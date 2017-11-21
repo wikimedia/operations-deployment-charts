@@ -1,0 +1,43 @@
+# Default values for $SERVICE_NAME.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+namespace: $NAMESPACE
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: $IMAGE_NAME
+  version: latest # we use latest everywhere in the defaults.
+  port: $PORT
+  limits:
+    cpu: 1
+    memory: 400Mi
+  liveness_probe:
+    httpGet:
+      path: /
+      port: $PORT
+  readiness_probe:
+    httpGet:
+      path: /
+      port: $PORT
+
+logging:
+  enabled: false
+  fluent_bit_version: latest
+  output_match: "*"
+  limits:
+    cpu: 100m
+    memory: 200Mi
+monitoring:
+  enabled: true
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: $SERVICE_PORT
+  externalIP: null # you need to define this if "production" is used
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
