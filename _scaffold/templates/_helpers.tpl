@@ -19,3 +19,7 @@
 {{- define "wmf.chartid" -}}
 {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}
+
+{{- define "wmf.appbaseurl" -}}
+http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
+{{- end -}}
