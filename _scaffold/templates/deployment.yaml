@@ -66,14 +66,14 @@ spec:
               {{ end }}
 {{- end -}}
 {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-collector
-          image: {{ .Values.docker.registry }}/prometheus-statsd-collector:{{ .Values.monitoring.image_version }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           volumeMounts:
-            - name: {{ .Release.Name }}-metrics-collector
+            - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
       volumes:
-        - name: {{ .Release.Name }}-metrics-collector
+        - name: {{ .Release.Name }}-metrics-exporter
           configMap:
             name: {{ .Release.Name }}-metrics-config
 {{- end -}}
