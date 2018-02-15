@@ -15,7 +15,7 @@ function main {
     read -r NAMESPACE
     echo "Please input the port the application is listening on"
     read -r PORT
-    echo "Please input the port this service will be exposed on (dev only)"
+    echo "Please input the port this service will be exposed on (dev only, range 30000-32787)"
     read -r SERVICE_PORT
     echo "Please input the docker image to use:"
     read -r IMAGE_NAME
