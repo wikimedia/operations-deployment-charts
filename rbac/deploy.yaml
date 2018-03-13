@@ -1,0 +1,16 @@
+kind: ClusterRole
+metadata:
+  name: deploy
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods/portforward
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
