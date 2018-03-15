@@ -21,4 +21,7 @@ KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create rolebinding ${SERVICEACCOU
 KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create rolebinding ${DEPLOY_USER} --clusterrole=deploy --user=${DEPLOY_USER}
 
 # Initialize helm
-helm init --service-account ${SERVICEACCOUNT} --tiller-namespace=${NAMESPACE}
+KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
+	--tiller-namespace=${NAMESPACE} \
+	--tiller-image=docker-registry.discovery.wmnet/tiller:latest \
+	--skip-refresh
