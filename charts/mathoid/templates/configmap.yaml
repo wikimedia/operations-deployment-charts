@@ -13,5 +13,12 @@ metadata:
 data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" }}
-...
 {{- end -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-{{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+data:
+  config.yaml: |- {{ .Files.Get "config/config.yaml" | indent 4 }}
