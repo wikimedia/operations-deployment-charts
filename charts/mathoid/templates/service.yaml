@@ -18,7 +18,7 @@ spec:
     protocol: TCP
     port: {{ .Values.main_app.port }}
     nodePort:  {{ .Values.service.port }}
-{{ if ne .Values.service.deployment "minikube" -}}
+{{- if ne .Values.service.deployment "minikube" }}
   externalIPs:
   - {{ .Values.service.externalIP }}
 {{- end }}
