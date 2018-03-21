@@ -64,6 +64,10 @@ spec:
           env:
             - name: FLUENTBIT_OUTPUT_MATCH
               value: {{ .Values.logging.output_match | quote }}
+            - name: K8S_NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           resources:
             limits:
               {{ range $limit, $value := .Values.logging.limits -}}
