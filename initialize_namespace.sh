@@ -11,6 +11,9 @@ DEPLOY_USER=$2
 # First create the namespace
 KUBECONFIG=$KUBECONFIG kubectl create namespace ${NAMESPACE}
 
+# Annotate the namespace so that calico will enforce a default deny network policy
+KUBECONFIG=$KUBECONFIG kubectl annotate namespace ${NAMESPACE} "net.beta.kubernetes.io/network-policy={\"ingress\":{\"isolation\":\"DefaultDeny\"}}"
+
 # Create the service account under which tiller will run
 KUBECONFIG=$KUBECONFIG kubectl create serviceaccount ${SERVICEACCOUNT} -n ${NAMESPACE}
 
