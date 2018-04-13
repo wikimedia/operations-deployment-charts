@@ -4,7 +4,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-metrics-config
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -19,6 +18,5 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: config-{{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
 data:
   config.yaml: |- {{ .Files.Get "config/config.yaml" | indent 4 }}
