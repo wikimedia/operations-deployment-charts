@@ -2,7 +2,6 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: {{ template "wmf.releasename" . }}
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -17,7 +16,6 @@ spec:
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
-      namespace: {{ .Values.namespace }}
       labels:
         release: {{ .Release.Name }}
         app: {{ template "wmf.chartname" . }}
