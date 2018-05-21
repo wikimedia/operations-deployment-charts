@@ -14,6 +14,8 @@ spec:
     - ports:
       - port: {{ .Values.main_app.port }}
         protocol: TCP
+        {{- if .Values.monitoring.enabled }}
       - port: 9102
         protocol: TCP
+        {{- end }}
 {{- end }}
