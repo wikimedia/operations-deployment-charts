@@ -16,7 +16,10 @@ spec:
   - name: http
     protocol: TCP
     port: {{ .Values.main_app.port }}
+    {{/* If the port is passed as a value use it, otherwise autoallocate */}}
+    {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
+    {{- end }}
 {{- if ne .Values.service.deployment "minikube" }}
   externalIPs:
   - {{ .Values.service.externalIP }}
