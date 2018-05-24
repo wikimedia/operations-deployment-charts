@@ -11,15 +11,11 @@ function main {
     echo "Please input the name of the service"
     read -r SERVICE_NAME
     test -d "charts/${SERVICE_NAME}" && fail "A service named ${SERVICE_NAME} already exists, cannot recreate it."
-    echo "Please input the namespace this service will be deployed to"
-    read -r NAMESPACE
     echo "Please input the port the application is listening on"
     read -r PORT
-    echo "Please input the port this service will be exposed on (dev only, range 30000-32787)"
-    read -r SERVICE_PORT
     echo "Please input the docker image to use:"
     read -r IMAGE_NAME
-    export SERVICE_NAME NAMESPACE SERVICE_PORT IMAGE_NAME PORT
+    export SERVICE_NAME IMAGE_NAME PORT
     cp -rp _scaffold/ charts/${SERVICE_NAME}
     cat _scaffold/values.yaml | envsubst > charts/${SERVICE_NAME}/values.yaml
     cat _scaffold/Chart.yaml | envsubst > charts/${SERVICE_NAME}/Chart.yaml
