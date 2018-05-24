@@ -82,11 +82,14 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
+{{- end }}
       volumes:
+        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
+        {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
             name: {{ .Release.Name }}-metrics-config
+        {{- end }}
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
-{{- end -}}
