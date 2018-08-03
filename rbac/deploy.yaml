@@ -15,3 +15,10 @@ rules:
   - pods
   verbs:
   - list
+  - get # This is extra to the "recommended" RBAC deploy rights
+- apiGroups:
+  - ""
+  resources: # This is extra to the "recommended" RBAC deploy rights
+  - pods/log
+  verbs:
+  - get
