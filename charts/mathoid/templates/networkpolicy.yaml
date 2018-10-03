@@ -10,6 +10,8 @@ spec:
     matchLabels:
       app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
   ingress:
     - ports:
       - port: {{ .Values.main_app.port }}
