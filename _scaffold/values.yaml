@@ -11,9 +11,12 @@ main_app:
   image: $IMAGE_NAME
   version: latest # we use latest everywhere in the defaults.
   port: $PORT
+  requests:
+    cpu: 1m # Just some sample, edit these
+    memory: 200Mi # Just some sample, edit these
   limits:
-    cpu: 1
-    memory: 400Mi
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
       port: $PORT

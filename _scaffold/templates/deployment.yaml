@@ -50,6 +50,8 @@ spec:
                   key: {{ $k }}
           {{- end }}
           resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
 {{- if .Values.logging.enabled }}
