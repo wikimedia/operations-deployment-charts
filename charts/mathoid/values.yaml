@@ -18,8 +18,7 @@ main_app:
     cpu: 1 # But can consume up to 1 vCPU per process
     memory: 1Gi # Mathoid consumes up to 1G RES under high stress, then service-runner kills it
   liveness_probe:
-    httpGet:
-      path: /_info
+    tcpSocket:
       port: 10044
   readiness_probe:
     httpGet:
