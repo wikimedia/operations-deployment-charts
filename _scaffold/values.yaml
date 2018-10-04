@@ -15,8 +15,7 @@ main_app:
     cpu: 1
     memory: 400Mi
   liveness_probe:
-    httpGet:
-      path: /
+    tcpSocket:
       port: $PORT
   readiness_probe:
     httpGet:
