@@ -11,9 +11,12 @@ main_app:
   image: wikimedia/mediawiki-services-mathoid
   version: latest # we use latest everywhere in the defaults.
   port: 10044
+  requests:
+    cpu: 100m # Pretty idle normally
+    memory: 200Mi # Mathoid consumes ~130MB RES under normal conditions
   limits:
-    cpu: 1
-    memory: 400Mi
+    cpu: 1 # But can consume up to 1 vCPU per process
+    memory: 1Gi # Mathoid consumes up to 1G RES under high stress, then service-runner kills it
   liveness_probe:
     httpGet:
       path: /_info
