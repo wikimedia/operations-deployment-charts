@@ -1,0 +1,41 @@
+# Default values for zotero.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/mediawiki-services-zotero
+  version: latest # we use latest everywhere in the defaults.
+  port: 1969
+  requests:
+    cpu: 1m # Minimal CPU on idle
+    memory: 100Mi # Some 100Mi on idle
+  limits:
+    cpu: 1 # TODO Run some more tests for this
+    memory: 400Mi # TODO Run some more tests for this
+  liveness_probe:
+    tcpSocket:
+      port: 1969
+# No readiness probe, zotero translation-server has not GET endpoints yet
+
+logging:
+  enabled: false
+  fluent_bit_version: latest
+  output_match: "*"
+  limits:
+    cpu: 100m
+    memory: 200Mi
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  externalIP: null # you need to define this if "production" is used
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
