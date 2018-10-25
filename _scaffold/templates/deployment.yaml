@@ -10,15 +10,16 @@ metadata:
 spec:
   selector:
     matchLabels:
-      release: {{ .Release.Name }}
       app: {{ template "wmf.chartname" . }}
-      # TODO: add the ability to do canary deployments here maybe?
+      chart: {{ template "wmf.chartid" . }}
+      release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        release: {{ .Release.Name }}
         app: {{ template "wmf.chartname" . }}
+        chart: {{ template "wmf.chartid" . }}
+        release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         prometheus.io/port: "9102"

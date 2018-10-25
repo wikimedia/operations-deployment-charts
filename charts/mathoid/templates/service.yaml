@@ -11,6 +11,7 @@ spec:
   type: NodePort
   selector:
     app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
   ports:
   - name: http
