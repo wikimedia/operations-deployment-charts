@@ -19,6 +19,9 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{ if .Values.monitoring.enabled -}}
+         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
