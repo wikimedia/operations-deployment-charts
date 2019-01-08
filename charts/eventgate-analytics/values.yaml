@@ -1,0 +1,51 @@
+# Default values for eventgate-analytics.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+
+
+main_app:
+  # Don't use docker.registry value for main_app image so we can override
+  # and use locally built and cached images via --set main_app.image during development.
+  image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
+  version: latest # we use latest everywhere in the defaults.
+  port: 8192
+  log_level: info
+  # Value of kafka.conf.'metadata.broker.list' in app config.yaml.
+  # Override this in production.
+  kafka_broker_list: kafka.default.svc.cluster.local:9092
+
+  # Override this during helm install with --set datacenter=XXXX
+  # This will be used as the topic prefix.
+  datacenter: eqiad
+
+  # Following https://wikitech.wikimedia.org/wiki/User:Alexandros_Kosiaris/Benchmarking_kubernetes_apps,
+  # EventGate maxed at 900m CPU and 86MiB.  This bench was done using
+  # only a single event schema; in prod there will be on the order of tens to
+  # hundreds of cached schemas.  Still, each schema probably only takes a few KiB.
+  # Also, as Kafka produce requests get busy, the Kafka produce queues may also
+  # take up memory.
+  requests:
+    cpu: 100m
+    memory: 50Mi
+  limits:
+    cpu: 1000m
+    memory: 150Mi
+
+monitoring:
+  enabled: false
+  image_version: latest
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+subcharts:
+  # Set this to true during local minikube development to get a Kafka pod deployed
+  kafka: false
