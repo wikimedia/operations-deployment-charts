@@ -19,4 +19,4 @@ kind: ConfigMap
 metadata:
   name: config-{{ .Release.Name }}
 data:
-  config.yaml: |- {{ .Files.Get "config/config.yaml" | indent 4 }}
+  config.yaml: |- {{ include "config.app" . | indent 4 }}

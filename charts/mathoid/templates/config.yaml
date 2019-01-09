@@ -1,3 +1,4 @@
+{{- define "config.app" -}}
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
@@ -19,12 +20,14 @@ logging:
       port: 12201
       type: gelf
 
+{{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
 metrics:
   name: mathoid
   host: localhost
   port: 9125
   type: statsd
+{{- end }}
 
 services:
   - name: mathoid
@@ -32,7 +35,7 @@ services:
     module: ./app.js
     # per-service config
     conf:
-      port: 10044
+      port: {{ .Values.main_app.port }}
       # interface: localhost # uncomment to only listen on localhost
       # more per-service config settings
       # the location of the spec, defaults to spec.yaml if not specified
@@ -96,13 +99,14 @@ services:
         method: post
         uri: http://api-rw.discovery.wmnet/w/api.php
         headers:
-          host: '{{request.params.domain}}'
-          user-agent: '{{user-agent}}'
-        body: '{{ default(request.query, {}) }}'
+          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
+          user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
+        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       # the template used for contacting RESTBase
       restbase_req:
-        method: '{{request.method}}'
-        uri: http://restbase.discovery.wmnet:7231/{{domain}}/v1/{+path}
-        query: '{{ default(request.query, {}) }}'
-        headers: '{{request.headers}}'
-        body: '{{request.body}}'
+        method: {{ "'{{" }}request.method{{ "}}'" }}
+        uri: http://restbase.discovery.wmnet:7231/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers: {{ "'{{" }}request.headers{{ "}}'" }}
+        body: {{ "'{{" }}request.body{{ "}}'" }}
+{{- end -}}
