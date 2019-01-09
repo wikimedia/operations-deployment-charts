@@ -16,6 +16,7 @@ worker_heartbeat_timeout: 7500
 logging:
   name: mathoid
   streams:
+    - type: stdout
     - host: logstash.svc.eqiad.wmnet
       port: 12201
       type: gelf
