@@ -25,13 +25,6 @@ main_app:
       path: /_info
       port: 10044
 
-logging:
-  enabled: false
-  fluent_bit_version: latest
-  output_match: "*"
-  limits:
-    cpu: 100m
-    memory: 200Mi
 monitoring:
   enabled: false
   image_version: latest
