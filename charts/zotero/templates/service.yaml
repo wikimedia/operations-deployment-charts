@@ -12,6 +12,7 @@ spec:
   selector:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
   ports:
   - name: http
     protocol: TCP
