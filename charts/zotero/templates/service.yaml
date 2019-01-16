@@ -21,7 +21,3 @@ spec:
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
     {{- end }}
-  {{- if eq .Values.service.deployment "production" }}
-  externalIPs:
-  - {{ .Values.service.externalIP }}
-  {{- end }}
