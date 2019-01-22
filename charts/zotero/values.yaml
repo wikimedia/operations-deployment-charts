@@ -22,13 +22,6 @@ main_app:
       port: 1969
 # No readiness probe, zotero translation-server has not GET endpoints yet
 
-logging:
-  enabled: false
-  fluent_bit_version: latest
-  output_match: "*"
-  limits:
-    cpu: 100m
-    memory: 200Mi
 monitoring:
   enabled: false
   image_version: latest

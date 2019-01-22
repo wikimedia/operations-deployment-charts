@@ -55,23 +55,6 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.logging.enabled }}
-        - name: {{ .Release.Name }}-log-collector
-          image: {{ .Values.docker.registry }}/fluent-bit:{{ .Values.logging.fluent_bit_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          env:
-            - name: FLUENTBIT_OUTPUT_MATCH
-              value: {{ .Values.logging.output_match | quote }}
-            - name: K8S_NODE_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-          resources:
-            limits:
-              {{ range $limit, $value := .Values.logging.limits -}}
-              {{ $limit }}: {{ $value }}
-              {{ end }}
-{{- end -}}
 {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
