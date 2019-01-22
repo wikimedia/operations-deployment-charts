@@ -4,21 +4,18 @@ metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
     app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
       app: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
         app: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
