@@ -11,8 +11,8 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   prometheus-statsd.conf: |-
-{{ .Files.Get "config/prometheus-statsd.conf" }}
-{{- end -}}
+{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
+{{ end }}
 ---
 apiVersion: v1
 kind: ConfigMap
