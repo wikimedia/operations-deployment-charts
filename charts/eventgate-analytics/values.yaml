@@ -8,8 +8,6 @@ docker:
 resources:
   replicas: 1
 
-
-
 main_app:
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
@@ -21,9 +19,10 @@ main_app:
   # Override this in production.
   kafka_broker_list: kafka.default.svc.cluster.local:9092
 
-  # Override this during helm install with --set datacenter=XXXX
-  # This will be used as the topic prefix.
-  datacenter: eqiad
+  # Override this during helm install with --set topic_prefix=XXXX
+  # In production release this should be the datacenter name.
+  # (a '.' will be appended to this in the config.yaml template)
+  topic_prefix: datacenter1
 
   # Following https://wikitech.wikimedia.org/wiki/User:Alexandros_Kosiaris/Benchmarking_kubernetes_apps,
   # EventGate maxed at 900m CPU and 86MiB.  This bench was done using

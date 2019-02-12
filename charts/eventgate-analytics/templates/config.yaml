@@ -69,8 +69,8 @@ services:
       # is also configured.
       stream_field: [meta.stream, meta.topic]
 
-      # Prefix topics with the datacenter name and a .
-      topic_prefix: {{ .Values.main_app.datacenter }}.
+      # Prefix topics with the topic_prefix name and a .
+      topic_prefix: {{ .Values.main_app.topic_prefix }}.
 
       # This field will be used in log messages to uniquely ID each event.
       id_field: meta.id
