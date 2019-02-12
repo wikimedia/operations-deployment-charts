@@ -1,0 +1,10 @@
+# Default values for kafka-single-node.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+
+kafka:
+  # Override this if your minikube ip is different by installing the
+  # chart with --set kafka.advertised_hostname=$(minikube ip)
+  advertised_host_name: 192.168.99.100
+  advertised_port: 30092

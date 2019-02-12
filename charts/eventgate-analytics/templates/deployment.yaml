@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        {{ if .Values.monitoring.enabled -}}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
+        prometheus.io/port: "9102"
+        prometheus.io/scrape: "true"
+    spec:
+
+      # In prod deployemnt event-schemas will come from a remote service or
+      # built into the app container image.  This is here temporarily
+      # for development of this chart and service in staging k8s.
+      initContainers:
+        # This container clones the desired git repo to the EmptyDir volume.
+        - name: git-clone-event-schemas
+          image: {{ .Values.docker.registry }}/wmfdebug:latest
+          env:
+          command: ["git"]
+          args:
+            - clone
+            - --single-branch
+            - --
+            - https://gerrit.wikimedia.org/r/mediawiki/event-schemas
+            - /srv/event-schemas # Put it in the volume
+          securityContext:
+            runAsUser: 1 # Any non-root user will do. Match to the workload.
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: event-schemas-git-repo
+              mountPath: /srv/event-schemas
+      containers:
+        # The main application container
+        - name: {{ template "wmf.releasename" . }}
+          image: "{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          command: ["nodejs"]
+          args: ["/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - containerPort: {{ .Values.main_app.port }}
+          liveness_probe:
+            tcpSocket:
+              port: {{ .Values.main_app.port }}
+          readiness_probe:
+            httpGet:
+              path: /?spec
+              port: {{ .Values.main_app.port }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "wmf.releasename" . }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/eventgate
+            - name: event-schemas-git-repo
+              mountPath: /srv/event-schemas
+          resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.limits | indent 14 }}
+{{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-metrics-exporter
+              mountPath: /etc/monitoring
+{{- end }}
+      volumes:
+        {{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+            name: {{ .Release.Name }}-metrics-config
+        {{- end }}
+        - name: config-volume
+          configMap:
+            name: config-{{ .Release.Name }}
+        - name: event-schemas-git-repo
+          emptyDir: {}

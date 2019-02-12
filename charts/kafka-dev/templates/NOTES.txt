@@ -1,0 +1,3 @@
+Please run the following to get the nodeport of zookeeper
+  MINIKUBE_HOST=$(minikube ip)
+  SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ .Release.name }} -o jsonpath='{.spec.ports[0].nodePort}')

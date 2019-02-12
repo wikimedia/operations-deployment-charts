@@ -1,0 +1,92 @@
+{{- define "config.app" -}}
+# service-runner EventGate app config.yaml.
+
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 200
+
+# Logger info
+logging:
+  level:  {{ .Values.main_app.log_level }}
+{{- if eq .Values.service.deployment "production" }}
+  streams:
+  # Use gelf-stream -> logstash
+    - host: logstash.svc.{{ .Values.datacenter }}.wmnet
+      port: 12201
+      type: gelf
+{{- end }}
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  name: {{ .Chart.Name }}
+  host: localhost
+  port: 9125
+  type: statsd
+{{- end }}
+
+services:
+  - name: {{ .Chart.Name }}
+    # a relative path or the name of an npm package, if different from name
+    module: ./app.js
+    conf:
+      port: {{ .Values.main_app.port }}
+
+      # more per-service config settings
+      user_agent: {{ .Chart.Name }}
+
+      eventgate_factory_module: '/srv/service/lib/factories/wikimedia-eventgate'
+
+      # Mapping of stream names to allowed schemas
+      # TODO from web URL in prod?
+      stream_config_uri: /etc/eventgate/stream-config.yaml
+      # stream_config_uri: https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/config/stream-config.yaml
+      # This field in each event will be used to extract a
+      # (possibly relative) schema uri.  The default is $schema.
+      # An array of field names will cause EventGate to search for
+      # fields by these names in each event, using the first match.
+      schema_uri_field: [$schema, meta.schema_uri]
+
+      # If set, this URI will be prepended to any relative schema URI
+      # extracted from each event's schema_field./
+      # This should be the path to the local checkout of
+      # https://github.com/wikimedia/mediawiki-event-schemas
+
+      # /srv/event-schemas is cloned and mounted via an k8s emptyDir and an initContainer
+      schema_base_uri: file:///srv/event-schemas/jsonschema/
+      # You can alteratively use a remote HTTP base URI.
+      # schema_base_uri: https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/
+
+      # If set, this will be appended to every extracted schema_uri if that schema_uri
+      # does not already end with a file extension.
+      #schema_file_extension: .yaml
+
+      # This field in each event will be used to extract a destination 'stream' name.
+      # This will equal the destination Kafka topic, unless a topic prefix
+      # is also configured.
+      stream_field: [meta.stream, meta.topic]
+
+      # Prefix topics with the datacenter name and a .
+      topic_prefix: {{ .Values.main_app.datacenter }}.
+
+      # This field will be used in log messages to uniquely ID each event.
+      id_field: meta.id
+
+      # If a validation error is encountered, a validation error event
+      # will be produced to this stream.
+      error_stream: eventgate.error.validation
+
+      # kafka configs go here.
+      # TODO: use a kafka image for develpment mode?
+      kafka:
+        conf:
+          metadata.broker.list: {{ .Values.main_app.kafka_broker_list }}
+        # kafka topic conf goes here
+        topic_conf: {}
+
+{{- end }}
