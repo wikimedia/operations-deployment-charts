@@ -13,8 +13,9 @@ worker_heap_limit_mb: 200
 # Logger info
 logging:
   level:  {{ .Values.main_app.log_level }}
-{{- if eq .Values.service.deployment "production" }}
   streams:
+    - type: stdout
+{{- if eq .Values.service.deployment "production" }}
   # Use gelf-stream -> logstash
     - host: logstash.svc.{{ .Values.datacenter }}.wmnet
       port: 12201
