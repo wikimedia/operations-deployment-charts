@@ -8,7 +8,7 @@ data:
   # TODO: stream-config should come from a remote URL/service.
   stream-config.yaml: |- {{ .Files.Get "config/stream-config.yaml" | indent 4 }}
 
-{{- if .Values.monitoring.enabled -}}
+{{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
