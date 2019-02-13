@@ -17,7 +17,7 @@ logging:
     - type: stdout
 {{- if eq .Values.service.deployment "production" }}
   # Use gelf-stream -> logstash
-    - host: logstash.svc.{{ .Values.datacenter }}.wmnet
+    - host: logstash.svc.eqiad.wmnet
       port: 12201
       type: gelf
 {{- end }}
