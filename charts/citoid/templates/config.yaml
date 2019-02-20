@@ -1,0 +1,101 @@
+{{- define "config.app" -}}
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 300
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 7500
+
+# Logger info
+logging:
+  name: citoid
+  streams:
+    - type: stdout
+    - host: logstash.svc.eqiad.wmnet
+      level: warn
+      port: 12201
+      type: gelf
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  name: citoid
+  host: localhost
+  port: 9125
+  type: statsd
+{{- end }}
+
+services:
+  - name: citoid
+    # a relative path or the name of an npm package, if different from name
+    module: app.js
+    # per-service config
+    conf:
+      port: {{ .Values.main_app.port }}
+      # interface: localhost # uncomment to only listen on localhost
+      # more per-service config settings
+      # the location of the spec, defaults to spec.yaml if not specified
+      # spec: ./spec.template.yaml
+      # allow cross-domain requests to the API (default '*')
+      cors: '*'
+      # to disable use:
+      # cors: false
+      # to restrict to a particular domain, use:
+      # cors: restricted.domain.org
+      # content for the CSP headers
+      # csp: false  # uncomment this line to disable sending them
+      # URL of the outbound proxy to use (complete with protocol)
+      {{ if .Values.main_app.proxy -}}
+      proxy: {{ .Values.main_app.proxy }}
+      {{ end -}}
+      # the list of domains for which not to use the proxy defined above
+      # no_proxy_list:
+      #   - domain1.com
+      #   - domain2.org
+      # the list of incoming request headers that can be logged; if left empty,
+      # the following headers are allowed: cache-control, content-length,
+      # content-type, if-match, user-agent, x-request-id
+      # log_header_whitelist:
+      #   - cache-control
+      #   - content-length
+      #   - content-type
+      #   - if-match
+      #   - user-agent
+      #   - x-request-id
+      # User-Agent HTTP header to use for requests
+      userAgent: "Citoid (Wikimedia tool; learn more at https://www.mediawiki.org/wiki/Citoid)"
+      # contact e-mail address; used for making crossRef requests
+      mailto: services@lists.wikimedia.org
+      # whether Citoid should use Zotero
+      {{ if .Values.main_app.zotero -}}
+      zotero: true
+      {{ else -}}
+      zotero: false
+      {{ end -}}
+      # URL where to contact Zotero
+      zoteroInterface: {{ .Values.main_app.zotero }}
+      # zotero's server port
+      zoteroPort: 1969
+      # whether the proxy should be used to contact zotero
+      zoteroUseProxy: false
+      # whether Citoid should always wait for the PubMed request to complete
+      pubmed: false
+      # whether Citoid is allowed to scrape private IPs
+      allowPrivateAddresses: false
+      # maximum number of redirects allowed
+      maxRedirects: 10
+      # whether to use the WorldCat XISBN service (deprecated)
+      xisbn: {{ .Values.main_app.xisbn }}
+      # the WorldCat Search API key to use
+      {{ if .Values.main_app.wskey -}}
+      wskey: '{{ .Values.main_app.wskey }}'
+      {{ else -}}
+      wskey: false
+      {{ end -}}
+{{- end -}}
