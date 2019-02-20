@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   blubberoid:
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.74305276+02:00
+    created: 2019-02-20T17:06:36.61900107+02:00
     description: Helm chart for Blubberoid on WMF Kubernetes infrastructure
     digest: b06bc56466bccda98acc78aa176301606d535d90f9311706c05f22ae3a9b6664
     home: https://wikitech.wikimedia.org/wiki/Blubber
@@ -21,7 +21,7 @@ entries:
     - blubberoid-0.0.5.tgz
     version: 0.0.5
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.742577706+02:00
+    created: 2019-02-20T17:06:36.618548981+02:00
     description: Helm chart for Blubberoid on WMF Kubernetes infrastructure
     digest: a86b45f1fc062dc59cc79f415f2f9a05cc8231c26ffc78fcdb51c9db3c802662
     home: https://wikitech.wikimedia.org/wiki/Blubber
@@ -40,7 +40,7 @@ entries:
     - blubberoid-0.0.4.tgz
     version: 0.0.4
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.742155762+02:00
+    created: 2019-02-20T17:06:36.618064763+02:00
     description: Helm chart for Blubberoid on WMF Kubernetes infrastructure
     digest: bbfd855800f4126382db210739411a3efa39493287a1173c14843bfee305903e
     home: https://wikitech.wikimedia.org/wiki/Blubber
@@ -59,7 +59,7 @@ entries:
     - blubberoid-0.0.3.tgz
     version: 0.0.3
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.741660506+02:00
+    created: 2019-02-20T17:06:36.617634241+02:00
     description: Helm chart for Blubberoid on WMF Kubernetes infrastructure
     digest: eea20f7feab7ec2d15c9af8a12a894ead42bb5b7318062f9f95a32673867405f
     home: https://wikitech.wikimedia.org/wiki/Blubber
@@ -78,7 +78,7 @@ entries:
     - blubberoid-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.741143279+02:00
+    created: 2019-02-20T17:06:36.617189508+02:00
     description: Helm chart for Blubberoid on WMF Kubernetes infrastructure
     digest: ba75b81a135cb21a87e6458b93cc9529facb91defab10ee6e79931fe2e7907fe
     home: https://wikitech.wikimedia.org/wiki/Blubber
@@ -98,7 +98,7 @@ entries:
     version: 0.0.1
   eventgate-analytics:
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.745360083+02:00
+    created: 2019-02-20T17:06:36.621696314+02:00
     description: |
       eventgate-analytics receives JSON events over HTTP, validates them against JSONSchemas, and produces them to Kafka.
     digest: 4e2968ff1cd8bcbafab5c025719e29feece15e77808ee55ef32285b6c3503f31
@@ -107,7 +107,7 @@ entries:
     - eventgate-analytics-0.0.4.tgz
     version: 0.0.4
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.744803873+02:00
+    created: 2019-02-20T17:06:36.621128669+02:00
     description: |
       eventgate-analytics receives JSON events over HTTP, validates them against JSONSchemas, and produces them to Kafka.
     digest: 5ba9c226a7b37ee2047655918a18cdc125c03175ab534006a958cd50a0561010
@@ -116,7 +116,7 @@ entries:
     - eventgate-analytics-0.0.3.tgz
     version: 0.0.3
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.744246939+02:00
+    created: 2019-02-20T17:06:36.620410212+02:00
     description: |
       eventgate-analytics receives JSON events over HTTP, validates them against JSONSchemas, and produces them to Kafka.
     digest: d5b7d5bfe5504eab65af7362ac14e5494548a1e30120c9b7bc145c33f07b8caf
@@ -125,7 +125,7 @@ entries:
     - eventgate-analytics-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.743612514+02:00
+    created: 2019-02-20T17:06:36.619704628+02:00
     description: |
       eventgate-analytics receives JSON events over HTTP, validates them against JSONSchemas, and produces them to Kafka.
     digest: e3371f40e32b25b14c08c38405923112bee26ce187b5001bbc89e19ab9ccc040
@@ -135,7 +135,7 @@ entries:
     version: 0.0.1
   kafka-dev:
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.745737932+02:00
+    created: 2019-02-20T17:06:36.621997074+02:00
     description: |
       A Helm chart for installing a single node Kafka (and Zookeeper) pod for development and testing purposes.
     digest: c7db6da709d3a62341c2ea31437d39478e81eed2a1fcb35f2fbdf9453778a10a
@@ -145,7 +145,26 @@ entries:
     version: 0.0.1
   mathoid:
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.74887066+02:00
+    created: 2019-02-20T17:06:36.625336723+02:00
+    description: Helm chart for Mathoid on WMF Kubernetes infrastructure
+    digest: 45a6cbac1f5c3fb958873339bea731cd3615e7084c3091fb222be22fe73d7e9d
+    home: https://www.mediawiki.org/wiki/Manual:Mathoid
+    keywords:
+    - math
+    - mathoid
+    kubeVersion: '>=1.8'
+    maintainers:
+    - email: akosiaris at wikimedia.org
+      name: Alexandros Kosiaris
+    name: mathoid
+    sources:
+    - https://github.com/wikimedia/mathoid
+    tillerVersion: '>=2.8'
+    urls:
+    - mathoid-0.0.17.tgz
+    version: 0.0.17
+  - apiVersion: v1
+    created: 2019-02-20T17:06:36.624946979+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: e6c1e4c072967b7e5d82d5430218441eb6633d8b3f7e9d46cc4c08825e3eb20f
     home: https://www.mediawiki.org/wiki/Manual:Mathoid
@@ -164,7 +183,7 @@ entries:
     - mathoid-0.0.16.tgz
     version: 0.0.16
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.748334542+02:00
+    created: 2019-02-20T17:06:36.624559056+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: dfb90b77595bcf8c339f6ae235fe56fa495c465e23e41321ebe9b31ef07e4fb7
     home: https://www.mediawiki.org/wiki/Manual:Mathoid
@@ -183,7 +202,7 @@ entries:
     - mathoid-0.0.15.tgz
     version: 0.0.15
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.747926125+02:00
+    created: 2019-02-20T17:06:36.624183115+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 524772fbe48dcd43e5042900028fb57a7d8540270aca6d9b5b09e4f38ef8384c
     home: https://www.mediawiki.org/wiki/Manual:Mathoid
@@ -202,7 +221,7 @@ entries:
     - mathoid-0.0.14.tgz
     version: 0.0.14
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.747547647+02:00
+    created: 2019-02-20T17:06:36.623797912+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 7f4552b931b9a30845a56543212f807a7cf58d6cb970e0394babb30a6813d555
     home: https://www.mediawiki.org/wiki/Manual:Mathoid
@@ -221,7 +240,7 @@ entries:
     - mathoid-0.0.13.tgz
     version: 0.0.13
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.74715512+02:00
+    created: 2019-02-20T17:06:36.623395953+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: c70221d9e9ab2c474dca65556d4736461cc6561a2b08e1cf9fecfada884888b0
     name: mathoid
@@ -229,7 +248,7 @@ entries:
     - mathoid-0.0.12.tgz
     version: 0.0.12
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.746823195+02:00
+    created: 2019-02-20T17:06:36.623061642+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: b2feae7e6500847482d72e9fa70160f17e30cefad30f58ccf673f4196056c9ae
     name: mathoid
@@ -237,7 +256,7 @@ entries:
     - mathoid-0.0.11.tgz
     version: 0.0.11
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.746462516+02:00
+    created: 2019-02-20T17:06:36.622728065+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 1e2044d3e168901dc5ba046b2a0952b81678fc30531e4e67d8395af1b77f8e77
     name: mathoid
@@ -245,7 +264,7 @@ entries:
     - mathoid-0.0.10.tgz
     version: 0.0.10
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.752712118+02:00
+    created: 2019-02-20T17:06:36.630121535+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 80b33ba8bad07caa5b45c74ff61f75027375dfda399df0cbf52e910f48d6b0e3
     name: mathoid
@@ -253,7 +272,7 @@ entries:
     - mathoid-0.0.9.tgz
     version: 0.0.9
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.751911021+02:00
+    created: 2019-02-20T17:06:36.629798609+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: bcbb004a5bbf1a1cd410636c1484ac13c5e9d380fa7ce4778bd54e0c2bcf097c
     name: mathoid
@@ -261,7 +280,7 @@ entries:
     - mathoid-0.0.8.tgz
     version: 0.0.8
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.750881655+02:00
+    created: 2019-02-20T17:06:36.629479704+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 9ce6cc8ab8c1688e91ef3f0b24d5f9d1847d3b9f13af74b828dd1793e7280249
     name: mathoid
@@ -269,7 +288,7 @@ entries:
     - mathoid-0.0.7.tgz
     version: 0.0.7
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.750536144+02:00
+    created: 2019-02-20T17:06:36.62916047+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: d31ae28622ab0841ee146fa8a473cdac62c39f918d068ad31ce45b8555413bd9
     name: mathoid
@@ -277,7 +296,7 @@ entries:
     - mathoid-0.0.6.tgz
     version: 0.0.6
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.750206571+02:00
+    created: 2019-02-20T17:06:36.628700667+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 5f9d6ce9fbefd0f70e43125a4f606d8ace6af6267a47ff52b7db704c559928db
     name: mathoid
@@ -285,7 +304,7 @@ entries:
     - mathoid-0.0.5.tgz
     version: 0.0.5
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.749867+02:00
+    created: 2019-02-20T17:06:36.628233085+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: 7d71910949a3a7b564257ed05f2c08ffe294cff4a5c7c9e60f039808b2b194d3
     name: mathoid
@@ -293,7 +312,7 @@ entries:
     - mathoid-0.0.4.tgz
     version: 0.0.4
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.749536045+02:00
+    created: 2019-02-20T17:06:36.627771536+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: d7b8a1d7b660ed044a3048152749dc0adcdde9c97fe3cfd68e81eb1425f5fe26
     name: mathoid
@@ -301,7 +320,7 @@ entries:
     - mathoid-0.0.3.tgz
     version: 0.0.3
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.749214288+02:00
+    created: 2019-02-20T17:06:36.627124895+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: fbe0be1347e13985227fb90157cd73a8832aea472e34ff847fe7411b50a43531
     name: mathoid
@@ -309,7 +328,7 @@ entries:
     - mathoid-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.746101192+02:00
+    created: 2019-02-20T17:06:36.622348748+02:00
     description: Helm chart for Mathoid on WMF Kubernetes infrastructure
     digest: f7fe77369f0326be1259d6d9298c0025bcc77e92006b35dc5dd2edf43248fadb
     name: mathoid
@@ -318,7 +337,7 @@ entries:
     version: 0.0.1
   zotero:
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.756132602+02:00
+    created: 2019-02-20T17:06:36.632853468+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: ba71cdc18d52e8c3e051a95e9e77f37f1148a200d41378fe365c625a3ecb95d8
@@ -341,7 +360,7 @@ entries:
     - zotero-0.0.6.tgz
     version: 0.0.6
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.755648397+02:00
+    created: 2019-02-20T17:06:36.632401502+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: 848642ee039b7e70e0df7386dff6a345546b8708cbca343da523e8840437bfcb
@@ -364,7 +383,7 @@ entries:
     - zotero-0.0.5.tgz
     version: 0.0.5
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.755139859+02:00
+    created: 2019-02-20T17:06:36.631962283+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: 0cd7c907336678a5ef92f16667716599603581d58f80cb03085538de5310f95a
@@ -387,7 +406,7 @@ entries:
     - zotero-0.0.4.tgz
     version: 0.0.4
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.754633439+02:00
+    created: 2019-02-20T17:06:36.631507392+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: 7feb11fe6f74fb18fe438dbe2e7fdfdc6e9f74dc4c5758dbafc9005e136ff660
@@ -410,7 +429,7 @@ entries:
     - zotero-0.0.3.tgz
     version: 0.0.3
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.754135691+02:00
+    created: 2019-02-20T17:06:36.631048187+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: 94e4603e2d325e85238239f982e67ffdcbbbcaea0cd1adc7569a952b1b43b88e
@@ -433,7 +452,7 @@ entries:
     - zotero-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
-    created: 2019-02-20T16:24:25.753386942+02:00
+    created: 2019-02-20T17:06:36.630580212+02:00
     description: A Helm chart for Kubernetes used to deploy the zotero-translation
       server
     digest: 1b5906d375cf8a0dc4555fa4eed01e9ae8337a016cf870233feb75411a4b3e00
@@ -455,4 +474,4 @@ entries:
     urls:
     - zotero-0.0.1.tgz
     version: 0.0.1
-generated: 2019-02-20T16:24:25.73978906+02:00
+generated: 2019-02-20T17:06:36.616627348+02:00
