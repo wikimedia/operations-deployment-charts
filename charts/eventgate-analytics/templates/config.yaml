@@ -38,6 +38,8 @@ services:
     conf:
       port: {{ .Values.main_app.port }}
 
+      cors: false
+
       # more per-service config settings
       user_agent: {{ .Chart.Name }}
 
