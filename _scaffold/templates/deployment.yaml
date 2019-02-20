@@ -47,7 +47,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
+                  name: {{ template "wmf.releasename" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:

@@ -40,13 +40,6 @@ spec:
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
           {{- end }}
-          {{- range $k, $v := .Values.config.private }}
-            - name: {{ $k | upper }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
-                  key: {{ $k }}
-          {{- end }}
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}

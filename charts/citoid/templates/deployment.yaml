@@ -42,17 +42,6 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
-          {{- range $k, $v := .Values.config.public }}
-            - name: {{ $k | upper }}
-              value: {{ $v | quote }}
-          {{- end }}
-          {{- range $k, $v := .Values.config.private }}
-            - name: {{ $k | upper }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
-                  key: {{ $k }}
-          {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/citoid

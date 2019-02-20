@@ -35,6 +35,3 @@ monitoring:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
-config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
-  private: {} # Add here all the keys that should be private but still available as env variables
