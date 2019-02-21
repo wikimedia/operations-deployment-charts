@@ -18,7 +18,6 @@ spec:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
       annotations:
-        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         checksum/config: {{ include "config.app" . | sha256sum }}
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
