@@ -1,0 +1,69 @@
+# Default values for cxserver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/mediawiki-services-cxserver
+  version: latest # we use latest everywhere in the defaults.
+  port: 8080
+  proxy: null
+  mw_host: mediawiki.svc.cluster.local # api-rw.discovery.wmnet in production
+  restbase_host: restbase.svc.cluster.local # restbase.discovery.wmnet:7231 in production
+  no_proxy_list: []
+  jwt_secret: null
+  ratelimiter_key: X-Forwarded-For # In production this is going to be X-Client-IP
+  ratelimiter_rate: 10
+  mt:
+    TestClient:
+      languages: config/TestClient.yaml
+    #Apertium:
+    #  api: "http://apertium.svc.cluster.local:2737"
+    #  languages: config/Apertium.wikimedia.yaml
+    #Google:
+    #  api: "https://www.googleapis.com/language/translate/v2"
+    #  key: "dummykey"
+    #  languages: config/Google.yaml
+    #LingoCloud:
+    #  api: "https://api.interpreter.caiyunai.com/v1"
+    #  key: "dummykey"
+    #  account: "dummyaccount"
+    #  languages: config/LingoCloud.yaml
+    #Matxin:
+    #  api: "http://matxin.elhuyar.eus/API"
+    #  key: "dummykey"
+    #  languages: config/Matxin.yaml
+    #Yandex:
+    #  api: https://translate.yandex.net
+    #  key: "dummykey"
+    #  languages: config/Yandex.yaml
+    #Youdao:
+    #  api: https://openapi.youdao.com/api
+    #  appKey: "dummyappkey"
+    #  appSecret: "dummyappsecret"
+    #  languages: config/Youdao.yaml
+    defaults: config/mt-defaults.wikimedia.yaml
+  requests:
+    cpu: 100m # The average case
+    memory: 90Mi # The average cause usage
+  limits:
+    cpu: 1100m # Maximum per benchmarks
+    memory: 200Mi # Maximum in benchmarks
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 8080
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate

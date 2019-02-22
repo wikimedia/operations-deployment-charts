@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include "config.app" . | sha256sum }}
+        {{ if .Values.monitoring.enabled -}}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
+        prometheus.io/port: "9102"
+        prometheus.io/scrape: "true"
+    spec:
+      securityContext:
+        # Make sure we set the user to run as
+        runAsUser: 900
+        allowPrivilegeEscalation: false
+      containers:
+        # The main application container
+        - name: {{ template "wmf.releasename" . }}
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          command: ["nodejs"]
+          args: ["/srv/service/server.js", "-c", "/etc/cxserver/config.yaml"]
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - containerPort: {{ .Values.main_app.port }}
+          livenessProbe:
+{{ toYaml .Values.main_app.liveness_probe | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.main_app.readiness_probe | indent 12 }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "wmf.releasename" . }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/cxserver
+          resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.limits | indent 14 }}
+{{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          securityContext:
+            # Use the built-in user of the image
+            runAsUser: 101
+          volumeMounts:
+            - name: {{ .Release.Name }}-metrics-exporter
+              mountPath: /etc/monitoring
+{{- end }}
+      volumes:
+        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
+        {{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+            name: {{ .Release.Name }}-metrics-config
+        {{- end }}
+        - name: config-volume
+          configMap:
+            name: config-{{ .Release.Name }}
