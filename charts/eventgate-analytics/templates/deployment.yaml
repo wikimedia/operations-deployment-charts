@@ -26,29 +26,6 @@ spec:
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
-
-      # In prod deployemnt event-schemas will come from a remote service or
-      # built into the app container image.  This is here temporarily
-      # for development of this chart and service in staging k8s.
-      initContainers:
-        # This container clones the desired git repo to the EmptyDir volume.
-        - name: git-clone-event-schemas
-          image: {{ .Values.docker.registry }}/wmfdebug:latest
-          env:
-          command: ["git"]
-          args:
-            - clone
-            - --single-branch
-            - --
-            - https://gerrit.wikimedia.org/r/mediawiki/event-schemas
-            - /srv/event-schemas # Put it in the volume
-          securityContext:
-            runAsUser: 1 # Any non-root user will do. Match to the workload.
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - name: event-schemas-git-repo
-              mountPath: /srv/event-schemas
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
@@ -71,8 +48,6 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/eventgate
-            - name: event-schemas-git-repo
-              mountPath: /srv/event-schemas
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}
@@ -95,5 +70,3 @@ spec:
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
-        - name: event-schemas-git-repo
-          emptyDir: {}

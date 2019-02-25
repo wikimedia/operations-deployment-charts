@@ -68,7 +68,7 @@ helm delete $(release)
 # replace the image name with an available EventGate image name.
 # I install these into minikube's dockermachine from the
 # EventGate repository, e.g.
-# blubber .pipeline/blubber.yaml developement > Dockerfile & docker build -t eventgate-dev .
+# blubber .pipeline/blubber.yaml development > Dockerfile && docker build -t eventgate-dev .
 
 helm install --set main_app.image=eventgate-dev --set main_app.kafka_broker_list=$(minikube ip):30092 --set subcharts.kafka=true ./eventgate-analytics
 

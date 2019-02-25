@@ -25,6 +25,11 @@
 /^eventgate\.error(\..+)?/:
   schema_title: error
 
+# api-request events are generated from Mediawiki via the
+# Monolog 'api-request' channel.
+mediawiki.api-request:
+  schema_title: mediawiki/api/request
+
 # test/event is for systems testing to ensure POST works
 # that events are produced.
 test.event:

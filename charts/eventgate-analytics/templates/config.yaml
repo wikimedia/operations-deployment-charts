@@ -56,12 +56,11 @@ services:
       schema_uri_field: [$schema, meta.schema_uri]
 
       # If set, this URI will be prepended to any relative schema URI
-      # extracted from each event's schema_field./
-      # This should be the path to the local checkout of
-      # https://github.com/wikimedia/mediawiki-event-schemas
+      # extracted from each event's schema_field.
 
-      # /srv/event-schemas is cloned and mounted via an k8s emptyDir and an initContainer
-      schema_base_uris: [file:///srv/event-schemas/jsonschema/]
+      # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at build
+      # time from https://gerrit.wikimedia.org/r/mediawiki/event-schemas
+      schema_base_uris: [file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/]
 
       # If set, this will be appended to every extracted schema_uri if that schema_uri
       # does not already end with a file extension.
