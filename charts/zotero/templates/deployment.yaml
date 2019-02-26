@@ -18,7 +18,6 @@ spec:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
       annotations:
-        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
