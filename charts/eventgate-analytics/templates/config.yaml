@@ -86,6 +86,9 @@ services:
       kafka:
         conf:
           metadata.broker.list: {{ .Values.main_app.kafka_broker_list }}
+          compression.codec: snappy
+          # Match this to what is set on brokers in production.
+          message.max.bytes: 4194304
         # kafka topic conf goes here
         topic_conf: {}
 
