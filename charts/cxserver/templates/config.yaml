@@ -31,13 +31,14 @@ metrics:
   type: statsd
 {{- end }}
 
-# TODO: Figure out how to do this in a kubernetes env
-#ratelimiter:
-#  type: kademlia
-#  seeds: ['scb1002.eqiad.wmnet','scb1003.eqiad.wmnet','scb1004.eqiad.wmnet']
-#  listen:
-#    address: 10.64.0.16
-#    port: 3051
+# TODO: Figure this out in production
+{{- if eq .Values.service.deployment "minikube" }}
+ratelimiter:
+  type: kademlia
+  seeds: [{{ template "wmf.releasename" . }}-kademlia.default.svc.cluster.local]
+  listen:
+    port: {{ .Values.main_app.kademlia_port }}
+{{- end }}
 
 services:
   - name: cxserver

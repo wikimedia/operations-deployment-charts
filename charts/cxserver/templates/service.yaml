@@ -19,3 +19,22 @@ spec:
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
     {{- end }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "wmf.releasename" . }}-kademlia
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+  - name: kademlia
+    protocol: UDP
+    port: {{ .Values.main_app.kademlia_port }}

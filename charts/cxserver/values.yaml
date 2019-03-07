@@ -11,6 +11,7 @@ main_app:
   image: wikimedia/mediawiki-services-cxserver
   version: latest # we use latest everywhere in the defaults.
   port: 8080
+  kademlia_port: 3051
   proxy: null
   mw_host: mediawiki.svc.cluster.local # api-rw.discovery.wmnet in production
   restbase_host: restbase.svc.cluster.local # restbase.discovery.wmnet:7231 in production
