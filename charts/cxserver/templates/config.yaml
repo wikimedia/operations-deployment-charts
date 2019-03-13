@@ -47,6 +47,7 @@ services:
       cors: "*"
       port: {{ .Values.main_app.port }}
       user_agent: CXServer/WMF
+      # the template used for contacting mediawiki
       mwapi_req:
         body: {{ "'{{" }} request.body {{ "}}'" }}
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
@@ -54,20 +55,20 @@ services:
           host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
         method: post
-        uri: "https://{{ "{{" }}{{ .Values.main_app.mw_host }}{{ "}}" }}/w/api.php"
+        uri: http://{{ .Values.main_app.mw_host }}/w/api.php
       # the template used for contacting RESTBase
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}
-        uri: http://{{ .Values.main_app.restbase_host }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
         headers: {{ "'{{" }} request.headers {{ "}}'" }}
         body: {{ "'{{" }} request.body {{ "}}'" }}
+        uri: http://{{ .Values.main_app.restbase_host }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
       {{ if .Values.main_app.proxy -}}
       proxy: {{ .Values.main_app.proxy }}
       {{ end -}}
       {{ if .Values.main_app.no_proxy_list -}}
       no_proxy_list:
-      {{- range $i := .Values.main_app.no_proxy_list }}
+      {{ range $i := .Values.main_app.no_proxy_list -}}
         - {{ $i }}
       {{ end -}}
       {{ end -}}
@@ -85,4 +86,4 @@ services:
       dictionary:
         JsonDict:
           languages: config/JsonDict.yaml
-{{- end -}}
+{{- end }}
