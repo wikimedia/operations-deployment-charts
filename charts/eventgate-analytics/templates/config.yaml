@@ -97,6 +97,10 @@ services:
           compression.codec: snappy
           # Match this to what is set on brokers in production.
           message.max.bytes: 4194304
+{{- if .Values.monitoring.enabled }}
+          # Emit rdkafka stats every 10 seconds
+          statistics.interval.ms: 10000
+{{- end }}
         # kafka topic conf goes here
         topic_conf: {}
 
