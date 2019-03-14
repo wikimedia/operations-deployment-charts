@@ -35,10 +35,10 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.port }}
-          liveness_probe:
+          livenessProbe:
             tcpSocket:
               port: {{ .Values.main_app.port }}
-          readiness_probe:
+          readinessProbe:
             httpGet:
               path: /?spec
               port: {{ .Values.main_app.port }}
