@@ -19,3 +19,10 @@ spec:
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
     {{- end }}
+# If testing monitoring (likely for statsd prometheus exporter mappings)
+# in minikube, then export the statsd_exporter listen port
+{{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
+  - name: statsd-exporter
+    protocol: TCP
+    port: 9102
+{{- end }}
