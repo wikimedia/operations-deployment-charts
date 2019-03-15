@@ -17,9 +17,6 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
-      annotations:
-        prometheus.io/port: "9102"
-        prometheus.io/scrape: "true"
     spec:
       containers:
         # The main application container
@@ -44,18 +41,3 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-metrics-exporter
-              mountPath: /etc/monitoring
-{{- end }}
-      volumes:
-        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          configMap:
-            name: {{ .Release.Name }}-metrics-config
-        {{- end }}
