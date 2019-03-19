@@ -98,8 +98,9 @@ services:
           # Match this to what is set on brokers in production.
           message.max.bytes: 4194304
 {{- if .Values.monitoring.enabled }}
-          # Emit rdkafka stats every 10 seconds
-          statistics.interval.ms: 10000
+          # Emit rdkafka stats every 30 seconds
+          # (Prometheus will only scrape statsd-exporterd every 60 seconds).
+          statistics.interval.ms: 30000
 {{- end }}
         # kafka topic conf goes here
         topic_conf: {}
