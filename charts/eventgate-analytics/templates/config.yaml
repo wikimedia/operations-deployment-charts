@@ -89,6 +89,10 @@ services:
       # will be produced to this stream.
       error_stream: eventgate.error.validation
 
+{{- if .Values.main_app.extra_app_conf }}
+{{ toYaml .Values.main_app.extra_app_conf | indent 6 }}
+{{- end }}
+
       # kafka configs go here.
       # TODO: use a kafka image for develpment mode?
       kafka:
@@ -105,6 +109,9 @@ services:
           # Emit rdkafka stats every 30 seconds
           # (Prometheus will only scrape statsd-exporterd every 60 seconds).
           statistics.interval.ms: 30000
+{{- end }}
+{{- if .Values.main_app.extra_kafka_conf }}
+{{ toYaml .Values.main_app.extra_kafka_conf | indent 10 }}
 {{- end }}
         # kafka topic conf goes here
         topic_conf: {}
