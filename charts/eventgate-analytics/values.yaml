@@ -36,6 +36,11 @@ main_app:
   limits:
     cpu: 1000m
     memory: 150Mi
+  # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
+  # extra_kafka_conf:
+  #   event_cb: true
+  #   log_level: 7
+  #   debug: broker,topic,msg
 
 monitoring:
   enabled: false

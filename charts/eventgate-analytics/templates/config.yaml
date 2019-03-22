@@ -101,10 +101,17 @@ services:
           compression.codec: snappy
           # Match this to what is set on brokers in production.
           message.max.bytes: 4194304
+          # Higher values of this mean higher latency but result in better produce performance.
+          # This needs to be tuned differently analytics vs. production events.
+          # We should probably add option to tune hasty vs guaranteed producers separately.
+          queue.buffering.max.ms: 100
           # Silence noisy connection reaper logging
           # https://github.com/Blizzard/node-rdkafka/issues/326
           # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
           log.connection.close: false
+          # k8s might have an IPv6 issue, force rdkafka to use IPv4 addresses.
+          # https://phabricator.wikimedia.org/T218268#5049090
+          broker.address.family: v4
 {{- if .Values.monitoring.enabled }}
           # Emit rdkafka stats every 30 seconds
           # (Prometheus will only scrape statsd-exporterd every 60 seconds).
