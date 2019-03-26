@@ -94,17 +94,12 @@ services:
 {{- end }}
 
       # kafka configs go here.
-      # TODO: use a kafka image for develpment mode?
       kafka:
         conf:
           metadata.broker.list: {{ .Values.main_app.kafka_broker_list }}
           compression.codec: snappy
           # Match this to what is set on brokers in production.
           message.max.bytes: 4194304
-          # Higher values of this mean higher latency but result in better produce performance.
-          # This needs to be tuned differently analytics vs. production events.
-          # We should probably add option to tune hasty vs guaranteed producers separately.
-          queue.buffering.max.ms: 100
           # Silence noisy connection reaper logging
           # https://github.com/Blizzard/node-rdkafka/issues/326
           # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
@@ -123,4 +118,19 @@ services:
         # kafka topic conf goes here
         topic_conf: {}
 
+        # Producer type specific overrides.
+        # If you need to configure some producer specific settings,
+        # e.g. different batch settings, you can provide them here.
+        hasty:
+          conf:
+            # HastyProducer doesn't block HTTP clients, so we can
+            # afford to wait for a largish batch size.
+            queue.buffering.max.ms: 1000
+        guaranteed:
+          conf:
+            # GuaranteedProducer doese block HTTP clients, so we
+            # should use a smaller batch size. Waiting 50 ms
+            # will allow for some kafka produce reqeust batching
+            # while minimizing latency on the HTTP client.
+            queue.buffering.max.ms: 50
 {{- end }}
