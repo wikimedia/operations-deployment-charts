@@ -43,7 +43,7 @@ main_app:
   #   debug: broker,topic,msg
 
 monitoring:
-  enabled: false
+  enabled: true
   image_version: latest
 
 service:
@@ -51,5 +51,6 @@ service:
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
 subcharts:
-  # Set this to true during local minikube development to get a Kafka pod deployed
+  # Set this to true during local minikube development to get a Kafka pod deployed.
+  # You only need to do this if you don't manually install the kafka-dev chart.
   kafka: false
