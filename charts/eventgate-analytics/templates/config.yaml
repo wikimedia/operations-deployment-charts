@@ -70,10 +70,6 @@ services:
         - /test/event/0.0.2
         - /mediawiki/api/request/0.0.1
 
-      # If set, this will be appended to every extracted schema_uri if that schema_uri
-      # does not already end with a file extension.
-      #schema_file_extension: .yaml
-
       # This field in each event will be used to extract a destination 'stream' name.
       # This will equal the destination Kafka topic, unless a topic prefix
       # is also configured.
@@ -87,7 +83,7 @@ services:
 
       # If a validation error is encountered, a validation error event
       # will be produced to this stream.
-      error_stream: eventgate.error.validation
+      error_stream: eventgate.analytics.error.validation
 
 {{- if .Values.main_app.extra_app_conf }}
 {{ toYaml .Values.main_app.extra_app_conf | indent 6 }}

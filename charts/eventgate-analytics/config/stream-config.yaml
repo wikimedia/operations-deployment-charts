@@ -18,11 +18,9 @@
 # See: https://phabricator.wikimedia.org/T205319
 #
 
-# EventGate is configured to produce validation error events to
-# eventgate.error.validation.  TOOD: Should this be a different
-# topic for different deployments of eventgate, e.g. eventgate-analytics
-# vs eventgate-main?
-/^eventgate\.error(\..+)?/:
+# eventgate-analytics is configured to produce validation error events to
+# eventgate.analytics.error.validation.
+/^eventgate\.analytics\.error(\..+)?/:
   schema_title: error
 
 # api-request events are generated from Mediawiki via the
