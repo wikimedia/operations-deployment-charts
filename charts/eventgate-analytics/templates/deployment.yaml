@@ -39,9 +39,18 @@ spec:
             tcpSocket:
               port: {{ .Values.main_app.port }}
           readinessProbe:
-            httpGet:
-              path: /?spec
-              port: {{ .Values.main_app.port }}
+            # EventGate should process a test event if it is ready.
+            # post-events examples will read the given schema for
+            # and an examples array and post that data as events.
+            # It exits 0 if the events were accepted and produced
+            # or non-zero if not.
+            exec:
+              command:
+                - /srv/service/scripts/post-events
+                - examples
+                - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/test/event/0.0.3'
+                - 'http://localhost:{{ .Values.main_app.port }}/v1/events'
+            initialDelaySeconds: 2
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
