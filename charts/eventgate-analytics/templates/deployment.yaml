@@ -43,13 +43,15 @@ spec:
             # post-events examples will read the given schema for
             # and an examples array and post that data as events.
             # It exits 0 if the events were accepted and produced
-            # or non-zero if not.
+            # or non-zero if not. By setting --dt-field, the script
+            # will make sure that the event meta.dt has a current timestamp.
             exec:
               command:
                 - /srv/service/scripts/post-events
+                - '--service-url=http://localhost:{{ .Values.main_app.port }}/v1/events'
+                - '--dt-field=meta.dt'
                 - examples
                 - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/test/event/0.0.3'
-                - 'http://localhost:{{ .Values.main_app.port }}/v1/events'
             initialDelaySeconds: 2
           env:
             - name: SERVICE_IDENTIFIER
