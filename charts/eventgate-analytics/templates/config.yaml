@@ -31,6 +31,10 @@ metrics:
   type: statsd
 {{- end }}
 
+{{- if .Values.main_app.extra_service_runner_conf }}
+{{ toYaml .Values.main_app.extra_service_runner_conf | indent 0 }}
+{{- end }}
+
 services:
   - name: {{ .Chart.Name }}
     # a relative path or the name of an npm package, if different from name
