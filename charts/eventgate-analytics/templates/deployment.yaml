@@ -26,7 +26,7 @@ spec:
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
-{{- if .Values.wmfdebug_enabled | default false }}
+{{- if .Values.debug_mode_enabled | default false }}
       shareProcessNamespace: true
 {{- end }}
       containers:
@@ -34,8 +34,9 @@ spec:
         - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           command: ["nodejs"]
-{{- if .Values.main_app.profiling_enabled | default false }}
-          args: ["--prof", "--logfile=/tmp/{{ template "wmf.chartname" . }}-v8.log", "--no-logfile-per-isolate", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+# If debug_mode, then enable the NodeJS Inspector and save v8 profiling data.
+{{- if .Values.debug_mode_enabled | default false }}
+          args: ["--inspect=0.0.0.0:9229", "--prof", "--logfile=/tmp/{{ template "wmf.chartname" . }}-v8.log", "--no-logfile-per-isolate", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
 {{- else }}
           args: ["/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
 {{- end }}
@@ -79,7 +80,7 @@ spec:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
 {{- end }}
-{{- if .Values.wmfdebug_enabled | default false }}
+{{- if .Values.debug_mode_enabled | default false }}
         - name: {{ .Release.Name }}-wmfdebug
           image: {{ .Values.docker.registry }}/wmfdebug:latest
           command: ["/bin/bash"]

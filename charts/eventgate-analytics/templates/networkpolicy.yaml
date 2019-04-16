@@ -21,4 +21,8 @@ spec:
       - port: 9102
         protocol: TCP
         {{- end }}
+        {{- if .Values.debug_mode_enabled | default false }}
+      - port: 9229
+        protocol: TCP
+        {{- end }}
 {{- end }}
