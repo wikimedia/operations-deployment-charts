@@ -4,15 +4,15 @@
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
-num_workers: 1
+num_workers: {{ .Values.main_app.num_workers | default 1 }}
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
-worker_heap_limit_mb: 200
+worker_heap_limit_mb: {{ .Values.main_app.worker_heap_limit_mb | default 200 }}
 
 # Logger info
 logging:
-  level:  {{ .Values.main_app.log_level }}
+  level:  {{ .Values.main_app.log_level | default "info" }}
   streams:
     - type: stdout
 {{- if eq .Values.service.deployment "production" }}

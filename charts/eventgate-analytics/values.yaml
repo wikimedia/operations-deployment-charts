@@ -14,7 +14,6 @@ main_app:
   image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
   version: latest # we use latest everywhere in the defaults.
   port: 8192
-  log_level: info
   # Value of kafka.conf.'metadata.broker.list' in app config.yaml.
   # Override this in production.
   kafka_broker_list: kafka.default.svc.cluster.local:9092
