@@ -22,7 +22,9 @@ spec:
         protocol: TCP
         {{- end }}
         {{- if .Values.debug_mode_enabled | default false }}
-      - port: 9229
+      - port: 9229 # service-runner master node inspector port
+        protocol: TCP
+      - port: 9230 # service-runner worker node inspector port
         protocol: TCP
         {{- end }}
 {{- end }}

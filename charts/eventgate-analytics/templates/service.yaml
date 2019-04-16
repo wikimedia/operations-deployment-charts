@@ -28,8 +28,12 @@ spec:
 {{- end }}
 # If debug_mode_enabled, then Node Inspector will listen on port 9229
 {{- if .Values.debug_mode_enabled | default false }}
-  - name: node-inspector
+  - name: node-inspector-master
     protocol: TCP
     port: 9229
     nodePort: 31229
+  - name: node-inspector-worker
+    protocol: TCP
+    port: 9230
+    nodePort: 31230
 {{- end }}
