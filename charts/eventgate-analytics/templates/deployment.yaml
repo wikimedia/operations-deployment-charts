@@ -26,12 +26,19 @@ spec:
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
+{{- if .Values.wmfdebug_enabled | default false }}
+      shareProcessNamespace: true
+{{- end }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           command: ["nodejs"]
+{{- if .Values.main_app.profiling_enabled | default false }}
+          args: ["--prof", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+{{- else }}
           args: ["/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+{{- end }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.port }}
@@ -71,6 +78,19 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
+{{- end }}
+{{- if .Values.wmfdebug_enabled | default false }}
+        - name: {{ .Release.Name }}-wmfdebug
+          image: {{ .Values.docker.registry }}/wmfdebug:latest
+          command: ["/bin/bash"]
+          args: ["-c", "echo 'Sleeping indefinitely...'; while true; do sleep 60s; done"]
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
+          stdin: true
+          tty: true
 {{- end }}
       volumes:
         {{- if .Values.monitoring.enabled }}
