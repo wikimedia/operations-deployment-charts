@@ -35,7 +35,7 @@ spec:
           image: "{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           command: ["nodejs"]
 {{- if .Values.main_app.profiling_enabled | default false }}
-          args: ["--prof", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+          args: ["--prof", "--logfile=/tmp/{{ template "wmf.chartname" . }}-v8.log", "--no-logfile-per-isolate", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
 {{- else }}
           args: ["/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
 {{- end }}
