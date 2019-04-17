@@ -14,6 +14,7 @@ main_app:
   image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
   version: latest # we use latest everywhere in the defaults.
   port: 8192
+  #log_level: info   # info is the default
   # Value of kafka.conf.'metadata.broker.list' in app config.yaml.
   # Override this in production.
   kafka_broker_list: kafka.default.svc.cluster.local:9092
@@ -23,23 +24,19 @@ main_app:
   # (a '.' will be appended to this in the config.yaml template)
   topic_prefix: datacenter1
 
-  # Following https://wikitech.wikimedia.org/wiki/User:Alexandros_Kosiaris/Benchmarking_kubernetes_apps,
-  # EventGate maxed at 900m CPU and 86MiB.  This bench was done using
-  # only a single event schema; in prod there will be on the order of tens to
-  # hundreds of cached schemas.  Still, each schema probably only takes a few KiB.
-  # Also, as Kafka produce requests get busy, the Kafka produce queues may also
-  # take up memory.
+  # See: https://phabricator.wikimedia.org/T220661#5117972
   requests:
-    cpu: 100m
-    memory: 50Mi
-  limits:
-    cpu: 1000m
+    cpu: 200m
     memory: 150Mi
+  limits:
+    cpu: 2000m
+    memory: 300Mi
+
   # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
-  # extra_kafka_conf:
-  #   event_cb: true
-  #   log_level: 7
-  #   debug: broker,topic,msg
+  #extra_kafka_conf:
+  #  event_cb: true
+  #  log_level: 7
+  #  debug: broker,topic,msg
 
 monitoring:
   enabled: true
@@ -48,6 +45,18 @@ monitoring:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+# Debug mode adds the --profile and --inspect flags to the NodeJS service, and
+# also deploys a wmfdebug sidecar container in the pod. You can get the v8.log profiling output
+# from the pod with e.g (staging):
+#   sudo KUBECONFIG=/etc/kubernetes/admin-staging.config kubectl cp -n eventgate-analytics -c eventgate-analytics-staging <pod_id>:/tmp/eventgate-analytics-v8.log ./
+# You can connect to the Node Inspector on port 31229 for the master service-runner process,
+# and port 31230 for the worker process.  Note that if a worker is restarted, it willl
+# claim a new port and not be reachable externally.
+# You can log into the wmfdebug container with e.g. (staging):
+#   sudo KUBECONFIG=/etc/kubernetes/admin-staging.config kubectl exec -ti <pod_id> -n eventgate-analytics -c staging-wmfdebug bash
+#
+#debug_mode_enabled: false
 
 subcharts:
   # Set this to true during local minikube development to get a Kafka pod deployed.
