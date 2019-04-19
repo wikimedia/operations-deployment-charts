@@ -1,0 +1,50 @@
+# Default values for kask.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+affinity: {}
+tolerations: {}
+main_app:
+  image: wikimedia/mediawiki-services-kask
+  version: latest # we use latest everywhere in the defaults.
+  port: 8081
+  # All of this needs to be overriden in production
+  cassandra:
+    authentication:
+      password: cassandra
+      username: cassandra
+    hostname: cassandra.default.svc.cluster.local
+    keyspace: sessions
+    table: values
+  default_ttl: 86400
+  listen_address: 0.0.0.0
+  service_name: sessions
+  # See T220401 for how these numbers were calculated
+  requests:
+    cpu: 150m # T220401
+    memory: 50Mi # T220401
+  limits:
+    cpu: 150m # T220401
+    memory: 50Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 8081
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8081
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables

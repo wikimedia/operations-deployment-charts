@@ -1,0 +1,20 @@
+apiVersion: v1
+description: Helm chart for Kask on WMF Kubernetes infrastructure
+name: kask
+version: 0.0.1
+kubeVersion: ">=1.8"
+
+keywords:
+- session
+- store
+home: https://www.mediawiki.org/wiki/Kask
+sources:
+  - https://github.com/wikimedia/mediawiki-services-kask
+maintainers:
+- name: Eric Evants
+  email: eevans@wikimedia.org
+- name: Clara Andrew-Wani
+  email: candrew@wikimedia.org
+- name: Alexandros Kosiaris
+  email: akosiaris@wikimedia.org
+tillerVersion: ">=2.8"

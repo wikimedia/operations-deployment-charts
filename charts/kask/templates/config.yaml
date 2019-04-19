@@ -1,0 +1,10 @@
+{{- define "config.app" -}}
+#
+base_uri: "/sessions/v1"
+cassandra:
+{{ toYaml .Values.main_app.cassandra | indent 2 }}
+default_ttl: {{ .Values.main_app.default_ttl }}
+listen_address: {{ .Values.main_app.listen_address }}
+listen_port: {{ .Values.main_app.port }}
+service_name: {{ .Values.main_app.service_name }}
+{{- end -}}
