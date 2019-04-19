@@ -25,6 +25,9 @@ spec:
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}

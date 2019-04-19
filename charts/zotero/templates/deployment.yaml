@@ -18,6 +18,9 @@ spec:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
