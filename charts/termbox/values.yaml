@@ -1,0 +1,38 @@
+# Default values for termbox.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+affinity: {}
+tolerations: {}
+main_app:
+  image: wikimedia/wikibase-termbox
+  version: latest # we use latest everywhere in the defaults.
+  port: 3030
+  requests:
+    cpu: 1m # T220402
+    memory: 140Mi # T220402
+  limits:
+    cpu: 1 # T220402
+    memory: 300Mi # T220402
+  liveness_probe:
+    tcpSocket:
+      port: 3030
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 3030
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables

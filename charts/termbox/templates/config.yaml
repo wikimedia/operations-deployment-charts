@@ -1,0 +1,79 @@
+{{- define "config.app" -}}
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Number of workers to start in parallel after the first worker.
+# The first worker is always started independently. After it has completed
+# its start-up, this number controls the number of workers to start in
+# parallel until `num_workers` have been started. Note that setting this
+# number to a too high a value might lead to high resource consumption
+# (especially of CPU) during the start-up process.
+startup_concurrency: 2
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 300
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 7500
+
+logging:
+  level: info
+  # Sets up sample logging for some 'interesting' events.
+  # Map keys correspond to the full log level names.
+  # Map values specify the probability for such events to be logged
+  # regardless of the configured logging level.
+  name: termbox
+  sampled_levels:
+    'trace/webrequest': 0.2
+  streams:
+    - type: stdout
+    # Use gelf-stream -> logstash
+    - type: gelf
+      host: logstash.svc.eqiad.wmnet
+      port: 12201
+    # Alternatively you can provide a comma-separated list of host:port pairs,
+    # the server to use will be selected randomly on startup
+    # uris: logstash1001.eqiad.wmnet:12201,logstash1003.eqiad.wmnet:12201
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  name: termbox
+  host: localhost
+  port: 9125
+  type: statsd
+  batch: # Metrics batching options. Supported only for `statsd` reporter type
+    max_size: 1500 # Max size of the batch buffer (default: 1500)
+    max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
+{{- end }}
+
+# Rate limiter (enabled by default)
+ratelimit:
+  type: memory
+  # optional: Kademlia backend
+  # type: kad
+  # seeds:
+  #  - 123.456.789.233
+  #  - 456.789.90.2
+
+# DNS caching, switched on by default. To disable caching use:
+# dns_cache: false
+# To specify caching parameters use:
+dns_cache:
+  ttl: 5 # Time-to-live for cache entries, in seconds. Default: 5
+  size: 100 # Optional cache size. Default: 100
+
+services:
+  - name: wikibase-termbox
+    # a relative path or the name of an npm package, if different from name
+    module: ./serverBuild/server/server.js
+    # per-service config
+    conf:
+      WIKIBASE_REPO: '{env(WIKIBASE_REPO,https://www.wikidata.org/w)}' #use env var with fallback
+      SSR_PORT: '{env(SSR_PORT,{{ .Values.main_app.port }})}'
+    entrypoint: default #required for ES6 style exports
+{{- end -}}
