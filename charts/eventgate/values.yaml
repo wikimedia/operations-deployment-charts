@@ -1,0 +1,153 @@
+# Default values for EventGate.
+
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+monitoring:
+  enabled: true
+  image_version: latest
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+# Debug mode adds the --profile and --inspect flags to the NodeJS service, and
+# also deploys a wmfdebug sidecar container in the pod. You can get the v8.log profiling output
+# from the pod with e.g (staging):
+#   sudo KUBECONFIG=/etc/kubernetes/admin-staging.config kubectl cp -n eventgate-analytics -c eventgate-analytics-staging <pod_id>:/tmp/eventgate-analytics-v8.log ./
+# You can connect to the Node Inspector on port 31229 for the master service-runner process,
+# and port 31230 for the worker process.  Note that if a worker is restarted, it willl
+# claim a new port and not be reachable externally.
+# You can log into the wmfdebug container with e.g. (staging):
+#   sudo KUBECONFIG=/etc/kubernetes/admin-staging.config kubectl exec -ti <pod_id> -n eventgate-analytics -c staging-wmfdebug bash
+#
+#debug_mode_enabled: false
+
+subcharts:
+  # Set this to true during local minikube development to get a Kafka pod deployed.
+  # You only need to do this if you don't manually install the kafka-dev chart.
+  kafka: false
+
+main_app:
+  # Don't use docker.registry value for main_app image so we can override
+  # and use locally built and cached images via --set main_app.image during development.
+  image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
+  version: latest # we use latest  in the defaults.
+  port: 8192
+
+  # See: https://phabricator.wikimedia.org/T220661#5117972
+  requests:
+    cpu: 200m
+    memory: 150Mi
+  limits:
+    cpu: 2000m
+    memory: 300Mi
+
+  # EventGate service-runner app defaults config.
+  # In production, these should be overridden in service/release specific values files.
+  conf:
+    eventgate_factory_module: '/srv/service/lib/factories/wikimedia-eventgate'
+
+    # Mapping of stream names to allowed schemas
+    stream_config_uri: /etc/eventgate/stream-config.yaml
+
+    # This field in each event will be used to extract a
+    # (possibly relative) schema uri.  The default is $schema.
+    # An array of field names will cause EventGate to search for
+    # fields by these names in each event, using the first match.
+    schema_uri_field: $schema
+
+    # If set, this URI will be prepended to any relative schema URI
+    # extracted from each event's schema_field.
+
+    # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at build
+    # time from https://gerrit.wikimedia.org/r/mediawiki/event-schemas
+    schema_base_uris: ['file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/']
+
+    # These schema URIs will be 'precached' on service startup.
+    # They should be resolveable by the URI prefixes in schema_base_uris.
+    # These should be set to the most comprehensive list for each release.
+    schema_precache_uris:
+      - /error/0.0.3
+      - /test/event/0.0.3
+
+    # This field in each event will be used to extract a destination 'stream' name.
+    # This will equal the destination Kafka topic, unless a topic prefix
+    # is also configured.
+    stream_field: meta.stream
+
+    # Prefix topics with the topic_prefix name and a .
+    topic_prefix: datacenter1.
+
+    # This field will be used in log messages to uniquely ID each event.
+    id_field: meta.id
+
+    # This field will be used to extract and set a Kafka message timestamp.
+    dt_field: meta.dt
+
+    # If a validation error is encountered, a validation error event
+    # will be produced to this stream.
+    # This should be set in release specific values files.
+    # In production, this should be prefixed with service.name
+    error_stream: eventgate-dev.error.validation
+
+    # kafka configs go here.
+    kafka:
+      conf:
+        # Override this in release specific values.yaml files
+        metadata.broker.list: ['kafka.default.svc.cluster.local:9092']
+        compression.codec: snappy
+        # Match this to what is set on brokers in production.
+        message.max.bytes: 4194304
+        # Silence noisy connection reaper logging
+        # https://github.com/Blizzard/node-rdkafka/issues/326
+        # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+        log.connection.close: false
+        # Force rdkafka to prefer IPv4 addresses for repeatablity.
+        # See also: https://phabricator.wikimedia.org/T218268#5049090
+        broker.address.family: v4
+        # Emit rdkafka stats every 30 seconds
+        # (Prometheus will only scrape statsd-exporterd every 60 seconds).
+        statistics.interval.ms: 30000
+        # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
+        #event_cb: true
+        #log_level: 7
+        #debug: broker,topic,msg
+
+      # kafka topic conf goes here
+      topic_conf: {}
+
+      # Producer type specific overrides.
+      # If you need to configure some producer specific settings,
+      # e.g. different batch settings, you can provide them here.
+      hasty:
+        conf:
+          # HastyProducer doesn't block HTTP clients, so we can
+          # afford to wait for a largish batch size.
+          queue.buffering.max.ms: 1000
+          # A custom kafka config. Will call producer.setPollInterval
+          # with this value if set.
+          producer.poll.interval.ms: 100
+      guaranteed:
+        conf:
+          # GuaranteedProducer does block HTTP clients, so we attempt to send
+          # the produce request as soon as possible, rather than waiting
+          # for larger batches.
+          queue.buffering.max.ms: 0
+          # Custom kafka config, will call producer.setPollInterval
+          # with this value if set.
+          producer.poll.interval.ms: 10
+
+  # This will be rendered in /etc/eventgate/stream-config.yaml
+  # and used by EventGate to restrict event schemas to specific streams.
+  # test and error streams are automatically configured by this chart.
+  # You should add additional stream configs specific to a production releases here.
+  # E.g.
+  #stream_config:
+  #  'mediawiki.api-request':
+  #     schema_title: mediawiki/api/request
+  # # etc.

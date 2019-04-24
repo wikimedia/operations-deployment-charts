@@ -1,25 +1,28 @@
-NOTE: This chart is deprecated by the more generic 'eventgate' chart.
-This will be removed soon.
-
-# eventgate-analytics deployment pipeline
+# EventGate deployment pipeline
 
 [EventGate](https://github.com/wikimedia/eventgate) is a service
 that accepts events on an HTTP endpoint, validates them against
 JSONSchemas, and produces them to Kafka.
 
-eventgate-analytics is the deployemnt of EventGate for WMF analytics purposes.
-It is intended to replace analytics usages of
-[EventLogging](https://wikitech.wikimedia.org/wiki/Analytics/Systems/EventLogging).
 
+## Service Releases
+This deployment chart is used for all EventGate services in WMF production.
+Each service is defined by a specific Helm 'release'.  E.g. the eventgate-analytics
+release --name is 'analytics'.
+
+### eventgate-analytics
+For (mostly) analytics purposes.  Intended to replace usages of [EventLogging](https://wikitech.wikimedia.org/wiki/Analytics/Systems/EventLogging).
+
+### eventgate-main
+For WMF production purposes. It is intended to replace usages of
+[EventBus](https://wikitech.wikimedia.org/wiki/EventBus).
 
 ## event-schemas
-Currently, the eventgate pod expects that event schemas are available
-locally in a shared volume at /srv/event-schemas.  These are cloned via git in an initContainer.  This setup will only be used for staging.  Eventually the schemas
-will either be built into the container image, or will be available via a remote
-HTTP schema service.
+Currently, the eventgate pod expects that event schemas are available in the
+EventGate image.
 
 For now, we only have one git schema repo, mediawiki/event-schemas.
-This eventgate-analytics instance will eventually use schemas from a different
+The eventgate-analytics deployment will eventually use schemas from a different
 more analytics focused repository.
 
 ## stream config
@@ -27,13 +30,18 @@ stream-config.yaml describes which schemas are allowed to be produced to which t
 In the EventBus system, this config file (eventbus-topics.yaml) is in the mediawiki/event-schemas
 repository.  It doesn't belong there. Eventually this will be moved to a separate
 Stream Config service.  For EventGate, we maintain this config here in the chart repo.
-This way, eaach EventGate deployment can have its own stream config.
+This way, each EventGate deployment can have its own stream config.
+Release specific stream config should be provided in each release specific values file.
+
+## EventGate Namespace & Service Name
+This chart uses wmf.releasename as the app/service name.  This requires that
+you set release --name to the suffix of your full service name.  When
+deploying eventgate-analytics in production, you should set --name analytics.
+For eventgate-main, you should set --name main.
 
 ## Minikube vs Production deployment
 EventGate's service-runner config.yaml is templatized.  If `service.deployment` is 'production' logstash will be configured appropriately.  If `monitoring.enabled` is
-true, statsd will be configured appropriately.
-
-To ease in troubleshooting, EventGate's log level has also been parameterized, and is overridable by setting `.Values.main_app.log_level` (the default is 'info').
+true (the default), statsd will be configured appropriately.
 
 In non-production (minikube) deployment, EventGate expects that Kafka is
 running in a pod. See below on how to use the kafka-dev chart for this.
@@ -49,10 +57,10 @@ sudo ip link set docker0 promisc on
 ## Handy helm & kubectl commands for Minikube development
 
 ```
-chart=eventgate-analytics
+chart=eventgate
 
 # Get the name of the deployed EventGate pod
-alias pod='kubectl get pods | grep ${chart} | awk "{print \$1}"'
+alias pod="kubectl get pods | grep ${chart} | awk '{print \$1}'"
 
 # Get the name of the installed helm release
 alias release='helm list | grep ${chart} | awk "{print \$1"}'
@@ -64,16 +72,16 @@ alias service='eval $(helm status $(release) | grep -A 1 MINIKUBE_HOST=) && echo
 eval $(minikube docker-env)
 
 # Delete the running EventGate helm chart
-helm delete $(release)
+helm delete --purge $(release)
 
 # Install the EventGate helm chart
 # (assumes you are cd-ed into the charts/ directory)
 # replace the image name with an available EventGate image name.
 # I install these into minikube's dockermachine from the
-# EventGate repository, e.g.
+# EventGate repository:
 # blubber .pipeline/blubber.yaml development > Dockerfile && docker build -t eventgate-dev .
 
-helm install --set main_app.image=eventgate-dev --set main_app.kafka_broker_list=$(minikube ip):30092 --set subcharts.kafka=true ./eventgate-analytics
+helm install --set main_app.image=eventgate-dev --set main_app.conf.kafka.conf."metadata\.broker\.list"={$(minikube ip):30092} --set subcharts.kafka=true ./eventgate
 
 # Or, if you've already installed a Kafka pod and don't need this to deploy it, you can
 # leave off the --set subcharts.kafka part.  This expects that you have a Kafka pod deployment
@@ -81,17 +89,17 @@ helm install --set main_app.image=eventgate-dev --set main_app.kafka_broker_list
 # development) by running
 helm install ./kafka-dev
 
-# You can install the latest deployed eventgate image from WMF's
-# docker registry by just ommitting the main_app.image override, e.g.
-helm install --set main_app.kafka_broker_list=$(minikube ip):30092 ./eventgate-analytics
+# You can then install the latest deployed eventgate image from WMF's
+# docker registry by just ommitting the main_app.image override:
+helm install --set main_app.conf.kafka.conf."metadata\.broker\.list"={$(minikube ip):30092} ./eventgate
 
 # Tail logs for the running EventGate instance
-kubectl logs -f $(pod)
-# You can pipe these into bunyan for easier to read output, e.g.
-# kubectl logs -f $(pod) | ../eventgate/node_modules/.bin/bunyan
+kubectl logs --namespace=$namespace -f $(pod)
+# You can pipe these into bunyan for easier to read output:
+# kubectl logs --namespace=$namespace -f $(pod) | ../eventgate/node_modules/.bin/bunyan
 
 # Start a shell in the EventGate container
-kubectl exec $(pod) -i -t -- bash
+kubectl exec --namespace=$namespace $(pod) -i -t -- bash
 
 # Get the status of the helm release
 helm status $(release)
@@ -99,7 +107,8 @@ helm status $(release)
 # Get the status of the running EventGate pod
 kubectl describe pod $(pod)
 
+# Get recent k8s events:
+kubectl get events
+
 # Post an event to the EventGate service in the pod
 curl -X POST -H 'Content-Type: application/json' -d@./path/to/event.json  $(service)v1/events | jq .
-
-
