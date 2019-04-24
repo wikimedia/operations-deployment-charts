@@ -29,6 +29,9 @@ spec:
         # Make sure we set the user to run as
         runAsUser: 900
         allowPrivilegeEscalation: false
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
