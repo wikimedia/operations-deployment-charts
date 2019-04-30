@@ -44,6 +44,14 @@ services:
       cors: false
       user_agent: {{ template "wmf.releasename" . }}
 
+
+    # If a validation error is encountered, a validation error event
+    # will be produced to this stream.
+    # This should be set in release specific values files.
+    # In production, this should be prefixed with service name,
+    # e.g. eventgate-analytics, eventgate-main
+    error_stream: {{ template "wmf.releasename" . }}.error.validation
+
       # eventgate app settings
 {{ toYaml .Values.main_app.conf | indent 6 }}
 
