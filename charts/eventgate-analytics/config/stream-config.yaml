@@ -28,6 +28,11 @@
 mediawiki.api-request:
   schema_title: mediawiki/api/request
 
+# cirrussearch-request events are generated from Mediawiki via the
+# Monolog 'cirrussearch-request' channel.
+mediawiki.cirrussearch-request:
+  schema_title: mediawiki/cirrussearch/request
+
 # test/event is for systems testing to ensure POST works
 # that events are produced.
 test.event:
