@@ -16,8 +16,8 @@ spec:
     protocol: TCP
     port: {{ .Values.main_app.port }}
     {{/* If the port is passed as a value use it, otherwise autoallocate */}}
-    {{- if .Values.service.port }}
-    nodePort:  {{ .Values.service.port }}
+    {{- if .Values.service.port -}}
+    nodePort: {{ .Values.service.port }}
     {{- end }}
 # If testing monitoring (likely for statsd prometheus exporter mappings)
 # in minikube, then export the statsd_exporter listen port

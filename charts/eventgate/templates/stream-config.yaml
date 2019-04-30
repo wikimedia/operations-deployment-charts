@@ -30,7 +30,7 @@
   schema_title: test/event
 
 # Release specific stream/schema mapping goes here.
-{{- if .Values.main_app.stream_config -}}
+{{- if .Values.main_app.stream_config }}
 {{ toYaml .Values.main_app.stream_config }}
 {{- end -}}
 
