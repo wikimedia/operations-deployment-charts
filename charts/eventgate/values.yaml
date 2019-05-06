@@ -89,11 +89,8 @@ main_app:
     # This field will be used to extract and set a Kafka message timestamp.
     dt_field: meta.dt
 
-    # If a validation error is encountered, a validation error event
-    # will be produced to this stream.
-    # This should be set in release specific values files.
-    # In production, this should be prefixed with service.name
-    error_stream: eventgate-dev.error.validation
+    # NOTE: This config is templated in config.yaml.
+    #error_stream: eventgate-dev.error.validation
 
     # kafka configs go here.
     kafka:
