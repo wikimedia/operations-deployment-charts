@@ -1,8 +1,14 @@
 {{- define "config.app" -}}
 #
-base_uri: "/sessions/v1"
+base_uri: {{ .Values.main_app.base_uri }}
 cassandra:
+{{- if hasKey .Values.main_app.cassandra "hostname" }}
 {{ toYaml .Values.main_app.cassandra | indent 2 }}
+{{- else }}
+{{- $hostname := printf "%s-%s.%s.%s" .Release.Name "cassandra" .Release.Namespace "svc.cluster.local" -}}
+{{- $cassandra := set .Values.main_app.cassandra "hostname" $hostname -}}
+{{ toYaml $cassandra | indent 2 }}
+{{- end }}
 default_ttl: {{ .Values.main_app.default_ttl }}
 listen_address: {{ .Values.main_app.listen_address }}
 listen_port: {{ .Values.main_app.port }}

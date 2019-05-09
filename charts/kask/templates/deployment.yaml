@@ -19,12 +19,21 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
-        {{ if .Values.monitoring.enabled -}}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-        {{ end -}}
-        prometheus.io/port: "9102"
+        prometheus.io/port: {{ .Values.main_app.port | quote }}
         prometheus.io/scrape: "true"
     spec:
+      {{ if .Values.subcharts.cassandra }}
+      {{- $hostname := printf "%s-%s.%s.%s" .Release.Name "cassandra" .Release.Namespace "svc.cluster.local" -}}
+      initContainers:
+        - name: create-kask-keyspace
+          # NOTE: Hardcode this for now, as well as the keyspace and table below
+          # This is ugly but it's only meant for minikube use, let's stomach it for now
+          image: "cassandra:3.11.3"
+          command:
+            - sh
+            - -c
+            - echo "CREATE KEYSPACE IF NOT EXISTS kask WITH REPLICATION = { 'class':'SimpleStrategy', 'replication_factor':1}; CREATE TABLE kask.values (key text PRIMARY KEY, value blob);" | cqlsh {{ $hostname }}
+      {{ end }}
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
@@ -55,21 +64,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-metrics-exporter
-              mountPath: /etc/monitoring
-{{- end }}
       volumes:
-        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          configMap:
-            name: {{ .Release.Name }}-metrics-config
-        {{- end }}
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}

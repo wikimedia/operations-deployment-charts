@@ -14,16 +14,17 @@ main_app:
   version: latest # we use latest everywhere in the defaults.
   port: 8081
   # All of this needs to be overriden in production
+  base_uri: kask/v1
   cassandra:
     authentication:
       password: cassandra
       username: cassandra
-    hostname: cassandra.default.svc.cluster.local
-    keyspace: sessions
+    #hostname: cassandra.default.svc.cluster.local # uncommented to allow discovery in minikube
+    keyspace: kask
     table: values
   default_ttl: 86400
   listen_address: 0.0.0.0
-  service_name: sessions
+  service_name: kask
   # See T220401 for how these numbers were calculated
   requests:
     cpu: 150m # T220401
@@ -39,12 +40,20 @@ main_app:
       path: /healthz
       port: 8081
 
-monitoring:
-  enabled: false
-  image_version: latest
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
+
+subcharts:
+  # Set this to true during local minikube development to get a cassandra pod deployed.
+  cassandra: false
+
+cassandra:
+  config:
+    cluster_size: 1
+    seed_size: 1
+    max_heap_size: 768M
+    heap_new_size: 512M

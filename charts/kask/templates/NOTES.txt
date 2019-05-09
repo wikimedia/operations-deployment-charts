@@ -18,4 +18,11 @@ or alternatively in your browser using the following URL
 
 echo http://${MINIKUBE_HOST}:${SERVICE_PORT}/
 
+{{ if .Values.subcharts.cassandra }}
+You 've specified that you 'd like to have cassandra populated as well. This
+should only happen in a development environment, as we rely on
+incubator/cassandra Helm subchart which will not work in production. There will
+be a best-effort to populate a cassandra database and create keyspaces and
+tables kask relies on. DO NOT CHANGE THE DEFAULTS FOR KEYSPACE!
+{{ end }}
 {{- end }}
