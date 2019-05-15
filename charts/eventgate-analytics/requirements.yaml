@@ -1,9 +1,0 @@
-dependencies:
-  # kafka-dev can be deployed for developement purposes
-  # ./charts/kafka-dev is symlinked to ../kafka-dev
-- name: kafka-dev
-  version: ">= 0.0.1"
-  repository: https://releases.wikimedia.org/charts
-  # Only require kafka-dev if subcharts.kafka is set to true in values
-  # or --set subcharts.kafka=true
-  condition: subcharts.kafka
