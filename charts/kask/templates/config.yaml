@@ -13,4 +13,11 @@ default_ttl: {{ .Values.main_app.default_ttl }}
 listen_address: {{ .Values.main_app.listen_address }}
 listen_port: {{ .Values.main_app.port }}
 service_name: {{ .Values.main_app.service_name }}
+log_level: {{ .Values.main_app.log_level }}
+{{- if .Values.main_app.openapi_spec }}
+openapi_spec: {{ .Values.main_app.openapi_spec }}
+{{- end -}}
+{{- if .Values.main_app.tls }}
+tls: {{ .Values.main_app.tls }}
+{{- end -}}
 {{- end -}}

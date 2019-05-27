@@ -32,7 +32,7 @@ spec:
           command:
             - sh
             - -c
-            - echo "CREATE KEYSPACE IF NOT EXISTS kask WITH REPLICATION = { 'class':'SimpleStrategy', 'replication_factor':1}; CREATE TABLE kask.values (key text PRIMARY KEY, value blob);" | cqlsh {{ $hostname }}
+            - echo "CREATE KEYSPACE IF NOT EXISTS kask WITH REPLICATION = { 'class':'SimpleStrategy', 'replication_factor':1}; CREATE TABLE IF NOT EXISTS kask.values (key text PRIMARY KEY, value blob);" | cqlsh {{ $hostname }}
       {{ end }}
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}

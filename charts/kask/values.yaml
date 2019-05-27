@@ -22,9 +22,16 @@ main_app:
     #hostname: cassandra.default.svc.cluster.local # uncommented to allow discovery in minikube
     keyspace: kask
     table: values
+    # tls:
+    #   ca: /etc/ssl/certs/ca-certificates.crt
   default_ttl: 86400
   listen_address: 0.0.0.0
   service_name: kask
+  log_level: info
+  openapi_spec: openapi.yaml
+  # tls:
+  #   cert: /etc/kask/cert.pem
+  #   key: /etc/kask/key.pem
   # See T220401 for how these numbers were calculated
   requests:
     cpu: 150m # T220401
