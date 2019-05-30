@@ -15,6 +15,64 @@ main_app:
   port: 8081
   # All of this needs to be overriden in production
   base_uri: kask/v1
+  # Uncomment the stuff below and add certificates verbatim to be used
+  #certs:
+  #  cassandra:
+  #    ca: |-
+  #      -----BEGIN CERTIFICATE-----
+  #      MIICyjCCAbKgAwIBAgIJAPbPzqesPs8HMA0GCSqGSIb3DQEBCwUAMB0xGzAZBgNV
+  #      BAMMEmtpcml0aGdhbC5hcmRhLmFuYzAeFw0xNzAxMjUxNjA1NTdaFw0yNzAxMjMx
+  #      NjA1NTdaMB0xGzAZBgNVBAMMEmtpcml0aGdhbC5hcmRhLmFuYzCCASIwDQYJKoZI
+  #      hvcNAQEBBQADggEPADCCAQoCggEBALqIgh56H8WtqXtt6fjcYGZrskNJGWwOH7n6
+  #      FaihAIiLMgQeZJkHjon/ChQC/VIR0gTdsKyvmj1wSHocgFPxfniYNK6ZzGMgcc4E
+  #      xVWo+XoLBz7k2eopn36Na4w/n5Tj1onVS2UcHYykFa8YVrucNrWQ6jg2YNvlZbeC
+  #      FzK5EYk7F1ucrPNGEgurKWcyANvGriRYFnhBtwZuGSGh5ZWrlUGa/nVtZraJJxBN
+  #      YStLbs/jLkDk5ZhmAJvQ9vwnKmBO9S4fuU5GFCi77DS6vcF7NRKYUrxOH2vNVeAO
+  #      7MRFhBjov+dQbbYnJSbKog+CRu9bEIHMFRn/eB3Cab5EqdxRo8sCAwEAAaMNMAsw
+  #      CQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAQEApl1bU3ITgfmoTO+WSRLryIAv
+  #      g7wmurdubpfso/YT0SNRofleMnBYDOKYEMivXXQbaqBJ5Ks7eTzTVXfcmtHdvmxp
+  #      SalOVOMzPNqbaSMku2+PIBX4SFZp2vBy8MVRHdvJgWFI1DtYNvRTxOETz0xE4CJC
+  #      l1wD7Rsuop6G/6JI0FoNGjqMNq52wP6BHRju9PZwzpOw+LXO8xQ+KbMmyLk1fSO4
+  #      s8NDhB9cwOgeRf5pdMcTjpt+6xbttJjm/hg4tDZRV0y8/+NiHyh9rIEo9NtbrJ6r
+  #      sXCmc06hGrksTt8cG2kkPXQ83/YvBfnmgoYLvLLHm7ddZs9iE493OZ+tezik1A==
+  #      -----END CERTIFICATE-----
+  #  kask:
+  #    cert: |-
+  #      -----BEGIN CERTIFICATE-----
+  #      MIICyjCCAbKgAwIBAgIJAPbPzqesPs8HMA0GCSqGSIb3DQEBCwUAMB0xGzAZBgNV
+  #      BAMMEmtpcml0aGdhbC5hcmRhLmFuYzAeFw0xNzAxMjUxNjA1NTdaFw0yNzAxMjMx
+  #      NjA1NTdaMB0xGzAZBgNVBAMMEmtpcml0aGdhbC5hcmRhLmFuYzCCASIwDQYJKoZI
+  #      hvcNAQEBBQADggEPADCCAQoCggEBALqIgh56H8WtqXtt6fjcYGZrskNJGWwOH7n6
+  #      FaihAIiLMgQeZJkHjon/ChQC/VIR0gTdsKyvmj1wSHocgFPxfniYNK6ZzGMgcc4E
+  #      xVWo+XoLBz7k2eopn36Na4w/n5Tj1onVS2UcHYykFa8YVrucNrWQ6jg2YNvlZbeC
+  #      FzK5EYk7F1ucrPNGEgurKWcyANvGriRYFnhBtwZuGSGh5ZWrlUGa/nVtZraJJxBN
+  #      YStLbs/jLkDk5ZhmAJvQ9vwnKmBO9S4fuU5GFCi77DS6vcF7NRKYUrxOH2vNVeAO
+  #      7MRFhBjov+dQbbYnJSbKog+CRu9bEIHMFRn/eB3Cab5EqdxRo8sCAwEAAaMNMAsw
+  #      CQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAQEApl1bU3ITgfmoTO+WSRLryIAv
+  #      g7wmurdubpfso/YT0SNRofleMnBYDOKYEMivXXQbaqBJ5Ks7eTzTVXfcmtHdvmxp
+  #      SalOVOMzPNqbaSMku2+PIBX4SFZp2vBy8MVRHdvJgWFI1DtYNvRTxOETz0xE4CJC
+  #      l1wD7Rsuop6G/6JI0FoNGjqMNq52wP6BHRju9PZwzpOw+LXO8xQ+KbMmyLk1fSO4
+  #      s8NDhB9cwOgeRf5pdMcTjpt+6xbttJjm/hg4tDZRV0y8/+NiHyh9rIEo9NtbrJ6r
+  #      sXCmc06hGrksTt8cG2kkPXQ83/YvBfnmgoYLvLLHm7ddZs9iE493OZ+tezik1A==
+  #      -----END CERTIFICATE-----
+  #    key: |-
+  #      -----BEGIN CERTIFICATE-----
+  #      MIICyjCCAbKgAwIBAgIJAPbPzqesPs8HMA0GCSqGSIb3DQEBCwUAMB0xGzAZBgNV
+  #      BAMMEmtpcml0aGdhbC5hcmRhLmFuYzAeFw0xNzAxMjUxNjA1NTdaFw0yNzAxMjMx
+  #      NjA1NTdaMB0xGzAZBgNVBAMMEmtpcml0aGdhbC5hcmRhLmFuYzCCASIwDQYJKoZI
+  #      hvcNAQEBBQADggEPADCCAQoCggEBALqIgh56H8WtqXtt6fjcYGZrskNJGWwOH7n6
+  #      FaihAIiLMgQeZJkHjon/ChQC/VIR0gTdsKyvmj1wSHocgFPxfniYNK6ZzGMgcc4E
+  #      xVWo+XoLBz7k2eopn36Na4w/n5Tj1onVS2UcHYykFa8YVrucNrWQ6jg2YNvlZbeC
+  #      FzK5EYk7F1ucrPNGEgurKWcyANvGriRYFnhBtwZuGSGh5ZWrlUGa/nVtZraJJxBN
+  #      YStLbs/jLkDk5ZhmAJvQ9vwnKmBO9S4fuU5GFCi77DS6vcF7NRKYUrxOH2vNVeAO
+  #      7MRFhBjov+dQbbYnJSbKog+CRu9bEIHMFRn/eB3Cab5EqdxRo8sCAwEAAaMNMAsw
+  #      CQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAQEApl1bU3ITgfmoTO+WSRLryIAv
+  #      g7wmurdubpfso/YT0SNRofleMnBYDOKYEMivXXQbaqBJ5Ks7eTzTVXfcmtHdvmxp
+  #      SalOVOMzPNqbaSMku2+PIBX4SFZp2vBy8MVRHdvJgWFI1DtYNvRTxOETz0xE4CJC
+  #      l1wD7Rsuop6G/6JI0FoNGjqMNq52wP6BHRju9PZwzpOw+LXO8xQ+KbMmyLk1fSO4
+  #      s8NDhB9cwOgeRf5pdMcTjpt+6xbttJjm/hg4tDZRV0y8/+NiHyh9rIEo9NtbrJ6r
+  #      sXCmc06hGrksTt8cG2kkPXQ83/YvBfnmgoYLvLLHm7ddZs9iE493OZ+tezik1A==
+  #      -----END CERTIFICATE-----
   cassandra:
     authentication:
       password: cassandra
@@ -22,16 +80,11 @@ main_app:
     #hostname: cassandra.default.svc.cluster.local # uncommented to allow discovery in minikube
     keyspace: kask
     table: values
-    # tls:
-    #   ca: /etc/ssl/certs/ca-certificates.crt
   default_ttl: 86400
   listen_address: 0.0.0.0
   service_name: kask
   log_level: info
   openapi_spec: openapi.yaml
-  # tls:
-  #   cert: /etc/kask/cert.pem
-  #   key: /etc/kask/key.pem
   # See T220401 for how these numbers were calculated
   requests:
     cpu: 150m # T220401

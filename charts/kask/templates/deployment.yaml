@@ -59,6 +59,14 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/kask
+            {{- with .Values.main_app.certs }}{{ if .cassandra }}
+            - name: cassandra-certs-volume
+              mountPath: /etc/cassandra-certs
+            {{- end }}{{ end }}
+            {{- with .Values.main_app.certs}}{{ if .kask }}
+            - name: kask-certs-volume
+              mountPath: /etc/kask-certs
+            {{- end }}{{ end }}
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}
@@ -68,3 +76,13 @@ spec:
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
+        {{- if .Values.main_app.certs }}{{ if .Values.main_app.cassandra }}
+        - name: cassandra-certs-volume
+          configMap:
+            name: cassandra-certs-{{ .Release.Name }}
+        {{- end }}{{ end }}
+        {{- if .Values.main_app.certs }}{{ if .Values.main_app.kask }}
+        - name: kask-certs-volume
+          configMap:
+            name: kask-certs-{{ .Release.Name }}
+        {{- end }}{{ end }}

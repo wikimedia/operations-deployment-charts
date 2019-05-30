@@ -4,3 +4,25 @@ metadata:
   name: config-{{ .Release.Name }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{- if .Values.main_app.certs}}{{ if .Values.main_app.certs.cassandra }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cassandra-certs-{{ .Release.Name }}
+data:
+  ca.crt: |-
+{{ .Values.main_app.certs.cassandra.ca | indent 4 }}
+{{- end }}{{ end -}}
+{{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.kask }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kask-certs-{{ .Release.Name }}
+data:
+  cert.pem: |-
+{{ .Values.main_app.certs.kask.cert | indent 4 }}
+  key.pem: |-
+{{ .Values.main_app.certs.kask.key | indent 4 }}
+{{- end }}{{ end -}}
