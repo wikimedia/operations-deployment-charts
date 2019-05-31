@@ -76,12 +76,12 @@ spec:
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
-        {{- if .Values.main_app.certs }}{{ if .Values.main_app.cassandra }}
+        {{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.cassandra }}
         - name: cassandra-certs-volume
           configMap:
             name: cassandra-certs-{{ .Release.Name }}
         {{- end }}{{ end }}
-        {{- if .Values.main_app.certs }}{{ if .Values.main_app.kask }}
+        {{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.kask }}
         - name: kask-certs-volume
           configMap:
             name: kask-certs-{{ .Release.Name }}

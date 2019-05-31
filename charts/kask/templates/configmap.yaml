@@ -4,7 +4,7 @@ metadata:
   name: config-{{ .Release.Name }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
-{{- if .Values.main_app.certs}}{{ if .Values.main_app.certs.cassandra }}
+{{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.cassandra }}
 ---
 apiVersion: v1
 kind: ConfigMap
