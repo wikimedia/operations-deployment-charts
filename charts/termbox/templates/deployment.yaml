@@ -44,6 +44,10 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/termbox

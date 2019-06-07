@@ -34,5 +34,11 @@ service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  public:
+    WIKIBASE_REPO: 'https://www.wikidata.org/w'
+    WIKIBASE_REPO_HOSTNAME_ALIAS: wikidata.org
+    MEDIAWIKI_REQUEST_TIMEOUT: 3000
+    MESSAGES_CACHE_MAX_AGE: 60000
+    LANGUAGES_CACHE_MAX_AGE: 300000
+    HEALTHCHECK_QUERY: 'language=de&entity=Q1&revision=3&editLink=/edit/Q1347&preferredLanguages=de|en'
   private: {} # Add here all the keys that should be private but still available as env variables

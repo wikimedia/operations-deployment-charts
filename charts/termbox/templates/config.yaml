@@ -16,10 +16,11 @@ startup_concurrency: 2
 # uses more heap (note: not RSS) than this many mb.
 worker_heap_limit_mb: 300
 
-# The maximum interval in ms that can pass between two beat messages
-# sent by each worker to the master before it is killed
+# Number of milliseconds to wait for a heartbeat from worker before killing
+# and restarting it
 worker_heartbeat_timeout: 7500
 
+# Logger info
 logging:
   level: info
   # Sets up sample logging for some 'interesting' events.
@@ -33,7 +34,7 @@ logging:
     - type: stdout
     # Use gelf-stream -> logstash
     - type: gelf
-      host: logstash.svc.eqiad.wmnet
+      host: '{env(LOGSTASH_HOST,logstash.svc.eqiad.wmnet)}'
       port: 12201
     # Alternatively you can provide a comma-separated list of host:port pairs,
     # the server to use will be selected randomly on startup
@@ -52,13 +53,13 @@ metrics:
 {{- end }}
 
 # Rate limiter (enabled by default)
-ratelimit:
-  type: memory
-  # optional: Kademlia backend
-  # type: kad
-  # seeds:
-  #  - 123.456.789.233
-  #  - 456.789.90.2
+#ratelimit:
+#  type: memory
+#   optional: Kademlia backend
+#   type: kad
+#   seeds:
+#    - 192.0.2.10
+#    - 192.0.2.20
 
 # DNS caching, switched on by default. To disable caching use:
 # dns_cache: false
@@ -73,7 +74,12 @@ services:
     module: ./serverBuild/server/server.js
     # per-service config
     conf:
-      WIKIBASE_REPO: '{env(WIKIBASE_REPO,https://www.wikidata.org/w)}' #use env var with fallback
-      SSR_PORT: '{env(SSR_PORT,{{ .Values.main_app.port }})}'
+      WIKIBASE_REPO: '{env(WIKIBASE_REPO, https://www.wikidata.org/w)}' #use env var with fallback
+      WIKIBASE_REPO_HOSTNAME_ALIAS: '{env(WIKIBASE_REPO_HOSTNAME_ALIAS, wikidata.org)}'
+      SSR_PORT: {{ .Values.main_app.port }}
+      MEDIAWIKI_REQUEST_TIMEOUT: '{env(MEDIAWIKI_REQUEST_TIMEOUT)}'
+      MESSAGES_CACHE_MAX_AGE: '{env(MESSAGES_CACHE_MAX_AGE)}'
+      LANGUAGES_CACHE_MAX_AGE: '{env(LANGUAGES_CACHE_MAX_AGE)}'
+      HEALTHCHECK_QUERY: '{env(HEALTHCHECK_QUERY)}'
     entrypoint: default #required for ES6 style exports
 {{- end -}}
