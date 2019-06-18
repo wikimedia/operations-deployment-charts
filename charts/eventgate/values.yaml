@@ -38,8 +38,6 @@ main_app:
   image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
   version: latest # we use latest  in the defaults.
   port: 8192
-  # Events can be large; increase max body size
-  max_body_size: 4mb
 
   # See: https://phabricator.wikimedia.org/T220661#5117972
   requests:
@@ -52,6 +50,9 @@ main_app:
   # EventGate service-runner app defaults config.
   # In production, these should be overridden in service/release specific values files.
   conf:
+    # Events can be large; increase max body size
+    max_body_size: 4mb
+
     eventgate_factory_module: '/srv/service/lib/factories/wikimedia-eventgate'
 
     # Mapping of stream names to allowed schemas
