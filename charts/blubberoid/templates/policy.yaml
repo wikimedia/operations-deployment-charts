@@ -1,0 +1,11 @@
+{{- define "policy.app" -}}
+# Blubber policy checks each variant base to ensure that images are coming
+# from a particular docker registry
+enforcements:
+  - path: base
+    rule: omitempty,startswith={{ .Values.main_app.policy.docker_registry }}
+  - path: variants.test.base
+    rule: omitempty,startswith={{ .Values.main_app.policy.docker_registry }}
+  - path: variants.production.base
+    rule: omitempty,startswith={{ .Values.main_app.policy.docker_registry }}
+{{- end -}}

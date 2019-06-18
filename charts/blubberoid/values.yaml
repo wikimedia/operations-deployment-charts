@@ -24,7 +24,9 @@ main_app:
     httpGet:
       path: /?spec
       port: 8748
-
+  policy:
+    enabled: false
+    docker_registry: docker-registry.wikimedia.org
 monitoring:
   enabled: false
   image_version: latest

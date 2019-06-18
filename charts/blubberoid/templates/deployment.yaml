@@ -28,6 +28,9 @@ spec:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+{{- if .Values.main_app.policy.enabled }}
+          args: ["--policy", "/etc/blubberoid/policy.yaml"]
+{{- end }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.port }}
@@ -38,6 +41,11 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
+{{- if .Values.main_app.policy.enabled }}
+          volumeMounts:
+            - name: policy-volume
+              mountPath: /etc/blubberoid
+{{- end }}
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}
@@ -57,4 +65,9 @@ spec:
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
             name: {{ .Release.Name }}-metrics-config
+        {{- end }}
+        {{- if .Values.main_app.policy.enabled }}
+        - name: policy-volume
+          configMap:
+            name: {{ .Release.Name }}-policy
         {{- end }}
