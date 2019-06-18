@@ -38,6 +38,8 @@ main_app:
   image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
   version: latest # we use latest  in the defaults.
   port: 8192
+  # Events can be large; increase max body size
+  max_body_size: 4mb
 
   # See: https://phabricator.wikimedia.org/T220661#5117972
   requests:
