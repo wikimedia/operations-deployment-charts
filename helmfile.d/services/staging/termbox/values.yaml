@@ -1,0 +1,40 @@
+affinity: {}
+config:
+  private: {}
+  public:
+    HEALTHCHECK_QUERY: language=de&entity=Q1&revision=103&editLink=/edit/Q1347&preferredLanguages=de|en
+    LANGUAGES_CACHE_MAX_AGE: 300000
+    MEDIAWIKI_REQUEST_TIMEOUT: 3000
+    MESSAGES_CACHE_MAX_AGE: 60000
+    WIKIBASE_REPO: http://www.wikidata.org/w
+    WIKIBASE_REPO_HOSTNAME_ALIAS: api-ro.discovery.wmnet
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.wikimedia.org
+helm_scaffold_version: 0.1
+main_app:
+  image: wikimedia/wikibase-termbox
+  limits:
+    cpu: 1
+    memory: 300Mi
+  liveness_probe:
+    tcpSocket:
+      port: 3030
+  port: 3030
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 3030
+  requests:
+    cpu: 1m
+    memory: 140Mi
+  version: 2019-06-07-150520-production
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+resources:
+  replicas: 1
+service:
+  deployment: production
+  port: 3030
+tolerations: {}

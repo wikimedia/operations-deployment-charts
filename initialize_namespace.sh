@@ -26,5 +26,5 @@ KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create rolebinding ${DEPLOY_USER}
 # Initialize helm
 KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
 	--tiller-namespace=${NAMESPACE} \
-	--tiller-image=docker-registry.discovery.wmnet/tiller:latest \
+	--tiller-image=docker-registry.discovery.wmnet/tiller:2.12.2-wmf1 \
 	--skip-refresh

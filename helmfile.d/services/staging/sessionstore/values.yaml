@@ -1,0 +1,88 @@
+affinity: {}
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.1
+main_app:
+  base_uri: sessions/v1
+  cassandra:
+    authentication:
+#     password: # needs to be defined on private/secrets.yaml
+      username: restb
+    hosts:
+    - restbase-dev1004-a.eqiad.wmnet
+    - restbase-dev1005-a.eqiad.wmnet
+    - restbase-dev1006-a.eqiad.wmnet
+    keyspace: sessions
+    table: values
+  certs:
+    cassandra:
+      ca: |-
+        -----BEGIN CERTIFICATE-----
+        MIIDWzCCAkOgAwIBAgIJAMDw6wy4LHx5MA0GCSqGSIb3DQEBCwUAMEMxDzANBgNV
+        BAMMBnJvb3RDYTEVMBMGA1UECwwMc2VydmljZXMtZGV2MQwwCgYDVQQKDANXTUYx
+        CzAJBgNVBAYTAlVTMCAXDTE3MDEwNTIyNTMwMFoYDzIwNjYxMjI0MjI1MzAwWjBD
+        MQ8wDQYDVQQDDAZyb290Q2ExFTATBgNVBAsMDHNlcnZpY2VzLWRldjEMMAoGA1UE
+        CgwDV01GMQswCQYDVQQGEwJVUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+        ggEBALH2sG1pHh+kphu2zqDpQ3X7jxlXqLfmMgrcLLXK/hRf1R5EDQ8N5B7kgnH7
+        ATDdboaPvHspu1WwE50dlhXK5xXV5U9sTjxd4WWB66v0bKiGn5nifvz9gWGh+0OZ
+        nIqxjQHH0YSpjLB/QOcq3GoeIZ5XNynl3BH2q+cWwBFJQYMyf4tMpRm2i2CC+e9/
+        3wRIyffAuVv85RjvKhNbRFmNMZARdRqBY/0na/kuE09r6D9PLBRDqzgPaK9vMcr1
+        Zu8QE71PE084xDkA/WiCmwZh9WUNotLI+Tvu1AxRlqUA90xPkFthmXoC75AHttts
+        S2si6unQFrznaCv1xnYckPvpUycCAwEAAaNQME4wHQYDVR0OBBYEFNmGKdk7wePm
+        NqYMJyB8GiBVrXUIMB8GA1UdIwQYMBaAFNmGKdk7wePmNqYMJyB8GiBVrXUIMAwG
+        A1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAB3nQzHxnqACaoYP/oyeuMrH
+        lMGsmTYJgDzP4eAoZj20a3saB7xL9vXvcHwlTJBTeg9ct7aKg67FgCZals2P7+nf
+        X1l3vTdwu0dlpkjTzL4nmP1XQ6r6N2mXL498F/y3nQlfUt9efNmy8pfWQFYGN/Ir
+        5UPB7o53pkCvqxSf6VK7GE9QB0QetYUBYg78J9xsqhMt0Gr4Qq3vZwUoq2yTA5c5
+        IjbQPilZhQ//Focy5fVgFJ++ojhAGadYm30VyP1EkJjvY72mhFaY6fpBptzUL9rz
+        NHNq7uXqpFosQptQHiHvN4E9zk1X73Bk7VY4aTE/HtESCT3jxLQDup2p0+v966A=
+        -----END CERTIFICATE-----
+    kask:
+      cert: |-
+        -----BEGIN CERTIFICATE-----
+        MIICxjCCAa6gAwIBAgIJAMFsyqmeOhQsMA0GCSqGSIb3DQEBCwUAMBsxGTAXBgNV
+        BAMMEGNhcm5kdW0uYXJkYS5hbmMwHhcNMTYwNTI0MTYwNDE2WhcNMjYwNTIyMTYw
+        NDE2WjAbMRkwFwYDVQQDDBBjYXJuZHVtLmFyZGEuYW5jMIIBIjANBgkqhkiG9w0B
+        AQEFAAOCAQ8AMIIBCgKCAQEAl2j6qJrMd6E5fVVavAfsq20dk88JF502jBhPLsUC
+        3ZogmA4/NEtRlnyijdcgJOqNJIE3S+6z9YSMxrN7wbEufcwV/WHmeehHrtWjc8H4
+        Jzv9X7qScJPG97v7KYQR0MDsVJCcTVGwJV6qNDMUZ/AmarQcbFcCjkzEehZGKs85
+        GsoYZdm5sTpcUWrxExtV61+TTUUe/sx5/7CAxNVm0HjJeCndZfiXIwNcbfgQJEm7
+        rRPOCAOcoAh55Q2qi4/AfGwLvTHjhbFADvohmm5qn1GIhtgGwTUL8opDQbdTnJE0
+        DXZHVbatBR3cKolhS/gO41gXNn/9rxWVLjD8eIlckXg2rwIDAQABow0wCzAJBgNV
+        HRMEAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQAN/ZBmmiu7vu4rIrVxVSqhqhnFtN7j
+        G/wk4+W/fMqmd6aHGZCq8fAeF48iQNQEHKjyS3bHPqqHAn/Oupbv5XBSlgfxcNOH
+        6EBb9J7GMz30rijnRwKjmtL+iRyO1EAI4/Zwtnd5JGnQnZQ7kBztvatgkA1b/SDp
+        YG70LyZeByGIs5N96Ui2pL0RnfLHfDCoN1koeoNVxd5QMaPTrdqppvipc7yhF5I6
+        8TAH/LybS9EbyJuUx5Z2FsrOUdjuMqTOsfcpJ0KlQo8Jr6IWnAFdCyBKy4Dr69N/
+        WYKM8lgockj+OIpU38xTIgtldc0NOFw8vER9fOCAMl8ePsliRP1DMJfP
+        -----END CERTIFICATE-----
+#     key: needs to be defined on private/secrets.yaml
+  default_ttl: 86400
+  image: wikimedia/mediawiki-services-kask
+  limits:
+    cpu: 150m
+    memory: 50Mi
+  listen_address: 0.0.0.0
+  liveness_probe:
+    tcpSocket:
+      port: 8081
+  log_level: info
+  openapi_spec: openapi.yaml
+  port: 8081
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8081
+      scheme: HTTPS
+  requests:
+    cpu: 150m
+    memory: 50Mi
+  service_name: sessionstore
+  version: 2019-05-30-155521-production
+resources:
+  replicas: 1
+service:
+  deployment: production
+  port: 8081
+tolerations: {}

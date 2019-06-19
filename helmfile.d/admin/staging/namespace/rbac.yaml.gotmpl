@@ -1,0 +1,58 @@
+bases:
+  - envs.yaml
+---
+bases:
+  - defaults.yaml
+---
+releases:
+  - name: {{ .Environment.Values.namespaceName }}-deploy-rolebinding
+    chart: charts/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: deploy
+            namespace: {{ .Environment.Values.namespaceName }}
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: deploy
+          subjects:
+          - apiGroup: rbac.authorization.k8s.io
+            kind: User
+            name: {{ .Environment.Values.deployUser }}
+
+  - name: {{ .Environment.Values.namespaceName }}-tiller-sa
+    chart: charts/raw
+    namespace: kube-system
+    values:
+    - templates:
+        - |
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: tiller
+            namespace: {{ .Environment.Values.namespaceName }}
+
+  - name: {{ .Environment.Values.namespaceName }}-tiller-rolebinding
+    chart: charts/raw
+    namespace: kube-system
+    values:
+    - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: tiller
+            namespace: {{ .Environment.Values.namespaceName }}
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: tiller
+          subjects:
+          - kind: ServiceAccount
+            name: tiller
+            namespace: {{ .Environment.Values.namespaceName }}

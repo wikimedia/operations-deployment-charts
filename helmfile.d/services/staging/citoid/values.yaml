@@ -1,0 +1,33 @@
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.1
+main_app:
+  image: wikimedia/mediawiki-services-citoid
+  limits:
+    cpu: 1
+    memory: 400Mi
+  liveness_probe:
+    tcpSocket:
+      port: 1970
+  port: 1970
+  proxy: http://url-downloader.eqiad.wikimedia.org:8080
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 1970
+  requests:
+    cpu: 1m
+    memory: 100Mi
+  version: 2019-06-10-115301-production
+  #wskey:
+  xisbn: false
+  zotero: zotero.discovery.wmnet
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+resources:
+  replicas: 1
+service:
+  deployment: production
+  port: 1970

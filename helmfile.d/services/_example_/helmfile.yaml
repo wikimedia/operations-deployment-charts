@@ -1,0 +1,28 @@
+repositories:
+  - name: stable
+    url: https://releases.wikimedia.org/charts/
+
+#default values to set for args along with dedicated keys that can be set by contributers, cli args take precedence over these
+helmDefaults:
+  tillerNamespace: DEFAULT
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: falses
+
+releases:
+  # Published chart example
+  - name: RELEASE                            # name of this release
+    namespace: DEFAULT                       # target namespace
+    chart: stable/DEFAULT              # the chart being installed to create this release, referenced by relative path to local chart
+    #version: latest
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"             # Values file (relative path to manifest)
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[${CLUSTER}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]

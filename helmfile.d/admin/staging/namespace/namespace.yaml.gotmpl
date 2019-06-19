@@ -1,0 +1,19 @@
+bases:
+  - envs.yaml
+---
+bases:
+  - defaults.yaml
+---
+releases:
+  - name: {{ .Environment.Values.namespaceName }}-namespace
+    chart: charts/raw
+    namespace: kube-system
+    values:
+    - templates:
+        - |
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: {{ .Environment.Values.namespaceName }}
+            annotations:
+              net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
