@@ -14,8 +14,10 @@ spec:
     - Ingress
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
+{{- range .Values.main_app.ports }}
+      - port: {{ . }}
         protocol: TCP
+{{- end }}
         {{- if .Values.monitoring }}
       - port: 9102
         protocol: TCP

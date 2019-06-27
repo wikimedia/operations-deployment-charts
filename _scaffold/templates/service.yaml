@@ -12,10 +12,6 @@ spec:
     app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
   ports:
-  - name: http
-    protocol: TCP
-    port: {{ .Values.main_app.port }}
-    {{/* If the port is passed as a value use it, otherwise autoallocate */}}
-    {{- if .Values.service.port }}
-    nodePort:  {{ .Values.service.port }}
-    {{- end }}
+{{- with .Values.service.ports }}
+{{ toYaml . | indent 4 }}
+{{- end }}

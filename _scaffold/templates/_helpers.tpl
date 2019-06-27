@@ -21,5 +21,5 @@
 {{- end -}}
 
 {{- define "wmf.appbaseurl" -}}
-http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
+http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.appbase_url_port }}
 {{- end -}}
