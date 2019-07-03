@@ -1,0 +1,39 @@
+config:
+  private: {}
+  public: {}
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.1
+logging:
+  enabled: false
+  fluent_bit_version: latest
+  limits:
+    cpu: 100m
+    memory: 200Mi
+  output_match: '*'
+main_app:
+  image: wikimedia/blubber
+  limits:
+    cpu: 1
+    memory: 20Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8748
+  port: 8748
+  readiness_probe:
+    httpGet:
+      path: /?spec
+      port: 8748
+  requests:
+    cpu: 1m
+    memory: 20Mi
+  version: 2018-12-13-183249-production
+monitoring:
+  enabled: false
+  image_version: 0.0.5
+resources:
+  replicas: 4
+service:
+  deployment: production
+  port: 8748

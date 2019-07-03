@@ -1,0 +1,22 @@
+main_app:
+  conf:
+    kafka:
+      conf:
+        metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092
+    schema_precache_uris:
+    - /error/0.0.3
+    - /test/event/0.0.3
+    - /mediawiki/api/request/0.0.1
+    - /mediawiki/cirrussearch/request/0.0.1
+    topic_prefix: codfw.
+  stream_config:
+    mediawiki.api-request:
+      schema_title: mediawiki/api/request
+    mediawiki.cirrussearch-request:
+      schema_title: mediawiki/cirrussearch/request
+  version: v1.0.14-wmf0
+resources:
+  replicas: 20
+service:
+  deployment: production
+  port: 31192
