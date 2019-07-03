@@ -9,6 +9,7 @@ main_app:
     authentication:
 #     password: # needs to be defined on private/secrets.yaml
       username: restb
+    hostname: restbase-dev1004-a.eqiad.wmnet,restbase-dev1005-a.eqiad.wmnet,restbase-dev1006-a.eqiad.wmnet
     hosts:
     - restbase-dev1004-a.eqiad.wmnet
     - restbase-dev1005-a.eqiad.wmnet
@@ -41,24 +42,34 @@ main_app:
     kask:
       cert: |-
         -----BEGIN CERTIFICATE-----
-        MIICxjCCAa6gAwIBAgIJAMFsyqmeOhQsMA0GCSqGSIb3DQEBCwUAMBsxGTAXBgNV
-        BAMMEGNhcm5kdW0uYXJkYS5hbmMwHhcNMTYwNTI0MTYwNDE2WhcNMjYwNTIyMTYw
-        NDE2WjAbMRkwFwYDVQQDDBBjYXJuZHVtLmFyZGEuYW5jMIIBIjANBgkqhkiG9w0B
-        AQEFAAOCAQ8AMIIBCgKCAQEAl2j6qJrMd6E5fVVavAfsq20dk88JF502jBhPLsUC
-        3ZogmA4/NEtRlnyijdcgJOqNJIE3S+6z9YSMxrN7wbEufcwV/WHmeehHrtWjc8H4
-        Jzv9X7qScJPG97v7KYQR0MDsVJCcTVGwJV6qNDMUZ/AmarQcbFcCjkzEehZGKs85
-        GsoYZdm5sTpcUWrxExtV61+TTUUe/sx5/7CAxNVm0HjJeCndZfiXIwNcbfgQJEm7
-        rRPOCAOcoAh55Q2qi4/AfGwLvTHjhbFADvohmm5qn1GIhtgGwTUL8opDQbdTnJE0
-        DXZHVbatBR3cKolhS/gO41gXNn/9rxWVLjD8eIlckXg2rwIDAQABow0wCzAJBgNV
-        HRMEAjAAMA0GCSqGSIb3DQEBCwUAA4IBAQAN/ZBmmiu7vu4rIrVxVSqhqhnFtN7j
-        G/wk4+W/fMqmd6aHGZCq8fAeF48iQNQEHKjyS3bHPqqHAn/Oupbv5XBSlgfxcNOH
-        6EBb9J7GMz30rijnRwKjmtL+iRyO1EAI4/Zwtnd5JGnQnZQ7kBztvatgkA1b/SDp
-        YG70LyZeByGIs5N96Ui2pL0RnfLHfDCoN1koeoNVxd5QMaPTrdqppvipc7yhF5I6
-        8TAH/LybS9EbyJuUx5Z2FsrOUdjuMqTOsfcpJ0KlQo8Jr6IWnAFdCyBKy4Dr69N/
-        WYKM8lgockj+OIpU38xTIgtldc0NOFw8vER9fOCAMl8ePsliRP1DMJfP
+        MIIEpjCCAo6gAwIBAgICFBIwDQYJKoZIhvcNAQELBQAwKzEpMCcGA1UEAwwgUHVw
+        cGV0IENBOiBwYWxsYWRpdW0uZXFpYWQud21uZXQwHhcNMTkwNTI5MTczODU4WhcN
+        MjQwNTI4MTczODU4WjCBhjElMCMGA1UEAwwcc2Vzc2lvbnN0b3JlLmRpc2NvdmVy
+        eS53bW5ldDEjMCEGA1UECgwaV2lraW1lZGlhIEZvdW5kYXRpb24sIEluYy4xCzAJ
+        BgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJh
+        bmNpc2NvMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEo0mXSs6cuo4petvH4Tf5
+        cEta2oFzrAwZi0s70o58512aAGteTtbWByh9M1YSrszhxaHLEvib8A/DtR7Qubrm
+        aKOCAUEwggE9MDcGCWCGSAGG+EIBDQQqDChQdXBwZXQgUnVieS9PcGVuU1NMIElu
+        dGVybmFsIENlcnRpZmljYXRlMIGBBgNVHREEejB4ghxzZXNzaW9uc3RvcmUuZGlz
+        Y292ZXJ5LndtbmV0ghxzZXNzaW9uc3RvcmUuc3ZjLmVxaWFkLndtbmV0ghxzZXNz
+        aW9uc3RvcmUuc3ZjLmNvZGZ3LndtbmV0ghxzZXNzaW9uc3RvcmUuZGlzY292ZXJ5
+        LndtbmV0MA4GA1UdDwEB/wQEAwIFoDAgBgNVHSUBAf8EFjAUBggrBgEFBQcDAQYI
+        KwYBBQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUy3MqWp8zdRDls9e2hX3g
+        fSZ3ozMwHwYDVR0jBBgwFoAUWeSGMH4Crw0ApnTtmvYOF65srrowDQYJKoZIhvcN
+        AQELBQADggIBALZwcnXPaohiM4W7ABcKRqw5UvwO5X2JSGuPgDgh6VdRs+M2P6lM
+        EF/iNVjIyFiZNRaH4/00jHFH1C5LTj1Wf575Pb1o5AeItd+2U1FmVBrOT917NpjQ
+        NsjgDfMukhyRahsAvngBZuZRZPFYicIAOMFdzZ5WFzURZd9YszLWSjYcBOpz3UOb
+        P0ErM7Lz+QXnruDUjo1yprGWOyffPU7YtEfoFHtkoeKR3RVIhoWSt0AY2zGDWxr1
+        SYjYIk0hJDYGOHRN/SX5r+eOolD+O5SqR5lh8H1RAD/SZAPFeCwGqx0OO5rOoEEs
+        NmViWG+7E7Q14vtgathNqodE90w92X9/AdgSpBjtRB+v+BOj+xxFbr02Ua56XRi3
+        aOczx6vxb2NNeYMhaanncuzBaoBSzJjz02xDXK1RErmoJsyxkGpMhXSf6S+vA66F
+        WmTIa3nK9hxi1bddks+eVkx03SYh4pZgXhmEkCu2KzI3KqvmPQPyW41AWneCO2M4
+        Vxu0z9xqtlV1I66R/Krz/sbnuyZA+B7QDWVyh9jtrU1JImW7u46GFjoBN5n0LvU9
+        1x2qkgDUyinG+zbng4oa5cZ8EKUT+UOe79xuwXHUZFbcLoINudPjbMdg4GdCqbkb
+        IBSf6WFpl7UiAs491jFQMvSZkk5Irk2s/iUt3Grv+5B+FkoTa1+6vW8u
         -----END CERTIFICATE-----
-#     key: needs to be defined on private/secrets.yaml
-  default_ttl: 86400
+#      key: needs to be defined on private/secrets.yaml
+  default_ttl: 3600
   image: wikimedia/mediawiki-services-kask
   limits:
     cpu: 150m

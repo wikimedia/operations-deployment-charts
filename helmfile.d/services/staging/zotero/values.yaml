@@ -7,7 +7,7 @@ config:
     NODEJS_V8_HEAP_SIZE_IN_MB: "3584"
 docker:
   pull_policy: IfNotPresent
-  registry: docker-registry.wikimedia.org
+  registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.1
 logging:
   enabled: false
@@ -20,7 +20,7 @@ main_app:
   image: wikimedia/mediawiki-services-zotero
   limits:
     cpu: 1
-    memory: 700Mi
+    memory: 2Gi
   liveness_probe:
     tcpSocket:
       port: 1969
