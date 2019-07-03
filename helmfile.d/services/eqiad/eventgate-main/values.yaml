@@ -1,0 +1,71 @@
+main_app:
+  conf:
+    kafka:
+      conf:
+        metadata.broker.list: kafka1001.eqiad.wmnet:9092,kafka1002.eqiad.wmnet:9092,kafka1003.eqiad.wmnet:9092
+    schema_precache_uris:
+    - /error/0.0.3
+    - /test/event/0.0.3
+    - /change-prop/retry/1.0.0
+    - /change-prop/continue/1.0.0
+    - /resource_change/1.0.0
+    - /mediawiki/page/move/1.0.0
+    - /mediawiki/page/restrictions-change/1.0.0
+    - /mediawiki/page/delete/1.0.0
+    - /mediawiki/page/links-change/1.0.0
+    - /mediawiki/page/properties-change/1.0.0
+    - /mediawiki/page/undelete/1.0.0
+    - /mediawiki/recentchange/1.0.0
+    - /mediawiki/user/blocks-change/1.0.0
+    - /mediawiki/centralnotice/campaign/change/1.0.0
+    - /mediawiki/centralnotice/campaign/delete/1.0.0
+    - /mediawiki/centralnotice/campaign/create/1.0.0
+    - /mediawiki/job/1.0.0
+    - /mediawiki/revision/visibility-change/1.0.0
+    - /mediawiki/revision/score/1.0.0
+    - /mediawiki/revision/tags-change/1.0.0
+    - /mediawiki/revision/create/1.0.0
+    topic_prefix: eqiad.
+  stream_config:
+    /^mediawiki\.job\..+/:
+      schema_title: mediawiki/job
+    mediawiki.centralnotice.campaign-change:
+      schema_title: mediawiki/centralnotice/campaign/change
+    mediawiki.centralnotice.campaign-create:
+      schema_title: mediawiki/centralnotice/campaign/create
+    mediawiki.centralnotice.campaign-delete:
+      schema_title: mediawiki/centralnotice/campaign/delete
+    mediawiki.page-create:
+      schema_title: mediawiki/revision/create
+    mediawiki.page-delete:
+      schema_title: mediawiki/page/delete
+    mediawiki.page-links-change:
+      schema_title: mediawiki/page/links-change
+    mediawiki.page-move:
+      schema_title: mediawiki/page/move
+    mediawiki.page-properties-change:
+      schema_title: mediawiki/page/properties-change
+    mediawiki.page-restrictions-change:
+      schema_title: mediawiki/page/restrictions-change
+    mediawiki.page-undelete:
+      schema_title: mediawiki/page/undelete
+    mediawiki.recentchange:
+      schema_title: mediawiki/recentchange
+    mediawiki.revision-create:
+      schema_title: mediawiki/revision/create
+    mediawiki.revision-score:
+      schema_title: mediawiki/revision/score
+    mediawiki.revision-tags-change:
+      schema_title: mediawiki/revision/tags-change
+    mediawiki.revision-visibility-change:
+      schema_title: mediawiki/revision/visibility-change
+    mediawiki.user-blocks-change:
+      schema_title: mediawiki/user/blocks-change
+    resource_change:
+      schema_title: resource_change
+  version: v1.0.14-wmf0
+resources:
+  replicas: 3
+service:
+  deployment: production
+  port: 32192

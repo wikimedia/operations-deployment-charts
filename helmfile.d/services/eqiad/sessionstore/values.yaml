@@ -1,0 +1,121 @@
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: dedicated
+          operator: In
+          values:
+          - kask
+        - key: failure-domain.beta.kubernetes.io/zone
+          operator: In
+          values:
+          - row-a
+          - row-b
+          - row-c
+          - row-d
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.1
+main_app:
+  base_uri: sessions/v1
+  cassandra:
+    authentication:
+      #password:
+      username: sessions
+    hosts:
+    - sessionstore1001-a.eqiad.wmnet
+    - sessionstore1002-a.eqiad.wmnet
+    - sessionstore1003-a.eqiad.wmnet
+    keyspace: sessions
+    table: values
+  certs:
+    cassandra:
+      ca: |-
+        -----BEGIN CERTIFICATE-----
+        MIIDVjCCAj6gAwIBAgIJAO9QSQYun6TEMA0GCSqGSIb3DQEBCwUAMD8xDzANBgNV
+        BAMMBnJvb3RDYTERMA8GA1UECwwIc2Vzc2lvbnMxDDAKBgNVBAoMA1dNRjELMAkG
+        A1UEBhMCVVMwIBcNMTkwMzE0MTI0NDA4WhgPMjA2OTAzMDExMjQ0MDhaMD8xDzAN
+        BgNVBAMMBnJvb3RDYTERMA8GA1UECwwIc2Vzc2lvbnMxDDAKBgNVBAoMA1dNRjEL
+        MAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCc3/cP
+        Asp5OA0KBaQCcPHwaOPJcFNMnp/3uWMPdKHkI00nnkzCMZ26BazB4X+rcd043wY0
+        UBlt5fJ6LbIvwRTfpqyCjyj6rDyADNwpTAVKHEVN9T+gzIJVZ1J10BFx50wp5RjW
+        8Oku1EDBf+XYsKGbaKzN+SmwUEfWvPi0b8KrQ6N1z/6N82c6S2HWPhFingnPlyR0
+        HpUpvUAK9b58Bj/tI0ZizP2t9c/AEi/jcmMjejG+6Mm+7M+ZRkf2OUTNwFBK9LJD
+        NiSxf78N4OxWITodyZ4j+EKSKYxw80JI/NkikIdqiDj/Kza36b1oWZLiBIlHN1pN
+        FWaBaZNovsRGkZU/AgMBAAGjUzBRMB0GA1UdDgQWBBT1pq01moYJF2wiAC/wQO4b
+        VUHrIzAfBgNVHSMEGDAWgBT1pq01moYJF2wiAC/wQO4bVUHrIzAPBgNVHRMBAf8E
+        BTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQBNp6IdH+ZI7NtHcc4n5XfsLiJWZ5kh
+        WwA8HlDqMJz1m9Q2xnFZAHw/F/8FmI640jlTfDQom/cpxCcDrdkohaJMIY/Z0vwB
+        yN0T8rSZK8wYBWmbb0lTSrwquNdTNmvvIfVcGeaOifcI3t6uDqG0E/fkc8Su8RVI
+        hqxn1ta/Ef23c0/MzMIv/nO/x+zmKFPfxmOveACynBhKzTiiqJnCa8dj5hlRkKle
+        1HnYoJed8KOpOgWirHbXYnDwf/wIz5JOyYMUmhzhXaaHPgN6MXNSsDmumID9hMjU
+        Ea0WMO1qk4kiVO9rfgASstuga4nRs8GlkFdsuSmwzxG2klS3hi98qJVr
+        -----END CERTIFICATE-----
+    kask:
+      cert: |-
+        -----BEGIN CERTIFICATE-----
+        MIIEpjCCAo6gAwIBAgICFBIwDQYJKoZIhvcNAQELBQAwKzEpMCcGA1UEAwwgUHVw
+        cGV0IENBOiBwYWxsYWRpdW0uZXFpYWQud21uZXQwHhcNMTkwNTI5MTczODU4WhcN
+        MjQwNTI4MTczODU4WjCBhjElMCMGA1UEAwwcc2Vzc2lvbnN0b3JlLmRpc2NvdmVy
+        eS53bW5ldDEjMCEGA1UECgwaV2lraW1lZGlhIEZvdW5kYXRpb24sIEluYy4xCzAJ
+        BgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJh
+        bmNpc2NvMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEo0mXSs6cuo4petvH4Tf5
+        cEta2oFzrAwZi0s70o58512aAGteTtbWByh9M1YSrszhxaHLEvib8A/DtR7Qubrm
+        aKOCAUEwggE9MDcGCWCGSAGG+EIBDQQqDChQdXBwZXQgUnVieS9PcGVuU1NMIElu
+        dGVybmFsIENlcnRpZmljYXRlMIGBBgNVHREEejB4ghxzZXNzaW9uc3RvcmUuZGlz
+        Y292ZXJ5LndtbmV0ghxzZXNzaW9uc3RvcmUuc3ZjLmVxaWFkLndtbmV0ghxzZXNz
+        aW9uc3RvcmUuc3ZjLmNvZGZ3LndtbmV0ghxzZXNzaW9uc3RvcmUuZGlzY292ZXJ5
+        LndtbmV0MA4GA1UdDwEB/wQEAwIFoDAgBgNVHSUBAf8EFjAUBggrBgEFBQcDAQYI
+        KwYBBQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUy3MqWp8zdRDls9e2hX3g
+        fSZ3ozMwHwYDVR0jBBgwFoAUWeSGMH4Crw0ApnTtmvYOF65srrowDQYJKoZIhvcN
+        AQELBQADggIBALZwcnXPaohiM4W7ABcKRqw5UvwO5X2JSGuPgDgh6VdRs+M2P6lM
+        EF/iNVjIyFiZNRaH4/00jHFH1C5LTj1Wf575Pb1o5AeItd+2U1FmVBrOT917NpjQ
+        NsjgDfMukhyRahsAvngBZuZRZPFYicIAOMFdzZ5WFzURZd9YszLWSjYcBOpz3UOb
+        P0ErM7Lz+QXnruDUjo1yprGWOyffPU7YtEfoFHtkoeKR3RVIhoWSt0AY2zGDWxr1
+        SYjYIk0hJDYGOHRN/SX5r+eOolD+O5SqR5lh8H1RAD/SZAPFeCwGqx0OO5rOoEEs
+        NmViWG+7E7Q14vtgathNqodE90w92X9/AdgSpBjtRB+v+BOj+xxFbr02Ua56XRi3
+        aOczx6vxb2NNeYMhaanncuzBaoBSzJjz02xDXK1RErmoJsyxkGpMhXSf6S+vA66F
+        WmTIa3nK9hxi1bddks+eVkx03SYh4pZgXhmEkCu2KzI3KqvmPQPyW41AWneCO2M4
+        Vxu0z9xqtlV1I66R/Krz/sbnuyZA+B7QDWVyh9jtrU1JImW7u46GFjoBN5n0LvU9
+        1x2qkgDUyinG+zbng4oa5cZ8EKUT+UOe79xuwXHUZFbcLoINudPjbMdg4GdCqbkb
+        IBSf6WFpl7UiAs491jFQMvSZkk5Irk2s/iUt3Grv+5B+FkoTa1+6vW8u
+        -----END CERTIFICATE-----
+      #key: |-
+  default_ttl: 3600
+  image: wikimedia/mediawiki-services-kask
+  limits:
+    cpu: 150m
+    memory: 50Mi
+  listen_address: 0.0.0.0
+  liveness_probe:
+    tcpSocket:
+      port: 8081
+  log_level: info
+  openapi_spec: openapi.yaml
+  port: 8081
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8081
+      scheme: HTTPS
+  requests:
+    cpu: 150m
+    memory: 50Mi
+  service_name: sessionstore
+  version: 2019-05-30-155521-production
+resources:
+  replicas: 4
+service:
+  deployment: production
+  port: 8081
+tolerations:
+- effect: NoSchedule
+  key: dedicated
+  operator: Equal
+  value: kask
+- effect: NoExecute
+  key: dedicated
+  operator: Equal
+  value: kask
