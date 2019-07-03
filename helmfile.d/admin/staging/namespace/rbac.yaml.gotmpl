@@ -4,6 +4,7 @@ bases:
 bases:
   - defaults.yaml
 ---
+{{- if .Environment.Values }}
 releases:
   - name: {{ .Environment.Values.namespaceName }}-deploy-rolebinding
     chart: charts/raw
@@ -56,3 +57,4 @@ releases:
           - kind: ServiceAccount
             name: tiller
             namespace: {{ .Environment.Values.namespaceName }}
+{{- end }}
