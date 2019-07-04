@@ -4,6 +4,7 @@ bases:
 bases:
   - defaults.yaml
 ---
+{{- if .Environment.Values }}
 releases:
   - name: {{ .Environment.Values.namespaceName }}-tiller-deploy
     chart: charts/raw
@@ -89,3 +90,4 @@ releases:
                 serviceAccount: tiller
                 serviceAccountName: tiller
                 terminationGracePeriodSeconds: 30
+{{- end }}
