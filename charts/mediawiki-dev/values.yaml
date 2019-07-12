@@ -1,0 +1,64 @@
+# Default values for mediawiki.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: dev/mediawiki
+  version: latest # we use latest everywhere in the defaults.
+  ports:
+    - 80
+  command: '["/bin/bash", "-c"]' # use to override the entrypoint command ex: '["node"]'
+  args: '/var/config/setup.sh && /usr/bin/php -S 0.0.0.0:80 -t /var/www/html' # any args for your command above ex: 'bin/server.js'
+  requests: # Current image we use is using a single threaded php server, update this when the image changes
+    cpu: 15m
+    memory: 100Mi
+  limits: # Current image we use is using a single threaded php server, update this when the image changes
+    cpu: 1
+    memory: 200Mi
+  liveness_probe:
+    tcpSocket:
+      port: 80
+  readiness_probe:
+    httpGet:
+      path: /wiki/Special:BlankPage
+      port: 80
+  volumes: [] # add here any volumes to mount onto the container
+  volumeMounts: [] # add here any mounted volumes
+  xdebug:
+    enabled: false
+    remoteHost: ''
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  ports:
+    - name: http
+      protocol: TCP
+      targetPort: 80
+      port: 80
+      nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public:
+    XDEBUG_CONFIG: "remote_autostart=1 remote_enable=1 remote_handler=dbgp remote_host={{ .Values.main_app.xdebug.remoteHost }} remote_log=/tmp/xdebug_remote.log remote_mode=req remote_port=9000"
+    WIKI_NAME: "My Wiki"
+    WIKI_ADMIN: "admin"
+    DB_NAME: "my_wiki"
+    RESTBASE_NODEPORT: ""
+    MEDIAWIKI_DOMAIN: "{{ .Release.Name }}"
+    RESTBASE_URL: "http://restbase-{{ .Release.Name }}"
+    IS_RESTBASE_EXTERNAL: "false"
+    PARSOID_URL: "http://parsoid-{{ .Release.Name }}"
+    ENABLE_VISUAL_EDITOR: "false"
+    DB_SERVER: "mariadb-{{ .Release.Name }}"
+  private:
+    WIKI_ADMIN_PASS: "adminpass"
+    DB_PASS: "password"
+    WG_SECRET_KEY: "d964ce98b272c2115d5f4960563af8fb8f02ff968bbb0d62bdf4e1e4c18393ed"
+    WG_UPGRADE_KEY: "aed8ffeb5b5fba9e"
