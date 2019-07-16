@@ -7,7 +7,7 @@ bases:
 {{- if .Environment.Values }}
 releases:
   - name: {{ .Environment.Values.namespaceName }}-deploy-rolebinding
-    chart: charts/raw
+    chart: stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -27,7 +27,7 @@ releases:
             name: {{ .Environment.Values.deployUser }}
 
   - name: {{ .Environment.Values.namespaceName }}-tiller-sa
-    chart: charts/raw
+    chart: stable/raw
     namespace: kube-system
     values:
     - templates:
@@ -39,7 +39,7 @@ releases:
             namespace: {{ .Environment.Values.namespaceName }}
 
   - name: {{ .Environment.Values.namespaceName }}-tiller-rolebinding
-    chart: charts/raw
+    chart: stable/raw
     namespace: kube-system
     values:
     - templates:

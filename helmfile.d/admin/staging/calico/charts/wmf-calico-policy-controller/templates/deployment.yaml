@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  generation: 1
+  labels:
+    k8s-app: calico-policy
+  name: calico-policy-controller
+  namespace: kube-system
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: calico-policy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: calico-policy
+      name: calico-policy-controller
+      namespace: kube-system
+    spec:
+      containers:
+      - env:
+        - name: ETCD_ENDPOINTS
+          value: "{{ .Values.etcd.endpoints }}"
+        - name: ETCD_CA_CERT_FILE
+          value: "{{ .Values.etcd.ca_cert_file }}"
+        - name: ETCD_CERT_FILE
+          value: "{{ .Values.etcd.cert_file }}"
+        - name: ETCD_KEY_FILE
+          value: "{{ .Values.etcd.cert_key }}"
+        - name: K8S_API
+          value: "{{ .Values.k8s.api_endpoint }}"
+        - name: K8S_AUTH_TOKEN
+          value: {{ required "Calico policy controller will not work without a token!" .Values.k8s.api_token }}
+        - name: CONFIGURE_ETC_HOSTS
+          value: "true"
+        image: "{{ .Values.image.name}}:{{ .Values.image.tag}}"
+        imagePullPolicy: Always
+        name: calico-policy-controller
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/ssl/certs/
+          name: sslcerts
+        - mountPath: /etc/calico/ssl/
+          name: calicossl
+        - mountPath: /usr/local/share/ca-certificates/
+          name: localsharecerts
+        - mountPath: /etc/wmf-k8s-default-policy/
+          name: wmf-k8s-default-policy
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /etc/ssl/certs/
+          type: ""
+        name: sslcerts
+      - hostPath:
+          path: /etc/calico/ssl/
+          type: ""
+        name: calicossl
+      - hostPath:
+          path: /usr/local/share/ca-certificates/
+          type: ""
+        name: localsharecerts
+      - configMap:
+          defaultMode: 420
+          name: wmf-default-policy
+        name: wmf-k8s-default-policy

@@ -1,0 +1,38 @@
+helmDefaults:
+  tillerNamespace: kube-system  #dedicated default key for tiller-namespace
+  tillerless: false                  #dedicated default key for tillerless
+  # defaults for verify, wait, force, timeout and recreatePods under releases[]
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: false
+
+releases:
+  - name: calico-policy-controller
+    namespace: kube-system
+    chart: charts/wmf-calico-policy-controller
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: calico-policy-data
+    chart: stable/raw
+    namespace: kube-system
+    values:
+    - templates:
+        - |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: wmf-default-policy
+            namespace: kube-system
+          data:
+            egress:
+              {{ exec "cat" (list "default-kubernetes-policy.yaml") | indent 14 | toYaml }}
