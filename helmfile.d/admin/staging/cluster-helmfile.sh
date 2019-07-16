@@ -1,4 +1,7 @@
 #!/bin/bash
+pushd coredns
+    helmfile "$@"
+popd
 pushd calico
 ./apply-calico-policy.sh "$@"
 popd
