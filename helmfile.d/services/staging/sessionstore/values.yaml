@@ -72,7 +72,8 @@ main_app:
     hosts:
       - restbase-dev1004-a.eqiad.wmnet
       - restbase-dev1005-a.eqiad.wmnet
-      - restbase-dev1006-a.eqiad.wmnet
+      # Skip this host for now (https://phabricator.wikimedia.org/T224260)
+      # - restbase-dev1006-a.eqiad.wmnet
     keyspace: sessions
     table: values
   # WARNING: The value of $wgObjectCacheSessionExpiry in MediaWiki must
