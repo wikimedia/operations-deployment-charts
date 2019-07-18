@@ -1,0 +1,102 @@
+# Default values for parsoid.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: dev/parsoid
+  version: latest # we use latest everywhere in the defaults.
+  appbase_url_port: 8142 # port used for wmf.appbaseurl used by service-checker
+  ports:
+    - 8142
+  # Use command and args below to override the entrypoint
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # ex: command: '["node"]' args: '["bin/server.js"]'
+  command: '[node]'
+  args: '["--debug=0.0.0.0:5858", "bin/server.js", "-n 0", "--config", "/usr/src/config/config.yaml"]'
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 1
+    memory: 300Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8142
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 8142
+  # add here any volumes to mount onto the pod. Example:
+  # volumes:
+  #   - name: myvolumename
+  #      hostPath:
+  #        path: /myvolumepath # where on the host machine
+
+  # add here any mounted volumes to make accessible to the container. Example:
+  # volumeMounts:
+  #   - name: myvolumename # the name from your volume above
+  #     mountPath: /path/ # where it should live in your container
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  ports:
+    - name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+      # protocol: TCP # TCP is the default protocol
+      targetPort: 8142 # the number or name of the exposed port on the container
+      port: 80 # the number of the port desired to be exposed to the cluster
+      nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: # Add here all the keys that can be publicly available as a ConfigMap
+    INTERFACE: "0.0.0.0"
+    PORT: "8142"
+    NODE_ENV: development
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+  num_workers: 1
+  worker_heartbeat_timeout: 300000
+  logging:
+    level: info
+  metrics:
+    type: log
+  services: # used to populate config.yaml
+    module: lib/index.js
+    entrypoint: apiServiceWorker
+    localsettings: ''
+    userAgent: ''
+    uri: 'mediawiki-dev-{{ .Release.Name }}/api.php'
+    domain: '{{ .Release.Name }}'  # optional
+    #prefix: 'parsoid' # optional
+    #proxy:
+    #    uri: 'http://my.proxy:1234/'
+    #    headers:  # optional
+    #        'X-Forwarded-Proto': 'https'
+    strictSSL: true
+    useWorker: false
+    cpu_workers: 1
+    loadWMF: false
+    defaultAPIProxyURI: ''
+    debug: false
+    usePHPPreProcessor: true
+    useSelser: false
+    # disable:
+      # allowCORS: false
+    # restrict:
+      # allowCORS: 'some.domain.org'
+    #serverPort: 8000
+    #serverInterface: '127.0.0.1'
+    #linting: true
+    #linter:
+    #  sendAPI: false # Send lint errors to MW API instead of to the log
+    #  apiSampling: 10 # Sampling rate (1 / 10)
+    #modulesLoadURI: 'http://example.org/load.php'
+
+    # extraApis: [] add yaml for additional api configurations in the provided module here
+    # extraServices: [] add yaml for additional service (& respective api) configurations here.
