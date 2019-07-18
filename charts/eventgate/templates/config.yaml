@@ -37,12 +37,17 @@ metrics:
 
 services:
   - name: {{ template "wmf.releasename" . }}
-    # a relative path or the name of an npm package, if different from name
-    module: ./app.js
+    # We want service-runner to start eventgate.
+    # Since eventgate is also a library, it exports the
+    # service-runner app as 'app'.
+    module: eventgate
+    entrypoint: app
     conf:
       port: {{ .Values.main_app.port }}
       cors: false
       user_agent: {{ template "wmf.releasename" . }}
+
+      eventgate_factory_module: '/srv/service/eventgate-wikimedia.js'
 
       # If a validation error is encountered, a validation error event
       # will be produced to this stream.

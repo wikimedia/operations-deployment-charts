@@ -35,7 +35,7 @@ subcharts:
 main_app:
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
-  image: docker-registry.wikimedia.org/wikimedia/eventgate-ci
+  image: docker-registry.wikimedia.org/wikimedia/eventgate-wikimedia
   version: latest # we use latest  in the defaults.
   port: 8192
 
@@ -52,8 +52,6 @@ main_app:
   conf:
     # Events can be large; increase max body size
     max_body_size: 4mb
-
-    eventgate_factory_module: '/srv/service/lib/factories/wikimedia-eventgate'
 
     # Mapping of stream names to allowed schemas
     stream_config_uri: /etc/eventgate/stream-config.yaml
