@@ -1,35 +1,39 @@
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.discovery.wmnet
+  pull_policy: IfNotPresent
+resources:
+  replicas: 4
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
-      - matchExpressions:
-        - key: dedicated
-          operator: In
-          values:
-          - kask
-        - key: failure-domain.beta.kubernetes.io/zone
-          operator: In
-          values:
-          - row-a
-          - row-b
-          - row-c
-          - row-d
-docker:
-  pull_policy: IfNotPresent
-  registry: docker-registry.discovery.wmnet
-helm_scaffold_version: 0.1
+        - matchExpressions:
+          - key: dedicated
+            operator: In
+            values:
+              - kask
+          - key: failure-domain.beta.kubernetes.io/zone
+            operator: In
+            values:
+              - row-a
+              - row-b
+              - row-c
+              - row-d
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "kask"
+    effect: "NoSchedule"
+  - key: "dedicated"
+    operator: "Equal"
+    value: "kask"
+    effect: "NoExecute"
 main_app:
-  base_uri: sessions/v1
-  cassandra:
-    authentication:
-      #password:
-      username: sessions
-    hosts:
-    - sessionstore1001-a.eqiad.wmnet
-    - sessionstore1002-a.eqiad.wmnet
-    - sessionstore1003-a.eqiad.wmnet
-    keyspace: sessions
-    table: values
+  image: wikimedia/mediawiki-services-kask
+  version: v1.0.2
+  port: 8081
+  # All of this needs to be overriden in production
   certs:
     cassandra:
       ca: |-
@@ -82,40 +86,42 @@ main_app:
         1x2qkgDUyinG+zbng4oa5cZ8EKUT+UOe79xuwXHUZFbcLoINudPjbMdg4GdCqbkb
         IBSf6WFpl7UiAs491jFQMvSZkk5Irk2s/iUt3Grv+5B+FkoTa1+6vW8u
         -----END CERTIFICATE-----
-      #key: |-
+      # key: |-
+  base_uri: sessions/v1
+  cassandra:
+    authentication:
+      # password:
+      username: sessions
+    hosts:
+      - sessionstore1001-a.eqiad.wmnet
+      - sessionstore1002-a.eqiad.wmnet
+      - sessionstore1003-a.eqiad.wmnet
+    keyspace: sessions
+    table: values
+  # WARNING: The value of $wgObjectCacheSessionExpiry in MediaWiki must
+  # correspond to the TTL defined here; If you alter default_ttl, update
+  # MediaWiki accordingly or problems with session renewal/expiry may occur.
   default_ttl: 3600
-  image: wikimedia/mediawiki-services-kask
-  limits:
-    cpu: 150m
-    memory: 50Mi
   listen_address: 0.0.0.0
+  service_name: sessionstore
+  log_level: info
+  openapi_spec: openapi.yaml
+  # See T220401 for how these numbers were calculated
+  requests:
+    cpu: 150m # T220401
+    memory: 50Mi # T220401
+  limits:
+    cpu: 150m # T220401
+    memory: 50Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
       port: 8081
-  log_level: info
-  openapi_spec: openapi.yaml
-  port: 8081
   readiness_probe:
     httpGet:
       path: /healthz
       port: 8081
       scheme: HTTPS
-  requests:
-    cpu: 150m
-    memory: 50Mi
-  service_name: sessionstore
-  version: 2019-05-30-155521-production
-resources:
-  replicas: 4
+
 service:
   deployment: production
   port: 8081
-tolerations:
-- effect: NoSchedule
-  key: dedicated
-  operator: Equal
-  value: kask
-- effect: NoExecute
-  key: dedicated
-  operator: Equal
-  value: kask
