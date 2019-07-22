@@ -11,10 +11,10 @@ helmDefaults:
 releases:
   - name: coredns
     namespace: kube-system
-    chart: charts/coredns
+    chart: ./charts/wmfcoredns
     missingFileHandler: Warn
     values:
-    - "values.yaml"
+    - "values/values.yaml"
     - "private/secrets.yaml"
     wait: true
     hooks:

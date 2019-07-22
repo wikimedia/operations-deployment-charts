@@ -28,7 +28,12 @@ spec:
       nodeSelector:
         beta.kubernetes.io/os: linux
       containers:
-      - name: coredns
+      - env:
+        - name: KUBERNETES_SERVICE_HOST
+          value: {{ required "Coredns needs a kubernetes api host" .Values.api.host }}
+        - name: KUBERNETES_SERVICE_PORT
+          value: {{ required "Coredns needs a kubernetes api port" .Values.api.port | quote }}
+        name: coredns
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:

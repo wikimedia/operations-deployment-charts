@@ -12,6 +12,10 @@ image:
 service:
   clusterIP: 10.96.0.10
 
+api:
+  host: kubernetes.default.svc.cluster.local
+  port: 443
+
 resources:
   limits:
     memory: 170Mi
