@@ -28,7 +28,9 @@ main_app:
   requests:
     cpu: 1m
     memory: 20Mi
-  version: 2018-12-13-183249-production
+  policy:
+    enabled: true
+  version: 2019-07-23-155043-production
 monitoring:
   enabled: false
   image_version: 0.0.5
