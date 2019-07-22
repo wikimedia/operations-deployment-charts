@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" }}-metrics-config
+  name: {{ template "wmf.releasename" . }}-metrics-config
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}

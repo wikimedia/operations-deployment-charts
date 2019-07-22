@@ -83,7 +83,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "wmf.releasename" }}-metrics-config
+            name: {{ template "wmf.releasename" . }}-metrics-config
         {{- end }}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}
