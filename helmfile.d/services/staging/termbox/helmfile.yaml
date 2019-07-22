@@ -11,12 +11,24 @@ helmDefaults:
   force: false
 
 releases:
+  - name: test
+    namespace: termbox
+    chart: stable/termbox
+    missingFileHandler: Warn
+    values:
+    - "values/test.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
   - name: staging
     namespace: termbox
     chart: stable/termbox
     missingFileHandler: Warn
     values:
-    - "values.yaml"
+    - "values/staging.yaml"
     - "private/secrets.yaml"
     wait: true
     hooks:
