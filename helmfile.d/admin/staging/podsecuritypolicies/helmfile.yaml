@@ -1,0 +1,152 @@
+helmDefaults:
+  tillerNamespace: kube-system  #dedicated default key for tiller-namespace
+  tillerless: false                  #dedicated default key for tillerless
+  # defaults for verify, wait, force, timeout and recreatePods under releases[]
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: false
+
+releases:
+  - name: podsecuritypolicy-privilege
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: policy/v1beta1
+          kind: PodSecurityPolicy
+          metadata:
+            name: privileged
+            annotations:
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+          spec:
+            privileged: true
+            allowPrivilegeEscalation: true
+            allowedCapabilities:
+            - '*'
+            volumes:
+            - '*'
+            hostNetwork: true
+            hostPorts:
+            - min: 0
+              max: 65535
+            hostIPC: true
+            hostPID: true
+            runAsUser:
+              rule: 'RunAsAny'
+            seLinux:
+              rule: 'RunAsAny'
+            supplementalGroups:
+              rule: 'RunAsAny'
+            fsGroup:
+              rule: 'RunAsAny'
+  - name: podsecuritypolicy-restricted
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: policy/v1beta1
+          kind: PodSecurityPolicy
+          metadata:
+            name: restricted
+            annotations:
+              apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+              apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
+              seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+          spec:
+            privileged: false
+            # Required to prevent escalations to root.
+            allowPrivilegeEscalation: false
+            # This is redundant with non-root + disallow privilege escalation,
+            # but we can provide it for defense in depth.
+            requiredDropCapabilities:
+              - ALL
+            # Allow core volume types.
+            volumes:
+              - 'configMap'
+              - 'emptyDir'
+              - 'projected'
+              - 'secret'
+              - 'downwardAPI'
+              # Assume that persistentVolumes set up by the cluster admin are safe to use.
+              - 'persistentVolumeClaim'
+            hostNetwork: false
+            hostIPC: false
+            hostPID: false
+            runAsUser:
+              # Require the container to run without root privileges.
+              rule: 'MustRunAsNonRoot'
+            seLinux:
+              # This policy assumes the nodes are using AppArmor rather than SELinux.
+              rule: 'RunAsAny'
+            supplementalGroups:
+              rule: 'MustRunAs'
+              ranges:
+                # Forbid adding the root group.
+                - min: 1
+                  max: 65535
+            fsGroup:
+              rule: 'MustRunAs'
+              ranges:
+                # Forbid adding the root group.
+                - min: 1
+                  max: 65535
+            readOnlyRootFilesystem: false
+  - name: rbac-clusterrole-use-psp-privileged
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: allow-privileged-psp
+          rules:
+          - apiGroups: ['policy']
+            resources: ['podsecuritypolicies']
+            verbs:     ['use']
+            resourceNames:
+            - privileged
+  - name: rbac-clusterrole-use-psp-restricted
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: allow-restricted-psp
+          rules:
+          - apiGroups: ['policy']
+            resources: ['podsecuritypolicies']
+            verbs:     ['use']
+            resourceNames:
+            - restricted
+  - name: privileged-psp-rolebinding
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: psp-privileged
+            namespace: kube-system
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: allow-privileged-psp
+          subjects:
+          - apiGroup: rbac.authorization.k8s.io
+            kind: Group
+            name: system:serviceaccounts:kube-system
+          - kind: Group
+            apiGroup: rbac.authorization.k8s.io
+            name: system:authenticated

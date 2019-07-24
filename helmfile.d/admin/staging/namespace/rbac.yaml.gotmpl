@@ -26,6 +26,30 @@ releases:
             kind: User
             name: {{ .Environment.Values.deployUser }}
 
+  - name: {{ .Environment.Values.namespaceName }}-psp-rolebinding
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: allow-using-psp
+            namespace: {{ .Environment.Values.namespaceName }}
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: allow-restricted-psp
+          subjects:
+          - apiGroup: rbac.authorization.k8s.io
+            kind: Group
+            name: system:serviceaccounts:{{ .Environment.Values.namespaceName }}
+          - kind: Group
+            apiGroup: rbac.authorization.k8s.io
+            name: system:authenticated
+
+
   - name: {{ .Environment.Values.namespaceName }}-tiller-sa
     chart: stable/raw
     namespace: kube-system

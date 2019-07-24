@@ -1,4 +1,7 @@
 #!/bin/bash
+pushd podsecuritypolicies
+    helmfile "$@"
+popd
 pushd rbac
     helmfile "$@"
 popd
