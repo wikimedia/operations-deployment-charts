@@ -6,6 +6,23 @@ bases:
 ---
 {{- if .Environment.Values }}
 releases:
+  - name: {{ .Environment.Values.namespaceName }}-deploy-clusterrole
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy
+            labels:
+              # Add these permissions to the "view" default role.
+              rbac.authorization.k8s.io/aggregate-to-view: "true"
+          rules:
+          - apiGroups: [""]
+            resources: ["pods/portforward"]
+            verbs: ["create"]
   - name: {{ .Environment.Values.namespaceName }}-deploy-rolebinding
     chart: stable/raw
     namespace: kube-system
