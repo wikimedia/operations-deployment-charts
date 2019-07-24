@@ -1,0 +1,32 @@
+helmDefaults:
+  tillerNamespace: kube-system  #dedicated default key for tiller-namespace
+  tillerless: false                  #dedicated default key for tillerless
+  # defaults for verify, wait, force, timeout and recreatePods under releases[]
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: false
+
+releases:
+  - name: rbac-deploy-clusterrole
+    chart: stable/raw
+    namespace: kube-system
+    values:
+      - templates:
+        - |
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy
+            labels:
+              # Add these permissions to the "view" default role.
+              rbac.authorization.k8s.io/aggregate-to-view: "true"
+          rules:
+          - apiGroups: [""]
+            resources: ["pods/portforward"]
+            verbs: ["create"]
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]

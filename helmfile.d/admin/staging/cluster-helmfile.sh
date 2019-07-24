@@ -1,4 +1,7 @@
 #!/bin/bash
+pushd rbac
+    helmfile "$@"
+popd
 pushd coredns
     helmfile "$@"
 popd
