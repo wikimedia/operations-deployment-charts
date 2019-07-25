@@ -23,6 +23,8 @@ main_app:
       schema_title: mediawiki/api/request
     mediawiki.cirrussearch-request:
       schema_title: mediawiki/cirrussearch/request
+    '/^swift.(.+\.)?upload-complete$/':
+      schema_title: swift/upload/complete
   version: 2019-07-18-154717-production
 service:
   deployment: production
