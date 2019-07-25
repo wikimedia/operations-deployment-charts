@@ -9,6 +9,15 @@ main_app:
     - /mediawiki/api/request/0.0.1
     - /mediawiki/cirrussearch/request/0.0.1
     topic_prefix: eqiad.
+
+    # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at
+    # image build time from https://gerrit.wikimedia.org/r/mediawiki/event-schemas.
+    # http://schema.svc hosts a more up to date clone of this (and other) event schema repositories.
+    # Both of these will be used when looking up schemas.
+    schema_base_uris:
+    - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/'
+    - 'http://schema.svc.eqiad.wmnet:8190/repositories/mediawiki/jsonschema/'
+
   stream_config:
     mediawiki.api-request:
       schema_title: mediawiki/api/request
