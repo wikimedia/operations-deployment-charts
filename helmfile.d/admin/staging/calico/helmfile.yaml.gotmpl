@@ -35,4 +35,4 @@ releases:
             namespace: kube-system
           data:
             egress:
-              {{ exec "cat" (list "default-kubernetes-policy.yaml") | indent 14 | toYaml }}
+              {{ readFile "default-kubernetes-policy.yaml" | toYaml | indent 14}}
