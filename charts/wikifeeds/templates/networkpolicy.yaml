@@ -1,0 +1,25 @@
+# Pre kubernetes 1.8 NetworkPolicy objects could not be updated
+{{- if and (eq .Capabilities.KubeVersion.Major "1") (eq .Capabilities.KubeVersion.Minor "7") .Release.IsUpgrade }}
+{{- else }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+{{- range .Values.main_app.ports }}
+      - port: {{ . }}
+        protocol: TCP
+{{- end }}
+        {{- if .Values.monitoring }}
+      - port: 9102
+        protocol: TCP
+        {{- end }}
+{{- end }}

@@ -1,0 +1,97 @@
+{{- define "config.app" -}}
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 2
+
+# Number of workers to start in parallel after the first worker.
+# The first worker is always started independently. After it has completed
+# its start-up, this number controls the number of workers to start in
+# parallel until `num_workers` have been started. Note that setting this
+# number to a too high a value might lead to high resource consumption
+# (especially of CPU) during the start-up process.
+startup_concurrency: 4
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 750
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 15000
+
+# Logger info
+logging:
+  level: warn
+  name: wikifeeds
+  streams:
+    - type: stdout
+    - host: logstash.svc.eqiad.wmnet
+      port: 12201
+      type: gelf
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  name: wikifeeds
+  host: localhost
+  port: 9125
+  type: statsd
+{{- end }}
+
+services:
+  - name: wikifeeds
+    # a relative path or the name of an npm package, if different from name
+    module: ./app.js
+    # per-service config
+    conf:
+      port: {{ .Values.main_app.port }}
+      # interface: localhost # uncomment to only listen on localhost
+      # more per-service config settings
+      # the location of the spec, defaults to spec.yaml if not specified
+      # spec: ./spec.template.yaml
+      # allow cross-domain requests to the API (default '*')
+      cors: '*'
+      # to disable use:
+      # cors: false
+      # to restrict to a particular domain, use:
+      # cors: restricted.domain.org
+      # content for the CSP headers
+      # csp: false  # uncomment this line to disable sending them
+      # URL of the outbound proxy to use (complete with protocol)
+      #      proxy: http://url-downloader.eqiad.wikimedia.org:8080
+      # the list of domains for which not to use the proxy defined above
+      # no_proxy_list:
+      #   - domain1.com
+      #   - domain2.org
+      # the list of incoming request headers that can be logged; if left empty,
+      # the following headers are allowed: cache-control, content-length,
+      # content-type, if-match, user-agent, x-request-id
+      # log_header_whitelist:
+      #   - cache-control
+      #   - content-length
+      #   - content-type
+      #   - if-match
+      #   - user-agent
+      #   - x-request-id
+      # User-Agent HTTP header to use for requests
+      user_agent: "Wikifeeds/WMF"
+      # the user agent to use when issuing requests
+      # user_agent: service-template-node
+      # the template used for contacting the MW API
+      mwapi_req:
+        method: post
+        uri: {{ .Values.main_app.mwapi_uri }}
+        headers:
+          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
+          user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
+        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+      # the template used for contacting RESTBase
+      restbase_req:
+        method: {{ "'{{" }}request.method{{ "}}'" }}
+        uri: {{ .Values.main_app.restbase_uri }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers: {{ "'{{" }}request.headers{{ "}}'" }}
+        body: {{ "'{{" }}request.body{{ "}}'" }}
+        timeout: 60000
+{{- end -}}

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include "config.app" . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{ if .Values.monitoring.enabled -}}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
+        prometheus.io/port: "9102"
+        prometheus.io/scrape: "true"
+    spec:
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
+      containers:
+        # The main application container
+        - name: {{ template "wmf.releasename" . }}
+          image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- if .Values.main_app.command }}
+          command: {{ .Values.main_app.command }}
+          {{- end }}
+          {{- if .Values.main_app.args }}
+          args: {{ .Values.main_app.args }}
+          {{- end }}
+          ports:
+          {{- range $k, $v := .Values.main_app.ports }}
+            - containerPort: {{ $v }}
+          {{- end }}
+          livenessProbe:
+{{ toYaml .Values.main_app.liveness_probe | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.main_app.readiness_probe | indent 12 }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "wmf.releasename" . }}
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- range $k, $v := .Values.config.private }}
+            - name: {{ $k | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  key: {{ $k }}
+          {{- end }}
+          resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.limits | indent 14 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/wikifeeds
+{{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-metrics-exporter
+              mountPath: /etc/monitoring
+{{- end }}
+      volumes:
+        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
+        {{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+            name: {{ template "wmf.releasename" . }}-metrics-config
+        {{- end }}
+        - name: config-volume
+          configMap:
+            name: config-{{ .Release.Name }}
