@@ -1,0 +1,26 @@
+repositories:
+  - name: stable
+    url: https://releases.wikimedia.org/charts/
+
+helmDefaults:
+  tillerNamespace: restrouter
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: false
+
+releases:
+  - name: codfw
+    namespace: restrouter
+    chart: stable/restrouter
+    #version: latest
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"             # Values file (relative path to manifest)
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
