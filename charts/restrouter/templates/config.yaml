@@ -88,7 +88,7 @@ default_project: &default_project
                   recommendation: &recommendation_options
                     host: {{ .Values.main_app.recommendation_uri }}
                   events: &events_options
-                    uri: {{ .Values.main_app.eventbus_uri }}
+                    uri: {{ .Values.main_app.event_service_uri }}
                     topic: resource_change
                     transcludes_topic: change-prop.transcludes.resource-change
                   summary:
