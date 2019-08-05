@@ -28,8 +28,8 @@ KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create clusterrolebinding ${SERVI
 KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
 	--tiller-namespace=${NAMESPACE} \
 	--tiller-image=docker-registry.discovery.wmnet/tiller:2.12.2-wmf1 \
-	--override spec.template.spec.containers[0].env[2].name"="${KUBERNETES_SERVICE_HOST} \
-	--override spec.template.spec.containers[0].env[2].value"="neon.eqiad.wmnet  \
-	--override spec.template.spec.containers[0].env[3].name"="${KUBERNETES_SERVICE_PORT} \
-	--override spec.template.spec.containers[0].env[3].value"="6443 \
+	--override spec.template.spec.containers[0].env[2].name"="KUBERNETES_SERVICE_HOST \
+	--override spec.template.spec.containers[0].env[2].value"="${KUBERNETES_SERVICE_HOST}  \
+	--override spec.template.spec.containers[0].env[3].name"="KUBERNETES_SERVICE_PORT \
+	--override spec.template.spec.containers[0].env[3].value"="${KUBERNETES_SERVICE_PORT} \
 	--skip-refresh
