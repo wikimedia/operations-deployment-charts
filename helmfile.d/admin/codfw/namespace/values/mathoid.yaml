@@ -8,32 +8,31 @@ limitranges:
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
   container:
     min:
-      memory: "20m"
+      memory: "30Mi"
       cpu: "100m"
     max:
       memory: "2Gi"
       cpu: "2"
     defaultRequest:
-      memory: "20m"
+      memory: "30Mi"
       cpu: "100m"
     default:
-      memory: "2Gi"
-      cpu: "1"
+      memory: "30Mi"
+      cpu: "100m"
   pod:
     min:
-      memory: "20m"
+      memory: "30Mi"
       cpu: "100m"
     max:
       memory: "4Gi"
-      cpu: "3"
+      cpu: "4"
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
-resourcequota: {}
-# resourcequota:
-#   pods: {}
-#   compute:
-#     requests:
-#       cpu: "4"
-#       memory: "8Gi"
-#     limits:
-#       cpu: "30"
-#       memory: "30Gi"
+resourcequota:
+  pods: {}
+  compute:
+    requests:
+      cpu: "120"
+      memory: "120Gi"
+    limits:
+      cpu: "120"
+      memory: "120Gi"
