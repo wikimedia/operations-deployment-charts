@@ -12,7 +12,7 @@ limitranges:
       cpu: "100m"
     max:
       memory: "2Gi"
-      cpu: "2"
+      cpu: "3"
     defaultRequest:
       memory: "20m"
       cpu: "100m"
@@ -24,16 +24,15 @@ limitranges:
       memory: "20m"
       cpu: "100m"
     max:
-      memory: "4Gi"
+      memory: "2Gi"
       cpu: "3"
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
-resourcequota: {}
-# resourcequota:q
-#   pods: {}
-#   compute:
-#     requests:
-#       cpu: "4"
-#       memory: "8Gi"
-#     limits:
-#       cpu: "10"
-#       memory: "20Gi"
+resourcequota:
+  pods: {}
+  compute:
+    requests:
+      cpu: "90"
+      memory: "60Gi"
+    limits:
+      cpu: "90"
+      memory: "60Gi"
