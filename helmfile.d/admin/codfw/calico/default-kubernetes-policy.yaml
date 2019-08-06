@@ -14,6 +14,7 @@
   dst_net: 10.192.64.0/21
 - action: allow
   dst_net: 10.64.75.0/24
+
 # Allow DNS
 - action: allow
   dst_ports:
@@ -30,6 +31,7 @@
     - 53
   dst_net: 208.80.154.254/32
   protocol: udp
+
   # Allow url-downloaders
 - action: allow
   dst_ports:
@@ -51,6 +53,7 @@
     - 8080
   dst_net: 208.80.154.80/32
   protocol: tcp
+
   # Allow statsd
 - action: allow
   dst_ports:
@@ -67,8 +70,10 @@
     - 8125
   dst_net: 10.192.16.33/32
   protocol: udp
+
   # Allow graphite
   # Re-evaluate this at some later point in time. For now deny
+
   # Allow logstash
 - action: allow
   dst_ports:
@@ -84,6 +89,7 @@
     - 12201
   dst_net: 10.2.2.36/32
   protocol: udp
+
   # Allow restbase
 - action: allow
   dst_ports:
@@ -95,6 +101,7 @@
     - 7231
   dst_net: 10.2.1.17/32
   protocol: tcp
+
   # Allow uncached API
 - action: allow
   dst_ports:
@@ -108,6 +115,7 @@
     - 443
   dst_net: 10.2.1.22/32
   protocol: tcp
+
   # Allow EventBus
 - action: allow
   dst_ports:
@@ -119,6 +127,7 @@
     - 8085
   dst_net: 10.2.2.23/32
   protocol: tcp
+
   # Cached API
   # NOTE: We want to deny this for most services as it makes operations difficult
   # but we have zotero which we don't currently control
@@ -136,6 +145,7 @@
   dst_ports:
     - 80
     - 443
+
   # Allow Kafka for eventgate-analytics
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics'
@@ -210,7 +220,7 @@
   dst_ports:
     - 9092
 
-# Allow schema.svc.{eqiad,codfw} for eventgate-analytics
+  # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics'
   dst_net: 10.2.2.43/32 # schema.svc.eqiad.wmnet
@@ -283,6 +293,36 @@
     - 9092
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.64.0.200/32 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.64.16.37/32 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.64.32.90/32 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.64.48.30/32 # kafka-main1004
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.64.48.31/32 # kafka-main1005
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
   dst_net: 10.192.0.17/32 # kafka-main2001
   protocol: tcp
   dst_ports:
@@ -296,6 +336,18 @@
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-main'
   dst_net: 10.192.32.136/32 # kafka-main2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.192.48.38/32 # kafka-main2004
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 10.192.48.46/32 # kafka-main2005
   protocol: tcp
   dst_ports:
     - 9092
@@ -319,6 +371,36 @@
     - 9092
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:861:101:10:64:0:200/128 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:861:102:10:64:16:37/128 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:861:103:10:64:32:90/128 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:861:107:10:64:48:30/128 # kafka-main1004
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:861:107:10:64:48:31/128 # kafka-main1005
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
   dst_net: 2620:0:860:101:10:192:0:17/128 # kafka-main2001
   protocol: tcp
   dst_ports:
@@ -335,6 +417,19 @@
   protocol: tcp
   dst_ports:
     - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:860:104:10:192:48:38/128 # kafka-main2004
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-main'
+  dst_net: 2620:0:860:104:10:192:48:46/128 # kafka-main2005
+  protocol: tcp
+  dst_ports:
+    - 9092
+
   # Allow Citoid access to zotero
 - action: allow
   src_selector: calico/k8s_ns == 'citoid'
@@ -348,6 +443,7 @@
   protocol: tcp
   dst_ports:
     - 1969
+
   # Allow cxserver access to apertium
 - action: allow
   src_selector: calico/k8s_ns == 'cxserver'
@@ -361,6 +457,7 @@
   protocol: tcp
   dst_ports:
     - 2737
+
   # Allow sessionstore kask to access sessionstore cassandra.
   # Note: we are reusing the restbase-dev cassandra cluster for staging
 - action: allow
