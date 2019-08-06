@@ -8,31 +8,32 @@ limitranges:
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
   container:
     min:
-      memory: "30Mi"
+      memory: "100Mi"
       cpu: "100m"
     max:
-      memory: "2Gi"
-      cpu: "2"
+      # Allow room to grow
+      memory: "1900Mi" # 90% more than the current chart value
+      cpu: "1900m" # 90% more than the current chart value
     defaultRequest:
-      memory: "30Mi"
+      memory: "100Mi"
       cpu: "100m"
     default:
-      memory: "30Mi"
+      memory: "100Mi"
       cpu: "100m"
   pod:
     min:
-      memory: "30Mi"
+      memory: "100Mi"
       cpu: "100m"
     max:
-      memory: "4Gi"
-      cpu: "4"
+      memory: "2Gi" # Enough to fit the app + metrics-exporter
+      cpu: "2" # Enough to fit the app + metrics-exporter
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 resourcequota:
   pods: {}
   compute:
     requests:
-      cpu: "120"
-      memory: "120Gi"
+      cpu: "60"
+      memory: "60Gi"
     limits:
-      cpu: "120"
-      memory: "120Gi"
+      cpu: "60"
+      memory: "60Gi"
