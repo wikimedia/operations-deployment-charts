@@ -56,6 +56,18 @@ spec:
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - containerPort: 9102
+          livenessProbe:
+            tcpSocket:
+              port: 10044
+          resources:
+            requests:
+              cpu: 10m
+              memory: 30Mi
+            limits:
+              cpu: 150m
+              memory: 100Mi
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
