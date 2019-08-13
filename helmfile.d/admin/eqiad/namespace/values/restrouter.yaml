@@ -1,5 +1,5 @@
 namespaceName: restrouter
-kubernetesServiceHost: kubemaster.svc.codfw.wmnet
+kubernetesServiceHost: kubemaster.svc.eqiad.wmnet
 kubernetesServicePort: "6443"
 tillerImage: docker-registry.wikimedia.org/tiller:2.12.2-wmf1
 deployUser: restrouter
@@ -8,31 +8,31 @@ limitranges:
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
   container:
     min:
-      memory: "20m"
+      memory: "100Mi"
       cpu: "100m"
     max:
       memory: "2Gi"
-      cpu: "2"
+      cpu: "3"
     defaultRequest:
-      memory: "800Mi"
-      cpu: "1600m"
+      memory: "100Mi"
+      cpu: "100m"
     default:
-      memory: "1500mi"
-      cpu: "2"
+      memory: "100Mi"
+      cpu: "100m"
   pod:
     min:
-      memory: "20m"
+      memory: "100Mi"
       cpu: "100m"
     max:
       memory: "2Gi"
-      cpu: "2"
+      cpu: "3"
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 resourcequota:
   pods: {}
   compute:
     requests:
-      cpu: "4"
-      memory: "8Gi"
+      cpu: "90"
+      memory: "60Gi"
     limits:
-      cpu: "10"
-      memory: "20Gi"
+      cpu: "90"
+      memory: "60Gi"
