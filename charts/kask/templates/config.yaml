@@ -20,9 +20,11 @@ log_level: {{ .Values.main_app.log_level }}
 {{- if .Values.main_app.openapi_spec }}
 openapi_spec: {{ .Values.main_app.openapi_spec }}
 {{- end -}}
+{{- if not .Values.main_app.disable_endpoint_tls }}
 {{- with .Values.main_app.certs}}{{- if .kask }}
 {{- $tls := dict "cert" "/etc/kask-certs/cert.pem" "key" "/etc/kask-certs/key.pem" }}
 tls:
 {{ toYaml $tls | indent 2 }}
+{{- end}}
 {{- end }}{{ end -}}
 {{- end -}}
