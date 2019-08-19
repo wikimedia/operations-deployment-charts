@@ -13,10 +13,10 @@ main_app:
   port: 8748
   requests:
     cpu: 100m
-    memory: 20Mi
+    memory: 100Mi
   limits:
     cpu: 1800m
-    memory: 20Mi
+    memory: 100Mi
   liveness_probe:
     tcpSocket:
       port: 8748
