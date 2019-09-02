@@ -108,11 +108,11 @@ main_app:
   openapi_spec: openapi.yaml
   # See T220401 for how these numbers were calculated
   requests:
-    cpu: 150m # T220401
-    memory: 100Mi # T220401
+    cpu: 2500m # T220401 and T229697
+    memory: 50Mi # T220401
   limits:
-    cpu: 150m # T220401
-    memory: 100Mi # Just some sample, edit these
+    cpu: 2500m # T220401 and T229697
+    memory: 50Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
       port: 8081
