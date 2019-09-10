@@ -8,26 +8,26 @@ docker:
 resources:
   replicas: 1
 main_app:
-  image: dev/mediawiki
-  version: latest # we use latest everywhere in the defaults.
+  image: wikimedia/mediawiki-core
+  version: dev
   appbase_url_port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80
   command: '["/bin/bash", "-c"]' # use to override the entrypoint command ex: '["node"]'
-  args: '/var/config/setup.sh && /usr/bin/php -S 0.0.0.0:80 -t /var/www/html' # any args for your command above ex: 'bin/server.js'
-  requests: # Current image we use is using a single threaded php server, update this when the image changes
-    cpu: 15m
+  args: '/var/config/setup.sh && php-fpm7.2 -D && /usr/sbin/apache2ctl -D FOREGROUND'
+  requests:
+    cpu: 100m
     memory: 100Mi
-  limits: # Current image we use is using a single threaded php server, update this when the image changes
-    cpu: 1
-    memory: 200Mi
+  limits:
+    cpu: 1.2
+    memory: 500Mi
   liveness_probe:
     tcpSocket:
-      port: 80
+      port: 8080
   readiness_probe:
     httpGet:
-      path: /wiki/Special:BlankPage
-      port: 80
+      path: /index.php/Special:BlankPage
+      port: 8080
   volumes: [] # add here any volumes to mount onto the container
   volumeMounts: [] # add here any mounted volumes
   xdebug:
@@ -42,7 +42,7 @@ service:
   ports:
     - name: http
       protocol: TCP
-      targetPort: 80
+      targetPort: 8080
       port: 80
       nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
@@ -57,7 +57,7 @@ config:
     IS_RESTBASE_EXTERNAL: "false"
     PARSOID_URL: "http://parsoid-{{ .Release.Name }}"
     ENABLE_VISUAL_EDITOR: "false"
-    DB_SERVER: "mariadb-{{ .Release.Name }}"
+    DB_SERVER: "{{ .Release.Name }}-mariadb"
   private:
     WIKI_ADMIN_PASS: "adminpass"
     DB_PASS: "password"
