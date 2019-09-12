@@ -610,5 +610,23 @@
     - 8888
     - 9632
 
+  # Allow access to the kubernetes APIs for coreDNS
+- action: allow
+  src_selector: calico/k8s_ns == 'kube-system'
+  dst_net: 10.2.1.8/32
+  protocol: tcp
+- action: allow
+  src_selector: calico/k8s_ns == 'kube-system'
+  dst_net: 10.2.2.8/32
+  protocol: tcp
+- action: allow
+  src_selector: calico/k8s_ns == 'kube-system'
+  dst_net: 10.64.0.40/32 # neon, staging
+  protocol: tcp
+- action: allow
+  src_selector: calico/k8s_ns == 'kube-system'
+  dst_net: 2620:0:861:101:10:64:0:40/128 # neon, staging
+  protocol: tcp
+
   # Deny everything else
 - action: deny
