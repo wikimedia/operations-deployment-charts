@@ -1,19 +1,3 @@
-{{- if .Values.monitoring.enabled -}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-metrics-config
-  labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  prometheus-statsd.conf: |-
-{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
-...
-{{- end -}}
 {{- if .Values.main_app.policy.enabled }}
 ---
 apiVersion: v1
