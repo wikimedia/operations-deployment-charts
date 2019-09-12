@@ -5,7 +5,7 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: kube-dns
-    kubernetes.io/name: "CoreDNS"
+    app.kubernetes.io/name: "CoreDNS"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -19,6 +19,9 @@ spec:
     metadata:
       labels:
         k8s-app: kube-dns
+      annotations:
+        prometheus.io/port: "9153"
+        prometheus.io/scrape: "true"
     spec:
       priorityClassName: system-cluster-critical
       serviceAccountName: coredns

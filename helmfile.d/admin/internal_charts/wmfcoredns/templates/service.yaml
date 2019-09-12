@@ -3,13 +3,12 @@ kind: Service
 metadata:
   name: kube-dns
   namespace: kube-system
-  annotations:
-    prometheus.io/port: "9153"
-    prometheus.io/scrape: "true"
   labels:
     k8s-app: kube-dns
+    # TODO: Deprecated label, should be removed at some point.
+    # https://github.com/kubernetes/kubernetes/issues/72757
     kubernetes.io/cluster-service: "true"
-    kubernetes.io/name: "CoreDNS"
+    app.kubernetes.io/name: "CoreDNS"
 spec:
   selector:
     k8s-app: kube-dns
@@ -20,7 +19,4 @@ spec:
     protocol: UDP
   - name: dns-tcp
     port: 53
-    protocol: TCP
-  - name: metrics
-    port: 9153
     protocol: TCP
