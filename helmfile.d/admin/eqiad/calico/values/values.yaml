@@ -1,10 +1,10 @@
 etcd:
-  endpoints: "https://kubetcd2001.codfw.wmnet:2379,https://kubetcd2002.codfw.wmnet:2379,https://kubetcd2003.codfw.wmnet:2379"
+  endpoints: "https://etcd1001.eqiad.wmnet:2379,https://etcd1002.eqiad.wmnet:2379,https://etcd1003.eqiad.wmnet:2379"
   ca_cert_file: "/etc/ssl/certs/Puppet_Internal_CA.pem"
   cert_file: "/etc/calico/ssl/cert.pem"
   key_file: "/etc/calico/ssl/server.key"
 k8s:
-  api_endpoint: "https://kubemaster.svc.codfw.wmnet:6443"
+  api_endpoint: "https://kubemaster.svc.eqiad.wmnet:6443"
   #api_token: added on puppet repo
 image:
   name: docker-registry.discovery.wmnet/calico/kube-policy-controller
