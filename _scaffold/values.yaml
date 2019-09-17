@@ -13,11 +13,13 @@ main_app:
   appbase_url_port: $PORT # port used for wmf.appbaseurl used by service-checker
   ports:
     - $PORT
-  # Use command and args below to override the entrypoint
+  # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
-  # ex: command: '["node"]' args: '["bin/server.js"]'
-  command: ''
-  args: ''
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: []
+  args: []
   requests:
     cpu: 1m # Just some sample, edit these
     memory: 200Mi # Just some sample, edit these
