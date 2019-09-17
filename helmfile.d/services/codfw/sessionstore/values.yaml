@@ -98,6 +98,7 @@ main_app:
       - sessionstore2003-a.codfw.wmnet
     keyspace: sessions
     table: values
+    local_dc: codfw
   # WARNING: The value of $wgObjectCacheSessionExpiry in MediaWiki must
   # correspond to the TTL defined here; If you alter default_ttl, update
   # MediaWiki accordingly or problems with session renewal/expiry may occur.
