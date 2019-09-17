@@ -16,7 +16,7 @@ main_app:
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
-  command: ''
+  command: ["nodejs"]
   args: ["server.js", "-c", "/etc/wikifeeds/config.yaml"]
   requests:
     cpu: 800m
