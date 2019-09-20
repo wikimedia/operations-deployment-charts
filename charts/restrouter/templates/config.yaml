@@ -83,6 +83,8 @@ default_project: &default_project
                     cache-control: s-maxage=864000, max-age=86400
                   mobileapps:
                     host: {{ .Values.main_app.mobileapps_uri }}
+                  wikifeeds:
+                    host: {{ .Values.main_app.wikifeeds_uri }}
                   citoid:
                     host: {{ .Values.main_app.citoid_uri }}
                   recommendation: &recommendation_options
@@ -161,7 +163,6 @@ wiktionary_project: &wiktionary_project
         paths:
           /{api:v1}:
             x-modules:
-              - path: test/test_module.yaml
               - path: projects/v1/wiktionary.wmf.yaml
                 options: *default_options
           /{api:sys}: *default_sys
@@ -172,8 +173,7 @@ wikidata_project: &wikidata_project
         paths:
           /{api:v1}:
             x-modules:
-              - path: test/test_module.yaml
-              - path: projects/v1/wiktionary.wmf.yaml
+              - path: projects/v1/wikidata.wmf.yaml
                 options: *default_options
           /{api:sys}: *default_sys
 
@@ -183,7 +183,6 @@ wikivoyage_project: &wikivoyage_project
         paths:
           /{api:v1}:
             x-modules:
-              - path: test/test_module.yaml
               - path: projects/v1/wikivoyage.wmf.yaml
                 options: *default_options
           /{api:sys}: *default_sys
@@ -196,8 +195,6 @@ commons_project: &commons_project
             x-modules:
               - path: projects/v1/default.wmf.yaml
                 options: *default_options
-              - path: projects/proxy.yaml
-                options: *proxy_options
               - spec:
                    paths:
                      /data:
@@ -208,7 +205,7 @@ commons_project: &commons_project
 
 # Swagger spec root.
 root_spec: &root_spec
-  title: "The RESTBase root"
+  title: "The RESTRouter root"
   # Some more general RESTBase info
   x-request-filters:
     - path: lib/security_response_header_filter.js
