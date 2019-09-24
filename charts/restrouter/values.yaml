@@ -12,6 +12,7 @@ tolerations: {}
 main_app:
   image: wikimedia/restrouter
   version: latest # we use latest everywhere in the defaults.
+  port: 7231
   requests:
     cpu: 1600m
     memory: 800Mi
@@ -29,7 +30,6 @@ main_app:
       path: /en.wikipedia.org/v1/?spec
       port: 7231
   # service-related config values
-  port: 7231
   salt: secret
   mwapi_uri: http://localhost/w/api.php
   restbase_uri: http://localhost:7233
@@ -41,8 +41,6 @@ main_app:
   citoid_uri: https://citoid-beta.wmflabs.org
   recommendation_uri: https://recommendation-api-beta.wmflabs.org
   event_service_uri: http://localhost:32192/v1/events
-  pdfrender_uri: https://pdfrender-beta.wmflabs.org
-  pdfrender_key: secret
   proton_uri: https://proton-beta.wmflabs.org
   cxserver_uri: https://cxserver-beta.wmflabs.org
   aqs_uri: https://wikimedia.org/api/rest_v1/metrics

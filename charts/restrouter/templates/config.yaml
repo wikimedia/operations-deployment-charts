@@ -106,7 +106,7 @@ default_project: &default_project
                   skip_updates: false
                   pdf:
                     cache_control: s-maxage=600, max-age=600
-                    uri: {{ .Values.main_app.pdfrender_uri }}
+                    uri: {{ .Values.main_app.proton_uri }}
                   transform:
                     cx_host: {{ .Values.main_app.cxserver_uri }}
           /{api:sys}: &default_sys
