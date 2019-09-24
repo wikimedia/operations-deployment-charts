@@ -20,9 +20,11 @@ main_app:
     # We're running 2 workers, plus a little room
     memory: 1500Mi
   liveness_probe:
+    initialDelaySeconds: 60
     tcpSocket:
       port: 7231
   readiness_probe:
+    initialDelaySeconds: 60
     httpGet:
       path: /en.wikipedia.org/v1/?spec
       port: 7231
