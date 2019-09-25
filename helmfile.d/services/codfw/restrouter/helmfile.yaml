@@ -11,10 +11,9 @@ helmDefaults:
   force: false
 
 releases:
-  - name: codfw
+  - name: production
     namespace: restrouter
     chart: stable/restrouter
-    #version: latest
     missingFileHandler: Warn
     values:
     - "values.yaml"             # Values file (relative path to manifest)
