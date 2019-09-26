@@ -801,6 +801,7 @@ root_spec: &root_spec
     /{domain:bjn.wikipedia.org}: *wikipedia_project
     /{domain:pdc.wikipedia.org}: *wikipedia_project
     /{domain:ckb.wikipedia.org}: *wikipedia_project
+    /{domain:nqo.wikipedia.org}: *wikipedia_project
     /{domain:nov.wikipedia.org}: *wikipedia_project
     /{domain:no.wikipedia.org}: *wikipedia_project
     /{domain:am.wikipedia.org}: *wikipedia_project
@@ -1043,6 +1044,7 @@ services:
     module: hyperswitch
     conf:
       port: {{ .Values.main_app.port }}
+      skip_resources: true
       spec: *root_spec
       salt: "{{ .Values.main_app.salt }}"
       default_page_size: 250
