@@ -1,16 +1,16 @@
-Thank you for installing {{ template "wmf.chartname" . }}.
+Thank you for installing {{ template "$SERVICE_NAME.chartname" . }}.
 
-Your release is named {{ template "wmf.releasename" . }}.
+Your release is named {{ template "$SERVICE_NAME.releasename" . }}.
 
 To learn more about the release, try:
 
-  $ helm status {{ template "wmf.releasename" . }}
-  $ helm get {{ template "wmf.releasename" . }}
+  $ helm status {{ template "$SERVICE_NAME.releasename" . }}
+  $ helm get {{ template "$SERVICE_NAME.releasename" . }}
 
 {{- if eq .Values.service.deployment "minikube" }}
 You are using minikube, which means it's really easy to access your service. Run the following
 MINIKUBE_HOST=$(minikube ip)
-SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "wmf.releasename" . }} -o jsonpath='{.spec.ports[0].nodePort}')
+SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "$SERVICE_NAME.releasename" . }} -o jsonpath='{.spec.ports[0].nodePort}')
 
 curl http://${MINIKUBE_HOST}:${SERVICE_PORT}/
 

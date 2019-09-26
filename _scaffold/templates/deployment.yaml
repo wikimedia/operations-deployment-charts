@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "$SERVICE_NAME.releasename" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "$SERVICE_NAME.chartname" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "$SERVICE_NAME.chartname" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "$SERVICE_NAME.chartname" . }}
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
@@ -33,7 +33,7 @@ spec:
       {{- end }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}
+        - name: {{ template "$SERVICE_NAME.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -60,7 +60,7 @@ spec:
 {{ toYaml .Values.main_app.readiness_probe | indent 12 }}
           env:
             - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
+              value: {{ template "$SERVICE_NAME.releasename" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -69,7 +69,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "$SERVICE_NAME.releasename" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -111,7 +111,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
+            name: {{ template "$SERVICE_NAME.releasename" . }}-metrics-config
         {{- end }}
         {{- if .Values.tls.enabled }}
         - name: {{ .Release.Name }}-tls-proxy-certs

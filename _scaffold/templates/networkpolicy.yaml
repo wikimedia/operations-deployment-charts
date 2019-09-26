@@ -4,11 +4,11 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "$SERVICE_NAME.releasename" . }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "$SERVICE_NAME.chartname" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

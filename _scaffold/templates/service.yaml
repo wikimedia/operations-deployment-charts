@@ -23,15 +23,15 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "$SERVICE_NAME.releasename" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "$SERVICE_NAME.chartname" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "$SERVICE_NAME.chartname" . }}
     release: {{ .Release.Name }}
   ports:
     - name: {{ .Values.service.port.name }}

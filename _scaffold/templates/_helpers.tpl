@@ -7,19 +7,19 @@
  We also allow overriding the chart name via the chart.name value
 */}}
 
-{{- define "wmf.chartname" -}}
+{{- define "$SERVICE_NAME.chartname" -}}
 {{- default .Chart.Name .Values.chartName | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "wmf.releasename" -}}
+{{- define "$SERVICE_NAME.releasename" -}}
 {{- $name := default .Chart.Name .Values.chartName -}}
 {{- printf "%s-%s" $name .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "wmf.chartid" -}}
+{{- define "$SERVICE_NAME.chartid" -}}
 {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}
 
-{{- define "wmf.appbaseurl" -}}
-http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
+{{- define "$SERVICE_NAME.appbaseurl" -}}
+http://{{ template "$SERVICE_NAME.releasename" . }}:{{ .Values.main_app.appbase_url_port }}
 {{- end -}}
