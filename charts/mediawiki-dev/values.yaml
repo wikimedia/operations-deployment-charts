@@ -10,6 +10,7 @@ resources:
 main_app:
   image: dev/mediawiki
   version: latest # we use latest everywhere in the defaults.
+  appbase_url_port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80
   command: '["/bin/bash", "-c"]' # use to override the entrypoint command ex: '["node"]'

@@ -21,7 +21,7 @@
 {{- end -}}
 
 {{- define "wmf.appbaseurl" -}}
-http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.liveness_probe.tcpSocket.port }}
+http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.appbase_url_port }}
 {{- end -}}
 
 {{- define "mediawiki.args" -}}
