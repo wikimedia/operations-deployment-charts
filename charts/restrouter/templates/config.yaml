@@ -49,14 +49,13 @@ metrics:
   batch: true
 {{- end }}
 
-### TODO: figure out the rate limiting side of things
-#ratelimiter:
-#  type: kademlia
-#  listen:
-#    address: 127.0.0.1
-#    port: 3050
-#  seeds: []
-### END TODO
+# Rate limiter
+#
+ratelimiter:
+  type: kademlia
+  seeds: [{{ template "wmf.releasename" . }}-kademlia.{{ .Release.Namespace }}.svc.cluster.local]
+  listen:
+    port: {{ .Values.main_app.kademlia_port }}
 
 # load & parametrise project templates. These are referenced / shared
 # between domains in the root_spec further down.

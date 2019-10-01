@@ -13,6 +13,7 @@ main_app:
   image: wikimedia/mediawiki-services-restbase
   version: latest # we use latest everywhere in the defaults.
   port: 7231
+  kademlia_port: 3050
   requests:
     cpu: 1600m
     memory: 800Mi
