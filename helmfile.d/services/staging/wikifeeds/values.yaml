@@ -6,7 +6,7 @@ resources:
   replicas: 1
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
-  version: 2019-08-01-194023-production
+  version: 2019-10-08-131759-production
   appbase_url_port: 8889 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 8889
@@ -28,6 +28,7 @@ main_app:
     httpGet:
       path: /_info
       port: 8889
+  mw_uri: http://api-rw.discovery.wmnet/w/index.php
   mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
   restbase_uri: http://restbase.discovery.wmnet:7231
 

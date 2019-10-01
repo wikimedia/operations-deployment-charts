@@ -76,8 +76,6 @@ services:
       #   - x-request-id
       # User-Agent HTTP header to use for requests
       user_agent: "Wikifeeds/WMF"
-      # the user agent to use when issuing requests
-      # user_agent: service-template-node
       # the template used for contacting the MW API
       mwapi_req:
         method: post
@@ -85,6 +83,7 @@ services:
         headers:
           host: {{ "'{{" }}request.params.domain{{ "}}'" }}
           user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
+          accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
         body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       # the template used for contacting RESTBase
       restbase_req:
@@ -94,4 +93,14 @@ services:
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
         timeout: 60000
+      # the template used for requesting a page from a MediaWiki appserver
+      mw_req:
+        method: get
+        uri: {{ .Values.main_app.mw_uri }}
+        headers:
+          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
+          user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
+          accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
+        query:
+          title: {{ "'{{" }}request.params.title{{ "}}'" }}
 {{- end -}}
