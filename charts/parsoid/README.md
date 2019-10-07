@@ -19,8 +19,8 @@ From this directory:
 | `docker.registry` | The registry from which to pull the parsoid image | `docker-registry.wikimedia.org` |
 | `docker.pull_policy` | Always, Never, or IfNotPresent | `IfNotPresent` |
 | `resources.replicas` | The number of instances to deploy | `1` |
-| `main_app.image` | The image name | `dev/parsoid` |
-| `main_app.version` | The image tag | `latest` |
+| `main_app.image` | The image name | `wikimedia/mediawiki-services-parsoid` |
+| `main_app.version` | The image tag | `dev` |
 | `main_app.ports` | The container ports to expose | `[80]`
 | `main_app.command` | The command to run to override the entrypoint | `'[node]'` |
 | `main_app.args` | The args to give to the command | `'["--debug=0.0.0.0:5858", "bin/server.js", "-n 0", "--config", "/usr/src/config/config.yaml"]'`

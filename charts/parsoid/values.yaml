@@ -8,8 +8,8 @@ docker:
 resources:
   replicas: 1
 main_app:
-  image: dev/parsoid
-  version: latest # we use latest everywhere in the defaults.
+  image: wikimedia/mediawiki-services-parsoid
+  version: dev
   appbase_url_port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 8142
