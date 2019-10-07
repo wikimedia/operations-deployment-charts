@@ -55,6 +55,7 @@ ratelimiter:
   type: kademlia
   seeds: [{{ template "wmf.releasename" . }}-kademlia.{{ .Release.Namespace }}.svc.cluster.local]
   listen:
+    address: 0.0.0.0
     port: {{ .Values.main_app.kademlia_port }}
 
 # load & parametrise project templates. These are referenced / shared
