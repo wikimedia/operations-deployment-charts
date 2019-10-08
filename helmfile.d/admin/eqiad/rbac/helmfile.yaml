@@ -27,7 +27,16 @@ releases:
             resources: ["pods/portforward"]
             verbs: ["create"]
         - |
-          # Used by prometheus/rsyslog
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: api-metrics
+          rules:
+          - nonResourceURLs:
+            - /metrics
+            verbs: ["get"]
+        - |
+          # Used by rsyslog
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
@@ -40,6 +49,20 @@ releases:
           - apiGroup: rbac.authorization.k8s.io
             kind: Group
             name: view
+        - |
+          # Used by prometheus
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: api-metrics
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: api-metrics
+          subjects:
+          - apiGroup: rbac.authorization.k8s.io
+            kind: Group
+            name: api-metrics
     hooks:
     - events: ["prepare"]
       command: "helmfile_log_sal"
