@@ -6,7 +6,7 @@ resources:
   replicas: 4 # Start with 4, we can always bump it
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
-  version: 2019-10-09-163206-production
+  version: 2019-10-09-175646-production
   appbase_url_port: 8889 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 8889
