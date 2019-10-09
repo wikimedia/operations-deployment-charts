@@ -611,6 +611,12 @@
     - 8000
     - 8888
     - 9632
+- action: allow
+  src_selector: calico/k8s_ns == 'restrouter'
+  dst_net: 10.64.64.0/21
+  protocol: udp
+  dst_ports:
+    - 3050
 
   # Allow access to the kubernetes APIs for coreDNS
 - action: allow
