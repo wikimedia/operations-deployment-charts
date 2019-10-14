@@ -81,6 +81,8 @@ services:
       ratelimiter_key: {{ .Values.main_app.ratelimiter_key }}
       ratelimiter_rate: {{ .Values.main_app.ratelimit_rate }}
       languages: config/languages.yaml
+      templatemapping:
+        database: config/templatemapping.db
       mt:
 {{ toYaml .Values.main_app.mt | indent 8 }}
       dictionary:
