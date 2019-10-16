@@ -74,18 +74,42 @@ main_app:
       # password:
       username: restb
     hosts:
-      - restbase2011.codfw.wmnet
-      - restbase2015.codfw.wmnet
-      - restbase2016.codfw.wmnet
-      - restbase2020.codfw.wmnet
-      - restbase2010.codfw.wmnet
-      - restbase2013.codfw.wmnet
-      - restbase2014.codfw.wmnet
-      - restbase2019.codfw.wmnet
-      - restbase2009.codfw.wmnet
-      - restbase2012.codfw.wmnet
-      - restbase2017.codfw.wmnet
-      - restbase2018.codfw.wmnet
+      - restbase2011-a.codfw.wmnet
+      - restbase2011-b.codfw.wmnet
+      - restbase2011-c.codfw.wmnet
+      - restbase2015-a.codfw.wmnet
+      - restbase2015-b.codfw.wmnet
+      - restbase2015-c.codfw.wmnet
+      - restbase2016-a.codfw.wmnet
+      - restbase2016-b.codfw.wmnet
+      - restbase2016-c.codfw.wmnet
+      - restbase2020-a.codfw.wmnet
+      - restbase2020-b.codfw.wmnet
+      - restbase2020-c.codfw.wmnet
+      - restbase2010-a.codfw.wmnet
+      - restbase2010-b.codfw.wmnet
+      - restbase2010-c.codfw.wmnet
+      - restbase2013-a.codfw.wmnet
+      - restbase2013-b.codfw.wmnet
+      - restbase2013-c.codfw.wmnet
+      - restbase2014-a.codfw.wmnet
+      - restbase2014-b.codfw.wmnet
+      - restbase2014-c.codfw.wmnet
+      - restbase2019-a.codfw.wmnet
+      - restbase2019-b.codfw.wmnet
+      - restbase2019-c.codfw.wmnet
+      - restbase2009-a.codfw.wmnet
+      - restbase2009-b.codfw.wmnet
+      - restbase2009-c.codfw.wmnet
+      - restbase2012-a.codfw.wmnet
+      - restbase2012-b.codfw.wmnet
+      - restbase2012-c.codfw.wmnet
+      - restbase2017-a.codfw.wmnet
+      - restbase2017-b.codfw.wmnet
+      - restbase2017-c.codfw.wmnet
+      - restbase2018-a.codfw.wmnet
+      - restbase2018-b.codfw.wmnet
+      - restbase2018-c.codfw.wmnet
     keyspace: echostore
     table: values
     local_dc: codfw
@@ -94,7 +118,7 @@ main_app:
   # MediaWiki accordingly or problems with session renewal/expiry may occur.
   default_ttl: 3600
   listen_address: 0.0.0.0
-  service_name: sessionstore
+  service_name: echostore
   log_level: info
   openapi_spec: openapi.yaml
   # See T220401 for how these numbers were calculated
