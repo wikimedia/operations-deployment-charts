@@ -4,22 +4,6 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 4
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-          - key: dedicated
-            operator: In
-            values:
-              - kask
-          - key: failure-domain.beta.kubernetes.io/zone
-            operator: In
-            values:
-              - row-a
-              - row-b
-              - row-c
-              - row-d
 tolerations:
   - key: "dedicated"
     operator: "Equal"
