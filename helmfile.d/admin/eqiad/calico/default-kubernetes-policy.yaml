@@ -636,5 +636,12 @@
   dst_net: 2620:0:861:101:10:64:0:40/128 # neon, staging
   protocol: tcp
 
+  # Allow access for echostore kask to restbase cassandra
+- action: allow
+  src_selector: calico/k8s_ns == 'echostore'
+  protocol: tcp
+  dst_ports:
+    - 9042
+
   # Deny everything else
 - action: deny
