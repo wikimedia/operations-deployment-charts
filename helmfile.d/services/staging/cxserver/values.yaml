@@ -49,7 +49,7 @@ main_app:
   - discovery.wmnet
   port: 8080
   proxy: http://url-downloader.eqiad.wikimedia.org:8080
-  ratelimiter_key: X-Client-IP
+  ratelimiter_key: x-client-ip
   ratelimiter_rate: 10
   readiness_probe:
     httpGet:
