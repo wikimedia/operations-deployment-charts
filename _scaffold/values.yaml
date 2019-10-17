@@ -58,3 +58,12 @@ service:
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false
+  image_version: latest
+  public_port: 2345 # the port where TLS will be exposed
+  certs: {}
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"

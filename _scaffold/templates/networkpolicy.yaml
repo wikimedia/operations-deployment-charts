@@ -18,8 +18,12 @@ spec:
       - port: {{ . }}
         protocol: TCP
 {{- end }}
-        {{- if .Values.monitoring }}
+        {{- if .Values.monitoring.enabled }}
       - port: 9102
+        protocol: TCP
+        {{- end }}
+        {{- if .Values.tls.enabled }}
+      - port: {{ .Values.tls.public_port }}
         protocol: TCP
         {{- end }}
 {{- end }}
