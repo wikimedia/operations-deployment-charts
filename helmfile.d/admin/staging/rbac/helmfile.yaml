@@ -22,7 +22,10 @@ releases:
             labels:
               # Add these permissions to the "view" default role.
               rbac.authorization.k8s.io/aggregate-to-view: "true"
-          rules: []
+          rules:
+          - apiGroups: [""]
+            resources: ["pods/portforward"]
+            verbs: ["create"]
         - |
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
