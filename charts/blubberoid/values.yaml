@@ -30,3 +30,10 @@ main_app:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+tls:
+  enabled: false
+  public_port: 4002
+# To be defined in a private space
+# certs:
+#   cert: ... # The service public certificate
+#   key: ...  # The service private key

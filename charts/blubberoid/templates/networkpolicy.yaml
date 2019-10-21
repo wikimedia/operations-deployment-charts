@@ -16,4 +16,8 @@ spec:
     - ports:
       - port: {{ .Values.main_app.port }}
         protocol: TCP
+      {{- if .Values.tls.enabled }}
+      - port: {{ .Values.tls.public_port }}
+        protocol: TCP
+      {{- end }}
 {{- end }}

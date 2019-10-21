@@ -9,3 +9,20 @@ data:
 {{ include "policy.app" . | indent 4 }}
 ...
 {{- end -}}
+{{- if .Values.tls.enabled }}
+--
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename"   }}-tls-proxy-certs
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  service.crt: |-
+    {{ .Values.tls.certs.cert | indent 4 }}
+  service.key: |-
+    {{ .Values.tls.certs.key | indent 4 }}
+{{ end -}}

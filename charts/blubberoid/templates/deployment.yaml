@@ -17,6 +17,11 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        {{ if .Values.tls.enabled -}}
+        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
+        {{ end -}}
+
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -48,10 +53,32 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+{{- if .Values.tls.enabled }}
+      - name: {{ template "wmf.releasename" }}-tls-proxy
+        image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        env:
+          - name: SERVICE_NAME
+            value: {{ .Release.Name }}
+          - name: SERVICE_PORT
+            value: {{ .Values.main_app.port }}
+          - name: PUBLIC_PORT
+            value: {{ .Values.tls.public_port }}
+        ports:
+          containerPort: {{ .Values.tls.public_port }}
+        volumeMounts:
+          - name: tls-proxy-certs-volume
+            mountPath: /etc/envoy/ssl
+            readOnly: true
+{{- end }}
       volumes:
-        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
         {{- if .Values.main_app.policy.enabled }}
         - name: policy-volume
           configMap:
             name: {{ .Release.Name }}-policy
+        {{- end }}
+        {{- if .Values.tls.enabled }}
+        - name: {{ .Release.Name }}-tls-proxy-certs
+          configMap:
+            name: {{ template "wmf.releasename" }}-tls-proxy-certs
         {{- end }}
