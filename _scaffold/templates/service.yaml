@@ -34,6 +34,31 @@ spec:
     app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
   ports:
-{{- with .Values.service.ports }}
-{{ toYaml . | indent 4 }}
-{{- end }}{{- end }}
+    - name: {{ .Values.service.port.name }}
+      targetPort: {{ .Values.service.port.targetPort }}
+      port: {{ .Values.service.port.port }}
+      nodePort: {{ .Values.service.port.nodePort }}
+{{- end }}
+{{ if .Values.debug.enabled }}
+--
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "wmf.releasename" . }}-debug
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    {{- range $port := .Values.debug.ports }}
+    - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
+      targetPort: {{ $port }}
+      port: {{ $port }}
+      nodePort: null # We're assuming this will be only used on minikube
+    {{- end }}
+{{- end }}

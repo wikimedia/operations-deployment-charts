@@ -10,9 +10,7 @@ resources:
 main_app:
   image: $IMAGE_NAME
   version: latest # we use latest everywhere in the defaults.
-  appbase_url_port: $PORT # port used for wmf.appbaseurl used by service-checker
-  ports:
-    - $PORT
+  port: $PORT # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
@@ -49,12 +47,12 @@ monitoring:
   image_version: latest
 service:
   deployment: minikube # valid values are "production" and "minikube"
-  ports:
-    - name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-      # protocol: TCP # TCP is the default protocol
-      targetPort: $PORT # the number or name of the exposed port on the container
-      port: $PORT # the number of the port desired to be exposed to the cluster
-      nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: $PORT # the number or name of the exposed port on the container
+    port: $PORT # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
@@ -67,3 +65,9 @@ tls:
 # Add here, via our "secret" system, the cert/key pairs
 #    cert: "your cert here"
 #    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []

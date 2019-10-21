@@ -25,7 +25,7 @@ spec:
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
         {{ if .Values.tls.enabled -}}
-        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.appbase_url_port .Values.tls.certs.cert | sha256sum }}
+        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
         {{ end -}}
     spec:
       {{- if .Values.affinity }}
@@ -49,9 +49,11 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-          {{- range $k, $v := .Values.main_app.ports }}
-            - containerPort: {{ $v }}
-          {{- end }}
+            - containerPort: {{ .Values.main_app.port }}
+          {{- if .Values.debug.enabled }}
+          {{- range .Values.debug.ports }}
+            - containerPort: {{ . }}
+          {{- end }}{{ end }}
           livenessProbe:
 {{ toYaml .Values.main_app.liveness_probe | indent 12 }}
           readinessProbe:
@@ -95,7 +97,7 @@ spec:
           - name: SERVICE_NAME
             value: {{ .Release.Name }}
           - name: SERVICE_PORT
-            value: {{ .Values.main_app.appbase_url_port }}
+            value: {{ .Values.main_app.port }}
           - name: PUBLIC_PORT
             value: {{ .Values.tls.public_port }}
         ports:
