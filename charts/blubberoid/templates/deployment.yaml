@@ -17,11 +17,10 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.tls.enabled }}
       annotations:
-        {{ if .Values.tls.enabled -}}
         checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
-        {{ end -}}
-
+      {{- end }}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
