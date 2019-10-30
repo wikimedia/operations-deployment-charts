@@ -1,0 +1,25 @@
+repositories:
+  - name: stable
+    url: https://releases.wikimedia.org/charts/
+
+helmDefaults:
+  tillerNamespace: eventgate-logging-external
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: false
+
+releases:
+  - name: logging-external
+    namespace: eventgate-logging-external
+    chart: stable/eventgate
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
