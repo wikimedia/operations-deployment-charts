@@ -53,7 +53,7 @@ spec:
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
 {{- if .Values.tls.enabled }}
-      - name: {{ template "wmf.releasename" }}-tls-proxy
+      - name: {{ template "wmf.releasename" . }}-tls-proxy
         image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         env:
@@ -66,7 +66,7 @@ spec:
         ports:
           containerPort: {{ .Values.tls.public_port }}
         volumeMounts:
-          - name: tls-proxy-certs-volume
+          - name: tls-certs-volume
             mountPath: /etc/envoy/ssl
             readOnly: true
 {{- end }}
@@ -77,7 +77,7 @@ spec:
             name: {{ .Release.Name }}-policy
         {{- end }}
         {{- if .Values.tls.enabled }}
-        - name: {{ .Release.Name }}-tls-proxy-certs
+        - name: tls-certs-volume
           configMap:
-            name: {{ template "wmf.releasename" }}-tls-proxy-certs
+            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
         {{- end }}

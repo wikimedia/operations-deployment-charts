@@ -50,6 +50,11 @@ task :validate_template do
   results = {}
   all_charts.each do |chart|
     results[chart] = system("helm template '#{chart}' > /dev/null")
+    fixtures = FileList.new("#{chart}/.fixtures/*.yaml")
+    fixtures.each do |fixture|
+      fixture_name = File.basename(fixture, '.yaml')
+      results["#{chart} => #{fixture_name}"] = system("helm template -f '#{fixture}' '#{chart}' > /dev/null")
+    end
   end
   pprint "Helm template summary:", results
   raise_if_failed results
