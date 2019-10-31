@@ -10,7 +10,7 @@ data:
 ...
 {{- end -}}
 {{- if .Values.tls.enabled }}
---
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -22,7 +22,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   service.crt: |-
-    {{ .Values.tls.certs.cert | indent 4 }}
+{{ .Values.tls.certs.cert | indent 4 }}
   service.key: |-
-    {{ .Values.tls.certs.key | indent 4 }}
+{{ .Values.tls.certs.key | indent 4 }}
 {{ end -}}

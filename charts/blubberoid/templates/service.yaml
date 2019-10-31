@@ -20,7 +20,7 @@ spec:
     nodePort:  {{ .Values.service.port }}
     {{- end }}
 {{ if .Values.tls.enabled }}
---
+---
 kind: Service
 apiVersion: v1
 metadata:
