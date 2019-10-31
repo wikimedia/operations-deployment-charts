@@ -64,7 +64,7 @@ spec:
             - name: PUBLIC_PORT
               value: "{{ .Values.tls.public_port }}"
           ports:
-            containerPort: {{ .Values.tls.public_port }}
+            - containerPort: {{ .Values.tls.public_port }}
           volumeMounts:
             - name: tls-certs-volume
               mountPath: /etc/envoy/ssl
