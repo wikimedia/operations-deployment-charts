@@ -60,9 +60,9 @@ spec:
             - name: SERVICE_NAME
               value: {{ .Release.Name }}
             - name: SERVICE_PORT
-              value: {{ .Values.main_app.port }}
+              value: "{{ .Values.main_app.port }}" # env variables need to be strings
             - name: PUBLIC_PORT
-              value: {{ .Values.tls.public_port }}
+              value: "{{ .Values.tls.public_port }}"
           ports:
             containerPort: {{ .Values.tls.public_port }}
           volumeMounts:
