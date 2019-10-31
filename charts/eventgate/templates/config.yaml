@@ -15,12 +15,6 @@ logging:
   level:  {{ .Values.main_app.log_level | default "info" }}
   streams:
     - type: stdout
-{{- if eq .Values.service.deployment "production" }}
-  # Use gelf-stream -> logstash
-    - host: logstash.svc.eqiad.wmnet
-      port: 12201
-      type: gelf
-{{- end }}
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
