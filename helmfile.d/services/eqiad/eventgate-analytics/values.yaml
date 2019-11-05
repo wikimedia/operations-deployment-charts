@@ -8,6 +8,7 @@ main_app:
     - /test/event/0.0.3
     - /mediawiki/api/request/0.0.1
     - /mediawiki/cirrussearch/request/0.0.1
+    - /sparql/query/1.0.0
     topic_prefix: eqiad.
 
     # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at
@@ -23,9 +24,15 @@ main_app:
       schema_title: mediawiki/api/request
     mediawiki.cirrussearch-request:
       schema_title: mediawiki/cirrussearch/request
+    wdqs-internal.sparql-query:
+      schema_title: sparql/query
+    wdqs-external.sparql-query:
+      schema_title: sparql/query
+    cqs-external.sparql-query:
+      schema_title: sparql/query
     '/^swift\.(.+\.)?upload-complete$/':
       schema_title: swift/upload/complete
-  version: 2019-07-18-154717-production
+  version: 2019-10-28-185106-production
 resources:
   replicas: 20
 service:
