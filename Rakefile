@@ -4,6 +4,9 @@ require 'open3'
 require 'yaml'
 
 ERROR_CONTEXT_LINES = 4
+PRIVATE_STUB = '.fixtures/private_stub.yaml'
+HELM_REPO = 'stable'
+HELMFILE_GLOB = "helmfile.d/services/*/*/helmfile.yaml"
 
 class String
   def red
@@ -26,9 +29,9 @@ def pprint(title, data)
   puts ""
   data.each do |chart, success|
     if success
-      puts "#{chart.ljust(40)}OK".green
+      puts "#{chart.ljust(72)}OK".green
     else
-      puts "#{chart.ljust(40)}FAIL".red
+      puts "#{chart.ljust(72)}FAIL".red
     end
   end
 end
@@ -57,9 +60,14 @@ end
 
 def check_template(chart, fixture = nil)
   if fixture != nil
-    command = "helm template -f '#{fixture}' '#{chart}'"
-    fixture_name = File.basename(fixture, '.yaml')
-    error = "Error checking #{chart} (fixture #{fixture_name})"
+    # When passing multiple values, concatenate them
+    quoted = fixture.map{ |x| "-f '#{x}'" }.join " "
+    command = "helm template #{quoted} '#{chart}'"
+    error = "Error checking #{chart}, value files: #{fixture}"
+#  elsif fixture != nil
+#    command = "helm template -f '#{fixture}' '#{chart}'"
+#    fixture_name = File.basename(fixture, '.yaml')
+#    error = "Error checking #{chart} (fixture #{fixture_name})"
   else
     command = "helm template '#{chart}'"
     error = "Error checking #{chart}"
@@ -93,9 +101,34 @@ def check_template(chart, fixture = nil)
   else
     # Error happens before yaml validation
     puts error.red
+    puts "Error running #{command}:"
     puts output
   end
   return success
+end
+
+
+def parse_helmfile(filename)
+  charts = {}
+  helmfile_dir = File.dirname(filename)
+  data = File.read(filename)
+  helmfile_data = YAML.safe_load(data)
+  helmfile_data['releases'].each do |release|
+    chart = release['chart'].gsub(/^#{HELM_REPO}/, 'charts')
+    charts[chart] ||= []
+    release['values'].each do |val|
+      # We can't test private files, so we use a stub in those cases.
+      if val.include? "private/"
+        private_stub = "#{chart}/#{PRIVATE_STUB}"
+        if File.exists? private_stub
+          charts[chart] << private_stub
+        end
+      else
+        charts[chart] << File.join(helmfile_dir, val)
+      end
+    end
+  end
+  charts
 end
 
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
@@ -117,12 +150,36 @@ task :validate_template do
     results[chart] = check_template chart
     fixtures = FileList.new("#{chart}/.fixtures/*.yaml")
     fixtures.each do |fixture|
+      # Exclude the private stub if present.
+      next if fixture.include? PRIVATE_STUB
       fixture_name = File.basename(fixture, '.yaml')
-      results["#{chart} => #{fixture_name}"] = check_template chart, fixture
+      results["#{chart} => #{fixture_name}"] = check_template chart, [fixture]
     end
   end
   pprint "Helm template summary:", results
   raise_if_failed results
 end
 
-task :default => [:lint, :validate_template]
+desc 'Runs helm template using the helmfile values'
+task :validate_deployments do
+  results = {}
+  deployments = FileList.new(HELMFILE_GLOB)
+  deployments.each do |helmfile|
+    radix, deployment = File.split(File.dirname(helmfile))
+    _, cluster = File.split(radix)
+    # Skip the example, shall we
+    next if deployment == '_example_'
+    charts = parse_helmfile helmfile
+    if charts.length == 1
+      chart, values = charts.first
+      results["#{deployment}/#{cluster}"] = check_template chart, values
+    else
+      charts.each do |chart, values|
+        results["#{deployment}/#{cluster} => #{chart}"] = check_template chart, values
+      end
+    end
+  end
+  pprint "Helmfile deployments check summary:", results
+end
+
+task :default => [:lint, :validate_template, :validate_deployments]

@@ -29,6 +29,21 @@ it be
 initialize_namespace.sh is used to create a new namespace in our current
 production infrastructure
 
+== Basic sanity checks ==
+
+Charts are linted using "helm lint" and "helm template"; the resulting
+templates are also checked to ensure they produce valid YAMLs.
+
+Since you might want to test various features in your charts, helm
+template will be run both with the default values in the chart and
+with values provided by any YAML file in the .fixtures/ directory.
+
+In addition to this, all service deployments under helmfile.d/services
+are checked as well. Given some of those would need private data that
+is not available in testing/development, you can provide a special
+file called .fixtures/private_stub.yaml to simulate populating such
+data in deployments.
+
 = License =
 
 While the helm charts specification allows for a per chart license to be
