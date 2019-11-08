@@ -20,6 +20,12 @@ spec:
       {{- if .Values.tls.enabled }}
       annotations:
         checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
+        {{- if .Values.tls.telemetry.enabled }}
+        envoyproxy.io/scrape: true
+        envoyproxy.io/port: {{ .Values.tls.telemetry.port }}
+        {{- else }}
+        envoyproxy.io/scrape: false
+        {{- end }}
       {{- end }}
     spec:
       {{- if .Values.affinity }}
@@ -63,6 +69,12 @@ spec:
               value: "{{ .Values.main_app.port }}" # env variables need to be strings
             - name: PUBLIC_PORT
               value: "{{ .Values.tls.public_port }}"
+            - name: ADMIN_LISTEN
+              value: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
+            - name: ADMIN_PORT
+              value: {{ .Values.tls.telemetry.port }}
+            - name: UPSTREAM_TIMEOUT
+              value: {{ .Values.tls.upstream_timeout }}
           ports:
             - containerPort: {{ .Values.tls.public_port }}
           volumeMounts:

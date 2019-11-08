@@ -32,8 +32,16 @@ service:
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 tls:
   enabled: false
+  image_version: 1.12.1-1 # minimum compatible version
   public_port: 4002
+  upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:
     cert: "snakeoil"
     key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361
+    prometheus_nodes: # this should be provided by puppet in production.
+      - 127.0.0.1

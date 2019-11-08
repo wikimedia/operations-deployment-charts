@@ -14,10 +14,20 @@ spec:
     - Ingress
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
-        protocol: TCP
-      {{- if .Values.tls.enabled }}
-      - port: {{ .Values.tls.public_port }}
-        protocol: TCP
+        - port: {{ .Values.main_app.port }}
+          protocol: TCP
+          {{- if .Values.tls.enabled }}
+        - port: {{ .Values.tls.public_port }}
+          protocol: TCP
+          {{- end }}
+    {{- if .Values.tls.telemetry.enabled }}
+    - from:
+      {{- range .Values.tls.telemetry.prometheus_nodes }}
+        - ipBlock:
+            cidr: {{ . }}/32
       {{- end }}
+      ports:
+        - port: {{ .Values.tls.telemetry.port }}
+          protocol: TCP
+    {{- end }}
 {{- end }}

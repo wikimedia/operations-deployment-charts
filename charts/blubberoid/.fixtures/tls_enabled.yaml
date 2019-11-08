@@ -1,6 +1,6 @@
 tls:
   enabled: true
-  image_version: 1.11.2-1
+  image_version: 1.11.2-2
   public_port: 4666 # the port where TLS will be exposed
   certs:
     cert: |-
@@ -11,3 +11,10 @@ tls:
       -- begin --
       678910
       -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+    prometheus_nodes: # this should be provided by puppet in production.
+      - 1.2.3.4
+      - 257.3.2.1 # Yes, if you're wondering, this is for you :P
