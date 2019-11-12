@@ -418,6 +418,26 @@
   dst_ports:
     - 9092
 
+  # Allow eventgate-logging-external to reach logstash kafkas
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.0.112/32
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.32.180/32
+  protocol: tcp
+  dst_ports:
+    - 9092
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.48.131/32
+  protocol: tcp
+  dst_ports:
+    - 9092
+
   # Allow Citoid access to zotero
 - action: allow
   src_selector: calico/k8s_ns == 'citoid'
