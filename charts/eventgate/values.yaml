@@ -15,6 +15,14 @@ service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
+tls:
+  enabled: false
+  public_port: 4192
+# To be defined in a private space
+# certs:
+#   cert: ... # The service public certificate
+#   key: ...  # The service private key
+
 # Debug mode adds the --profile and --inspect flags to the NodeJS service, and
 # also deploys a wmfdebug sidecar container in the pod. You can get the v8.log profiling output
 # from the pod with e.g (staging):
