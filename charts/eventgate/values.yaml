@@ -55,6 +55,10 @@ main_app:
     cpu: 2000m
     memory: 300Mi
 
+  # Override this in your service specific values.yaml file
+  # to enable Kafka Producer TLS.
+  kafka_ca_cert: null
+
   # EventGate service-runner app defaults config.
   # In production, these should be overridden in service/release specific values files.
   conf:
@@ -124,6 +128,9 @@ main_app:
         # Emit rdkafka stats every 30 seconds
         # (Prometheus will only scrape statsd-exporterd every 60 seconds).
         statistics.interval.ms: 30000
+        # Set these to enable Kafka producer TLS (no authentication, just encryption).
+        #security.protocol: ssl
+        #ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
         # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
         #event_cb: true
         #log_level: 7

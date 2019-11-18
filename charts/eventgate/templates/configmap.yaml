@@ -7,7 +7,10 @@ data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
   # TODO: stream-config will eventually come from a remote URL/service.
   stream-config.yaml: |- {{ include "stream.config" . | nindent 4  }}
-
+{{- if .Values.main_app.kafka_ca_cert }}
+  kafka_ca.crt.pem: |-
+    {{ .Values.main_app.kafka_ca_cert | nindent 4 }}
+{{ end }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
