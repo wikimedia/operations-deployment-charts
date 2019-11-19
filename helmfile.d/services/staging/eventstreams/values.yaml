@@ -1,0 +1,112 @@
+resources:
+  replicas: 1
+
+service:
+  deployment: production
+  # HTTP port 30892 in chart values.yaml
+
+tls:
+  enabled: true
+  image_version: 1.11.2-1
+  # HTTPS port 4892 in chart values.yaml
+
+main_app:
+  version: 2019-12-19-161005-production
+  conf:
+    kafka:
+      metadata.broker.list: kakfa-main1001.eqiad.wmnet,kafka-main1002.eqiad.wmnet:9092,kafka-main1003.eqiad.wmnet:9092
+      queued.max.messages.kbytes: 32768
+      fetch.message.max.bytes: 8388608
+      queued.min.messages: 1000
+      statistics.interval.ms: 60000
+
+    # List of stream name (routes) and their constituent topics.
+    # This is used to choose which topics are exposed, as well as for
+    # generating the OpenAPI spec documentation.
+    streams:
+
+      test:
+        description: |-
+          A test event stream. A new event is posted about once a minute.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/test/event
+        topics:
+          - eqiad.test.event
+          - codfw.test.event
+
+      page-create:
+        description: |-
+          Mediawiki Page create events. This page create stream is just the first revision create
+          event for each page. As such, it reuses the mediawiki/revision/create schema.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/revision/create
+        topics:
+          - eqiad.mediawiki.page-create
+          - codfw.mediawiki.page-create
+
+      page-delete:
+        description: |-
+          Mediawiki Page delete events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/delete
+        topics:
+          - eqiad.mediawiki.page-delete
+          - codfw.mediawiki.page-delete
+
+      page-move:
+        description: |-
+          Mediawiki Page move (rename) events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/move
+        topics:
+          - eqiad.mediawiki.page-move
+          - codfw.mediawiki.page-move
+
+      page-undelete:
+        description: |-
+          Mediawiki Page un-delete events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/undelete
+        topics:
+          - eqiad.mediawiki.page-undelete
+          - codfw.mediawiki.page-undelete
+
+      page-properties-change:
+        description: |-
+          Mediawiki Page Properties change events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/properties-change
+        topics:
+          - eqiad.mediawiki.page-properties-change
+          - codfw.mediawiki.page-properties-change
+
+      page-links-change:
+        description: |-
+          Mediawiki Page Links change events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/links-change
+        topics:
+          - eqiad.mediawiki.page-links-change
+          - codfw.mediawiki.page-links-change
+
+      recentchange:
+        description: |-
+          Mediawiki RecentChanges feed.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/recentchange
+        topics:
+          - eqiad.mediawiki.recentchange
+          - codfw.mediawiki.recentchange
+
+      revision-create:
+        description: |-
+          Mediawiki Revision create events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/create
+        topics:
+          - eqiad.mediawiki.revision-create
+          - codfw.mediawiki.revision-create
+
+      revision-score:
+        description: |-
+          Mediawiki Revision Score feed. Every new revision in an ORES enabled wiki should have a
+          revision-score event. This schema is structured differnetly than ORES API results, as
+          event schemas should map well into RDBMS / SQL environments where columns must be
+          strongly typed.
+          NOTE: Only the most commonly used ORES model scores are included in each event
+          (the ones returned by https://ores.wikimedia.org/v3/precache).
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/score
+        topics:
+          - eqiad.mediawiki.revision-score
+          - codfw.mediawiki.revision-score

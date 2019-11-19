@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '{{ template "eventstreams.releasename" . }}-service-checker'
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: '{{ template "eventstreams.releasename" . }}-service-checker'
+    image: "{{ .Values.docker.registry }}/service-checker"
+    imagePullPolicy: {{ .Values.docker.pull_policy }}
+    args: ["-t", "5", '$({{ include "eventstreams.releasename" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "eventstreams.appbaseurl" . }}']
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never

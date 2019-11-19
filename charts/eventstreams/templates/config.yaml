@@ -1,0 +1,43 @@
+{{- define "config.app" -}}
+# service-runner EventStreams app config.yaml.
+
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: {{ .Values.main_app.num_workers | default 1 }}
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: {{ .Values.main_app.worker_heap_limit_mb | default 750 }}
+
+# Logger info
+logging:
+  level:  {{ .Values.main_app.log_level | default "info" }}
+  streams:
+    - type: stdout
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  - type: prometheus
+    port: {{ .Values.monitoring.port.targetPort | default 9202 }}
+{{- end }}
+
+{{- if .Values.main_app.extra_service_runner_conf }}
+{{ toYaml .Values.main_app.extra_service_runner_conf | indent 0 }}
+{{- end }}
+
+services:
+  - name: {{ template "eventstreams.releasename" . }}
+    module: app.js
+    conf:
+      port: {{ .Values.main_app.port }}
+      cors: '*'
+      csp: "default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src *; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'"
+      spec: ./spec.yaml
+      user_agent: {{ template "eventstreams.releasename" . }}
+
+      # eventstreams app settings
+{{ toYaml .Values.main_app.conf | indent 6 }}
+
+{{- end }}

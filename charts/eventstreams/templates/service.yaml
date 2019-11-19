@@ -1,0 +1,72 @@
+{{ if .Values.tls.enabled }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "eventstreams.releasename" . }}-tls-service
+  labels:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    - name: {{ template "eventstreams.releasename" . }}-tls-port
+      targetPort: {{ .Values.tls.public_port }}
+      port: {{ .Values.tls.public_port }}
+      nodePort: {{ .Values.tls.public_port }}
+{{- else }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "eventstreams.releasename" . }}
+  labels:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    - name: http-{{ template "eventstreams.releasename" . }}
+      targetPort: {{ .Values.service.port.targetPort | default .Values.main_app.port }}
+      port: {{ .Values.service.port.port | default .Values.main_app.port }}
+      nodePort: {{ .Values.service.port.nodePort }}
+{{- end }}
+{{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
+    # If testing monitoring export the service-runner prometheus metrics listen port
+    - name:  prometheus-{{ template "eventstreams.releasename" . }}
+      targetPort: {{ .Values.monitoring.port.targetPort | default 9202 }}
+      port: {{ .Values.monitoring.port.port | default 9202 }}
+      nodePort: {{ .Values.monitoring.port.nodePort }} # We're assuming this will be static on minikube
+{{- end }}
+{{ if .Values.debug.enabled }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "eventstreams.releasename" . }}-debug
+  labels:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "eventstreams.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    {{- range $port := .Values.debug.ports }}
+    - name: {{ template "eventstreams.releasename" $ }}-debug-{{ $port }}
+      targetPort: {{ $port }}
+      port: {{ $port }}
+      nodePort: null # We're assuming this will be only used on minikube
+    {{- end }}
+{{- end }}
+

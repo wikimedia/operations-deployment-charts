@@ -1,0 +1,98 @@
+# Default values for EventStreams.
+
+
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  # Don't use docker.registry value for main_app image so we can override
+  # and use locally built and cached images via --set main_app.image during development.
+  image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-eventstreams
+  version: latest
+  port: 8092
+  command: ["nodejs"]
+  args: ["/srv/service/server.js", "-c", "/etc/eventstreams/config.yaml"]
+  requests:
+    cpu: 100m
+    memory: 500Mi
+  limits:
+    cpu: 1000m
+    memory: 1000Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8092
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 8092
+
+  log_level: info
+
+  conf:
+    kafka:
+      metadata.broker.list: 'kafka.default.svc.cluster.local:31092'
+      statistics.interval.ms: 5000
+
+    # Limit the number of connected clients from the same
+    # X-Client-IP per eventstreams process to 1.
+    # There are a limited number of connection slots from frontend routers (25 per varnish?).
+    # A greedy user could potentially use up all the frontend slots and starve out other clients.
+    # If a user is trying to open multiple connections
+    # and they happen to be routed to the same worker, they
+    # will be denied.  This is unfortunate if the client
+    # is only opening a few connections, but they should
+    # eventually be able to get through to multiple workers.
+    # In prod we run 100 worker replicas.
+    # A malfunctioning client could still use up 100 total
+    # connections, but this should still be less than the total
+    # number of frontend connection slots.  This is better
+    # than being able to use them all up. :/
+    # See also: https://phabricator.wikimedia.org/T226808#5292059
+    # (A global counter and limit of client connections per IP would be much better.)
+    client_ip_connection_limit: 1
+
+    streams:
+      # Map of stream name (routes) to their constituent topics.
+      # Each 'stream' name can be composed of multiple topics.
+      # Each entry here we result in a consumable
+      # /v2/stream/{stream_name} route.
+      test:
+        description: "Test event stream"
+        topics:
+          - datacenter1.test.event
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    # targetPort and port are main_app.port (8092)
+    nodePort: 30892
+
+# EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
+monitoring:
+  enabled: true
+  # These ports are only used when testing in non production dev env.
+  port: {}
+    # port and targetPort default to 9202.
+    # nodePort is auto allocated.
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap env variables
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false
+  image_version: latest
+  public_port: 4892 # the port where TLS will be exposed
+  certs: {}
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
