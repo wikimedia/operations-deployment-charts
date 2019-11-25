@@ -21,10 +21,10 @@ spec:
       annotations:
         checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
         {{- if .Values.tls.telemetry.enabled }}
-        envoyproxy.io/scrape: true
+        envoyproxy.io/scrape: "true"
         envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
         {{- else }}
-        envoyproxy.io/scrape: false
+        envoyproxy.io/scrape: "false"
         {{- end }}
       {{- end }}
     spec:
