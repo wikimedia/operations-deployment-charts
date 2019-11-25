@@ -22,7 +22,7 @@ spec:
         checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
         {{- if .Values.tls.telemetry.enabled }}
         envoyproxy.io/scrape: true
-        envoyproxy.io/port: {{ .Values.tls.telemetry.port }}
+        envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
         {{- else }}
         envoyproxy.io/scrape: false
         {{- end }}
@@ -72,7 +72,7 @@ spec:
             - name: ADMIN_LISTEN
               value: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
             - name: ADMIN_PORT
-              value: {{ .Values.tls.telemetry.port }}
+              value: "{{ .Values.tls.telemetry.port }}"
             - name: UPSTREAM_TIMEOUT
               value: {{ .Values.tls.upstream_timeout }}
           ports:
