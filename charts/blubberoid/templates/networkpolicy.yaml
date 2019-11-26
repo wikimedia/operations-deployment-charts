@@ -20,14 +20,8 @@ spec:
         - port: {{ .Values.tls.public_port }}
           protocol: TCP
           {{- end }}
-    {{- if .Values.tls.telemetry.enabled }}
-    - from:
-      {{- range .Values.tls.telemetry.prometheus_nodes }}
-        - ipBlock:
-            cidr: {{ . }}/32
-      {{- end }}
-      ports:
+          {{- if .Values.tls.telemetry.enabled }}
         - port: {{ .Values.tls.telemetry.port }}
           protocol: TCP
-    {{- end }}
+          {{- end }}
 {{- end }}
