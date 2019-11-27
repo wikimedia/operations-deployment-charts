@@ -39,3 +39,8 @@ resources:
 service:
   deployment: production
   port: 8748
+tls:
+  enabled: true
+  public_port: 4666 # the port where TLS will be exposed
+  telemetry:
+    enabled: true
