@@ -16,7 +16,7 @@ main_app:
   image: wikimedia/blubber
   limits:
     cpu: 1
-    memory: 20Mi
+    memory: 100Mi
   liveness_probe:
     tcpSocket:
       port: 8748
@@ -27,7 +27,7 @@ main_app:
       port: 8748
   requests:
     cpu: 100m
-    memory: 20Mi
+    memory: 100Mi
   policy:
     enabled: true
   version: 2019-07-23-155043-production
