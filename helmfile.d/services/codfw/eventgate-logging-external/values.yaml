@@ -8,7 +8,7 @@ main_app:
     max_body_size: 4mb
     kafka:
       conf:
-        metadata.broker.list: logstash2001.codfw.wmnet:9092,logstash2002.codfw.wmnet:9092,logstash2003.codfw.wmnet:9092
+        metadata.broker.list: logstash2001.codfw.wmnet:9093,logstash2002.codfw.wmnet:9093,logstash2003.codfw.wmnet:9093
         # Enforce a smaller message size limit for this externally accessible eventgate instance.
         message.max.bytes: 1048576
         # Enable Kafka producer TLS (no authentication, just encryption).
