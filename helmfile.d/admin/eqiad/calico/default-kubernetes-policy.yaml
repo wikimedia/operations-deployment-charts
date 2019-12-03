@@ -466,21 +466,42 @@
   # Allow eventgate-logging-external to reach logstash kafkas
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-logging-external'
-  dst_net: 10.64.0.181/32
+  dst_net: 10.64.0.181/32 # logstash1010
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-logging-external'
-  dst_net: 10.64.16.30/32
+  dst_net: 10.64.16.30/32 # logstash1011
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-logging-external'
-  dst_net: 10.64.48.177/32
+  dst_net: 10.64.48.177/32 # logstash1012
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:861:101:10:64:0:181/128 # logstash1010
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:861:102:10:64:16:30/128 # logstash1011
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:861:107:10:64:48:177/128 # logstash1012
   protocol: tcp
   dst_ports:
     - 9092
