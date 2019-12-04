@@ -1,0 +1,126 @@
+# Default values for changepropagation.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/mediawiki-services-change-propagation
+  version: latest # we use latest everywhere in the defaults.
+  port: 7272 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: ["node"]
+  args: ["server.js", "-c", "/etc/changeprop/config.yaml"]
+  requests:
+    cpu: 1m # Just some sample, edit these
+    memory: 300Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 600Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 7272
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 7272
+
+  purge_host: 127.0.0.1
+  purge_port: 4827
+
+  concurrency: 50
+  domain_zone: org
+
+  event_service_uri: localhost:32192/v1/events
+
+  # Log threshold. Defaults info in template if not defined here
+  log_level: debug
+
+  proxy:
+
+  rerendered_pcs_endpoints:
+    - mobile-sections
+    - media-list
+    - mobile-html
+    - references
+
+  site: datacenter1
+
+    # Replace the Mediawiki URI with the correct K8s URI
+  mwapi_uri: http://localhost/w/api.php
+
+  # Replace the Restbase URI with the correct K8s URI
+  restbase_uri: http://localhost:7231
+
+  # Ores pre-caching
+  ores:
+    uris:
+      - http://localhost
+
+  # kafka
+  kafka:
+    broker_list:
+      - localhost
+    max_bytes: 4194304
+    compression_codec: snappy
+
+  # redis
+  redis:
+    uri: 127.0.0.1:6379
+    pass:
+
+  # add here any volumes to mount onto the pod. Example:
+  # volumes:
+  #   - name: myvolumename
+  #      hostPath:
+  #        path: /myvolumepath # where on the host machine
+
+  # add here any mounted volumes to make accessible to the container. Example:
+  # volumeMounts:
+  #   - name: myvolumename # the name from your volume above
+  #     mountPath: /path/ # where it should live in your container
+
+# metrics
+metrics:
+  name: changeprop
+
+# monitorin
+monitoring:
+    enabled: false
+    image_version: latest
+
+service:
+  name: changeprop
+  deployment: "minikube" # valid values are "production" and "minikube"
+  port:
+    name: changeprop # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 7272 # the number or name of the exposed port on the container
+    port: 7272 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false
+  image_version: latest
+  public_port: 2345 # the port where TLS will be exposed
+  certs: {}
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []

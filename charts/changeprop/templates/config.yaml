@@ -1,0 +1,917 @@
+{{- define "config.app" }}
+
+# service-runner Changeprop app config.yaml.
+spec: &spec
+  x-sub-request-filters:
+    - type: default
+      name: http
+      options:
+        allow:
+          - pattern: /^https?:\/\//
+            forward_headers:
+              user-agent: true
+  title: The Change Propagation root
+  paths:
+{{- if eq .Values.service.deployment "production" }}
+    /{api:sys}/limit:
+      x-modules:
+        - path: sys/rate_limiter.js
+          options:
+            redis: &redis_config
+              path: {{ .Values.main_app.redis_uri }}
+              password: {{ .Values.main_app.redis_pass | default "" }}
+            limiters:
+              blacklist:
+                # First, allow no more then 100 errors per week
+                # The precision parameter controls the step a sliding window moves by
+                - interval: 604800
+                  limit: 100
+                  precision: 86400
+                # Secondly to avoid bursts in case of outages, don't allow more then 10
+                # errors per hour
+                - interval: 3600
+                  limit: 10
+    /{api:sys}/dedupe:
+      x-modules:
+        - path: sys/deduplicator.js
+          options:
+            redis: *redis_config
+{{- end }}
+    /{api:sys}/purge:
+      x-modules:
+        - path: sys/purge.js
+          options:
+            host: {{ .Values.main_app.purge_host }}
+            port: {{ .Values.main_app.purge_port }}
+    /{api:sys}/links:
+      x-modules:
+        - path: sys/dep_updates.js
+          options:
+            templates:
+              mw_api:
+                uri: {{ .Values.main_app.mwapi_uri }}
+                headers:
+                  host: '{{ "{{" }}message.meta.domain{{ "}}" }}'
+                body:
+                  formatversion: 2
+    /sys/ores:
+      x-modules:
+        - path: sys/ores_updates.js
+          options:
+            ores_precache_uris:
+{{- range .Values.main_app.ores.uris }}
+              - {{ . -}}/v3/precache
+{{- end  }}
+            event_service_uri: {{ .Values.main_app.event_service_uri }}
+    /{api:sys}/queue:
+      x-modules:
+        - path: sys/kafka.js
+          options:
+            metadata_broker_list: {{  .Values.main_app.kafka.broker_list }}
+            dc_name: {{ .Values.main_app.site }}
+            consumer:
+              # JobQueue jobs might sent messages larget then 1 Meg,
+              # so we increase the max message size in kafka and have to
+              # ajust the consumers accordingly.
+              fetch.message.max.bytes: {{ .Values.main_app.kafka.max_bytes | int64 }}
+              # Silence noisy connection reaper logging
+              # https://github.com/Blizzard/node-rdkafka/issues/326
+              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+              log.connection.close: false
+            producer:
+              compression.codec: {{ .Values.main_app.kafka.compression_codec }}
+              # Silence noisy connection reaper logging
+              # https://github.com/Blizzard/node-rdkafka/issues/326
+              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+              log.connection.close: false
+            concurrency: {{ .Values.main_app.concurrency }}
+            startup_delay: 60000
+            blacklist:
+              # Wikipedia
+              ca.wikipedia.org:
+                - 'Usuari:TronaBot/log:Activitat_reversors_per_hores'
+              ceb.wikipedia.org:
+                - 'Gumagamit:Lsjbot/Anomalier-PRIVAT'
+                - 'Gumagamit:Lsjbot/Kartrutor2'
+              de.wikipedia.org:
+                - '/The_Big_Bang_Theory\/Staffel/'
+                - 'Wikipedia:Café'
+                - 'Wikipedia:Defekte_Weblinks/Bot2015-Problem'
+                - 'Wikipedia_Diskussion:Hauptseite/Schon_gewusst'
+                - 'Benutzer:Anglo-Araneophilus/Almigdad_Mojalli'
+                - 'Benutzer:Wartungsstube/Berlin'
+                - 'Benutzer:Wartungsstube/Musik'
+                - 'Benutzer:Wartungsstube/Unternehmen'
+                - 'Benutzer:Wartungsstube/Schifffahrt'
+                - 'Benutzer:Verum/ege'
+                - 'Benutzer:Septembermorgen/Bottabelle/Französische_Kantone_N–Z'
+                - 'Wikipedia:WikiProjekt_Planen_und_Bauen/Zu_überarbeitende_Artikel'
+              en.wikipedia.org:
+                - 'User:B-bot/Event_log'
+                - 'User:DeltaQuad/UAA/Wait'
+                - 'User:JamesR/AdminStats'
+                - 'User:Kudpung/Dashboard'
+                # Various dashboards
+                - 'User:Breawycker/Wikipedia'
+                - 'User:Sonia/dashboard'
+                - 'User:Ocaasi/dashboard'
+                - 'User:Nolelover'
+                - 'User:Calmer_Waters'
+                - '/User%3ARedwolf24\//'
+                - 'User:Technical_13/dashboard'
+                - 'Template:Cratstats'
+                # Cyberbot is creating 90% of null edits
+                - '/User:Cyberbot_I\//'
+                - '/User:Cyberbot_II\//'
+                - '/User:Cyberpower678\//'
+                - '/User:Darts170Darts170\//'
+                - 'صارف:Cyberbot_I/Run/Adminstats'
+                - 'Defnyddiwr:Cyberbot_I/Run/Adminstats'
+                - 'User:Pentjuuu!.!/sandbox'
+                - 'User:AllyD/CSDlog'
+                - 'User:Peter_I._Vardy/sandbox-13'
+                - 'User:I_dream_of_horses/CSD_log'
+                - 'User:MJ180MJ180/sandbox'
+                - 'Talk:United_States_presidential_election,_2016'
+                - 'Wikipedia:Reference_desk/Humanities'
+                - 'Wikipedia:WikiProject_Deletion_sorting/People'
+                - 'Wikipedia:WikiProject_Deletion_sorting/United_States_of_America'
+                - 'Wikipedia:Articles_for_creation/Redirects'
+                - 'Wikipedia:Administrators%27_noticeboard/Incidents'
+              es.wikipedia.org:
+                - 'Wikipedia:Café/Archivo/Miscelánea/Actual'
+              fr.wikipedia.org:
+                - 'Utilisateur:ZéroBot/Log/Erreurs'
+                - 'Utilisateur:SyntaxTerror/Ajouts_du_modèle_Autorité'
+                - '/Utilisateur:[\s\S]+[Bb]rouillon'
+                - 'Discussion_utilisateur:NaggoBot/CommonsDR'
+                - 'Projet:France/Annonces/Admissibilité'
+                - '/Wikipédia:Le_saviez-vous_.+/Anecdotes_proposées/'
+              hy.wikipedia.org:
+                - "/Մասնակից:Omicroñ\\'R/"
+              it.wikipedia.org:
+                - 'Utente:Effems/Sandbox7'
+              nl.wikipedia.org:
+                - 'Gebruiker:Eg-T2g/Kladblok'
+              pt.wikipedia.org:
+                - 'Wikipédia:Pedidos/Bloqueio'
+              ru.wikipedia.org:
+                - 'Википедия:Форум/Технический'
+                - 'Портал:Герпетология'
+              sv.wikipedia.org:
+                - 'Användare:Lsjbot/Anomalier-PRIVAT'
+                - 'Användare:Lsjbot/Namnkonflikter-PRIVAT'
+              ur.wikipedia.org:
+                - 'نام_مقامات_ایل'
+                - 'نام_مقامات_ڈی'
+                - 'نام_مقامات_جے'
+                - 'نام_مقامات_جی'
+                - 'نام_مقامات_ایچ'
+                - 'نام_مقامات_ایم'
+                - 'نام_مقامات_ایس'
+              zh.wikipedia.org:
+                - 'Wikipedia:互助客栈/条目探讨'
+                - 'Draft:日本人工湖列表'
+              # Wikisource
+              pl.wikisource.org:
+                - '/^Wśród_czarnych\//'
+              # Wikimedia
+              commons.wikimedia.org:
+                - '/Commons:Featured_picture_candidates\//'
+                - 'Commons:Quality_images/Subject/Places/Natural_structures'
+                - '/Commons:Undeletion_requests\//'
+                - '/Commons:WikiProject_Aviation\/recent_uploads\//'
+                - '/\/(?:User|Benutzer):/'
+            templates:
+#               summary_definition_rerender: &summary_definition_rerender_spec
+#                 topic: 'resource_change'
+#                 limiters:
+#                   blacklist: 'summary:{message.meta.uri}'
+#                 cases:
+#                   - match:
+#                       meta:
+#                         uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^\/]+)$/'
+#                       tags:
+#                         - restbase
+#                     match_not:
+#                       - meta:
+#                           domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+#                       - meta:
+#                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     exec:
+#                       method: get
+#                       # Don't encode title since it should be already encoded
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+#                       query:
+#                         redirect: false
+#                       headers:
+#                         cache-control: no-cache
+#                   - match:
+#                       meta:
+#                         # These URIs are coming from RESTBase, so we know that article titles will be normalized
+#                         # and main namespace articles will not have : (uri-encoded, so %3a or %3A)
+#                         uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/((?:(?!%3a|%3A|\/).)+)$/'
+#                         domain: '/^en\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+#                       tags:
+#                         - restbase
+#                     exec:
+#                       method: post
+#                       uri: /sys/purge
+#                       body:
+#                         - meta:
+#                             # Don't encode title since it should be already encoded
+#                             uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+
+#               summary_definition_rerender_transcludes: &summary_definition_rerender_transcludes_spec
+#                 <<: *summary_definition_rerender_spec
+#                 topic: 'change-prop.transcludes.resource-change'
+
+#               metadata_purge: &metadata_purge_spec
+#                 topic: 'resource_change'
+#                 limiters:
+#                   blacklist: 'metadata:"{"message.meta.uri"}"'
+#                 match:
+#                   meta:
+#                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/(?<title>.+)$/'
+#                     domain: '/\.(?:wikipedia|wiktionary|wikivoyage)\.{{ .Values.main_app.domain_zone }}$/'
+#                   tags:
+#                     - restbase
+#                 exec:
+#                   method: post
+#                   uri: '/sys/purge/'
+#                   body:
+#                     - meta:
+#                         uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+
+#               metadata_purge_transcludes: &metadata_purge_transcludes_spec
+#                 <<: *metadata_purge_spec
+#                 topic: 'change-prop.transcludes.resource-change'
+
+# {{ range .Values.main_app.rerendered_pcs_endpoints -}}
+#               {{ . }} _rerender: &{{ . }}_rerender_spec
+#                 topic: 'resource_change'
+#                 match:
+#                   meta:
+#                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^/]+)$/'
+#                     domain: '/\.wikipedia\.{{ $.Values.main_app.domain_zone }}$/'
+#                   tags:
+#                     - restbase
+#                 exec:
+#                   method: get
+#                   # Don't encode title since it should be already encoded
+#                   uri: '{{ $.Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/{{ . }}/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+#                   query:
+#                     redirect: false
+#                   headers:
+#                     cache-control: no-cache
+#                 limiters:
+#                   blacklist: '{{ . }}:{message.meta.uri}'
+
+#               {{ . }}_rerender_transcludes: &{{ . }}_rerender_transcludes_spec
+#                 <<: *{{ . }}_rerender_spec
+#                 topic: 'change-prop.transcludes.resource-change'
+
+# {{- end }}
+#               purge_varnish: &purge_varnish_spec
+#                 enable_blacklist: false
+#                 topic: 'resource_change'
+#                 match:
+#                   meta:
+#                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/(?<title>.+)$/'
+#                   tags:
+#                     - restbase
+#                 match_not:
+#                   meta:
+#                     domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                 exec:
+#                   method: post
+#                   uri: '/sys/purge/'
+#                   body:
+#                     - meta:
+#                         uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+
+#               purge_varnish_transcludes: &purge_varnish_transcludes_spec
+#                 <<: *purge_varnish_spec
+#                 topic: 'change-prop.transcludes.resource-change'
+
+              # RESTBase update jobs
+              mw_purge:
+                topic: resource_change
+                limiters:
+                  blacklist: 'html:{message.meta.uri}'
+                cases:
+                  - match:
+                      meta:
+                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                      tags:
+                        - purge
+                    exec: &mw_purge_wikipedia_rerender
+                      - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                        query:
+                          redirect: false
+                        # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
+                        # content, so let's purge them as well just in case. The rate is low.
+                      - method: get
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                        query:
+                          redirect: false
+                      - method: get
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                        query:
+                          redirect: false
+                  - match:
+                      meta:
+                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        domain: '/wiktionary.{{ .Values.main_app.domain_zone }}$/'
+                      tags:
+                        - purge
+                    exec: &mw_purge_wiktionary_rerender
+                      - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                        query:
+                          redirect: false
+                  - match:
+                      meta:
+                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                      tags:
+                        - purge
+                    match_not: &others_match_not
+                      - meta:
+                          domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                      - meta:
+                          domain: '/\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                        page_namespace: 0
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                        page_namespace: 120
+                    exec: &mw_purge_others_rerender
+                      - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                        query:
+                          redirect: false
+                        # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
+                        # content, so let's purge them as well just in case. The rate is low.
+                      - method: get
+                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                        query:
+                          redirect: false
+
+#               null_edit:
+#                 topic: resource_change
+#                 ignore:
+#                   status:
+#                     - 403 # Ignoring 403 since some of the pages with high number of null_edit events are blacklisted
+#                     - 412
+#                 limiters:
+#                   blacklist: 'html:{message.meta.uri}'
+#                 cases:
+#                   - match:
+#                       meta:
+#                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+#                         domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+#                       tags:
+#                         - purge
+#                     exec: *mw_purge_wikipedia_rerender
+#                   - match:
+#                       meta:
+#                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+#                         domain: '/wiktionary.{{ .Values.main_app.domain_zone }}$/'
+#                       tags:
+#                         - purge
+#                     exec: *mw_purge_wiktionary_rerender
+#                   - match:
+#                       meta:
+#                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+#                       tags:
+#                         - purge
+#                     match_not: &others_match_not
+#                        - meta:
+#                            domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+#                        - meta:
+#                            domain: '/\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+#                        - meta:
+#                            domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                          page_namespace: 0
+#                        - meta:
+#                            domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                          page_namespace: 120
+#                     exec: *mw_purge_others_rerender
+
+#               page_edit:
+#                 topic: mediawiki.revision-create
+#                 limiters:
+#                   blacklist: 'html:{message.meta.uri}'
+#                 retry_on:
+#                   status:
+#                     - '5xx'
+#                     - 404 # Sometimes occasional 404s happen because of the mysql replication lag, so retry
+#                 match:
+#                   rev_content_changed: true
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                     # Block Scribunto Module dependencies as they create a lot of load
+#                     # with supposingly very low actual effect
+#                   - meta:
+#                       domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+#                     page_namespace: 828
+#                 exec:
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                     headers:
+#                       cache-control: no-cache
+#                       x-restbase-parentrevision: '{{ "{{" }}message.rev_parent_id{{ "}}" }}'
+#                       if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+#                     query:
+#                       redirect: false
+#                   - method: post
+#                     uri: '/sys/links/transcludes/{message.page_title}'
+#                     body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               revision_visibility_change:
+#                 enable_blacklist: false
+#                 topic: mediawiki.revision-visibility-change
+#                 ignore:
+#                   status:
+#                     - 403 # When the revision is hidden 403 will be returned by RESTBase, it's a valid situation
+#                     - 412
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                 exec:
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                     headers:
+#                       cache-control: no-cache
+#                     query:
+#                       redirect: false
+#                   # For page revision restriction RESTBase doesn't emit resource_change events, and to go through
+#                   # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
+#                   # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
+#                   # Only purge the URIs with a rev_id since the latest revision can not be restricted.
+#                   - method: post
+#                     uri: '/sys/purge/'
+#                     body:
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+# {{ range .Values.main_app.rerendered_pcs_endpoints }}
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+# {{ end }}
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+
+#               page_delete:
+#                 disable_blacklist: true
+#                 topic: mediawiki.page-delete
+#                 ignore:
+#                   status:
+#                     - 404 # 404 is a normal response for page deletion
+#                     - 412
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                 exec:
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}'
+#                     headers:
+#                       cache-control: no-cache
+#                     query:
+#                       redirect: false
+#                   # The links to the deleted page should become red again
+#                   - method: post
+#                     uri: '/sys/links/backlinks/{message.page_title}'
+#                     body: '{{ "{{" }}globals.message{{ "}}" }}'
+#                   # For page deletion RESTBase doesn't emit resource_change events, and to go through
+#                   # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
+#                   # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
+#                   - method: post
+#                     uri: '/sys/purge/'
+#                     body:
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/summary/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+# {{ range .Values.main_app.rerendered_pcs_endpoints }}
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+# {{ end }}
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}'
+#                       - meta:
+#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+
+#               page_restore:
+#                 disable_blacklist: true
+#                 topic: mediawiki.page-undelete
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                 exec:
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}'
+#                     headers:
+#                       cache-control: no-cache
+#                     query:
+#                       redirect: false
+#                   # The links to the restored page should not be red any more
+#                   - method: post
+#                     uri: '/sys/links/backlinks/{message.page_title}'
+#                     body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               page_move:
+#                 disable_blacklist: true
+#                 topic: mediawiki.page-move
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                 exec:
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+#                     headers:
+#                       cache-control: no-cache
+#                       if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+#                     query:
+#                       redirect: false
+#                   - method: get
+#                     uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.prior_state.page_title}'
+#                     headers:
+#                       cache-control: no-cache
+#                     query:
+#                       redirect: false
+
+#               on_transclusion_update:
+#                 concurrency: {{ mul .Values.main_app.concurrency 4 }}
+#                 topic: change-prop.transcludes.resource-change
+#                 limiters:
+#                   blacklist: 'html:{message.meta.uri}'
+#                 cases:
+#                   - match:
+#                       $schema: '/^\/resource_change\/.*/'
+#                       meta:
+#                         uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+#                       tags: [ 'transcludes' ]
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+#                       headers:
+#                         cache-control: no-cache
+#                         if-unmodified-since: '{{ "{{" }}date(message.root_event.dt){{ "}}" }}'
+#                         x-restbase-mode: '{{ "{{" }}message.tags[1]{{ "}}" }}'
+#                       query:
+#                         redirect: false
+#                     match_not:
+#                       meta:
+#                         domain: ceb.wikipedia.org
+#                   - match:
+#                       $schema: '/^\/change-prop\/continue\/.*/'
+#                     match_not:
+#                       - meta:
+#                           domain: ceb.wikipedia.org
+#                       - original_event:
+#                           # Block Scribunto Module dependencies as they create a lot of load
+#                           # with supposingly very low actual effect
+#                           meta:
+#                             domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+#                           page_namespace: 828
+#                     exec:
+#                       method: post
+#                       uri: '/sys/links/transcludes/{message.original_event.page_title}'
+#                       body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               page_create:
+#                 topic: mediawiki.page-create
+#                 retry_on:
+#                   status:
+#                     - '5xx'
+#                     - 404 # Sometimes occasional 404s happen because of the mysql replication lag, so retry
+#                 match_not:
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 0
+#                   - meta:
+#                       domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                     page_namespace: 120
+#                 exec:
+#                   - method: post
+#                     uri: '/sys/links/backlinks/{message.page_title}'
+#                     body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               on_backlinks_update:
+#                 topic: change-prop.backlinks.resource-change
+#                 limiters:
+#                   blacklist: 'html:{message.meta.uri}'
+#                 cases:
+#                   - match:
+#                       $schema: '/^\/resource_change\/.*/'
+#                       meta:
+#                         uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+#                       tags: [ 'backlinks' ]
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+#                       headers:
+#                         cache-control: no-cache
+#                         if-unmodified-since: '{{ "{{" }}date(message.root_event.dt){{ "}}" }}'
+#                         x-restbase-mode: '{{ "{{" }}message.tags[1]{{ "}}" }}'
+#                       query:
+#                         redirect: false
+#                   - match:
+#                       $schema: '/^\/change-prop\/continue\/.*/'
+#                     exec:
+#                       method: post
+#                       uri: '/sys/links/backlinks/{message.original_event.page_title}'
+#                       body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               # ORES caching updates
+#               ores_cache:
+#                 topic: mediawiki.revision-create
+#                 concurrency: 25
+#                 ignore:
+#                   status:
+#                     - 503
+#                 exec:
+#                   method: post
+#                   uri: '/sys/ores/'
+#                   query:
+#                     postevent: true
+#                   body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               wikidata_description_on_edit:
+#                 topic: mediawiki.revision-create
+#                 match:
+#                   meta:
+#                     domain: www.wikidata.org
+#                   page_namespace: 0
+#                   # It's impossible to modify a comment in wikidata while editing the entity.
+#                   comment: '/wbeditentity|wbsetdescription|undo|restore/'
+#                   rev_content_changed: true
+#                 exec:
+#                   method: post
+#                   uri: '/sys/links/wikidata_descriptions'
+#                   body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               wikidata_description_on_undelete:
+#                 topic: mediawiki.page-undelete
+#                 match:
+#                   meta:
+#                     domain: www.wikidata.org
+#                   page_namespace: 0
+#                 exec:
+#                   method: post
+#                   uri: '/sys/links/wikidata_descriptions'
+#                   body: '{{ "{{" }}globals.message{{ "}}" }}'
+
+#               on_wikidata_description_change:
+#                 topic: change-prop.wikidata.resource-change
+#                 cases:
+#                   - match:
+#                       meta:
+#                         uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+#                         domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+#                       tags: [ 'wikidata' ]
+#                     exec:
+#                       - method: get
+#                         uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+#                         headers:
+#                           cache-control: no-cache
+#                         query:
+#                           redirect: false
+#                       - method: get
+#                         uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+#                         headers:
+#                           cache-control: no-cache
+#                         query:
+#                           redirect: false
+#                   - match:
+#                       meta:
+#                         uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+#                       tags: [ 'wikidata' ]
+#                     match_not: *others_match_not
+#                     exec:
+#                       - method: get
+#                         uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+#                         headers:
+#                           cache-control: no-cache
+#                         query:
+#                           redirect: false
+
+#               # Rerender summary when pageimages page property change
+#               page_images_summary:
+#                 topic: mediawiki.page-properties-change
+#                 # We don't support 'OR' in the match section, so workaround it by 2 cases with identical exec
+#                 cases:
+#                   - match:
+#                       added_properties:
+#                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
+#                     match_not:
+#                       - meta:
+#                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                         page_namespace: 0
+#                       - meta:
+#                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                         page_namespace: 120
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{message.page_title}'
+#                       headers:
+#                         cache-control: no-cache
+#                       query:
+#                         redirect: false
+#                   - match:
+#                       removed_properties:
+#                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
+#                     match_not:
+#                       - meta:
+#                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                         page_namespace: 0
+#                       - meta:
+#                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+#                         page_namespace: 120
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{message.page_title}'
+#                       headers:
+#                         cache-control: no-cache
+#                       query:
+#                         redirect: false
+
+#               page_images_mobile:
+#                 topic: mediawiki.page-properties-change
+#                 # We don't support 'OR' in the match section, so workaround it by 2 cases with identical exec
+#                 cases:
+#                   - match:
+#                       meta:
+#                         domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+#                       added_properties:
+#                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{message.page_title}'
+#                       headers:
+#                         cache-control: no-cache
+#                       query:
+#                         redirect: false
+#                   - match:
+#                       meta:
+#                         domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+#                       removed_properties:
+#                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
+#                     exec:
+#                       method: get
+#                       uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{message.page_title}'
+#                       headers:
+#                         cache-control: no-cache
+#                       query:
+#                         redirect: false
+
+#               # Map tile cache invalidation
+#               purge_map_tile:
+#                 topic: 'resource_change'
+#                 match:
+#                   tags:
+#                     - tilerator
+#                 exec:
+#                   method: post
+#                   uri: '/sys/purge/'
+#                   body:
+#                     - meta:
+#                         uri: '{{ "{{" }}message.meta.uri{{ "}}" }}'
+
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Number of workers to start in parallel after the first worker.
+# The first worker is always started independently. After it has completed
+# its start-up, this number controls the number of workers to start in
+# parallel until `num_workers` have been started. Note that setting this
+# number to a too high a value might lead to high resource consumption
+# (especially of CPU) during the start-up process.
+startup_concurrency: 4
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 750
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 30000
+
+# Logger info
+logging:
+  level:  {{ .Values.main_app.log_level | default "info" }}
+  streams:
+    - type: stdout
+
+
+# Statsd metrics reporter
+
+metrics:
+  name: {{ .Values.metrics.name }}
+  host: localhost
+  port: 9125
+  type: statsd
+
+services:
+  - name: {{ .Values.service.name }}
+    # a relative path or the name of an npm package, if different from name
+    module: hyperswitch
+    # per-service config
+    conf:
+      cors: "*"
+      port: {{ .Values.main_app.port }}
+      # interface: localhost # uncomment to only listen on localhost
+      # URL of the outbound proxy to use (complete with protocol)
+      proxy: {{ .Values.main_app.proxy | default "" }}
+      # the list of domains for which not to use the proxy defined above
+      # no_proxy_list:
+      #   - domain1.com
+      #   - domain2.org
+      # the list of incoming request headers that can be logged; if left empty,
+      # the following headers are allowed: cache-control, content-length,
+      # content-type, if-match, user-agent, x-request-id
+      # log_header_whitelist:
+      #   - cache-control
+      #   - content-length
+      #   - content-type
+      #   - if-match
+      #   - user-agent
+      #   - x-request-id
+      user_agent: ChangePropagation/WMF
+      spec: *spec
+{{- end}}
