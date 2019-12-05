@@ -1,13 +1,18 @@
 #!/bin/bash
 set -eu
 function fail {
-    _msg=shift
-    echo $_msg && exit 1
+    echo "$@" && exit 1
+}
+
+function get_scaffold_version() {
+    # Using awk instead of a proper yaml parser to reduce dependencies of this script.
+    awk '{if ($1 == "helm_scaffold_version:")  print $2}' _scaffold/values.yaml
 }
 
 
 function main {
     which envsubst || fail "You need envusbst(1) to run this script; please install gettext!"
+    command -v awk || fail "You need awk(1) to run this script. Please install it."
     echo "Please input the name of the service"
     read -r SERVICE_NAME
     test -d "charts/${SERVICE_NAME}" && fail "A service named ${SERVICE_NAME} already exists, cannot recreate it."
@@ -24,7 +29,11 @@ function main {
         filename="$(basename $filepath)"
         cat $filepath | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/$SERVICE_NAME/templates/$filename
     done
-
+    scaffold_version=$(get_scaffold_version)
+    for filepath in common_templates/"${scaffold_version}/"*.tpl; do
+        filename="$(basename $filepath)"
+        cd "charts/${SERVICE_NAME}/templates" && ln -s "../../../${filepath}" "$filename"
+    done
     echo "You can edit your chart (if needed!) at ${PWD}/charts/${SERVICE_NAME}"
 }
 

@@ -58,9 +58,18 @@ config:
   private: {} # Add here all the keys that should be private but still available as env variables
 
 tls:
-  enabled: false
-  image_version: latest
-  public_port: 2345 # the port where TLS will be exposed
+  enabled: false # Switch to true in production
+  image_version: 1.12.1-3 # minimum compatible version
+  public_port: $PORT # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
   certs: {}
 # Add here, via our "secret" system, the cert/key pairs
 #    cert: "your cert here"

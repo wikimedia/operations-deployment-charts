@@ -25,8 +25,5 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
-      {{- if .Values.tls.enabled }}
-      - port: {{ .Values.tls.public_port }}
-        protocol: TCP
-      {{- end }}
+      {{- include "tls.networkpolicy" . | indent 8}}
 {{- end }}
