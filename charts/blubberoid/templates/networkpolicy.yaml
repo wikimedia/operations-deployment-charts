@@ -16,12 +16,5 @@ spec:
     - ports:
         - port: {{ .Values.main_app.port }}
           protocol: TCP
-          {{- if .Values.tls.enabled }}
-        - port: {{ .Values.tls.public_port }}
-          protocol: TCP
-          {{- end }}
-          {{- if .Values.tls.telemetry.enabled }}
-        - port: {{ .Values.tls.telemetry.port }}
-          protocol: TCP
-          {{- end }}
+    {{- include "tls.networkpolicy" . | indent 8 }}
 {{- end }}

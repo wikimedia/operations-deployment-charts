@@ -19,13 +19,7 @@ spec:
         release: {{ .Release.Name }}
       {{- if .Values.tls.enabled }}
       annotations:
-        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
-        {{- if .Values.tls.telemetry.enabled }}
-        envoyproxy.io/scrape: "true"
-        envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
-        {{- else }}
-        envoyproxy.io/scrape: "false"
-        {{- end }}
+        {{- include "tls.annotations" . | indent 8 }}
       {{- end }}
     spec:
       {{- if .Values.affinity }}
@@ -58,38 +52,11 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.tls.enabled }}
-        - name: {{ template "wmf.releasename" . }}-tls-proxy
-          image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          env:
-            - name: SERVICE_NAME
-              value: {{ .Release.Name }}
-            - name: SERVICE_PORT
-              value: "{{ .Values.main_app.port }}" # env variables need to be strings
-            - name: PUBLIC_PORT
-              value: "{{ .Values.tls.public_port }}"
-            - name: ADMIN_LISTEN
-              value: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
-            - name: ADMIN_PORT
-              value: "{{ .Values.tls.telemetry.port }}"
-            - name: UPSTREAM_TIMEOUT
-              value: {{ .Values.tls.upstream_timeout }}
-          ports:
-            - containerPort: {{ .Values.tls.public_port }}
-          volumeMounts:
-            - name: tls-certs-volume
-              mountPath: /etc/envoy/ssl
-              readOnly: true
-{{- end }}
+        {{- include "tls.container" . | indent 8 }}
       volumes:
         {{- if .Values.main_app.policy.enabled }}
         - name: policy-volume
           configMap:
             name: {{ .Release.Name }}-policy
         {{- end }}
-        {{- if .Values.tls.enabled }}
-        - name: tls-certs-volume
-          configMap:
-            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
-        {{- end }}
+        {{- include "tls.volume" . | indent 8 }}
