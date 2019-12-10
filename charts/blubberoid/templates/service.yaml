@@ -19,4 +19,4 @@ spec:
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
     {{- end }}
-{{ template "tls.service" . }}
+{{ include "tls.service" . }}

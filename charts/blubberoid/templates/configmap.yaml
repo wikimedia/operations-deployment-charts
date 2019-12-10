@@ -9,4 +9,4 @@ data:
 {{ include "policy.app" . | indent 4 }}
 ...
 {{- end -}}
-{{ template "tls.config" . }}
+{{ include "tls.config" . }}
