@@ -38,3 +38,4 @@ spec:
   - name: kademlia
     protocol: UDP
     port: {{ .Values.main_app.kademlia_port }}
+{{ include "tls.service" . }}

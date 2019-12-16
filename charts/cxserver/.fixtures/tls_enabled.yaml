@@ -1,0 +1,16 @@
+tls:
+  enabled: true
+  public_port: 4002 # the port where TLS will be exposed
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
