@@ -42,3 +42,16 @@ config:
     LANGUAGES_CACHE_MAX_AGE: 300000
     HEALTHCHECK_QUERY: 'language=de&entity=Q1&revision=3&editLink=/edit/Q1347&preferredLanguages=de|en'
   private: {} # Add here all the keys that should be private but still available as env variables
+tls:
+  enabled: false
+  image_version: 1.13.1-1 # latest as of 20200507 
+  public_port: 4001
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361

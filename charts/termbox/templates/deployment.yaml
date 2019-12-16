@@ -24,6 +24,7 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
+        {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -64,6 +65,7 @@ spec:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
 {{- end }}
+        {{- include "tls.container" . | indent 8 }}
       volumes:
         {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
         {{- if .Values.monitoring.enabled }}
@@ -74,3 +76,4 @@ spec:
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
+        {{- include "tls.volume" . | indent 8 }}
