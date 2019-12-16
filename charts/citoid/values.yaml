@@ -35,3 +35,16 @@ monitoring:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+tls:
+  enabled: false
+  image_version: 1.12.2-3 # minimum compatible version
+  public_port: 4003
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361
