@@ -37,3 +37,16 @@ service:
   # canaries in a probabilistic fashion. It falls upon the deployer to calculate the ratio
   # TODO: Add docs
   canaryof: null
+tls:
+  enabled: false
+  image_version: 1.13.1-1 # latest as of 20200507
+  public_port: 4001
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361
