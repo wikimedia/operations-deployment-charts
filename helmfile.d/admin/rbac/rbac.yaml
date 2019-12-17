@@ -1,5 +1,7 @@
 templates:
+  # ClusterRoles
 - |
+  # Use by deployers
   apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -12,6 +14,7 @@ templates:
     resources: ["pods/portforward"]
     verbs: ["create"]
 - |
+  # Use by prometheus
   apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -20,6 +23,23 @@ templates:
   - nonResourceURLs:
     - /metrics
     verbs: ["get"]
+- |
+  # Used by tiller
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: tiller
+  rules:
+  - apiGroups:
+    - ""
+    - extensions
+    - apps
+    - networking.k8s.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  # ClusterRoleBindings
 - |
   # Used by rsyslog
   apiVersion: rbac.authorization.k8s.io/v1
