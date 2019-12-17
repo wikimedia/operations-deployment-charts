@@ -26,10 +26,6 @@ spec:
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8 }}
     spec:
-      securityContext:
-        # Make sure we set the user to run as
-        runAsUser: 900
-        allowPrivilegeEscalation: false
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
