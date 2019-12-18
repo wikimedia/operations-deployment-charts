@@ -8,6 +8,7 @@
 set -x
 set -e
 
+HELM_HOME=${HELM_HOME:-"/etc/helm"}
 SERVICEACCOUNT=${SERVICEACCOUNT:-"tiller"}
 KUBECONFIG=${KUBECONFIG:-"/etc/kubernetes/kubeconfig"}
 NAMESPACE=$1
@@ -25,11 +26,13 @@ KUBECONFIG=$KUBECONFIG kubectl create serviceaccount ${SERVICEACCOUNT} -n ${NAME
 KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create clusterrolebinding ${SERVICEACCOUNT} --clusterrole=cluster-admin --serviceaccount="${NAMESPACE}:${SERVICEACCOUNT}"
 
 # Initialize helm
-KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
+# Make sure we don't rely on the internal DNS service to avoid the Chicken and egg problem of not having it around yet
+HELM_HOME=$HELM_HOME KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
 	--tiller-namespace=${NAMESPACE} \
 	--tiller-image=docker-registry.discovery.wmnet/tiller:2.12.2-wmf1 \
 	--override spec.template.spec.containers[0].env[2].name"="KUBERNETES_SERVICE_HOST \
 	--override spec.template.spec.containers[0].env[2].value"="${KUBERNETES_SERVICE_HOST}  \
 	--override spec.template.spec.containers[0].env[3].name"="KUBERNETES_SERVICE_PORT \
 	--override spec.template.spec.containers[0].env[3].value"="${KUBERNETES_SERVICE_PORT} \
+	--override spec.template.spec.dnsPolicy="Default" \
 	--skip-refresh
