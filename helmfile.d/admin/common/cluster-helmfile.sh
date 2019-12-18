@@ -11,4 +11,4 @@ popd
 pushd calico
     helmfile "$@"
 popd
-for NS in $(ls namespace/values/*.yaml); do helmfile -e $(basename -s .yaml $NS) "$@" ;done
+for NS in $(ls namespace/values/*.yaml); do helmfile -e $(basename -s .yaml $NS) "$@" ; sleep 1 ;done
