@@ -1,3 +1,7 @@
-Please run the following to get the nodeport of zookeeper
-  MINIKUBE_HOST=$(minikube ip)
-  SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ .Release.name }} -o jsonpath='{.spec.ports[0].nodePort}')
+To access Kafka:
+
+In Minikube:
+  KAFKA_ADDRESS=$(minikube ip):30092
+
+In docker-desktop with Kubernetes:
+  KAFKA_ADDRESS=localhost:30092
