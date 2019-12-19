@@ -24,8 +24,8 @@ spec:
   type: NodePort
   ports:
   - name: kafka
-    port: 9092
-    nodePort: {{ .Values.kafka.advertised_port }}
-    targetPort: 9092
+    port: 9092       # Cluster (pod) port
+    targetPort: 9092 # container (broker) port
+    nodePort: {{ .Values.kafka_advertised_port | default 30092 }} # external port
   selector:
     app: kafka
