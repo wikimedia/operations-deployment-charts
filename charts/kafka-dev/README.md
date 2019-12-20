@@ -7,7 +7,7 @@ the Kafka cluster via a nodePort.
 # Internal Kafka Clients
 
 Internal (kubernetes) cluster Kafka clients should connect to Kafka at
-kafka.default.svc.cluster.local:9092.
+kafka.default.svc.cluster.local:<kafka_internal_port> (default 31092).
 
 # External Kafka Clients
 
@@ -19,7 +19,7 @@ Set
 
 in values.yaml.
 
-External Kafka clients will need to connect to localhost:<kafka_advertised_port>.
+External Kafka clients will need to connect to localhost:<kafka_external_port>.
 
 Or helm install this chart with --set kafka.advertised_host_name=localhost
 
@@ -33,6 +33,8 @@ Set
 in values.yaml.
 
 Or helm install this chart with --set kafka.advertised_host_name=$(minikube ip)
+
+External Kafka clients will need to connect to $(minikube ip):<kafka_external_port>.
 
 
 NOTE: To get Kafka to work in recent versions of minikube, you need to run

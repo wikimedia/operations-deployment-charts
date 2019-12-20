@@ -14,6 +14,13 @@ spec:
   selector:
     app: zookeeper
 ---
+# Kafka is configured with internal and external listeners.
+# In order to work with docker-desktop's routing of localhost:port to the nodePort,
+# we need Kafka to know how to map from each nodePort to a port it actually exposes.
+# It does this by mapping the incoming port number to an advertised.listener.
+# This means that even though we can use different advertised hostnames
+# in advertised listeners, the ports must be the same all the way through
+# from client to nodePort to pod to container/kafka.
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,10 +29,15 @@ metadata:
   name: kafka
 spec:
   type: NodePort
-  ports:
-  - name: kafka
-    port: 9092       # Cluster (pod) port
-    targetPort: 9092 # container (broker) port
-    nodePort: {{ .Values.kafka_advertised_port | default 30092 }} # external port
   selector:
     app: kafka
+  ports:
+  - name: kafka-internal
+    targetPort: {{ .Values.kafka_internal_port | default 31092 }} # container (broker) port
+    port: {{ .Values.kafka_internal_port | default 31092 }}       # cluster (pod) port
+    nodePort: {{ .Values.kafka_internal_port | default 31092 }}   # external port
+  - name: kafka-external
+    targetPort: {{ .Values.kafka_external_port | default 30092 }} # container (broker) port
+    port: {{ .Values.kafka_external_port | default 30092 }}       # cluster (pod) port
+    nodePort: {{ .Values.kafka_external_port | default 30092 }}   # external port
+

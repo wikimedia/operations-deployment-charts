@@ -114,7 +114,7 @@ main_app:
     kafka:
       conf:
         # Override this in release specific values.yaml files
-        metadata.broker.list: ['kafka.default.svc.cluster.local:9092']
+        metadata.broker.list: ['kafka.default.svc.cluster.local:31092']
         compression.codec: snappy
         # Match this to what is set on brokers in production.
         message.max.bytes: 4194304

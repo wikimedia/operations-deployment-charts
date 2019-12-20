@@ -44,16 +44,16 @@ spec:
         # rename the kafka service name in service.yaml as a workaround).
         # See: https://github.com/wurstmeister/kafka-docker/issues/122#issuecomment-253184494
         - name: KAFKA_PORT
-          value: "9092"
+          value: "{{ .Values.kafka_internal_port | default 31092 }}"
         # Listen on two ports:
-        # - 9092 for internal cluster traffic
-        # - kafka_advertised_port (default 30092) for external clients.
+        # - kafka_internal_port (default 31092) for internal cluster traffic
+        # - kafka_external_port (default 30092) for external clients.
         - name: KAFKA_LISTENERS
-          value: "PLAINTEXT://:9092,EXTERNAL://:{{ .Values.kafka_advertised_port | default 30092 }}"
-        # - Internal cluster clients should connect to $KAFKA_SERVICE_HOST:9092
-        # - External clients should connect to kafka_advertised_host:kafka_advertised_port
+          value: "PLAINTEXT://:{{ .Values.kafka_internal_port | default 31092 }},EXTERNAL://:{{ .Values.kafka_external_port | default 30092 }}"
+        # - Internal cluster clients should connect to $KAFKA_SERVICE_HOST:31092
+        # - External clients should connect to kafka_advertised_host:kafka_external_port
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://_{HOSTNAME_COMMAND}:9092,EXTERNAL://{{ .Values.kafka_advertised_host }}:{{ .Values.kafka_advertised_port | default 30092 }}"
+          value: "PLAINTEXT://_{HOSTNAME_COMMAND}:{{ .Values.kafka_internal_port | default 31092 }},EXTERNAL://{{ .Values.kafka_advertised_host }}:{{ .Values.kafka_external_port | default 30092 }}"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
         # Inter-broker traffic should use the interal cluster (ClusterIP:port) advertised listener.
@@ -67,4 +67,9 @@ spec:
         imagePullPolicy: IfNotPresent
         name: kafka
         ports:
-        - containerPort: 9092
+        # NOTE: container port needs to be the same as nodePort so 'localhost' as advertised.host
+        # will work from both external and from the container.
+        - containerPort: {{ .Values.kafka_internal_port | default 31092 }}
+          name: kafka-internal
+        - containerPort: {{ .Values.kafka_external_port | default 30092 }}
+          name: kafka-external
