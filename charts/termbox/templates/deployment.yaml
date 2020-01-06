@@ -33,7 +33,7 @@ spec:
         - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           command: ["nodejs"]
-          args: ["serverBuild/server/service-runner-entrypoint.js", "-c", "/etc/termbox/config.yaml"]
+          args: ["serverBuild/src/server/service-runner-entrypoint.js", "-c", "/etc/termbox/config.yaml"]
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.port }}

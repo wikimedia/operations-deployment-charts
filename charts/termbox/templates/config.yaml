@@ -71,7 +71,7 @@ dns_cache:
 services:
   - name: wikibase-termbox
     # a relative path or the name of an npm package, if different from name
-    module: ./serverBuild/server/server.js
+    module: ./serverBuild/src/server/server.js
     # per-service config
     conf:
       WIKIBASE_REPO: '{env(WIKIBASE_REPO, https://www.wikidata.org/w)}' #use env var with fallback
