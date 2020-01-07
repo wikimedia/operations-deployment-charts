@@ -14,6 +14,8 @@ main_app:
         # Enable Kafka producer TLS (no authentication, just encryption).
         security.protocol: ssl
         ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
+    schema_base_uris:
+    - 'file:///srv/service/schemas/event/primary/jsonschema/'
     schema_precache_uris:
     - /client/error/1.0.0
     topic_prefix: staging.
@@ -54,7 +56,7 @@ main_app:
     SaEqoNHJ2+KytzdcT9HzY/ywvd0tUFBJCCtuGpwVtimHYXkInwFfP4zmFZmsETld
     Jl3aYuLUirKWSp+dQm8ikFCJ2gGaB8WHQWzIswFEw08vpAM=
     -----END CERTIFICATE-----
-  version: 2019-12-13-200604-production
+  version: 2020-01-07-204419-production
 service:
   deployment: production
   port: 33192
