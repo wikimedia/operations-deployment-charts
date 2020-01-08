@@ -66,7 +66,7 @@ spec:
                 - '--service-url=http://localhost:{{ .Values.main_app.port }}/v1/events'
                 - '--dt-field=meta.dt'
                 - examples
-                - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/test/event/0.0.3'
+                - '{{ .Values.main_app.readiness_probe_schema_url }}'
             initialDelaySeconds: 2
           env:
             - name: SERVICE_IDENTIFIER

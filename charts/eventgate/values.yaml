@@ -59,6 +59,12 @@ main_app:
   # to enable Kafka Producer TLS.
   kafka_ca_cert: null
 
+  # The schema at this URL MUST have an JSONSchema examples event entry
+  # That this eventgate instance is configured to allow.
+  # This example event will be POSTed by the readinessProbe to determine
+  # that eventgate is ready to handle events.
+  readiness_probe_schema_url: 'file:///srv/service/schemas/event/primary/jsonschema/test/event/0.0.3'
+
   # EventGate service-runner app defaults config.
   # In production, these should be overridden in service/release specific values files.
   conf:
@@ -82,9 +88,10 @@ main_app:
     # If set, this URI will be prepended to any relative schema URI
     # extracted from each event's schema_field.
 
-    # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at build
-    # time from https://gerrit.wikimedia.org/r/mediawiki/event-schemas
-    schema_base_uris: ['file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/']
+    # /srv/service/schemas/primary is in the eventgate image cloned at build
+    # time from https://gerrit.wikimedia.org/r/schemas/event/primary.
+    schema_base_uris:
+      - 'file:///srv/service/schemas/event/primary/jsonschema/'
 
     # These schema URIs will be 'precached' on service startup.
     # They should be resolveable by the URI prefixes in schema_base_uris.
