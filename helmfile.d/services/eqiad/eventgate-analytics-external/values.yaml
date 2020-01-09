@@ -1,0 +1,88 @@
+service:
+  deployment: production
+  port: 36192
+  routing_tag: eventgate-analytics-external
+
+tls:
+  enabled: true
+  image_version: 1.11.2-1
+  public_port: 4692 # the port where TLS will be exposed
+
+resources:
+  replicas: 3
+
+main_app:
+  name: eventgate-analytics-external
+  version: 2020-01-10-185555-production
+  conf:
+    kafka:
+      conf:
+        metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092
+        # Enforce a smaller message size limit for this externally accessible eventgate instance.
+        message.max.bytes: 1048576
+        # Enable Kafka producer TLS (no authentication, just encryption).
+        security.protocol: ssl
+        ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
+    schema_precache_uris:
+    - /error/0.0.3
+    - /test/event/0.0.3
+    topic_prefix: eqiad.
+
+    # /srv/service/schemas/event/{primary,secondary} is in the eventgate-wikmiedia image cloned at
+    # image build time from https://gerrit.wikimedia.org/r/schemas/event/{primary,secondary}
+    # http://schema.discovery.wmnet hosts a more up to date clone of the secondary (and other)
+    # event schema repositories. These will all be used when looking up schemas.
+    # By also using a remote schema URI, eventgate can discover new schemas without rebuilding the
+    # image.
+    schema_base_uris:
+    - 'file:///srv/service/schemas/event/primary/jsonschema/'
+    - 'file:///srv/service/schemas/event/secondary/jsonschema/'
+    - 'https://schema.discovery.wmnet/repositories/secondary/jsonschema/'
+
+    # Request dynamic stream config from the EventStreamConfig extension MW API endpoint.
+    # We use meta.wikimedia.org here as the default stream configuration wiki.
+    # Streams can be configured per wiki in mediawiki-config, but they should always be at
+    # least configured with a stream name and schema_title available from meta.wikimedia.org.
+    # NOTE: we need all_settings, otherwise we will not receive the stream's schema_title, which
+    # is what EventGate needs to verify that an event of a given schema is allowed in a stream.
+    stream_config_uri: 'https://meta.wikimedia.org/w/api.php?format=json&action=streamconfigs&all_settings=true&streams=<%= stream %>?'
+    # Re-request for yet unknown streams at runtime
+    stream_config_is_dynamic: true
+    # Expect the stream -> settings map in the response at this subobject key
+    stream_config_object_path: streams
+    # Expire and re-request dynamic stream configs every 5 minutes
+    stream_config_ttl: 300
+    stream_config_recache_on_expire: true
+  # This is the Puppet CA cert.
+  kafka_ca_cert: |-
+    -----BEGIN CERTIFICATE-----
+    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
+    -----END CERTIFICATE-----

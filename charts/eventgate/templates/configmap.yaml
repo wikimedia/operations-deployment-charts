@@ -10,8 +10,12 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
-  # TODO: stream-config will eventually come from a remote URL/service.
+{{- if .Values.main_app.stream_config }}
+  # If stream_config is provided, render it in a separate config file.
+  # If this is not given, it is expected to be given from
+  # a remote stream_config_uri.
   stream-config.yaml: |- {{ include "stream.config" . | nindent 4  }}
+{{ end }}
 {{- if .Values.main_app.kafka_ca_cert }}
   kafka_ca.crt.pem: |-
     {{ .Values.main_app.kafka_ca_cert | nindent 4 }}
