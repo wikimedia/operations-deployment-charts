@@ -6,7 +6,14 @@ spec:
   podSelector:
     matchLabels:
       app: {{ template "wmf.chartname" . }}
+      {{- if .Values.service.canaryof }}
+      # We are in canary mode, add a "canary" label to match the actual
+      # release and use "release" label to point to parent
+      canary: {{ .Release.Name }}
+      release: {{ .Values.service.canaryof }}
+      {{- else }}
       release: {{ .Release.Name }}
+      {{- end }}
   policyTypes:
     - Ingress
   ingress:

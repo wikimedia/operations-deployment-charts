@@ -31,3 +31,9 @@ monitoring:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+  # Canary functionality. If canaryof is specified, it must be an already
+  # deployed helm release. In that case, this release will be addressed by the
+  # parent release's service. The settings above become moot. This implements
+  # canaries in a probabilistic fashion. It falls upon the deployer to calculate the ratio
+  # TODO: Add docs
+  canaryof: null
