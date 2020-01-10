@@ -29,6 +29,21 @@ it be
 initialize_namespace.sh is used to create a new namespace in our current
 production infrastructure
 
+= Updating a Chart =
+
+If you want to update an existing chart then changes should be made to it in
+the charts/ directory.
+
+After making the changes the chart version should be
+incremented in the respective Chart.yaml
+
+The chart should then be packaged using `helm package <chart-name>`
+
+The repository index should then be rebuilt using `helm repo index .` from
+the charts/ directory
+
+The resulting files and changes should then be uploaded to gerrit for review
+
 == Basic sanity checks ==
 
 Charts are linted using "helm lint" and "helm template"; the resulting
