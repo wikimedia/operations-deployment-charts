@@ -23,3 +23,16 @@ releases:
     - events: ["prepare"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+  - name: canary
+    namespace: mathoid
+    chart: stable/mathoid
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "canary.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
