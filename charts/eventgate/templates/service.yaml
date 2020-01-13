@@ -1,18 +1,28 @@
+{{- if ne .Values.service.deployment "none" }}
+#
+# Deploy a k8s Service for {{ template "wmf.releasename" . }}
+# routing to all pods that are labeled with:
+#   chart: {{ template "wmf.chartname" . }}
+#   app: {{ .Values.main_app.name }}
+#   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
+#
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
-    app: {{ template "wmf.releasename" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.releasename" . }}
-    release: {{ .Release.Name }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-  - name: http
+  - name: {{ template "wmf.chartname" . }}-http
     protocol: TCP
     port: {{ .Values.main_app.port }}
     {{/* If the port is passed as a value use it, otherwise autoallocate */}}
@@ -44,17 +54,21 @@ apiVersion: v1
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
-    app: {{ template "wmf.releasename" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.releasename" . }}
-    release: {{ .Release.Name }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-    - name: {{ template "wmf.releasename" . }}-https
+    - name: {{ template "wmf.chartname" . }}-https
       protocol: TCP
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
+{{- end }}
+
 {{- end }}

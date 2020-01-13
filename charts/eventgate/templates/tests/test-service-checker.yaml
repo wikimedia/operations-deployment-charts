@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: '{{ template "wmf.releasename" . }}-service-checker'
+  name: '{{ .Values.main_app.name }}-service-checker'
   annotations:
     "helm.sh/hook": test-success
 spec:
   containers:
-  - name: '{{ template "wmf.releasename" . }}-service-checker'
+  - name: '{{ .Values.main_app.name }}-service-checker'
     image: "{{ .Values.docker.registry }}/service-checker"
     imagePullPolicy: {{ .Values.docker.pull_policy }}
     args: ["-t", "5", '$({{ include "wmf.releasename" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "wmf.appbaseurl" . }}']

@@ -1,6 +1,7 @@
 Thank you for installing {{ template "wmf.chartname" . }}.
 
-Your release is named {{ .Release.Name }}.
+
+Your deployment is named {{ template "wmf.releasename" . }}.
 
 To learn more about the release, try:
 

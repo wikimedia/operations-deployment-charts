@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-config
+  name: {{ .Values.main_app.name }}-config
 data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
   # TODO: stream-config will eventually come from a remote URL/service.
@@ -16,9 +16,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-metrics-exporter-config
+  name: {{ .Values.main_app.name }}-metrics-exporter-config
   labels:
-    app: {{ template "wmf.releasename" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -30,10 +31,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
+  name: {{ .Values.main_app.name }}-tls-proxy-certs
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

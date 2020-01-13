@@ -5,7 +5,8 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.releasename" . }}
+      chart: {{ template "wmf.chartname" . }}
+      app: {{ .Values.main_app.name }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

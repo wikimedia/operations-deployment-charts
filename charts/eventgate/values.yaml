@@ -7,17 +7,27 @@ docker:
 resources:
   replicas: 1
 
-monitoring:
-  enabled: true
-  image_version: latest
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
-  port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+  # valid values are "production" and "minikube" and "none".
+  # If "none", no k8s Service will be deployed for this release.
+  deployment: minikube
+  # You need to define this if "production" is used. In minikube environments let it autoallocate
+  port: null
+  # Set routing_tag to the same (arbitrary) value for all releases that you want
+  # this k8s Service to route to.
+  # If you don't to deploy a service with a specific release (e.g. a canary), set service: false
+  # routing_tag defaults to .Release.Name, so by default a Service will only route to the release it is part of.
+  # routing_tag:
 
 tls:
   enabled: false
   public_port: 4192
+
+monitoring:
+  enabled: true
+  image_version: latest
+
 # To be defined in a private space
 # certs:
 #   cert: ... # The service public certificate
@@ -41,6 +51,10 @@ subcharts:
   kafka: false
 
 main_app:
+  # This should uniquely identify your chart's main app's name.
+  # In the case where a chart is used for multiple deployments, this
+  # should be set to something unique for each one.
+  name: eventgate
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
   image: docker-registry.wikimedia.org/wikimedia/eventgate-wikimedia

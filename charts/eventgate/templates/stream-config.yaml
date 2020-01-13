@@ -19,9 +19,9 @@
 # See: https://phabricator.wikimedia.org/T205319
 #
 
-# {{ template "wmf.releasename" . }} is configured to produce validation
-# error events to {{ template "wmf.releasename" . }}.error.validation stream.
-'/^{{ template "wmf.releasename" . }}\.error(\..+)?/':
+# {{ .Values.main_app.name }} is configured to produce validation
+# error events to {{ .Values.main_app.name }}.error.validation stream.
+'/^{{ .Values.main_app.name }}\.error(\..+)?/':
   schema_title: error
 
 # test/event is for systems testing to ensure POST works
