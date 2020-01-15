@@ -32,29 +32,6 @@
   dst_net: 208.80.154.254/32
   protocol: udp
 
-  # TODO: OLD, remove
-  # Allow url-downloaders
-- action: allow
-  dst_ports:
-    - 8080
-  dst_net: 208.80.154.49/32
-  protocol: tcp
-- action: allow
-  dst_ports:
-    - 8080
-  dst_net: 208.80.153.16/32
-  protocol: tcp
-- action: allow
-  dst_ports:
-    - 8080
-  dst_net: 208.80.153.50/32
-  protocol: tcp
-- action: allow
-  dst_ports:
-    - 8080
-  dst_net: 208.80.154.80/32
-  protocol: tcp
-
   # Allow url-downloaders
 - action: allow
   dst_ports:
