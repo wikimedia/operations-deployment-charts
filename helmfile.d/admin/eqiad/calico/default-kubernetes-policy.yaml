@@ -32,6 +32,7 @@
   dst_net: 208.80.154.254/32
   protocol: udp
 
+  # TODO: OLD, remove
   # Allow url-downloaders
 - action: allow
   dst_ports:
@@ -52,6 +53,48 @@
   dst_ports:
     - 8080
   dst_net: 208.80.154.80/32
+  protocol: tcp
+
+  # Allow url-downloaders
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 208.80.154.29/32 # urldownloader1001
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 2620:0:861:1:208:80:154:29/128 # urldownloader1001
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 208.80.154.81/32 # urldownloader1002
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 2620:0:861:3:208:80:154:81/128 # urldownloader1002
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 208.80.153.24/32 # urldownloader2001
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 2620:0:860:1:208:80:153:24/128 # urldownloader2001
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 208.80.153.61/32 # urldownloader2002
+  protocol: tcp
+- action: allow
+  dst_ports:
+    - 8080
+  dst_net: 2620:0:860:2:208:80:153:61/128 # urldownloader2002
   protocol: tcp
 
   # Allow statsd
