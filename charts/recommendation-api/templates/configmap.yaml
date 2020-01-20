@@ -1,0 +1,23 @@
+{{- if .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-metrics-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  prometheus-statsd.conf: |-
+{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
+{{ end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-{{ .Release.Name }}
+data:
+  config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{ template "tls.config" . }}

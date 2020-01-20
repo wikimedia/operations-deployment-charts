@@ -1,0 +1,58 @@
+{{- define "config.app" -}}
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 300
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 7500
+
+# Logger info
+logging:
+  name: recommendation-api
+  streams:
+    - type: stdout
+      named_levels: true
+
+{{- if .Values.monitoring.enabled }}
+# Statsd metrics reporter
+metrics:
+  name: recommendation-api
+  host: localhost
+  port: 9125
+  type: statsd
+{{- end }}
+
+services:
+  - name: recommendation-api
+    module: ./app.js
+    conf:
+      cors: "*"
+      port: {{ .Values.main_app.port }}
+      mwapi_req:
+        method: post
+        uri: http://{{ .Values.main_app.mw_host }}/w/api.php
+        headers:
+          user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
+        body: {{ "'{{" }} request.body {{ "}}'" }}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+      restbase_req:
+        method: {{ "'{{" }}request.method{{ "}}'" }}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers: {{ "'{{" }} request.headers {{ "}}'" }}
+        body: {{ "'{{" }} request.body {{ "}}'" }}
+        uri: http://{{ .Values.main_app.restbase_host }}/api/rest_v1/{+path}
+      wdqsapi_req:
+        method: 'post'
+        uri: 'https://query.wikidata.org/sparql'
+        headers:
+          user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
+        body:
+          format: json
+          query: {{ "'{{" }} request.query {{ "}}'" }}
+{{- end -}}
