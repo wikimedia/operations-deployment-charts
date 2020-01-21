@@ -1,6 +1,3 @@
-# Pre kubernetes 1.8 NetworkPolicy objects could not be updated
-{{- if and (eq .Capabilities.KubeVersion.Major "1") (eq .Capabilities.KubeVersion.Minor "7") .Release.IsUpgrade }}
-{{- else }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -31,4 +28,3 @@ spec:
       - port: 9230 # service-runner worker node inspector port
         protocol: TCP
         {{- end }}
-{{- end }}
