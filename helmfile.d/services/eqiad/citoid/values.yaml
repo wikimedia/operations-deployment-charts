@@ -31,3 +31,9 @@ resources:
 service:
   deployment: production
   port: 1970
+tls:
+  enabled: true
+  image_version: 1.12.2-1
+  public_port: 4003 # the port where TLS will be exposed
+  telemetry:
+    enabled: true
