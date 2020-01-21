@@ -10,7 +10,6 @@
 {{- define "wmf.chartname" -}}
 {{- default .Chart.Name .Values.chartName | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-/*eventgate*/
 
 {{- define "wmf.releasename" -}}
 {{- $name := default .Chart.Name .Values.chartName -}}
