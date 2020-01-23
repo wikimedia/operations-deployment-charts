@@ -52,12 +52,14 @@ main_app:
   port: 8092
   command: ["nodejs"]
   args: ["/srv/service/server.js", "-c", "/etc/eventstreams/config.yaml"]
+
   requests:
     cpu: 100m
     memory: 500Mi
   limits:
     cpu: 1000m
     memory: 1000Mi
+
   liveness_probe:
     tcpSocket:
       port: 8092
@@ -68,10 +70,18 @@ main_app:
 
   log_level: info
 
+  # Override this in your service specific values.yaml file
+  # to enable Kafka consumer TLS.
+  kafka_ca_cert: null
+
   conf:
     kafka:
       metadata.broker.list: 'kafka.default.svc.cluster.local:31092'
       statistics.interval.ms: 5000
+      # Set these to enable Kafka consumer TLS (no authentication, just encryption).
+      #security.protocol: ssl
+      #ssl.ca.location: /etc/eventstreams/kafka_ca.crt.pem
+
 
     # Limit the number of connected clients from the same
     # X-Client-IP per eventstreams process to 1.
