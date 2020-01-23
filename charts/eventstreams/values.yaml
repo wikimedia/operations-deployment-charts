@@ -1,12 +1,49 @@
 # Default values for EventStreams.
 
-
 helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 resources:
   replicas: 1
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    # targetPort and port are main_app.port (8092)
+    nodePort: 30892
+
+tls:
+  enabled: false
+  image_version: latest
+  public_port: 4892 # the port where TLS will be exposed
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: false
+    port: 9361
+
+# EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
+monitoring:
+  enabled: true
+  # These ports are only used when testing in non production dev env.
+  port: {}
+    # port and targetPort default to 9202.
+    # nodePort is auto allocated.
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap env variables
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+
 main_app:
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
@@ -63,36 +100,3 @@ main_app:
         description: "Test event stream"
         topics:
           - datacenter1.test.event
-
-service:
-  deployment: minikube # valid values are "production" and "minikube"
-  port:
-    # targetPort and port are main_app.port (8092)
-    nodePort: 30892
-
-# EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
-monitoring:
-  enabled: true
-  # These ports are only used when testing in non production dev env.
-  port: {}
-    # port and targetPort default to 9202.
-    # nodePort is auto allocated.
-
-config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap env variables
-  private: {} # Add here all the keys that should be private but still available as env variables
-
-tls:
-  enabled: false
-  image_version: latest
-  public_port: 4892 # the port where TLS will be exposed
-  certs: {}
-# Add here, via our "secret" system, the cert/key pairs
-#    cert: "your cert here"
-#    key: "your key here"
-
-# Additional resources if we want to add a port for a debugger to connect to.
-debug:
-  enabled: false
-  # Define here any port that you want to expose for debugging purposes
-  ports: []
