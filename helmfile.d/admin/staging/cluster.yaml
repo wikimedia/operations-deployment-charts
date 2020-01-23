@@ -1,6 +1,4 @@
-kubernetesServiceHost: kubemaster.svc.eqiad.wmnet
-kubernetesServicePort: "6443"
-tillerImage: docker-registry.wikimedia.org/tiller:2.12.2-wmf1
+kubernetesServiceHost: neon.eqiad.wmnet
 limitranges:
   # check out documentation to understand this well
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
@@ -25,12 +23,13 @@ limitranges:
       memory: "2Gi"
       cpu: "3"
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
+# Allow only up to 3 replicas to safeguard the staging cluster
 resourcequota:
   pods: {}
   compute:
     requests:
-      cpu: "90"
-      memory: "60Gi"
+      cpu: "9"
+      memory: "6Gi"
     limits:
-      cpu: "90"
-      memory: "60Gi"
+      cpu: "9"
+      memory: "6Gi"
