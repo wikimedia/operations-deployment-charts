@@ -7,11 +7,11 @@ data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
 
 {{- if .Values.tls.enabled }}
---
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "eventstreams.releasename"   }}-tls-proxy-certs
+  name: {{ template "eventstreams.releasename" . }}-tls-proxy-certs
   labels:
     app: {{ template "eventstreams.chartname" . }}
     chart: {{ template "eventstreams.chartid" . }}
