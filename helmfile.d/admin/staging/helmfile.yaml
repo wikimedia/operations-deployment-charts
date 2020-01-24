@@ -10,8 +10,11 @@ helmDefaults:
   recreatePods: false
   force: false
 
-bases:
-  - envs.yaml
+environments:
+{{- $a := readFile "namespace/envs.yaml" | fromYaml }}
+{{- range $key, $value := $a.environments }}
+  {{ $key }}: {}
+{{- end }}
 
 helmfiles:
   - "namespace/namespace.yaml.gotmpl"
