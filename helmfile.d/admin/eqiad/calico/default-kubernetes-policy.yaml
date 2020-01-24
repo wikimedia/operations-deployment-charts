@@ -199,7 +199,6 @@
   dst_ports:
     - 9092
     - 9093
-    - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics'
   dst_net: 10.64.32.159/32
@@ -545,6 +544,48 @@
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-logging-external'
   dst_net: 2620:0:861:107:10:64:48:177/128 # logstash1012
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.0.112/32 # logstash2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.32.180/32 # logstash2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 10.192.48.131/32 # logstash2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:860:101:10:192:0:112/128 # logstash2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:860:103:10:192:32:180/128 # logstash2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-logging-external'
+  dst_net: 2620:0:860:104:10:192:48:131/128 # logstash2003
   protocol: tcp
   dst_ports:
     - 9092
