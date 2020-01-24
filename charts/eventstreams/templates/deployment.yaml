@@ -20,7 +20,7 @@ spec:
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        prometheus.io/port: "9102"
+        prometheus.io/port: "{{ .Values.monitoring.port.port }}"
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8 }}
     spec:

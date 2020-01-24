@@ -20,7 +20,7 @@ logging:
 # Statsd metrics reporter
 metrics:
   - type: prometheus
-    port: {{ .Values.monitoring.port.targetPort | default 9202 }}
+    port: {{ .Values.monitoring.port.targetPort }}
 {{- end }}
 
 {{- if .Values.main_app.extra_service_runner_conf }}

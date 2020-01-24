@@ -42,9 +42,9 @@ spec:
 {{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
     # If testing monitoring export the service-runner prometheus metrics listen port
     - name:  prometheus-{{ template "eventstreams.releasename" . }}
-      targetPort: {{ .Values.monitoring.port.targetPort | default 9202 }}
-      port: {{ .Values.monitoring.port.port | default 9202 }}
-      nodePort: {{ .Values.monitoring.port.nodePort }} # We're assuming this will be static on minikube
+      targetPort: {{ .Values.monitoring.port.targetPort }}
+      port: {{ .Values.monitoring.port.port }}
+      nodePort: {{ .Values.monitoring.port.nodePort }}
 {{- end }}
 {{ if .Values.debug.enabled }}
 ---

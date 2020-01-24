@@ -29,9 +29,10 @@ tls:
 monitoring:
   enabled: true
   # These ports are only used when testing in non production dev env.
-  port: {}
-    # port and targetPort default to 9202.
-    # nodePort is auto allocated.
+  port:
+    targetPort: 9102
+    port: 9102
+    # nodePort: 31102 auto allocated
 
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap env variables
