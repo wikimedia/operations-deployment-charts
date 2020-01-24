@@ -9,6 +9,6 @@ pushd coredns
     helmfile "$@"
 popd
 pushd calico
-./apply-calico-policy.sh "$@"
+    helmfile "$@"
 popd
 for NS in $(ls values/*.yaml); do helmfile -e $(basename -s .yaml $NS) "$@" ;done
