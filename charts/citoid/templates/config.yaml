@@ -90,8 +90,6 @@ services:
       allowPrivateAddresses: false
       # maximum number of redirects allowed
       maxRedirects: 10
-      # whether to use the WorldCat XISBN service (deprecated)
-      xisbn: {{ .Values.main_app.xisbn }}
       # the WorldCat Search API key to use
       {{ if .Values.main_app.wskey -}}
       wskey: '{{ .Values.main_app.wskey }}'
