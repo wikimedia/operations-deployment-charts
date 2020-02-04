@@ -1,10 +1,7 @@
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   version: latest # we use latest everywhere in the defaults.
-  appbase_url_port: 8889 # port used for wmf.appbaseurl used by service-checker
-  ports:
-    - 8889
-    - 8890
+  port: 8889
 service:
   ports:
     - name: http

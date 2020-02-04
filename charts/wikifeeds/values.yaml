@@ -10,9 +10,7 @@ resources:
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   version: latest # we use latest everywhere in the defaults.
-  appbase_url_port: 8889 # port used for wmf.appbaseurl used by service-checker
-  ports:
-    - 8889
+  port: 8889
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
