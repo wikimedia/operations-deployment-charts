@@ -21,5 +21,5 @@
 {{- end -}}
 
 {{- define "$SERVICE_NAME.appbaseurl" -}}
-http://{{ template "$SERVICE_NAME.releasename" . }}:{{ .Values.main_app.appbase_url_port }}
+http://{{ template "$SERVICE_NAME.releasename" . }}:{{ .Values.main_app.port }}
 {{- end -}}
