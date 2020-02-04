@@ -10,6 +10,13 @@ and deploying it in production
 If you want to create a new chart, use the create\_new\_service.sh script, test
 it and upload a change to the gerrit repo, then await for review.
 
+Template names are global. If two separate charts have templates with the same
+name and are deployed in one release, the last definition of the template will
+be used for both charts. Please take this into account when designing new
+charts. Since the main \_helpers.tpl file is shared across all charts, that
+means you will probably have to ship a different template helpers file that
+contains your own templates, used accordingly
+
 = Other stuff =
 
 The values.yaml files provided by any chart are defaults and their purpose is
