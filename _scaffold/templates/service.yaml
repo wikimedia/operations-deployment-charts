@@ -21,7 +21,7 @@ spec:
       nodePort: {{ .Values.service.port.nodePort }}
 {{- end }}
 {{ if .Values.debug.enabled }}
---
+---
 kind: Service
 apiVersion: v1
 metadata:
