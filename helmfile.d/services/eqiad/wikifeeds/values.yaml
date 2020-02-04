@@ -7,9 +7,7 @@ resources:
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   version: 2020-02-03-180007-production
-  appbase_url_port: 8889 # port used for wmf.appbaseurl used by service-checker
-  ports:
-    - 8889
+  port: 8889
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
@@ -37,12 +35,12 @@ monitoring:
   image_version: 0.0.5
 service:
   deployment: production
-  ports:
-    - name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-      # protocol: TCP # TCP is the default protocol
-      targetPort: 8889 # the number or name of the exposed port on the container
-      port: 8889 # the number of the port desired to be exposed to the cluster
-      nodePort: 8889
+  port:
+   name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+   # protocol: TCP # TCP is the default protocol
+   targetPort: 8889 # the number or name of the exposed port on the container
+   port: 8889 # the number of the port desired to be exposed to the cluster
+   nodePort: 8889
 config:
   public: {}
   private: {}
