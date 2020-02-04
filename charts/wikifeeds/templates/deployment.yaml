@@ -47,8 +47,11 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-          {{- range $k, $v := .Values.main_app.ports }}
-            - containerPort: {{ $v }}
+            - containerPort: {{ .Values.main_app.port }}
+          {{- if .Values.debug.enabled }}
+          {{- range .Values.debug.ports }}
+            - containerPort: {{ . }}
+          {{- end }}
           {{- end }}
           livenessProbe:
 {{ toYaml .Values.main_app.liveness_probe | indent 12 }}

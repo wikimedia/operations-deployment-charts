@@ -11,11 +11,15 @@ spec:
     - Ingress
   ingress:
     - ports:
-      {{- range .Values.main_app.ports }}
+      - port: {{ .Values.main_app.port }}
+        protocol: TCP
+      {{- if .Values.debug.enabled }}
+      {{- range .Values.debug.ports }}
       - port: {{ . }}
         protocol: TCP
       {{- end }}
-      {{- if .Values.monitoring }}
+      {{- end }}
+      {{- if .Values.monitoring.enabled }}
       - port: 9102
         protocol: TCP
       {{- end }}

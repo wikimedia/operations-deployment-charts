@@ -3,12 +3,8 @@ main_app:
   version: latest # we use latest everywhere in the defaults.
   port: 8889
 service:
-  ports:
-    - name: http
-      targetPort: 8889
-      port: 8889
-      nodePort: null
-    - name: telnet # Not really, but it's a test
-      targetPort: 8890
-      port: 23
-      nodePort: null
+  port:
+    name: http
+    targetPort: 8889
+    port: 8889
+    nodePort: null
