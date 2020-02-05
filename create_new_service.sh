@@ -25,10 +25,6 @@ function main {
     cat _scaffold/values.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/values.yaml
     cat _scaffold/Chart.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/Chart.yaml
     cat _scaffold/templates/tests/test-service-checker.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/templates/tests/test-service-checker.yaml
-    for filepath in _scaffold/templates/*.*; do
-        filename="$(basename $filepath)"
-        cat $filepath | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/$SERVICE_NAME/templates/$filename
-    done
     scaffold_version=$(get_scaffold_version)
     for filepath in common_templates/"${scaffold_version}/"*.tpl; do
         filename="$(basename $filepath)"
