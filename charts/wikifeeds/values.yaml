@@ -17,10 +17,10 @@ main_app:
   command: ["nodejs"]
   args: ["server.js", "-c", "/etc/wikifeeds/config.yaml"]
   requests:
-    cpu: 800m
+    cpu: 1m
     memory: 950Mi
   limits:
-    cpu: 1
+    cpu: 3
     memory: 1300Mi
   liveness_probe:
     tcpSocket:
