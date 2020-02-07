@@ -3,7 +3,7 @@ docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
 resources:
-  replicas: 4 # Start with 4, we can bump this
+  replicas: 6
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   version: 2020-02-03-180007-production
