@@ -1,27 +1,5 @@
 kubernetesServiceHost: neon.eqiad.wmnet
-limitranges:
-  # check out documentation to understand this well
-  # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
-  container:
-    min:
-      memory: "100Mi"
-      cpu: "100m"
-    max:
-      memory: "2Gi"
-      cpu: "3"
-    defaultRequest:
-      memory: "100Mi"
-      cpu: "100m"
-    default:
-      memory: "100Mi"
-      cpu: "100m"
-  pod:
-    min:
-      memory: "100Mi"
-      cpu: "100m"
-    max:
-      memory: "2Gi"
-      cpu: "3"
+# check out documentation to understand this well
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 # Allow only up to 3 replicas to safeguard the staging cluster
 resourcequota:
