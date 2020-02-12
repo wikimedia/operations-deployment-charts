@@ -123,16 +123,16 @@ spec:
               readOnly: true
 {{- end }}
       volumes:
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Values.main_app.name }}-metrics-exporter-config-volume
-          configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-exporter-config
-        {{- end }}
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:
             name: {{ template "wmf.releasename" . }}-config
+        {{- if .Values.monitoring.enabled }}
+        - name: metrics-exporter-config-volume
+          configMap:
+            name: {{ template "wmf.releasename" . }}-metrics-exporter-config
+        {{- end }}
         {{- if .Values.tls.enabled }}
-        - name: {{ .Values.main_app.name }}-tls-certs-volume
+        - name: tls-certs-volume
           configMap:
             name: {{ template "wmf.releasename" . }}-tls-proxy-certs
         {{- end }}

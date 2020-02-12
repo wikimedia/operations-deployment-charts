@@ -22,7 +22,7 @@ spec:
     app: {{ .Values.main_app.name }}
     routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-  - name: {{ template "wmf.chartname" . }}-http
+  - name: {{ .Values.main_app.name }}-http
     protocol: TCP
     port: {{ .Values.main_app.port }}
     {{/* If the port is passed as a value use it, otherwise autoallocate */}}
@@ -47,6 +47,7 @@ spec:
     port: 9230
     nodePort: 31230
 {{- end }}
+
 {{ if .Values.tls.enabled }}
 ---
 kind: Service
@@ -65,10 +66,15 @@ spec:
     app: {{ .Values.main_app.name }}
     routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-    - name: {{ template "wmf.chartname" . }}-https
+    - name: {{ .Values.main_app.name }}-https
       protocol: TCP
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
 {{- end }}
 
+{{- else }}
+#
+# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# as service.deployment is set to "{{ .Values.service.deployment }}"
+#
 {{- end }}
