@@ -5,44 +5,40 @@ that accepts events on an HTTP endpoint, validates them against
 JSONSchemas, and produces them to Kafka.
 
 
-## Service Releases
-This deployment chart is used for all EventGate services in WMF production.
-Each service is defined by a specific Helm 'release'.  E.g. the eventgate-analytics
-release --name is 'analytics'.
+## App deployments
+This deployment chart is used for all EventGate app deployments in WMF production.
+Each app is differentiated by the value of main_app.name.  E.g. eventgate-main or eventgate-analytics.
+
+NOTE: eventgate-analytics-external is TBD Q3 2019/2020.
 
 ### eventgate-analytics
-For (mostly) analytics purposes.  Intended to replace usages of [EventLogging](https://wikitech.wikimedia.org/wiki/Analytics/Systems/EventLogging).
+For (mostly) analytics purposes.  Intended to replace usages of
+[EventLogging](https://wikitech.wikimedia.org/wiki/Analytics/Systems/EventLogging).
 
 ### eventgate-main
 For WMF production purposes. It is intended to replace usages of
 [EventBus](https://wikitech.wikimedia.org/wiki/EventBus).
 
-## event-schemas
-Currently, the eventgate pod expects that event schemas are available in the
-EventGate image.
+### eventgate-logging-external
+For client side error logging.
 
-For now, we only have one git schema repo, mediawiki/event-schemas.
-The eventgate-analytics deployment will eventually use schemas from a different
-more analytics focused repository.
+### eventgate-analytics-external
+For client side analytics instrumentation, AKA EventLogging.
+
+
+## event-schemas
+EventGate can fetch event schemas for event validation either from
+a cloned schema repository baked into the image; or from remote
+schema URLs.  Only eventgate-analytics-external uses remote schema repositories.
 
 ## stream config
-stream-config.yaml describes which schemas are allowed to be produced to which topics.
-In the EventBus system, this config file (eventbus-topics.yaml) is in the mediawiki/event-schemas
-repository.  It doesn't belong there. Eventually this will be moved to a separate
-Stream Config service.  For EventGate, we maintain this config here in the chart repo.
-This way, each EventGate deployment can have its own stream config.
-Release specific stream config should be provided in each release specific values file.
+EventGate can use either locally configured or remote stream configuration.
+stream-config.yaml describes which schemas are allowed to be produced to which topics,
+and is used by all services except eventgate-analytics-external.  eventgate-analytics-external
+uses the EventStreamConfig MediaWiki extension to get dynamic configs from the MediaWiki
+action API.
 
-## EventGate Namespace & Service Name
-This chart uses wmf.releasename as the app/service name.  This requires that
-you set release --name to the suffix of your full service name.  When
-deploying eventgate-analytics in production, you should set --name analytics.
-For eventgate-main, you should set --name main.
-
-## Minikube vs Production deployment
-EventGate's service-runner config.yaml is templatized.  If `service.deployment` is 'production' logstash will be configured appropriately.  If `monitoring.enabled` is
-true (the default), statsd will be configured appropriately.
-
+## Minikube Kafka
 In non-production (minikube) deployment, EventGate expects that Kafka is
 running in a pod. See below on how to use the kafka-dev chart for this.
 
