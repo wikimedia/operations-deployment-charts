@@ -88,7 +88,7 @@ spec:
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           volumeMounts:
-            - name: {{ .Values.main_app.name }}-metrics-exporter-config-volume
+            - name: metrics-exporter-config-volume
               mountPath: /etc/monitoring
 {{- end }}
 {{- if .Values.debug_mode_enabled | default false }}
@@ -126,13 +126,13 @@ spec:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Values.main_app.name }}-metrics-exporter-config-volume
           configMap:
-            name: {{ .Values.main_app.name }}-metrics-exporter-config
+            name: {{ template "wmf.releasename" . }}-metrics-exporter-config
         {{- end }}
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:
-            name: {{ .Values.main_app.name }}-config
+            name: {{ template "wmf.releasename" . }}-config
         {{- if .Values.tls.enabled }}
         - name: {{ .Values.main_app.name }}-tls-certs-volume
           configMap:
-            name: {{ .Values.main_app.name }}-tls-proxy-certs
+            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
         {{- end }}
