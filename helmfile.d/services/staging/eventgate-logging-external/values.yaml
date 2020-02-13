@@ -1,4 +1,15 @@
+service:
+  deployment: production
+  port: 33192
+  routing_tag: eventgate-logging-external
+
+tls:
+  enabled: true
+  image_version: 1.11.2-1
+  public_port: 4392 # the port where TLS will be exposed
+
 main_app:
+  name: eventgate-logging-external
   conf:
     # The request body is accepted as an array of events, each of which
     # will be an individual message in Kafka.  Each individual
@@ -59,10 +70,3 @@ main_app:
     Jl3aYuLUirKWSp+dQm8ikFCJ2gGaB8WHQWzIswFEw08vpAM=
     -----END CERTIFICATE-----
   version: 2020-01-10-185555-production
-service:
-  deployment: production
-  port: 33192
-tls:
-  enabled: true
-  image_version: 1.11.2-1
-  public_port: 4392 # the port where TLS will be exposed

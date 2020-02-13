@@ -11,6 +11,37 @@ helmDefaults:
   force: false
 
 releases:
+
+  - name: production
+    namespace: eventgate-logging-external
+    chart: stable/eventgate
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: canary
+    namespace: eventgate-logging-external
+    chart: stable/eventgate
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "values-canary.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  # TODO: Destroy and remove this release after LVS is migrated
+  # to using the production release's Service nodePort.
+  # https://phabricator.wikimedia.org/T245203
   - name: logging-external
     namespace: eventgate-logging-external
     chart: stable/eventgate
