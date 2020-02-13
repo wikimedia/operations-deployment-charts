@@ -11,6 +11,34 @@ helmDefaults:
   force: false
 
 releases:
+
+  - name: production
+    namespace: eventgate-main
+    chart: stable/eventgate
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[EQIAD] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: canary
+    namespace: eventgate-main
+    chart: stable/eventgate
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "values-canary.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[EQIAD] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
   - name: main
     namespace: eventgate-main
     chart: stable/eventgate

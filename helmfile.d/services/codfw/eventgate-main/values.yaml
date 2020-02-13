@@ -1,8 +1,25 @@
+service:
+  deployment: production
+  port: 34192
+  routing_tag: eventgate-main
+
+tls:
+  enabled: true
+  image_version: 1.11.2-1
+  public_port: 4492 # the port where TLS will be exposed
+
+resources:
+  replicas: 3
+
 main_app:
+  name: eventgate-main
+  version: 2020-01-10-185555-production
   conf:
     kafka:
       conf:
         metadata.broker.list: kafka-main2001.codfw.wmnet:9092,kafka-main2002.codfw.wmnet:9092,kafka-main2003.codfw.wmnet:9092
+    schema_base_uris:
+    - 'file:///srv/service/schemas/event/primary/jsonschema/'
     schema_precache_uris:
     - /error/0.0.3
     - /test/event/0.0.3
@@ -66,13 +83,3 @@ main_app:
     # Produced by restbase
     change-prop.transcludes.resource-change:
       schema_title: resource_change
-  version: 2019-09-24-173906-production
-resources:
-  replicas: 3
-service:
-  deployment: production
-  port: 32192
-tls:
-  enabled: true
-  image_version: 1.11.2-1
-  public_port: 4292 # the port where TLS will be exposed
