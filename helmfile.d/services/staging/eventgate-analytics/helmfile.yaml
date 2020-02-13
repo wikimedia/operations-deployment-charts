@@ -11,6 +11,7 @@ helmDefaults:
   force: false
 
 releases:
+
   - name: production
     namespace: eventgate-analytics
     chart: stable/eventgate
@@ -23,6 +24,7 @@ releases:
     - events: ["prepare"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
   - name: canary
     namespace: eventgate-analytics
     chart: stable/eventgate

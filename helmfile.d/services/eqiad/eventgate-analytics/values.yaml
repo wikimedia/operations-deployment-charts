@@ -1,4 +1,18 @@
+service:
+  deployment: production
+  port: 35192
+  routing_tag: eventgate-analytics
+
+tls:
+  enabled: true
+  image_version: 1.11.2-1
+  public_port: 4592 # the port where TLS will be exposed
+
+resources:
+  replicas: 20
+
 main_app:
+  name: eventgate-analytics
   conf:
     kafka:
       conf:
@@ -33,12 +47,3 @@ main_app:
     '/^swift\.(.+\.)?upload-complete$/':
       schema_title: swift/upload/complete
   version: 2019-10-28-185106-production
-resources:
-  replicas: 20
-service:
-  deployment: production
-  port: 31192
-tls:
-  enabled: true
-  image_version: 1.11.2-1
-  public_port: 4192 # the port where TLS will be exposed
