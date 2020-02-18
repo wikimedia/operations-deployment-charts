@@ -26,13 +26,19 @@ main_app:
     - /sparql/query/1.0.0
     topic_prefix: eqiad.
 
-    # /srv/service/schemas/mediawiki-event-schemas is in the eventgate image cloned at
-    # image build time from https://gerrit.wikimedia.org/r/mediawiki/event-schemas.
-    # http://schema.svc hosts a more up to date clone of this (and other) event schema repositories.
-    # Both of these will be used when looking up schemas.
+    # /srv/service/schemas/event/{primary,secondary} is in the eventgate-wikmiedia image cloned at
+    # image build time from https://gerrit.wikimedia.org/r/schemas/event/{primary,secondary}
+    # http://schema.discovery.wmnet hosts a more up to date clone of the secondary (and other)
+    # event schema repositories. These will all be used when looking up schemas.
+    # By also using a remote schema URI, eventgate can discover new schemas without rebuilding the
+    # image.
     schema_base_uris:
+    - 'file:///srv/service/schemas/event/primary/jsonschema/'
+    - 'file:///srv/service/schemas/event/secondary/jsonschema/'
+    - 'https://schema.discovery.wmnet/repositories/secondary/jsonschema/'
+    # TODO: mediawiki schema repo is deprecated; use primary and secondary repos instead.
+    # Will remove this after canary release is done to test this in a canary change.
     - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/'
-    - 'http://schema.svc.eqiad.wmnet:8190/repositories/mediawiki/jsonschema/'
 
   stream_config:
     mediawiki.api-request:
