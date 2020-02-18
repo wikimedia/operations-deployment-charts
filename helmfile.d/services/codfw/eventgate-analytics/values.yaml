@@ -14,6 +14,7 @@ resources:
 
 main_app:
   name: eventgate-analytics
+  version: 2020-01-10-185555-production
   conf:
     kafka:
       conf:
@@ -49,4 +50,3 @@ main_app:
       schema_title: sparql/query
     '/^swift\.(.+\.)?upload-complete$/':
       schema_title: swift/upload/complete
-  version: 2019-10-28-185106-production
