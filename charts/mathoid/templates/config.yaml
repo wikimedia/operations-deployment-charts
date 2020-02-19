@@ -17,9 +17,6 @@ logging:
   name: mathoid
   streams:
     - type: stdout
-    - host: logstash.svc.eqiad.wmnet
-      port: 12201
-      type: gelf
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
