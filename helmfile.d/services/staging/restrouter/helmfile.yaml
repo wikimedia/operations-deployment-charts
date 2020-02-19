@@ -12,6 +12,7 @@ helmDefaults:
 
 releases:
   - name: staging
+    installed: false
     namespace: restrouter
     chart: stable/restrouter
     missingFileHandler: Warn

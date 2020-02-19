@@ -12,6 +12,7 @@ helmDefaults:
 
 releases:
   - name: production
+    installed: false
     namespace: restrouter
     chart: stable/restrouter
     missingFileHandler: Warn
