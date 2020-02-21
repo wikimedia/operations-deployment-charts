@@ -1,0 +1,38 @@
+main_app:
+  version: 2020-01-15-230958-production
+
+  purge_host: 239.128.0.112
+
+  event_service_uri: http://eventgate-main.discovery.wmnet:32192/v1/events
+
+  log_level: info
+
+  site: staging
+
+  mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
+
+  restbase_uri: http://restbase-async.discovery.wmnet:7231
+
+  ores:
+    uris:
+    - http://ores.svc.eqiad.wmnet:8081
+    - http://ores.svc.codfw.wmnet:8081
+
+  kafka:
+    broker_list:
+      - kafka-main1001.eqiad.wmnet
+      - kafka-main1002.eqiad.wmnet
+      - kafka-main1003.eqiad.wmnet
+
+  redis:
+    uri: localhost:6379
+
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+
+service:
+  name: changeprop-staging
+  deployment: "production"
+  port:
+    nodePort: 7272
