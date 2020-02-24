@@ -4,6 +4,7 @@ resources:
 service:
   deployment: production
   # HTTP port 30892 in chart values.yaml
+  routing_tag: eventstreams
 
 tls:
   enabled: true
@@ -13,6 +14,7 @@ tls:
     enabled: true
 
 main_app:
+  name: eventstreams
   version: 2020-01-23-183729-production
 
   # This is the Puppet CA cert.

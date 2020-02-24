@@ -23,3 +23,17 @@ releases:
     - events: ["prepare"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: canary
+    namespace: eventstreams
+    chart: stable/eventstreams
+    missingFileHandler: Warn
+    values:
+    - "values.yaml"
+    - "values-canary.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[STAGING] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]

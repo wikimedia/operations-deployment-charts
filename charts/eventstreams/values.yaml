@@ -4,14 +4,22 @@ helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
+
 resources:
   replicas: 1
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  # valid values are "production" and "minikube" and "none".
+  # If "none", no k8s Service will be deployed for this release.
+  deployment: minikube
   port:
     # targetPort and port are main_app.port (8092)
     nodePort: 30892
+  # Set routing_tag to the same (arbitrary) value for all releases that you want
+  # this k8s Service to route to.
+  # If you don't to deploy a service with a specific release (e.g. a canary), set service.deployment: none
+  # routing_tag defaults to .Release.Name, so by default a Service will only route to the release it is part of.
+  # routing_tag:
 
 tls:
   enabled: false
@@ -44,8 +52,11 @@ debug:
   # Define here any port that you want to expose for debugging purposes
   ports: []
 
-
 main_app:
+  # This should uniquely identify your chart's main app's name.
+  # In the case where a chart is used for multiple deployments, this
+  # should be set to something unique for each one.
+  name: eventstreams
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
   image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-eventstreams

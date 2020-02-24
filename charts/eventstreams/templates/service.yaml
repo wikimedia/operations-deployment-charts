@@ -1,20 +1,30 @@
+{{- if ne .Values.service.deployment "none" }}
+#
+# Deploy a k8s Service for {{ template "wmf.releasename" . }}
+# routing to all pods that are labeled with:
+#   chart: {{ template "wmf.chartname" . }}
+#   app: {{ .Values.main_app.name }}
+#   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
+#
 {{ if .Values.tls.enabled }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-tls-service
+  name: {{ template "wmf.releasename" . }}-tls-service
   labels:
-    app: {{ template "eventstreams.chartname" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "eventstreams.chartname" . }}
-    release: {{ .Release.Name }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-    - name: {{ template "eventstreams.releasename" . }}-tls-port
+    - name: {{ .Values.main_app.name }}-tls-port
       targetPort: {{ .Values.tls.public_port }}
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
@@ -23,50 +33,64 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "eventstreams.releasename" . }}
+  name: {{ template "wmf.releasename" . }}
   labels:
-    app: {{ template "eventstreams.chartname" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "eventstreams.chartname" . }}
-    release: {{ .Release.Name }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-    - name: http-{{ template "eventstreams.releasename" . }}
+    - name: {{ .Values.main_app.name }}-http
       targetPort: {{ .Values.service.port.targetPort | default .Values.main_app.port }}
       port: {{ .Values.service.port.port | default .Values.main_app.port }}
       nodePort: {{ .Values.service.port.nodePort }}
 {{- end }}
 {{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
     # If testing monitoring export the service-runner prometheus metrics listen port
-    - name:  prometheus-{{ template "eventstreams.releasename" . }}
+    - name:  prometheus-{{ .Values.main_app.name }}
       targetPort: {{ .Values.monitoring.port.targetPort }}
       port: {{ .Values.monitoring.port.port }}
       nodePort: {{ .Values.monitoring.port.nodePort }}
 {{- end }}
+
+{{- else }}
+#
+# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# as service.deployment is set to "{{ .Values.service.deployment }}"
+#
+{{- end }}
+
 {{ if .Values.debug.enabled }}
+# Deploy a k8s Service for access to debugging ports
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-debug
+  name: {{ template "wmf.releasename" . }}-debug
   labels:
-    app: {{ template "eventstreams.chartname" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "eventstreams.chartname" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
   ports:
     {{- range $port := .Values.debug.ports }}
-    - name: {{ template "eventstreams.releasename" $ }}-debug-{{ $port }}
+    - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
       targetPort: {{ $port }}
       port: {{ $port }}
       nodePort: null # We're assuming this will be only used on minikube
     {{- end }}
 {{- end }}
+
 

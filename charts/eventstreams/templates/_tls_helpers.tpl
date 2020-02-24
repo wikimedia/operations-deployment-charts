@@ -21,7 +21,7 @@ envoyproxy.io/scrape: "false"
 
 {{- define "tls.container" -}}
 {{- if .Values.tls.enabled }}
-- name: {{ template "eventstreams.releasename" . }}-tls-proxy
+- name: {{ template "wmf.releasename" . }}-tls-proxy
   image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
@@ -50,7 +50,7 @@ envoyproxy.io/scrape: "false"
 {{- if .Values.tls.enabled }}
 - name: tls-certs-volume
   configMap:
-    name: {{ template "eventstreams.releasename" . }}-tls-proxy-certs
+    name: {{ template "wmf.releasename" . }}-tls-proxy-certs
 {{- end }}
 {{- end -}}
 
@@ -65,18 +65,18 @@ envoyproxy.io/scrape: "false"
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-tls-service
+  name: {{ template "wmf.releasename" . }}-tls-service
   labels:
-    app: {{ template "eventstreams.chartname" . }}
+    app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "eventstreams.chartname" . }}
+    app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
   ports:
-    - name: {{ template "eventstreams.releasename" . }}-https
+    - name: {{ template "wmf.releasename" . }}-https
       protocol: TCP
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
@@ -96,10 +96,10 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-tls-proxy-certs
+  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
   labels:
-    app: {{ template "eventstreams.chartname" . }}
-    chart: {{ template "eventstreams.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

@@ -2,7 +2,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-config
+  name: {{ template "wmf.releasename" . }}-config
+  labels:
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
 {{- if .Values.main_app.kafka_ca_cert }}
@@ -14,10 +19,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "eventstreams.releasename" . }}-tls-proxy-certs
+  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
   labels:
-    app: {{ template "eventstreams.chartname" . }}
-    chart: {{ template "eventstreams.chartid" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

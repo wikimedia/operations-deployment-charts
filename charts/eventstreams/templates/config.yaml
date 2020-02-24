@@ -28,14 +28,14 @@ metrics:
 {{- end }}
 
 services:
-  - name: {{ template "eventstreams.releasename" . }}
+  - name: {{ .Values.main_app.name }}
     module: app.js
     conf:
       port: {{ .Values.main_app.port }}
       cors: '*'
       csp: "default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src *; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'"
       spec: ./spec.yaml
-      user_agent: {{ template "eventstreams.releasename" . }}
+      user_agent: {{ template "wmf.releasename" . }}
 
       # eventstreams app settings
 {{ toYaml .Values.main_app.conf | indent 6 }}

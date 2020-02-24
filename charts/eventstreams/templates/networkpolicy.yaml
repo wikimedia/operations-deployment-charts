@@ -1,11 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "eventstreams.releasename" . }}
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "eventstreams.chartname" . }}
+      chart: {{ template "wmf.chartname" . }}
+      app: {{ .Values.main_app.name }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress
