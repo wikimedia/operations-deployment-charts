@@ -17,6 +17,13 @@ main_app:
   name: eventstreams
   version: 2020-01-23-183729-production
 
+  requests:
+    cpu: 100m
+    memory: 500Mi
+  limits:
+    cpu: 2000m
+    memory: 1000Mi
+
   # This is the Puppet CA cert.
   kafka_ca_cert: |-
     -----BEGIN CERTIFICATE-----
