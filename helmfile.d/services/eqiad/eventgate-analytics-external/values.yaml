@@ -13,7 +13,7 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: 2020-01-10-185555-production
+  version: 2020-02-25-183224-production
   conf:
     kafka:
       conf:
@@ -43,10 +43,11 @@ main_app:
     # We use meta.wikimedia.org here as the default stream configuration wiki.
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
+    # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
     # NOTE: we need all_settings, otherwise we will not receive the stream's schema_title, which
     # is what EventGate needs to verify that an event of a given schema is allowed in a stream.
-    stream_config_uri: 'https://meta.wikimedia.org/w/api.php?format=json&action=streamconfigs&all_settings=true&streams=<%= stream %>?'
-    # Re-request for yet unknown streams at runtime
+    stream_config_uri: 'https://api.svc.eqiad.wmnet/w/api.php?format=json&action=streamconfigs&all_settings=true&streams=<%= stream %>?'
+    stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}    # Re-request for yet unknown streams at runtime
     stream_config_is_dynamic: true
     # Expect the stream -> settings map in the response at this subobject key
     stream_config_object_path: streams
