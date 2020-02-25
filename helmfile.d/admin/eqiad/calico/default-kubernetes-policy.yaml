@@ -1021,5 +1021,116 @@
     - 9092
     - 9093
 
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.192.0.17/32 # kafka-main2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.192.16.8/32 # kafka-main2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.192.32.136/32 # kafka-main2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:860:101:10:192:0:17/128 # kafka-main2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:860:102:10:192:16:8/128 # kafka-main2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:860:103:10:192:32:136/128 # kafka-main2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.64.0.200/32 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.64.16.37/32 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.64.32.90/32 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:861:101:10:64:0:200/128 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:861:102:10:64:16:37/128 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 2620:0:861:103:10:64:32:90/128 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.2.2.10/32 # ores.svc.eqiad.wmnet
+  protocol: tcp
+  dst_ports:
+    - 8081
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.2.1.10/32 # ores.svc.codfw.wmnet
+  protocol: tcp
+  dst_ports:
+    - 8081
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+  protocol: tcp
+  dst_ports:
+    - 32192
+    - 4492
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+  protocol: tcp
+  dst_ports:
+    - 32192
+    - 4492
+
   # Deny everything else
 - action: deny
