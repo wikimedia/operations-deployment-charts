@@ -18,8 +18,8 @@ spec: &spec
         - path: sys/rate_limiter.js
           options:
             redis: &redis_config
-              path: {{ .Values.main_app.redis_uri }}
-              password: {{ .Values.main_app.redis_pass | default "" }}
+              path: {{ .Values.main_app.redis.uri }}
+              password: {{ .Values.main_app.redis.pass | default "" }}
             limiters:
               blacklist:
                 # First, allow no more then 100 errors per week
