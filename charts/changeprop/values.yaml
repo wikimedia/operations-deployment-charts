@@ -87,11 +87,17 @@ main_app:
   #   - name: myvolumename # the name from your volume above
   #     mountPath: /path/ # where it should live in your container
 
+
+subcharts:
+  # Set this to true during local minikube development to get a Kafka pod deployed.
+  # You only need to do this if you don't manually install the kafka-dev chart.
+  kafka: false
+
 # metrics
 metrics:
   name: changeprop
 
-# monitorin
+# monitoring
 monitoring:
     enabled: false
     image_version: latest
