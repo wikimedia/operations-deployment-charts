@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -7,6 +7,9 @@ metadata:
   name: zookeeper
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
   template:
     metadata:
       labels:
@@ -19,7 +22,7 @@ spec:
         ports:
         - containerPort: 2181
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -27,6 +30,9 @@ metadata:
   name: kafka
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
   template:
     metadata:
       labels:
