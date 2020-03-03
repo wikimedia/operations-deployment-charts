@@ -26,9 +26,10 @@ function main {
     cat _scaffold/Chart.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/Chart.yaml
     cat _scaffold/templates/tests/test-service-checker.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/templates/tests/test-service-checker.yaml
     scaffold_version=$(get_scaffold_version)
+    # Enforce symlinks to shared helpers. This way we can more easily track changes
     for filepath in common_templates/"${scaffold_version}/"*.tpl; do
         filename="$(basename $filepath)"
-        cd "charts/${SERVICE_NAME}/templates" && ln -s "../../../${filepath}" "$filename"
+        pushd "charts/${SERVICE_NAME}/templates" && ln -sfn "../../../${filepath}" "$filename" && popd
     done
     echo "You can edit your chart (if needed!) at ${PWD}/charts/${SERVICE_NAME}"
 }
