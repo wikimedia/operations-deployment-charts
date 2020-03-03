@@ -27,7 +27,7 @@ main_app:
   command: ["node"]
   args: ["server.js", "-c", "/etc/changeprop/config.yaml"]
   requests:
-    cpu: 1m
+    cpu: 500m
     memory: 300Mi
   limits:
     cpu: 1
