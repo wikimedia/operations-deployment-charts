@@ -30,7 +30,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename"   }}-tls-proxy-certs
+  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
