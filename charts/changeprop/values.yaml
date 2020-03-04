@@ -84,17 +84,10 @@ main_app:
     uri: 127.0.0.1:6379
     pass:
 
-  # add here any volumes to mount onto the pod. Example:
-  # volumes:
-  #   - name: myvolumename
-  #      hostPath:
-  #        path: /myvolumepath # where on the host machine
-
-  # add here any mounted volumes to make accessible to the container. Example:
-  # volumeMounts:
-  #   - name: myvolumename # the name from your volume above
-  #     mountPath: /path/ # where it should live in your container
-
+nutcracker:
+  enabled: false
+  version: latest # But lock this down to a specific version in production
+  servers: [] # The form is <IP>:<port>:<db> "name" for each element
 
 subcharts:
   # Set this to true during local minikube development to get a Kafka pod deployed.

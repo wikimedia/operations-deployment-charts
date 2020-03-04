@@ -19,6 +19,9 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
+        {{ if .Values.nutcracker.enabled -}}
+        checksum/nutcracker: {{ include "nutcracker.config" . | sha256sum }}
+        {{ end -}}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
@@ -93,22 +96,33 @@ spec:
               mountPath: /etc/monitoring
 {{- end }}
 {{- if .Values.tls.enabled }}
-      - name: {{ .Release.Name }}-tls-proxy
-        image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
-        imagePullPolicy: {{ .Values.docker.pull_policy }}
-        env:
-          - name: SERVICE_NAME
-            value: {{ .Release.Name }}
-          - name: SERVICE_PORT
-            value: "{{ .Values.main_app.port }}"
-          - name: PUBLIC_PORT
-            value: "{{ .Values.tls.public_port }}"
-        ports:
-          - containerPort: {{ .Values.tls.public_port }}
-        volumeMounts:
-          - name: {{ .Release.Name }}-tls-proxy-certs
-            mountPath: /etc/envoy/ssl
-            readOnly: true
+        - name: {{ .Release.Name }}-tls-proxy
+          image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ .Release.Name }}
+            - name: SERVICE_PORT
+              value: "{{ .Values.main_app.port }}"
+            - name: PUBLIC_PORT
+              value: "{{ .Values.tls.public_port }}"
+          ports:
+            - containerPort: {{ .Values.tls.public_port }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-tls-proxy-certs
+              mountPath: /etc/envoy/ssl
+              readOnly: true
+{{- end }}
+{{- if .Values.nutcracker.enabled }}
+        - name: {{ .Release.Name }}-nutcracker
+          image: {{ .Values.docker.registry }}/nutcracker:{{ .Values.nutcracker.version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: {{ .Release.Name }}-nutcracker-config
+              mountPath: /etc/nutcracker
+              readOnly: true
 {{- end }}
       volumes:
         - name: {{ .Release.Name }}-base-config
@@ -122,7 +136,12 @@ spec:
         {{- if .Values.tls.enabled }}
         - name: {{ .Release.Name }}-tls-proxy-certs
           configMap:
-            name: {{ template "wmf.releasename" }}-tls-proxy-certs
+            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
+        {{- end }}
+        {{- if .Values.nutcracker.enabled }}
+        - name: {{ .Release.Name }}-nutcracker-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-nutcracker-config
         {{- end }}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}

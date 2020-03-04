@@ -42,3 +42,17 @@ data:
   service.key: |-
 {{ .Values.tls.certs.key | indent 4 }}
 {{ end -}}
+{{- if .Values.nutcracker.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-nutcracker-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  nutcracker.yaml: |- {{ include "nutcracker.config" . | indent 4 }}
+{{ end -}}

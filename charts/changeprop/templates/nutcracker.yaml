@@ -1,0 +1,17 @@
+{{- define "nutcracker.config" }}
+redis:
+  auto_eject_hosts: true
+  distribution: ketama
+  hash: md5
+  listen: 127.0.0.1:6379
+  redis: true
+  redis_auth: {{ .Values.main_app.redis.pass }}
+  server_connections: 1
+  server_failure_limit: 3
+  server_retry_timeout: 10000
+  servers:
+  {{- range .Values.nutcracker.servers }}
+    - {{ . }}
+  {{- end }}
+  timeout: 1000
+{{- end }}
