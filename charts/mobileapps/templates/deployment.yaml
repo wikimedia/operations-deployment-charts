@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "mobileapps.releasename" . }}
+  name: {{ template "wmf.releasename" . }}
   labels:
-    app: {{ template "mobileapps.chartname" . }}
+    app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "mobileapps.chartname" . }}
+      app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "mobileapps.chartname" . }}
+        app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
@@ -32,7 +32,7 @@ spec:
       {{- end }}
       containers:
         # The main application container
-        - name: {{ template "mobileapps.releasename" . }}
+        - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -59,7 +59,7 @@ spec:
 {{ toYaml .Values.main_app.readiness_probe | indent 12 }}
           env:
             - name: SERVICE_IDENTIFIER
-              value: {{ template "mobileapps.releasename" . }}
+              value: {{ template "wmf.releasename" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -68,7 +68,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "mobileapps.releasename" $ }}-secret-config
+                  name: {{ template "wmf.releasename" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -92,7 +92,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "mobileapps.releasename" . }}-metrics-config
+            name: {{ template "wmf.releasename" . }}-metrics-config
         {{- end }}
         {{- include "tls.volume" . | indent 8}}
         - name: config-volume

@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: '{{ template "mobileapps.releasename" . }}-service-checker'
+  name: '{{ template "wmf.releasename" . }}-service-checker'
   annotations:
     "helm.sh/hook": test-success
 spec:
   containers:
-  - name: '{{ template "mobileapps.releasename" . }}-service-checker'
+  - name: '{{ template "wmf.releasename" . }}-service-checker'
     image: "{{ .Values.docker.registry }}/service-checker"
     imagePullPolicy: {{ .Values.docker.pull_policy }}
-    args: ["-t", "5", '$({{ include "mobileapps.releasename" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "mobileapps.appbaseurl" . }}']
+    args: ["-t", "5", '$({{ include "wmf.releasename" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "wmf.appbaseurl" . }}']
   dnsPolicy: ClusterFirst
   restartPolicy: Never

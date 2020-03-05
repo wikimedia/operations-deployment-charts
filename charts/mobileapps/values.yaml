@@ -35,16 +35,6 @@ main_app:
   mw_uri: http://api-rw.discovery.wmnet/w/index.php
   mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
   restbase_uri: http://restbase.discovery.wmnet:7231
-  # add here any volumes to mount onto the pod. Example:
-  # volumes:
-  #   - name: myvolumename
-  #      hostPath:
-  #        path: /myvolumepath # where on the host machine
-
-  # add here any mounted volumes to make accessible to the container. Example:
-  # volumeMounts:
-  #   - name: myvolumename # the name from your volume above
-  #     mountPath: /path/ # where it should live in your container
 
 monitoring:
   enabled: false

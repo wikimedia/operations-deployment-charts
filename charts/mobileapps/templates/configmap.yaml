@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "mobileapps.releasename" . }}-metrics-config
+  name: {{ template "wmf.releasename" . }}-metrics-config
   labels:
-    app: {{ template "mobileapps.chartname" . }}
-    chart: {{ template "mobileapps.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
