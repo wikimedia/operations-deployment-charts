@@ -77,7 +77,7 @@ main_app:
       test:
         description: |-
           A test event stream. A new event is posted about once a minute.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/test/event
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/test/event/latest/latest
         topics:
           - eqiad.test.event
           - codfw.test.event
@@ -86,7 +86,7 @@ main_app:
         description: |-
           Mediawiki Page create events. This page create stream is just the first revision create
           event for each page. As such, it reuses the mediawiki/revision/create schema.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/revision/create
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/create/latest
         topics:
           - eqiad.mediawiki.page-create
           - codfw.mediawiki.page-create
@@ -94,7 +94,7 @@ main_app:
       page-delete:
         description: |-
           Mediawiki Page delete events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/delete
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/delete/latest
         topics:
           - eqiad.mediawiki.page-delete
           - codfw.mediawiki.page-delete
@@ -102,7 +102,7 @@ main_app:
       page-move:
         description: |-
           Mediawiki Page move (rename) events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/move
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/move/latest
         topics:
           - eqiad.mediawiki.page-move
           - codfw.mediawiki.page-move
@@ -110,7 +110,7 @@ main_app:
       page-undelete:
         description: |-
           Mediawiki Page un-delete events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/undelete
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/undelete/latest
         topics:
           - eqiad.mediawiki.page-undelete
           - codfw.mediawiki.page-undelete
@@ -118,7 +118,7 @@ main_app:
       page-properties-change:
         description: |-
           Mediawiki Page Properties change events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/properties-change
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/properties-change/latest
         topics:
           - eqiad.mediawiki.page-properties-change
           - codfw.mediawiki.page-properties-change
@@ -126,7 +126,7 @@ main_app:
       page-links-change:
         description: |-
           Mediawiki Page Links change events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/blob/master/jsonschema/mediawiki/page/links-change
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/links-change/latest
         topics:
           - eqiad.mediawiki.page-links-change
           - codfw.mediawiki.page-links-change
