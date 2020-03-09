@@ -110,10 +110,10 @@ main_app:
   # See T220401 for how these numbers were calculated
   requests:
     cpu: 2500m # T220401 and T229697
-    memory: 100Mi # T220401
+    memory: 150Mi # T220401
   limits:
     cpu: 2500m # T220401 and T229697
-    memory: 100Mi # T220401
+    memory: 300Mi # T220401
   liveness_probe:
     tcpSocket:
       port: 8081
