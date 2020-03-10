@@ -26,7 +26,7 @@ envoyproxy.io/scrape: "false"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: SERVICE_NAME
-      value: {{ .Release.Name }}
+      value: {{ .Values.main_app.name }}
     - name: SERVICE_PORT
       value: "{{ .Values.main_app.port }}" # env variables need to be strings
     - name: PUBLIC_PORT
