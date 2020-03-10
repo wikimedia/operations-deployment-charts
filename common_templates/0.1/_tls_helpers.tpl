@@ -43,6 +43,17 @@ envoyproxy.io/scrape: "false"
     - name: tls-certs-volume
       mountPath: /etc/envoy/ssl
       readOnly: true
+  resources:
+{{- if .Values.tls.resources }}
+{{ toYaml .Values.tls.resources | indent 4 }}
+{{- else }}
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+{{- end }}
 {{- end }}
 {{- end -}}
 
