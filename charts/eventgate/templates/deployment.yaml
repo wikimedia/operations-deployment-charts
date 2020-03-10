@@ -31,9 +31,7 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{- if .Values.tls.enabled }}
-        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
-        {{- end }}
+        {{- include "tls.annotations" . | indent 8 }}
     spec:
       {{- if .Values.debug_mode_enabled | default false }}
       shareProcessNamespace: true
@@ -106,24 +104,7 @@ spec:
           stdin: true
           tty: true
 {{- end }}
-{{- if .Values.tls.enabled }}
-        - name: {{ .Values.main_app.name }}-tls-proxy
-          image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          env:
-            - name: SERVICE_NAME
-              value: {{ .Values.main_app.name }}
-            - name: SERVICE_PORT
-              value: "{{ .Values.main_app.port }}" # env variables need to be strings
-            - name: PUBLIC_PORT
-              value: "{{ .Values.tls.public_port }}"
-          ports:
-            - containerPort: {{ .Values.tls.public_port }}
-          volumeMounts:
-            - name: tls-certs-volume
-              mountPath: /etc/envoy/ssl
-              readOnly: true
-{{- end }}
+        {{- include "tls.container" . | indent 8 }}
       volumes:
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:
@@ -133,8 +114,5 @@ spec:
           configMap:
             name: {{ template "wmf.releasename" . }}-metrics-exporter-config
         {{- end }}
-        {{- if .Values.tls.enabled }}
-        - name: tls-certs-volume
-          configMap:
-            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
-        {{- end }}
+        {{- include "tls.volume" . | indent 8 }}
+

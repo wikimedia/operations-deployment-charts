@@ -18,19 +18,16 @@ spec:
     - Egress
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
-        protocol: TCP
-      {{- if .Values.tls.enabled }}
-      - port: {{ .Values.tls.public_port }}
-        protocol: TCP
-      {{- end }}
-      {{- if .Values.monitoring.enabled }}
-      - port: 9102
-        protocol: TCP
-      {{- end }}
-      {{- if .Values.debug_mode_enabled | default false }}
-      - port: 9229 # service-runner master node inspector port
-        protocol: TCP
-      - port: 9230 # service-runner worker node inspector port
-        protocol: TCP
+        - port: {{ .Values.main_app.port }}
+          protocol: TCP
+        {{- if .Values.monitoring.enabled }}
+        - port: 9102
+          protocol: TCP
         {{- end }}
+        {{- if .Values.debug_mode_enabled | default false }}
+        - port: 9229 # service-runner master node inspector port
+          protocol: TCP
+        - port: 9230 # service-runner worker node inspector port
+          protocol: TCP
+        {{- end }}
+        {{- include "tls.networkpolicy" . | indent 8 }}

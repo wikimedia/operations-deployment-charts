@@ -6,6 +6,10 @@
 #   app: {{ .Values.main_app.name }}
 #   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
 #
+{{ if .Values.tls.enabled }}
+{{ include "tls.service" . }}
+{{- end }}
+---
 kind: Service
 apiVersion: v1
 metadata:
@@ -46,30 +50,6 @@ spec:
     protocol: TCP
     port: 9230
     nodePort: 31230
-{{- end }}
-
-{{ if .Values.tls.enabled }}
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: {{ template "wmf.releasename" . }}-tls-service
-  labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: NodePort
-  selector:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
-  ports:
-    - name: {{ .Values.main_app.name }}-https
-      protocol: TCP
-      port: {{ .Values.tls.public_port }}
-      nodePort: {{ .Values.tls.public_port }}
 {{- end }}
 
 {{- else }}

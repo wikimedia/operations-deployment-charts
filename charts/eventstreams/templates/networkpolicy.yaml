@@ -28,4 +28,4 @@ spec:
         - port: {{ .Values.monitoring.port.port }}
           protocol: TCP
         {{- end }}
-    {{- include "tls.networkpolicy" . | indent 8 }}
+        {{- include "tls.networkpolicy" . | indent 8 }}

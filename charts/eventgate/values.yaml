@@ -22,7 +22,16 @@ service:
 
 tls:
   enabled: false
-  public_port: 4192
+  image_version: latest
+  public_port: 4192 # the port where TLS will be exposed
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: false
+    port: 9361
+
 
 monitoring:
   enabled: true
