@@ -17,18 +17,15 @@ spec:
     - Ingress
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
-        protocol: TCP
-      {{- if .Values.debug.enabled }}
-      {{- range .Values.debug.ports }}
-      - port: {{ . }}
-        protocol: TCP
-      {{- end }}{{- end }}
-      {{- if .Values.monitoring.enabled }}
-      - port: {{ .Values.monitoring.port.port }}
-        protocol: TCP
-      {{- end }}
-      {{- if .Values.tls.enabled }}
-      - port: {{ .Values.tls.public_port }}
-        protocol: TCP
-      {{- end }}
+        - port: {{ .Values.main_app.port }}
+          protocol: TCP
+        {{- if .Values.debug.enabled }}
+        {{- range .Values.debug.ports }}
+        - port: {{ . }}
+          protocol: TCP
+        {{- end }}{{- end }}
+        {{- if .Values.monitoring.enabled }}
+        - port: {{ .Values.monitoring.port.port }}
+          protocol: TCP
+        {{- end }}
+    {{- include "tls.networkpolicy" . | indent 8 }}

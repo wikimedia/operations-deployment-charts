@@ -14,20 +14,4 @@ data:
   kafka_ca.crt.pem: |-
     {{ .Values.main_app.kafka_ca_cert | nindent 4 }}
 {{ end }}
-{{- if .Values.tls.enabled }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
-  labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  service.crt: |-
-{{ .Values.tls.certs.cert | indent 4 }}
-  service.key: |-
-{{ .Values.tls.certs.key | indent 4 }}
-{{ end -}}
+{{ include "tls.config" . }}

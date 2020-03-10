@@ -43,6 +43,17 @@ envoyproxy.io/scrape: "false"
     - name: tls-certs-volume
       mountPath: /etc/envoy/ssl
       readOnly: true
+  resources:
+{{- if .Values.tls.resources }}
+{{ toYaml .Values.tls.resources | indent 4 }}
+{{- else }}
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+{{- end }}
 {{- end }}
 {{- end -}}
 
@@ -60,29 +71,29 @@ envoyproxy.io/scrape: "false"
 
 */}}
 {{- define "tls.service" -}}
-{{ if .Values.tls.enabled }}
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
-    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
-    release: {{ .Release.Name }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
-    - name: {{ template "wmf.releasename" . }}-https
+    - name: {{ .Values.main_app.name }}-https
       protocol: TCP
+      targetPort: {{ .Values.tls.public_port }}
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
-{{- end }}
 {{- end -}}
-
 
 {{/*
 
@@ -98,8 +109,8 @@ kind: ConfigMap
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-proxy-certs
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
