@@ -21,7 +21,7 @@ envoyproxy.io/scrape: "false"
 
 {{- define "tls.container" -}}
 {{- if .Values.tls.enabled }}
-- name: {{ template "wmf.releasename" . }}-tls-proxy
+- name: {{ .Values.main_app.name }}-tls-proxy
   image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
