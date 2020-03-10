@@ -27,6 +27,11 @@ main_app:
   redis:
     uri: localhost:6379
 
+nutcracker:
+  servers:
+    - rdb1005.eqiad.wmnet:6379:1 "cp-1"
+    - rdb1009.eqiad.wmnet:6379:1 "cp-2"
+
 monitoring:
   enabled: true
   image_version: 0.0.5
