@@ -54,5 +54,5 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  nutcracker.yaml: |- {{ include "nutcracker.config" . | indent 4 }}
+  nutcracker.yml: |- {{ include "nutcracker.config" . | indent 4 }}
 {{ end -}}
