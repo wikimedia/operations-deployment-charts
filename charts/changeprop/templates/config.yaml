@@ -18,7 +18,8 @@ spec: &spec
         - path: sys/rate_limiter.js
           options:
             redis: &redis_config
-              path: {{ .Values.main_app.redis.uri }}
+              host: {{ .Values.main_app.redis.host }}
+              port: {{ .Values.main_app.redis.port }}
               password: {{ .Values.main_app.redis.pass | default "" }}
             limiters:
               blacklist:
