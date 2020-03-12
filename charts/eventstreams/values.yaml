@@ -32,7 +32,7 @@ tls:
   telemetry:
     enabled: false
     port: 9361
-  upstream_timeout: 0 # T238658#5961899. Don't override if you don't want premature connection closings.
+  upstream_timeout: "0s" # T238658#5961899. Don't override if you don't want premature connection closings.
 
 # EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
 monitoring:
