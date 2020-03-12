@@ -36,7 +36,7 @@ envoyproxy.io/scrape: "false"
     - name: ADMIN_PORT
       value: "{{ .Values.tls.telemetry.port }}"
     - name: UPSTREAM_TIMEOUT
-      value: {{ .Values.tls.upstream_timeout }}
+      value: "{{ .Values.tls.upstream_timeout }}"
   ports:
     - containerPort: {{ .Values.tls.public_port }}
   volumeMounts:
