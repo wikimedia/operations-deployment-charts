@@ -35,9 +35,7 @@ main_app:
   liveness_probe:
     tcpSocket:
       port: 7272
-  readiness_probe:
-    tcpSocket:
-      port: 7272
+    initialDelaySeconds: 60
 
   purge_host: 127.0.0.1
   purge_port: 4827

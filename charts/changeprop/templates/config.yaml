@@ -68,7 +68,8 @@ spec: &spec
       x-modules:
         - path: sys/kafka.js
           options:
-            metadata_broker_list: {{  .Values.main_app.kafka.broker_list }}
+            metadata_broker_list:
+{{ toYaml .Values.main_app.kafka.broker_list | indent 14 }}
             dc_name: {{ .Values.main_app.site }}
             consumer:
               # JobQueue jobs might sent messages larget then 1 Meg,
