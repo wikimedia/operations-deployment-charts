@@ -38,33 +38,7 @@ spec:
       port: {{ .Values.monitoring.port.port }}
       nodePort: {{ .Values.monitoring.port.nodePort }}
 {{- end }}
-
-{{- else }}
-#
-# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
-# as service.deployment is set to "{{ .Values.service.deployment }}"
-#
-{{- end }}
-
-{{ if .Values.debug.enabled }}
-# Deploy a k8s Service for access to debugging ports
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: {{ template "wmf.releasename" . }}-debug
-  labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: NodePort
-  selector:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    release: {{ .Release.Name }}
-  ports:
+{{- if and .Values.debug.enabled (eq .Values.service.deployment "minikube") }}
     {{- /*
     # .Values.main_app.name doesn't work the range loop below.
     # 'can't evaluate field Values in type interface {}'
@@ -74,8 +48,15 @@ spec:
     - name: {{ $port_name_prefix }}-{{ $port }}
       targetPort: {{ $port }}
       port: {{ $port }}
-      nodePort: null # We're assuming this will be only used on minikube
+      nodePort: {{ sub $port 9000 | add 30000 }} # We're assuming this will be only used on minikube
     {{- end }}
+{{- end }}
+
+{{- else }}
+#
+# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# as service.deployment is set to "{{ .Values.service.deployment }}"
+#
 {{- end }}
 
 
