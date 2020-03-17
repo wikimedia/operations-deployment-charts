@@ -8,5 +8,31 @@ helmDefaults:
   recreatePods: true
   force: false
 
-helmfiles:
-  - "helmfile.yaml.gotmpl"
+releases:
+  - name: calico-policy-controller
+    namespace: kube-system
+    chart: ../../internal_charts/wmf-calico-policy-controller
+    missingFileHandler: Warn
+    values:
+    - "values/values.yaml"
+    - "private/secrets.yaml"
+    wait: true
+    hooks:
+    - events: ["prepare"]
+      command: "helmfile_log_sal"
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: calico-policy-data
+    chart: stable/raw
+    namespace: kube-system
+    values:
+    - templates:
+        - |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: wmf-default-policy
+            namespace: kube-system
+          data:
+            egress:
+              {{ readFile "../../common/calico/default-kubernetes-policy.yaml" | toYaml | indent 14}}
