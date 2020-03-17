@@ -23,7 +23,7 @@ releases:
     hooks:
     - events: ["prepare"]
       command: "helmfile_log_sal"
-      args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
 
   - name: canary
     namespace: eventgate-analytics-external
@@ -37,4 +37,4 @@ releases:
     hooks:
     - events: ["prepare"]
       command: "helmfile_log_sal"
-      args: [ "{{`{{.HelmfileCommand}}`}}", "[CODFW] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+      args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
