@@ -28,6 +28,9 @@ spec:
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8 }}
     spec:
+      {{- if .Values.debug.enabled | default false }}
+      shareProcessNamespace: true
+      {{- end }}
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
@@ -42,15 +45,24 @@ spec:
             - {{ . }}
             {{- end }}
           {{- end }}
-          {{- if .Values.main_app.args }}
           args:
+          {{- if .Values.debug.enabled | default false }}
+          # If debug_mode, then enable the NodeJS Inspector and save v8 profiling data.
+          # service-runner master inspector port will be .Values.debug.ports[0],
+          # and worker will be .Values.debug.ports[1].
+          # (Assume the first port in .Values.debug.ports is to be the node inspect port.)
+            - "--inspect=0.0.0.0:{{ index .Values.debug.ports 0 }}"
+            - "--expose-gc"
+            - "--prof"
+            - "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log"
+            - "--no-logfile-per-isolate"
+          {{- end }}
             {{- range .Values.main_app.args }}
             - {{ . }}
             {{- end }}
-          {{- end }}
           ports:
             - containerPort: {{ .Values.main_app.port }}
-          {{- if .Values.debug.enabled }}
+          {{- if .Values.debug.enabled | default false }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
           {{- end }}{{ end }}
@@ -81,6 +93,19 @@ spec:
             - name: {{ .Values.main_app.name }}-config-volume
               mountPath: /etc/eventstreams
         {{- include "tls.container" . | indent 8 }}
+        {{- if .Values.debug.enabled | default false }}
+        - name: {{ .Values.main_app.name }}-wmfdebug
+          image: {{ .Values.docker.registry }}/wmfdebug:latest
+          command: ["/bin/bash"]
+          args: ["-c", "echo 'Sleeping infinitely...'; sleep infinity;"]
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
+          stdin: true
+          tty: true
+        {{- end }}
       volumes:
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:

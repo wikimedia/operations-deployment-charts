@@ -48,10 +48,20 @@ config:
   private: {} # Add here all the keys that should be private but still available as env variables
 
 # Additional resources if we want to add a port for a debugger to connect to.
+# Debug mode adds the --profile and --inspect flags to the NodeJS service, and
+# also deploys a wmfdebug sidecar container in the pod. You can get the v8.log profiling output
+# from the pod with e.g (staging):
+#   source .hfenv; kubectl cp -n eventstreams -c eventstreams <pod_id>:/tmp/eventstreams-v8.log ./
+# You can connect to the Node Inspector on port 9229 for the master service-runner process,
+# and port 9230 for the worker process.  Note that if a worker is restarted, it willl
+# claim a new port and not be reachable externally.
+# You can log into the wmfdebug container with e.g. (staging):
+#   source .hfenv; kubectl exec -ti <pod_id> -n eventstreams -c eventstreams bash
 debug:
   enabled: false
   # Define here any port that you want to expose for debugging purposes
-  ports: []
+  # 9229 master and 9230 worker will be used by v8 profiler
+  ports: [9229, 9230]
 
 main_app:
   # This should uniquely identify your chart's main app's name.

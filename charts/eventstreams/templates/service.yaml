@@ -65,8 +65,15 @@ spec:
     app: {{ .Values.main_app.name }}
     release: {{ .Release.Name }}
   ports:
+    {{- /*
+    # .Values.main_app.name doesn't work the range loop below.
+    # 'can't evaluate field Values in type interface {}'
+    */ -}}
+    # service-runner master inspector port will be .Values.debug.ports[0],
+    # and worker will be .Values.debug.ports[1].
+    {{- $port_name_prefix := printf "%s-debug" .Values.main_app.name -}}
     {{- range $port := .Values.debug.ports }}
-    - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
+    - name: {{ $port_name_prefix }}-{{ $port }}
       targetPort: {{ $port }}
       port: {{ $port }}
       nodePort: null # We're assuming this will be only used on minikube
