@@ -74,7 +74,6 @@
   dst_net: 2620:0:860:2:208:80:153:61/128 # urldownloader2002
   protocol: tcp
 
-
   # Allow statsd
 - action: allow
   dst_ports:
@@ -155,7 +154,7 @@
     - 80
     - 443
 
-  # Allow Kafka for eventgate-analytics, eventage-analytics-external
+  # Allow Kafka for eventgate-analytics, eventgate-analytics-external
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
   dst_net: 10.64.0.175/32
@@ -979,7 +978,7 @@
     - 9092
     - 9093
 
-# Changeprop
+  # Changeprop
 - action: allow
   src_selector: calico/k8s_ns == 'changeprop'
   dst_net: 10.192.0.17/32 # kafka-main2001
