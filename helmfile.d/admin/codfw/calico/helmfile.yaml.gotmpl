@@ -35,4 +35,4 @@ releases:
             namespace: kube-system
           data:
             egress:
-              {{ readFile "default-kubernetes-policy.yaml" | toYaml | indent 14}}
+              {{ readFile "../../common/calico/default-kubernetes-policy.yaml" | toYaml | indent 14}}

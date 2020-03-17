@@ -1,9 +1,5 @@
 # This file has the default egress policy for kubernetes pods in WMF.
 # It denies everything and only allows specific outgoing communications
-# This file is meant to be fed as a ConfigMap to calico-policy-controller in a pretty specific way
-# To do so, first delete the old one and create the new one (faster that way)
-# $ kubectl --namespace=kube-system delete configmap wmf-default-policy
-# $ kubectl --namespace=kube-system create configmap wmf-default-policy --from-file=egress=default-kubernetes-policy.yaml
 #
 # NOTE: This is going to be deprecated when we move to calico 2.4.x
 #
