@@ -22,7 +22,7 @@ spec:
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
-        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        checksum/config: {{ include "parsoid-config.app" . | sha256sum }}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
     spec:
