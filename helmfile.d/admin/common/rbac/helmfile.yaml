@@ -1,12 +1,5 @@
-helmDefaults:
-  tillerNamespace: kube-system  #dedicated default key for tiller-namespace
-  tillerless: false                  #dedicated default key for tillerless
-  # defaults for verify, wait, force, timeout and recreatePods under releases[]
-  verify: false
-  wait: true
-  timeout: 600
-  recreatePods: false
-  force: false
+bases:
+  - ../../common/defaults.yaml
 
 releases:
   - name: rbac-deploy-clusterrole
