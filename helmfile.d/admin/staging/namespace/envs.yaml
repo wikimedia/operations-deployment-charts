@@ -1,86 +1,103 @@
 environments:
-  # ci env only exists in staging
+   # ci env only exists in staging
   ci:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/ci.yaml
   citoid:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/citoid.yaml
   blubberoid:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/blubberoid.yaml
   cxserver:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/cxserver.yaml
   eventgate-analytics:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventgate-analytics.yaml
   eventgate-main:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventgate-main.yaml
   eventgate-logging-external:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventgate-logging-external.yaml
   mathoid:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/mathoid.yaml
   sessionstore:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/sessionstore.yaml
   termbox:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/termbox.yaml
   zotero:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/zotero.yaml
   wikifeeds:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/wikifeeds.yaml
   echostore:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/echostore.yaml
   eventstreams:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventstreams.yaml
   eventgate-analytics-external:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventgate-analytics-external.yaml
   changeprop:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
     - values/changeprop.yaml
   changeprop-jobqueue:
+    missingFileHandler: Warn
     values:
     - ../../common/values.yaml
     - cluster.yaml
