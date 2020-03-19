@@ -1109,6 +1109,12 @@
   protocol: tcp
   dst_ports:
     - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 239.128.0.112/32 # varnish purge multicast address
+  protocol: udp
+  dst_ports:
+    - 4827
 
   # Deny everything else
 - action: deny

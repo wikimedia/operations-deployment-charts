@@ -299,8 +299,8 @@ spec: &spec
               # RESTBase update jobs
               mw_purge:
                 topic: resource_change
-                limiters:
-                  blacklist: 'html:{message.meta.uri}'
+#                limiters:
+#                  blacklist: 'html:{message.meta.uri}'
                 cases:
                   - match:
                       meta:
