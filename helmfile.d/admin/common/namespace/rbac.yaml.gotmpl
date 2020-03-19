@@ -6,7 +6,7 @@ bases:
 ---
 {{- if .Environment.Values }}
 releases:
-  - name: {{ .Environment.Values.namespaceName }}-deploy-rolebinding
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-deploy-rolebinding
     chart: stable/raw
     namespace: kube-system
     values:
@@ -16,7 +16,7 @@ releases:
           kind: RoleBinding
           metadata:
             name: deploy
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
           roleRef:
             apiGroup: rbac.authorization.k8s.io
             kind: ClusterRole
@@ -24,9 +24,9 @@ releases:
           subjects:
           - apiGroup: rbac.authorization.k8s.io
             kind: User
-            name: {{ .Environment.Values.deployUser }}
+            name: {{ .Environment.Values | getOrNil "deployUser" | default .Environment.Name }}
 
-  - name: {{ .Environment.Values.namespaceName }}-psp-rolebinding
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-psp-rolebinding
     chart: stable/raw
     namespace: kube-system
     values:
@@ -36,7 +36,7 @@ releases:
           kind: RoleBinding
           metadata:
             name: allow-using-psp
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
           roleRef:
             apiGroup: rbac.authorization.k8s.io
             kind: ClusterRole
@@ -44,13 +44,13 @@ releases:
           subjects:
           - apiGroup: rbac.authorization.k8s.io
             kind: Group
-            name: system:serviceaccounts:{{ .Environment.Values.namespaceName }}
+            name: system:serviceaccounts:{{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
           - kind: Group
             apiGroup: rbac.authorization.k8s.io
             name: system:authenticated
 
 
-  - name: {{ .Environment.Values.namespaceName }}-tiller-sa
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-tiller-sa
     chart: stable/raw
     namespace: kube-system
     values:
@@ -60,9 +60,9 @@ releases:
           kind: ServiceAccount
           metadata:
             name: tiller
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
 
-  - name: {{ .Environment.Values.namespaceName }}-tiller-rolebinding
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-tiller-rolebinding
     chart: stable/raw
     namespace: kube-system
     values:
@@ -72,7 +72,7 @@ releases:
           kind: RoleBinding
           metadata:
             name: tiller
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
           roleRef:
             apiGroup: rbac.authorization.k8s.io
             kind: ClusterRole
@@ -80,5 +80,5 @@ releases:
           subjects:
           - kind: ServiceAccount
             name: tiller
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
 {{- end }}

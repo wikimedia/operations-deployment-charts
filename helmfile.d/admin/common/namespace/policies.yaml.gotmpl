@@ -9,7 +9,7 @@ bases:
 {{- if .Environment.Values.resourcequota }}
 
 releases:
-  - name: {{ .Environment.Values.namespaceName }}-limitranges
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-limitranges
     chart: stable/raw
     namespace: kube-system
     values:
@@ -18,7 +18,7 @@ releases:
           apiVersion: v1
           kind: LimitRange
           metadata:
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
             name: general-limits
           spec:
             limits:
@@ -43,7 +43,7 @@ releases:
                     memory: {{ .Environment.Values.limitranges.pod.max.memory | quote }}
                 type: Pod
 
-  - name: {{ .Environment.Values.namespaceName }}-resourcequota
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-resourcequota
     chart: stable/raw
     namespace: kube-system
     values:
@@ -52,7 +52,7 @@ releases:
           apiVersion: v1
           kind: ResourceQuota
           metadata:
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
             name: quota-compute-resources
           spec:
             hard:

@@ -6,7 +6,7 @@ bases:
 ---
 {{- if .Environment.Values }}
 releases:
-  - name: {{ .Environment.Values.namespaceName }}-namespace
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-namespace
     chart: stable/raw
     namespace: kube-system
     values:
@@ -15,7 +15,7 @@ releases:
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: {{ .Environment.Values.namespaceName }}
+            name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
             annotations:
               net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
 {{- end }}

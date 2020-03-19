@@ -6,7 +6,7 @@ bases:
 ---
 {{- if .Environment.Values }}
 releases:
-  - name: {{ .Environment.Values.namespaceName }}-tiller-deploy
+  - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-tiller-deploy
     chart: stable/raw
     namespace: kube-system
     values:
@@ -19,7 +19,7 @@ releases:
               app: helm
               name: tiller
             name: tiller-deploy
-            namespace: {{ .Environment.Values.namespaceName }}
+            namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
           spec:
             progressDeadlineSeconds: 600
             replicas: 1
@@ -43,7 +43,7 @@ releases:
                 containers:
                 - env:
                   - name: TILLER_NAMESPACE
-                    value: {{ .Environment.Values.namespaceName }}
+                    value: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
                   - name: TILLER_HISTORY_MAX
                     value: "0"
                   - name: KUBERNETES_SERVICE_HOST
