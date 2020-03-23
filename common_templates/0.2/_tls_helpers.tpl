@@ -122,6 +122,10 @@ data:
 {{ .Values.tls.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.tls.certs.key | indent 4 }}
+{{- if .Values.puppet_ca_crt }}
+  ca.crt: |-
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -172,8 +176,6 @@ static_resources:
   clusters:
   - name: local_service
     common_http_protocol_options:
-      # Idle timeout is the time a keepalive connection will stay idle before being
-      # closed. It's important to keep it similar to the backend idle timeout.
       idle_timeout: {{ .Values.tls.idle_timeout | default "5s" }}
     connect_timeout: 1.0s
     lb_policy: round_robin
@@ -196,6 +198,71 @@ static_resources:
             address:
               socket_address: {address: 127.0.0.1, port_value: 1666 }
     type: strict_dns
+{{- /*
+  Remote clusters.
+
+  To instantiate remote clusters, you need to define two
+  data structures:
+  - A list of remote service configurations (that can be shared between charts)
+  - A list of which services you intend to reach from your service (which will be specific)
+
+  discovery:
+    listeners:
+      - svcA
+  services_proxy:
+    svcA:
+      keepalive: "5s"
+      port: 6060  # this is the local port
+      http_host: foobar.example.org  # this is the Host: header that will be added to your request
+      timeout: "60s"
+      retry_policy:
+        num_retries: 1
+        retry_on: 5xx
+      upstream:
+        address: svcA.discovery.wmnet
+        port: 10100  # this is the prot on the remote system
+        encryption: false
+*/}}
+{{- if .Values.discovery | default false -}}
+{{- range $name := .Values.discovery.listeners }}
+{{- $listener := index $.Values.services_proxy $name }}
+  - name: {{ $name }}
+    connect_timeout: 0.25s
+    {{- if $listener.keepalive }}
+    common_http_protocol_options:
+      idle_timeout: {{ $listener.keepalive }}
+    {{- end }}
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: cluster_{{ $name }}
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $listener.upstream.address }}
+                port_value: {{ $listener.upstream.port }}
+{{- /* 
+  Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
+*/}}
+    max_requests_per_connection: 1000
+    {{- if $listener.upstream.encryption }}
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
+        common_tls_context:
+          tls_params:
+            tls_minimum_protocol_version: TLSv1_2
+            cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+          validation_context:
+            trusted_ca:
+              filename: /etc/envoy/ssl/ca.crt
+    {{- end -}}
+{{- end }}
+{{- end }}
   listeners:
   - address:
       socket_address:
@@ -262,4 +329,61 @@ static_resources:
     listener_filters:
     - name: envoy.filters.listener.tls_inspector
       typed_config: {}
+  {{- if .Values.discovery | default false -}}
+  {{- range $name := .Values.discovery.listeners }}
+  {{- $listener := index $.Values.services_proxy $name }}
+  - address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: {{ $listener.port }}
+    filter_chains:
+    - filters:
+      - name:  envoy.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          access_log:
+          - name: envoy.file_access_log
+            filter:
+              status_code_filter:
+                comparison:
+                  op: "GE"
+                  value:
+                    default_value: 500
+                    runtime_key: {{ $name }}_min_log_code
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.accesslog.v2.FileAccessLog
+              path: "/dev/stdout"
+          stat_prefix: {{ $name }}_egress
+          http_filters:
+          - name: envoy.filters.http.router
+            typed_config: {}
+          route_config:
+          {{- if $listener.xfp }}
+            request_headers_to_add:
+            - header:
+               key: "x-forwarded-proto"
+               value: "{{ $listener.xfp }}"
+          {{- end }}
+            name: {{ $name }}_route
+            virtual_hosts:
+            - name: {{ $name }}
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  {{- if $listener.http_host }}
+                  host_rewrite: {{ $listener.http_host }}
+                  {{- end }}
+                  cluster: {{ $name }}
+                  timeout: {{ $listener.timeout }}
+                  {{- if $listener.retry_policy }}
+                  retry_policy:
+                  {{- range $k, $v :=  $listener.retry_policy }}
+                    {{ $k }}: {{ $v }}
+                  {{- end -}}
+                  {{- end }}
+  {{- end -}}
+  {{- end -}}
 {{- end -}}

@@ -1,3 +1,4 @@
+---
 tls:
   enabled: true
   public_port: 4004 # the port where TLS will be exposed
@@ -10,30 +11,251 @@ tls:
       -- begin --
       678910
       -- end --
+  ca: |-
+    -- begin --
+    abcdef
+    -- end --
   # Enable telemetry
   telemetry:
     enabled: true
     port: 9361
 discovery:
   enabled: true
-  listeners: [pinkunicorn, frugal]
+  listeners:
+    - parsoid
+    - parsoid-php
+    - mathoid
+    - mwapi-async
+    - parsoid-async
+    - swift-eqiad
+    - swift-codfw
+    - search-omega-eqiad
+    - search-chi-eqiad
 services_proxy:
-  pinkunicorn: # this is a complete listener
-    keepalive: "5s"
-    http_host: "pinkunicorn.wikimedia.org"
-    timeout: "60s"
+  parsoid:
+    port: 6001
+    timeout: 8s
+    upstream:
+      address: parsoid.discovery.wmnet
+      port: 8000
+      encryption: false
+  parsoid-php:
+    keepalive: 4s
+    port: 6002
+    timeout: 8s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
     xfp: https
-    port: 6666
+    upstream:
+      address: parsoid-php.discovery.wmnet
+      port: 443
+      encryption: true
+  mathoid:
+    port: 6003
+    timeout: 3s
+    upstream:
+      address: mathoid.discovery.wmnet
+      port: 10042
+      encryption: false
+  eventgate-analytics:
+    keepalive: 4.5s
+    port: 6004
+    timeout: 10s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    upstream:
+      address: eventgate-analytics.discovery.wmnet
+      port: 4592
+      encryption: true
+  eventgate-main:
+    keepalive: 4.5s
+    port: 6005
+    timeout: 25s
     retry_policy:
       retry_on: 5xx
       num_retries: 2
     upstream:
-      address: pinkunicorn.discovery
-      port: 666
+      address: eventgate-main.discovery.wmnet
+      port: 4492
       encryption: true
-  frugal: # this is a bare-minimum listener
-    timeout: "15s"
-    port: 6161
+  sessionstore:
+    port: 6006
+    timeout: 2.5s
     upstream:
-      address: test.wikpedia.org
+      address: sessionstore.discovery.wmnet
+      port: 8081
+      encryption: true
+  echostore:
+    port: 6007
+    timeout: 2.5s
+    upstream:
+      address: echostore.discovery.wmnet
+      port: 8082
+      encryption: true
+  termbox:
+    keepalive: 4.5s
+    port: 6008
+    timeout: 25s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 2
+    upstream:
+      address: termbox.discovery.wmnet
+      port: 4004
+      encryption: true
+  wdqs-internal:
+    port: 6009
+    timeout: 10s
+    upstream:
+      address: wdqs-internal.discovery.wmnet
+      port: 80
+      encryption: false
+  ores:
+    port: 6010
+    timeout: 10s
+    upstream:
+      address: ores.discovery.wmnet
+      port: 8081
+      encryption: false
+  restbase:
+    port: 6011
+    timeout: 10s
+    xfp: https
+    upstream:
+      address: restbase.discovery.wmnet
+      port: 7443
+      encryption: true
+  swift-eqiad:
+    port: 6101
+    timeout: 50s
+    upstream:
+      address: ms-fe.svc.eqiad.wmnet
       port: 443
+      encryption: true
+  swift-codfw:
+    port: 6201
+    timeout: 50s
+    upstream:
+      address: ms-fe.svc.codfw.wmnet
+      port: 443
+      encryption: true
+  search-chi-eqiad:
+    port: 6102
+    timeout: 50s
+    upstream:
+      address: search.svc.eqiad.wmnet
+      port: 9243
+      encryption: true
+  search-chi-codfw:
+    port: 6202
+    timeout: 50s
+    upstream:
+      address: search.svc.codfw.wmnet
+      port: 9243
+      encryption: true
+  search-omega-eqiad:
+    port: 6103
+    timeout: 50s
+    upstream:
+      address: search.svc.eqiad.wmnet
+      port: 9443
+      encryption: true
+  search-omega-codfw:
+    port: 6203
+    timeout: 50s
+    upstream:
+      address: search.svc.codfw.wmnet
+      port: 9443
+      encryption: true
+  search-psi-eqiad:
+    port: 6104
+    timeout: 50s
+    upstream:
+      address: search.svc.eqiad.wmnet
+      port: 9643
+      encryption: true
+  search-psi-codfw:
+    port: 6204
+    timeout: 50s
+    upstream:
+      address: search.svc.codfw.wmnet
+      port: 9643
+      encryption: true
+  mobileapps:
+    port: 6012
+    timeout: 120s
+    upstream:
+      address: mobileapps.discovery.wmnet
+      port: 8888
+      encryption: false
+  graphoid:
+    port: 6666
+    timeout: 120s
+    upstream:
+      address: graphoid.discovery.wmnet
+      port: 19000
+      encryption: false
+  aqs:
+    port: 6020
+    timeout: 120s
+    upstream:
+      address: aqs.discovery.wmnet
+      port: 7232
+      encryption: false
+  proton:
+    port: 6013
+    timeout: 120s
+    upstream:
+      address: proton.discovery.wmnet
+      port: 4030
+      encryption: true
+  citoid:
+    port: 6014
+    timeout: 120s
+    upstream:
+      address: citoid.discovery.wmnet
+      port: 1970
+      encryption: false
+  cxserver:
+    port: 6015
+    timeout: 120s
+    upstream:
+      address: cxserver-https.discovery.wmnet
+      port: 4002
+      encryption: true
+  recommendation:
+    port: 6016
+    timeout: 120s
+    upstream:
+      address: recommendation-api.discovery.wmnet
+      port: 9632
+      encryption: false
+  wikifeeds:
+    port: 6017
+    timeout: 120s
+    upstream:
+      address: wikifeeds.discovery.wmnet
+      port: 8889
+      encryption: false
+  parsoid-async:
+    keepalive: 4s
+    port: 6502
+    timeout: 120s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    xfp: https
+    upstream:
+      address: parsoid-php.discovery.wmnet
+      port: 443
+      encryption: true
+  mwapi-async:
+    keepalive: 4s
+    port: 6500
+    timeout: 120s
+    upstream:
+      address: api-rw.discovery.wmnet
+      port: 443
+      encryption: true
