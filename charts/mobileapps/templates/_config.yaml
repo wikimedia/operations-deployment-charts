@@ -85,7 +85,7 @@ services:
       # the template used for contacting RESTBase
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}
-        uri: {{ .Values.main_app.restbase_uri }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
+        uri: {{ .Values.main_app.restbase_uri }}/{{ "{{" }}domain{{ "}}" }}/v1/{+path}
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
@@ -100,4 +100,8 @@ services:
           accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
         query:
           title: {{ "'{{" }}request.params.title{{ "}}'" }}
+      # REST API external base URIs (for injection into mobile-html output)
+      mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
+      mobile_html_local_rest_api_base_uri_template: //{{ "{{" }}domain{{ "}}" }}/api/rest_v1/
+      mobile_html_csp: {{ .Values.main_app.mobile_html_csp }}
 {{- end -}}
