@@ -23,11 +23,3 @@
 {{- define "wmf.appbaseurl" -}}
 http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.appbase_url_port }}
 {{- end -}}
-
-{{- define "mediawiki.args" -}}
-{{- if .Values.main_app.xdebug.enabled -}}
-["phpenmod xdebug && {{ .Values.main_app.args }}"]
-{{- else -}}
-["{{ .Values.main_app.args }}"]
-{{- end -}}
-{{- end -}}

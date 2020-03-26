@@ -13,3 +13,35 @@ data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
+
+{{- if .Values.main_app.xdebug.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-xdebug-ini
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  20-xdebug.ini: |-
+{{ .Files.Get "config/20-xdebug.ini" | indent 4 }}
+{{ end }}
+
+{{- if .Values.main_app.xhprof.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-xhprof-ini
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  20-tideways-xhprof.ini: |-
+{{ .Files.Get "config/20-tideways-xhprof.ini" | indent 4 }}
+{{ end }}
