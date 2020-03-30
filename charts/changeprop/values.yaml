@@ -81,6 +81,27 @@ main_app:
     port: 6379
     pass:
 
+  cp_features:
+    # null edit uses features of mw_purge - also includes on_wikidata_description_change
+    mw_purge_null_edit: true
+    summary_definition_rerender: false
+    purge_varnish: false
+    page_edit: false
+    revision_visibility_change: false
+    page_delete: false
+    page_restore: false
+    page_move: false
+    on_transclusion_update: false
+    page_create: false
+    on_backlinks_update: false
+    ores_cache: false
+    wikidata_description_on_edit: false
+    wikidata_description_on_undelete: false
+    page_images_summary: false
+    page_images_mobile: false
+    purge_map_tile: false
+    rerendered_pcs_endpoints: false
+
 nutcracker:
   enabled: false
   version: latest # But lock this down to a specific version in production
