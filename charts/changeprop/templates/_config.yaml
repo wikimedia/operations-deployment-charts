@@ -228,27 +228,6 @@ spec: &spec
 #                 <<: *summary_definition_rerender_spec
 #                 topic: 'change-prop.transcludes.resource-change'
 
-#               metadata_purge: &metadata_purge_spec
-#                 topic: 'resource_change'
-#                 limiters:
-#                   blacklist: 'metadata:"{"message.meta.uri"}"'
-#                 match:
-#                   meta:
-#                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/(?<title>.+)$/'
-#                     domain: '/\.(?:wikipedia|wiktionary|wikivoyage)\.{{ .Values.main_app.domain_zone }}$/'
-#                   tags:
-#                     - restbase
-#                 exec:
-#                   method: post
-#                   uri: '/sys/purge/'
-#                   body:
-#                     - meta:
-#                         uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
-
-#               metadata_purge_transcludes: &metadata_purge_transcludes_spec
-#                 <<: *metadata_purge_spec
-#                 topic: 'change-prop.transcludes.resource-change'
-
 # {{ range .Values.main_app.rerendered_pcs_endpoints -}}
 #               {{ . }} _rerender: &{{ . }}_rerender_spec
 #                 topic: 'resource_change'
@@ -490,24 +469,13 @@ spec: &spec
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 #                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-#                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 # {{ range .Values.main_app.rerendered_pcs_endpoints }}
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 # {{ end }}
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-
 #               page_delete:
 #                 disable_blacklist: true
 #                 topic: mediawiki.page-delete
@@ -548,26 +516,15 @@ spec: &spec
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
 #                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections/{message.page_title}'
-#                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/metadata/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 # {{ range .Values.main_app.rerendered_pcs_endpoints }}
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
 #                       - meta:
 #                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
 # {{ end }}
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}'
-#                       - meta:
-#                           uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/media/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-
 #               page_restore:
 #                 disable_blacklist: true
 #                 topic: mediawiki.page-undelete
