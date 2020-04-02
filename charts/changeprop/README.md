@@ -44,7 +44,7 @@ helm delete --purge $(release)
 # I installed these into minikube's dockermachine from the changeprop repository:
 # blubber .pipeline/blubber.yaml development > Dockerfile && docker build -t changeprop-dev .
 
-helm install --generate-name --set main_app.image=changeprop-dev --set main_app.conf.kafka.conf."metadata\.broker\.list"={$(minikube ip):30092} --set subcharts.kafka=true ./changeprop
+helm install --generate-name --set subcharts.kafka=true --set main_app.version=2020-01-15-230958-production --set main_app.kafka.broker_list={$(minikube ip):30092} changeprop
 
 # Or, if you've already installed a Kafka pod and don't need this to deploy it, you can
 # leave off the --set subcharts.kafka part.  This expects that you have a Kafka pod deployment
@@ -54,7 +54,7 @@ helm install --generate-name ./kafka-dev
 
 # You can then install the latest deployed changeprop image from WMF's
 # docker registry by just ommitting the main_app.image override:
-helm install  --generate-name --set main_app.conf.kafka.conf."metadata\.broker\.list"={$(minikube ip):30092} ./changeprop
+helm install  --generate-name --set main_app.kafka.broker_list={$(minikube ip):30092} ./changeprop
 
 # Tail logs for the running changeprop instance
 kubectl logs --namespace=$namespace -f $(pod)
