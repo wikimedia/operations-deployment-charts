@@ -1076,14 +1076,12 @@
   dst_net: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
   protocol: tcp
   dst_ports:
-    - 32192
     - 4492
 - action: allow
   src_selector: calico/k8s_ns == 'changeprop'
   dst_net: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
   protocol: tcp
   dst_ports:
-    - 32192
     - 4492
 - action: allow
   src_selector: calico/k8s_ns == 'changeprop'
