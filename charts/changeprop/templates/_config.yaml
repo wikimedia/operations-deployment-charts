@@ -381,20 +381,20 @@ spec: &spec
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
                         domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
                       tags:
-                        - purge
+                        - null_edit
                     exec: *mw_purge_wikipedia_rerender
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
                         domain: '/wiktionary.{{ .Values.main_app.domain_zone }}$/'
                       tags:
-                        - purge
+                        - null_edit
                     exec: *mw_purge_wiktionary_rerender
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
                       tags:
-                        - purge
+                        - null_edit
                     match_not: &others_match_not
                        - meta:
                            domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
@@ -818,20 +818,6 @@ spec: &spec
                         cache-control: no-cache
                       query:
                         redirect: false
-{{ end -}}
-{{ if .Values.main_app.cp_features.purge_map_tile }}
-              # Map tile cache invalidation
-              purge_map_tile:
-                topic: 'resource_change'
-                match:
-                  tags:
-                    - tilerator
-                exec:
-                  method: post
-                  uri: '/sys/purge/'
-                  body:
-                    - meta:
-                        uri: '{{ "{{" }}message.meta.uri{{ "}}" }}'
 {{ end -}}
 
 # Number of worker processes to spawn.
