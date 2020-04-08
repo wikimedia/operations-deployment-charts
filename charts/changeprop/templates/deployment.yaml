@@ -78,7 +78,7 @@ spec:
           {{- end }}
 {{ if .Values.main_app.puppet_ca_cert }}
             - name: NODE_EXTRA_CA_CERTS
-              value: /etc/changeprop/puppetca.crt
+              value: /etc/changeprop/puppetca.crt.pem
 {{- end }}
           resources:
             requests:
