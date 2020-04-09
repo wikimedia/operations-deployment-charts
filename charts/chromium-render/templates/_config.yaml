@@ -26,6 +26,7 @@ logging:
   name: chromium-render
   streams:
     - type: stdout
+      named_levels: true
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
