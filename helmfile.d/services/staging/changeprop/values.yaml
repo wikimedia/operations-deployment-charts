@@ -75,6 +75,9 @@ monitoring:
   enabled: true
   image_version: 0.0.5
 
+resources:
+  replicas: 2
+
 service:
   name: changeprop-staging
   deployment: "production"

@@ -1,6 +1,9 @@
 main_app:
   version: v0.9.4
 
+  limits:
+    memory: 1000Mi
+
   purge_host: 239.128.0.112
 
   event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
@@ -74,6 +77,9 @@ nutcracker:
 monitoring:
   enabled: true
   image_version: 0.0.5
+
+resources:
+  replicas: 3
 
 service:
   deployment: "production"
