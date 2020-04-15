@@ -862,6 +862,7 @@ logging:
   level:  {{ .Values.main_app.log_level | default "info" }}
   streams:
     - type: stdout
+      named_levels: true
 
 
 # Statsd metrics reporter
