@@ -20,7 +20,7 @@ releases:
     - "values/test.yaml"
     wait: true
     hooks:
-    - events: ["prepare"]
+    - events: ["presync"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
 
@@ -34,6 +34,6 @@ releases:
     - "private/secrets.yaml"
     wait: true
     hooks:
-    - events: ["prepare"]
+    - events: ["presync"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]

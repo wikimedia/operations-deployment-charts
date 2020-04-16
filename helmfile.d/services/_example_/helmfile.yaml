@@ -23,6 +23,6 @@ releases:
     - "private/secrets.yaml"
     wait: true
     hooks:
-    - events: ["prepare"]
+    - events: ["presync"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[${CLUSTER}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
