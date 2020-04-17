@@ -17,7 +17,8 @@ data:
   stream-config.yaml: |- {{ include "stream.config" . | nindent 4  }}
 {{ end }}
   # All Kafka Broker and client certificates use the Puppet CA.
-  kafka_ca.crt.pem: {{ .Values.puppet_ca_cert | default "snakeoil" }}
+  kafka_ca.crt.pem: |-
+{{ .Values.puppet_ca_cert | default "snakeoil" | indent 4 }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
