@@ -18,7 +18,7 @@ data:
 {{ end }}
   # All Kafka Broker and client certificates use the Puppet CA.
   kafka_ca.crt.pem: |-
-{{ .Values.puppet_ca_cert | default "snakeoil" | indent 4 }}
+{{ .Values.puppet_ca_crt | default "snakeoil" | indent 4 }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
