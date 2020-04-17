@@ -1113,6 +1113,18 @@
   protocol: udp
   dst_ports:
     - 4827
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.64.16.92/32 # staging.svc.eqiad.wmnet - staging eventgate
+  protocol: tcp
+  dst_ports:
+    - 34192
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop'
+  dst_net: 10.64.0.247/32 # staging.svc.eqiad.wmnet - staging eventgate
+  protocol: tcp
+  dst_ports:
+    - 34192
 
   # Deny everything else
 - action: deny

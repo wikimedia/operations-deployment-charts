@@ -3,7 +3,8 @@ main_app:
 
   purge_host: 239.128.0.112
 
-  event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
+  # This is the endpoint for the staging instance of eventgate
+  event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
 
   log_level: info
 
