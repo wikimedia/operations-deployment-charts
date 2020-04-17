@@ -8,16 +8,14 @@ tls:
   image_version: 1.13.1-1
   public_port: 4492 # the port where TLS will be exposed
 
-
-
-
 main_app:
   name: eventgate-main
   version: 2020-01-10-185555-production
   conf:
     kafka:
       conf:
-        metadata.broker.list: kafka-main1001.eqiad.wmnet:9092,kafka-main1002.eqiad.wmnet:9092,kafka-main1003.eqiad.wmnet:9092
+        metadata.broker.list: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093
+        security.protocol: ssl
     schema_base_uris:
     - 'file:///srv/service/schemas/event/primary/jsonschema/'
     schema_precache_uris:
