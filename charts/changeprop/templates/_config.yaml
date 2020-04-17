@@ -80,12 +80,10 @@ spec: &spec
               # https://github.com/Blizzard/node-rdkafka/issues/326
               # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
               log.connection.close: false
-{{- if .Values.main_app.puppet_ca_cert }}
 {{- if .Values.main_app.kafka.ssl }}
               # Set these to enable Kafka producer TLS (no authentication, just encryption).
               security.protocol: ssl
               ssl.ca.location: /etc/changeprop/puppetca.crt.pem
-{{- end }}
 {{- end }}
             producer:
               compression.codec: {{ .Values.main_app.kafka.compression_codec }}
@@ -93,12 +91,10 @@ spec: &spec
               # https://github.com/Blizzard/node-rdkafka/issues/326
               # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
               log.connection.close: false
-{{- if .Values.main_app.puppet_ca_cert }}
 {{- if .Values.main_app.kafka.ssl }}
               # Set these to enable Kafka producer TLS (no authentication, just encryption).
               security.protocol: ssl
               ssl.ca.location: /etc/changeprop/puppetca.crt.pem
-{{- end }}
 {{- end }}
             concurrency: {{ .Values.main_app.concurrency }}
             startup_delay: 60000
