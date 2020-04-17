@@ -18,6 +18,7 @@ releases:
     missingFileHandler: Warn
     values:
     - "values.yaml"
+    - "private/general.yaml"
     - "private/secrets.yaml"
     wait: true
     hooks:
@@ -33,6 +34,7 @@ releases:
     values:
     - "values.yaml"
     - "values-canary.yaml"
+    - "private/general.yaml"
     - "private/secrets.yaml"
     wait: true
     hooks:
