@@ -16,10 +16,8 @@ data:
   # a remote stream_config_uri.
   stream-config.yaml: |- {{ include "stream.config" . | nindent 4  }}
 {{ end }}
-{{- if .Values.main_app.kafka_ca_cert }}
-  kafka_ca.crt.pem: |-
-    {{ .Values.main_app.kafka_ca_cert | nindent 4 }}
-{{ end }}
+  # All Kafka Broker and client certificates use the Puppet CA.
+  kafka_ca.crt.pem: {{ .Values.puppet_ca_cert | default "snakeoil" }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1

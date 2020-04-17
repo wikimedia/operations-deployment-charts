@@ -78,10 +78,6 @@ main_app:
     cpu: 2000m
     memory: 300Mi
 
-  # Override this in your service specific values.yaml file
-  # to enable Kafka Producer TLS.
-  kafka_ca_cert: null
-
   # The schema at this URL MUST have an JSONSchema examples event entry
   # That this eventgate instance is configured to allow.
   # This example event will be POSTed by the readinessProbe to determine
@@ -160,7 +156,8 @@ main_app:
         statistics.interval.ms: 30000
         # Set these to enable Kafka producer TLS (no authentication, just encryption).
         #security.protocol: ssl
-        #ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
+        # This is only used if security.protocol == ssl
+        ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
         # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
         #event_cb: true
         #log_level: 7
