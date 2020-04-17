@@ -103,7 +103,8 @@ main_app:
       statistics.interval.ms: 5000
       # Set these to enable Kafka consumer TLS (no authentication, just encryption).
       #security.protocol: ssl
-      #ssl.ca.location: /etc/eventstreams/kafka_ca.crt.pem
+      # This is only used if security.protocol == ssl
+      ssl.ca.location: /etc/eventstreams/kafka_ca.crt.pem
 
     # Limit the number of connected clients from the same
     # X-Client-IP per eventstreams process to 2.
