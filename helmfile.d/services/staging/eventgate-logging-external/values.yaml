@@ -33,6 +33,8 @@ main_app:
     - /mediawiki/client/error/1.0.0
     topic_prefix: staging.
   stream_config:
-    # TODO make more streams when used by other clients than Mediawiki client side JS.
     mediawiki.client.error:
       schema_title: mediawiki/client/error
+    kaios_app.error:
+      schema_title: mediawiki/client/error
+
