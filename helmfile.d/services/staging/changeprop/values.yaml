@@ -31,7 +31,13 @@ main_app:
     port: 6379
 
   cp_features:
+    on_backlinks_update: true
     ores_cache: true
+    wikidata_description_on_edit: true
+    wikidata_description_on_undelete: true
+    page_images_summary: true
+    page_images_mobile: true
+    rerendered_pcs_endpoints: true
 
 nutcracker:
   enabled: true
