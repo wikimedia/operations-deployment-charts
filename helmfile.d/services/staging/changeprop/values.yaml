@@ -31,6 +31,14 @@ main_app:
     port: 6379
 
   cp_features:
+    mw_purge_null_edit: true
+    summary_definition_rerender: true
+    page_edit: true
+    revision_visibility_change: true
+    page_delete: true
+    page_restore: true
+    page_move: true
+    page_create: true
     on_backlinks_update: true
     ores_cache: true
     wikidata_description_on_edit: true
@@ -38,6 +46,8 @@ main_app:
     page_images_summary: true
     page_images_mobile: true
     rerendered_pcs_endpoints: true
+    purge_varnish: false
+    on_transclusion_update: false
 
 nutcracker:
   enabled: true
