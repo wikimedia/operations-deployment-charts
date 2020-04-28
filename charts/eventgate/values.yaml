@@ -156,8 +156,12 @@ main_app:
         statistics.interval.ms: 30000
         # Set these to enable Kafka producer TLS (no authentication, just encryption).
         #security.protocol: ssl
-        # This is only used if security.protocol == ssl
+        # These ssl setttings are only used if security.protocol == ssl
         ssl.ca.location: /etc/eventgate/kafka_ca.crt.pem
+        ssl.cipher.suites: ECDHE-ECDSA-AES256-GCM-SHA384
+        ssl.curves.list: P-256
+        ssl.sigalgs.list: ECDSA+SHA256
+
         # Uncomment to enable rdkafka trace logging (and set log_level: trace above)
         #event_cb: true
         #log_level: 7
