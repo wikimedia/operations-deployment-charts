@@ -24,7 +24,7 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" | indent 8}}
+        {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
