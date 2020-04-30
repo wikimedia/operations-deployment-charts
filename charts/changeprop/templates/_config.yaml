@@ -871,8 +871,8 @@ logging:
 
 metrics:
   name: {{ .Values.metrics.name }}
-  host: localhost
-  port: 9125
+  host: {{ .Values.metrics.host }}
+  port: {{ .Values.metrics.port }}
   type: statsd
 
 services:
