@@ -15,6 +15,7 @@ logging:
   level:  {{ .Values.main_app.log_level | default "info" }}
   streams:
     - type: stdout
+      named_levels: true
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
