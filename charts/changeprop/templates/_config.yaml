@@ -38,12 +38,6 @@ spec: &spec
           options:
             redis: *redis_config
 {{- end }}
-    /{api:sys}/purge:
-      x-modules:
-        - path: sys/purge.js
-          options:
-            host: {{ .Values.main_app.purge_host }}
-            port: {{ .Values.main_app.purge_port }}
     /{api:sys}/links:
       x-modules:
         - path: sys/dep_updates.js
@@ -229,11 +223,13 @@ spec: &spec
                         - restbase
                     exec:
                       method: post
-                      uri: /sys/purge
+                      uri: '/sys/queue/events'
                       body:
                         - meta:
                             # Don't encode title since it should be already encoded
-                            uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+                            uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+                            stream: '{{ .Values.main_app.purge_stream }}'
+                            domain: '{{`{{message.meta.domain}}`}}'
 
               summary_definition_rerender_transcludes: &summary_definition_rerender_transcludes_spec
                 <<: *summary_definition_rerender_spec
@@ -279,11 +275,14 @@ spec: &spec
                   meta:
                     domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
                 exec:
-                  method: post
-                  uri: '/sys/purge/'
+                  method: 'post'
+                  uri: '/sys/queue/events'
                   body:
                     - meta:
-                        uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                        uri: '{{`{{message.meta.uri}}`}}'
+                        stream: '{{ .Values.main_app.purge_stream }}'
+                        domain: '{{`{{message.meta.domain}}`}}'
+
 
               purge_varnish_transcludes: &purge_varnish_transcludes_spec
                 <<: *purge_varnish_spec
@@ -519,18 +518,26 @@ spec: &spec
                   # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
                   # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
                   # Only purge the URIs with a rev_id since the latest revision can not be restricted.
-                  - method: post
-                    uri: '/sys/purge/'
+                  - method: 'post'
+                    uri: '/sys/queue/events'
                     body:
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
 {{ range .Values.main_app.rerendered_pcs_endpoints }}
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
 
@@ -566,25 +573,42 @@ spec: &spec
                   # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
                   # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
                   - method: post
-                    uri: '/sys/purge/'
+                    uri: '/sys/queue/events'
                     body:
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/summary/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/summary/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
+
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
 {{ range .Values.main_app.rerendered_pcs_endpoints }}
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: '//{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          stream: '{{ .Values.main_app.purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
 {{ if .Values.main_app.cp_features.page_restore }}

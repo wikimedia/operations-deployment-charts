@@ -1,7 +1,3 @@
-# Default values for changepropagation.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 # This can be useful when backporting fixes.
 helm_scaffold_version: 0.1
 
@@ -19,11 +15,6 @@ main_app:
   version: latest
   # port exposed as a Service, also used by service-checker.
   port: 7272
-  # Use command and args below to override the entrypoint. Type is arrays
-  # Not necessary unless you want to change the entrypoint defined in the docker image
-  # Example:
-  # command: ["node"]
-  # args: ["bin/server.js", "--param1", "arg1"]
   command: ["node"]
   args: ["server.js", "-c", "/etc/changeprop/config.yaml"]
   requests:
@@ -102,6 +93,8 @@ main_app:
     page_images_mobile: false
     rerendered_pcs_endpoints: false
 
+  purge_stream: resource-purge
+
 nutcracker:
   enabled: false
   version: latest # But lock this down to a specific version in production
@@ -128,14 +121,9 @@ service:
   # valid values are "production" and "minikube"
   deployment: "minikube"
   port:
-    # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     name: changeprop
-    # protocol: TCP # TCP is the default protocol
-    # the number or name of the exposed port on the container
     targetPort: 7272
-    # the number of the port desired to be exposed to the cluster
     port: 7272
-    # you need to define this if "production" is used. In minikube environments let it autoallocate
     nodePort: null
 
 config:
