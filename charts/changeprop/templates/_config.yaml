@@ -263,7 +263,7 @@ spec: &spec
 {{ end -}}
 {{ end -}}
 {{ if .Values.main_app.cp_features.purge_varnish }}
-              purge_varnish: &purge_varnish_spec
+              generate_purge_varnish: &purge_varnish_spec
                 enable_blacklist: false
                 topic: 'resource_change'
                 match:
@@ -284,7 +284,7 @@ spec: &spec
                         domain: '{{`{{message.meta.domain}}`}}'
 
 
-              purge_varnish_transcludes: &purge_varnish_transcludes_spec
+              generate_purge_varnish_transcludes: &purge_varnish_transcludes_spec
                 <<: *purge_varnish_spec
                 topic: 'change-prop.transcludes.resource-change'
 {{ end -}}
