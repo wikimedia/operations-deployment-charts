@@ -23,3 +23,4 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
+      {{- include "tls.networkpolicy" . | nindent 6 }}

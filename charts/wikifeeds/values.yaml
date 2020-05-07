@@ -50,3 +50,16 @@ config:
 debug:
   enabled: false
   ports: []
+
+tls:
+  enabled: false
+  image_version: 1.13.1-1 # latest as of 20200507
+  public_port: 4101 # the port where TLS will be exposed
+  upstream_timeout: 60s # envoy-tls-local-proxy default
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361

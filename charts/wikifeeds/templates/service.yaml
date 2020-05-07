@@ -39,3 +39,4 @@ spec:
       nodePort: null # We're assuming this will be only used on minikube
     {{- end }}
 {{- end }}
+{{ include "tls.service" . }}
