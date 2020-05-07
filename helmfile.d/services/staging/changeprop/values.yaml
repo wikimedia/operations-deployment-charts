@@ -1,8 +1,6 @@
 main_app:
   version: v0.9.5
 
-  purge_host: 239.128.0.112
-
   # This is the endpoint for the staging instance of eventgate
   event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
 
@@ -46,7 +44,7 @@ main_app:
     page_images_summary: true
     page_images_mobile: true
     rerendered_pcs_endpoints: true
-    purge_varnish: false
+    purge_varnish: true
     on_transclusion_update: true
 
 nutcracker:
