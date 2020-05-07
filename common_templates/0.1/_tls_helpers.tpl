@@ -31,12 +31,18 @@ envoyproxy.io/scrape: "false"
       value: "{{ .Values.main_app.port }}" # env variables need to be strings
     - name: PUBLIC_PORT
       value: "{{ .Values.tls.public_port }}"
+    {{- if .Values.tls.telemetry.enabled }}
     - name: ADMIN_LISTEN
-      value: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
+      value: 0.0.0.0
+    {{- if .Values.tls.telemetry.port }}
     - name: ADMIN_PORT
       value: "{{ .Values.tls.telemetry.port }}"
+    {{- end }}
+    {{- end }}
+    {{- if .Values.tls.upstream_timeout }}
     - name: UPSTREAM_TIMEOUT
       value: "{{ .Values.tls.upstream_timeout }}"
+    {{- end }}
   ports:
     - containerPort: {{ .Values.tls.public_port }}
   volumeMounts:
