@@ -1,4 +1,5 @@
 {{- define "config.app" }}
+{{- $purge_stream  := .Values.main_app.purge_stream -}}
 
 # service-runner Changeprop app config.yaml.
 spec: &spec
@@ -228,7 +229,7 @@ spec: &spec
                         - meta:
                             # Don't encode title since it should be already encoded
                             uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
-                            stream: '{{ .Values.main_app.purge_stream }}'
+                            stream: '{{ $purge_stream }}'
                             domain: '{{`{{message.meta.domain}}`}}'
 
               summary_definition_rerender_transcludes: &summary_definition_rerender_transcludes_spec
@@ -280,7 +281,7 @@ spec: &spec
                   body:
                     - meta:
                         uri: '{{`{{message.meta.uri}}`}}'
-                        stream: '{{ .Values.main_app.purge_stream }}'
+                        stream: '{{ $purge_stream }}'
                         domain: '{{`{{message.meta.domain}}`}}'
 
 
@@ -523,20 +524,20 @@ spec: &spec
                     body:
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ range .Values.main_app.rerendered_pcs_endpoints }}
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
@@ -577,37 +578,37 @@ spec: &spec
                     body:
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/summary/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ range .Values.main_app.rerendered_pcs_endpoints }}
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
                           uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
-                          stream: '{{ .Values.main_app.purge_stream }}'
+                          stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
