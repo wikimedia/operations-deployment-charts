@@ -1,0 +1,180 @@
+main_app:
+  version: v0.9.5
+
+  limits:
+    memory: 1000Mi
+
+  log_level: info
+
+  site: eqiad
+
+  kafka:
+    broker_list:
+      - kafka-main1001.eqiad.wmnet:9093
+      - kafka-main1002.eqiad.wmnet:9093
+      - kafka-main1003.eqiad.wmnet:9093
+    ssl: true
+
+  redis:
+    host: localhost
+    port: 6379
+
+  jobqueue:
+    jobrunner_uri: http://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
+    videoscaler_uri: http://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
+
+    # All the jobs listed below get their own rule, which transfers to
+    # their own processing unit - each type of job listed explicitly is processed
+    # by a separate worker in change-prop.
+    high_traffic_jobs_config:
+      ThumbnailRender:
+        enabled: false
+        concurrency: 20
+      categoryMembershipChange:
+        enabled: false
+        concurrency: 200
+      # CNDPurge is quite low-volume, but it uses delayed execution,
+      # so avoid putting it together with other low-volume jobs so that it doesn't
+      # block execution for others.
+      cdnPurge:
+        enabled: false
+        concurrency: 5
+      ORESFetchScoreJob:
+        enabled: false
+        concurrency: 20
+      # RecordLinks is normally low-volume, but could have big spikes
+      # when maintenance scripts are run. Elevated concurrency
+      RecordLintJob:
+        enabled: false
+        concurrency: 50
+        consumer_batch_size: 10
+      wikibase-addUsagesForPage:
+        enabled: false
+        concurrency: 5
+      constraintsRunCheck:
+        enabled: false
+        concurrency: 30
+      fetchGoogleCloudVisionAnnotations:
+        enabled: false
+        concurrency: 10
+        # All the jobs of this kind are delayed exactly 48 hours, so we don't want
+        # the reenqueue feature to kick in.
+        reenqueue_delay: 259200
+      # For cirrus search jobs the retries are built into the job itself,
+      # so disable the retries by change-prop. We need special rules for cirrus
+      # jobs because they need special configuration.
+      cirrusSearchCheckerJob:
+        enabled: false
+        disable_delayed_execution: true #T198462
+        retry_limit: 0
+        concurrency: 20
+      cirrusSearchDeleteArchive:
+        enabled: false
+        retry_limit: 0
+        concurrency: 5
+      cirrusSearchDeletePages:
+        enabled: false
+        retry_limit: 0
+        concurrency: 5
+      cirrusSearchIncomingLinkCount:
+        enabled: false
+        retry_limit: 0
+        concurrency: 15
+      cirrusSearchLinksUpdate:
+        enabled: false
+        retry_limit: 0
+        concurrency: 300
+      cirrusSearchLinksUpdatePrioritized:
+        enabled: false
+        retry_limit: 0
+        concurrency: 150
+      cirrusSearchOtherIndex:
+        enabled: false
+        retry_limit: 0
+        concurrency: 5
+      # technically not a high traffic job, but enabling here for
+      # testing. To be removed once we're confident.
+      updateBetaFeaturesUserCounts:
+        concurrency: 50
+        enabled: true
+
+    # Videoscaler jobs point to a different LVS, so they need special treatment
+    # as well - thus special rules.
+    videoscaler_jobs_config:
+      webVideoTranscode:
+        enabled: false
+        timeout: 86400000
+        concurrency: 50
+      webVideoTranscodePrioritized:
+        enabled: false
+        concurrency: 30
+        timeout: 86400000
+
+    # Some jobs require partitioning according to MariaDB shards.
+    partitioned_jobs_config:
+      refreshLinks:
+        enabled: false
+        # Partition jobs by mediawiki database cluster (s1, s2, etc.)
+        partitioner_kind: mediawiki_database
+        # This is the concurrency for the partitioner
+        # itself, it's does not actually touch Mediawiki, only re-enqueues the
+        # jobs according to proper partitions
+        partitioner_concurrency: 200
+        partition:
+          # This is the concurrency of the individual partitions, so overall concurrency
+          # is 8 * 20 = 160
+          concurrency: 20
+          # Abandon jobs which root job is more than 1 week long
+          root_claim_ttl: 604800
+      htmlCacheUpdate:
+        enabled: false
+        # Partition jobs by mediawiki database cluster (s1, s2, etc.)
+        partitioner_kind: mediawiki_database
+        partitioner_concurrency: 50
+        partition:
+          # This is the concurrency of the individual partitions, so overall concurrency
+          # is 8 * 4 = 32
+          # The load of htmlCacheUpdate is uneven across partitions, so we are using a bit
+          # higher overall concurrency then needed.
+          concurrency: 4
+          # Abandon jobs which root job is more than 1 week long
+          root_claim_ttl: 604800
+      cirrusSearchElasticaWrite:
+        enabled: false
+        partitioner_kind: cirrussearch_cluster
+        partitioner_concurrency: 50
+        partition:
+          # This is the concurrency of the individual partitions, so overall concurrency
+          # is 100 * 3 = 300
+          concurrency: 100
+          reenqueue_delay: 3600
+          retry_limit: 0
+
+    # All the jobs not explicitly specified in the config are combined into the
+    # `low_traffic_jobs` rule, so they share a worker. The low_traffic_concurrency
+    # is shared between all the jobs other then the exceptions listed above.
+    #
+    # Most of the topics are empty most of the time, so a lot of slots are just waiting
+    # for the `consume` method to timeout and do nothing.
+    # So a significantly higher concurrency is needed to account for that.
+    low_traffic_jobs:
+      enabled: false
+      concurrency: 50
+
+nutcracker:
+  enabled: true
+  servers:
+    - rdb1005.eqiad.wmnet:6379:1 "cp-1"
+    - rdb1009.eqiad.wmnet:6379:1 "cp-2"
+
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+
+resources:
+  replicas: 12
+
+service:
+  deployment: "production"
+  port:
+    nodePort: 7272

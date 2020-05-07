@@ -1,0 +1,289 @@
+{{- define "jobqueue.app" }}
+{{- $jobrunner_uri  := .Values.main_app.jobqueue.jobrunner_uri -}}
+{{- $videoscaler_uri := .Values.main_app.jobqueue.videoscaler_uri -}}
+
+# service-runner jobqueue app config.yaml.
+spec: &spec
+  x-sub-request-filters:
+    - type: default
+      name: http
+      options:
+        allow:
+          - pattern: /^https?:\/\//
+            forward_headers:
+              user-agent: true
+  title: Change propagation job queue
+  paths:
+    /{api:sys}/dedupe:
+      x-modules:
+        - path: sys/deduplicator.js
+          options:
+            redis_prefix: 'CPJQ'
+            redis: &redis_config
+              host: {{ .Values.main_app.redis.host }}
+              port: {{ .Values.main_app.redis.port }}
+              password: {{ .Values.main_app.redis.pass | default "" }}
+    /{api:sys}/partition/cirrussearch_cluster:
+      x-modules:
+        - path: sys/partitioner.js
+          options:
+            templates:
+              partition_stream: 'cpjobqueue.partitioned.{{ `{{message.meta.stream}}` }}'
+            partition_key: params.cluster
+            partition_default: 1
+            partition_map:
+              cloudelastic: 0
+              codfw: 1
+              eqiad: 2
+    /{api:sys}/partition/mediawiki_database:
+      x-modules:
+        - path: sys/partitioner.js
+          options:
+            templates:
+              partition_stream: 'cpjobqueue.partitioned.{{ `{{message.meta.stream}}` }}'
+            partition_key: database
+            partition_default: 2
+            partition_map:
+              # s1: enwiki
+              enwiki: 0
+              # s2: large wikis
+              bgwiki: 1
+              bgwiktionary: 1
+              cswiki: 1
+              enwikiquote: 1
+              enwiktionary: 1
+              eowiki: 1
+              fiwiki: 1
+              idwiki: 1
+              itwiki: 1
+              nlwiki: 1
+              nowiki: 1
+              plwiki: 1
+              ptwiki: 1
+              svwiki: 1
+              thwiki: 1
+              trwiki: 1
+              zhwiki: 1
+              # s3 (default)
+              # s4: commons
+              commonswiki: 3
+              # s5: dewiki
+              dewiki: 4
+              # s6: large wikis
+              frwiki: 5
+              jawiki: 5
+              ruwiki: 5
+              # s7: large wikis centralauth
+              eswiki: 6
+              huwiki: 6
+              hewiki: 6
+              ukwiki: 6
+              frwiktionary: 6
+              metawiki: 6
+              arwiki: 6
+              centralauth: 6
+              cawiki: 6
+              viwiki: 6
+              fawiki: 6
+              rowiki: 6
+              kowiki: 6
+              # s8: wikidata
+              wikidatawiki: 7
+    /{api:sys}/queue:
+      x-modules:
+        - path: sys/kafka.js
+          options:
+            metadata_broker_list:
+{{ toYaml .Values.main_app.kafka.broker_list | indent 14 }}
+            dc_name: {{ .Values.main_app.site }}
+            consumer:
+              # JobQueue jobs might sent messages larget then 1 Meg,
+              # so we increase the max message size in kafka and have to
+              # ajust the consumers accordingly.
+              fetch.message.max.bytes: {{ .Values.main_app.kafka.max_bytes | int64 }}
+              # Silence noisy connection reaper logging
+              # https://github.com/Blizzard/node-rdkafka/issues/326
+              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+              log.connection.close: false
+{{- if .Values.main_app.kafka.ssl }}
+              # Set these to enable Kafka producer TLS (no authentication, just encryption).
+              security.protocol: ssl
+              ssl.ca.location: /etc/changeprop/puppetca.crt.pem
+{{- end }}
+            producer:
+              compression.codec: {{ .Values.main_app.kafka.compression_codec }}
+              # Silence noisy connection reaper logging
+              # https://github.com/Blizzard/node-rdkafka/issues/326
+              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+              log.connection.close: false
+{{- if .Values.main_app.kafka.ssl }}
+              # Set these to enable Kafka producer TLS (no authentication, just encryption).
+              security.protocol: ssl
+              ssl.ca.location: /etc/changeprop/puppetca.crt.pem
+{{- end }}
+            concurrency: {{ .Values.main_app.concurrency }}
+            startup_delay: 60000
+            disable_blacklist: true
+            disable_ratelimit: true
+            templates:
+{{- range $topic, $topic_config := .Values.main_app.jobqueue.high_traffic_jobs_config }}
+{{- if $topic_config.enabled }}
+              {{ $topic }}:
+                topic: 'mediawiki.job.{{ $topic }}'
+                {{- range $key, $value := $topic_config }}
+                {{- if ne $key "enabled" }}
+                  {{ $key }}: {{ $value | quote }}
+                {{- end }}
+                {{- end }}
+                exec:
+                  method: post
+                  uri: '{{ $jobrunner_uri }}'
+                  headers:
+                    content-type: 'application/json'
+                  body: '{{ `{{globals.message}}` }}'
+                  agentOptions:
+                    keepAlive: true
+{{- end }}
+{{- end }}
+
+{{- range $part_topic, $part_options := .Values.main_app.jobqueue.partitioned_jobs_config }}
+{{- if $part_options.enabled }}
+              {{ $part_topic }}_partitioner:
+                topic: 'mediawiki.job.{{ $part_topic }}'
+                concurrency: {{ $part_options.partitioner_concurrency }}
+                exec:
+                  method: 'post'
+                  uri: '/sys/partition/{{ $part_options.partitioner_kind }}/'
+                  headers:
+                    content-type: "application/json"
+                  body: '{{ `{{globals.message}}` }}'
+              {{ $part_topic }}:
+                topic: 'cpjobqueue.partitioned.mediawiki.job.{{ $part_topic }}'
+                {{- range $key, $value := $part_options.partition }}
+                {{- if ne $key "enabled" }}
+                  {{ $key }}: {{ $value | quote }}
+                {{- end }}
+                {{- end }}
+                  exec:
+                    method: post
+                    uri: '{{ $jobrunner_uri }}'
+                    headers:
+                      content-type: 'application/json'
+                    body: '{{ `{{globals.message}}` }}'
+                    agentOptions:
+                      keepAlive: true
+{{- end }}
+{{- end }}
+
+# Videoscaler jobs need to have special rules since then need to go to a different LVS
+{{- range $topic, $topic_config := .Values.main_app.jobqueue.videoscaler_jobs_config }}
+{{- if $topic_config.enabled }}
+              {{ $topic }}:
+                topic: 'mediawiki.job.{{ $topic }}'
+              {{- range $key, $value := $topic_config }}
+                {{- if ne $key "enabled" }}
+                {{ $key }}: {{ $value | quote }}
+                {{- end }}
+              {{- end }}
+                exec:
+                  method: post
+                  uri: '{{ $videoscaler_uri }}'
+                  headers:
+                    content-type: 'application/json'
+                  body: '{{ `{{globals.message}}` }}'
+                  agentOptions:
+                    keepAlive: true
+{{- end }}
+{{- end }}
+
+{{- if .Values.main_app.jobqueue.low_traffic_jobs.enabled }}
+              # Now special rule to cover all the low-traffic jobs
+              low_traffic_jobs:
+                concurrency: '{{ .Values.main_app.jobqueue.low_traffic_jobs.concurrency }}'
+                topics:
+                  - '/^mediawiki\.job\..*/'
+                # Don't execute anything that's covered by different rules
+                exclude_topics:
+                  - 'mediawiki.job.fetchGoogleCloudVisionAnnotations'
+                {{- range .Values.main_app.jobqueue.high_traffic_jobs_config }}
+                  - 'mediawiki.job.{{ . }}'
+                {{- end }}
+                {{- range .Values.main_app.jobqueue.videoscaler_jobs_config }}
+                  - 'mediawiki.job.{{ . }}'
+                {{- end }}
+                {{- range .Values.main_app.jobqueue.partitioned_jobs_config }}
+                  - 'mediawiki.job.{{ . }}'
+                {{- end }}
+                exec:
+                  method: post
+                  uri: '{{ $jobrunner_uri }}'
+                  headers:
+                    content-type: 'application/json'
+                  body: '{{ `{{globals.message}}` }}'
+                  agentOptions:
+                    keepAlive: true
+{{- end }}
+
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: 1
+
+# Number of workers to start in parallel after the first worker.
+# The first worker is always started independently. After it has completed
+# its start-up, this number controls the number of workers to start in
+# parallel until `num_workers` have been started. Note that setting this
+# number to a too high a value might lead to high resource consumption
+# (especially of CPU) during the start-up process.
+startup_concurrency: 4
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 750
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: 15000
+
+# Logger info
+logging:
+  level:  {{ .Values.main_app.log_level | default "info" }}
+  streams:
+    - type: stdout
+      named_levels: true
+
+# Statsd metrics reporter
+metrics:
+  name: {{ .Values.metrics.name }}
+  host: {{ .Values.metrics.host }}
+  port: {{ .Values.metrics.port }}
+  type: statsd
+
+services:
+  - name: {{ .Values.service.name }}
+    # a relative path or the name of an npm package, if different from name
+    module: hyperswitch
+    # per-service config
+    conf:
+      cors: "*"
+      port: {{ .Values.main_app.port }}
+      # interface: localhost # uncomment to only listen on localhost
+      # URL of the outbound proxy to use (complete with protocol)
+      proxy: {{ .Values.main_app.proxy | default "" }}
+      # the list of domains for which not to use the proxy defined above
+      # no_proxy_list:
+      #   - domain1.com
+      #   - domain2.org
+      # the list of incoming request headers that can be logged; if left empty,
+      # the following headers are allowed: cache-control, content-length,
+      # content-type, if-match, user-agent, x-request-id
+      # log_header_whitelist:
+      #   - cache-control
+      #   - content-length
+      #   - content-type
+      #   - if-match
+      #   - user-agent
+      #   - x-request-id
+      user_agent: ChangePropagation-JobQueue/WMF
+      spec: *spec
+{{- end}}

@@ -1122,5 +1122,129 @@
   dst_ports:
     - 34192
 
+  # Changeprop-Jobqueue
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.192.0.17/32 # kafka-main2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.192.16.8/32 # kafka-main2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.192.32.136/32 # kafka-main2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:860:101:10:192:0:17/128 # kafka-main2001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:860:102:10:192:16:8/128 # kafka-main2002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:860:103:10:192:32:136/128 # kafka-main2003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.64.0.200/32 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.64.16.37/32 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.64.32.90/32 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:861:101:10:64:0:200/128 # kafka-main1001
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:861:102:10:64:16:37/128 # kafka-main1002
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 2620:0:861:103:10:64:32:90/128 # kafka-main1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.2.2.26 # jobrunner.discovery.wmnet
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.2.2.5 # videoscaler.discovery.wmnet
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.192.16.122/32 # rdb2003
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.192.32.133/32 # rdb2005
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.64.0.24/32 # rdb1005
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.64.16.76/32 # rdb1009
+  protocol: tcp
+  dst_ports:
+    - 6379
+
   # Deny everything else
 - action: deny
