@@ -45,9 +45,9 @@ spec: &spec
           options:
             templates:
               mw_api:
-                uri: {{ .Values.main_app.mwapi_uri }}
+                uri: {{ .Values.main_app.changeprop.mwapi_uri }}
                 headers:
-                  host: '{{ "{{" }}message.meta.domain{{ "}}" }}'
+                  host: '{{ `{{message.meta.domain}}` }}'
                 body:
                   formatversion: 2
     /sys/ores:
@@ -55,7 +55,7 @@ spec: &spec
         - path: sys/ores_updates.js
           options:
             ores_precache_uris:
-{{- range .Values.main_app.ores.uris }}
+{{- range .Values.main_app.changeprop.ores.uris }}
               - {{ . -}}/v3/precache
 {{- end  }}
             event_service_uri: {{ .Values.main_app.event_service_uri }}
@@ -190,7 +190,7 @@ spec: &spec
                 - '/Commons:WikiProject_Aviation\/recent_uploads\//'
                 - '/\/(?:User|Benutzer):/'
             templates:
-{{ if .Values.main_app.cp_features.summary_definition_rerender }}
+{{ if .Values.main_app.changeprop.features.summary_definition_rerender }}
               summary_definition_rerender: &summary_definition_rerender_spec
                 topic: 'resource_change'
                 limiters:
@@ -203,13 +203,13 @@ spec: &spec
                         - restbase
                     match_not:
                       - meta:
-                          domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                          domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     exec:
                       method: get
                       # Don't encode title since it should be already encoded
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri[1]}}` }}'
                       query:
                         redirect: false
                       headers:
@@ -219,7 +219,7 @@ spec: &spec
                         # These URIs are coming from RESTBase, so we know that article titles will be normalized
                         # and main namespace articles will not have : (uri-encoded, so %3a or %3A)
                         uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/((?:(?!%3a|%3A|\/).)+)$/'
-                        domain: '/^en\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/^en\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags:
                         - restbase
                     exec:
@@ -228,7 +228,7 @@ spec: &spec
                       body:
                         - meta:
                             # Don't encode title since it should be already encoded
-                            uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+                            uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{{ `{{match.meta.uri[1]}}` }}'
                             stream: '{{ $purge_stream }}'
                             domain: '{{`{{message.meta.domain}}`}}'
 
@@ -237,20 +237,20 @@ spec: &spec
                 topic: 'change-prop.transcludes.resource-change'
 {{ end -}}
 
-{{ if .Values.main_app.cp_features.rerendered_pcs_endpoints }}
-{{ range .Values.main_app.rerendered_pcs_endpoints }}
+{{ if .Values.main_app.changeprop.features.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
               {{ . }}_rerender: &{{ . }}_rerender_spec
                 topic: 'resource_change'
                 match:
                   meta:
                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^/]+)$/'
-                    domain: '/\.wikipedia\.{{ $.Values.main_app.domain_zone }}$/'
+                    domain: '/\.wikipedia\.{{ $.Values.main_app.changeprop.domain_zone }}$/'
                   tags:
                     - restbase
                 exec:
                   method: get
                   # Don't encode title since it should be already encoded
-                  uri: '{{ $.Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/{{ . }}/{{ "{{" }}match.meta.uri[1]{{ "}}" }}'
+                  uri: '{{ $.Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{{ `{{match.meta.uri[1]}}` }}'
                   query:
                     redirect: false
                   headers:
@@ -263,7 +263,7 @@ spec: &spec
                 topic: 'change-prop.transcludes.resource-change'
 {{ end -}}
 {{ end -}}
-{{ if .Values.main_app.cp_features.purge_varnish }}
+{{ if .Values.main_app.changeprop.features.purge_varnish }}
               generate_purge_varnish: &purge_varnish_spec
                 enable_blacklist: false
                 topic: 'resource_change'
@@ -274,7 +274,7 @@ spec: &spec
                     - restbase
                 match_not:
                   meta:
-                    domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                    domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                 exec:
                   method: 'post'
                   uri: '/sys/queue/events'
@@ -291,7 +291,7 @@ spec: &spec
 {{ end -}}
 
               # RESTBase update jobs
-{{ if .Values.main_app.cp_features.mw_purge_null_edit }}
+{{ if .Values.main_app.changeprop.features.mw_purge_null_edit }}
               mw_purge:
                 topic: resource_change
                 limiters:
@@ -300,29 +300,29 @@ spec: &spec
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags:
                         - purge
                     exec: &mw_purge_wikipedia_rerender
                       - method: get
                         # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
                         # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
-                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                         # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
                         # content, so let's purge them as well just in case. The rate is low.
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
                         query:
                           redirect: false
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-sections/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
                         query:
@@ -330,17 +330,17 @@ spec: &spec
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/wiktionary.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags:
                         - purge
                     exec: &mw_purge_wiktionary_rerender
                       - method: get
                         # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
                         # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
-                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                   - match:
@@ -350,29 +350,29 @@ spec: &spec
                         - purge
                     match_not: &others_match_not
                       - meta:
-                          domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                          domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       - meta:
-                          domain: '/\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                          domain: '/\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 0
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 120
                     exec: &mw_purge_others_rerender
                       - method: get
                         # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
                         # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
-                          if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                         # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
                         # content, so let's purge them as well just in case. The rate is low.
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{decode(match.meta.uri.title)}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
                         query:
@@ -389,14 +389,14 @@ spec: &spec
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags:
                         - null_edit
                     exec: *mw_purge_wikipedia_rerender
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/wiktionary.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags:
                         - null_edit
                     exec: *mw_purge_wiktionary_rerender
@@ -407,14 +407,14 @@ spec: &spec
                         - null_edit
                     match_not: &others_match_not
                        - meta:
-                           domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                           domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                        - meta:
-                           domain: '/\.wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                           domain: '/\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                        - meta:
-                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                          page_namespace: 0
                        - meta:
-                           domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                          page_namespace: 120
                     exec: *mw_purge_others_rerender
               on_wikidata_description_change:
@@ -423,23 +423,23 @@ spec: &spec
                   - match:
                       meta:
                         uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
-                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       tags: [ 'wikidata' ]
                     exec:
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
                         query:
                           redirect: false
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-sections/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
                         query:
                           redirect: false
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-html/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-html/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
                         query:
@@ -451,13 +451,13 @@ spec: &spec
                     match_not: *others_match_not
                     exec:
                       - method: get
-                        uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
                         query:
                           redirect: false
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_edit }}
+{{ if .Values.main_app.changeprop.features.page_edit }}
               page_edit:
                 topic: mediawiki.revision-create
                 limiters:
@@ -470,30 +470,30 @@ spec: &spec
                   rev_content_changed: true
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                     # Block Scribunto Module dependencies as they create a lot of load
                     # with supposingly very low actual effect
                   - meta:
-                      domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                      domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                     page_namespace: 828
                 exec:
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                     headers:
                       cache-control: no-cache
-                      x-restbase-parentrevision: '{{ "{{" }}message.rev_parent_id{{ "}}" }}'
-                      if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                      x-restbase-parentrevision: '{{ `{{message.rev_parent_id}}` }}'
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                     query:
                       redirect: false
                   - method: post
                     uri: '/sys/links/transcludes/{message.page_title}'
-                    body: '{{ "{{" }}globals.message{{ "}}" }}'
+                    body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.revision_visibility_change }}
+{{ if .Values.main_app.changeprop.features.revision_visibility_change }}
               revision_visibility_change:
                 enable_blacklist: false
                 topic: mediawiki.revision-visibility-change
@@ -503,14 +503,14 @@ spec: &spec
                     - 412
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}/{{ `{{message.rev_id}}` }}'
                     headers:
                       cache-control: no-cache
                     query:
@@ -523,26 +523,26 @@ spec: &spec
                     uri: '/sys/queue/events'
                     body:
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
-{{ range .Values.main_app.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
 
-{{ if .Values.main_app.cp_features.page_delete }}
+{{ if .Values.main_app.changeprop.features.page_delete }}
               page_delete:
                 disable_blacklist: true
                 topics:
@@ -554,14 +554,14 @@ spec: &spec
                     - 412
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
                     headers:
                       cache-control: no-cache
                     query:
@@ -569,7 +569,7 @@ spec: &spec
                   # The links to the deleted page should become red again
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
-                    body: '{{ "{{" }}globals.message{{ "}}" }}'
+                    body: '{{ `{{globals.message}}` }}'
                   # For page deletion RESTBase doesn't emit resource_change events, and to go through
                   # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
                   # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
@@ -577,55 +577,55 @@ spec: &spec
                     uri: '/sys/queue/events'
                     body:
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/summary/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/summary/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/definition/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
-{{ range .Values.main_app.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                       - meta:
-                          uri: 'http://{{ "{{" }}message.meta.domain{{ "}}" }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
 {{ end }}
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_restore }}
+{{ if .Values.main_app.changeprop.features.page_restore }}
               page_restore:
                 disable_blacklist: true
                 topic: mediawiki.page-undelete
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.page_title}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
                     headers:
                       cache-control: no-cache
                     query:
@@ -633,35 +633,35 @@ spec: &spec
                   # The links to the restored page should not be red any more
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
-                    body: '{{ "{{" }}globals.message{{ "}}" }}'
+                    body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_move }}
+{{ if .Values.main_app.changeprop.features.page_move }}
               page_move:
                 disable_blacklist: true
                 topic: mediawiki.page-move
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{message.page_title}/{{ "{{" }}message.rev_id{{ "}}" }}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                     headers:
                       cache-control: no-cache
-                      if-unmodified-since: '{{ "{{" }}date(message.meta.dt){{ "}}" }}'
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                     query:
                       redirect: false
                   - method: get
-                    uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/title/{message.prior_state.page_title}'
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.prior_state.page_title}'
                     headers:
                       cache-control: no-cache
                     query:
                       redirect: false
 {{ end -}}
-{{ if .Values.main_app.cp_features.on_transclusion_update }}
+{{ if .Values.main_app.changeprop.features.on_transclusion_update }}
               on_transclusion_update:
                 concurrency: {{ mul .Values.main_app.concurrency 4 }}
                 topic: change-prop.transcludes.resource-change
@@ -675,11 +675,11 @@ spec: &spec
                       tags: [ 'transcludes' ]
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
                       headers:
                         cache-control: no-cache
-                        if-unmodified-since: '{{ "{{" }}date(message.root_event.dt){{ "}}" }}'
-                        x-restbase-mode: '{{ "{{" }}message.tags[1]{{ "}}" }}'
+                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
+                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
                       query:
                         redirect: false
                     match_not:
@@ -694,14 +694,14 @@ spec: &spec
                           # Block Scribunto Module dependencies as they create a lot of load
                           # with supposingly very low actual effect
                           meta:
-                            domain: '/wiktionary\.{{ .Values.main_app.domain_zone }}$/'
+                            domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                           page_namespace: 828
                     exec:
                       method: post
                       uri: '/sys/links/transcludes/{message.original_event.page_title}'
-                      body: '{{ "{{" }}globals.message{{ "}}" }}'
+                      body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_create }}
+{{ if .Values.main_app.changeprop.features.page_create }}
               page_create:
                 topic: mediawiki.page-create
                 retry_on:
@@ -710,17 +710,17 @@ spec: &spec
                     - 404 # Sometimes occasional 404s happen because of the mysql replication lag, so retry
                 match_not:
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 0
                   - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
-                    body: '{{ "{{" }}globals.message{{ "}}" }}'
+                    body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.on_backlinks_update }}
+{{ if .Values.main_app.changeprop.features.on_backlinks_update }}
               on_backlinks_update:
                 topic: change-prop.backlinks.resource-change
                 limiters:
@@ -733,11 +733,11 @@ spec: &spec
                       tags: [ 'backlinks' ]
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/html/{{ "{{" }}match.meta.uri.title{{ "}}" }}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
                       headers:
                         cache-control: no-cache
-                        if-unmodified-since: '{{ "{{" }}date(message.root_event.dt){{ "}}" }}'
-                        x-restbase-mode: '{{ "{{" }}message.tags[1]{{ "}}" }}'
+                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
+                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
                       query:
                         redirect: false
                   - match:
@@ -745,9 +745,9 @@ spec: &spec
                     exec:
                       method: post
                       uri: '/sys/links/backlinks/{message.original_event.page_title}'
-                      body: '{{ "{{" }}globals.message{{ "}}" }}'
+                      body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.ores_cache }}
+{{ if .Values.main_app.changeprop.features.ores_cache }}
               # ORES caching updates
               ores_cache:
                 topic: mediawiki.revision-create
@@ -760,9 +760,9 @@ spec: &spec
                   uri: '/sys/ores/'
                   query:
                     postevent: true
-                  body: '{{ "{{" }}globals.message{{ "}}" }}'
+                  body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.wikidata_description_on_edit }}
+{{ if .Values.main_app.changeprop.features.wikidata_description_on_edit }}
               wikidata_description_on_edit:
                 topic: mediawiki.revision-create
                 match:
@@ -775,9 +775,9 @@ spec: &spec
                 exec:
                   method: post
                   uri: '/sys/links/wikidata_descriptions'
-                  body: '{{ "{{" }}globals.message{{ "}}" }}'
+                  body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.wikidata_description_on_undelete }}
+{{ if .Values.main_app.changeprop.features.wikidata_description_on_undelete }}
               wikidata_description_on_undelete:
                 topic: mediawiki.page-undelete
                 match:
@@ -787,11 +787,11 @@ spec: &spec
                 exec:
                   method: post
                   uri: '/sys/links/wikidata_descriptions'
-                  body: '{{ "{{" }}globals.message{{ "}}" }}'
+                  body: '{{ `{{globals.message}}` }}'
 {{ end -}}
-{{ if .Values.main_app.cp_features.on_wikidata_description_change }}
+{{ if .Values.main_app.changeprop.features.on_wikidata_description_change }}
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_images_summary }}
+{{ if .Values.main_app.changeprop.features.page_images_summary }}
               # Rerender summary when pageimages page property change
               page_images_summary:
                 topic: mediawiki.page-properties-change
@@ -802,14 +802,14 @@ spec: &spec
                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     match_not:
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 0
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 120
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{message.page_title}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
                       headers:
                         cache-control: no-cache
                       query:
@@ -819,44 +819,44 @@ spec: &spec
                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     match_not:
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 0
                       - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.domain_zone }}$/
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 120
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/summary/{message.page_title}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
                       headers:
                         cache-control: no-cache
                       query:
                         redirect: false
 {{ end -}}
-{{ if .Values.main_app.cp_features.page_images_mobile }}
+{{ if .Values.main_app.changeprop.features.page_images_mobile }}
               page_images_mobile:
                 topic: mediawiki.page-properties-change
                 # We don't support 'OR' in the match section, so workaround it by 2 cases with identical exec
                 cases:
                   - match:
                       meta:
-                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       added_properties:
                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{message.page_title}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-sections/{message.page_title}'
                       headers:
                         cache-control: no-cache
                       query:
                         redirect: false
                   - match:
                       meta:
-                        domain: '/\.wikipedia\.{{ .Values.main_app.domain_zone }}$/'
+                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                       removed_properties:
                         page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.restbase_uri }}/{{ "{{" }}message.meta.domain{{ "}}" }}/v1/page/mobile-sections/{message.page_title}'
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-sections/{message.page_title}'
                       headers:
                         cache-control: no-cache
                       query:

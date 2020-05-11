@@ -1,21 +1,9 @@
 main_app:
   version: v0.9.5
 
-  # This is the endpoint for the staging instance of eventgate
-  event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
-
   log_level: info
 
   site: staging
-
-  mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
-
-  restbase_uri: http://restbase-async.discovery.wmnet:7231
-
-  ores:
-    uris:
-    - http://ores.svc.eqiad.wmnet:8081
-    - http://ores.svc.codfw.wmnet:8081
 
   kafka:
     broker_list:
@@ -28,24 +16,37 @@ main_app:
     host: localhost
     port: 6379
 
-  cp_features:
-    mw_purge_null_edit: true
-    summary_definition_rerender: true
-    page_edit: true
-    revision_visibility_change: true
-    page_delete: true
-    page_restore: true
-    page_move: true
-    page_create: true
-    on_backlinks_update: true
-    ores_cache: true
-    wikidata_description_on_edit: true
-    wikidata_description_on_undelete: true
-    page_images_summary: true
-    page_images_mobile: true
-    rerendered_pcs_endpoints: true
-    purge_varnish: true
-    on_transclusion_update: true
+  changeprop:
+    # This is the endpoint for the staging instance of eventgate
+    event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
+
+    mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
+
+    restbase_uri: http://restbase-async.discovery.wmnet:7231
+
+    ores:
+      uris:
+        - http://ores.svc.eqiad.wmnet:8081
+        - http://ores.svc.codfw.wmnet:8081
+
+    features:
+      mw_purge_null_edit: true
+      summary_definition_rerender: true
+      page_edit: true
+      revision_visibility_change: true
+      page_delete: true
+      page_restore: true
+      page_move: true
+      page_create: true
+      on_backlinks_update: true
+      ores_cache: true
+      wikidata_description_on_edit: true
+      wikidata_description_on_undelete: true
+      page_images_summary: true
+      page_images_mobile: true
+      rerendered_pcs_endpoints: true
+      purge_varnish: true
+      on_transclusion_update: true
 
 nutcracker:
   enabled: true
