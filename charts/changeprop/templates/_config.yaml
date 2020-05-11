@@ -58,7 +58,7 @@ spec: &spec
 {{- range .Values.main_app.changeprop.ores.uris }}
               - {{ . -}}/v3/precache
 {{- end  }}
-            event_service_uri: {{ .Values.main_app.event_service_uri }}
+            event_service_uri: {{ .Values.main_app.changeprop.event_service_uri }}
     /{api:sys}/queue:
       x-modules:
         - path: sys/kafka.js
