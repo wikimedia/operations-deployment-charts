@@ -8,11 +8,6 @@ main_app:
 
   site: eqiad
 
-  ores:
-    uris:
-    - http://ores.svc.eqiad.wmnet:8081
-    - http://ores.svc.codfw.wmnet:8081
-
   kafka:
     broker_list:
       - kafka-main1001.eqiad.wmnet:9093
@@ -30,6 +25,11 @@ main_app:
     mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
 
     restbase_uri: http://restbase-async.discovery.wmnet:7231
+
+    ores:
+      uris:
+        - http://ores.svc.eqiad.wmnet:8081
+        - http://ores.svc.codfw.wmnet:8081
 
     features:
       mw_purge_null_edit: true
