@@ -75,6 +75,10 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ .Values.main_app.name }}
+{{ if .Values.puppet_ca_crt }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/eventgate/puppetca.crt.pem
+{{- end }}
           volumeMounts:
             - name: {{ .Values.main_app.name }}-config-volume
               mountPath: /etc/eventgate

@@ -17,7 +17,9 @@ data:
   stream-config.yaml: |- {{ include "stream.config" . | nindent 4  }}
 {{ end }}
   # All Kafka Broker and client certificates use the Puppet CA.
-  kafka_ca.crt.pem: |-
+  # This is also used to allow NodeJS to talk to internal envoy TLS endpoints
+  # like schema.discovery.wmnet:443
+  puppetca.crt.pem: |-
 {{ .Values.puppet_ca_crt | default "snakeoil" | indent 4 }}
 {{- if .Values.monitoring.enabled }}
 ---
