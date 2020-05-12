@@ -236,19 +236,21 @@
     - 9092
     - 9093
 
-  # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
+  # Allow schema.svc.{eqiad,codfw} for eventgate-analytics, eventgate-analytics-external
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
   dst_net: 10.2.2.43/32 # schema.svc.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 8190
+    - 443
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
   dst_net: 10.2.1.43/32 # schema.svc.codfw.wmnet
   protocol: tcp
   dst_ports:
     - 8190
+    - 443
 
   # Allow Kafka for eventgate-main
   # main-eqiad:
