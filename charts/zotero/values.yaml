@@ -30,3 +30,15 @@ service:
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
+
+tls:
+  enabled: false
+  image_version: 1.13.1-1 # latest as of 20200507
+  public_port: 4969 # the port where TLS will be exposed
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361

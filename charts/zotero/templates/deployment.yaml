@@ -17,6 +17,8 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+      annotations:
+        {{- include "tls.annotations" . | nindent 8 }}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -44,3 +46,6 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+        {{- include "tls.container" . | nindent 8 }}
+      volumes:
+        {{- include "tls.volume" . | nindent 8 }}
