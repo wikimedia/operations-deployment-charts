@@ -1,0 +1,29 @@
+main_app:
+  event_service_uri: http://deployment-eventgate-3.deployment-prep.eqiad.wmflabs:8292/v1/events
+  ores:
+    uris:
+      - http://deployment-ores01.deployment-prep.eqiad.wmflabs:8081
+
+  mwapi_uri: http://deployment-mediawiki-07.deployment-prep.eqiad.wmflabs/w/api.php
+
+  site: eqiad
+
+  purge_host: deployment-cache-text05.deployment-prep.eqiad.wmflabs
+
+  kafka:
+    ssl: false
+    broker_list:
+      - deployment-kafka-main-1.deployment-prep.eqiad.wmflabs:9092
+      - deployment-kafka-main-2.deployment-prep.eqiad.wmflabs:9092
+  concurrency: 1
+
+  restbase_uri: http://deployment-restbase02.deployment-prep.eqiad.wmflabs:7231
+  domain_zone: beta\.wmflabs\.org
+
+  log_level: warn
+
+metrics:
+  name: changeprop
+  host: cloudmetrics1002.eqiad.wmnet
+  port: 8125
+  type: statsd
