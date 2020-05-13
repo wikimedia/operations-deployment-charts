@@ -62,22 +62,22 @@ main_app:
     features:
       # null edit uses features of mw_purge - also includes on_wikidata_description_change
       mw_purge_null_edit: true
-      summary_definition_rerender: false
-      purge_varnish: false
-      page_edit: false
-      revision_visibility_change: false
-      page_delete: false
-      page_restore: false
-      page_move: false
-      on_transclusion_update: false
-      page_create: false
-      on_backlinks_update: false
-      ores_cache: false
-      wikidata_description_on_edit: false
-      wikidata_description_on_undelete: false
-      page_images_summary: false
-      page_images_mobile: false
-      rerendered_pcs_endpoints: false
+      summary_definition_rerender: true
+      purge_varnish: true
+      page_edit: true
+      revision_visibility_change: true
+      page_delete: true
+      page_restore: true
+      page_move: true
+      on_transclusion_update: true
+      page_create: true
+      on_backlinks_update: true
+      ores_cache: true
+      wikidata_description_on_edit: true
+      wikidata_description_on_undelete: true
+      page_images_summary: true
+      page_images_mobile: true
+      rerendered_pcs_endpoints: true
 
   # if jobqueue is true, then we'll configure our pod as a
   # changeprop-jobqueue instance. If it's false, we'll assume that
