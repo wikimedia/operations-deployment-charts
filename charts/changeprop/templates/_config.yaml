@@ -232,7 +232,7 @@ spec: &spec
                             stream: '{{ $purge_stream }}'
                             domain: '{{`{{message.meta.domain}}`}}'
                             dt: '{{`{{message.meta.dt}}`}}'
-                          root_event: '{{`message.root_event`}}'
+                          root_event: '{{`{{message.root_event}}`}}'
 
               summary_definition_rerender_transcludes: &summary_definition_rerender_transcludes_spec
                 <<: *summary_definition_rerender_spec
@@ -286,7 +286,7 @@ spec: &spec
                         stream: '{{ $purge_stream }}'
                         domain: '{{`{{message.meta.domain}}`}}'
                         dt: '{{`{{message.meta.dt}}`}}'
-                      root_event: '{{`message.root_event`}}'
+                      root_event: '{{`{{message.root_event}}`}}'
 
               generate_purge_varnish_transcludes: &purge_varnish_transcludes_spec
                 <<: *purge_varnish_spec
