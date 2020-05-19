@@ -56,7 +56,7 @@ envoyproxy.io/scrape: "false"
 {{- if .Values.tls.enabled }}
 - name: envoy-config-volume
   configMap:
-    name: {{ template "wmf.releasename" . }}}-envoy-config-volume
+    name: {{ template "wmf.releasename" . }}-envoy-config-volume
 - name: tls-certs-volume
   configMap:
     name: {{ template "wmf.releasename" . }}-tls-proxy-certs
