@@ -168,7 +168,7 @@ static_resources:
     common_http_protocol_options:
       # Idle timeout is the time a keepalive connection will stay idle before being
       # closed. It's important to keep it similar to the backend idle timeout.
-      idle_timeout: {{ .Values.tls.idle_timeout | default 5s }}
+      idle_timeout: {{ .Values.tls.idle_timeout | default "5s" }}
     connect_timeout: 1.0s
     lb_policy: round_robin
     load_assignment:
