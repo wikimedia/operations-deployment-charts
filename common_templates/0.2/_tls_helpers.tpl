@@ -126,9 +126,9 @@ metadata:
     chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  data:
-    envoy.yaml: |-
-{{ template "tls.envoy_template" . }}
+data:
+  envoy.yaml: |-
+    {{- include "tls.envoy_template" . | nindent 4 }}
 {{ end -}}
 {{- end -}}
 
