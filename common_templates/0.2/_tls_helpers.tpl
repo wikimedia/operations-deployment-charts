@@ -120,7 +120,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf-releasename" . }}-envoy-config-volume
+  name: {{ template "wmf.releasename" . }}-envoy-config-volume
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
