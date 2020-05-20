@@ -9,6 +9,9 @@ spec:
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress
+      {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+      {{- end }}
   ingress:
     - ports:
       - port: {{ .Values.main_app.port }}
@@ -26,4 +29,8 @@ spec:
       - port: {{ .Values.tls.public_port }}
         protocol: TCP
       {{- end }}
-
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+{{- end }}
