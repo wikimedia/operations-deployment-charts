@@ -23,17 +23,3 @@ releases:
     - events: ["presync"]
       command: "helmfile_log_sal"
       args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
-  - name: canary
-    installed: false
-    namespace: mathoid
-    chart: stable/mathoid
-    missingFileHandler: Warn
-    values:
-    - "values.yaml"
-    - "canary.yaml"
-    - "private/secrets.yaml"
-    wait: true
-    hooks:
-    - events: ["presync"]
-      command: "helmfile_log_sal"
-      args: [ "{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
