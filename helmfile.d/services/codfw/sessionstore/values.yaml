@@ -110,3 +110,91 @@ main_app:
 service:
   deployment: production
   port: 8081
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 10.64.0.141/32   # sessionstore1001
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.0.144/32   # sessionstore1001-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.78/32   # sessionstore1002
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.85/32   # sessionstore1002-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.175/32  # sessionstore1003
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.178/32  # sessionstore1003-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.16.79/32  # sessionstore2001
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.16.95/32  # sessionstore2001-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.32.15/32  # sessionstore2002
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.32.101/32 # sessionstore2002-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.48.118/32 # sessionstore2003
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.192.48.132/32 # sessionstore2003-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.0.89/32   # restbase-dev1004
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.0.167/32  # restbase-dev1004-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.0.168/32  # restbase-dev1004-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.16.96/32  # restbase-dev1005
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.16.97/32  # restbase-dev1005-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.16.98/32  # restbase-dev1005-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.10/32  # restbase-dev1006
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.168/32 # restbase-dev1006-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.169/32 # restbase-dev1006-b
+      ports:
+      - protocol: tcp
+        port: 9042

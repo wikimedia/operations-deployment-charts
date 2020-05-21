@@ -30,6 +30,13 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 
 */}}
 {{- define "wmf.networkpolicy.egress" -}}
+{{- if .networkpolicy.egress.dst_ports }}
+{{- range $ports := .networkpolicy.egress.dst_ports }}
+    - ports:
+      - protocol: {{ $ports.protocol | upper }}
+        port: {{ $ports.port }}
+{{- end }}
+{{- end }}
 {{- range $cidr := .networkpolicy.egress.dst_nets }}
     - to:
       - ipBlock:

@@ -99,3 +99,9 @@ main_app:
 service:
   deployment: production
   port: 8082
+networkpolicy:
+  egress:
+    enabled: false
+    dst_ports:
+    - port: 9042
+      protocol: tcp
