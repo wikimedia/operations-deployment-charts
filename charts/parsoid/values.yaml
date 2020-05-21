@@ -10,7 +10,7 @@ resources:
 main_app:
   image: wikimedia/mediawiki-services-parsoid
   version: dev
-  appbase_url_port: 80 # port used for wmf.appbaseurl used by service-checker
+  port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 8142
   # Use command and args below to override the entrypoint
@@ -99,3 +99,7 @@ config:
 
     # extraApis: [] add yaml for additional api configurations in the provided module here
     # extraServices: [] add yaml for additional service (& respective api) configurations here.
+
+networkpolicy:
+  egress:
+    enabled: false
