@@ -54,3 +54,89 @@ main_app:
       schema_title: sparql/query
     '/^swift\.(.+\.)?upload-complete$/':
       schema_title: swift/upload/complete
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 10.64.0.175/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.0.176/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.16.99/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.32.159/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.32.160/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.48.117/32
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:101:10:64:0:175/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:101:10:64:0:176/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:102:10:64:16:99/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:159/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:160/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:117/128
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+
+      # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
+    - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 8190
+    - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 8190
