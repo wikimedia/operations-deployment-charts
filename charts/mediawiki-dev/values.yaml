@@ -10,7 +10,7 @@ resources:
 main_app:
   image: wikimedia/mediawiki-core
   version: dev
-  appbase_url_port: 80 # port used for wmf.appbaseurl used by service-checker
+  port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80
   command: '["/bin/bash", "-c"]' # use to override the entrypoint command ex: '["node"]'
@@ -64,3 +64,7 @@ config:
     DB_PASS: "password"
     WG_SECRET_KEY: "d964ce98b272c2115d5f4960563af8fb8f02ff968bbb0d62bdf4e1e4c18393ed"
     WG_UPGRADE_KEY: "aed8ffeb5b5fba9e"
+
+networkpolicy:
+  egress:
+    enabled: false
