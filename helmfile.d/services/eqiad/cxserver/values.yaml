@@ -79,3 +79,15 @@ tls:
   public_port: 4002 # the port where TLS will be exposed
   telemetry:
     enabled: true
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 10.2.1.11/32
+      ports:
+      - protocol: tcp
+        port: 2737
+    - cidr: 10.2.2.11/32
+      ports:
+      - protocol: tcp
+        port: 2737
