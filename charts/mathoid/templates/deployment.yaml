@@ -10,27 +10,13 @@ spec:
   selector:
     matchLabels:
       app: {{ template "wmf.chartname" . }}
-      {{- if .Values.service.canaryof }}
-      # We are in canary mode, add a "canary" label to match the actual
-      # release and use "release" label to point to parent
-      canary: {{ .Release.Name }}
-      release: {{ .Values.service.canaryof }}
-      {{- else }}
       release: {{ .Release.Name }}
-      {{- end }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
         app: {{ template "wmf.chartname" . }}
-        {{- if .Values.service.canaryof }}
-        # We are in canary mode, add a "canary" label to match the actual
-        # release and use "release" label to point to parent
-        canary: {{ .Release.Name }}
-        release: {{ .Values.service.canaryof }}
-        {{- else }}
         release: {{ .Release.Name }}
-        {{- end }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
         {{ if .Values.monitoring.enabled -}}

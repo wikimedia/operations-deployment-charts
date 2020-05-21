@@ -1,6 +1,3 @@
-# If canaryof value is specified, we are in canary mode, don't declare a
-# service. The parent one will be used instead
-{{- if not .Values.service.canaryof }}
 kind: Service
 apiVersion: v1
 metadata:
@@ -23,4 +20,3 @@ spec:
     nodePort:  {{ .Values.service.port }}
     {{- end }}
 {{ include "tls.service" . }}
-{{- end }}
