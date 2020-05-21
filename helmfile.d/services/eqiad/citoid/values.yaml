@@ -36,3 +36,15 @@ tls:
   public_port: 4003 # the port where TLS will be exposed
   telemetry:
     enabled: true
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 10.2.1.16/32
+      ports:
+      - protocol: tcp
+        port: 1969
+    - cidr: 10.2.2.16/32
+      ports:
+      - protocol: tcp
+        port: 1969
