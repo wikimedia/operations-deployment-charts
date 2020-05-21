@@ -37,3 +37,19 @@ resources:
 service:
   deployment: production
   port: 1969
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 208.80.154.224/32
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 208.80.153.224/32
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
