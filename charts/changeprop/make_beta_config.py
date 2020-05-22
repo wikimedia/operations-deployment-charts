@@ -14,7 +14,6 @@ parse the generated files for only the changeprop config itself.
 import argparse
 import os
 import subprocess
-import tempfile
 
 import yaml
 
@@ -36,10 +35,14 @@ def main():
 
     args = parse_args()
 
-    output_dir = tempfile.mkdtemp()
+    # when we dump our yaml out, this will unroll the anchors used in the
+    # generated YAML. Puppet doesn't like literally interpreted anchors in
+    # YAML, and PyYAML will mangle the anchor names into id001 etc as is. This
+    # makes our config huge, but it's necessary for it to be loaded by puppet.
+    yaml.Dumper.ignore_aliases = lambda *args : True
 
     helm_p = subprocess.Popen(["helm", "template", "-f", "values-beta.yaml",
-                               "--output-dir", output_dir, args.helm_chart_path],
+                               "-x", "templates/configmap.yaml", args.helm_chart_path],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = helm_p.communicate()
 
@@ -51,24 +54,14 @@ def main():
         print("helm stdout: {}".format(stdout))
         print("helm stderr: {}".format(stderr))
 
-    with open(os.path.join(output_dir, "changeprop",
-                           "templates", "configmap.yaml")) as config_f:
+    # note - we load all here as helm puts multiple yaml documents in a
+    # file
+    configmap = yaml.load_all(stdout)
+    for doc in configmap:
+        if doc and "data" in doc:
+            configdata = doc["data"]["config.yaml"]
 
-        # note - we load all here as helm puts multiple yaml documents in a
-        # file
-        configmap = yaml.load_all(config_f)
-        for doc in configmap:
-            if doc and "data" in doc:
-                configdata = doc["data"]["config.yaml"]
-
-    if args.verbose:
-        print("Config rendered")
-        print(configdata)
-
-    output_path = os.path.join(output_dir, "changeprop", "config.yaml")
-    with open(output_path, "w") as output_f:
-        output_f.write(configdata)
-        print("Wrote config to {}".format(output_path))
+    print(configdata)
 
 if __name__ == "__main__":
     main()

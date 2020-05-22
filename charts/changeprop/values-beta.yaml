@@ -1,14 +1,5 @@
 main_app:
-  event_service_uri: http://deployment-eventgate-3.deployment-prep.eqiad.wmflabs:8292/v1/events
-  ores:
-    uris:
-      - http://deployment-ores01.deployment-prep.eqiad.wmflabs:8081
-
-  mwapi_uri: http://deployment-mediawiki-07.deployment-prep.eqiad.wmflabs/w/api.php
-
   site: eqiad
-
-  purge_host: deployment-cache-text05.deployment-prep.eqiad.wmflabs
 
   kafka:
     ssl: false
@@ -17,8 +8,17 @@ main_app:
       - deployment-kafka-main-2.deployment-prep.eqiad.wmflabs:9092
   concurrency: 1
 
-  restbase_uri: http://deployment-restbase02.deployment-prep.eqiad.wmflabs:7231
-  domain_zone: beta\.wmflabs\.org
+  changeprop:
+    mwapi_uri: http://deployment-mediawiki-07.deployment-prep.eqiad.wmflabs/w/api.php
+    event_service_uri: http://deployment-eventgate-3.deployment-prep.eqiad.wmflabs:8292/v1/events
+    ores:
+      uris:
+        - http://deployment-ores01.deployment-prep.eqiad.wmflabs:8081
+
+    purge_host: deployment-cache-text05.deployment-prep.eqiad.wmflabs
+
+    restbase_uri: http://deployment-restbase02.deployment-prep.eqiad.wmflabs:7231
+    domain_zone: beta\.wmflabs\.org
 
   log_level: warn
 
