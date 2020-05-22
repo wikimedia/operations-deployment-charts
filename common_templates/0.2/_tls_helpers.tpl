@@ -82,6 +82,7 @@ metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
     app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:

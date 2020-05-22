@@ -6,6 +6,7 @@ metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
     app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -28,6 +29,7 @@ metadata:
   name: {{ template "wmf.releasename" . }}-debug
   labels:
     app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
