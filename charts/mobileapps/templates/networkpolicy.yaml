@@ -22,4 +22,4 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
-      {{- include "tls.networkpolicy" . | indent 8}}
+      {{- include "tls.networkpolicy" . | indent 6}}
