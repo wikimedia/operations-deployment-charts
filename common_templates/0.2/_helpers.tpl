@@ -23,3 +23,23 @@
 {{- define "wmf.appbaseurl" -}}
 http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{- end -}}
+
+{{/*
+
+ Egress NetworkPolicy template
+
+*/}}
+{{- define "wmf.networkpolicy.egress" -}}
+{{- range $cidr := .networkpolicy.egress.dst_nets }}
+    - to:
+      - ipBlock:
+          cidr: {{ $cidr.cidr }}
+{{- if $cidr.ports }}
+      ports:
+{{- range $port := $cidr.ports }}
+      - protocol: {{ $port.protocol | upper }}
+        port: {{ $port.port }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
