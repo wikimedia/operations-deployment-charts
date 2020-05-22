@@ -132,7 +132,7 @@ spec: &spec
                 topic: 'mediawiki.job.{{ $topic }}'
                 {{- range $key, $value := $topic_config }}
                 {{- if ne $key "enabled" }}
-                  {{ $key }}: {{ $value | quote }}
+                {{ $key }}: {{ $value | quote }}
                 {{- end }}
                 {{- end }}
                 exec:
@@ -161,7 +161,7 @@ spec: &spec
                 topic: 'cpjobqueue.partitioned.mediawiki.job.{{ $part_topic }}'
                 {{- range $key, $value := $part_options.partition }}
                 {{- if ne $key "enabled" }}
-                  {{ $key }}: {{ $value | quote }}
+                {{ $key }}: {{ $value | quote }}
                 {{- end }}
                 {{- end }}
                   exec:

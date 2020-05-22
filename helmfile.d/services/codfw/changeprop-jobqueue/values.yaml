@@ -1,5 +1,6 @@
 main_app:
   version: v0.9.5
+  port: 7200
 
   limits:
     memory: 1000Mi
@@ -177,7 +178,7 @@ resources:
 service:
   deployment: "production"
   port:
-    nodePort: 7272
+    nodePort: 7200
 
 networkpolicy:
   egress:

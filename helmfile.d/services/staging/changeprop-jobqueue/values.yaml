@@ -1,5 +1,6 @@
 main_app:
   version: v0.9.5
+  port: 7200
 
   log_level: info
 
@@ -175,7 +176,7 @@ service:
   name: changeprop-staging
   deployment: "production"
   port:
-    nodePort: 7272
+    nodePort: 7200
 
 networkpolicy:
   egress:
