@@ -14,7 +14,6 @@ releases:
   - name: test
     namespace: termbox
     chart: stable/termbox
-    version: 0.0.9
     missingFileHandler: Warn
     values:
     - "values/test.yaml"
@@ -27,7 +26,6 @@ releases:
   - name: staging
     namespace: termbox
     chart: stable/termbox
-    version: 0.0.9
     missingFileHandler: Warn
     values:
     - "values/staging.yaml"
