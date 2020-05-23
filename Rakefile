@@ -45,13 +45,13 @@ def _exec(command)
   # Executes a command, returns an array [true/false, String], first element
   # denoting success or failure, second one being stdout/stderr
   Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+    out = stdout.gets(nil)
+    err = stderr.gets(nil)
     exit_status = wait_thr.value.exitstatus
     if exit_status == 0
-      out = stdout.gets(nil)
       ret = [true, out]
     else
-      out = stderr.gets(nil)
-      ret = [false, out]
+      ret = [false, err]
     end
   }
   ret
