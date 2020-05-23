@@ -40,7 +40,7 @@ service:
   port: 1969
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_nets:
     - cidr: 208.80.154.224/32
       ports:

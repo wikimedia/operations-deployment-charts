@@ -184,7 +184,7 @@ service:
 
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_nets:
     - cidr: 10.192.0.17/32 # kafka-main2001
       ports:
