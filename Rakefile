@@ -7,6 +7,7 @@ ERROR_CONTEXT_LINES = 4
 PRIVATE_STUB = '.fixtures/private_stub.yaml'
 HELM_REPO = 'stable'
 HELMFILE_GLOB = "helmfile.d/services/*/*/helmfile.yaml"
+KUBERNETES_VERSIONS = "1.17,1.16,1.15,1.14,1.13,1.12"  # Let's target only what we have or want to upgrade to
 
 class String
   def red
@@ -40,25 +41,44 @@ def raise_if_failed(data)
   data.each{ |_, success| raise('Failure') unless success }
 end
 
-def _exec(command)
+def _exec(command, input=nil, nostderr=false)
   ret = []
   # Executes a command, returns an array [true/false, String], first element
   # denoting success or failure, second one being stdout/stderr
   Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+    if input
+      stdin.write(input)
+      stdin.close()
+    end
     out = stdout.gets(nil)
     err = stderr.gets(nil)
     exit_status = wait_thr.value.exitstatus
     if exit_status == 0
       ret = [true, out]
     else
-      ret = [false, err]
+      out = nostderr ? out : err
+      ret = [false, out]
     end
   }
   ret
 end
 
+# Cross-platform way of finding an executable in the $PATH.
+#
+#   which('ruby') #=> /usr/bin/ruby
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each do |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable?(exe) && !File.directory?(exe)
+    end
+  end
+  nil
+end
 
-def check_template(chart, fixture = nil)
+
+def check_template(chart, fixture = nil, kubeyaml = nil)
   if fixture != nil
     # When passing multiple values, concatenate them
     quoted = fixture.map{ |x| "-f '#{x}'" }.join " "
@@ -97,6 +117,25 @@ def check_template(chart, fixture = nil)
       success = false
       puts error.red
       puts e
+    end
+    if kubeyaml
+      command = "#{kubeyaml} -versions #{KUBERNETES_VERSIONS}"
+      # split per YAML doc. See GH issue #7 as to why
+      docs = output.split('---')
+      docs.each do |doc|
+        # Remove the # Source: line. It can be helpful if the template ends up
+        # fully empty as kubeyaml won't then emit a useless warning
+        source = doc.match(/^# Source: [a-zA-Z0-9\/\.-]*$/)
+        doc = doc.strip.gsub(/^# Source: [a-zA-Z0-9\/\.-]*$/, '').strip
+        next if doc.length == 0
+        succ, out = _exec command, doc, true
+        if not succ
+          puts error.red
+          puts "Error validating semantically YAML"
+          puts "Kubeyaml says:\n#{out}\n for:\n#{source}"
+          success = succ
+        end
+      end
     end
   else
     # Error happens before yaml validation
@@ -145,15 +184,19 @@ end
 
 desc 'Runs helm template on all charts'
 task :validate_template do
+  # Detect kubeyaml, if present also semantically validate YAML
+  # Note that we only do this in this task, to avoid heavily increased execution
+  # times
+  kubeyaml = which('kubeyaml')
   results = {}
   all_charts.each do |chart|
-    results[chart] = check_template chart
+    results[chart] = check_template chart, nil, kubeyaml
     fixtures = FileList.new("#{chart}/.fixtures/*.yaml")
     fixtures.each do |fixture|
       # Exclude the private stub if present.
       next if fixture.include? PRIVATE_STUB
       fixture_name = File.basename(fixture, '.yaml')
-      results["#{chart} => #{fixture_name}"] = check_template chart, [fixture]
+      results["#{chart} => #{fixture_name}"] = check_template chart, [fixture], kubeyaml
     end
   end
   pprint "Helm template summary:", results
