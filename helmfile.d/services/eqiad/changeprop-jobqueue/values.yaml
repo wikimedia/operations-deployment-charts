@@ -5,7 +5,8 @@ main_app:
   limits:
     memory: 1000Mi
 
-  log_level: info
+  # restore this to info once we have migrated successfully
+  log_level: trace
 
   site: eqiad
 
@@ -15,6 +16,10 @@ main_app:
       - kafka-main1002.eqiad.wmnet:9093
       - kafka-main1003.eqiad.wmnet:9093
     ssl: true
+
+  liveness_probe:
+    tcpSocket:
+      port: 7200
 
   redis:
     host: localhost
@@ -173,7 +178,8 @@ monitoring:
   image_version: 0.0.5
 
 resources:
-  replicas: 12
+  # To be increased as we deploy new rules
+  replicas: 2
 
 service:
   deployment: "production"

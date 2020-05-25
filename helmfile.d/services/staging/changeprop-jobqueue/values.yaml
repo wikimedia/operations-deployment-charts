@@ -2,7 +2,7 @@ main_app:
   version: v0.9.5
   port: 7200
 
-  log_level: info
+  log_level: trace
 
   site: staging
 
@@ -158,6 +158,10 @@ main_app:
     low_traffic_jobs:
       enabled: false
       concurrency: 50
+
+  liveness_probe:
+    tcpSocket:
+      port: 7200
 
 nutcracker:
   enabled: true

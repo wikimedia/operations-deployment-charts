@@ -5,7 +5,8 @@ main_app:
   limits:
     memory: 1000Mi
 
-  log_level: info
+  # restore this to info once we have migrated successfully
+  log_level: trace
 
   site: codfw
 
@@ -15,6 +16,10 @@ main_app:
       - kafka-main2002.codfw.wmnet:9093
       - kafka-main2003.codfw.wmnet:9093
     ssl: true
+
+  liveness_probe:
+    tcpSocket:
+      port: 7200
 
   redis:
     host: localhost
@@ -173,7 +178,8 @@ monitoring:
   image_version: 0.0.5
 
 resources:
-  replicas: 12
+  # To be increased as we enable more features
+  replicas: 2
 
 service:
   deployment: "production"
