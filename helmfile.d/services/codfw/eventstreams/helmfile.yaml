@@ -5,7 +5,7 @@ repositories:
 helmDefaults:
   tillerNamespace: eventstreams
   verify: false
-  wait: true
+  atomic: true
   timeout: 180
   recreatePods: false
   force: false
@@ -19,7 +19,6 @@ releases:
     - "values.yaml"
     - "private/general.yaml"
     - "private/secrets.yaml"
-    wait: true
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"
@@ -34,7 +33,6 @@ releases:
     - "values-canary.yaml"
     - "private/general.yaml"
     - "private/secrets.yaml"
-    wait: true
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"

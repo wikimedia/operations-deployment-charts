@@ -5,7 +5,7 @@ repositories:
 helmDefaults:
   tillerNamespace: changeprop
   verify: false
-  wait: true
+  atomic: true
   timeout: 600
   recreatePods: false
   force: false
@@ -19,7 +19,6 @@ releases:
     - "values.yaml"
     - "private/secrets.yaml"
     - "private/general.yaml"
-    wait: true
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"
