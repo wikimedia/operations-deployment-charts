@@ -14,6 +14,7 @@ KUBECONFIG=${KUBECONFIG:-"/etc/kubernetes/kubeconfig"}
 NAMESPACE=$1
 KUBERNETES_SERVICE_HOST=$2
 KUBERNETES_SERVICE_PORT=$3
+TILLER_IMAGE=${TILLER_IMAGE:-"docker-registry.discovery.wmnet/tiller:2.16.7-wmf1"}
 
 
 # Annotate the namespace so that calico will enforce a default deny network policy
@@ -29,7 +30,7 @@ KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create clusterrolebinding ${SERVI
 # Make sure we don't rely on the internal DNS service to avoid the Chicken and egg problem of not having it around yet
 HELM_HOME=$HELM_HOME KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
 	--tiller-namespace=${NAMESPACE} \
-	--tiller-image=docker-registry.discovery.wmnet/tiller:2.12.2-wmf1 \
+	--tiller-image=${TILLER_IMAGE} \
 	--override spec.template.spec.containers[0].env[2].name"="KUBERNETES_SERVICE_HOST \
 	--override spec.template.spec.containers[0].env[2].value"="${KUBERNETES_SERVICE_HOST}  \
 	--override spec.template.spec.containers[0].env[3].name"="KUBERNETES_SERVICE_PORT \
