@@ -32,7 +32,6 @@ main_app:
   mw_uri: http://api-rw.discovery.wmnet/w/index.php
   mwapi_uri: http://api-rw.discovery.wmnet/w/api.php
   restbase_uri: http://restbase.discovery.wmnet:7231
-
 monitoring:
   enabled: false
   image_version: latest
@@ -46,14 +45,12 @@ service:
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
-
 debug:
   enabled: false
   ports: []
-
 tls:
   enabled: false
-  image_version: 1.13.1-1 # latest as of 20200507
+  image_version: 1.13.1-2
   public_port: 4101 # the port where TLS will be exposed
   upstream_timeout: 60s # envoy-tls-local-proxy default
   certs:
@@ -63,7 +60,6 @@ tls:
   telemetry:
     enabled: true
     port: 9361
-
 networkpolicy:
   egress:
     enabled: false
