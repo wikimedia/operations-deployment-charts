@@ -34,7 +34,7 @@ main_app:
     # by a separate worker in change-prop.
     high_traffic_jobs_config:
       ThumbnailRender:
-        enabled: false
+        enabled: true
         concurrency: 20
       categoryMembershipChange:
         enabled: false
@@ -98,11 +98,6 @@ main_app:
         enabled: false
         retry_limit: 0
         concurrency: 5
-      # technically not a high traffic job, but enabling here for
-      # testing. To be removed once we're confident.
-      updateBetaFeaturesUserCounts:
-        concurrency: 50
-        enabled: true
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
