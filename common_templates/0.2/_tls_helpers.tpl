@@ -237,7 +237,7 @@ static_resources:
               - match: {prefix: /}
                 route:
                   cluster: local_service
-                  timeout: {{ .Values.tls.upstream_timeout }}
+                  timeout: {{ .Values.tls.upstream_timeout | default "60s" }}
           stat_prefix: ingress_https_{{ .Release.Name }}
           server_name: {{ .Release.Name }}-tls
           server_header_transformation: APPEND_IF_ABSENT
