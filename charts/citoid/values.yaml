@@ -27,7 +27,6 @@ main_app:
     httpGet:
       path: /_info
       port: 1970
-
 monitoring:
   enabled: false
   image_version: latest
@@ -36,7 +35,7 @@ service:
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 tls:
   enabled: false
-  image_version: 1.12.2-3 # minimum compatible version
+  image_version: 1.13.1-2
   public_port: 4003
   upstream_timeout: "180.0s"
   # To be defined in a private space
@@ -47,7 +46,6 @@ tls:
   telemetry:
     enabled: false
     port: 9361
-
 # Enable networkpolicy egress rules
 networkpolicy:
   egress:
