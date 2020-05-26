@@ -9,7 +9,8 @@
 
 {{- define "tls.annotations" -}}
 {{- if .Values.tls.enabled }}
-checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
+checksum/tls-config: {{ include "tls.envoy_template" . | sha256sum }}
+checksum/tls-certs: {{ printf "%s" .Values.tls.certs | sha256sum }}
 {{- if .Values.tls.telemetry.enabled }}
 envoyproxy.io/scrape: "true"
 envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
