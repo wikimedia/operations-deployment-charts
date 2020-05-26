@@ -17,7 +17,7 @@ main_app:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
   command: ["node"]
-  args: ["server.js", "-c", "/etc/recommendation-api/config.yaml" ]
+  args: ["server.js", "-c", "/etc/recommendation-api/config.yaml"]
   requests:
     cpu: 50m
     memory: 100Mi
@@ -36,7 +36,7 @@ main_app:
   #   - name: myvolumename
   #      hostPath:
   #        path: /myvolumepath # where on the host machine
-
+  #
   # add here any mounted volumes to make accessible to the container. Example:
   # volumeMounts:
   #   - name: myvolumename # the name from your volume above
@@ -56,10 +56,9 @@ service:
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
-
 tls:
   enabled: false # Switch to true in production
-  image_version: 1.12.1-3 # minimum compatible version
+  image_version: 1.13.1-2
   public_port: 4632 # the port where TLS will be exposed
   upstream_timeout: "180.0s"
   # To be defined in a private space
