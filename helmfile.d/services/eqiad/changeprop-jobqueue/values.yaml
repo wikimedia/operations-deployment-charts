@@ -177,6 +177,7 @@ resources:
   replicas: 2
 
 service:
+  name: "cpjobqueue"
   deployment: "production"
   port:
     nodePort: 7200
@@ -281,3 +282,6 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+
+metrics:
+  name: cpjobqueue

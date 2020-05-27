@@ -172,7 +172,7 @@ resources:
   replicas: 2
 
 service:
-  name: changeprop-staging
+  name: cpjobqueue-staging
   deployment: "production"
   port:
     nodePort: 7200
@@ -277,3 +277,6 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+
+metrics:
+  name: cpjobqueue
