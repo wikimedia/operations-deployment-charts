@@ -1,5 +1,5 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
@@ -20,8 +20,8 @@ spec:
     nodePort:  {{ .Values.service.port }}
     {{- end }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-kademlia
   labels:

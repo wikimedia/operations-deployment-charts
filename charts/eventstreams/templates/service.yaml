@@ -10,8 +10,8 @@
 {{ include "tls.service" . }}
 {{- else }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:

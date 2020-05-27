@@ -1,8 +1,8 @@
 {{ template "tls.service" . }}
 {{ if not .Values.tls.enabled }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
@@ -22,8 +22,8 @@ spec:
 {{- end }}
 {{ if .Values.debug.enabled }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-debug
   labels:

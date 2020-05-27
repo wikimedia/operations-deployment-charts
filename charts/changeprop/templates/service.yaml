@@ -1,6 +1,6 @@
 {{ if .Values.tls.enabled }}
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
@@ -18,8 +18,8 @@ spec:
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
 {{- else }}
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
@@ -38,8 +38,8 @@ spec:
       nodePort: {{ .Values.service.port.nodePort }}
 {{- end }}
 {{ if .Values.debug.enabled }}
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-debug
   labels:

@@ -79,8 +79,8 @@ envoyproxy.io/scrape: "false"
 {{- define "tls.service" -}}
 {{ if .Values.tls.enabled }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
