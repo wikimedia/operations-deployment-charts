@@ -30,7 +30,9 @@ spec:
     - name: {{ .Values.main_app.name }}-http
       targetPort: {{ .Values.service.port.targetPort | default .Values.main_app.port }}
       port: {{ .Values.service.port.port | default .Values.main_app.port }}
+      {{- if .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
+      {{- end }}
 {{- end }}
 {{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
     # If testing monitoring export the service-runner prometheus metrics listen port

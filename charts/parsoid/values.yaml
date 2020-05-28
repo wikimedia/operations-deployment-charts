@@ -52,7 +52,6 @@ service:
       # protocol: TCP # TCP is the default protocol
       targetPort: 8142 # the number or name of the exposed port on the container
       port: 80 # the number of the port desired to be exposed to the cluster
-      nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: # Add here all the keys that can be publicly available as a ConfigMap
     INTERFACE: "0.0.0.0"

@@ -46,7 +46,6 @@ service:
       protocol: TCP
       targetPort: 8080
       port: 80
-      nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public:
     XDEBUG_CONFIG: "remote_autostart=1 remote_enable=1 remote_handler=dbgp remote_host={{ .Values.main_app.xdebug.remoteHost }} remote_log=/tmp/xdebug_remote.log remote_mode=req remote_port=9000"
