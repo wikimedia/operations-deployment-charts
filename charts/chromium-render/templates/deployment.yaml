@@ -48,9 +48,11 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-          {{- range $k, $v := .Values.main_app.ports }}
-            - containerPort: {{ $v }}
-          {{- end }}
+            - containerPort: {{ .Values.main_app.port }}
+          {{- if .Values.debug.enabled }}
+          {{- range .Values.debug.ports }}
+            - containerPort: {{ . }}
+          {{- end }}{{ end }}
           {{- if .Values.main_app.liveness_probe }}
           livenessProbe:
           {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
