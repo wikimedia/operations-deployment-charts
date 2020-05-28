@@ -53,5 +53,7 @@ spec:
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
         {{- include "tls.container" . | nindent 8 }}
+      {{- if .Values.tls.enabled }}
       volumes:
         {{- include "tls.volume" . | nindent 8 }}
+      {{- end }}
