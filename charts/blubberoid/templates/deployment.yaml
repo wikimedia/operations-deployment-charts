@@ -57,6 +57,7 @@ spec:
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
         {{- include "tls.container" . | indent 8 }}
+      {{- if or .Values.main_app.policy.enabled .Values.tls.enabled }}
       volumes:
         {{- if .Values.main_app.policy.enabled }}
         - name: policy-volume
@@ -64,3 +65,4 @@ spec:
             name: {{ .Release.Name }}-policy
         {{- end }}
         {{- include "tls.volume" . | indent 8 }}
+      {{- end }}
