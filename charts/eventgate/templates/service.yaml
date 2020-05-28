@@ -1,4 +1,5 @@
 {{- if ne .Values.service.deployment "none" }}
+{{/*
 #
 # Deploy a k8s Service for {{ template "wmf.releasename" . }}
 # routing to all pods that are labeled with:
@@ -6,6 +7,7 @@
 #   app: {{ .Values.main_app.name }}
 #   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
 #
+*/}}
 {{ if .Values.tls.enabled }}
 {{ include "tls.service" . }}
 {{- end }}
@@ -53,8 +55,10 @@ spec:
 {{- end }}
 
 {{- else }}
+{{/*
 #
 # Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
 # as service.deployment is set to "{{ .Values.service.deployment }}"
 #
+*/}}
 {{- end }}
