@@ -36,7 +36,6 @@ spec:
     - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
       targetPort: {{ $port }}
       port: {{ $port }}
-      nodePort: null # We're assuming this will be only used on minikube
     {{- end }}
 {{- end }}
 {{ include "tls.service" . }}
