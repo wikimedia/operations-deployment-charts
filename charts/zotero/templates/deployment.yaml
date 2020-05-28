@@ -30,10 +30,14 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.port }}
+          {{- if .Values.main_app.liveness_probe }}
           livenessProbe:
-{{ toYaml .Values.main_app.liveness_probe | indent 12 }}
+          {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.main_app.readiness_probe }}
           readinessProbe:
-{{ toYaml .Values.main_app.readiness_probe | indent 12 }}
+          {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
+          {{- end }}
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
