@@ -24,6 +24,7 @@ tls:
   enabled: false
   image_version: latest
   public_port: 4192 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:
     cert: "snakeoil"
