@@ -32,6 +32,10 @@ envoyproxy.io/scrape: "false"
       value: "default"
   ports:
     - containerPort: {{ .Values.tls.public_port }}
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: {{ .Values.tls.telemetry.port | default 1667 }}
   volumeMounts:
     - name: envoy-config-volume
       mountPath: /etc/envoy/
@@ -214,6 +218,10 @@ static_resources:
                 route:
                   cluster: admin_interface
                   timeout: 5.0s
+              - match: {prefix: /healthz}
+                direct_response:
+                  status: 200
+                  body: {inline_string: "OK"}
               - match: {prefix: /}
                 direct_response:
                   status: 403
