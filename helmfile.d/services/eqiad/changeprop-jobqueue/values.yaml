@@ -37,31 +37,31 @@ main_app:
         enabled: true
         concurrency: 20
       categoryMembershipChange:
-        enabled: false
+        enabled: true
         concurrency: 200
       # CNDPurge is quite low-volume, but it uses delayed execution,
       # so avoid putting it together with other low-volume jobs so that it doesn't
       # block execution for others.
       cdnPurge:
-        enabled: false
+        enabled: true
         concurrency: 5
       ORESFetchScoreJob:
-        enabled: false
+        enabled: true
         concurrency: 20
       # RecordLinks is normally low-volume, but could have big spikes
       # when maintenance scripts are run. Elevated concurrency
       RecordLintJob:
-        enabled: false
+        enabled: true
         concurrency: 50
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
-        enabled: false
+        enabled: true
         concurrency: 5
       constraintsRunCheck:
-        enabled: false
+        enabled: true
         concurrency: 30
       fetchGoogleCloudVisionAnnotations:
-        enabled: false
+        enabled: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, so we don't want
         # the reenqueue feature to kick in.
@@ -70,32 +70,32 @@ main_app:
       # so disable the retries by change-prop. We need special rules for cirrus
       # jobs because they need special configuration.
       cirrusSearchCheckerJob:
-        enabled: false
+        enabled: true
         disable_delayed_execution: true #T198462
         retry_limit: 0
         concurrency: 20
       cirrusSearchDeleteArchive:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 5
       cirrusSearchDeletePages:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 5
       cirrusSearchIncomingLinkCount:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 15
       cirrusSearchLinksUpdate:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 300
       cirrusSearchLinksUpdatePrioritized:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 150
       cirrusSearchOtherIndex:
-        enabled: false
+        enabled: true
         retry_limit: 0
         concurrency: 5
 
@@ -173,13 +173,13 @@ monitoring:
   image_version: 0.0.5
 
 resources:
-  # To be increased as we deploy new rules
-  replicas: 2
+  replicas: 12
 
 service:
   name: "cpjobqueue"
   deployment: "production"
   port:
+    name: cpjobqueue
     nodePort: 7200
 
 networkpolicy:
