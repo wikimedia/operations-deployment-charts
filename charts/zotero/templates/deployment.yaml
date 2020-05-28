@@ -17,8 +17,10 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+      {{- if .Values.tls.enabled }}
       annotations:
         {{- include "tls.annotations" . | nindent 8 }}
+      {{- end }}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
