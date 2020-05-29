@@ -95,3 +95,21 @@ environments:
     - ../../common/values.yaml
     - cluster.yaml
     - values/changeprop-jobqueue.yaml
+  proton:
+    missingFileHandler: Warn
+    values:
+    - ../../common/values.yaml
+    - cluster.yaml
+    - values/proton.yaml
+  recommendation-api:
+    missingFileHandler: Warn
+    values:
+    - ../../common/values.yaml
+    - cluster.yaml
+    - values/recommendation-api.yaml
+  mobileapps:
+    missingFileHandler: Warn
+    values:
+    - ../../common/values.yaml
+    - cluster.yaml
+    - values/mobileapps.yaml
