@@ -140,13 +140,16 @@ config:
 
 tls:
   enabled: false
-  image_version: latest
+  image_version: 1.13.1-2
   # the port where TLS will be exposed
   public_port: 2345
-  certs: {}
-# Add here, via our "secret" system, the cert/key pairs
-#    cert: "your cert here"
-#    key: "your key here"
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: false
+    port: 9361
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

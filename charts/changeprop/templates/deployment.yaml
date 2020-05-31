@@ -34,9 +34,7 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{ if .Values.tls.enabled -}}
-        checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
-        {{ end }}
+        {{- include "tls.annotations" . | nindent 8 }}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -109,24 +107,7 @@ spec:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
 {{- end }}
-{{- if .Values.tls.enabled }}
-        - name: {{ .Release.Name }}-tls-proxy
-          image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          env:
-            - name: SERVICE_NAME
-              value: {{ .Release.Name }}
-            - name: SERVICE_PORT
-              value: "{{ .Values.main_app.port }}"
-            - name: PUBLIC_PORT
-              value: "{{ .Values.tls.public_port }}"
-          ports:
-            - containerPort: {{ .Values.tls.public_port }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-tls-proxy-certs
-              mountPath: /etc/envoy/ssl
-              readOnly: true
-{{- end }}
+        {{- include "tls.container" . | nindent 8 }}
 {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker
           image: {{ .Values.docker.registry }}/nutcracker:{{ .Values.nutcracker.version }}
@@ -150,11 +131,7 @@ spec:
           configMap:
             name: {{ template "wmf.releasename" . }}-metrics-config
         {{- end }}
-        {{- if .Values.tls.enabled }}
-        - name: {{ .Release.Name }}-tls-proxy-certs
-          configMap:
-            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
-        {{- end }}
+        {{- include "tls.volume" . | nindent 8 }}
         {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker-config
           configMap:
