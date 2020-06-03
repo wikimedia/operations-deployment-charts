@@ -152,87 +152,129 @@
     - 80
     - 443
 
-  # Allow Kafka for eventgate-analytics, eventgate-analytics-external
+  # Allow kafka-jumbo for eventgate-analytics, eventgate-analytics-external
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.0.175/32
+  dst_net: 10.64.0.175/32 # kafka-jumbo1001
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.0.176/32
+  dst_net: 10.64.0.176/32 # kafka-jumbo1002
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.16.99/32
+  dst_net: 10.64.16.99/32 # kafka-jumbo1003
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.32.159/32
+  dst_net: 10.64.32.159/32 # kafka-jumbo1004
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.32.160/32
+  dst_net: 10.64.32.160/32 # kafka-jumbo1005
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 10.64.48.117/32
+  dst_net: 10.64.48.117/32 # kafka-jumbo1006
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:101:10:64:0:175/128
+  dst_net: 10.64.32.106/32 # kafka-jumbo1007
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:101:10:64:0:176/128
+  dst_net: 10.64.48.121/32 # kafka-jumbo1008
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:102:10:64:16:99/128
+  dst_net: 10.64.48.140/32 # kafka-jumbo1009
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:103:10:64:32:159/128
+  dst_net: 2620:0:861:101:10:64:0:175/128 # kafka-jumbo1001
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:103:10:64:32:160/128
+  dst_net: 2620:0:861:101:10:64:0:176/128 # kafka-jumbo1002
   protocol: tcp
   dst_ports:
     - 9092
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
-  dst_net: 2620:0:861:107:10:64:48:117/128
+  dst_net: 2620:0:861:102:10:64:16:99/128 # kafka-jumbo1003
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:103:10:64:32:159/128 # kafka-jumbo1004
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:103:10:64:32:160/128 # kafka-jumbo1005
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:107:10:64:48:117/128 # kafka-jumbo1006
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:103:10:64:32:106/128 # kafka-jumbo1007
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:107:10:64:48:121/128 # kafka-jumbo1008
+  protocol: tcp
+  dst_ports:
+    - 9092
+    - 9093
+- action: allow
+  src_selector: calico/k8s_ns == 'eventgate-analytics' || calico/k8s_ns == 'eventgate-analytics-external'
+  dst_net: 2620:0:861:107:10:64:48:140/128 # kafka-jumbo1009
   protocol: tcp
   dst_ports:
     - 9092
