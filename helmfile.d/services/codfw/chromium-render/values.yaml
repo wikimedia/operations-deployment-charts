@@ -1,0 +1,18 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+resources:
+  replicas: 4
+main_app:
+  image: wikimedia/mediawiki-services-chromium-render
+  version: 2020-04-09-191920-production
+  port: 3030
+
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+service:
+  deployment: production
+  port:
+    nodePort: 3030
+tls:
+  enabled: true
