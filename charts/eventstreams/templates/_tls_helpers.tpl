@@ -9,7 +9,8 @@
 
 {{- define "tls.annotations" -}}
 {{- if .Values.tls.enabled }}
-checksum/tls: {{ printf "%s|%s|%s" .Values.tls.public_port .Values.main_app.port .Values.tls.certs.cert | sha256sum }}
+checksum/tls-config: {{ include "tls.envoy_template" . | sha256sum }}
+checksum/tls-certs: {{ printf "%s" .Values.tls.certs | sha256sum }}
 {{- if .Values.tls.telemetry.enabled }}
 envoyproxy.io/scrape: "true"
 envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
@@ -22,24 +23,23 @@ envoyproxy.io/scrape: "false"
 {{- define "tls.container" -}}
 {{- if .Values.tls.enabled }}
 - name: {{ .Values.main_app.name }}-tls-proxy
-  image: {{ .Values.docker.registry }}/envoy-tls-local-proxy:{{ .Values.tls.image_version }}
+  image: {{ .Values.docker.registry }}/envoy:{{ .Values.tls.image_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: SERVICE_NAME
       value: {{ .Values.main_app.name }}
-    - name: SERVICE_PORT
-      value: "{{ .Values.main_app.port }}" # env variables need to be strings
-    - name: PUBLIC_PORT
-      value: "{{ .Values.tls.public_port }}"
-    - name: ADMIN_LISTEN
-      value: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
-    - name: ADMIN_PORT
-      value: "{{ .Values.tls.telemetry.port }}"
-    - name: UPSTREAM_TIMEOUT
-      value: "{{ .Values.tls.upstream_timeout }}"
+    - name: SERVICE_ZONE
+      value: "default"
   ports:
     - containerPort: {{ .Values.tls.public_port }}
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: {{ .Values.tls.telemetry.port | default 1667 }}
   volumeMounts:
+    - name: envoy-config-volume
+      mountPath: /etc/envoy/
+      readOnly: true
     - name: tls-certs-volume
       mountPath: /etc/envoy/ssl
       readOnly: true
@@ -59,6 +59,9 @@ envoyproxy.io/scrape: "false"
 
 {{- define "tls.volume" }}
 {{- if .Values.tls.enabled }}
+- name: envoy-config-volume
+  configMap:
+    name: {{ template "wmf.releasename" . }}-envoy-config-volume
 - name: tls-certs-volume
   configMap:
     name: {{ template "wmf.releasename" . }}-tls-proxy-certs
@@ -118,6 +121,19 @@ data:
 {{ .Values.tls.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.tls.certs.key | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-envoy-config-volume
+  labels:
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  envoy.yaml: |-
+    {{- include "tls.envoy_template" . | nindent 4 }}
 {{ end -}}
 {{- end -}}
 
@@ -135,4 +151,111 @@ data:
   protocol: TCP
 {{- end }}
 {{- end }}
+{{- end -}}
+
+
+
+
+{{/*
+
+  Envoy configuration
+
+*/}}
+
+{{- define "tls.envoy_template" -}}
+admin:
+  access_log_path: /var/log/envoy/admin-access.log
+  address:
+    socket_address: {address: 127.0.0.1, port_value: 1666}
+static_resources:
+  clusters:
+  - name: local_service
+    common_http_protocol_options:
+      # Idle timeout is the time a keepalive connection will stay idle before being
+      # closed. It's important to keep it similar to the backend idle timeout.
+      idle_timeout: {{ .Values.tls.idle_timeout | default "5s" }}
+    connect_timeout: 1.0s
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: local_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address: {address: 127.0.0.1, port_value: {{ .Values.main_app.port }} }
+    type: strict_dns
+  - name: admin_interface
+    connect_timeout: 1.0s
+    lb_policy: round_robin
+    load_assignment:
+      cluster_name: admin_interface
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address: {address: 127.0.0.1, port_value: 1666 }
+    type: strict_dns
+  listeners:
+  - address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: {{ .Values.tls.telemetry.port | default 1667 }}
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        typed_config:
+          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          http_filters:
+          - name: envoy.router
+            typed_config: {}
+          http_protocol_options: {accept_http_10: true}
+          route_config:
+            virtual_hosts:
+            - domains: ['*']
+              name: admin_interface
+              routes:
+              - match: {prefix: /stats }
+                route:
+                  cluster: admin_interface
+                  timeout: 5.0s
+              - match: {prefix: /healthz}
+                direct_response:
+                  status: 200
+                  body: {inline_string: "OK"}
+              - match: {prefix: /}
+                direct_response:
+                  status: 403
+                  body: {inline_string: "You can't access this url."}
+          stat_prefix: admin_interface
+  - address:
+      socket_address: {address: 0.0.0.0, port_value: {{ .Values.tls.public_port }} }
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        typed_config:
+          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          http_filters:
+          - name: envoy.router
+            typed_config: {}
+          http_protocol_options: {accept_http_10: true}
+          route_config:
+            virtual_hosts:
+            - domains: ['*']
+              name: tls_termination
+              routes:
+              - match: {prefix: /}
+                route:
+                  cluster: local_service
+                  timeout: {{ .Values.tls.upstream_timeout | default "60s" }}
+          stat_prefix: ingress_https_{{ .Values.main_app.name }}
+          server_name: {{ .Values.main_app.name }}-tls
+          server_header_transformation: APPEND_IF_ABSENT
+      tls_context:
+        common_tls_context:
+          tls_certificates:
+          - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
+            private_key: {filename: /etc/envoy/ssl/service.key}
+    listener_filters:
+    - name: envoy.listener.tls_inspector
+      typed_config: {}
 {{- end -}}
