@@ -2,7 +2,7 @@
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
-num_workers: 1
+num_workers: 2
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
@@ -38,9 +38,9 @@ services:
         method: post
         uri: http://{{ .Values.main_app.mw_host }}/w/api.php
         headers:
+          host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
-        body: {{ "'{{" }} request.body {{ "}}'" }}
-        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
@@ -55,4 +55,37 @@ services:
         body:
           format: json
           query: {{ "'{{" }} request.query {{ "}}'" }}
+      mysql_conn:
+        limit: {{ .Values.main_app.mysql_conn.limit }}
+        host: {{ .Values.main_app.mysql_conn.host }}
+        name: {{ .Values.main_app.mysql_conn.name }}
+        user: {{ .Values.main_app.mysql_conn.user }}
+        pass: {{ .Values.main_app.mysql_conn.pass }}
+        retry: {{ .Values.main_app.mysql_conn.retry }}
+        retry_delay: {{ .Values.main_app.mysql_conn.retry_delay }}
+      mysql_tables:
+        language: language
+        normalized_rank: normalized_rank
+      wikidata_domain: 'www.wikidata.org'
+      article:
+        # key is the target language, values are source languages
+        translation_models:
+          en:
+            - de
+          es:
+            - en
+          fa:
+            - en
+          uz:
+            - en
+            - ru
+      description_allowed_domains:
+        - www.wikidata.org
+        - test.wikidata.org
+        - wikidata.beta.wmflabs.org
+      caption_allowed_domains:
+        - commons.wikimedia.org
+        - test-commons.wikimedia.org
+        - commons.wikimedia.beta.wmflabs.org
+
 {{- end -}}

@@ -11,12 +11,20 @@ main_app:
   image: wikimedia/mediawiki-services-recommendation-api
   version: latest # we use latest everywhere in the defaults.
   port: 9632 # port exposed as a Service, also used by service-checker.
+  mysql_conn:
+    limit: 2
+    host: localhost:3306
+    name: recommendationapi
+    user: root
+    pass:
+    # If a connection to MySQL fails, how many times to retry?
+    retry: 2
+    # retry delay (in ms) before connecting to MySQL
+    retry_delay: 1000
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
-  # command: ["node"]
-  # args: ["bin/server.js", "--param1", "arg1"]
-  command: ["node"]
+  command: ["nodejs"]
   args: ["server.js", "-c", "/etc/recommendation-api/config.yaml"]
   requests:
     cpu: 50m
@@ -29,18 +37,10 @@ main_app:
       port: 9632
   readiness_probe:
     httpGet:
-      path: /
+      path: /robots.txt
       port: 9632
-  # add here any volumes to mount onto the pod. Example:
-  # volumes:
-  #   - name: myvolumename
-  #      hostPath:
-  #        path: /myvolumepath # where on the host machine
-  #
-  # add here any mounted volumes to make accessible to the container. Example:
-  # volumeMounts:
-  #   - name: myvolumename # the name from your volume above
-  #     mountPath: /path/ # where it should live in your container
+  restbase_host: localhost
+  mw_host: localhost
 
 monitoring:
   enabled: false
@@ -49,7 +49,6 @@ service:
   deployment: minikube # valid values are "production" and "minikube"
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
     targetPort: 9632 # the number or name of the exposed port on the container
     port: 9632 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
@@ -60,7 +59,7 @@ tls:
   enabled: false # Switch to true in production
   image_version: 1.13.1-2
   public_port: 4632 # the port where TLS will be exposed
-  upstream_timeout: "180.0s"
+  upstream_timeout: 60s # envoy-tls-local-proxy default
   # To be defined in a private space
   certs:
     cert: "snakeoil"
@@ -69,7 +68,6 @@ tls:
   telemetry:
     enabled: true
     port: 9361
-  certs: {}
 # Add here, via our "secret" system, the cert/key pairs
 #    cert: "your cert here"
 #    key: "your key here"
