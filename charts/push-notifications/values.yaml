@@ -1,0 +1,130 @@
+# Default values for push-notifications.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/mediawiki-services-push-notifications
+  version: 2020-06-08-183341-publish # we use latest everywhere in the defaults.
+  port: 8900 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: ["nodejs"]
+  args: ["./dist/server.js", "-c", "/etc/push-notifications/config.yaml"]
+  proxy: {}
+  # See T218733#5850025 for derivation of 'requests' and 'limits' values
+  requests:
+    cpu: 1500m
+    memory: 300Mi
+  limits:
+    cpu: 1700m
+    memory: 350Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8900
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 8900
+  apns:
+    mock: false
+    production: true
+    token:
+      key: '/etc/push-notifications/apns.p8'
+      keyId: 'KEY_ID'
+      teamId: 'TEAM_ID'
+      # This might look like a proper private key, but it isn't used anywhere.
+      # It was generated on the fly and it just used to get the software to
+      # start. The exact same key is being used in the google stanza below
+      # So, no, no security leak here
+      data: |-
+        -----BEGIN PRIVATE KEY-----
+        MIIEogIBAAKCAQEA2ZUlwz6geaDZweWLH1yLjiRQ3l5oDl4gJBylCHE4XO3BTzVO
+        3uvwduq9AvRVHBPhzWlBRzFMb9q8n6jlIdTkixdCE+LcJc2DYUfL58uiPtYP5fub
+        bdkT8D9qtRkw/E8XL6zYltsLCajFMn96CgIywRMNb362ewpRrzz0jKpJjacPjgoV
+        bH/68GImhRnD4gtdfzQ2J2gQ1rgnABHOZUgcw5aN1st71eqwEdJZqlbaJsaL64fG
+        Rv0SZFvXrbHPrWipSMv4nMlhCPD+OdvJwE0zQ3CVkORrm545E7GE+meEXEjFVzge
+        fulrPWSnZgxFIwrNBNehk9+0MwTd9fbk8CpInwIDAQABAoIBACgBhmn5z+PNMXy3
+        SfdAOuCtyLi6PwO1Rs+c/LMqriRYCt0XfiL62sHis1Ihvqxk83WjTr9aTyWZ4Giy
+        0z5/OG5inmGtqrDAstFmNBWwmWpYTaAJvTBbY5Ee9+3IbftWR3samtBSAhuKjoeU
+        bMn+UXqymBvR/pds9Ev2NzjN7qw+nn1gcupPNw0fpcEk7U4HT85oe2XmDOaCaoXB
+        4ovLxzdRVnkHdNfp3tDMqVHLZrPP4bXbLi1+Tt4yF/JbDDXbY1pu+tebLW+xL5Zr
+        iLD5NZV2GH+EHj1oWB5utfVO2c+FDjJAvnceWnfEYuJ+p5g6nzV/C7o2lw7qnmpd
+        HT0v5MECgYEA9jq/FjPMd+GRXMYV6rp9B9MGisRSA08lt0hDs5iKU2r5TB3c0hAq
+        z3+suKJ7/8VxBxNmtduUt4r4rvAyB8gG5hWQtNSgis8COVC2QLBRRcvecjTcUhhA
+        bOS8O0Sg8zVdfzeSaTMbQLFVtOYcBCvP7RYVXFn3CGOjgQZ64axfCdECgYEA4jdm
+        WqSfQgqjAhIRWbU0DDbF/7iLZGiyUv3G4AA7XUWRMbItjO91jCE4feywT3SyaVEJ
+        JEpXI4849sNMkZ4XwylTCCgO5WBqQmQWeHAuxp4H4LOW9Hjmy1Ev6lIJChy0AD4t
+        Z6DEZwHdLZWIcyCRWmKfZyYPOYYB8g2em5VvV28CgYBbO9svw9OgG8E7qd3XEnBf
+        ZM6IvkNRHJNx/OGw+vVOAVYL4QjAAOOL7Ne3teTSGXtOzt6AxbKt611HnJI9Fd2Q
+        hS8QAbTWmetOB1zwTSRgAzESCgoUlQ3SC1K/dydX1k8lYxbpydjwOIT0OUrqNL2f
+        ME6L4H3K6vhbR2ZilfbE8QKBgER6nsprsSYt0CCtVYFBgEr+PbvmopO3uduzpQNk
+        LpRSndxcYruaNYxA9jfwcYLsAaIt/MV2l6BVF9pjTod6Qxk6Jj9+2NuI70G/yKmW
+        1CId7qaP1u+UtdDwd7/IK6JbBAZazCXlne7Muqa08IRhZH7nAfgYpl00etxKUSwp
+        9XWTAoGAFoJENS2q5k0b86blOYiBBTXQo2SreC8Uidr3PjRSR1koamhsnbNz9vZ+
+        MhXeq4puvrUxw10zqmogho81HuYJrSsm3K8cIrRcFx7Tq+8G/Lnp0vNKya04GMDI
+        NEqE55cyBebb+KpQILZU1ZZY32W7/5xys6sZcJVkiGhmCdLEMmY=
+        -----END PRIVATE KEY-----
+  google: |-
+    {
+    "type": "service_account",
+    "project_id": "dummyproject",
+    "private_key_id": "1111111111111111111111111111111111111111",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEogIBAAKCAQEA2ZUlwz6geaDZweWLH1yLjiRQ3l5oDl4gJBylCHE4XO3BTzVO\n3uvwduq9AvRVHBPhzWlBRzFMb9q8n6jlIdTkixdCE+LcJc2DYUfL58uiPtYP5fub\nbdkT8D9qtRkw/E8XL6zYltsLCajFMn96CgIywRMNb362ewpRrzz0jKpJjacPjgoV\nbH/68GImhRnD4gtdfzQ2J2gQ1rgnABHOZUgcw5aN1st71eqwEdJZqlbaJsaL64fG\nRv0SZFvXrbHPrWipSMv4nMlhCPD+OdvJwE0zQ3CVkORrm545E7GE+meEXEjFVzge\nfulrPWSnZgxFIwrNBNehk9+0MwTd9fbk8CpInwIDAQABAoIBACgBhmn5z+PNMXy3\nSfdAOuCtyLi6PwO1Rs+c/LMqriRYCt0XfiL62sHis1Ihvqxk83WjTr9aTyWZ4Giy\n0z5/OG5inmGtqrDAstFmNBWwmWpYTaAJvTBbY5Ee9+3IbftWR3samtBSAhuKjoeU\nbMn+UXqymBvR/pds9Ev2NzjN7qw+nn1gcupPNw0fpcEk7U4HT85oe2XmDOaCaoXB\n4ovLxzdRVnkHdNfp3tDMqVHLZrPP4bXbLi1+Tt4yF/JbDDXbY1pu+tebLW+xL5Zr\niLD5NZV2GH+EHj1oWB5utfVO2c+FDjJAvnceWnfEYuJ+p5g6nzV/C7o2lw7qnmpd\nHT0v5MECgYEA9jq/FjPMd+GRXMYV6rp9B9MGisRSA08lt0hDs5iKU2r5TB3c0hAq\nz3+suKJ7/8VxBxNmtduUt4r4rvAyB8gG5hWQtNSgis8COVC2QLBRRcvecjTcUhhA\nbOS8O0Sg8zVdfzeSaTMbQLFVtOYcBCvP7RYVXFn3CGOjgQZ64axfCdECgYEA4jdm\nWqSfQgqjAhIRWbU0DDbF/7iLZGiyUv3G4AA7XUWRMbItjO91jCE4feywT3SyaVEJ\nJEpXI4849sNMkZ4XwylTCCgO5WBqQmQWeHAuxp4H4LOW9Hjmy1Ev6lIJChy0AD4t\nZ6DEZwHdLZWIcyCRWmKfZyYPOYYB8g2em5VvV28CgYBbO9svw9OgG8E7qd3XEnBf\nZM6IvkNRHJNx/OGw+vVOAVYL4QjAAOOL7Ne3teTSGXtOzt6AxbKt611HnJI9Fd2Q\nhS8QAbTWmetOB1zwTSRgAzESCgoUlQ3SC1K/dydX1k8lYxbpydjwOIT0OUrqNL2f\nME6L4H3K6vhbR2ZilfbE8QKBgER6nsprsSYt0CCtVYFBgEr+PbvmopO3uduzpQNk\nLpRSndxcYruaNYxA9jfwcYLsAaIt/MV2l6BVF9pjTod6Qxk6Jj9+2NuI70G/yKmW\n1CId7qaP1u+UtdDwd7/IK6JbBAZazCXlne7Muqa08IRhZH7nAfgYpl00etxKUSwp\n9XWTAoGAFoJENS2q5k0b86blOYiBBTXQo2SreC8Uidr3PjRSR1koamhsnbNz9vZ+\nMhXeq4puvrUxw10zqmogho81HuYJrSsm3K8cIrRcFx7Tq+8G/Lnp0vNKya04GMDI\nNEqE55cyBebb+KpQILZU1ZZY32W7/5xys6sZcJVkiGhmCdLEMmY=\n-----END PRIVATE KEY-----\n",
+    "client_email": "fffffffffffffffffffffff@g111111111111111111111111.com",
+    "client_id": "111111111111111111111",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/1111111111111111111111111111111111111111111111111111111111111111111111111"
+    }
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8900 # the number or name of the exposed port on the container
+    port: 8900 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public:
+    GOOGLE_APPLICATION_CREDENTIALS: /etc/push-notifications/google-service.json
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false # Switch to true in production
+  image_version: 1.14.4-1
+  public_port: 4890 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false
