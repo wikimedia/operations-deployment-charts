@@ -113,7 +113,7 @@ main_app:
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
       refreshLinks:
-        enabled: false
+        enabled: true
         # Partition jobs by mediawiki database cluster (s1, s2, etc.)
         partitioner_kind: mediawiki_database
         # This is the concurrency for the partitioner
@@ -127,7 +127,7 @@ main_app:
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       htmlCacheUpdate:
-        enabled: false
+        enabled: true
         # Partition jobs by mediawiki database cluster (s1, s2, etc.)
         partitioner_kind: mediawiki_database
         partitioner_concurrency: 50
@@ -140,7 +140,7 @@ main_app:
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       cirrusSearchElasticaWrite:
-        enabled: false
+        enabled: true
         partitioner_kind: cirrussearch_cluster
         partitioner_concurrency: 50
         partition:
