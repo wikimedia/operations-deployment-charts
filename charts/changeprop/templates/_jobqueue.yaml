@@ -205,14 +205,14 @@ spec: &spec
                 # Don't execute anything that's covered by different rules
                 exclude_topics:
                   - 'mediawiki.job.fetchGoogleCloudVisionAnnotations'
-                {{- range .Values.main_app.jobqueue.high_traffic_jobs_config }}
-                  - 'mediawiki.job.{{ . }}'
+                {{- range $topic, $topic_config := .Values.main_app.jobqueue.high_traffic_jobs_config }}
+                  - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
-                {{- range .Values.main_app.jobqueue.videoscaler_jobs_config }}
-                  - 'mediawiki.job.{{ . }}'
+                {{- range $topic, $topic_config := .Values.main_app.jobqueue.videoscaler_jobs_config }}
+                  - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
-                {{- range .Values.main_app.jobqueue.partitioned_jobs_config }}
-                  - 'mediawiki.job.{{ . }}'
+                {{- range $topic, $topic_config := .Values.main_app.jobqueue.partitioned_jobs_config }}
+                  - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
                 exec:
                   method: post

@@ -158,7 +158,7 @@ main_app:
     # for the `consume` method to timeout and do nothing.
     # So a significantly higher concurrency is needed to account for that.
     low_traffic_jobs:
-      enabled: false
+      enabled: true
       concurrency: 50
 
 nutcracker:
