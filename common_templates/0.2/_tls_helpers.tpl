@@ -199,7 +199,7 @@ static_resources:
   listeners:
   - address:
       socket_address:
-        address: {{ if .Values.tls.telemetry.enabled }}0.0.0.0{{ else }}127.0.0.1{{ end }}
+        address: 0.0.0.0
         port_value: {{ .Values.tls.telemetry.port | default 1667 }}
     filter_chains:
     - filters:
