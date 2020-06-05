@@ -10,7 +10,6 @@ resources:
 main_app:
   image: wikimedia/mediawiki-services-chromium-render
   version: latest # we use latest everywhere in the defaults.
-  appbase_url_port: 3030 # port used for wmf.appbaseurl used by service-checker
   port: 3030 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
