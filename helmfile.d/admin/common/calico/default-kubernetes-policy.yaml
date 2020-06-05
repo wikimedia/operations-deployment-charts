@@ -1253,14 +1253,28 @@
     - 9093
 - action: allow
   src_selector: calico/k8s_ns == 'changeprop-jobqueue'
-  dst_net: 10.2.2.26 # jobrunner.discovery.wmnet
+  dst_net: 10.2.2.26/32 # jobrunner.svc.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 80
     - 443
 - action: allow
   src_selector: calico/k8s_ns == 'changeprop-jobqueue'
-  dst_net: 10.2.2.5 # videoscaler.discovery.wmnet
+  dst_net: 10.2.1.26/32 # jobrunner.svc.codfw.wmnet
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.2.2.5/32 # videoscaler.svc.eqiad.wmnet
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'changeprop-jobqueue'
+  dst_net: 10.2.1.5/32 # videoscaler.svc.codfw.wmnet
   protocol: tcp
   dst_ports:
     - 80
