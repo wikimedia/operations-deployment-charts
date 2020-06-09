@@ -3,7 +3,7 @@ repositories:
     url: https://releases.wikimedia.org/charts/
 
 helmDefaults:
-  tillerNamespace: chromium-render
+  tillerNamespace: proton
   verify: false
   atomic: true
   timeout: 600
@@ -12,7 +12,7 @@ helmDefaults:
 
 releases:
   - name: production
-    namespace: chromium-render
+    namespace: proton
     chart: stable/chromium-render
     missingFileHandler: Warn
     values:
