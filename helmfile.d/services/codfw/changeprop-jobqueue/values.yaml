@@ -28,6 +28,8 @@ main_app:
     jobrunner_uri: https://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
     videoscaler_uri: https://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
 
+    partitioners: true
+
     # All the jobs listed below get their own rule, which transfers to
     # their own processing unit - each type of job listed explicitly is processed
     # by a separate worker in change-prop.

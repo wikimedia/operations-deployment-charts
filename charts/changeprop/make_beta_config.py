@@ -17,6 +17,11 @@ import subprocess
 
 import yaml
 
+CONFIGS = {
+    "jobqueue": "values-beta-jobqueue.yaml",
+    "changeprop": "values-beta-changeprop.yaml"
+}
+
 def parse_args() -> argparse.Namespace:
     """ Parse command line arguments """
 
@@ -24,6 +29,9 @@ def parse_args() -> argparse.Namespace:
         description='Generate beta configuration for changeprop in Docker')
     parser.add_argument("helm_chart_path", action="store",
                         help="The path to the changeprop helm chart")
+    parser.add_argument("service_name", action="store",
+                        help="The service to generate configuration for",
+                        choices=["changeprop", "jobqueue"])
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Verbose output")
     args = parser.parse_args()
@@ -41,7 +49,7 @@ def main():
     # makes our config huge, but it's necessary for it to be loaded by puppet.
     yaml.Dumper.ignore_aliases = lambda *args : True
 
-    helm_p = subprocess.Popen(["helm", "template", "-f", "values-beta.yaml",
+    helm_p = subprocess.Popen(["helm", "template", "-f", CONFIGS[args.service_name],
                                "-x", "templates/configmap.yaml", args.helm_chart_path],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = helm_p.communicate()

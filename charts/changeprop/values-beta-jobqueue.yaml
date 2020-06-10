@@ -1,0 +1,39 @@
+main_app:
+  site: eqiad
+
+  kafka:
+    broker_list:
+      - deployment-kafka-main-1.deployment-prep.eqiad.wmflabs:9092
+      - deployment-kafka-main-2.deployment-prep.eqiad.wmflabs:9092
+    ssl: false
+    concurrency: 10
+
+  redis: false
+
+  jobqueue:
+    jobrunner_uri: http://deployment-jobrunner03.deployment-prep.eqiad.wmflabs:9006/rpc/RunSingleJob.php
+
+    partitioners: false
+
+    high_traffic_jobs_config:
+      fetchGoogleCloudVisionAnnotations:
+        enabled: true
+        concurrency: 10
+        # All the jobs of this kind are delayed exactly 48 hours, so we don't want
+        # the reenqueue feature to kick in.
+        reenqueue_delay: 259200
+
+    videoscaler_jobs_config: {}
+
+    partitioned_jobs_config: {}
+
+    # in beta, all jobs are low_traffic jobs
+
+    low_traffic_jobs:
+      enabled: true
+      concurrency: 10
+
+metrics:
+  name: cpjobqueue
+  host: cloudmetrics1002.eqiad.wmnet
+  port: 8125

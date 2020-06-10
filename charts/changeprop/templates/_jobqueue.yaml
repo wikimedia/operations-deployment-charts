@@ -14,6 +14,7 @@ spec: &spec
               user-agent: true
   title: Change propagation job queue
   paths:
+{{- if .Values.main_app.redis }}
     /{api:sys}/dedupe:
       x-modules:
         - path: sys/deduplicator.js
@@ -23,6 +24,8 @@ spec: &spec
               host: {{ .Values.main_app.redis.host }}
               port: {{ .Values.main_app.redis.port }}
               password: {{ .Values.main_app.redis.pass | default "" }}
+{{- end }}
+{{- if .Values.main_app.jobqueue.partitioners }}
     /{api:sys}/partition/cirrussearch_cluster:
       x-modules:
         - path: sys/partitioner.js
@@ -89,6 +92,7 @@ spec: &spec
               kowiki: 6
               # s8: wikidata
               wikidatawiki: 7
+{{- end }}
     /{api:sys}/queue:
       x-modules:
         - path: sys/kafka.js
