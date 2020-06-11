@@ -3,23 +3,7 @@ docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
 resources:
-  replicas: 4
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-          - key: dedicated
-            operator: In
-            values:
-              - kask
-          - key: failure-domain.beta.kubernetes.io/zone
-            operator: In
-            values:
-              - row-a
-              - row-b
-              - row-c
-              - row-d
+  replicas: 8
 tolerations:
   - key: "dedicated"
     operator: "Equal"
@@ -113,7 +97,7 @@ main_app:
     memory: 150Mi # T220401
   limits:
     cpu: 2500m # T220401 and T229697
-    memory: 300Mi # T220401
+    memory: 400Mi # T220401
   liveness_probe:
     tcpSocket:
       port: 8081
