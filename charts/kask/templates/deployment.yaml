@@ -32,7 +32,7 @@ spec:
         - name: create-kask-keyspace
           # NOTE: Hardcode this for now, as well as the keyspace and table below
           # This is ugly but it's only meant for minikube use, let's stomach it for now
-          image: "cassandra:3.11.3"
+          image: "{{ .Values.cassandra.image.repo }}:{{ .Values.cassandra.image.tag }}"
           command:
             - sh
             - -c

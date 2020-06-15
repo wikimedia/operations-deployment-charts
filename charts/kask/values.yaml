@@ -77,9 +77,10 @@ main_app:
     authentication:
       password: cassandra
       username: cassandra
-    #hostname: cassandra.default.svc.cluster.local # uncommented to allow discovery in minikube
     keyspace: kask
     table: values
+  # hosts: # list of cassandra hosts. Uncomment when not using cassandra chart
+  #   - "cassandra-host" # Just some sample, edit this
   default_ttl: 86400
   listen_address: 0.0.0.0
   service_name: kask
@@ -112,6 +113,9 @@ subcharts:
   cassandra: false
 
 cassandra:
+  image:
+    repo: docker-registry.wikimedia.org/releng/cassandra311
+    tag: latest
   config:
     cluster_size: 1
     seed_size: 1

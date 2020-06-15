@@ -3,14 +3,14 @@
 base_uri: {{ .Values.main_app.base_uri }}
 cassandra:
 {{- $cassandra := .Values.main_app.cassandra -}}
-{{- if not (hasKey $cassandra "hostname") }}
-{{- $hostname := printf "%s-%s.%s.%s" .Release.Name "cassandra" .Release.Namespace "svc.cluster.local" -}}
-{{- $cassandra := set $cassandra "hostname" $hostname -}}
-{{- end }}
 {{- with .Values.main_app.certs -}}{{- if .cassandra -}}
 {{- $tls := dict "ca" "/etc/cassandra-certs/ca.crt" -}}
 {{- $cassandra := set $cassandra "tls" $tls -}}
 {{- end }}{{ end }}
+{{- if not (hasKey $cassandra "hosts") }}
+  hosts:
+    - {{ .Release.Name }}-cassandra
+{{- end }}
 {{ toYaml $cassandra | indent 2 }}
 default_ttl: {{ .Values.main_app.default_ttl }}
 listen_address: {{ .Values.main_app.listen_address }}
