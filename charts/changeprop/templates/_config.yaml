@@ -894,9 +894,7 @@ startup_concurrency: 4
 # uses more heap (note: not RSS) than this many mb.
 worker_heap_limit_mb: 750
 
-# The maximum interval in ms that can pass between two beat messages
-# sent by each worker to the master before it is killed
-worker_heartbeat_timeout: 30000
+worker_heartbeat_timeout: false
 
 # Logger info
 logging:
