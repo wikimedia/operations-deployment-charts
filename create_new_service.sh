@@ -11,8 +11,8 @@ function get_scaffold_version() {
 
 
 function main {
-    which envsubst || fail "You need envusbst(1) to run this script; please install gettext!"
-    command -v awk || fail "You need awk(1) to run this script. Please install it."
+    which envsubst> /dev/null || fail "You need envusbst(1) to run this script; please install gettext!"
+    command -v awk > /dev/null || fail "You need awk(1) to run this script. Please install it."
     echo "Please input the name of the service"
     read -r SERVICE_NAME
     test -d "charts/${SERVICE_NAME}" && fail "A service named ${SERVICE_NAME} already exists, cannot recreate it."

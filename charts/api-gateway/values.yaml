@@ -1,0 +1,91 @@
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  # We use envoy-future here for more recent versions of envoy than
+  # are used widely across WMF infrastructure.
+  image: envoy-future
+  version: latest
+  port: 8087
+  command: ["/usr/bin/envoy"]
+  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 800Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8087
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 8087
+
+  admin_port: null
+  jwt: false
+  # debug server that echoes requests
+  echoapi: false
+  ratelimiter:
+    enabled: false
+    version: latest
+
+  # populated from secrets
+  jwks:
+    kid: ""
+    key: ""
+
+  endpoints: []
+
+  # run a local redis container for testing - see README for
+  # instructions
+  dev_redis: false
+
+nutcracker:
+  enabled: false
+  version: latest
+  port: 6379
+  servers: [] # The form is <IP>:<port>:<db> "name" for each element
+
+
+monitoring:
+  enabled: false
+  image_version: latest
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: api-gateway
+    targetPort: 8087 # the number or name of the exposed port on the container
+    port: 8087 # the number of the port desired to be exposed to the cluster
+    nodePort: null
+config:
+  public: {}
+  private: {}
+
+tls:
+  enabled: false
+  image_version: 1.12.1-3
+  public_port: 8087
+  upstream_timeout: "180.0s"
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 9361
+  certs: {}
+
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+# Enable networkpolicy egress rules
+networkpolicy:
+  egress:
+    enabled: false
