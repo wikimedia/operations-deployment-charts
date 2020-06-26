@@ -4,6 +4,22 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 8
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: dedicated
+            operator: In
+            values:
+              - kask
+          - key: failure-domain.beta.kubernetes.io/zone
+            operator: In
+            values:
+              - row-a
+              - row-b
+              - row-c
+              - row-d
 tolerations:
   - key: "dedicated"
     operator: "Equal"
@@ -94,7 +110,7 @@ main_app:
   # See T220401 for how these numbers were calculated
   requests:
     cpu: 2500m # T220401 and T229697
-    memory: 150Mi # T220401
+    memory: 400Mi # T220401
   limits:
     cpu: 2500m # T220401 and T229697
     memory: 400Mi # T220401
