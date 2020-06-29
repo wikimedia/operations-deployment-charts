@@ -119,23 +119,28 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
       puts e
     end
     if kubeyaml
+      threads = []
       command = "#{kubeyaml} -versions #{KUBERNETES_VERSIONS}"
       # split per YAML doc. See GH issue #7 as to why
       docs = output.split('---')
       docs.each do |doc|
-        # Remove the # Source: line. It can be helpful if the template ends up
-        # fully empty as kubeyaml won't then emit a useless warning
-        source = doc.match(/^# Source: [a-zA-Z0-9\/\.-]*$/)
-        doc = doc.strip.gsub(/^# Source: [a-zA-Z0-9\/\.-]*$/, '').strip
-        next if doc.length == 0
-        succ, out = _exec command, doc, true
-        if not succ
-          puts error.red
-          puts "Error validating semantically YAML"
-          puts "Kubeyaml says:\n#{out}\n for:\n#{source}"
-          success = succ
+        t = Thread.new do
+          # Remove the # Source: line. It can be helpful if the template ends up
+          # fully empty as kubeyaml won't then emit a useless warning
+          source = doc.match(/^# Source: [a-zA-Z0-9\/\.-]*$/)
+          doc = doc.strip.gsub(/^# Source: [a-zA-Z0-9\/\.-]*$/, '').strip
+          next if doc.length == 0
+          succ, out = _exec command, doc, true
+          if not succ
+            puts error.red
+            puts "Error validating semantically YAML"
+            puts "Kubeyaml says:\n#{out}\n for:\n#{source}"
+            success = succ
+          end
         end
+        threads.push(t)
       end
+      threads.each { |t| t.join }
     end
   else
     # Error happens before yaml validation
