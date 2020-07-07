@@ -132,11 +132,11 @@
   dst_net: 10.2.1.22/32
   protocol: tcp
 
-  # Cached API
+  # Cached API (text-lb)
   # NOTE: We want to deny this for most services as it makes operations difficult
   # But:
   # * we have zotero which we don't currently control the source code of
-  # * proton/puppeteer can't Host: HTTP header as it's not allowed byt chromium
+  # * proton/puppeteer can't Host: HTTP header as it's not allowed by chromium
 - action: allow
   src_selector: calico/k8s_ns == 'zotero' || calico/k8s_ns == 'proton'
   dst_net: 208.80.153.224/32
@@ -168,6 +168,43 @@
 - action: allow
   src_selector: calico/k8s_ns == 'zotero' || calico/k8s_ns == 'proton'
   dst_net: 91.198.174.192/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+
+  # Commons: upload-lb
+- action: allow
+  src_selector: calico/k8s_ns == 'proton'
+  dst_net: 208.80.153.240/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'proton'
+  dst_net: 208.80.154.240/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'proton'
+  dst_net: 103.102.166.240/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'proton'
+  dst_net: 198.35.26.112/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'proton'
+  dst_net: 91.198.174.208/32
   protocol: tcp
   dst_ports:
     - 80
