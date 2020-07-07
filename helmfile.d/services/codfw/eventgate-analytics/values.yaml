@@ -12,14 +12,14 @@ resources:
 
 main_app:
   name: eventgate-analytics
-  version: 2020-07-07-130941-production
+  version: 2020-07-07-140523-production
   conf:
     kafka:
       conf:
         metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
         security.protocol: ssl
     schema_precache_uris:
-    - /error/0.0.3
+    - /error/1.0.0
     - /test/event/0.0.3
     - /mediawiki/api/request/0.0.1
     - /mediawiki/cirrussearch/request/0.0.1
@@ -36,9 +36,6 @@ main_app:
     - 'file:///srv/service/schemas/event/primary/jsonschema/'
     - 'file:///srv/service/schemas/event/secondary/jsonschema/'
     - 'https://schema.discovery.wmnet/repositories/secondary/jsonschema/'
-    # TODO: mediawiki schema repo is deprecated; use primary and secondary repos instead.
-    # Will remove this after canary release is done to test this in a canary change.
-    - 'file:///srv/service/schemas/mediawiki-event-schemas/jsonschema/'
 
   stream_config:
     mediawiki.api-request:

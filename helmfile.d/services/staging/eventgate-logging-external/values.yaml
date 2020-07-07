@@ -9,7 +9,7 @@ tls:
 
 main_app:
   name: eventgate-logging-external
-  version: 2020-07-07-130941-production
+  version: 2020-07-07-140523-production
   conf:
     # The request body is accepted as an array of events, each of which
     # will be an individual message in Kafka.  Each individual
@@ -27,7 +27,7 @@ main_app:
     schema_base_uris:
     - 'file:///srv/service/schemas/event/primary/jsonschema/'
     schema_precache_uris:
-    - /error/0.0.3
+    - /error/1.0.0
     - /test/event/0.0.3
     - /mediawiki/client/error/1.0.0
     topic_prefix: staging.

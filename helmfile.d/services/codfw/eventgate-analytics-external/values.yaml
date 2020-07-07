@@ -12,7 +12,7 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: 2020-07-07-130941-production
+  version: 2020-07-07-140523-production
   conf:
     kafka:
       conf:
@@ -22,7 +22,7 @@ main_app:
         # Enable Kafka producer TLS (no authentication, just encryption).
         security.protocol: ssl
     schema_precache_uris:
-    - /error/0.0.3
+    - /error/1.0.0
     - /test/event/0.0.3
     topic_prefix: codfw.
 
