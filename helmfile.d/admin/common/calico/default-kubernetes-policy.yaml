@@ -151,6 +151,27 @@
   dst_ports:
     - 80
     - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'zotero' || calico/k8s_ns == 'proton'
+  dst_net: 103.102.166.224/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'zotero' || calico/k8s_ns == 'proton'
+  dst_net: 198.35.26.96/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'zotero' || calico/k8s_ns == 'proton'
+  dst_net: 91.198.174.192/32
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
 
   # Allow kafka-jumbo for eventgate-analytics, eventgate-analytics-external
 - action: allow
