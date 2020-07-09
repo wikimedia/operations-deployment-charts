@@ -13,7 +13,9 @@ spec:
       app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
   policyTypes:
+      {{- if .Values.networkpolicy.egress.enabled }}
     - Ingress
+      {{- end }}
   ingress:
     - ports:
       - port: {{ .Values.main_app.port }}
@@ -27,4 +29,9 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
-      {{- include "tls.networkpolicy" . | indent 8}}
+      {{- include "tls.networkpolicy" . | indent 6}}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+{{- end }}
