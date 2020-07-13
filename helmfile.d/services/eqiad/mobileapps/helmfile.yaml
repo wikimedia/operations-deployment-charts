@@ -23,3 +23,18 @@ releases:
       - events: ["presync"]
         command: "helmfile_log_sal"
         args: ["{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+
+  - name: nontls
+    installed: true
+    namespace: mobileapps
+    chart: stable/mobileapps
+    missingFileHandler: Warn
+    values:
+      - "values.yaml"
+      - "private/secrets.yaml"
+      - "private/general.yaml"
+      - "nontls.yaml"
+    hooks:
+      - events: ["presync"]
+        command: "helmfile_log_sal"
+        args: ["{{`{{.HelmfileCommand}}`}}", "[{{`{{ env \"K8S_CLUSTER\" | default \"UNKNOWN\" }}`}}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
