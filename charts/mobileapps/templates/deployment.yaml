@@ -65,6 +65,10 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
+          {{- if .Values.puppet_ca_crt }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/mobileapps/puppetca.crt.pem
+          {{- end }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
