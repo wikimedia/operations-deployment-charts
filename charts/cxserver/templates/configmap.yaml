@@ -5,7 +5,10 @@ metadata:
   name: config-{{ .Release.Name }}
 data:
   config.yaml: |- {{ include "config.app" . | nindent 4  }}
-
+{{- if .Values.puppet_ca_crt }}
+  puppetca.crt.pem: |-
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{ end -}}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1

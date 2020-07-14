@@ -18,6 +18,7 @@ releases:
     values:
     - "values.yaml"
     - "private/secrets.yaml"
+    - "private/general.yaml"
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"

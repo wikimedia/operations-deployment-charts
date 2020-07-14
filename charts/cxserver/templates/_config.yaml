@@ -52,7 +52,7 @@ services:
           host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
         method: post
-        uri: http://{{ .Values.main_app.mw_host }}/w/api.php
+        uri: {{ .Values.main_app.mwapi_uri }}
       # the template used for contacting RESTBase
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}

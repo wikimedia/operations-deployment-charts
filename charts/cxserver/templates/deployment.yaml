@@ -50,6 +50,10 @@ spec:
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
+          {{- if .Values.puppet_ca_crt }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/cxserver/puppetca.crt.pem
+          {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/cxserver

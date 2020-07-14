@@ -13,7 +13,7 @@ main_app:
   port: 8080
   kademlia_port: 3051
   proxy: null
-  mw_host: mediawiki.svc.cluster.local # api-rw.discovery.wmnet in production
+  mwapi_uri: http://mediawiki.svc.cluster.local/w/api.php # api-rw.discovery.wmnet in production
   restbase_host: restbase.svc.cluster.local # restbase.discovery.wmnet:7231 in production
   no_proxy_list: []
   jwt_secret: null
