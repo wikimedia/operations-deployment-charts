@@ -54,6 +54,10 @@ spec:
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
           {{- end }}
+          {{- if .Values.puppet_ca_crt }}
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/termbox/puppetca.crt.pem
+          {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/termbox

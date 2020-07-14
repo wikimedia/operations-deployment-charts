@@ -18,6 +18,7 @@ releases:
     missingFileHandler: Warn
     values:
     - "values/test.yaml"
+    - "private/general.yaml"
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"
@@ -31,6 +32,7 @@ releases:
     values:
     - "values/staging.yaml"
     - "private/secrets.yaml"
+    - "private/general.yaml"
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"
