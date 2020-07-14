@@ -91,16 +91,6 @@ services:
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
         timeout: 60000
-      # the template used for requesting a page from a MediaWiki appserver
-      mw_req:
-        method: get
-        uri: {{ .Values.main_app.mw_uri }}
-        headers:
-          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
-          user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
-          accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
-        query:
-          title: {{ "'{{" }}request.params.title{{ "}}'" }}
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
       mobile_html_local_rest_api_base_uri_template: //{{ "{{" }}domain{{ "}}" }}/api/rest_v1/
