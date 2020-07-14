@@ -20,4 +20,8 @@ metadata:
   name: config-{{ .Release.Name }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{- if .Values.puppet_ca_crt }}
+  puppetca.crt.pem: |-
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{ end -}}
 {{ include "tls.config" . }}
