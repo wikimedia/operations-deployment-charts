@@ -91,6 +91,14 @@ services:
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
         timeout: 60000
+      # the template used for requesting ResourceLoader module content from load.php
+      mw_resource_loader_req:
+        method: post
+        uri: {{ .Values.main_app.mw_resource_loader_uri }}
+        headers:
+          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
+          user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
+        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
       mobile_html_local_rest_api_base_uri_template: //{{ "{{" }}domain{{ "}}" }}/api/rest_v1/
