@@ -72,6 +72,9 @@ static_resources:
                       lua_lang: '{{ $route_opts.lua_lang }}'
                       dst_host: '{{ $route_opts.host }}'
                 route:
+                  cors:
+                    allow_origin_string_match:
+                      - prefix: "*"
                   regex_rewrite:
                     pattern:
                       google_re2: {}
@@ -137,6 +140,7 @@ static_resources:
                     #TODO move to using v3 protocol once ratelimit has been updated.
                     cluster_name: rate_limit_cluster
 {{- end }}
+          - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
   clusters:
   - name: webserver_cluster
