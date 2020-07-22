@@ -11,7 +11,7 @@ logging:
   limits:
     cpu: 100m
     memory: 200Mi
-  output_match: '*'
+  output_match: "*"
 main_app:
   image: wikimedia/blubber
   limits:
@@ -35,16 +35,15 @@ monitoring:
   enabled: false
   image_version: 0.0.5
 resources:
-  replicas: 1
+  replicas: 4
 service:
   deployment: production
   port: 8748
 tls:
   enabled: true
+  image_version: 1.14.4-1
   telemetry:
     enabled: true
-    # Prometheus nodes are in private/general.yaml
-  image_version: 1.14.4-1
 networkpolicy:
   egress:
     enabled: true
