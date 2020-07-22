@@ -92,6 +92,12 @@ main_app:
         enabled: true
         retry_limit: 0
         concurrency: 5
+      processMediaModeration:
+        enabled: true
+        # The job calls out to external PhotoDNA service, that has 5 req/s limit.
+        # The job takes 0.5s on average, so we would end up making 3.5 req/s on average.
+        # In case some of the jobs get rate limited, they will be retried.
+        concurrency: 7
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
