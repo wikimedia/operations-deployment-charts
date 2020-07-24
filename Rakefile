@@ -122,7 +122,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
       threads = []
       command = "#{kubeyaml} -versions #{KUBERNETES_VERSIONS}"
       # split per YAML doc. See GH issue #7 as to why
-      docs = output.split('---')
+      docs = output.split(/^---/)
       docs.each do |doc|
         t = Thread.new do
           # Remove the # Source: line. It can be helpful if the template ends up
