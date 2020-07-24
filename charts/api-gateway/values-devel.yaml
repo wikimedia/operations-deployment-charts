@@ -2,7 +2,7 @@ main_app:
 
   version: 1.15.0
 
-  admin_port: 9099
+  admin_port: 1667
   jwt: true
   echoapi: true
   ratelimiter:
@@ -12,6 +12,11 @@ main_app:
     redis_host: localhost
     redis_port: 6380
     redis_pass: ""
+
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8087
 
   dev_redis: true
   endpoints:

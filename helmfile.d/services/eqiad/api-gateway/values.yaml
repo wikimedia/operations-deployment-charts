@@ -2,6 +2,8 @@ main_app:
 
   version: 1.15.0
 
+  admin_port: 1667
+
   jwt: true
   ratelimiter:
     enabled: true
@@ -26,6 +28,11 @@ main_app:
       type: LOGICAL_DNS
       hosts:
         appservers-rw.discovery.wmnet: 443
+
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8087
 
 nutcracker:
   enabled: true

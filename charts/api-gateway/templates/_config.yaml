@@ -7,10 +7,47 @@ admin:
     socket_address:
       protocol: TCP
       address: 127.0.0.1
-      port_value: {{ .Values.main_app.admin_port }}
+      port_value: 1666
 {{ end -}}
 static_resources:
   listeners:
+{{- if .Values.main_app.admin_port }}
+  - name: admin_listener
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: {{ .Values.main_app.admin_port }}
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          http_filters:
+          - name: envoy.health_check
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.health_check.v2.HealthCheck
+              pass_through_mode: false
+              headers:
+                - name: ":path"
+                  exact_match: "/healthz"
+          - name: envoy.router
+            typed_config: {}
+          http_protocol_options: {accept_http_10: true}
+          route_config:
+            virtual_hosts:
+            - domains: ['*']
+              name: admin_cluster
+              routes:
+              - match: {prefix: /stats }
+                route:
+                  cluster: admin_cluster
+                  timeout: 5.0s
+              - match: {prefix: /}
+                direct_response:
+                  status: 403
+                  body: {inline_string: "You can't access this url."}
+          stat_prefix: admin_cluster
+{{- end }}
   - name: listener_0
     address:
       socket_address:
@@ -52,7 +89,7 @@ static_resources:
             name: api_wikimedia_org_route
             virtual_hosts:
             - name: api_wikimedia_org_vhost
-              domains: ["api.wikimedia.org"]
+              domains: ["api.wikimedia.org", "api.wikimedia.org:*", "staging.svc.eqiad.wmnet", "staging.svc.eqiad.wmnet:*"]
               routes:
               - match:
                   prefix: "/wiki/"
@@ -97,6 +134,13 @@ static_resources:
                   host_rewrite_header: "x-internal-host"
 {{- end }}
           http_filters:
+          - name: envoy.health_check
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.http.health_check.v2.HealthCheck
+              pass_through_mode: false
+              headers:
+                - name: ":path"
+                  exact_match: "/healthz"
 {{- if .Values.main_app.jwt }}
           - name: envoy.filters.http.jwt_authn
             typed_config:
@@ -203,5 +247,21 @@ static_resources:
                   socket_address:
                     address: 127.0.0.1
                     port_value: 8081
+{{- end }}
+{{ if .Values.main_app.admin_port }}
+  - name: admin_cluster
+    type: static
+    connect_timeout: 0.25s
+    lb_policy: ROUND_ROBIN
+    http2_protocol_options: {}
+    load_assignment:
+      cluster_name: admin_cluster
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: 127.0.0.1
+                    port_value: 1666
 {{- end }}
 {{- end }}
