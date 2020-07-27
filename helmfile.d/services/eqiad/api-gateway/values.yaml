@@ -1,0 +1,66 @@
+main_app:
+
+  version: 1.15.0
+
+  jwt: true
+  ratelimiter:
+    enabled: true
+    version: 1.5.0
+    log_level: debug
+    redis_host: localhost
+    redis_port: 6379
+    redis_pass: ""
+
+  endpoints:
+    api-rw.discovery.wmnet: 443
+
+nutcracker:
+  enabled: true
+  servers:
+    - rdb1005.eqiad.wmnet:6379:1 "cp-1"
+    - rdb1009.eqiad.wmnet:6379:1 "cp-2"
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.2.1/32 # appservers-rw.discovery.wmnet LVS endpoint (eqiad)
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
+    - cidr: 10.2.1.1/32 # appservers-rw.discovery.wmnet LVS endpoint (codfw)
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
+    - cidr: 10.2.2.22/32 # api-rw.discovery.wmnet LVS endpoint (eqiad)
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
+    - cidr: 10.2.1.22/32 # api-rw.discovery.wmnet LVS endpoint (codfw)
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
+    - cidr: 10.192.16.122/32 # rdb2003
+      ports:
+      - protocol: tcp
+        port: 6379
+    - cidr: 10.192.32.133/32 # rdb2005
+      ports:
+      - protocol: tcp
+        port: 6379
+    - cidr: 10.64.0.24/32 # rdb1005
+      ports:
+      - protocol: tcp
+        port: 6379
+    - cidr: 10.64.16.76/32 # rdb1009
+      ports:
+      - protocol: tcp
+        port: 6379

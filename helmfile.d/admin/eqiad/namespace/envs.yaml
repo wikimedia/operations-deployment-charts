@@ -119,3 +119,9 @@ environments:
     - ../../common/values.yaml
     - cluster.yaml
     - values/push-notifications.yaml
+  api-gateway:
+    missingFileHandler: Warn
+    values:
+    - ../../common/values.yaml
+    - cluster.yaml
+    - values/api-gateway.yaml

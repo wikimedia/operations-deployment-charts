@@ -1388,5 +1388,73 @@
   dst_ports:
     - 80
 
+  # api-gateway
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.192.16.122/32 # rdb2003
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.192.32.133/32 # rdb2005
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.64.0.24/32 # rdb1005
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.64.16.76/32 # rdb1009
+  protocol: tcp
+  dst_ports:
+    - 6379
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.1.1/32 # appservers-rw.discovery.wmnet (codfw)
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.2.1/32 # appservers-rw.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.1.22/32 # api-rw.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.2.22/32 # api-rw.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.64.0.46/32 # mwdebug1002
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.64.32.123/32 # mwdebug1001
+  protocol: tcp
+  dst_ports:
+    - 80
+    - 443
+
   # Deny everything else
 - action: deny
