@@ -63,6 +63,8 @@ spec:
           {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
           {{- end }}
           env:
+            - name: APP_ENABLE_CANCELLABLE_PROMISES
+              value: "true"
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
           {{- range $k, $v := .Values.config.public }}
