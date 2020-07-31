@@ -1,7 +1,3 @@
-repositories:
-  - name: stable
-    url: https://releases.wikimedia.org/charts/
-
 helmDefaults:
   tillerNamespace: mathoid
   verify: false
@@ -13,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: mathoid
-    chart: stable/mathoid
+    chart: chartmuseum/mathoid
     missingFileHandler: Warn
     values:
     - "values.yaml"

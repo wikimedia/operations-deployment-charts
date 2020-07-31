@@ -1,6 +1,6 @@
 = Introduction =
 
-This is the repo that powers https://releases.wikimedia.org/charts/
+This is the repo that powers https://helm-charts.wikimedia.org/stable/
 
 In this you will find the various helm charts WMF uses in developing software
 and deploying it in production
@@ -39,11 +39,6 @@ the charts/ directory.
 
 After making the changes the chart version should be
 incremented in the respective Chart.yaml
-
-The chart should then be packaged using `helm package <chart-name>`
-
-The repository index should then be rebuilt using `helm repo index .` from
-the charts/ directory
 
 The resulting files and changes should then be uploaded to gerrit for review
 
