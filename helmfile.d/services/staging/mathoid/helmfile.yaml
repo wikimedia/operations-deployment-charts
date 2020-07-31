@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: mathoid
-    chart: chartmuseum/mathoid
+    chart: stable/mathoid
     missingFileHandler: Warn
     values:
     - "values.yaml"
