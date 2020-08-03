@@ -207,7 +207,7 @@ static_resources:
         typed_config:
           '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
           http_filters:
-          - name: envoy.router
+          - name: envoy.filters.http.router
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
@@ -236,7 +236,7 @@ static_resources:
         typed_config:
           '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
           http_filters:
-          - name: envoy.router
+          - name: envoy.filters.http.router
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
@@ -251,12 +251,15 @@ static_resources:
           stat_prefix: ingress_https_{{ .Release.Name }}
           server_name: {{ .Release.Name }}-tls
           server_header_transformation: APPEND_IF_ABSENT
-      tls_context:
-        common_tls_context:
-          tls_certificates:
-          - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
-            private_key: {filename: /etc/envoy/ssl/service.key}
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          '@type': type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+              - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
+                private_key: {filename: /etc/envoy/ssl/service.key}
     listener_filters:
-    - name: envoy.listener.tls_inspector
+    - name: envoy.filters.listener.tls_inspector
       typed_config: {}
 {{- end -}}
