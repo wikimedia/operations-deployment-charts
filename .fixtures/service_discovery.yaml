@@ -1,0 +1,39 @@
+tls:
+  enabled: true
+  public_port: 4004 # the port where TLS will be exposed
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+discovery:
+  enabled: true
+  listeners: [pinkunicorn, frugal]
+services_proxy:
+  pinkunicorn: # this is a complete listener
+    keepalive: "5s"
+    http_host: "pinkunicorn.wikimedia.org"
+    timeout: "60s"
+    xfp: https
+    port: 6666
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 2
+    upstream:
+      address: pinkunicorn.discovery
+      port: 666
+      encryption: true
+  frugal: # this is a bare-minimum listener
+    timeout: "15s"
+    port: 6161
+    upstream:
+      address: test.wikpedia.org
+      port: 443

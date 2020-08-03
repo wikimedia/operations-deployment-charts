@@ -77,6 +77,21 @@ def which(cmd)
   nil
 end
 
+def report_yaml_parse_error(cmd, msg, output, e)
+  # Reports a yaml parsing error with some useful context
+  puts msg.red
+  puts "Error is at line #{e.line}, column #{e.column} of the output of `#{cmd}`: #{e.problem}".red
+  puts "Context:\n"
+  lines = output.split("\n")
+  min_line = [0, e.line - ERROR_CONTEXT_LINES].max
+  pre_lines = e.line - min_line
+  post_lines = [lines.length, e.line + ERROR_CONTEXT_LINES].min - e.line
+  puts lines[min_line, pre_lines].join "\n"
+  puts lines[e.line].red
+  puts lines[e.line + 1, post_lines].join "\n"
+end
+
+
 
 def check_template(chart, fixture = nil, kubeyaml = nil)
   if fixture != nil
@@ -102,16 +117,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
         # not doing anything here, we're just verifying it loads for now.
       end
     rescue Psych::SyntaxError => e
-      puts error.red
-      puts "Error is at line #{e.line}, column #{e.column} of the output of `#{command}`: #{e.problem}".red
-      puts "Context:\n"
-      lines = output.split("\n")
-      min_line = [0, e.line - ERROR_CONTEXT_LINES].max
-      pre_lines = e.line - min_line
-      post_lines = [lines.length, e.line + ERROR_CONTEXT_LINES].min - e.line
-      puts lines[min_line, pre_lines].join "\n"
-      puts lines[e.line].red
-      puts lines[e.line + 1, post_lines].join "\n"
+      report_yaml_parse_error(command, error, output, e)
       success = false
     rescue StandardError => e
       success = false
@@ -230,4 +236,73 @@ task :validate_deployments do
   pprint "Helmfile deployments check summary:", results
 end
 
-task :default => [:lint, :validate_template, :validate_deployments]
+desc 'Validate the envoy configuration'
+task :validate_envoy_config do
+  puts "Generating and verifying the envoy configuration..."
+  # run helm template for a specific fixture that generates a service proxy and tls terminator
+  command = "helm template --values .fixtures/service_discovery.yaml charts/termbox"
+  res, out = _exec command
+  unless res
+    puts out.red
+    raise('Failure generating the helm manifest')
+  end
+  # Extract the envoy configuration, write it to a file
+  begin
+    config = ""
+    YAML.load_stream(out) do |resource|
+      next unless resource["kind"] == "ConfigMap" \
+        && resource["metadata"] \
+        && resource["metadata"]["name"] \
+        && resource["metadata"]["name"].end_with?("envoy-config-volume")
+      config = resource["data"]["envoy.yaml"]
+    end
+  rescue StandardError => e
+    puts e.red
+    raise('Failure reading the helm yaml template')
+  end
+  begin
+    error = 'Parsing envoy.yaml'
+    YAML.safe_load(config)
+  rescue Psych::SyntaxError => e
+    report_yaml_parse_error(command, error, config, e)
+    raise('Failure parsing envoy YAML configuration')
+  rescue StandardError => e
+    puts error.red
+    puts e
+    raise('Generic failure interpreting envoy YAML configuration')
+  end
+
+  has_envoy = system('which envoy > /dev/null 2>&1')
+  if has_envoy
+    dest = '/etc/envoy'
+  else
+    dest = '.tmp'
+    # Now create a temp directory where we write the yaml file, then run docker to verify it works.
+    FileUtils.mkdir '.tmp', mode: 0777
+    at_exit { FileUtils.remove_entry '.tmp' }
+  end
+
+  f = File.open "#{dest}/envoy.yaml", 'w'
+  f.write config
+  f.close()
+  # If we're copying the file into the container, it needs to be world-readable
+  File.chmod 0755, "#{dest}/envoy.yaml" unless has_envoy
+
+  FileUtils.cp_r('.fixtures/ssl/', "#{dest}/")
+
+  if has_envoy
+    cmd = 'envoy --mode validate -c /etc/envoy/envoy.yaml'
+  else
+    path = File.realpath '.tmp'
+    cmd = "docker run --rm -v #{path}:/etc/envoy docker-registry.wikimedia.org/envoy:latest envoy --mode validate -c /etc/envoy/envoy.yaml"
+  end
+  res, out = _exec cmd
+  if !res
+    puts out.red
+    raise("Failure")
+  else
+    puts out.green
+  end
+end
+
+task :default => [:lint, :validate_template, :validate_deployments, :validate_envoy_config]
