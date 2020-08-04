@@ -24,6 +24,7 @@ releases:
     chart: stable/termbox
     missingFileHandler: Warn
     values:
+    - "/etc/helmfile-defaults/service-proxy.yaml"
     - "values/staging.yaml"
     - "private/secrets.yaml"
     - "private/general.yaml"
