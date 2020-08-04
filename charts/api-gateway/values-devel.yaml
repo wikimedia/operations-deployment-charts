@@ -22,65 +22,6 @@ main_app:
     kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="
     key: "wpQqfUk_vTLbbthUWhLaJ9wo4YZXWJjGmO8SFaEb0opgEXu_sP98dWzErQ04W2u0WpImfn1gqUEuAlnrgPXFyrIHD_WAJ5hFhdse5zNscJ9979yNDoXPlu20JQ91inYj592tFRHJQ9R9-jfSS2wgslWFXSZuOpY74EpHJcoGiCSwghLQDIdp5dl_VurfHNhOpWOAfp5zxVL-Ix5PuRzDvze0zA9GZH5-PEX1UgCNS0WyKW5Zt7hoRGNWU6hMNfVY6n6HThwLMq41GcyMwQ_zqOARGFOUrVQZY5yoCkxetTWHUj3qsfx_oq_ZQ3O_k95waKYMtgYwTKeBxbiunFfthw"
 
-  #TODO regex on v1
-  pathing_map:
-    '/core/v1/wikipedia/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikipedia.org'
-      lua_lang: '/core/v1/wikipedia/(%a+)/.*'
-    '/core/v1/wiktionary/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wiktionary.org'
-      lua_lang: '/core/v1/wiktionary/(%a+)/.*'
-    '/core/v1/commons/(\w+)':
-      path: '/w/rest.php/v1/\1'
-      host: 'commons.wikimedia.org'
-      lua_lang: ''
-    '/core/v1/wikibooks/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikibooks.org'
-      lua_lang: '/core/v1/wikibooks/(%a+)/.*'
-    '/core/v1/wikiquote/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikiquote.org'
-      lua_lang: '/core/v1/wikiquote/(%a+)/.*'
-    '/core/v1/wikiversity/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikiversity.org'
-      lua_lang: '/core/v1/wikiversity/(%a+)/.*'
-    '/core/v1/mediawiki/(.*)':
-      path: '/w/rest.php/v1/\1'
-      host: 'mediawiki.org'
-      lua_lang: ''
-    '/core/v1/wikidata/(.*)':
-      path: '/w/rest.php/v1/\1'
-      host: 'wikidata.org'
-      lua_lang: ''
-    '/core/v1/wikisource/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikisource.org'
-      lua_lang: '/core/v1/wikisource/(%a+)/.*'
-    '/core/v1/wikivoyage/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikivoyage.org'
-      lua_lang: '/core/v1/wikivoyage/(%a+)/.*'
-    '/core/v1/meta/(.*)':
-      path: '/w/rest.php/v1/\1'
-      host: 'meta.wikimedia.org'
-      lua_lang: ''
-    '/core/v1/wikinews/(\w+)/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikinews.org'
-      lua_lang: '/core/v1/wikinews/(\w+)/.*'
-    '/core/v1/wikispecies/(.*)':
-      path: '/w/rest.php/v1/\2'
-      host: 'species.wikimedia.org'
-      lua_lang: ''
-    '/feed/v1/(\w+)/(\w+)/(.*)':
-      path: '/api/rest_v1/feed/\3'
-      host: 'LANGUAGE.SITE.org'
-      #TODO this one is broken
-      lua_lang: '/feed/v1/(%a+)/(%a+)/.*'
 
 
 nutcracker:
