@@ -22,9 +22,17 @@ main_app:
     tcpSocket:
       port: 8087
   readiness_probe:
-    httpGet:
-      path: /
+    # For the short-term, use a tcpSocket for testing - once we've
+    # decided on a stable http endpoint to check we can return to
+    # using httpGet.
+    tcpSocket:
       port: 8087
+    #httpGet:
+    #  httpHeaders:
+    #    - name: Host
+    #      value: api.wikimedia.org
+    #  path: /
+    #  port: 8087
 
   admin_port: null
   jwt: false
@@ -78,7 +86,6 @@ tls:
   telemetry:
     enabled: true
     port: 9361
-  certs: {}
 
 debug:
   enabled: false
