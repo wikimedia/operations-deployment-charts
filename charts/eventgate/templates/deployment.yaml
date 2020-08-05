@@ -57,21 +57,16 @@ spec:
           livenessProbe:
             tcpSocket:
               port: {{ .Values.main_app.port }}
+{{- if .Values.main_app.conf.test_events | default false }}
           readinessProbe:
             # EventGate should process a test event if it is ready.
-            # post-events examples will read the given schema for
-            # and an examples array and post that data as events.
-            # It exits 0 if the events were accepted and produced
-            # or non-zero if not. By setting --dt-field, the script
-            # will make sure that the event meta.dt has a current timestamp.
-            exec:
-              command:
-                - /srv/service/scripts/post-events
-                - '--service-url=http://localhost:{{ .Values.main_app.port }}/v1/events'
-                - '--dt-field=meta.dt'
-                - examples
-                - '{{ .Values.main_app.readiness_probe_schema_url }}'
+            # The GET /v1/_test/events route will process the configured
+            # test_events as if they were POSTed to /v1/events.
+            httpGet:
+              path: /v1/_test/events
+              port: 3000
             initialDelaySeconds: 2
+{{- end }}
           env:
             - name: SERVICE_IDENTIFIER
               value: {{ .Values.main_app.name }}

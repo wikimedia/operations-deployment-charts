@@ -26,7 +26,7 @@
 
 # test/event is for systems testing to ensure POST works
 # that events are produced.
-'test.event':
+'{{ .Values.main_app.name }}.test.event':
   schema_title: test/event
 
 # Release specific stream/schema mapping goes here.
