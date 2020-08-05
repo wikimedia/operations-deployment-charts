@@ -12,7 +12,7 @@ resources:
 
 main_app:
   name: eventgate-main
-  version: 2020-07-07-140523-production
+  version: 2020-08-05-133842-production
   conf:
     kafka:
       conf:
@@ -42,6 +42,7 @@ main_app:
     - /mediawiki/revision/score/2.0.0
     - /mediawiki/revision/tags-change/1.0.0
     - /mediawiki/revision/create/1.0.0
+    - /mediawiki/revision/create/1.1.0
     topic_prefix: eqiad.
   stream_config:
     /^mediawiki\.job\..+/:
