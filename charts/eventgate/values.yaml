@@ -140,12 +140,17 @@ main_app:
     # If test_events is set, EventGate will set up a /v1/_test/events
     # route that will process these test_events as if they were POSTed
     # to /v1/events. This is used for the k8s readinessProbe.
-    # NOTE: This config is templated in _config.yaml.
-    # test_events:
-    #   - $schema: /test/event/1.0.0
-    #     meta:
-    #       # make sure this is configured in stream config if you are using it.
-    #       stream: eventgate.test.event
+    # IMPORTANT:
+    # If you are using stream config, make sure this stream is configured!
+    # If using local stream config, the _stream-config.yaml template
+    # will automatically configure an <main_app.name>.test.event stream,
+    # so in your helmfiles you should override this to a test event
+    # that prodcues to that stream.
+    test_events:
+      - $schema: /test/event/1.0.0
+        meta:
+          # make sure this is configured in stream config if you are using it.
+          stream: eventgate.test.event
 
     # kafka configs go here.
     kafka:

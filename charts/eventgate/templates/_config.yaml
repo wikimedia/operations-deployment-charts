@@ -50,17 +50,6 @@ services:
       # e.g. eventgate-analytics, eventgate-main
       error_stream: {{ .Values.main_app.name }}.error.validation
 
-      # If test_events is set, EventGate will set up a /v1/_test/events
-      # route that will process these test_events as if they were POSTed
-      # to /v1/events. This is used for the k8s readinessProbe.
-      # In production, this should be prefixed with service name,
-      # e.g. eventgate-analytics, eventgate-main
-      test_events:
-        - $schema: /test/event/1.0.0
-          meta:
-            # Important! Make sure this is configured in stream config if you are using it!
-            stream: {{ .Values.main_app.name }}.test.event
-
       # eventgate app settings
 {{ toYaml .Values.main_app.conf | indent 6 }}
 

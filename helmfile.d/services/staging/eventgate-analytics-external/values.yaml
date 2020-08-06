@@ -37,6 +37,22 @@ main_app:
     - 'file:///srv/service/schemas/event/secondary/jsonschema/'
     - 'https://schema.discovery.wmnet/repositories/secondary/jsonschema/'
 
+    # If test_events is set, EventGate will set up a /v1/_test/events
+    # route that will process these test_events as if they were POSTed
+    # to /v1/events. This is used for the k8s readinessProbe.
+    # IMPORTANT:
+    # If you are using stream config, make sure this stream is configured!
+    # If using local stream config, the _stream-config.yaml template
+    # will automatically configure an <main_app.name>.test.event stream,
+    # so in your helmfiles you should override this to a test event
+    # that prodcues to that stream.  If you are using remote
+    # stream config, you must configure these streams explicitly there.
+    test_events:
+      - $schema: /test/event/1.0.0
+        meta:
+          # make sure this is configured in stream config if you are using it.
+          stream: eventgate-analytics-external.test.event
+
     # Request dynamic stream config from the EventStreamConfig extension MW API endpoint.
     # We use meta.wikimedia.org here as the default stream configuration wiki.
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
@@ -53,6 +69,7 @@ main_app:
     # Expire and re-request dynamic stream configs every 5 minutes
     stream_config_ttl: 300
     stream_config_recache_on_expire: true
+
 networkpolicy:
   egress:
     enabled: false
