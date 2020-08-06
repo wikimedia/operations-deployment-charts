@@ -64,7 +64,7 @@ spec:
             # test_events as if they were POSTed to /v1/events.
             httpGet:
               path: /v1/_test/events
-              port: 3000
+              port: {{ .Values.main_app.port }}
             initialDelaySeconds: 2
 {{- end }}
           env:
