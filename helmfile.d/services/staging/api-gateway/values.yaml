@@ -12,8 +12,9 @@ main_app:
     redis_pass: ""
 
   endpoints:
-    webserver_cluster:
+    appserver_cluster:
       type: STRICT_DNS
+      tls: true
       hosts:
         mwdebug1001.eqiad.wmnet: 443
         mwdebug1002.eqiad.wmnet: 443
@@ -21,6 +22,13 @@ main_app:
       type: LOGICAL_DNS
       hosts:
         restbase.discovery.wmnet: 7231
+
+    mwapi_cluster:
+      tls: true
+      type: STRICT_DNS
+      hosts:
+        mwdebug1001.eqiad.wmnet: 443
+        mwdebug1002.eqiad.wmnet: 443
 
 nutcracker:
   enabled: true
@@ -67,4 +75,5 @@ networkpolicy:
 
 service:
   deployment: production
-  port: 8087
+  port:
+    nodePort: 8087

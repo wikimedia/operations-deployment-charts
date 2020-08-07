@@ -48,12 +48,15 @@ main_app:
     key: ""
 
   endpoints:
-    webserver_cluster:
+    mwapi_cluster:
       type: LOGICAL_DNS
-      hosts: {}
+      hosts: []
     restbase_cluster:
       type: LOGICAL_DNS
-      hosts: {}
+      hosts: []
+    appserver_cluster:
+      type: LOGICAL_DNS
+      hosts: []
 
   # run a local redis container for testing - see README for
   # instructions

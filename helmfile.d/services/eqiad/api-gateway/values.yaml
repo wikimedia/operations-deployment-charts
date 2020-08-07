@@ -12,7 +12,8 @@ main_app:
     redis_pass: ""
 
   endpoints:
-    webserver_cluster:
+    mwapi_cluster:
+      tls: true
       type: LOGICAL_DNS
       hosts:
         api-rw.discovery.wmnet: 443
@@ -20,6 +21,11 @@ main_app:
       type: LOGICAL_DNS
       hosts:
         restbase.discovery.wmnet: 7231
+    appserver_cluster:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        appservers-rw.discovery.wmnet: 443
 
 nutcracker:
   enabled: true
@@ -78,4 +84,5 @@ networkpolicy:
 
 service:
   deployment: production
-  port: 8087
+  port:
+    nodePort: 8087
