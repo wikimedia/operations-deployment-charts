@@ -12,7 +12,14 @@ main_app:
     redis_pass: ""
 
   endpoints:
-    api-rw.discovery.wmnet: 443
+    webserver_cluster:
+      type: LOGICAL_DNS
+      hosts:
+        api-rw.discovery.wmnet: 443
+    restbase_cluster:
+      type: LOGICAL_DNS
+      hosts:
+        restbase.discovery.wmnet: 7231
 
 nutcracker:
   enabled: true
@@ -64,6 +71,10 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+    - cidr: 10.2.2.17/32 # restbase.discovery.wmnet (eqiad)
+      ports:
+      - protocol: tcp
+        port: 7231
 
 service:
   deployment: production

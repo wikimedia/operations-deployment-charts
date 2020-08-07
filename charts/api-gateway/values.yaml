@@ -47,7 +47,13 @@ main_app:
     kid: ""
     key: ""
 
-  endpoints: []
+  endpoints:
+    webserver_cluster:
+      type: LOGICAL_DNS
+      hosts: {}
+    restbase_cluster:
+      type: LOGICAL_DNS
+      hosts: {}
 
   # run a local redis container for testing - see README for
   # instructions
@@ -109,8 +115,9 @@ main_app:
       lua_lang: ''
     '/feed/v1/(\w+)/(\w+)/(.*)':
       path: '/api/rest_v1/feed/\3'
-      host: 'LANGUAGE.SITE.org'
-      #TODO this one is broken
+      host: 'LANGUAGE.PROJECT.org'
+      # This is a horrible hack and we need to remove it whenever we can.
+      wikifeeds: true
       lua_lang: '/feed/v1/(%a+)/(%a+)/.*'
 
 nutcracker:

@@ -1455,6 +1455,18 @@
   dst_ports:
     - 80
     - 443
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.1.17/32 # restbase.discovery.wmnet (codfw)
+  protocol: tcp
+  dst_ports:
+    - 7231
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.2.17/32 # restbase.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 7231
 
   # Deny everything else
 - action: deny

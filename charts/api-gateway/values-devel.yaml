@@ -15,9 +15,16 @@ main_app:
 
   dev_redis: true
   endpoints:
-    localhost: 8888
-    badhost: 8888
-
+    webserver_cluster:
+      type: STRICT_DNS
+      hosts:
+        localhost: 8888
+        badhost: 8888
+    restbase_cluster:
+      type: STRICT_DNS
+      hosts:
+        localhost: 7231
+        badhost: 7231
   jwks:
     kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="
     key: "wpQqfUk_vTLbbthUWhLaJ9wo4YZXWJjGmO8SFaEb0opgEXu_sP98dWzErQ04W2u0WpImfn1gqUEuAlnrgPXFyrIHD_WAJ5hFhdse5zNscJ9979yNDoXPlu20JQ91inYj592tFRHJQ9R9-jfSS2wgslWFXSZuOpY74EpHJcoGiCSwghLQDIdp5dl_VurfHNhOpWOAfp5zxVL-Ix5PuRzDvze0zA9GZH5-PEX1UgCNS0WyKW5Zt7hoRGNWU6hMNfVY6n6HThwLMq41GcyMwQ_zqOARGFOUrVQZY5yoCkxetTWHUj3qsfx_oq_ZQ3O_k95waKYMtgYwTKeBxbiunFfthw"
