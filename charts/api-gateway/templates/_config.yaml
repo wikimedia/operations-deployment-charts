@@ -174,7 +174,7 @@ static_resources:
             cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
           validation_context:
             trusted_ca:
-              filename: /etc/envoy/puppetca.crt.pem
+              filename: /etc/api-gateway/puppetca.crt.pem
 {{- end }}
     load_assignment:
       cluster_name: {{ $cluster_name }}
