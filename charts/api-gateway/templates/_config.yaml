@@ -93,7 +93,7 @@ static_resources:
                       google_re2: {}
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
-                  cluster: api_cluster
+                  cluster: mwapi_cluster
                   host_rewrite_header: "x-internal-host"
 {{- end }}
           http_filters:
@@ -105,7 +105,7 @@ static_resources:
                 wikimedia:
                   issuer: http://dev.wikipedia.org
                   local_jwks:
-                    filename: /etc/api-gateway/jwks.json
+                    filename: /etc/jwks/jwks.json
                   forward: true
                   from_headers:
                     name: Authorization

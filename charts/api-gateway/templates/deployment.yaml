@@ -92,12 +92,10 @@ spec:
 {{ toYaml .Values.main_app.limits | indent 14 }}
           volumeMounts:
             - name: {{ .Release.Name }}-base-config
-              mountPath: /etc/api-gateway/config.yaml
-              subPath: config.yaml
+              mountPath: /etc/api-gateway/
 {{- if .Values.main_app.jwt }}
             - name: {{ .Release.Name }}-jwt-config
-              mountPath: /etc/api-gateway/jwks.json
-              subPath: jwks.json
+              mountPath: /etc/jwks/
 {{- end }}
 {{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
