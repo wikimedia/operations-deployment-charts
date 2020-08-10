@@ -60,30 +60,42 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: ingress_http
+{{- if .Values.main_app.access_log }}
           # configure logging
           access_log:
             name: envoy.file_access_log
+            filter:
+              not_health_check_filter: {}
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+{{- if eq .Values.main_app.access_log.type "stdout" }}
               path: /dev/stdout
-              json_format:
-                start_time: "%START_TIME%"
-                req_method: "%REQ(:METHOD)%"
-                req_path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
-                upstream_path: "%REQ(:PATH)%"
-                req_proto: "%PROTOCOL%"
-                resp_code: "%RESPONSE_CODE%"
-                resp_flags: "%RESPONSE_FLAGS%"
-                bytes_rx: "%BYTES_RECEIVED%"
-                bytes_tx: "%BYTES_SENT%"
-                upstream_time: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
-                req_x_forwarded_for: "%REQ(X-FORWARDED-FOR)%"
-                req_user_agent: "%REQ(USER-AGENT)%"
-                req_request_id: "%REQ(X-REQUEST-ID)%"
-                req_authority: "%REQ(:AUTHORITY)%"
-                upstream_host: "%UPSTREAM_HOST%"
-                jwt_cid: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:cid)%"
-                duration: "%DURATION%"
+{{- else if eq .Values.main_app.access_log.type "eventgate" }}
+              path: /var/log/access.log
+{{- else }}
+{{ fail "Invalid access_log.type" }}
+{{- end }}
+              log_format:
+                json_format:
+                  # TODO: unflatten when support for nested logs is added to envoy
+                  $schema: "/api-gateway/request/1.0.0"
+                  meta.uri: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                  meta.request_id: "%REQ(X-REQUEST-ID)%"
+                  meta.dt: "%START_TIME(%FT%TZ)%"
+                  meta.domain: "%REQ(:HOST)%"
+                  meta.stream: "api-gateway-request"
+                  http.method: "%REQ(:METHOD)%"
+                  http.protocol: "%PROTOCOL%"
+                  http.status_code: "%RESPONSE_CODE%"
+                  http.client_ip: "%REQ(X-FORWARDED-FOR)%"
+                  http.request_headers.user-agent: "%REQ(USER-AGENT)%"
+                  http.request_headers.referer: "%REQ(REFERER)%"
+                  http.request_headers.accept-language: "%REQ(ACCEPT-LANGUAGE)%"
+                  backend_time_ms: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
+                  total_time_ms: "%DURATION%"
+                  client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:cid)%"
+                  route: "%ROUTE_NAME%"
+{{- end }}
           use_remote_address: true
           route_config:
             name: api_wikimedia_org_route

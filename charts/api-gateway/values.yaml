@@ -35,6 +35,13 @@ main_app:
     default_limit:
       requests_per_unit: 5000
       unit: HOUR
+  # Type of access logging
+  # - false to turn off access logging
+  # - { type: stdout } for access logging to stdout
+  # - { type: eventgate, event_service: {host: eventgate.discovery.wmnet, port:80, path: /v1/events}, image_version: latest }
+  #   to send access logs to an eventgate instance.
+  access_log:
+    type: stdout
 
   # populated from secrets
   jwks:

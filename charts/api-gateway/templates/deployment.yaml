@@ -35,6 +35,12 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
+        {{ if .Values.main_app.access_log -}}
+        {{ if eq .Values.main_app.access_log.type "eventgate" -}}
+        checksum/td-agent: {{ include "fluent-bit.config" . | sha256sum }}
+        checksum/td-agent-parsers: {{ include "fluent-bit-parsers.config" . | sha256sum }}
+        {{- end }}
+        {{- end }}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -101,6 +107,12 @@ spec:
               mountPath: /etc/envoy-ssl
               readOnly: true
 {{- end }}
+{{- if .Values.main_app.access_log }}
+{{- if eq .Values.main_app.access_log.type "eventgate" }}
+            - name: {{ .Release.Name }}-varlog
+              mountPath: /var/log/
+{{- end }}
+{{- end }}
 {{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
 {{- end }}
@@ -128,7 +140,7 @@ spec:
 {{- end }}
 {{- if .Values.main_app.echoapi }}
         - name: {{ .Release.Name }}-echoapi
-          image: local/echoapi:latest
+          image: echoapi:latest
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: 8888
@@ -174,6 +186,21 @@ spec:
               subPath: config.yaml
               readOnly: true
 {{- end }}
+{{- if .Values.main_app.access_log }}
+{{- if eq .Values.main_app.access_log.type "eventgate" }}
+        - name: {{ .Release.Name }}-logstream-eventgate
+          image: {{ .Values.docker.registry }}/fluent-bit:{{ .Values.main_app.access_log.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          args: [ '-c', '/etc/td-agent-bit/td-agent-bit.conf' ]
+          volumeMounts:
+            - name: {{ .Release.Name }}-varlog
+              mountPath: /var/log/
+              readOnly: true
+            - name: {{ .Release.Name }}-fluent-bit-config
+              mountPath: /etc/td-agent-bit
+              readOnly: true
+{{- end }}
+{{- end }}
       volumes:
         - name: {{ .Release.Name }}-base-config
           configMap:
@@ -197,6 +224,15 @@ spec:
         - name: {{ .Release.Name }}-jwt-config
           configMap:
             name: {{ template "wmf.releasename" . }}-jwt-config
+        {{- end }}
+        {{- if .Values.main_app.access_log }}
+        {{- if eq .Values.main_app.access_log.type "eventgate" }}
+        - name: {{ .Release.Name }}-varlog
+          emptyDir: {}
+        - name: {{ .Release.Name }}-fluent-bit-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-fluent-bit-config
+        {{- end }}
         {{- end }}
         {{- if .Values.tls.enabled }}
         - name: {{ .Release.Name }}-tls-certs-volume

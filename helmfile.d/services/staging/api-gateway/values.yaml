@@ -12,6 +12,14 @@ main_app:
     redis_port: 6379
     redis_pass: ""
 
+  access_log:
+    type: eventgate
+    image_version: 1.5.3-0
+    event_service:
+      host: staging.svc.eqiad.wmnet
+      port: 35192
+      path: /v1/events
+
   endpoints:
     appserver_cluster:
       type: STRICT_DNS

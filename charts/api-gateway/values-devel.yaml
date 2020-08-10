@@ -18,6 +18,9 @@ main_app:
       requests_per_unit: 5000
       unit: HOUR
 
+  access_log:
+    type: stdout
+
   readiness_probe:
     httpGet:
       path: /healthz
