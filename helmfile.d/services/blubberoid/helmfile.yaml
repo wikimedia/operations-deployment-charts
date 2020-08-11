@@ -18,7 +18,7 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"releases\" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ \"no releases defined for this environment\" | fail }}{{end}}`}}"
     missingFileHandler: Warn
     values:
-      - "/etc/helmfile-defaults/general-{{ .Enviornment.Name }}.yaml" # general default values, controlled by SRE
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/blubberoid/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
