@@ -199,6 +199,18 @@ static_resources:
 {{- end }}
           - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
+{{- if .Values.tls.enabled }}
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+              certificate_chain:
+                filename: "/etc/envoy-ssl/service.crt"
+              private_key:
+                filename: "/etc/envoy-ssl/service.key"
+{{- end }}
   clusters:
 {{- range $cluster_name, $cluster_opts := .Values.main_app.endpoints }}
   - name: {{ $cluster_name }}

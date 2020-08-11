@@ -1,4 +1,3 @@
-{{ if not .Values.tls.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -21,7 +20,6 @@ spec:
       {{- if .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
-{{- end }}
 {{ if .Values.debug.enabled }}
 ---
 apiVersion: v1

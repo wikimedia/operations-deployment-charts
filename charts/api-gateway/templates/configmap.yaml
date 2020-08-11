@@ -29,7 +29,6 @@ data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
-{{ template "tls.config" . }}
 {{- if .Values.nutcracker.enabled }}
 ---
 apiVersion: v1
@@ -43,6 +42,23 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   nutcracker.yml: |- {{ include "nutcracker.config" . | indent 4 }}
+{{ end -}}
+{{- if .Values.tls.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-tls-proxy-certs
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  service.crt: |-
+{{ .Values.tls.certs.cert | indent 4 }}
+  service.key: |-
+{{ .Values.tls.certs.key | indent 4 }}
 {{ end -}}
 {{- if .Values.main_app.ratelimiter }}
 ---

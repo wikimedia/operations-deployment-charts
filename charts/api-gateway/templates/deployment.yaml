@@ -35,7 +35,6 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
@@ -96,6 +95,11 @@ spec:
 {{- if .Values.main_app.jwt }}
             - name: {{ .Release.Name }}-jwt-config
               mountPath: /etc/jwks/
+{{- end }}
+{{- if .Values.tls.enabled }}
+            - name: {{ .Release.Name }}-tls-certs-volume
+              mountPath: /etc/envoy-ssl
+              readOnly: true
 {{- end }}
 {{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
@@ -162,7 +166,6 @@ spec:
               mountPath: /srv/ratelimit/ratelimit/config.yaml
               subPath: config.yaml
 {{- end }}
-        {{- include "tls.container" . | indent 8}}
       volumes:
         - name: {{ .Release.Name }}-base-config
           configMap:
@@ -187,7 +190,11 @@ spec:
           configMap:
             name: {{ template "wmf.releasename" . }}-jwt-config
         {{- end }}
-        {{- include "tls.volume" . | indent 8}}
+        {{- if .Values.tls.enabled }}
+        - name: {{ .Release.Name }}-tls-certs-volume
+          configMap:
+            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
+        {{- end }}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}
 {{- end }}
