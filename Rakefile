@@ -1,4 +1,5 @@
 require 'rake'
+require 'tmpdir'
 require 'rake/tasklib'
 require 'open3'
 require 'yaml'
@@ -6,8 +7,9 @@ require 'yaml'
 ERROR_CONTEXT_LINES = 4
 PRIVATE_STUB = '.fixtures/private_stub.yaml'
 HELM_REPO = 'stable'
-HELMFILE_GLOB = "helmfile.d/services/*/*/helmfile.yaml"
+HELMFILE_GLOB = "helmfile.d/services/**/helmfile.yaml"
 KUBERNETES_VERSIONS = "1.17,1.16,1.15,1.14,1.13,1.12"  # Let's target only what we have or want to upgrade to
+HELMFILE_ENV = 'eqiad'
 
 class String
   def red
@@ -21,6 +23,37 @@ class String
   private
   def colour(colour_code)
     "\e[#{colour_code}m#{self}\e[0m"
+  end
+end
+
+
+# Very basic threadpool implementation
+
+class ThreadPool
+  def initialize(nthreads:)
+    @concurrency = nthreads
+    @jobs = Queue.new
+    @pool = Array.new(@concurrency) do
+      Thread.new do
+        catch(:exit) do
+          loop do
+            job = @jobs.pop
+            job.call()
+          end
+        end
+      end
+    end
+  end
+  def run(&block)
+    @jobs << block
+  end
+
+  def join
+    # schedule an exit for each thread
+    @concurrency.times do
+      run { throw :exit }
+    end
+    @pool.map(&:join)
   end
 end
 
@@ -99,10 +132,6 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
     quoted = fixture.map{ |x| "-f '#{x}'" }.join " "
     command = "helm template #{quoted} '#{chart}'"
     error = "Error checking #{chart}, value files: #{fixture}"
-#  elsif fixture != nil
-#    command = "helm template -f '#{fixture}' '#{chart}'"
-#    fixture_name = File.basename(fixture, '.yaml')
-#    error = "Error checking #{chart} (fixture #{fixture_name})"
   else
     command = "helm template '#{chart}'"
     error = "Error checking #{chart}"
@@ -158,28 +187,50 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
 end
 
 
-def parse_helmfile(filename)
-  charts = {}
-  helmfile_dir = File.dirname(filename)
-  data = File.read(filename)
-  helmfile_data = YAML.safe_load(data)
-  helmfile_data['releases'].each do |release|
-    chart = release['chart'].gsub(/^#{HELM_REPO}/, 'charts')
-    charts[chart] ||= []
-    release['values'].each do |val|
-      # We can't test private files, so we use a stub in those cases.
-      if val.include? "private/"
-        private_stub = "#{chart}/#{PRIVATE_STUB}"
-        if File.exists? private_stub
-          charts[chart] << private_stub
-        end
-      else
-        charts[chart] << File.join(helmfile_dir, val)
+def validate_helmfile_full(filepath, is_new)
+  # parses an helmfile and returns the status of running 'helmfile template'
+  # for all environments.
+  # The return data are organized as follows:
+  #  {environment: true/false}
+  # Do everything in a tempdir
+  results = {}
+  dir_to_copy, file = File.split filepath
+  Dir.mktmpdir do |dir|
+    # Copy the original dir files to the tmpdir
+    FileUtils.cp_r "#{dir_to_copy}/.", dir
+    filename = File.join dir, file
+    data = File.read(filename)
+    # Copy the fixtures file, if it exists, to private/secrets.yaml
+    fixtures = File.join(dir, '.fixtures.yaml')
+    if File.exists? fixtures
+      private = File.join dir, 'private', 'secrets.yaml'
+      FileUtils.mkdir File.dirname(private)
+      FileUtils.cp fixtures, private
+    end
+    # Find all the environments defined in the chart.
+    if not is_new
+      envs = ['default']
+    else
+      ok, data = _exec "helmfile -e staging -f #{filename} build", nil, true
+      # If we can't run helmfile build, we need to bail out early.
+      return {'staging' => false} unless ok
+      helmfile_raw_data = YAML.safe_load(data)
+      envs = helmfile_raw_data['environments'].keys
+    end
+    # now for each environment, build the list of
+    # helm commands to run
+    envs.each do |env|
+      ok, out = _exec "helmfile -e #{env} -f #{filename} lint"
+      if !ok
+        puts(out) unless ok
       end
+      results[env] = ok
+      # TODO: feed the output of helmfile template to kubeyaml?
     end
   end
-  charts
+  results
 end
+
 
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
@@ -218,22 +269,34 @@ desc 'Runs helm template using the helmfile values'
 task :validate_deployments do
   results = {}
   deployments = FileList.new(HELMFILE_GLOB)
+  # Do not overwhelm the charts repo,
+  # run at most 3 threads at once
+  tp = ThreadPool.new(nthreads: 3)
+  mutex = Mutex.new
   deployments.each do |helmfile|
-    radix, deployment = File.split(File.dirname(helmfile))
-    _, cluster = File.split(radix)
-    # Skip the example, shall we
-    next if deployment == '_example_'
-    charts = parse_helmfile helmfile
-    if charts.length == 1
-      chart, values = charts.first
-      results["#{deployment}/#{cluster}"] = check_template chart, values
-    else
-      charts.each do |chart, values|
-        results["#{deployment}/#{cluster} => #{chart}"] = check_template chart, values
+    tp.run do
+      radix, deployment = File.split(File.dirname(helmfile))
+      # Skip the example, and env-wide helmfiles
+      next if ['_example_', 'eqiad', 'codfw', 'staging'].include? deployment
+      is_new = (radix =~ /services$/)
+      deployment_results = validate_helmfile_full helmfile, is_new
+      # Separate old-style and new-style helmfile stuff.
+      if is_new
+        res = deployment_results
+      else
+        _, cluster = File.split(radix)
+        res = {cluster => deployment_results['default']}
+      end
+      mutex.synchronize do
+        res.each do |cluster, outcome|
+          results["#{deployment}/#{cluster}"] = outcome
+        end
       end
     end
   end
+  tp.join
   pprint "Helmfile deployments check summary:", results
+  raise_if_failed results
 end
 
 desc 'Validate the envoy configuration'
