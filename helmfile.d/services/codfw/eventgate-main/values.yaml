@@ -45,6 +45,21 @@ main_app:
     - /mediawiki/revision/create/1.1.0
     topic_prefix: codfw.
 
+    # Request static stream config during startup from the EventStreamConfig extension
+    # MW API endpoint for all streams with destination_event_service == eventgate-main
+    # We use meta.wikimedia.org here as the default stream configuration wiki.
+    # Streams can be configured per wiki in mediawiki-config, but they should always be at
+    # least configured with a stream name and schema_title available from meta.wikimedia.org.
+    # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
+    # NOTE: we need all_settings, otherwise we will not receive the stream's schema_title, which
+    # is what EventGate needs to verify that an event of a given schema is allowed in a stream.
+    stream_config_uri: 'https://api-ro.discovery.wmnet/w/api.php?format=json&action=streamconfigs&all_settings=true&constraints=destination_event_service=eventgate-main'
+    stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
+    # Only request stream configs once at startup.
+    stream_config_is_dynamic: false
+    # Expect the stream -> settings map in the response at this subobject key
+    stream_config_object_path: streams
+
     # If test_events is set, EventGate will set up a /v1/_test/events
     # route that will process these test_events as if they were POSTed
     # to /v1/events. This is used for the k8s readinessProbe.
@@ -61,50 +76,6 @@ main_app:
           # make sure this is configured in stream config if you are using it.
           stream: eventgate-main.test.event
 
-  stream_config:
-    /^mediawiki\.job\..+/:
-      schema_title: mediawiki/job
-    mediawiki.centralnotice.campaign-change:
-      schema_title: mediawiki/centralnotice/campaign/change
-    mediawiki.centralnotice.campaign-create:
-      schema_title: mediawiki/centralnotice/campaign/create
-    mediawiki.centralnotice.campaign-delete:
-      schema_title: mediawiki/centralnotice/campaign/delete
-    mediawiki.page-create:
-      schema_title: mediawiki/revision/create
-    mediawiki.page-delete:
-      schema_title: mediawiki/page/delete
-    mediawiki.page-links-change:
-      schema_title: mediawiki/page/links-change
-    mediawiki.page-move:
-      schema_title: mediawiki/page/move
-    mediawiki.page-properties-change:
-      schema_title: mediawiki/page/properties-change
-    mediawiki.page-restrictions-change:
-      schema_title: mediawiki/page/restrictions-change
-    mediawiki.page-suppress:
-      schema_title: mediawiki/page/delete
-    mediawiki.page-undelete:
-      schema_title: mediawiki/page/undelete
-    mediawiki.recentchange:
-      schema_title: mediawiki/recentchange
-    mediawiki.revision-create:
-      schema_title: mediawiki/revision/create
-    mediawiki.revision-score:
-      schema_title: mediawiki/revision/score
-    mediawiki.revision-tags-change:
-      schema_title: mediawiki/revision/tags-change
-    mediawiki.revision-visibility-change:
-      schema_title: mediawiki/revision/visibility-change
-    mediawiki.user-blocks-change:
-      schema_title: mediawiki/user/blocks-change
-    resource_change:
-      schema_title: resource_change
-    resource-purge:
-      schema_title: resource_change
-    # Produced by restbase
-    change-prop.transcludes.resource-change:
-      schema_title: resource_change
 networkpolicy:
   egress:
     enabled: false
