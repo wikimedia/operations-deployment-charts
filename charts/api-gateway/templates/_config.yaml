@@ -111,6 +111,54 @@ static_resources:
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: restbase_cluster
+                  rate_limits: &api_rate_limits_config
+                    # For authenticated requests, the following descriptor is produced:
+                    # - {value: ("client_id","<cid>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
+                    # Applying limit/unit for client_id/user_id pair.
+                    #
+                    # If JWT is absent, no descriptor generated.
+                    # If override is missing, descriptor is ignored since it's not configured in the service
+                    - stage: 0
+                      actions:
+                        - dynamic_metadata:
+                            descriptor_key: client_id
+                            metadata_key:
+                              key: envoy.filters.http.jwt_authn
+                              path:
+                                - key: jwt_payload
+                                - key: aud
+                        - dynamic_metadata:
+                            descriptor_key: user_id
+                            # TODO: envoy 1.16 default_value: anon - still works,
+                            # some corner cases might exist when the limit is not applied for anon
+                            metadata_key:
+                              key: envoy.filters.http.jwt_authn
+                              path:
+                                - key: jwt_payload
+                                - key: sub
+                      limit:
+                        dynamic_metadata:
+                          metadata_key:
+                            key: envoy.filters.http.jwt_authn
+                            path:
+                              - key: jwt_payload
+                              - key: ratelimit
+                    # For authenticated requests emit the following descriptor:
+                    # - {value: ("client_id_anon_fallback","<class>")("remote_address","123.123.123.123)}
+                    # which will be ignored by the service, since we only match on "anon" class.
+                    # For unauthenticated requests <class> would fallback to "anon", and the statically
+                    # configured limit will kick in.
+                    - stage: 0
+                      actions:
+                        - dynamic_metadata:
+                            descriptor_key: client_id_anon_fallback
+                            #TODO: envoy 1.16 default_value: anon - until envoy 1.16 anon limits will not be applied
+                            metadata_key:
+                              key: envoy.filters.http.jwt_authn
+                              path:
+                                - key: jwt_payload
+                                - key: aud
+                        - remote_address: {}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
               - match:
                   safe_regex:
@@ -132,6 +180,9 @@ static_resources:
                     substitution: '{{ $route_opts.path }}'
                   cluster: mwapi_cluster
                   host_rewrite_header: "x-internal-host"
+                  # TODO: switch to virtual host level rate limits once
+                  # we figure out how to exclude /w and /wiki
+                  rate_limits: *api_rate_limits_config
 {{- end }}
           http_filters:
           - name: envoy.health_check
@@ -188,7 +239,7 @@ static_resources:
           - name: envoy.filters.http.ratelimit
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-              domain: wikipedia
+              domain: wikimedia
               stage: 0
               timeout: 0.25s
               rate_limit_service:

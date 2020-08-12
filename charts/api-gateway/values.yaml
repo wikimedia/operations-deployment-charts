@@ -29,6 +29,12 @@ main_app:
   ratelimiter:
     enabled: false
     version: latest
+    anon_limit:
+      requests_per_unit: 500
+      unit: HOUR
+    default_limit:
+      requests_per_unit: 5000
+      unit: HOUR
 
   # populated from secrets
   jwks:

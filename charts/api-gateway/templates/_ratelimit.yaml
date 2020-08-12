@@ -1,20 +1,18 @@
 {{- define "ratelimit.config" }}
-domain: wikipedia
+domain: wikimedia
 descriptors:
-  - key: client-id
+  - key: user_class_anon_fallback
+    value: anon
     descriptors:
-      - key: class
-        value: degenerates
+      - key: remote_address
         rate_limit:
-          requests_per_unit: 1
-          unit: second
-      - key: class
-        value: anonymous
+          requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
+          unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
+  # Normally would be overriden by JWT override set OAuthRateLimiter
+  - key: client_id
+    descriptors:
+      - key: user_id
         rate_limit:
-          requests_per_unit: 0
-          unit: second
-      - key: class # default behavior if class value isn't degenerates or anonymous
-        rate_limit:
-          requests_per_unit: 0
-          unit: second
+          requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
+          unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
 {{- end }}

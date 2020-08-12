@@ -150,21 +150,30 @@ spec:
           command: ["/usr/bin/ratelimit"]
           ports:
             - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
           env:
             - name: REDIS_URL
               value: {{ .Values.main_app.ratelimiter.redis_host }}:{{ .Values.main_app.ratelimiter.redis_port }}
             - name: LOG_LEVEL
               value: {{ .Values.main_app.ratelimiter.log_level }}
             - name: RUNTIME_ROOT
-              value: /srv/ratelimit
+              value: /etc
             - name: RUNTIME_SUBDIRECTORY
               value: ratelimit
             - name: USE_STATSD
               value: "{{ .Values.monitoring.enabled }}"
           volumeMounts:
             - name: {{ .Release.Name }}-ratelimit-config
-              mountPath: /srv/ratelimit/ratelimit/config.yaml
+              mountPath: /etc/ratelimit/config.yaml
               subPath: config.yaml
+              readOnly: true
 {{- end }}
       volumes:
         - name: {{ .Release.Name }}-base-config
