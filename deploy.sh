@@ -44,6 +44,9 @@ main() {
         help
     fi
 
+    #T259684
+    source /etc/profile.d/kube-env.sh
+
     SERVICE_NAME="$1"
     ENVIRONMENT_NAME="$2"
 
