@@ -226,7 +226,8 @@ spec: &spec
                       method: post
                       uri: '/sys/queue/events'
                       body:
-                        - meta:
+                        - $schema: '/resource_change/1.0.0'
+                          meta:
                             # Don't encode title since it should be already encoded
                             uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{{ `{{match.meta.uri[1]}}` }}'
                             stream: '{{ $purge_stream }}'
@@ -281,7 +282,8 @@ spec: &spec
                   method: 'post'
                   uri: '/sys/queue/events'
                   body:
-                    - meta:
+                    - $schema: '/resource_change/1.0.0'
+                      meta:
                         uri: '{{`{{message.meta.uri}}`}}'
                         stream: '{{ $purge_stream }}'
                         domain: '{{`{{message.meta.domain}}`}}'
@@ -525,23 +527,27 @@ spec: &spec
                   - method: 'post'
                     uri: '/sys/queue/events'
                     body:
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
@@ -583,43 +589,51 @@ spec: &spec
                   - method: post
                     uri: '/sys/queue/events'
                     body:
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/summary/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-remaining/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - meta:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
