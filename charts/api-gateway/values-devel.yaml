@@ -26,7 +26,10 @@ main_app:
       path: /healthz
       port: 8087
 
+  strip_api_cookies: true
+
   dev_redis: true
+
   endpoints:
     mwapi_cluster:
       tls: false

@@ -48,6 +48,9 @@ main_app:
   access_log:
     type: stdout
 
+  # Strip cookies from API route requests and responses
+  strip_api_cookies: false
+
   # populated from secrets
   jwks:
     kid: ""

@@ -1,4 +1,6 @@
 {{- define "config.app" }}
+{{- $strip_cookies  := .Values.main_app.strip_api_cookies -}}
+
 # api gateway envoy config
 {{ if .Values.main_app.admin_port -}}
 admin:
@@ -133,6 +135,10 @@ static_resources:
                 route:
                   cluster: appserver_cluster
               - name: feed
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+{{- end }}
                 match:
                   prefix: "/feed/"
                 route:
@@ -195,6 +201,10 @@ static_resources:
                         - remote_address: {}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
               - name: core
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+{{- end }}
                 match:
                   safe_regex:
                     google_re2: {}
@@ -268,6 +278,7 @@ static_resources:
                     internal_host = metadata:get("dst_host")
                   end
                   request_handle:headers():add("x-internal-host", internal_host)
+
                 end
 {{- end }}
 {{- if .Values.main_app.ratelimiter }}
