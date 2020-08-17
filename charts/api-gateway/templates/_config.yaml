@@ -243,9 +243,9 @@ static_resources:
               stage: 0
               timeout: 0.25s
               rate_limit_service:
+                transport_api_version: V3
                 grpc_service:
                   envoy_grpc:
-                    #TODO move to using v3 protocol once ratelimit has been updated.
                     cluster_name: rate_limit_cluster
 {{- end }}
           - name: envoy.filters.http.cors
