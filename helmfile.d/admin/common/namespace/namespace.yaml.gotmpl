@@ -7,7 +7,7 @@ bases:
 {{- if .Environment.Values }}
 releases:
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-namespace
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
     - templates:

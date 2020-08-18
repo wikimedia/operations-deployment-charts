@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: zotero
-    chart: stable/zotero
+    chart: wmf-stable/zotero
     missingFileHandler: Warn
     values:
     - "values.yaml"

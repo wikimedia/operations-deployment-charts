@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: mobileapps
-    chart: stable/mobileapps
+    chart: wmf-stable/mobileapps
     missingFileHandler: Warn
     values:
       - "values.yaml"

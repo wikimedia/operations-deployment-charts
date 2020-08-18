@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: wikifeeds
-    chart: stable/wikifeeds
+    chart: wmf-stable/wikifeeds
     missingFileHandler: Warn
     values:
     - "values.yaml"

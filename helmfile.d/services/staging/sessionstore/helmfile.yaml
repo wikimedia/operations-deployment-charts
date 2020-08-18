@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: sessionstore
-    chart: stable/kask
+    chart: wmf-stable/kask
     missingFileHandler: Warn
     values:
     - "values.yaml"

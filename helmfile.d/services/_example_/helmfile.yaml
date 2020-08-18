@@ -11,7 +11,7 @@ releases:
   # Published chart example
   - name: RELEASE                            # name of this release
     namespace: DEFAULT                       # target namespace
-    chart: stable/DEFAULT              # the chart being installed to create this release, referenced by relative path to local chart
+    chart: wmf-stable/DEFAULT              # the chart being installed to create this release, referenced by relative path to local chart
     #version: latest
     missingFileHandler: Warn
     values:

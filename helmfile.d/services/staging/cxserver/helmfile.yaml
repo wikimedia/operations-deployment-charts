@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: cxserver
-    chart: stable/cxserver
+    chart: wmf-stable/cxserver
     missingFileHandler: Warn
     values:
     - "values.yaml"

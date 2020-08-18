@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: production
     namespace: proton
-    chart: stable/chromium-render
+    chart: wmf-stable/chromium-render
     missingFileHandler: Warn
     values:
       - "values.yaml"

@@ -3,7 +3,7 @@ bases:
 
 releases:
   - name: rbac-deploy-clusterrole
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - ../../common/rbac/rbac.yaml

@@ -3,7 +3,7 @@ bases:
 
 releases:
   - name: podsecuritypolicy-privilege
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -36,7 +36,7 @@ releases:
             fsGroup:
               rule: 'RunAsAny'
   - name: podsecuritypolicy-restricted
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -90,7 +90,7 @@ releases:
                   max: 65535
             readOnlyRootFilesystem: false
   - name: rbac-clusterrole-use-psp-privileged
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -106,7 +106,7 @@ releases:
             resourceNames:
             - privileged
   - name: rbac-clusterrole-use-psp-restricted
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -122,7 +122,7 @@ releases:
             resourceNames:
             - restricted
   - name: privileged-psp-rolebinding
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:

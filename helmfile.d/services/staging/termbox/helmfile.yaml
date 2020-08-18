@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: test
     namespace: termbox
-    chart: stable/termbox
+    chart: wmf-stable/termbox
     missingFileHandler: Warn
     values:
     - "values/test.yaml"
@@ -21,7 +21,7 @@ releases:
 
   - name: staging
     namespace: termbox
-    chart: stable/termbox
+    chart: wmf-stable/termbox
     missingFileHandler: Warn
     values:
     - "/etc/helmfile-defaults/service-proxy.yaml"

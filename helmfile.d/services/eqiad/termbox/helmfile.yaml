@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: production
     namespace: termbox
-    chart: stable/termbox
+    chart: wmf-stable/termbox
     missingFileHandler: Warn
     values:
     - "values.yaml"

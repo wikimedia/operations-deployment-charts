@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: production
     namespace: citoid
-    chart: stable/citoid
+    chart: wmf-stable/citoid
     missingFileHandler: Warn
     values:
     - "values.yaml"

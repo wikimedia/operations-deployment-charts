@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: production
     namespace: echostore
-    chart: stable/kask
+    chart: wmf-stable/kask
     missingFileHandler: Warn
     values:
     - "values.yaml"

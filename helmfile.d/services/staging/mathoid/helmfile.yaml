@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: mathoid
-    chart: stable/mathoid
+    chart: wmf-stable/mathoid
     missingFileHandler: Warn
     values:
     - "values.yaml"

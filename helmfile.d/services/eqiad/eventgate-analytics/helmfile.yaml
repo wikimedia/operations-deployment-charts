@@ -10,7 +10,7 @@ releases:
 
   - name: production
     namespace: eventgate-analytics
-    chart: stable/eventgate
+    chart: wmf-stable/eventgate
     missingFileHandler: Warn
     values:
     - "values.yaml"
@@ -24,7 +24,7 @@ releases:
   - name: canary
     installed: false
     namespace: eventgate-analytics
-    chart: stable/eventgate
+    chart: wmf-stable/eventgate
     missingFileHandler: Warn
     values:
     - "values.yaml"

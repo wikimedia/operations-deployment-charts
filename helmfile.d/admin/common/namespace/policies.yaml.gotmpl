@@ -10,7 +10,7 @@ bases:
 
 releases:
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-limitranges
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -44,7 +44,7 @@ releases:
                 type: Pod
 
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-resourcequota
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:

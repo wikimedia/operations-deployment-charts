@@ -7,7 +7,7 @@ bases:
 {{- if .Environment.Values }}
 releases:
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-deploy-rolebinding
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -27,7 +27,7 @@ releases:
             name: {{ .Environment.Values | getOrNil "deployUser" | default .Environment.Name }}
 
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-psp-rolebinding
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
       - templates:
@@ -51,7 +51,7 @@ releases:
 
 
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-tiller-sa
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
     - templates:
@@ -63,7 +63,7 @@ releases:
             namespace: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}
 
   - name: {{ .Environment.Values | getOrNil "namespaceName" | default .Environment.Name }}-tiller-rolebinding
-    chart: stable/raw
+    chart: wmf-stable/raw
     namespace: kube-system
     values:
     - templates:

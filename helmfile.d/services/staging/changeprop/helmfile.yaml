@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: changeprop
-    chart: stable/changeprop
+    chart: wmf-stable/changeprop
     missingFileHandler: Warn
     values:
     - "values.yaml"

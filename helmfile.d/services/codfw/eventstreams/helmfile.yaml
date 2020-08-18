@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: production
     namespace: eventstreams
-    chart: stable/eventstreams
+    chart: wmf-stable/eventstreams
     missingFileHandler: Warn
     values:
     - "values.yaml"
@@ -22,7 +22,7 @@ releases:
 
   - name: canary
     namespace: eventstreams
-    chart: stable/eventstreams
+    chart: wmf-stable/eventstreams
     missingFileHandler: Warn
     values:
     - "values.yaml"

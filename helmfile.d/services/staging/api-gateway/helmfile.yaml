@@ -9,7 +9,7 @@ helmDefaults:
 releases:
   - name: staging
     namespace: api-gateway
-    chart: stable/api-gateway
+    chart: wmf-stable/api-gateway
     missingFileHandler: Warn
     values:
     - "values.yaml"
