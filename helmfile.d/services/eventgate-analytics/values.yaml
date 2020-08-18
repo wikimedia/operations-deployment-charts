@@ -7,9 +7,6 @@ tls:
   enabled: true
   public_port: 4592 # the port where TLS will be exposed
   image_version: 1.14.4-1
-resources:
-  replicas: 20
-
 main_app:
   name: eventgate-analytics
   version: 2020-08-12-144657-production
@@ -25,7 +22,6 @@ main_app:
     - /mediawiki/api/request/0.0.1
     - /mediawiki/cirrussearch/request/0.0.1
     - /sparql/query/1.0.0
-    topic_prefix: eqiad.
 
     # /srv/service/schemas/event/{primary,secondary} is in the eventgate-wikmiedia image cloned at
     # image build time from https://gerrit.wikimedia.org/r/schemas/event/{primary,secondary}
