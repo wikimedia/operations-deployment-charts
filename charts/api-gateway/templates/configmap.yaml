@@ -103,6 +103,7 @@ metadata:
 data:
   td-agent-bit.conf: |- {{ include "fluent-bit.config" . | indent 4 }}
   td-agent-parsers.conf: |- {{ include "fluent-bit-parsers.config" . | indent 4 }}
+  td-agent-filter.lua: |- {{ include "fluent-bit.lua" . | indent 4 }}
 
 {{ end -}}
 {{ end -}}

@@ -9,6 +9,13 @@
     Path /var/log/access.log
     Parser json
 
+# TODO: workaround for T260820
+[FILTER]
+    Name lua
+    Match *
+    Script /etc/td-agent-bit/td-agent-filter.lua
+    Call replace_client_id
+
 [FILTER]
     Name nest
     Match *
