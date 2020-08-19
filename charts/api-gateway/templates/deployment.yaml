@@ -147,7 +147,6 @@ spec:
         - name: {{ .Release.Name }}-ratelimit
           image: {{ .Values.docker.registry }}/ratelimit:{{ .Values.main_app.ratelimiter.version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
-          command: ["/usr/bin/ratelimit"]
           ports:
             - containerPort: 8081
           readinessProbe:
