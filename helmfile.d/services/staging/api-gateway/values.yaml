@@ -16,9 +16,10 @@ main_app:
     type: eventgate
     image_version: 1.5.3-0
     debug: true
+    tls: true
     event_service:
       host: staging.svc.eqiad.wmnet
-      port: 35192
+      port: 4592
       path: /v1/events?hasty=true
 
   endpoints:

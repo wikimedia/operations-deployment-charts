@@ -55,5 +55,11 @@
     Port {{ .Values.main_app.access_log.event_service.port }}
     URI {{ .Values.main_app.access_log.event_service.path }}
     Header Content-Type application/json
+{{ if .Values.main_app.access_log.tls }}
+    tls On
+    tls.verify On
+    tls.crt_file /etc/td-agent-bit-ssl/service.crt
+    tls.key_file /etc/td-agent-bit-ssl/service.key
+{{- end }}
 
 {{ end }}

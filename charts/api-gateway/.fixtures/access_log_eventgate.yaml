@@ -1,8 +1,21 @@
+# access_log TLS requires general TLS to be enabled
+tls:
+  enabled: true
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
 main_app:
   access_log:
     type: eventgate
     image_version: 1.5.3-0
     debug: true
+    tls: true
     event_service:
       host: 127.0.0.1
       port: 80

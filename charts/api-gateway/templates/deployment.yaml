@@ -199,6 +199,14 @@ spec:
             - name: {{ .Release.Name }}-fluent-bit-config
               mountPath: /etc/td-agent-bit
               readOnly: true
+{{- if .Values.main_app.access_log.tls }}
+{{- if not .Values.tls.enabled }}
+{{ fail "Cannot enable access_log TLS if general TLS not enabled" -}}
+{{- end }}
+            - name: {{ .Release.Name }}-tls-certs-volume
+              mountPath: /etc/td-agent-bit-ssl
+              readOnly: true
+{{- end }}
 {{- end }}
 {{- end }}
       volumes:

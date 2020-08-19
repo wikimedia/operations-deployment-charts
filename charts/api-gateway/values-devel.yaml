@@ -19,13 +19,7 @@ main_app:
       unit: HOUR
 
   access_log:
-    type: eventgate
-    event_service:
-      host: eventgate.discovery.wmnet
-      port: 80
-      path: /v1/events?hasty=true
-    image_version: latest
-    debug: true
+    type: stdout
 
   readiness_probe:
     httpGet:
@@ -55,8 +49,6 @@ main_app:
   jwks:
     kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="
     key: "wpQqfUk_vTLbbthUWhLaJ9wo4YZXWJjGmO8SFaEb0opgEXu_sP98dWzErQ04W2u0WpImfn1gqUEuAlnrgPXFyrIHD_WAJ5hFhdse5zNscJ9979yNDoXPlu20JQ91inYj592tFRHJQ9R9-jfSS2wgslWFXSZuOpY74EpHJcoGiCSwghLQDIdp5dl_VurfHNhOpWOAfp5zxVL-Ix5PuRzDvze0zA9GZH5-PEX1UgCNS0WyKW5Zt7hoRGNWU6hMNfVY6n6HThwLMq41GcyMwQ_zqOARGFOUrVQZY5yoCkxetTWHUj3qsfx_oq_ZQ3O_k95waKYMtgYwTKeBxbiunFfthw"
-
-
 
 nutcracker:
   enabled: true
