@@ -19,7 +19,13 @@ main_app:
       unit: HOUR
 
   access_log:
-    type: stdout
+    type: eventgate
+    event_service:
+      host: eventgate.discovery.wmnet
+      port: 80
+      path: /v1/events?hasty=true
+    image_version: latest
+    debug: true
 
   readiness_probe:
     httpGet:

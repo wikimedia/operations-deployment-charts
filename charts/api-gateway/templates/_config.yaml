@@ -82,16 +82,13 @@ static_resources:
                   meta.uri: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
                   meta.request_id: "%REQ(X-REQUEST-ID)%"
                   meta.dt: "%START_TIME(%FT%TZ)%"
-                  meta.domain: "%REQ(:HOST)%"
+                  meta.domain: "%REQ(HOST)%"
                   meta.stream: "api-gateway.request"
                   http.method: "%REQ(:METHOD)%"
                   http.protocol: "%PROTOCOL%"
                   http.status_code: "%RESPONSE_CODE%"
                   http.client_ip: "%REQ(X-FORWARDED-FOR)%"
                   http.request_headers.user-agent: "%REQ(USER-AGENT)%"
-                  http.request_headers.referer: "%REQ(REFERER)%"
-                  http.request_headers.accept-language: "%REQ(ACCEPT-LANGUAGE)%"
-                  backend_time_ms: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
                   total_time_ms: "%DURATION%"
                   client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:cid)%"
                   route: "%ROUTE_NAME%"
@@ -103,15 +100,18 @@ static_resources:
             - name: api_wikimedia_org_vhost
               domains: ["api.wikimedia.org", "api.wikimedia.org:*", "staging.svc.eqiad.wmnet", "staging.svc.eqiad.wmnet:*"]
               routes:
-              - match:
+              - name: api-portal
+                match:
                   prefix: "/wiki/"
                 route:
                   cluster: appserver_cluster
-              - match:
+              - name: api-portal
+                match:
                   prefix: "/w/"
                 route:
                   cluster: appserver_cluster
-              - match:
+              - name: feed
+                match:
                   prefix: "/feed/"
                 route:
                   cors:
@@ -172,7 +172,8 @@ static_resources:
                                 - key: aud
                         - remote_address: {}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
-              - match:
+              - name: core
+                match:
                   safe_regex:
                     google_re2: {}
                     regex: '^{{ $api_route }}$'

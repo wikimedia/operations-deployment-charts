@@ -33,6 +33,13 @@
     Nest_under http
     Remove_prefix http.
 
+{{ if .Values.main_app.access_log.debug -}}
+[OUTPUT]
+    Name stdout
+    Match *
+    Format json
+{{- end }}
+
 [OUTPUT]
     Name http
     Match *
