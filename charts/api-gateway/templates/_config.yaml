@@ -83,7 +83,7 @@ static_resources:
                   meta.request_id: "%REQ(X-REQUEST-ID)%"
                   meta.dt: "%START_TIME(%FT%TZ)%"
                   meta.domain: "%REQ(:HOST)%"
-                  meta.stream: "api-gateway-request"
+                  meta.stream: "api-gateway.request"
                   http.method: "%REQ(:METHOD)%"
                   http.protocol: "%PROTOCOL%"
                   http.status_code: "%RESPONSE_CODE%"
