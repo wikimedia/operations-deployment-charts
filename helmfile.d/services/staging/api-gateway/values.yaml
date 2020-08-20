@@ -16,10 +16,10 @@ main_app:
     type: eventgate
     image_version: 1.5.3-0
     debug: true
-    tls: true
+    tls: false # Can not do TLS in staging T260917
     event_service:
       host: staging.svc.eqiad.wmnet
-      port: 4592
+      port: 35192
       path: /v1/events?hasty=true
 
   endpoints:
