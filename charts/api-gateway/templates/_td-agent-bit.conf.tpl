@@ -57,7 +57,12 @@
     Header Content-Type application/json
 {{ if .Values.main_app.access_log.tls }}
     tls On
+{{- if .Values.puppet_ca_crt }}
     tls.verify On
+    tls.ca_file /etc/td-agent-bit/puppetca.crt.pem
+{{- else }}
+    tls.verify Off
+{{- end }}
     tls.crt_file /etc/td-agent-bit-ssl/service.crt
     tls.key_file /etc/td-agent-bit-ssl/service.key
 {{- end }}
