@@ -55,7 +55,7 @@
     Port {{ .Values.main_app.access_log.event_service.port }}
     URI {{ .Values.main_app.access_log.event_service.path }}
     Header Content-Type application/json
-{{ if .Values.main_app.access_log.tls }}
+{{- if .Values.main_app.access_log.tls }}
     tls On
 {{- if .Values.puppet_ca_crt }}
     tls.verify On

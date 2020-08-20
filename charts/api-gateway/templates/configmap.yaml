@@ -104,10 +104,10 @@ data:
   td-agent-bit.conf: |- {{ include "fluent-bit.config" . | indent 4 }}
   td-agent-parsers.conf: |- {{ include "fluent-bit-parsers.config" . | indent 4 }}
   td-agent-filter.lua: |- {{ include "fluent-bit.lua" . | indent 4 }}
-  {{- if .Values.puppet_ca_crt }}
+{{- if .Values.puppet_ca_crt }}
   puppetca.crt.pem: |-
-  {{ .Values.puppet_ca_crt | indent 4 }}
-  {{ end -}}
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{ end -}}
 {{ end -}}
 {{ end -}}
 
