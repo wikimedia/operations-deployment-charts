@@ -252,10 +252,10 @@ static_resources:
                   if lua_lang ~= '' and lua_lang ~= nil then
                     site_lang = string.match(path, lua_lang)
                     internal_host = string.gsub(metadata:get("dst_host"), "LANGUAGE", site_lang)
-                    request_handle:headers():add("x-internal-host", internal_host)
                   else
                     internal_host = metadata:get("dst_host")
                   end
+                  request_handle:headers():add("x-internal-host", internal_host)
                 end
 {{- end }}
 {{- if .Values.main_app.ratelimiter }}
