@@ -94,12 +94,22 @@ static_resources:
                   route: "%ROUTE_NAME%"
 {{- end }}
           use_remote_address: true
+          local_reply_config:
+            body_format:
+              json_format:
+                httpCode: "%RESPONSE_CODE%"
+                httpReason: "%LOCAL_REPLY_BODY%"
           route_config:
             name: api_wikimedia_org_route
             virtual_hosts:
             - name: api_wikimedia_org_vhost
               domains: ["api.wikimedia.org", "api.wikimedia.org:*", "staging.svc.eqiad.wmnet", "staging.svc.eqiad.wmnet:*"]
               routes:
+              - name: api-portal-redirect
+                match:
+                  path: '/'
+                redirect:
+                  path_redirect: '/wiki/'
               - name: api-portal
                 match:
                   prefix: "/wiki/"
