@@ -95,6 +95,18 @@ static_resources:
 {{- end }}
           use_remote_address: true
           local_reply_config:
+            # Override the empty %LOCAL_REPLY_BODY% for 404 to "Not Found"
+            mappers:
+              - filter:
+                  status_code_filter:
+                    comparison:
+                      op: EQ
+                      value:
+                        default_value: 404
+                        runtime_key: unused_key_404
+                body:
+                  inline_string: "Not Found"
+            # Default format applied to all error responses
             body_format:
               json_format:
                 httpCode: "%RESPONSE_CODE%"
