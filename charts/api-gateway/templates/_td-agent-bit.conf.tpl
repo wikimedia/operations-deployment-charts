@@ -62,8 +62,6 @@
 {{- else }}
     tls.verify Off
 {{- end }}
-    tls.crt_file /etc/td-agent-bit-ssl/service.crt
-    tls.key_file /etc/td-agent-bit-ssl/service.key
 {{- end }}
 
 {{ end }}
