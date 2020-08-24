@@ -360,6 +360,8 @@ static_resources:
             typed_config: {}
           route_config:
           {{- if $listener.xfp }}
+            request_headers_to_remove:
+            - x-forwarded-proto
             request_headers_to_add:
             - header:
                key: "x-forwarded-proto"
