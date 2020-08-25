@@ -13,4 +13,4 @@ data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
-{{ template "tls.config" . }}
+{{ include "tls.config" . }}

@@ -20,4 +20,4 @@ metadata:
   name: config-{{ .Release.Name }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
-{{ template "tls.config" . }}
+{{ include "tls.config" . }}

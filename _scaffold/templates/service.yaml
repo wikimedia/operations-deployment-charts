@@ -1,4 +1,4 @@
-{{ template "tls.service" . }}
+{{ include "tls.service" . }}
 {{ if not .Values.tls.enabled }}
 ---
 apiVersion: v1
