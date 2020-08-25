@@ -1,5 +1,5 @@
 {{- define "config.app" }}
-{{- $strip_cookies  := .Values.main_app.strip_api_cookies -}}
+{{- $strip_cookies := .Values.main_app.strip_api_cookies -}}
 
 # api gateway envoy config
 {{ if .Values.main_app.admin_port -}}
