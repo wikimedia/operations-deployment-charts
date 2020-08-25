@@ -6,8 +6,8 @@ config:
     LANGUAGES_CACHE_MAX_AGE: 300000
     MEDIAWIKI_REQUEST_TIMEOUT: 3000
     MESSAGES_CACHE_MAX_AGE: 60000
-    WIKIBASE_REPO: https://www.wikidata.org/w
-    WIKIBASE_REPO_HOSTNAME_ALIAS: api-ro.discovery.wmnet
+    WIKIBASE_REPO: http://www.wikidata.org:6500/w
+    WIKIBASE_REPO_HOSTNAME_ALIAS: localhost
 docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
