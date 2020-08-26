@@ -199,18 +199,25 @@ def validate_helmfile_full(filepath, is_new)
     # Copy the original dir files to the tmpdir
     FileUtils.cp_r "#{dir_to_copy}/.", dir
     filename = File.join dir, file
-    data = File.read(filename)
-    # Copy the fixtures file, if it exists, to private/secrets.yaml
     fixtures = File.join(dir, '.fixtures.yaml')
-    if File.exists? fixtures
-      private = File.join dir, 'private', 'secrets.yaml'
-      FileUtils.mkdir File.dirname(private)
-      FileUtils.cp fixtures, private
-    end
+    source = File.read(filename)
+
     # Find all the environments defined in the chart.
     if not is_new
       envs = ['default']
+      # Copy the fixtures file, if it exists, to private/secrets.yaml
+      if File.exists? fixtures
+        private = File.join dir, 'private', 'secrets.yaml'
+        FileUtils.mkdir File.dirname(private)
+        FileUtils.cp fixtures, private
+      end
     else
+      # Patch helmfile so that .fixtures.yaml is used instead of
+      # /etc/helmfile-defaults/general-#{env}.yaml
+      if File.exists? fixtures
+        source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
+        File.write filename, source
+      end
       ok, data = _exec "helmfile -e staging -f #{filename} build", nil, true
       # If we can't run helmfile build, we need to bail out early.
       return {'staging' => false} unless ok
@@ -221,16 +228,13 @@ def validate_helmfile_full(filepath, is_new)
     # helm commands to run
     envs.each do |env|
       ok, out = _exec "helmfile -e #{env} -f #{filename} lint"
-      if !ok
-        puts(out) unless ok
-      end
+      puts(out) unless ok
       results[env] = ok
       # TODO: feed the output of helmfile template to kubeyaml?
     end
   end
   results
 end
-
 
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
