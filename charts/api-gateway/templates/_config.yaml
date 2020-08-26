@@ -191,7 +191,7 @@ static_resources:
                     - stage: 0
                       actions:
                         - dynamic_metadata:
-                            descriptor_key: client_id_anon_fallback
+                            descriptor_key: user_class_anon_fallback
                             #TODO: envoy 1.16 default_value: anon - until envoy 1.16 anon limits will not be applied
                             metadata_key:
                               key: envoy.filters.http.jwt_authn
@@ -279,6 +279,11 @@ static_resources:
                   end
                   request_handle:headers():add("x-internal-host", internal_host)
 
+                  -- TODO: envoy 1.16 - we should be relying on default value for the user_class_anon_fallback descriptor
+                  local jwt_filter_metadata = request_handle:streamInfo():dynamicMetadata():get("envoy.filters.http.jwt_authn")
+                  if (jwt_filter_metadata == nil or jwt_filter_metadata["jwt_payload"] == nil) then
+                    request_handle:streamInfo():dynamicMetadata():set("envoy.filters.http.jwt_authn", "jwt_payload", {aud="anon"})
+                  end
                 end
 {{- end }}
 {{- if .Values.main_app.ratelimiter }}
