@@ -1,23 +1,55 @@
-#default values to set for args along with dedicated keys that can be set by contributers, cli args take precedence over these
 helmDefaults:
-  tillerNamespace: DEFAULT
+  tillerNamespace: SERVICE_NAME
   verify: false
   atomic: true
   timeout: 600
   recreatePods: false
   force: false
+  args:
+    - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-{{ .Environment.Name }}.config"
 
-releases:
-  # Published chart example
-  - name: RELEASE                            # name of this release
-    namespace: DEFAULT                       # target namespace
-    chart: wmf-stable/DEFAULT              # the chart being installed to create this release, referenced by relative path to local chart
-    #version: latest
+templates:
+  default: &default
+    namespace: SERVICE_NAME
+    chart: wmf-stable/SERVICE_NAME
+    # This template gets applied for every release, all of which are applied in every environment
+    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
+    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
     missingFileHandler: Warn
     values:
-    - "values.yaml"             # Values file (relative path to manifest)
-    - "private/secrets.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values.yaml" # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/SERVICE_NAME/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
     hooks:
-    - events: ["presync"]
-      command: "helmfile_log_sal"
-      args: [ "{{`{{.HelmfileCommand}}`}}", "[${CLUSTER}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' ."]
+      - name: "log_sal"
+        events: ["presync"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+          ]
+
+releases:
+  - name: main
+    <<: *default
+  - name: canary
+    <<: *default
+  - name: test
+    <<: *default
+
+# Please note: you might not need to declare all of these releases. Most applications
+# might be fine just declaring "main" everywhere.
+environments:
+  staging:
+    values:
+      - releases: [main, test]
+  eqiad:
+    values:
+      - releases: [main, canary]
+  codfw:
+    values:
+      - releases: [main, canary]
