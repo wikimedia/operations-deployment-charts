@@ -12,6 +12,7 @@ releases:
     chart: wmf-stable/termbox
     missingFileHandler: Warn
     values:
+    - "/etc/helmfile-defaults/service-proxy.yaml"
     - "values.yaml"
     - "private/secrets.yaml"
     - "private/general.yaml"
