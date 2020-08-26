@@ -15,7 +15,17 @@ Which values are included varies depending on the cluster and release. So for ex
 - "/etc/helmfile-defaults/private/SERVICE_NAME/eqiad.yaml" # prod-specific secrets, controlled by SRE
 - "values-eqiad.yaml" # env-specific overrides
 - "values-main.yaml" # release-specific overrides
-``` 
+```
+
+# How to convert to the new layout
+We've recently switched to the previous helmfile layout to a new, more compact one. If you want to convert a deployment, follow these steps:
+
+- Run `helmfile_convert_diff.sh <deployment>`
+- If the service is pretty standard, it should run and generate 
+  the new-layout deployment in `<deployment>`, with the kubernetes catalogs for the various environments in `<deployment>/diffs`
+- If anything unexpected happens, the script will bail out and ask you to review your data before you proceed.
+- Once you've fixed what you want to fix, you can re-run the script, and it will only generate the catalogs for comparison
+- Fix discrepancies, and once you achieve zero diffs, you can deduplicate the values files, and generate diffs again to confirm you've not generated new issues.
 
 # How to add a new service here.
 - make a copy of the `_example_` directory here to a directory with the name of your new service
