@@ -188,7 +188,7 @@ end
 
 
 def validate_helmfile_full(filepath, is_new)
-  # parses an helmfile and returns the status of running 'helmfile template'
+  # parses an helmfile and returns the status of running 'helmfile lint'
   # for all environments.
   # The return data are organized as follows:
   #  {environment: true/false}
@@ -227,7 +227,11 @@ def validate_helmfile_full(filepath, is_new)
     # now for each environment, build the list of
     # helm commands to run
     envs.each do |env|
-      ok, out = _exec "helmfile -e #{env} -f #{filename} lint"
+      # --skip-deps sais it will "skip running `helm repo update` and
+      # `helm dependency build`". The latter might be a problem in cases where
+      # the charts/ directory is not commited to git. But currently this is not
+      # an issue and probably fixes a concurrency issue. See: T261313
+      ok, out = _exec "helmfile -e #{env} -f #{filename} lint --skip-deps"
       puts(out) unless ok
       results[env] = ok
       # TODO: feed the output of helmfile template to kubeyaml?
