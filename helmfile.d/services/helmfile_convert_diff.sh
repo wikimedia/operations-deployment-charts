@@ -25,6 +25,14 @@ copy_new_helmfile() {
 }
 
 copy_old_helmfiles() {
+    working_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ $working_branch == review* ]]; then
+        # This is a review branch, checkout the parent to copy old helmfiles from there
+        git checkout HEAD~1
+    else
+        working_branch=""
+    fi
+
     for cluster in $CLUSTERS; do
         cp -r "${CHARTS_ROOT}/$cluster/$DEPLOYMENT" "$cluster"
         pushd $cluster
@@ -33,6 +41,10 @@ copy_old_helmfiles() {
         fi
         popd
     done
+
+    if [ -n "$working_branch" ]; then
+        git checkout $working_branch
+    fi
 }
 
 scaffold_deployment() {
