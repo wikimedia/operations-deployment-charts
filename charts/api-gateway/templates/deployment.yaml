@@ -36,7 +36,6 @@ spec:
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
-        prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
         {{ if .Values.main_app.access_log -}}
         {{ if eq .Values.main_app.access_log.type "eventgate" -}}
@@ -183,6 +182,10 @@ spec:
               value: ratelimit
             - name: USE_STATSD
               value: "{{ .Values.monitoring.enabled }}"
+            - name: STATSD_HOST
+              value: "localhost"
+            - name: STATSD_PORT
+              value: "9102"
           volumeMounts:
             - name: {{ .Release.Name }}-ratelimit-config
               mountPath: /etc/ratelimit/config.yaml

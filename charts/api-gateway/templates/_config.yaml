@@ -40,11 +40,14 @@ static_resources:
             - domains: ['*']
               name: admin_cluster
               routes:
-              - match: {prefix: /stats }
+              - match:
+                  prefix: /metrics
                 route:
                   cluster: admin_cluster
+                  prefix_rewrite: "/stats/prometheus"
                   timeout: 5.0s
-              - match: {prefix: /}
+              - match:
+                  prefix: /
                 direct_response:
                   status: 403
                   body: {inline_string: "You can't access this url."}
