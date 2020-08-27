@@ -237,13 +237,13 @@ static_resources:
               headers:
                 - name: ":path"
                   exact_match: "/healthz"
-{{- if .Values.main_app.jwt }}
+{{- if .Values.main_app.jwt.enabled }}
           - name: envoy.filters.http.jwt_authn
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
               providers:
                 wikimedia:
-                  issuer: http://dev.wikipedia.org
+                  issuer: {{ .Values.main_app.jwt.issuer }}
                   local_jwks:
                     filename: /etc/jwks/jwks.json
                   forward: true

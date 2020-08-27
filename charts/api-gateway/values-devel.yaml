@@ -2,7 +2,9 @@ main_app:
   image: envoy-future
   version: latest
   admin_port: 1667
-  jwt: true
+  jwt:
+    enabled: true
+    issuer: https://dev.wikimedia.org/
   echoapi: true
   ratelimiter:
     enabled: true

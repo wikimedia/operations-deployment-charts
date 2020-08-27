@@ -3,7 +3,10 @@ main_app:
   version: 1.15.0
   admin_port: 1667
 
-  jwt: true
+  jwt:
+    enabled: true
+    issuer: https://meta.wikimedia.org/
+
   ratelimiter:
     enabled: true
     version: 1.5.1

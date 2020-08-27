@@ -23,7 +23,9 @@ main_app:
       port: 8087
 
   admin_port: null
-  jwt: false
+  jwt:
+    enabled: false
+    issuer: null
   # debug server that echoes requests
   echoapi: false
   ratelimiter:

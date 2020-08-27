@@ -24,7 +24,7 @@ spec:
         {{- if .Values.tls.enabled }}
         checksum/tls-certs: {{ printf "%v" (values .Values.tls.certs | sortAlpha) | sha256sum }}
         {{- end }}
-        {{ if .Values.main_app.jwt }}
+        {{ if .Values.main_app.jwt.enabled }}
         checksum/jwks: {{ include "jwks.config" . | sha256sum }}
         {{ end -}}
         {{ if .Values.nutcracker.enabled -}}
@@ -101,7 +101,7 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-base-config
               mountPath: /etc/api-gateway/
-{{- if .Values.main_app.jwt }}
+{{- if .Values.main_app.jwt.enabled }}
             - name: {{ .Release.Name }}-jwt-config
               mountPath: /etc/jwks/
 {{- end }}
@@ -223,7 +223,7 @@ spec:
           configMap:
             name: {{ template "wmf.releasename" . }}-ratelimit-config
         {{- end }}
-        {{- if .Values.main_app.jwt }}
+        {{- if .Values.main_app.jwt.enabled }}
         - name: {{ .Release.Name }}-jwt-config
           configMap:
             name: {{ template "wmf.releasename" . }}-jwt-config
