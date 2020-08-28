@@ -254,21 +254,21 @@ static_resources:
               rules:
                 # For docs wiki, allow no JWT, but if JWT is supplied, verify it.
                 - match:
-                   prefix: /wiki/
+                    prefix: /wiki/
                   requires:
                     requires_any:
                       requirements:
                         - provider_name: wikimedia
                         - allow_missing: {}
                 - match:
-                   prefix: /w/
+                    prefix: /w/
                   requires:
                     requires_any:
                       requirements:
                         - provider_name: wikimedia
                         - allow_missing: {}
                 - match:
-                   path: /
+                    path: /
                   requires:
                     requires_any:
                       requirements:
@@ -295,8 +295,8 @@ static_resources:
                   requires:
                     requires_any:
                       requirements:
-                      - provider_name: wikimedia
-                      - allow_missing: {}
+                        - provider_name: wikimedia
+                        - allow_missing: {}
           - name: envoy.filters.http.lua
             typed_config:
               "@type": type.googleapis.com/envoy.config.filter.http.lua.v2.Lua
