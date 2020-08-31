@@ -2,7 +2,7 @@
 {{- $strip_cookies := .Values.main_app.strip_api_cookies -}}
 
 # api gateway envoy config
-{{ if .Values.main_app.admin_port -}}
+{{ if .Values.main_app.telemetry_port -}}
 admin:
   access_log_path: /dev/stdout
   address:
@@ -13,12 +13,12 @@ admin:
 {{ end -}}
 static_resources:
   listeners:
-{{- if .Values.main_app.admin_port }}
-  - name: admin_listener
+{{- if .Values.main_app.telemetry_port }}
+  - name: telemetry_listener
     address:
       socket_address:
         address: 0.0.0.0
-        port_value: {{ .Values.main_app.admin_port }}
+        port_value: {{ .Values.main_app.telemetry_port }}
     filter_chains:
     - filters:
       - name: envoy.http_connection_manager
@@ -400,7 +400,7 @@ static_resources:
                     address: 127.0.0.1
                     port_value: 8081
 {{- end }}
-{{ if .Values.main_app.admin_port }}
+{{ if .Values.main_app.telemetry_port }}
   - name: admin_cluster
     type: static
     connect_timeout: 0.25s

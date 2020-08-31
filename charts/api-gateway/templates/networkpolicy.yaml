@@ -30,6 +30,11 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
+      {{- if .Values.main_app.telemetry_port }}
+      - port: {{ .Values.main_app.telemetry_port }}
+        protocol: TCP
+      {{- end }}
+
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
