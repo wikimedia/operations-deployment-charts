@@ -41,10 +41,10 @@ static_resources:
               name: admin_cluster
               routes:
               - match:
-                  prefix: /metrics
+                  prefix: /stats
                 route:
                   cluster: admin_cluster
-                  prefix_rewrite: "/stats/prometheus"
+                  prefix_rewrite: "/stats"
                   timeout: 5.0s
               - match:
                   prefix: /

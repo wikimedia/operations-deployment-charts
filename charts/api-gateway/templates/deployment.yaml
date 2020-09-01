@@ -37,6 +37,11 @@ spec:
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
         prometheus.io/scrape: "true"
+        prometheus.io/port: "9102"
+        {{ if .Values.main_app.telemetry_port -}}
+        envoyproxy.io/scrape: "true"
+        envoyproxy.io/port: "{{ .Values.main_app.telemetry_port }}"
+        {{ end -}}
         {{ if .Values.main_app.access_log -}}
         {{ if eq .Values.main_app.access_log.type "eventgate" -}}
         checksum/td-agent: {{ include "fluent-bit.config" . | sha256sum }}
@@ -134,7 +139,7 @@ spec:
             - "-o"
             - "/dev/stdout"
           ports:
-            - containerPort: 6380
+            - containerPort: {{ .Values.nutcracker.port }}
           volumeMounts:
             - name: {{ .Release.Name }}-nutcracker-config
               mountPath: /etc/nutcracker
