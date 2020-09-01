@@ -190,7 +190,7 @@ spec:
             - name: STATSD_HOST
               value: "localhost"
             - name: STATSD_PORT
-              value: "9102"
+              value: "9125"
           volumeMounts:
             - name: {{ .Release.Name }}-ratelimit-config
               mountPath: /etc/ratelimit/config.yaml
