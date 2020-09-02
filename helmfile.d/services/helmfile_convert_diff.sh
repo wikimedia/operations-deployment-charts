@@ -43,7 +43,7 @@ copy_old_helmfiles() {
     done
 
     if [ -n "$working_branch" ]; then
-        git checkout $working_branch
+        git checkout "$working_branch"
     fi
 }
 
@@ -88,7 +88,9 @@ generate_diffs() {
         fi
         helmfile -f new/helmfile.yaml --selector name=$REL -e $cluster template > "../$DIFFS/new.$cluster.yaml" 2> /dev/null
         helmfile -f "$cluster/helmfile.yaml" --selector name=$REL template > "../$DIFFS/old.$cluster.yaml" 2> /dev/null
+        set +e # diff will exit status 1 if there are differences
         diff -aur "../$DIFFS/old.$cluster.yaml" "../$DIFFS/new.$cluster.yaml" > "../$DIFFS/$cluster.diff"
+        set -e
         echo "Diffs generated for cluster $cluster in $DIFFS/$cluster.diff"
     done
     popd
@@ -96,6 +98,23 @@ generate_diffs() {
 }
 
 # Main script
+
+if [ -z "$DEPLOYMENT" ]; then
+    echo "Deployment not specified"
+    echo "Usage: $0 my_deployment"
+    exit 1
+fi
+
+if ! ( command -v helmfile > /dev/null && command -v helm > /dev/null); then
+    echo "helm and helmfile must be installed"
+    exit 1
+fi
+
+if ! helm repo list | grep wmf-stable; then
+    echo "wmf-stable repo must be defined in helm repositories list"
+    echo "Run: helm repo add wmf-stable https://helm-charts.wikimedia.org/stable"
+    exit 1
+fi
 
 if [ ! -d "$CHARTS_ROOT/$DEPLOYMENT" ]; then
     echo "Creating the new-style deployment from the example repo"
