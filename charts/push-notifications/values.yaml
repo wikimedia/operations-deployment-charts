@@ -9,7 +9,7 @@ resources:
   replicas: 1
 main_app:
   image: wikimedia/mediawiki-services-push-notifications
-  version: 2020-06-08-183341-publish # we use latest everywhere in the defaults.
+  version: 2020-09-02-115949-publish # we use latest everywhere in the defaults.
   port: 8900 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
@@ -21,11 +21,11 @@ main_app:
   proxy: {}
   # See T218733#5850025 for derivation of 'requests' and 'limits' values
   requests:
-    cpu: 1500m
-    memory: 300Mi
+    cpu: 700m
+    memory: 450Mi
   limits:
-    cpu: 1700m
-    memory: 350Mi
+    cpu: 1000m
+    memory: 500Mi
   liveness_probe:
     tcpSocket:
       port: 8900
@@ -87,7 +87,7 @@ main_app:
     }
 
 monitoring:
-  enabled: false
+  enabled: true
   image_version: latest
 service:
   deployment: minikube # valid values are "production" and "minikube"

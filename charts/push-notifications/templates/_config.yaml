@@ -31,10 +31,8 @@ logging:
   {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
 metrics:
-  name: push-notifications
-  host: localhost
-  port: 9125
-  type: statsd
+  port: 9102
+  type: prometheus
   {{- end }}
 
 services:
@@ -75,6 +73,8 @@ services:
       # User-Agent HTTP header to use for requests
       user_agent: "PushNotifications/WMF"
       # the template used for contacting the MW API
+      queueing:
+        flushTimeoutMs: 10000
       apns:
         mock: {{ .Values.main_app.apns.mock }}
         production: {{ .Values.main_app.apns.production }}
