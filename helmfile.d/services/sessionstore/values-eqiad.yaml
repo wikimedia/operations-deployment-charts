@@ -1,0 +1,32 @@
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: dedicated
+              operator: In
+              values:
+                - kask
+            - key: failure-domain.beta.kubernetes.io/zone
+              operator: In
+              values:
+                - row-a
+                - row-b
+                - row-c
+                - row-d
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "kask"
+    effect: "NoSchedule"
+  - key: "dedicated"
+    operator: "Equal"
+    value: "kask"
+    effect: "NoExecute"
+main_app:
+  cassandra:
+    hosts:
+      - sessionstore1001-a.eqiad.wmnet
+      - sessionstore1002-a.eqiad.wmnet
+      - sessionstore1003-a.eqiad.wmnet
+    local_dc: eqiad

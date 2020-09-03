@@ -1,0 +1,43 @@
+resources:
+  replicas: 1
+affinity: {}
+tolerations: {}
+main_app:
+  # All of this needs to be overriden in production
+  certs:
+    cassandra:
+      ca: |-
+        -----BEGIN CERTIFICATE-----
+        MIIDWzCCAkOgAwIBAgIJAMDw6wy4LHx5MA0GCSqGSIb3DQEBCwUAMEMxDzANBgNV
+        BAMMBnJvb3RDYTEVMBMGA1UECwwMc2VydmljZXMtZGV2MQwwCgYDVQQKDANXTUYx
+        CzAJBgNVBAYTAlVTMCAXDTE3MDEwNTIyNTMwMFoYDzIwNjYxMjI0MjI1MzAwWjBD
+        MQ8wDQYDVQQDDAZyb290Q2ExFTATBgNVBAsMDHNlcnZpY2VzLWRldjEMMAoGA1UE
+        CgwDV01GMQswCQYDVQQGEwJVUzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+        ggEBALH2sG1pHh+kphu2zqDpQ3X7jxlXqLfmMgrcLLXK/hRf1R5EDQ8N5B7kgnH7
+        ATDdboaPvHspu1WwE50dlhXK5xXV5U9sTjxd4WWB66v0bKiGn5nifvz9gWGh+0OZ
+        nIqxjQHH0YSpjLB/QOcq3GoeIZ5XNynl3BH2q+cWwBFJQYMyf4tMpRm2i2CC+e9/
+        3wRIyffAuVv85RjvKhNbRFmNMZARdRqBY/0na/kuE09r6D9PLBRDqzgPaK9vMcr1
+        Zu8QE71PE084xDkA/WiCmwZh9WUNotLI+Tvu1AxRlqUA90xPkFthmXoC75AHttts
+        S2si6unQFrznaCv1xnYckPvpUycCAwEAAaNQME4wHQYDVR0OBBYEFNmGKdk7wePm
+        NqYMJyB8GiBVrXUIMB8GA1UdIwQYMBaAFNmGKdk7wePmNqYMJyB8GiBVrXUIMAwG
+        A1UdEwQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAB3nQzHxnqACaoYP/oyeuMrH
+        lMGsmTYJgDzP4eAoZj20a3saB7xL9vXvcHwlTJBTeg9ct7aKg67FgCZals2P7+nf
+        X1l3vTdwu0dlpkjTzL4nmP1XQ6r6N2mXL498F/y3nQlfUt9efNmy8pfWQFYGN/Ir
+        5UPB7o53pkCvqxSf6VK7GE9QB0QetYUBYg78J9xsqhMt0Gr4Qq3vZwUoq2yTA5c5
+        IjbQPilZhQ//Focy5fVgFJ++ojhAGadYm30VyP1EkJjvY72mhFaY6fpBptzUL9rz
+        NHNq7uXqpFosQptQHiHvN4E9zk1X73Bk7VY4aTE/HtESCT3jxLQDup2p0+v966A=
+        -----END CERTIFICATE-----
+  cassandra:
+    authentication:
+      #     password: # needs to be defined on private/secrets.yaml
+      username: restb
+    hosts:
+      - restbase-dev1004-a.eqiad.wmnet
+      - restbase-dev1005-a.eqiad.wmnet
+      - restbase-dev1006-a.eqiad.wmnet
+  requests:
+    cpu: 2500m
+    memory: 100Mi
+  limits:
+    cpu: 2500m
+    memory: 100Mi
