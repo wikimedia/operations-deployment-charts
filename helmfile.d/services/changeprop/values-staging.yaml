@@ -1,0 +1,26 @@
+main_app:
+
+  site: staging
+
+  kafka:
+    broker_list:
+      - kafka-main1001.eqiad.wmnet:9093
+      - kafka-main1002.eqiad.wmnet:9093
+      - kafka-main1003.eqiad.wmnet:9093
+    ssl: true
+
+  changeprop:
+    # This is the endpoint for the staging instance of eventgate
+    event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
+
+nutcracker:
+  enabled: true
+  servers:
+    - rdb1005.eqiad.wmnet:6379:1 "cp-1"
+    - rdb1009.eqiad.wmnet:6379:1 "cp-2"
+
+resources:
+  replicas: 2
+
+service:
+  name: changeprop-staging

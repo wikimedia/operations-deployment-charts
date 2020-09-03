@@ -1,20 +1,7 @@
 main_app:
   version: v0.10.3
 
-  limits:
-    cpu: 3
-    memory: 1500Mi
-
   log_level: info
-
-  site: codfw
-
-  kafka:
-    broker_list:
-      - kafka-main2001.codfw.wmnet:9093
-      - kafka-main2002.codfw.wmnet:9093
-      - kafka-main2003.codfw.wmnet:9093
-    ssl: true
 
   redis:
     host: localhost
@@ -29,20 +16,10 @@ main_app:
       uris:
         - http://ores.svc.eqiad.wmnet:8081
         - http://ores.svc.codfw.wmnet:8081
-    event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
-
-nutcracker:
-  enabled: true
-  servers:
-    - rdb2003.codfw.wmnet:6379:1 "cp-1"
-    - rdb2005.codfw.wmnet:6379:1 "cp-2"
 
 monitoring:
   enabled: true
   image_version: 0.0.5
-
-resources:
-  replicas: 12
 
 service:
   deployment: "production"

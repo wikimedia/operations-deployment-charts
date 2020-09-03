@@ -1,0 +1,10 @@
+main_app:
+  limits:
+    cpu: 3
+    memory: 1500Mi
+
+  changeprop:
+    event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
+
+resources:
+  replicas: 12
