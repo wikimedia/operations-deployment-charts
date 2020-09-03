@@ -1,0 +1,15 @@
+main_app:
+  requests:
+    cpu: 2500m # T220401 and T229697
+    memory: 100Mi
+  limits:
+    cpu: 2500m # T220401 and T229697
+    memory: 100Mi
+  cassandra:
+    hosts:
+      - restbase-dev1004-a.eqiad.wmnet
+      - restbase-dev1005-a.eqiad.wmnet
+      - restbase-dev1006-a.eqiad.wmnet
+resources:
+  replicas: 1
+tolerations: {}

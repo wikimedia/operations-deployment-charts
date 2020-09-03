@@ -88,10 +88,8 @@ generate_diffs() {
         fi
         helmfile -f new/helmfile.yaml --selector name=$REL -e $cluster template > "../$DIFFS/new.$cluster.yaml" 2> /dev/null
         helmfile -f "$cluster/helmfile.yaml" --selector name=$REL template > "../$DIFFS/old.$cluster.yaml" 2> /dev/null
-        set +e # diff will exit status 1 if there are differences
-        diff -aur "../$DIFFS/old.$cluster.yaml" "../$DIFFS/new.$cluster.yaml" > "../$DIFFS/$cluster.diff"
-        set -e
-        echo "Diffs generated for cluster $cluster in $DIFFS/$cluster.diff"
+        echo "Generating diffs for cluster $cluster in $DIFFS/$cluster.diff"
+        diff -aur "../$DIFFS/old.$cluster.yaml" "../$DIFFS/new.$cluster.yaml" > "../$DIFFS/$cluster.diff" || echo "diffs found"
     done
     popd
     rm -rf .tmp
