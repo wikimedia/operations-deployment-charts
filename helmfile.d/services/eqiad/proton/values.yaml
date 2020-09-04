@@ -1,0 +1,82 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+resources:
+  replicas: 4
+main_app:
+  image: wikimedia/mediawiki-services-chromium-render
+  version: 2020-08-11-170508-production
+
+monitoring:
+  enabled: true
+  image_version: 0.0.7
+service:
+  deployment: production
+  port:
+    nodePort: 3030
+tls:
+  enabled: true
+  image_version: 1.14.4-1
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 208.80.153.224/32 # text-lb.codfw
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 208.80.154.224/32 # text-lb.eqiad
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 103.102.166.224/32 # text-lb.eqsin
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 198.35.26.96/32 # text-lb.ulsfo
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 91.198.174.192/32 # text-lb.esams
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 208.80.153.240/32 # upload-lb.codfw
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 208.80.154.240/32 # upload-lb.eqiad
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 103.102.166.240/32 # upload-lb.eqsin
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 198.35.26.112/32 # upload-lb.ulsfo
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
+      - cidr: 91.198.174.208/32 # upload-lb.esams
+        ports:
+          - protocol: tcp
+            port: 80
+          - protocol: tcp
+            port: 443
