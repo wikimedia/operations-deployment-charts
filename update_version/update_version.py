@@ -117,7 +117,7 @@ class ValuesUpdater:
         """Updates the image version in the values file for each environment.
         """
         for env in self.envs:
-            path = f"{self.dir_path}/{env}/{self.service}/values.yaml"
+            path = "{}/{}/{}/values.yaml".format(self.dir_path, env, self.service)
             self.update_values_version(path)
 
 
@@ -129,15 +129,15 @@ class NewValuesUpdater(ValuesUpdater):
         """
         if set(self.envs) == set(VALID_ENVS):
             # updating all envs / default values
-            self.update_values_version(f"{self.dir_path}/values.yaml")
+            self.update_values_version("{}/values.yaml".format(self.dir_path))
 
             for env in self.envs:
-                path = f"{self.dir_path}/values-{env}.yaml"
+                path = "{}/values-{}.yaml".format(self.dir_path, env)
                 self.delete_values_version(path)
         else:
             # specific environments only
             for env in self.envs:
-                path = f"{self.dir_path}/values-{env}.yaml"
+                path = "{}/values-{}.yaml".format(self.dir_path, env)
                 self.update_values_version(path)
 
     def update_values_version(self, path):
@@ -193,7 +193,7 @@ def main():
     envs = args.envs
     service = args.service
     version = args.version
-    dir_path = f"{VALUES_ROOT}/{service}"
+    dir_path = "{}/{}".format(VALUES_ROOT, service)
 
     if os.path.isdir(dir_path):
         # new directory structure
