@@ -1,0 +1,13 @@
+main_app:
+  limits:
+    memory: 1000Mi
+
+resources:
+  replicas: 12
+
+service:
+  name: "cpjobqueue"
+  deployment: "production"
+  port:
+    name: cpjobqueue
+    nodePort: 7200

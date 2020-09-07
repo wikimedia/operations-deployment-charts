@@ -108,7 +108,7 @@ if ! ( command -v helmfile > /dev/null && command -v helm > /dev/null); then
     exit 1
 fi
 
-if ! helm repo list | grep wmf-stable; then
+if ! helm repo list | grep wmf-stable > /dev/null; then
     echo "wmf-stable repo must be defined in helm repositories list"
     echo "Run: helm repo add wmf-stable https://helm-charts.wikimedia.org/stable"
     exit 1

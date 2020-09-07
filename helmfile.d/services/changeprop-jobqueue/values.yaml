@@ -2,20 +2,15 @@ main_app:
   version: v0.10.2
   port: 7200
 
-  log_level: trace
-
-  site: staging
-
-  kafka:
-    broker_list:
-      - kafka-main1001.eqiad.wmnet:9093
-      - kafka-main1002.eqiad.wmnet:9093
-      - kafka-main1003.eqiad.wmnet:9093
-    ssl: true
+  log_level: info
 
   redis:
     host: localhost
     port: 6379
+
+  liveness_probe:
+    tcpSocket:
+      port: 7200
 
   jobqueue:
     jobrunner_uri: https://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
@@ -162,29 +157,9 @@ main_app:
       enabled: true
       concurrency: 50
 
-  liveness_probe:
-    tcpSocket:
-      port: 7200
-
-nutcracker:
-  enabled: true
-  servers:
-    - rdb1005.eqiad.wmnet:6379:1 "cp-1"
-    - rdb1009.eqiad.wmnet:6379:1 "cp-2"
-
 monitoring:
   enabled: true
   image_version: 0.0.5
-
-resources:
-  replicas: 2
-
-service:
-  name: cpjobqueue-staging
-  deployment: "production"
-  port:
-    name: cpjobqueue-staging
-    nodePort: 7200
 
 networkpolicy:
   egress:
