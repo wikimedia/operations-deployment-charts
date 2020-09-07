@@ -1,0 +1,18 @@
+services_proxy:
+  mwapi-async:
+    keepalive: 4s
+    port: 6500
+    timeout: 120s
+    xfp: https
+    upstream:
+      address: api-rw.discovery.wmnet
+      port: 443
+      encryption: true
+  restbase:
+    port: 6011
+    timeout: 10s
+    xfp: https
+    upstream:
+      address: restbase.discovery.wmnet
+      port: 7443
+      encryption: true

@@ -17,3 +17,9 @@ tls:
   enabled: true
   image_version: 1.14.4-1
   public_port: 4102
+
+discovery:
+  enabled: true
+  listeners:
+    - mwapi-async # TODO: change to a more stringent timeout
+    - restbase
