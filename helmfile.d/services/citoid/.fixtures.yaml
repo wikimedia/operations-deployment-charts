@@ -1,0 +1,10 @@
+services_proxy:
+  zotero:
+    keepalive: 4s
+    port: 6018
+    timeout: 120s
+    xfp: https
+    upstream:
+      address: zotero.discovery.wmnet
+      port: 1969
+      encryption: false

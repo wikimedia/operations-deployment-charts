@@ -2,6 +2,10 @@ docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.1
+discovery:
+  enabled: true
+  listeners:
+    - zotero
 main_app:
   image: wikimedia/mediawiki-services-citoid
   limits:
@@ -21,7 +25,8 @@ main_app:
     memory: 100Mi
   version: 2020-08-04-143447-production
   #wskey: defined on the private repo.
-  zotero: zotero.discovery.wmnet
+  zotero: localhost
+  zotero_port: 6018
 monitoring:
   enabled: true
   image_version: 0.0.5
