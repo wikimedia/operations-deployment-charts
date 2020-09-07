@@ -81,7 +81,7 @@ services:
       # URL where to contact Zotero
       zoteroInterface: {{ .Values.main_app.zotero }}
       # zotero's server port
-      zoteroPort: 1969
+      zoteroPort: {{ .Values.main_app.zotero_port }}
       # whether the proxy should be used to contact zotero
       zoteroUseProxy: false
       # whether Citoid should always wait for the PubMed request to complete
