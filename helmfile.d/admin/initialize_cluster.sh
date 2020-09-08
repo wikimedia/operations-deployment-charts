@@ -26,6 +26,13 @@ KUBECONFIG=$KUBECONFIG kubectl create serviceaccount ${SERVICEACCOUNT} -n ${NAME
 # create the tiller role binding. We use a cluster role for DRY purposes
 KUBECONFIG=$KUBECONFIG kubectl -n ${NAMESPACE} create clusterrolebinding ${SERVICEACCOUNT} --clusterrole=cluster-admin --serviceaccount="${NAMESPACE}:${SERVICEACCOUNT}"
 
+# In order to allow nodes to register with the API, patch system:node clusterrolebinding
+# See: https://kubernetes.io/docs/reference/access-authn-authz/node/#migration-considerations.
+KUBECONFIG=$KUBECONFIG kubectl patch clusterrolebinding system:node --patch "subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:nodes"
+
 # Initialize helm
 # Make sure we don't rely on the internal DNS service to avoid the Chicken and egg problem of not having it around yet
 HELM_HOME=$HELM_HOME KUBECONFIG=$KUBECONFIG helm init --service-account ${SERVICEACCOUNT} \
