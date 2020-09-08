@@ -88,10 +88,14 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 7231
+      - protocol: tcp
+        port: 7443
     - cidr: 10.2.1.17/32
       ports:
       - protocol: tcp
         port: 7231
+      - protocol: tcp
+        port: 7443
     # Allow uncached API
     - cidr: 10.2.2.22/32
       ports:
