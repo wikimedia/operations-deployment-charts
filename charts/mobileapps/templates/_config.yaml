@@ -101,6 +101,6 @@ services:
         body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
-      mobile_html_local_rest_api_base_uri_template: //{{ "{{" }}domain{{ "}}" }}/api/rest_v1/
+      mobile_html_local_rest_api_base_uri_template: {{ .Values.main_app.mobile_html_rest_api_base_uri_template }}
       mobile_html_csp: {{ .Values.main_app.mobile_html_csp }}
 {{- end -}}
