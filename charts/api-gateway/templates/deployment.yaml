@@ -191,6 +191,8 @@ spec:
               value: "localhost"
             - name: STATSD_PORT
               value: "9125"
+            - name: REDIS_AUTH
+              value: {{ .Values.main_app.ratelimiter.redis_pass }}
           volumeMounts:
             - name: {{ .Release.Name }}-ratelimit-config
               mountPath: /etc/ratelimit/config.yaml
