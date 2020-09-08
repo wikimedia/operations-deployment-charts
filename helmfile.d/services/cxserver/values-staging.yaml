@@ -1,4 +1,11 @@
 main_app:
+  mwapi_uri: http://localhost:6500/w/api.php
   proxy: http://url-downloader.eqiad.wikimedia.org:8080
+  no_proxy_list:
+  - eqiad.wmnet
+  - codfw.wmnet
+  - discovery.wmnet
+  - localhost
+  restbase_host: localhost:6011
 resources:
   replicas: 1
