@@ -201,7 +201,11 @@ static_resources:
                               path:
                                 - key: jwt_payload
                                 - key: aud
-                        - remote_address: {}
+                        - request_headers:
+                            # Use x-client-ip because Envoy's X-forwarded-for won't trust
+                            # the upstream IP in cases of more than one IP in the list.
+                            header_name: x-client-ip
+                            descriptor_key: client_ip
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
               - name: core
 {{- if $strip_cookies }}

@@ -4,7 +4,7 @@ descriptors:
   - key: user_class_anon_fallback
     value: anon
     descriptors:
-      - key: remote_address
+      - key: client_ip
         rate_limit:
           requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
           unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
