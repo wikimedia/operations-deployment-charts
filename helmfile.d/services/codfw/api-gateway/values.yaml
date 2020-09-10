@@ -18,6 +18,10 @@ main_app:
 
   strip_api_cookies: true
 
+  domains:
+    - api.wikimedia.org
+    - api.wikimedia.org:*
+
   access_log:
     type: eventgate
     image_version: 1.5.3-0

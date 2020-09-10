@@ -32,6 +32,12 @@ main_app:
 
   dev_redis: true
 
+  domains:
+    - localhost
+    - localhost:*
+    - 127.0.0.1
+    - 127.0.0.1:*
+
   endpoints:
     mwapi_cluster:
       tls: false

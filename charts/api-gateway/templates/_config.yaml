@@ -120,23 +120,38 @@ static_resources:
             name: api_wikimedia_org_route
             virtual_hosts:
             - name: api_wikimedia_org_vhost
-              domains: ["api.wikimedia.org", "api.wikimedia.org:*", "staging.svc.eqiad.wmnet", "staging.svc.eqiad.wmnet:*"]
+              domains:
+{{- range $domain := .Values.main_app.domains }}
+              - {{ $domain }}
+{{- end }}
               routes:
               - name: api-portal-redirect
                 match:
                   path: '/'
                 redirect:
                   path_redirect: '/wiki/'
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
               - name: api-portal
                 match:
                   prefix: "/wiki/"
                 route:
                   cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
               - name: api-portal
                 match:
                   prefix: "/w/"
                 route:
                   cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
               - name: feed
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
@@ -306,7 +321,7 @@ static_resources:
                         - allow_missing: {}
           - name: envoy.filters.http.lua
             typed_config:
-              "@type": type.googleapis.com/envoy.config.filter.http.lua.v2.Lua
+              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
               inline_code: |
                 function envoy_on_request(request_handle)
                   local path = request_handle:headers():get(":path")

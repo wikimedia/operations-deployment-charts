@@ -73,6 +73,12 @@ main_app:
   # instructions
   dev_redis: false
 
+  domains:
+    - localhost
+    - localhost:*
+    - 127.0.0.1
+    - 127.0.0.1:*
+
   #TODO regex on v1
   pathing_map:
     '/core/v1/wikipedia/(\w+)/(.*)':
