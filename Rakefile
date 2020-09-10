@@ -11,6 +11,7 @@ HELMFILE_GLOB = "helmfile.d/services/**/helmfile.yaml"
 KUBERNETES_VERSIONS = "1.17,1.16,1.15,1.14,1.13,1.12"  # Let's target only what we have or want to upgrade to
 HELMFILE_ENV = 'eqiad'
 
+# Extend string to add color output
 class String
   def red
     colour(31)
@@ -28,7 +29,6 @@ end
 
 
 # Very basic threadpool implementation
-
 class ThreadPool
   def initialize(nthreads:)
     @concurrency = nthreads
@@ -57,6 +57,7 @@ class ThreadPool
   end
 end
 
+# pretty-print output
 def pprint(title, data)
   puts "=="
   puts title
@@ -70,14 +71,15 @@ def pprint(title, data)
   end
 end
 
+# Checks the output of _exec
 def raise_if_failed(data)
   data.each{ |_, success| raise('Failure') unless success }
 end
 
+# Executes a command, returns an array [true/false, String], first element
+# denoting success or failure, second one being stdout/stderr
 def _exec(command, input=nil, nostderr=false)
   ret = []
-  # Executes a command, returns an array [true/false, String], first element
-  # denoting success or failure, second one being stdout/stderr
   Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
     if input
       stdin.write(input)
@@ -110,8 +112,8 @@ def which(cmd)
   nil
 end
 
+# Reports a yaml parsing error with some useful context
 def report_yaml_parse_error(cmd, msg, output, e)
-  # Reports a yaml parsing error with some useful context
   puts msg.red
   puts "Error is at line #{e.line}, column #{e.column} of the output of `#{cmd}`: #{e.problem}".red
   puts "Context:\n"
@@ -125,7 +127,9 @@ def report_yaml_parse_error(cmd, msg, output, e)
 end
 
 
-
+# Checks an helm chart.
+# Does so by running helm template (injecting value fixture files if present)
+# If kubeyaml is available, also run kubeyaml.
 def check_template(chart, fixture = nil, kubeyaml = nil)
   if fixture != nil
     # When passing multiple values, concatenate them
@@ -187,11 +191,11 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
 end
 
 
+# parses an helmfile and returns the status of running 'helmfile lint'
+# for all environments.
+# The return data are organized as follows:
+#  {environment: true/false}
 def validate_helmfile_full(filepath, is_new)
-  # parses an helmfile and returns the status of running 'helmfile lint'
-  # for all environments.
-  # The return data are organized as follows:
-  #  {environment: true/false}
   # Do everything in a tempdir
   results = {}
   dir_to_copy, file = File.split filepath
@@ -239,6 +243,9 @@ def validate_helmfile_full(filepath, is_new)
   end
   results
 end
+
+
+## RAKE TASKS
 
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
