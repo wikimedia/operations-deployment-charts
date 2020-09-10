@@ -49,9 +49,9 @@ main_app:
     database: config/cx-section-titles-aligned.db
   mwapi_uri: https://api-rw.discovery.wmnet/w/api.php
   no_proxy_list:
-  - eqiad.wmnet
-  - codfw.wmnet
-  - discovery.wmnet
+    - eqiad.wmnet
+    - codfw.wmnet
+    - discovery.wmnet
   port: 8080
   proxy: http://url-downloader.codfw.wikimedia.org:8080
   ratelimiter_key: x-client-ip
@@ -82,16 +82,16 @@ discovery:
   enabled: true
   listeners:
     - mwapi-async
-    - restbase
+    - restbase-for-services
 networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 10.2.1.11/32
-      ports:
-      - protocol: tcp
-        port: 2737
-    - cidr: 10.2.2.11/32
-      ports:
-      - protocol: tcp
-        port: 2737
+      - cidr: 10.2.1.11/32
+        ports:
+          - protocol: tcp
+            port: 2737
+      - cidr: 10.2.2.11/32
+        ports:
+          - protocol: tcp
+            port: 2737
