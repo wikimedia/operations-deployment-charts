@@ -7,7 +7,7 @@ main_app:
   version: 2020-09-14-204752-production
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
-  restbase_uri: http://localhost:6011
+  restbase_uri: http://localhost:6503
   mw_resource_loader_uri: http://localhost:6500/w/load.php
 
 monitoring:
@@ -26,5 +26,4 @@ discovery:
   enabled: true
   listeners:
     - mwapi-async # TODO: change to a more stringent timeout
-    - restbase
     - restbase-for-services
