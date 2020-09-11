@@ -9,7 +9,7 @@ resources:
   replicas: 1
 main_app:
   image: wikimedia/mediawiki-services-push-notifications
-  version: 2020-09-02-115949-publish # we use latest everywhere in the defaults.
+  version: 2020-09-11-113122-publish # we use latest everywhere in the defaults.
   port: 8900 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
