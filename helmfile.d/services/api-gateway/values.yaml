@@ -1,0 +1,60 @@
+main_app:
+
+  version: 1.15.0
+  telemetry_port: 1667
+
+  jwt:
+    enabled: true
+    issuer: https://meta.wikimedia.org
+
+  ratelimiter:
+    enabled: true
+    version: 1.5.1
+    log_level: debug
+    redis_host: localhost
+    redis_port: 6379
+    redis_pass: ""
+
+  strip_api_cookies: true
+
+  access_log:
+    type: eventgate
+    image_version: 1.5.3-0
+
+  endpoints:
+    appserver_cluster:
+      debug_hosts:
+        mwdebug1001.eqiad.wmnet: 443
+        mwdebug1002.eqiad.wmnet: 443
+        mwdebug2001.codfw.wmnet: 443
+        mwdebug2002.codfw.wmnet: 443
+    restbase_cluster:
+      type: LOGICAL_DNS
+      hosts:
+        restbase.discovery.wmnet: 7231
+    mwapi_cluster:
+      debug_hosts:
+        mwdebug1001.eqiad.wmnet: 443
+        mwdebug1002.eqiad.wmnet: 443
+        mwdebug2001.codfw.wmnet: 443
+        mwdebug2002.codfw.wmnet: 443
+
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8087
+      scheme: HTTPS
+
+
+service:
+  deployment: production
+  port:
+    nodePort: 8087
+
+tls:
+  enabled: true
+
+# Only used by ratelimiter for metrics - envoy uses prometheus native metrics
+monitoring:
+  enabled: true
+  image_version: 0.0.5
