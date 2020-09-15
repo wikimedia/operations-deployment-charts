@@ -62,13 +62,16 @@ main_app:
   endpoints:
     mwapi_cluster:
       type: LOGICAL_DNS
-      hosts: []
+      hosts: {}
+      # Specifies the host to support debug routing to via X-Wikimedia-Debug
+      debug_hosts: {}
     restbase_cluster:
       type: LOGICAL_DNS
-      hosts: []
+      hosts: {}
     appserver_cluster:
       type: LOGICAL_DNS
-      hosts: []
+      hosts: {}
+      debug_hosts: {}
 
   # run a local redis container for testing - see README for
   # instructions

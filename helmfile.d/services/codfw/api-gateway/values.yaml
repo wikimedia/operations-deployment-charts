@@ -35,18 +35,24 @@ main_app:
   endpoints:
     mwapi_cluster:
       tls: true
-      type: LOGICAL_DNS
+      type: STRICT_DNS
       hosts:
         api-rw.discovery.wmnet: 443
+      debug_hosts:
+        mwdebug2001.codfw.wmnet: 443
+        mwdebug2002.codfw.wmnet: 443
     restbase_cluster:
       type: LOGICAL_DNS
       hosts:
         restbase.discovery.wmnet: 7231
     appserver_cluster:
       tls: true
-      type: LOGICAL_DNS
+      type: STRICT_DNS
       hosts:
         appservers-rw.discovery.wmnet: 443
+      debug_hosts:
+        mwdebug2001.codfw.wmnet: 443
+        mwdebug2002.codfw.wmnet: 443
 
   readiness_probe:
     httpGet:

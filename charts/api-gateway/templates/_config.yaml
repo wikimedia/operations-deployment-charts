@@ -358,6 +358,24 @@ static_resources:
                   envoy_grpc:
                     cluster_name: rate_limit_cluster
 {{- end }}
+          - name: envoy.filters.http.header_to_metadata
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.Config
+              request_rules:
+                - header: "x-wikimedia-debug"
+                  on_header_present:
+                    metadata_namespace: envoy.lb
+                    key: x_wikimedia_debug_server
+                    regex_value_rewrite:
+                      pattern:
+                        google_re2: {}
+                        regex: "^backend=([\\w.]+).*$"
+                      substitution: "\\1"
+                  on_header_missing:
+                    metadata_namespace: envoy.lb
+                    key: x_wikimedia_debug_server
+                    value: none
+                    type: STRING
           - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
 {{- if .Values.tls.enabled }}
@@ -397,6 +415,13 @@ static_resources:
             trusted_ca:
               filename: /etc/api-gateway/puppetca.crt.pem
 {{- end }}
+    lb_subset_config:
+      fallback_policy: "DEFAULT_SUBSET"
+      default_subset:
+        x_wikimedia_debug_server: none
+      subset_selectors:
+        - keys:
+            - x_wikimedia_debug_server
     load_assignment:
       cluster_name: {{ $cluster_name }}
       endpoints:
@@ -407,6 +432,21 @@ static_resources:
               socket_address:
                 address: {{ $host }}
                 port_value: {{ $port }}
+          metadata:
+            filter_metadata:
+              envoy.lb:
+                x_wikimedia_debug_server: none
+{{- end }}
+{{- range $host, $port := $cluster_opts.debug_hosts }}
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $host }}
+                port_value: {{ $port }}
+          metadata:
+            filter_metadata:
+              envoy.lb:
+                x_wikimedia_debug_server: {{ $host }}
 {{- end }}
 {{- end }}
 {{- if .Values.main_app.ratelimiter }}
