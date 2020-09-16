@@ -8,9 +8,6 @@ main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   version: 2020-08-18-215651-production
   port: 8889
-  mw_uri: http://localhost:6500/w/index.php
-  mwapi_uri: http://localhost:6500/w/api.php
-  restbase_uri: http://localhost:6503
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
