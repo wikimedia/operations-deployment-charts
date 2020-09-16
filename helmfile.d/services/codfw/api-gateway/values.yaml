@@ -70,6 +70,18 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
+    - cidr: 10.64.32.123/32 # mwdebug1001
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
+    - cidr: 10.64.0.46/32 # mwdebug1002
+      ports:
+      - protocol: tcp
+        port: 443
+      - protocol: tcp
+        port: 80
     - cidr: 10.2.2.22/32 # api-rw.discovery.wmnet LVS endpoint (eqiad)
       ports:
       - protocol: tcp
