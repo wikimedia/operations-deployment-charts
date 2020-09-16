@@ -198,8 +198,13 @@ end
 def validate_helmfile_full(filepath, is_new)
   # Do everything in a tempdir
   results = {}
+  helm_home = ENV['HELM_HOME'] || File.expand_path("~/.helm")
   dir_to_copy, file = File.split filepath
   Dir.mktmpdir do |dir|
+    # Copy HELM_HOME so that we don't incur in race conditions when running in
+    # parallel, see T261313
+    local_helm_home = File.join dir, ".helm"
+    FileUtils.cp_r helm_home, local_helm_home
     # Copy the original dir files to the tmpdir
     FileUtils.cp_r "#{dir_to_copy}/.", dir
     filename = File.join dir, file
@@ -222,7 +227,7 @@ def validate_helmfile_full(filepath, is_new)
         source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
         File.write filename, source
       end
-      ok, data = _exec "helmfile -e staging -f #{filename} build", nil, true
+      ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e staging -f #{filename} build", nil, true
       # If we can't run helmfile build, we need to bail out early.
       return {'staging' => false} unless ok
       helmfile_raw_data = YAML.safe_load(data)
@@ -231,11 +236,7 @@ def validate_helmfile_full(filepath, is_new)
     # now for each environment, build the list of
     # helm commands to run
     envs.each do |env|
-      # --skip-deps sais it will "skip running `helm repo update` and
-      # `helm dependency build`". The latter might be a problem in cases where
-      # the charts/ directory is not commited to git. But currently this is not
-      # an issue and probably fixes a concurrency issue. See: T261313
-      ok, out = _exec "helmfile -e #{env} -f #{filename} lint --skip-deps"
+      ok, out = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{filename} lint"
       puts(out) unless ok
       results[env] = ok
       # TODO: feed the output of helmfile template to kubeyaml?
