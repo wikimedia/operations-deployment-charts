@@ -1,0 +1,14 @@
+main_app:
+  mw_uri: http://localhost:6500/w/index.php
+  mwapi_uri: http://localhost:6500/w/api.php
+  restbase_uri: http://localhost:6503
+service_proxy:
+  restbase-for-services:
+    port: 6503
+    timeout: 122s
+    xfp: https
+    keepalive: 4s
+    upstream:
+      address: restbase.discovery.wmnet
+      port: 7443
+      encryption: true
