@@ -143,6 +143,42 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+              - name: api-portal-static
+                match:
+                  prefix: "/static/"
+                route:
+                  cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
+              - name: favicon
+                match:
+                  path: "/favicon.ico"
+                route:
+                  cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
+              - name: robotstxt
+                match:
+                  path: "/robots.txt"
+                route:
+                  cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
+              - name: appletouch-icon
+                match:
+                  path: "/apple-touch-icon.png"
+                route:
+                  cluster: appserver_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
               - name: api-portal
                 match:
                   prefix: "/w/"
