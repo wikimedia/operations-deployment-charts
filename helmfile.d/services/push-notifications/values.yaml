@@ -8,9 +8,9 @@ monitoring:
   enabled: true
   image_version: 0.0.5
 resources:
-  replicas: 2 # Change in production
+  replicas: 8
 service:
-  deployment: staging # Switch to production when in production
+  deployment: production
   port:
     port: 8900
     nodePort: 8900
