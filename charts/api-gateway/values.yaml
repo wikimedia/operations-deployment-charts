@@ -1,4 +1,4 @@
-helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+helm_scaffold_version: 0.1
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
@@ -22,15 +22,23 @@ main_app:
     tcpSocket:
       port: 8087
 
+  # idle connection timeout to backend clusters - low to limit issues
+  # with connection reuse
   idle_timeout: 5s
+  # If set to true, expose a telemetry port that offers stats and
+  # health endpoint. Enables but does not expose the admin port internally
   telemetry_port: null
   jwt:
     enabled: false
+    # String that matches the "iss" field in a JWT *EXACTLY* - be
+    # careful with leading "https://" and trailing "/"
     issuer: null
-  # debug server that echoes requests
+
+  # if true, enable a debug server that echoes requests - see README.md
   echoapi: false
   ratelimiter:
     enabled: false
+    # image version
     version: latest
     anon_limit:
       requests_per_unit: 500
@@ -51,23 +59,27 @@ main_app:
   access_log:
     type: stdout
 
-  # Strip cookies from API route requests and responses
+  # Explicitly strip cookies from API route requests and responses -
+  # don't strip cookies from /wiki/ and other endpoints.
   strip_api_cookies: false
 
-  # populated from secrets
+  # populated from secrets - JSON web key sets
   jwks:
     kid: ""
     key: ""
 
   endpoints:
+    # for /core/ URLs
     mwapi_cluster:
       type: LOGICAL_DNS
       hosts: {}
       # Specifies the host to support debug routing to via X-Wikimedia-Debug
       debug_hosts: {}
+    # used for /feed/
     restbase_cluster:
       type: LOGICAL_DNS
       hosts: {}
+    # used to serve the API portal
     appserver_cluster:
       type: LOGICAL_DNS
       hosts: {}
@@ -77,11 +89,27 @@ main_app:
   # instructions
   dev_redis: false
 
+  # domains that the API Gateway will answer for. Be sure to set your
+  # Host headers accordingly.
   domains:
     - localhost
     - localhost:*
     - 127.0.0.1
     - 127.0.0.1:*
+
+  # This map maps URLs that will be requested of api.wikimedia.org to
+  # a *path* that is requested of the appservers. The *host* is set on
+  # this request according to the language specified in the *path*
+  # URI. The *lua_lang* path is used to extract this language and then
+  # substitute it into the *host*.
+
+  # Consider: https://api.wikimedia.org/core/v1/wikipedia/ga/page/Veigeat%C3%B3ireachas
+  # 1) The API gateway matches the URL path
+  # 2) the lua_lang is used in LUA to extract the language
+  # 3) the path is formatted based on the path provided
+  # 4) the host header is set by doing a replace on LANGUAGE
+  # 5) the x-internal-host header is set
+  # 6) envoy rewrites the Host header via `host_rewrite_header`
 
   #TODO regex on v1
   pathing_map:
@@ -156,11 +184,11 @@ monitoring:
   image_version: latest
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  deployment: minikube
   port:
     name: api-gateway
-    targetPort: 8087 # the number or name of the exposed port on the container
-    port: 8087 # the number of the port desired to be exposed to the cluster
+    targetPort: 8087
+    port: 8087
     nodePort: null
 config:
   public: {}
@@ -177,7 +205,6 @@ debug:
   # Define here any port that you want to expose for debugging purposes
   ports: []
 
-# Enable networkpolicy egress rules
 networkpolicy:
   egress:
     enabled: false
