@@ -34,6 +34,8 @@ main_app:
       path: /_info
       port: 8900
   apns:
+    debug_topics:
+      - org.wikimedia.Notifications-Utility
     mock: false
     production: true
     token:

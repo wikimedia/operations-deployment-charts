@@ -22,7 +22,7 @@ worker_heartbeat_timeout: 15000
 
 # Logger info
 logging:
-  level: warn
+  level: debug
   name: push-notifications
   streams:
     - type: stdout
@@ -78,6 +78,7 @@ services:
         flushTimeoutMax: {{ .Values.main_app.queueing.flush_timeout_max }}
       # Apple Push Notification Service (APNS) config
       apns:
+        debug_topics: {{ .Values.main_app.apns.debug_topics }}
         mock: {{ .Values.main_app.apns.mock }}
         production: {{ .Values.main_app.apns.production }}
         token:
@@ -94,4 +95,5 @@ services:
         body: '{{ `{{ default(request.query, {}) }}` }}'
       mw_subscription_manager_username: {{ .Values.main_app.mw_subscription_manager_username }}
       mw_subscription_manager_password: {{ .Values.main_app.mw_subscription_manager_password }}
+      debug: true
 {{- end -}}
