@@ -9,7 +9,7 @@ resources:
   replicas: 1
 main_app:
   image: wikimedia/mediawiki-services-push-notifications
-  version: 2020-09-11-113122-publish # we use latest everywhere in the defaults.
+  version: latest # we use latest everywhere in the defaults.
   port: 8900 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
@@ -85,6 +85,14 @@ main_app:
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/1111111111111111111111111111111111111111111111111111111111111111111111111"
     }
+  mwapi_uri: https://api-rw.discovery.wmnet/w/api.php
+  mwapi_host_header: meta.wikimedia.org
+  mw_subscription_manager_username: PushSubscriptionManager2
+  mw_subscription_manager_password: snakeoil
+  queueing:
+    flush_timeout_ms: random
+    flush_timeout_min: 600000 # 10 minutes
+    flush_timeout_max: 1200000 # 20 minutes
 
 monitoring:
   enabled: true
@@ -105,7 +113,7 @@ config:
 tls:
   enabled: false # Switch to true in production
   image_version: 1.14.4-1
-  public_port: 4104 
+  public_port: 4104
   upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:

@@ -72,9 +72,11 @@ services:
       #   - x-request-id
       # User-Agent HTTP header to use for requests
       user_agent: "PushNotifications/WMF"
-      # the template used for contacting the MW API
       queueing:
-        flushTimeoutMs: 10000
+        flushTimeoutMs: {{ .Values.main_app.queueing.flush_timeout_ms }}
+        flushTimeoutMin: {{ .Values.main_app.queueing.flush_timeout_min }}
+        flushTimeoutMax: {{ .Values.main_app.queueing.flush_timeout_max }}
+      # Apple Push Notification Service (APNS) config
       apns:
         mock: {{ .Values.main_app.apns.mock }}
         production: {{ .Values.main_app.apns.production }}
@@ -82,4 +84,14 @@ services:
           key: {{ .Values.main_app.apns.token.key }}
           keyId: {{ .Values.main_app.apns.token.keyId }}
           teamId: {{ .Values.main_app.apns.token.teamId }}
+      # the template used for contacting the MW API
+      mwapi_req:
+        method: post
+        uri: {{ .Values.main_app.mwapi_uri }}
+        headers:
+          host: {{ .Values.main_app.mwapi_host_header }}
+          user-agent: '{{ `{{user-agent}}` }}'
+        body: '{{ `{{ default(request.query, {}) }}` }}'
+      mw_subscription_manager_username: {{ .Values.main_app.mw_subscription_manager_username }}
+      mw_subscription_manager_password: {{ .Values.main_app.mw_subscription_manager_password }}
 {{- end -}}
