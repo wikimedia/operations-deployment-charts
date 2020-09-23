@@ -91,10 +91,13 @@ main_app:
   mwapi_host_header: meta.wikimedia.org
   mw_subscription_manager_username: PushSubscriptionManager2
   mw_subscription_manager_password: snakeoil
+  # TODO: The batching period upper and lower bounds kept low here for testing. Increase it before
+  #  clients launch.
   queueing:
     flush_timeout_ms: random
-    flush_timeout_min: 600000 # 10 minutes
-    flush_timeout_max: 1200000 # 20 minutes
+    flush_timeout_min: 60000 # 1 minute
+    flush_timeout_max: 300000 # 5 minutes
+    verbose: true
 
 monitoring:
   enabled: true

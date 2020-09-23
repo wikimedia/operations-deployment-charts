@@ -76,6 +76,7 @@ services:
         flushTimeoutMs: {{ .Values.main_app.queueing.flush_timeout_ms }}
         flushTimeoutMin: {{ .Values.main_app.queueing.flush_timeout_min }}
         flushTimeoutMax: {{ .Values.main_app.queueing.flush_timeout_max }}
+        verbose: {{ .Values.main_app.queueing.verbose }}
       # Apple Push Notification Service (APNS) config
       apns:
         debug_topics: {{ .Values.main_app.apns.debug_topics }}
