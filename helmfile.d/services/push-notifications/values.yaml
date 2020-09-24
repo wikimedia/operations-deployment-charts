@@ -4,6 +4,9 @@ docker:
 helm_scaffold_version: 0.1
 main_app:
   version: 2020-09-23-230744-publish # need to switch to -$environment
+  mwapi_uri: http://localhost:6500/w/api.php
+  no_proxy_list:
+    - localhost
 monitoring:
   enabled: true
   image_version: 0.0.5
@@ -19,6 +22,10 @@ tls:
   image_version: 1.14.4-1
   telemetry:
     enabled: true
+discovery:
+  enabled: true
+  listeners:
+    - mwapi-async
 networkpolicy:
   egress:
     enabled: false # Switch to true in production
