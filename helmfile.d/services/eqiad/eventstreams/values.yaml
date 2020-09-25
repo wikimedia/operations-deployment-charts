@@ -111,6 +111,14 @@ main_app:
           - eqiad.mediawiki.revision-create
           - codfw.mediawiki.revision-create
 
+      revision-visibility-change:
+        description: |-
+          Mediawiki Revision visiblity change events.
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/visibility-change
+        topics:
+          - eqiad.mediawiki.revision-visibility-change
+          - codfw.mediawiki.revision-visibility-change
+
       revision-score:
         description: |-
           Mediawiki Revision Score feed. Every new revision in an ORES enabled wiki should have a
