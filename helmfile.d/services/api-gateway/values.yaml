@@ -30,8 +30,9 @@ main_app:
         mwdebug2002.codfw.wmnet: 443
     restbase_cluster:
       type: LOGICAL_DNS
+      tls: true
       hosts:
-        restbase.discovery.wmnet: 7231
+        restbase.discovery.wmnet: 7443
     mwapi_cluster:
       debug_hosts:
         mwdebug1001.eqiad.wmnet: 443
