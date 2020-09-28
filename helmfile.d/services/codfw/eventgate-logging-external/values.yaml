@@ -8,6 +8,13 @@ tls:
   enabled: true
   public_port: 4392 # the port where TLS will be exposed
   image_version: 1.14.4-1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1
+      memory: 500Mi
 main_app:
   name: eventgate-logging-external
   version: 2020-09-08-200149-production
