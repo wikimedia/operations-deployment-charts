@@ -79,6 +79,10 @@ main_app:
     restbase_cluster:
       type: LOGICAL_DNS
       hosts: {}
+    # used for descriptions
+    mobileapps_cluster:
+      type: LOGICAL_DNS
+      hosts: {}
     # used to serve the API portal
     appserver_cluster:
       type: LOGICAL_DNS
@@ -165,12 +169,6 @@ main_app:
       path: '/w/rest.php/v1/\1'
       host: 'species.wikimedia.org'
       lua_lang: ''
-    '/feed/v1/(\w+)/(\w+)/(.*)':
-      path: '/api/rest_v1/feed/\3'
-      host: 'LANGUAGE.PROJECT.org'
-      # This is a horrible hack and we need to remove it whenever we can.
-      wikifeeds: true
-      lua_lang: '/feed/v1/(%a+)/(%a+)/.*'
 
 nutcracker:
   enabled: false

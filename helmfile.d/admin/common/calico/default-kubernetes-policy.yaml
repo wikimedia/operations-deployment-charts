@@ -1487,6 +1487,18 @@
   protocol: tcp
   dst_ports:
     - 7231
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.2.14/32 # mobileapps.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 4102
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.1.14/32 # mobileapps.discovery.wmnet (codfw)
+  protocol: tcp
+  dst_ports:
+    - 4102
 
   # Deny everything else
 - action: deny

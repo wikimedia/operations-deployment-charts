@@ -258,6 +258,27 @@ static_resources:
                             # the upstream IP in cases of more than one IP in the list.
                             header_name: x-client-ip
                             descriptor_key: client_ip
+              - name: descriptions
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+{{- end }}
+                match:
+                  safe_regex:
+                    google_re2: {}
+                    regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
+                route:
+                  cors:
+                    allow_origin_string_match:
+                      - prefix: "*"
+                    allow_headers: "authorization"
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
+                    substitution: '/\2.\1.org/v1/page/description/\3'
+                  cluster: mobileapps_cluster
+                  rate_limits: *api_rate_limits_config
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
               - name: core
 {{- if $strip_cookies }}

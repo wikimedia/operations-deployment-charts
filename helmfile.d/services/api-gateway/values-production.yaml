@@ -113,3 +113,12 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4492
+    - cidr: 10.2.1.14/32 # mobileapps.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4102
+    - cidr: 10.2.2.14/32 # mobileapps.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4102
+

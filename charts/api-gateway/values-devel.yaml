@@ -52,6 +52,11 @@ main_app:
       hosts:
         localhost: 7231
         badhost: 7231
+    mobileapps_cluster:
+      type: STRICT_DNS
+      hosts:
+        localhost: 8888
+        badhost: 8888
     appserver_cluster:
       tls: false
       type: STRICT_DNS

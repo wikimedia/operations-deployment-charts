@@ -27,6 +27,11 @@ main_app:
       hosts:
         mwdebug1001.eqiad.wmnet: 443
         mwdebug1002.eqiad.wmnet: 443
+    mobileapps_cluster:
+      type: STRICT_DNS
+      tls: false # Can not do TLS in staging T260917
+      hosts:
+        staging.svc.eqiad.wmnet: 8888
 
 nutcracker:
   enabled: true
