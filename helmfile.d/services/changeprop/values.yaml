@@ -106,10 +106,14 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 8081
+      - protocol: tcp
+        port: 443
     - cidr: 10.2.1.10/32 # ores.svc.codfw.wmnet
       ports:
       - protocol: tcp
         port: 8081
+      - protocol: tcp
+        port: 443
     - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
       ports:
       - protocol: tcp
