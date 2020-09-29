@@ -44,11 +44,15 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 10.2.1.16/32
+    - cidr: 10.2.1.16/32 # zotero.svc.codfw.wmnet
       ports:
       - protocol: tcp
-        port: 1969
-    - cidr: 10.2.2.16/32
+        port: 1969       # http
+      - protocol: tcp
+        port: 4969       # https
+    - cidr: 10.2.2.16/32 # zotero.svc.eqiad.wmnet
       ports:
       - protocol: tcp
-        port: 1969
+        port: 1969       # http
+      - protocol: tcp
+        port: 4969       # https
