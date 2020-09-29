@@ -6,6 +6,9 @@ resources:
   replicas: 6
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
+  mw_uri: http://localhost:6500/w/index.php
+  mwapi_uri: http://localhost:6500/w/api.php
+  restbase_uri: http://localhost:6503
   version: 2020-09-28-221030-production
   port: 8889
   # Use command and args below to override the entrypoint
