@@ -17,10 +17,7 @@ logging:
   name: citoid
   streams:
     - type: stdout
-    - host: logstash.svc.eqiad.wmnet
-      level: warn
-      port: 12201
-      type: gelf
+      named_levels: true
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
