@@ -144,6 +144,7 @@ spec: &spec
                   uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
+                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -160,6 +161,7 @@ spec: &spec
                   uri: '/sys/partition/{{ $part_options.partitioner_kind }}/'
                   headers:
                     content-type: "application/json"
+                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
                   body: '{{ `{{globals.message}}` }}'
               {{ $part_topic }}:
                 topic: 'cpjobqueue.partitioned.mediawiki.job.{{ $part_topic }}'
@@ -173,6 +175,7 @@ spec: &spec
                   uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
+                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -194,6 +197,7 @@ spec: &spec
                   uri: '{{ $videoscaler_uri }}'
                   headers:
                     content-type: 'application/json'
+                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -223,6 +227,7 @@ spec: &spec
                   uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
+                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
