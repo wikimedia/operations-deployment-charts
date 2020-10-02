@@ -5,7 +5,7 @@ helm_scaffold_version: 0.1
 discovery:
   enabled: true
   listeners:
-    - zotero
+  - zotero
 main_app:
   image: wikimedia/mediawiki-services-citoid
   limits:
@@ -23,7 +23,7 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
-  version: 2020-09-08-122926-production
+  version: 2020-10-02-141432-production
   #wskey: defined on the private repo.
   zotero: localhost
   zotero_port: 6018
