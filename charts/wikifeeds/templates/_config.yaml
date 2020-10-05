@@ -27,9 +27,6 @@ logging:
   streams:
     - type: stdout
       named_levels: true
-    - host: logstash.svc.eqiad.wmnet
-      port: 12201
-      type: gelf
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
