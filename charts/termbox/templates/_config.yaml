@@ -32,13 +32,7 @@ logging:
     'trace/webrequest': 0.2
   streams:
     - type: stdout
-    # Use gelf-stream -> logstash
-    - type: gelf
-      host: '{env(LOGSTASH_HOST,logstash.svc.eqiad.wmnet)}'
-      port: 12201
-    # Alternatively you can provide a comma-separated list of host:port pairs,
-    # the server to use will be selected randomly on startup
-    # uris: logstash1001.eqiad.wmnet:12201,logstash1003.eqiad.wmnet:12201
+      named_levels: true
 
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
