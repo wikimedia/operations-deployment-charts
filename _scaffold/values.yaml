@@ -59,7 +59,7 @@ config:
 
 tls:
   enabled: false # Switch to true in production
-  image_version: 1.14.4-1
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: $PORT # the port where TLS will be exposed
   upstream_timeout: "180.0s"
   # To be defined in a private space
