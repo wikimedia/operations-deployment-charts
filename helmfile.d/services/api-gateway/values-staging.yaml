@@ -8,10 +8,10 @@ main_app:
 
   access_log:
     debug: true
-    tls: false # Can not do TLS in staging T260917
+    tls: true
     event_service:
       host: staging.svc.eqiad.wmnet
-      port: 35192
+      port: 4592
       path: /v1/events?hasty=true
 
   endpoints:
@@ -29,9 +29,9 @@ main_app:
         mwdebug1002.eqiad.wmnet: 443
     mobileapps_cluster:
       type: STRICT_DNS
-      tls: false # Can not do TLS in staging T260917
+      tls: true
       hosts:
-        staging.svc.eqiad.wmnet: 8888
+        staging.svc.eqiad.wmnet: 4102
 
 nutcracker:
   enabled: true
