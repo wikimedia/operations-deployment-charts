@@ -11,7 +11,6 @@ releases:
     - "../../common/calico/values.yaml"
     - "values.yaml"
     - "private/secrets.yaml"
-    wait: true
     hooks:
     - events: ["presync"]
       command: "helmfile_log_sal"

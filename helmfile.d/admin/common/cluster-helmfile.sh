@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 pushd podsecuritypolicies
     helmfile "$@"
 popd
