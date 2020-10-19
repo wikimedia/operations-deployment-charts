@@ -44,7 +44,7 @@ main_app:
       test:
         description: |-
           A test event stream. A new event is posted about once a minute.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/test/event
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/test/event/latest
         topics:
           - eqiad.test.event
           - codfw.test.event
@@ -101,7 +101,7 @@ main_app:
       recentchange:
         description: |-
           Mediawiki RecentChanges feed.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/recentchange
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/recentchange/latest
         topics:
           - eqiad.mediawiki.recentchange
           - codfw.mediawiki.recentchange
@@ -109,7 +109,7 @@ main_app:
       revision-create:
         description: |-
           Mediawiki Revision create events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/create
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/create/latest
         topics:
           - eqiad.mediawiki.revision-create
           - codfw.mediawiki.revision-create
@@ -117,7 +117,7 @@ main_app:
       revision-visibility-change:
         description: |-
           Mediawiki Revision visiblity change events.
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/visibility-change
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/visibility-change/latest
         topics:
           - eqiad.mediawiki.revision-visibility-change
           - codfw.mediawiki.revision-visibility-change
@@ -130,7 +130,7 @@ main_app:
           strongly typed.
           NOTE: Only the most commonly used ORES model scores are included in each event
           (the ones returned by https://ores.wikimedia.org/v3/precache).
-          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/mediawiki/revision/score
+          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/score/latest
         topics:
           - eqiad.mediawiki.revision-score
           - codfw.mediawiki.revision-score
