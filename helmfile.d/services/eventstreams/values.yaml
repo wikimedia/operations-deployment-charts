@@ -9,8 +9,9 @@ tls:
   telemetry:
     enabled: true
   image_version: 1.14.4-1
+
 resources:
-  replicas: 1
+  replicas: 8
 
 main_app:
   name: eventstreams
@@ -24,8 +25,10 @@ main_app:
     memory: 1000Mi
 
   conf:
+
     kafka:
-      metadata.broker.list: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093
+      # NOTE: The kafka brokers list is set in site specific values files.
+      #metadata.broker.list:
       queued.max.messages.kbytes: 32768
       fetch.message.max.bytes: 8388608
       queued.min.messages: 1000
@@ -41,7 +44,7 @@ main_app:
       test:
         description: |-
           A test event stream. A new event is posted about once a minute.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/test/event/latest/latest
+          Schema: https://github.com/wikimedia/mediawiki-event-schemas/tree/master/jsonschema/test/event
         topics:
           - eqiad.test.event
           - codfw.test.event
@@ -131,6 +134,7 @@ main_app:
         topics:
           - eqiad.mediawiki.revision-score
           - codfw.mediawiki.revision-score
+
 networkpolicy:
   egress:
     enabled: false

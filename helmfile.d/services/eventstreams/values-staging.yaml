@@ -1,0 +1,7 @@
+resources:
+  replicas: 1
+
+main_app:
+  conf:
+    kafka:
+      metadata.broker.list: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093
