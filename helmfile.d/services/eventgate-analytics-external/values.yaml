@@ -7,6 +7,7 @@ tls:
   enabled: true
   public_port: 4692 # the port where TLS will be exposed
   image_version: 1.14.4-1
+
 resources:
   replicas: 3
 
@@ -16,15 +17,16 @@ main_app:
   conf:
     kafka:
       conf:
-        metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
+        # NOTE: The kafka brokers list is set in site specific values files.
+        #metadata.broker.list:
         # Enforce a smaller message size limit for this externally accessible eventgate instance.
         message.max.bytes: 1048576
         # Enable Kafka producer TLS (no authentication, just encryption).
         security.protocol: ssl
+
     schema_precache_uris:
     - /error/1.0.0
     - /test/event/1.0.0
-    topic_prefix: codfw.
 
     # /srv/service/schemas/event/{primary,secondary} is in the eventgate-wikmiedia image cloned at
     # image build time from https://gerrit.wikimedia.org/r/schemas/event/{primary,secondary}
@@ -68,6 +70,7 @@ main_app:
     # Expire and re-request dynamic stream configs every 5 minutes
     stream_config_ttl: 300
     stream_config_recache_on_expire: true
+
 networkpolicy:
   egress:
     enabled: false
