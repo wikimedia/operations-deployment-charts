@@ -1,0 +1,13 @@
+image:
+  repository: docker-registry.wikimedia.org/eventrouter
+  tag: 0.3.0-2
+  pullPolicy: IfNotPresent
+
+resources:
+  # This is the charts default currently, needs verification
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

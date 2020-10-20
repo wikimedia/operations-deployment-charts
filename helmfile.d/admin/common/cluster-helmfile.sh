@@ -1,18 +1,21 @@
 #!/bin/bash
 set -e
 
-pushd podsecuritypolicies
-    helmfile "$@"
-popd
-pushd rbac
-    helmfile "$@"
-popd
-pushd coredns
-    helmfile "$@"
-popd
-pushd calico
-    helmfile "$@"
-popd
+# List helmfile deployments/directories here
+# Will be applied in order
+DEPLOYMENTS="
+podsecuritypolicies
+rbac
+coredns
+calico
+eventrouter
+"
+
+for DEPL in $DEPLOYMENTS; do
+    pushd $DEPL
+        helmfile "$@"
+    popd
+done
 
 # TODO: It's about time to rewrite cluster-helmfile as a python script
 # or to add "list environments" functionality to helmfile.
