@@ -95,7 +95,7 @@ static_resources:
                   http.client_ip: "%REQ(X-FORWARDED-FOR)%"
                   http.request_headers.user-agent: "%REQ(USER-AGENT)%"
                   total_time_ms: "%DURATION%"
-                  client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:cid)%"
+                  client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:aud)%"
                   route: "%ROUTE_NAME%"
 {{- end }}
           use_remote_address: true
@@ -208,7 +208,7 @@ static_resources:
                   cluster: restbase_cluster
                   rate_limits: &api_rate_limits_config
                     # For authenticated requests, the following descriptor is produced:
-                    # - {value: ("client_id","<cid>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
+                    # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
                     # Applying limit/unit for client_id/user_id pair.
                     #
                     # If JWT is absent, no descriptor generated.
