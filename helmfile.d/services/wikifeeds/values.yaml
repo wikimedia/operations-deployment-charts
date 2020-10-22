@@ -45,6 +45,13 @@ config:
   private: {}
 tls:
   enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 150Mi
+    limits:
+      cpu: 1
+      memory: 500Mi
 discovery:
   enabled: true
   listeners:
