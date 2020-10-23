@@ -55,6 +55,12 @@ main_app:
         # All the jobs of this kind are delayed exactly 48 hours, so we don't want
         # the reenqueue feature to kick in.
         reenqueue_delay: 259200
+      newcomerTasksCacheRefreshJob:
+        enabled: true
+        concurrency: 10
+        # All the jobs of this kind are delayed exactly 144 hours (6 days), avoid reenqueueing them
+        # by setting the reenqueue delay to 7 days
+        reenqueue_delay: 604800
       # For cirrus search jobs the retries are built into the job itself,
       # so disable the retries by change-prop. We need special rules for cirrus
       # jobs because they need special configuration.
