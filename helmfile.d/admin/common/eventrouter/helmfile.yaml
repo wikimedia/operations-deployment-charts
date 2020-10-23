@@ -4,7 +4,7 @@ bases:
 releases:
   - name: eventrouter
     namespace: kube-system
-    chart: eventrouter
+    chart: wmf-stable/eventrouter
     missingFileHandler: Warn
     values:
     - "../../common/eventrouter/values.yaml"
