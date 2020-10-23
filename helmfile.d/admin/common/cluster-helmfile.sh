@@ -12,6 +12,9 @@ eventrouter
 "
 
 for DEPL in $DEPLOYMENTS; do
+    if [ ! -d $DEPL ]; then
+        continue
+    fi
     pushd $DEPL
         helmfile "$@"
     popd
