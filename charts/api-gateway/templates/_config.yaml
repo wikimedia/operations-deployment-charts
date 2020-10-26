@@ -152,6 +152,16 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+              - name: api-portal-restbase
+                match:
+                  prefix: "/api/rest_v1/"
+                route:
+                  cluster: restbase_cluster
+                  prefix_rewrite: "/api.wikimedia.org/v1/"
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
               - name: favicon
                 match:
                   path: "/favicon.ico"
