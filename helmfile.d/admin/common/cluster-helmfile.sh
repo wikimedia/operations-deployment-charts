@@ -12,7 +12,7 @@ eventrouter
 "
 
 for DEPL in $DEPLOYMENTS; do
-    if [ ! -d $DEPL ]; then
+    if [ ! -e $DEPL/helmfile.yaml ]; then
         continue
     fi
     pushd $DEPL
