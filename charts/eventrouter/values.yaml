@@ -1,8 +1,8 @@
 # Default values for eventrouter.
 
 image:
-  repository: gcr.io/heptio-images/eventrouter
-  tag: v0.3
+  repository: docker-registry.discovery.wmnet/eventrouter
+  tag: 0.3.0-3
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -40,3 +40,9 @@ securityContext: {}
   # runAsUser: 1000
 
 enablePrometheus: true
+
+# Overwrite the default KUBERNETES_ environment variables for the container
+# to work around the IP SAN limitation of puppet CA
+kubernetesApi:
+  host: ""
+  port: ""

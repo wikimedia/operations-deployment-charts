@@ -52,3 +52,23 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create kubernetes master/api environment variables
+*/}}
+{{- define "kubernetesApiEnv" -}}
+- name: KUBERNETES_PORT_443_TCP_ADDR
+  value: "{{ .Values.kubernetesApi.host }}"
+- name: KUBERNETES_SERVICE_HOST
+  value: "{{ .Values.kubernetesApi.host }}"
+- name: KUBERNETES_SERVICE_PORT
+  value: "{{ .Values.kubernetesApi.port }}"
+- name: KUBERNETES_SERVICE_PORT_HTTPS
+  value: "{{ .Values.kubernetesApi.port }}"
+- name: KUBERNETES_PORT
+  value: "{{ printf "tcp://%s:%s" .Values.kubernetesApi.host .Values.kubernetesApi.port}}"
+- name: KUBERNETES_PORT_443_TCP
+  value: "{{ printf "tcp://%s:%s" .Values.kubernetesApi.host .Values.kubernetesApi.port}}"
+- name: KUBERNETES_PORT_443_TCP_PORT
+  value: "{{ .Values.kubernetesApi.port }}"
+{{- end -}}

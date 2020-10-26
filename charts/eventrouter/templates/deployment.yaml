@@ -19,8 +19,13 @@ spec:
       labels:
         app: {{ template "eventrouter.name" . }}
         release: {{ .Release.Name }}
-    {{- if .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ printf "%s-%s" .Values.sink .Values.enablePrometheus | sha256sum }}
+      {{- if .Values.enablePrometheus }}
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      {{- end }}
+    {{- if .Values.podAnnotations }}
 {{ toYaml .Values.podAnnotations | indent 8 }}
     {{- end }}
     spec:
@@ -28,7 +33,13 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+        env:
+          {{- include "kubernetesApiEnv" . | nindent 10 }}
+        {{- end }}
         volumeMounts:
+          - name: tmp
+            mountPath: /tmp
           - name: config-volume
             mountPath: /etc/eventrouter
     {{- if .Values.containerPorts }}
@@ -54,3 +65,5 @@ spec:
         - name: config-volume
           configMap:
             name: {{ template "eventrouter.fullname" . }}
+        - name: tmp
+          emptyDir: {}
