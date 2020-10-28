@@ -25,8 +25,8 @@ function main {
     cat _scaffold/values.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/values.yaml
     cat _scaffold/Chart.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/Chart.yaml
     cat _scaffold/templates/tests/test-service-checker.yaml | envsubst '${SERVICE_NAME} ${IMAGE_NAME} ${PORT}' > charts/${SERVICE_NAME}/templates/tests/test-service-checker.yaml
-    pushd "charts/${SERVICE_NAME}/" && ln -sfn ../../common_templates/"${scaffold_version}"/default-network-policy-conf.yaml default-network-policy-conf.yaml && popd
     scaffold_version=$(get_scaffold_version)
+    pushd "charts/${SERVICE_NAME}/" && ln -sfn ../../common_templates/"${scaffold_version}"/default-network-policy-conf.yaml default-network-policy-conf.yaml && popd
     # Enforce symlinks to shared helpers. This way we can more easily track changes
     for filepath in common_templates/"${scaffold_version}/"*.tpl; do
         filename="$(basename $filepath)"
