@@ -1,0 +1,91 @@
+# Default values for linkrecommendation.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/research-mwaddlink
+  version: stable # we use latest everywhere in the defaults.
+  port: 8000 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: []
+  args: []
+  requests:
+    cpu: 750m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 500Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8000
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8000
+  # add here any volumes to mount onto the pod. Example:
+  # volumes:
+  #   - name: myvolumename
+  #      hostPath:
+  #        path: /myvolumepath # where on the host machine
+
+  # add here any mounted volumes to make accessible to the container. Example:
+  # volumeMounts:
+  #   - name: myvolumename # the name from your volume above
+  #     mountPath: /path/ # where it should live in your container
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8000 # the number or name of the exposed port on the container
+    port: 8000 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {}
+  private:
+    DB_HOST: "snakeoil"
+    DB_PORT: "snakeoil"
+    DB_USER: "snakeoil"
+    DB_DATABASE: "snakeoil"
+    DB_PASSWORD: "snakeoil"
+    DB_BACKEND: "mysql"
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 8000 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false

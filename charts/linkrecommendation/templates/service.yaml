@@ -1,0 +1,48 @@
+{{ include "tls.service" . }}
+{{ if not .Values.tls.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    - name: {{ .Values.service.port.name }}
+      targetPort: {{ .Values.service.port.targetPort }}
+      port: {{ .Values.service.port.port }}
+      {{- if .Values.service.port.nodePort }}
+      nodePort: {{ .Values.service.port.nodePort }}
+      {{- end }}
+{{- end }}
+{{ if .Values.debug.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wmf.releasename" . }}-debug
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
+  ports:
+    {{- range $port := .Values.debug.ports }}
+    - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
+      targetPort: {{ $port }}
+      port: {{ $port }}
+    {{- end }}
+{{- end }}
