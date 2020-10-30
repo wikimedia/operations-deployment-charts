@@ -13,9 +13,10 @@ spec:
       app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
   policyTypes:
-      {{- if .Values.networkpolicy.egress.enabled }}
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
     - Ingress
-      {{- end }}
   ingress:
     - ports:
       - port: {{ .Values.main_app.port }}

@@ -80,8 +80,8 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-          volumeMounts:
 {{- with .Values.main_app.volumeMounts }}
+          volumeMounts:
 {{ toYaml . | indent 12 }}
 {{- end }}
 {{- if .Values.monitoring.enabled }}
@@ -93,6 +93,7 @@ spec:
               mountPath: /etc/monitoring
 {{- end }}
         {{- include "tls.container" . | indent 8}}
+{{- if or .Values.monitoring.enabled .Values.main_app.volumes .Values.tls.enabled }}
       volumes:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
@@ -102,4 +103,5 @@ spec:
         {{- include "tls.volume" . | indent 8}}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}
+{{- end }}
 {{- end }}
