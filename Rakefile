@@ -27,7 +27,6 @@ class String
   end
 end
 
-
 # Very basic threadpool implementation
 class ThreadPool
   def initialize(nthreads:)
@@ -195,7 +194,7 @@ end
 # for all environments.
 # The return data are organized as follows:
 #  {environment: true/false}
-def validate_helmfile_full(filepath, is_new)
+def validate_helmfile_full(filepath)
   # Do everything in a tempdir
   results = {}
   helm_home = ENV['HELM_HOME'] || File.expand_path("~/.helm")
@@ -211,28 +210,19 @@ def validate_helmfile_full(filepath, is_new)
     fixtures = File.join(dir, '.fixtures.yaml')
     source = File.read(filename)
 
-    # Find all the environments defined in the chart.
-    if not is_new
-      envs = ['default']
-      # Copy the fixtures file, if it exists, to private/secrets.yaml
-      if File.exists? fixtures
-        private = File.join dir, 'private', 'secrets.yaml'
-        FileUtils.mkdir File.dirname(private)
-        FileUtils.cp fixtures, private
-      end
-    else
-      # Patch helmfile so that .fixtures.yaml is used instead of
-      # /etc/helmfile-defaults/general-#{env}.yaml
-      if File.exists? fixtures
-        source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
-        File.write filename, source
-      end
-      ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e staging -f #{filename} build", nil, true
-      # If we can't run helmfile build, we need to bail out early.
-      return {'staging' => false} unless ok
-      helmfile_raw_data = YAML.safe_load(data)
-      envs = helmfile_raw_data['environments'].keys
+    # Patch helmfile so that .fixtures.yaml is used instead of
+    # /etc/helmfile-defaults/general-#{env}.yaml
+    if File.exists? fixtures
+      source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
+      File.write filename, source
     end
+    ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e staging -f #{filename} build", nil, true
+    # If we can't run helmfile build, we need to bail out early.
+    return {'staging' => false} unless ok
+
+    helmfile_raw_data = YAML.safe_load(data)
+    envs = helmfile_raw_data['environments'].keys
+
     # now for each environment, build the list of
     # helm commands to run
     envs.each do |env|
@@ -294,15 +284,8 @@ task :validate_deployments do
       radix, deployment = File.split(File.dirname(helmfile))
       # Skip the example, and env-wide helmfiles
       next if ['_example_', 'eqiad', 'codfw', 'staging'].include? deployment
-      is_new = (radix =~ /services$/)
-      deployment_results = validate_helmfile_full helmfile, is_new
-      # Separate old-style and new-style helmfile stuff.
-      if is_new
-        res = deployment_results
-      else
-        _, cluster = File.split(radix)
-        res = {cluster => deployment_results['default']}
-      end
+      deployment_results = validate_helmfile_full helmfile
+      res = deployment_results
       mutex.synchronize do
         res.each do |cluster, outcome|
           results["#{deployment}/#{cluster}"] = outcome
