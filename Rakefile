@@ -8,7 +8,7 @@ ERROR_CONTEXT_LINES = 4
 PRIVATE_STUB = '.fixtures/private_stub.yaml'
 HELM_REPO = 'stable'
 HELMFILE_GLOB = "helmfile.d/services/**/helmfile.yaml"
-KUBERNETES_VERSIONS = "1.19,1.12"  # Let's target only what we have or want to upgrade to
+KUBERNETES_VERSIONS = "1.19,1.16,1.12"
 HELMFILE_ENV = 'eqiad'
 
 # Extend string to add color output
