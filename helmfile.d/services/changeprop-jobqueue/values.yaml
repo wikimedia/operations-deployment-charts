@@ -99,6 +99,11 @@ main_app:
         # The job takes 0.5s on average, so we would end up making 3.5 req/s on average.
         # In case some of the jobs get rate limited, they will be retried.
         concurrency: 7
+      LocalGlobalUserPageCacheUpdateJob:
+        # This job is prone to large spikes, so having it on the low_traffic_jobs queue
+        # blocks other jobs.
+        enabled: true
+        concurrency: 25
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
