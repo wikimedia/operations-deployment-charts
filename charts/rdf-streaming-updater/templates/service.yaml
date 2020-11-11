@@ -1,0 +1,43 @@
+{{ include "tls.service" . }}
+{{ if not .Values.tls.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wmf.releasename" . }}-ui
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  ports:
+  - name: webui
+    port: 8081
+  selector:
+    app: {{ template "wmf.chartname" . }}-jobmanager
+    release: {{ .Release.Name }}
+    component: jobmanager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wmf.releasename" . }}-jobmanager
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: rpc
+    port: 6123
+  - name: blob-server
+    port: 6124
+  selector:
+    app: {{ template "wmf.chartname" . }}-jobmanager
+    release: {{ .Release.Name }}
+    component: jobmanager
+{{- end }}

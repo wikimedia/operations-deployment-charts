@@ -1,0 +1,100 @@
+# Default values for rdf-streaming-updater.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
+  version: latest
+
+main_app:
+  replicas: 1
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 6123
+    initialDelaySeconds: 30
+    periodSeconds: 60
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 8081
+  config:
+    consumer_group: wdqs_streaming_updater_test
+    brokers: kafka-jumbo1001.eqiad.wmnet:9092
+    output_topic: wdqs_streaming_updater_test
+    checkpoint_dir: file:///streaming_updater/checkpoints
+    spurious_events_dir: file:///streaming_updater/spurious_events
+    late_events_dir: file:///streaming_updater/late_events
+    failed_ops_dir: file:///streaming_updater/failed_events
+    input_idleness: 2000
+    checkpoint_interval: 30000
+    checkpoint_timeout: 900000
+    consumer_parallelism: 1
+    reordering_parallelism: 1
+    decide_mut_op_parallelism: 1
+    generate_diff_parallelism: 1
+
+task_manager:
+  replicas: 2
+  command: []
+  args: []
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 6122
+    initialDelaySeconds: 30
+    periodSeconds: 60
+
+monitoring:
+  enabled: false
+  image_version: latest
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 6122 # the number or name of the exposed port on the container
+    port: 6122 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 6122 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+# Add here, via our "secret" system, the cert/key pairs
+#    cert: "your cert here"
+#    key: "your key here"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false

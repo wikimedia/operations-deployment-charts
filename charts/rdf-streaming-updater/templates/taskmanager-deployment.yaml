@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}-taskmanager
+  labels:
+    app: {{ template "wmf.chartname" . }}-taskmanager
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: taskmanager
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}-taskmanager
+      release: {{ .Release.Name }}
+      component: taskmanager
+  replicas: {{ .Values.task_manager.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}-taskmanager
+        component: taskmanager
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{ if .Values.monitoring.enabled -}}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
+        prometheus.io/port: "9102"
+        prometheus.io/scrape: "true"
+        {{- include "tls.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
+      containers:
+        # The main application container
+        - name: {{ template "wmf.releasename" . }}-taskmanager
+          image: "{{ .Values.docker.registry }}/{{ .Values.docker.image }}:{{ .Values.docker.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          command: ["/opt/flink/bin/taskmanager.sh", "start-foreground"]
+          ports:
+            - containerPort: 6122
+              name: rpc
+            - containerPort: 6125
+              name: query-state
+          {{- if .Values.task_manager.liveness_probe }}
+          livenessProbe:
+          {{- toYaml .Values.task_manager.liveness_probe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.task_manager.readiness_probe }}
+          readinessProbe:
+          {{- toYaml .Values.task_manager.readiness_probe | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "wmf.releasename" . }}
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- range $k, $v := .Values.config.private }}
+            - name: {{ $k | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  key: {{ $k }}
+          {{- end }}
+          resources:
+            requests:
+{{ toYaml .Values.task_manager.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.task_manager.limits | indent 14 }}
+          volumeMounts:
+          - name: flink-config-volume
+            mountPath: /opt/flink/conf
+{{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-metrics-exporter
+              mountPath: /etc/monitoring
+{{- end }}
+        {{- include "tls.container" . | indent 8}}
+      volumes:
+        {{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+            name: {{ template "wmf.releasename" . }}-metrics-config
+        {{- end }}
+        {{- include "tls.volume" . | indent 8}}
+        - name: flink-config-volume
+          configMap:
+            name: {{ template "wmf.releasename" . }}-flink-config
+            items:
+            - key: flink-conf.yaml
+              path: flink-conf.yaml
+            - key: log4j-console.properties
+              path: log4j-console.properties

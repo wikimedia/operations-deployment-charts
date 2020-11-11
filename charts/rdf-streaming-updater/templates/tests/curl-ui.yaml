@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '{{ template "wmf.releasename" . }}-curl-ui'
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: '{{ template "wmf.releasename" . }}-curl-ui'
+    image: "{{ .Values.docker.registry }}/wmfdebug"
+    imagePullPolicy: {{ .Values.docker.pull_policy }}
+    args: ["curl", "http://{{ template "wmf.releasename" . }}-jobmanager:8081/"]
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never

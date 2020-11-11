@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-flink-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  flink-conf.yaml: |-
+{{ include "flink-conf" . | indent 4 }}
+  log4j-console.properties: |-
+{{ .Files.Get "config/log4j-console.properties" | indent 4 }}
+  updater-job.properties: |-
+{{ include "updater-job-properties" . | indent 4 }}
+{{- if .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-metrics-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  prometheus-statsd.conf: |-
+{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
+{{ end }}
+{{ include "tls.config" . }}
