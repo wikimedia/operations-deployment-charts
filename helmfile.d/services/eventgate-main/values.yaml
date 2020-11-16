@@ -11,33 +11,33 @@ resources:
 
 main_app:
   name: eventgate-main
-  version: 2020-08-12-144657-production
+  version: 2020-11-16-212345-production
   conf:
     schema_base_uris:
-      - "file:///srv/service/schemas/event/primary/jsonschema/"
+    - "file:///srv/service/schemas/event/primary/jsonschema/"
     schema_precache_uris:
-      - /error/1.0.0
-      - /test/event/1.0.0
-      - /change-prop/retry/1.0.0
-      - /change-prop/continue/1.0.0
-      - /resource_change/1.0.0
-      - /mediawiki/page/move/1.0.0
-      - /mediawiki/page/restrictions-change/1.0.0
-      - /mediawiki/page/delete/1.0.0
-      - /mediawiki/page/links-change/1.0.0
-      - /mediawiki/page/properties-change/1.0.0
-      - /mediawiki/page/undelete/1.0.0
-      - /mediawiki/recentchange/1.0.0
-      - /mediawiki/user/blocks-change/1.0.0
-      - /mediawiki/centralnotice/campaign/change/1.0.0
-      - /mediawiki/centralnotice/campaign/delete/1.0.0
-      - /mediawiki/centralnotice/campaign/create/1.0.0
-      - /mediawiki/job/1.0.0
-      - /mediawiki/revision/visibility-change/1.0.0
-      - /mediawiki/revision/score/2.0.0
-      - /mediawiki/revision/tags-change/1.0.0
-      - /mediawiki/revision/create/1.0.0
-      - /mediawiki/revision/create/1.1.0
+    - /error/1.0.0
+    - /test/event/1.0.0
+    - /change-prop/retry/1.0.0
+    - /change-prop/continue/1.0.0
+    - /resource_change/1.0.0
+    - /mediawiki/page/move/1.0.0
+    - /mediawiki/page/restrictions-change/1.0.0
+    - /mediawiki/page/delete/1.0.0
+    - /mediawiki/page/links-change/1.0.0
+    - /mediawiki/page/properties-change/1.0.0
+    - /mediawiki/page/undelete/1.0.0
+    - /mediawiki/recentchange/1.0.0
+    - /mediawiki/user/blocks-change/1.0.0
+    - /mediawiki/centralnotice/campaign/change/1.0.0
+    - /mediawiki/centralnotice/campaign/delete/1.0.0
+    - /mediawiki/centralnotice/campaign/create/1.0.0
+    - /mediawiki/job/1.0.0
+    - /mediawiki/revision/visibility-change/1.0.0
+    - /mediawiki/revision/score/2.0.0
+    - /mediawiki/revision/tags-change/1.0.0
+    - /mediawiki/revision/create/1.0.0
+    - /mediawiki/revision/create/1.1.0
     # Request static stream config during startup from the EventStreamConfig extension
     # MW API endpoint for all streams with destination_event_service == eventgate-main
     # We use meta.wikimedia.org here as the default stream configuration wiki.
@@ -64,206 +64,206 @@ main_app:
     # that prodcues to that stream.  If you are using remote
     # stream config, you must configure these streams explicitly there.
     test_events:
-      - $schema: /test/event/1.0.0
-        meta:
+    - $schema: /test/event/1.0.0
+      meta:
           # make sure this is configured in stream config if you are using it.
-          stream: eventgate-main.test.event
+        stream: eventgate-main.test.event
 networkpolicy:
   egress:
     enabled: false
     dst_nets:
       # Allow Kafka for eventgate-main
       # main-eqiad:
-      - cidr: 10.64.0.11/32 # kafka1001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.16.41/32 # kafka1002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.32.127/32 # kafka1003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:101:10:64:0:11/128 # kafka1001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:102:10:64:16:41/128 # kafka1002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:103:10:64:32:127/128 # kafka1003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
+    - cidr: 10.64.0.11/32   # kafka1001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.16.41/32   # kafka1002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.32.127/32   # kafka1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:101:10:64:0:11/128   # kafka1001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:102:10:64:16:41/128   # kafka1002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:127/128   # kafka1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
         # main-codfw:
-      - cidr: 10.192.0.139/32 # kafka2001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.16.169/32 # kafka2002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.32.150/32 # kafka2003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.0.200/32 # kafka-main1001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.16.37/32 # kafka-main1002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.32.90/32 # kafka-main1003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.48.30/32 # kafka-main1004
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.64.48.31/32 # kafka-main1005
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.0.17/32 # kafka-main2001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.16.8/32 # kafka-main2002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.32.136/32 # kafka-main2003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.48.38/32 # kafka-main2004
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 10.192.48.46/32 # kafka-main2005
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:101:10:192:0:139/128 # kafka2001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:102:10:192:16:169/128 # kafka2002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:103:10:192:32:150/128 # kafka2003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:101:10:64:0:200/128 # kafka-main1001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:102:10:64:16:37/128 # kafka-main1002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:103:10:64:32:90/128 # kafka-main1003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:107:10:64:48:30/128 # kafka-main1004
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:861:107:10:64:48:31/128 # kafka-main1005
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:101:10:192:0:17/128 # kafka-main2001
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:102:10:192:16:8/128 # kafka-main2002
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:103:10:192:32:136/128 # kafka-main2003
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:104:10:192:48:38/128 # kafka-main2004
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
-      - cidr: 2620:0:860:104:10:192:48:46/128 # kafka-main2005
-        ports:
-          - protocol: tcp
-            port: 9092
-          - protocol: tcp
-            port: 9093
+    - cidr: 10.192.0.139/32   # kafka2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.16.169/32   # kafka2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.32.150/32   # kafka2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.0.200/32   # kafka-main1001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.16.37/32   # kafka-main1002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.32.90/32   # kafka-main1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.48.30/32   # kafka-main1004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.48.31/32   # kafka-main1005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.0.17/32   # kafka-main2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.16.8/32   # kafka-main2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.32.136/32   # kafka-main2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.48.38/32   # kafka-main2004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.48.46/32   # kafka-main2005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:101:10:192:0:139/128   # kafka2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:102:10:192:16:169/128   # kafka2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:103:10:192:32:150/128   # kafka2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:101:10:64:0:200/128   # kafka-main1001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:102:10:64:16:37/128   # kafka-main1002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:90/128   # kafka-main1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:30/128   # kafka-main1004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:31/128   # kafka-main1005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:101:10:192:0:17/128   # kafka-main2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:102:10:192:16:8/128   # kafka-main2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:103:10:192:32:136/128   # kafka-main2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:104:10:192:48:38/128   # kafka-main2004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:104:10:192:48:46/128   # kafka-main2005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093

@@ -12,7 +12,7 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: 2020-10-27-173311-production
+  version: 2020-11-16-212345-production
   conf:
     kafka:
       conf:
@@ -49,10 +49,10 @@ main_app:
     # that prodcues to that stream.  If you are using remote
     # stream config, you must configure these streams explicitly there.
     test_events:
-      - $schema: /test/event/1.0.0
-        meta:
+    - $schema: /test/event/1.0.0
+      meta:
           # make sure this is configured in stream config if you are using it.
-          stream: eventgate-analytics-external.test.event
+        stream: eventgate-analytics-external.test.event
 
     # Request dynamic stream config from the EventStreamConfig extension MW API endpoint.
     # We use meta.wikimedia.org here as the default stream configuration wiki.

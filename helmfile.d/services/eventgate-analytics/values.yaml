@@ -8,7 +8,7 @@ tls:
   public_port: 4592 # the port where TLS will be exposed
 main_app:
   name: eventgate-analytics
-  version: 2020-08-12-144657-production
+  version: 2020-11-16-212345-production
   conf:
     kafka:
       conf:
@@ -60,10 +60,10 @@ main_app:
     # that prodcues to that stream.  If you are using remote
     # stream config, you must configure these streams explicitly there.
     test_events:
-      - $schema: /test/event/1.0.0
-        meta:
+    - $schema: /test/event/1.0.0
+      meta:
           # make sure this is configured in stream config if you are using it.
-          stream: eventgate-analytics.test.event
+        stream: eventgate-analytics.test.event
 
 networkpolicy:
   egress:

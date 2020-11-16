@@ -19,7 +19,7 @@ resources:
 
 main_app:
   name: eventgate-logging-external
-  version: 2020-09-08-200149-production
+  version: 2020-11-16-212345-production
   conf:
     # eventgate-logging-external is used to intake w3c browser reportingapi reports
     # like Network Error Logging.  Since reportingapi is not POSTing via sendBeacon,
@@ -85,10 +85,10 @@ main_app:
     # that prodcues to that stream.  If you are using remote
     # stream config, you must configure these streams explicitly there.
     test_events:
-      - $schema: /test/event/1.0.0
-        meta:
+    - $schema: /test/event/1.0.0
+      meta:
           # make sure this is configured in stream config if you are using it.
-          stream: eventgate-logging-external.test.event
+        stream: eventgate-logging-external.test.event
 
 networkpolicy:
   egress:
