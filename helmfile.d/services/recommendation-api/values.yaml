@@ -1,0 +1,67 @@
+helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.discovery.wmnet
+  pull_policy: IfNotPresent
+resources:
+  replicas: 12
+main_app:
+  image: wikimedia/mediawiki-services-recommendation-api
+  version: 2020-05-03-212505-production
+  port: 9632
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 1
+    memory: 300Mi
+  liveness_probe:
+    tcpSocket:
+      port: 9632
+  readiness_probe:
+    httpGet:
+      path: /_info
+      port: 9632
+  mw_host: api-ro.discovery.wmnet
+  restbase_host: restbase.discovery.wmnet:7231
+  mysql_conn:
+    limit: 2
+    host: m2-master.eqiad.wmnet
+    name: recommendationapi
+    user: recommendationapiservice
+    # pass: Being added via secrets on deployment host
+    # If a connection to MySQL fails, how many times to retry?
+    retry: 2
+    # retry delay (in ms) before connecting to MySQL
+    retry_delay: 1000
+
+monitoring:
+  enabled: true
+  image_version: 0.0.5
+service:
+  deployment: production
+  port:
+   name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+   # protocol: TCP # TCP is the default protocol
+   targetPort: 9632 # the number or name of the exposed port on the container
+   port: 9632 # the number of the port desired to be exposed to the cluster
+   nodePort: 9632
+config:
+  public: {}
+  private: {}
+tls:
+  enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 150Mi
+    limits:
+      cpu: 1
+      memory: 500Mi
+discovery:
+  enabled: false
+  listeners:
+    - mwapi-async
+    - restbase-for-services
+networkpolicy:
+  egress:
+    enabled: true
