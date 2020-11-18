@@ -64,8 +64,7 @@ services:
         retry: {{ .Values.main_app.mysql_conn.retry }}
         retry_delay: {{ .Values.main_app.mysql_conn.retry_delay }}
       mysql_tables:
-        language: language
-        normalized_rank: normalized_rank
+        {{- toYaml .Values.main_app.mysql_tables | nindent 8 }}
       wikidata_domain: 'www.wikidata.org'
       article:
         # key is the target language, values are source languages

@@ -14,7 +14,9 @@ main_app:
     retry: 2
     # retry delay (in ms) before connecting to MySQL
     retry_delay: 1000
-
+  mysql_tables:
+    language: language_20181130
+    normalized_rank: normalized_rank_20181130
 monitoring:
   enabled: true
   image_version: 0.0.5

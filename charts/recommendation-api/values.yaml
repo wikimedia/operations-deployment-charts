@@ -21,6 +21,9 @@ main_app:
     retry: 2
     # retry delay (in ms) before connecting to MySQL
     retry_delay: 1000
+  mysql_tables:
+    language: language
+    normalized_rank: normalized_rank
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
