@@ -27,7 +27,7 @@ main_app:
   command: ["nodejs"]
   args: ["server.js", "-c", "/etc/recommendation-api/config.yaml"]
   requests:
-    cpu: 50m
+    cpu: 100m
     memory: 100Mi
   limits:
     cpu: 1
