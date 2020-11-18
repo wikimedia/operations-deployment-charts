@@ -9,14 +9,6 @@ networkpolicy:
       ports:
       - protocol: udp
         port: 53
-    - cidr: 208.80.153.254/32
-      ports:
-      - protocol: udp
-        port: 53
-    - cidr: 208.80.154.254/32
-      ports:
-      - protocol: udp
-        port: 53
     # Allow url-downloaders
     - cidr: 208.80.154.29/32 # urldownloader1001
       ports:
