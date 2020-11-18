@@ -1,26 +1,7 @@
-helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
-docker:
-  registry: docker-registry.discovery.wmnet
-  pull_policy: IfNotPresent
 resources:
   replicas: 12
 main_app:
-  image: wikimedia/mediawiki-services-recommendation-api
   version: 2020-05-03-212505-production
-  port: 9632
-  requests:
-    cpu: 100m
-    memory: 100Mi
-  limits:
-    cpu: 1
-    memory: 300Mi
-  liveness_probe:
-    tcpSocket:
-      port: 9632
-  readiness_probe:
-    httpGet:
-      path: /_info
-      port: 9632
   mw_host: api-ro.discovery.wmnet
   restbase_host: restbase.discovery.wmnet:7231
   mysql_conn:
@@ -45,9 +26,6 @@ service:
    targetPort: 9632 # the number or name of the exposed port on the container
    port: 9632 # the number of the port desired to be exposed to the cluster
    nodePort: 9632
-config:
-  public: {}
-  private: {}
 tls:
   enabled: true
   resources:
