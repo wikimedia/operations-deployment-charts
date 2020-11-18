@@ -43,21 +43,6 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 8080
-    # Allow statsd
-    - cidr: 10.64.32.155/32
-      ports:
-      - protocol: udp
-        port: 8125
-    - cidr: 10.64.16.149/32
-      ports:
-      - protocol: udp
-        port: 8125
-    - cidr: 10.192.16.33/32
-      ports:
-      - protocol: udp
-        port: 8125
-    # Allow graphite
-    # Re-evaluate this at some later point in time. For now deny
     # Allow logstash
     - cidr: 10.2.2.36/32
       ports:
