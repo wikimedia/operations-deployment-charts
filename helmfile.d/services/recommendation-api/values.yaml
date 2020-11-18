@@ -2,8 +2,8 @@ resources:
   replicas: 12
 main_app:
   version: 2020-05-03-212505-production
-  mw_host: api-ro.discovery.wmnet
-  restbase_host: restbase.discovery.wmnet:7231
+  mw_host: localhost:6500
+  restbase_host: localhost:6503
   mysql_conn:
     limit: 2
     host: m2-master.eqiad.wmnet
@@ -38,7 +38,7 @@ tls:
       cpu: 1
       memory: 500Mi
 discovery:
-  enabled: false
+  enabled: true
   listeners:
     - mwapi-async
     - restbase-for-services
