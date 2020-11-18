@@ -65,3 +65,6 @@ discovery:
 networkpolicy:
   egress:
     enabled: true
+    dst_ports:
+      - port: 3306
+        protocol: tcp

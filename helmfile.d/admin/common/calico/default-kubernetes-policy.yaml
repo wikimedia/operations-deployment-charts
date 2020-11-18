@@ -1458,5 +1458,12 @@
   dst_ports:
     - 4102
 
+  # recommendation-api needs access to m2-master. Since the IP might change, for now open up 3306/tcp entirely
+- action: allow
+  src_selector: calico/k8s_ns == 'recommendation-api'
+  protocol: tcp
+  dst_ports:
+    - 3306
+
   # Deny everything else
 - action: deny
