@@ -1,0 +1,38 @@
+environments:
+  staging-codfw:
+    values:
+      - values.yaml
+      - {{ .Environment.Name }}/values.yaml
+---
+bases:
+  - helmfile_rbac.yaml
+  - helmfile_psp.yaml
+  - helmfile_namespaces.yaml
+  - coredns/helmfile.yaml
+  - eventrouter/helmfile.yaml
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{ .Environment.Name }}] START helmfile.d/admin '{{`{{.HelmfileCommand}}`}}'.",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{ .Environment.Name }}] DONE helmfile.d/admin '{{`{{.HelmfileCommand}}`}}'.",
+      ]
+---
+helmBinary: helm3
+helmDefaults:
+  verify: false
+  atomic: true
+  timeout: 600
+  recreatePods: false
+  force: false
+  args:
+    - "--kubeconfig=/etc/kubernetes/admin-{{ .Environment.Name }}.config"

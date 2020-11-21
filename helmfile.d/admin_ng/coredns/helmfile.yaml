@@ -1,0 +1,9 @@
+releases:
+  - name: coredns
+    namespace: kube-system
+    chart: ../admin/internal_charts/wmfcoredns
+    missingFileHandler: Warn
+    values:
+    - "coredns/values.yaml"
+    - "{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+    - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"

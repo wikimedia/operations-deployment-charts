@@ -1,0 +1,64 @@
+# Defaults applied to all clusters
+#
+kubernetesServicePort: "6443"
+tillerImage: docker-registry.discovery.wmnet/tiller:2.16.7-wmf1
+
+limitranges:
+  # check out documentation to understand this well
+  # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
+  container:
+    min:
+      memory: "100Mi"
+      cpu: "100m"
+    max:
+      memory: "3Gi"
+      cpu: "8"
+    defaultRequest:
+      memory: "100Mi"
+      cpu: "100m"
+    default:
+      memory: "100Mi"
+      cpu: "100m"
+  pod:
+    min:
+      memory: "100Mi"
+      cpu: "100m"
+    max:
+      memory: "4Gi"
+      cpu: "9"
+
+# https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
+resourcequota:
+  pods: {}
+  compute:
+    requests:
+      cpu: "90"
+      memory: "60Gi"
+    limits:
+      cpu: "90"
+      memory: "60Gi"
+
+# List all namespaces that should be created in every cluster
+# Set "<namespace-name>.deployUser: foo" for deploy username different from <namespace-name>
+namespaces:
+  api-gateway: {}
+  blubberoid: {}
+  changeprop: {}
+  changeprop-jobqueue: {}
+  citoid: {}
+  cxserver: {}
+  echostore: {}
+  eventgate-analytics: {}
+  eventgate-analytics-external: {}
+  eventgate-logging-external: {}
+  eventgate-main: {}
+  eventstreams: {}
+  mathoid: {}
+  mobileapps: {}
+  proton: {}
+  push-notifications: {}
+  recommendation-api: {}
+  sessionstore: {}
+  termbox: {}
+  wikifeeds: {}
+  zotero: {}

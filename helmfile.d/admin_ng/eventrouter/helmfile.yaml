@@ -1,0 +1,8 @@
+releases:
+  - name: eventrouter
+    namespace: kube-system
+    chart: wmf-stable/eventrouter
+    missingFileHandler: Warn
+    values:
+    - "eventrouter/values.yaml"
+    - "{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
