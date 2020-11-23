@@ -311,7 +311,11 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 8190
+      - protocol: tcp
+        port: 443
     - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
       ports:
       - protocol: tcp
         port: 8190
+      - protocol: tcp
+        port: 443
