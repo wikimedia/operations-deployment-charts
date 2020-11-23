@@ -128,15 +128,13 @@ main_app:
     # (A global counter and limit of client connections per IP would be much better.)
     client_ip_connection_limit: 2
 
-    streams:
-      # Map of stream name (routes) to their constituent topics.
-      # Each 'stream' name can be composed of multiple topics.
-      # Each entry here we result in a consumable
-      # /v2/stream/{stream_name} route.
-      test:
-        description: "Test event stream"
-        topics:
-          - datacenter1.test.event
+    schema_base_uris:
+    - https://schema.discovery.wmnet/repositories/primary/jsonschema
+    - https://schema.discovery.wmnet/repositories/secondary/jsonschema
+    schema_latest_version: latest
+
+    # This must be set in helmfile values.yaml!
+    #stream_config_uri:
 
 networkpolicy:
   egress:

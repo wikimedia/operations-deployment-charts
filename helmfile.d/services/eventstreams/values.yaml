@@ -35,104 +35,78 @@ main_app:
       # Enable Kafka consumer TLS (no authentication, just encryption).
       security.protocol: ssl
 
-    # List of stream name (routes) and their constituent topics.
-    # This is used to choose which topics are exposed, as well as for
-    # generating the OpenAPI spec documentation.
-    streams:
+    # Use the EventStreamConfig API to discover streams and topics.
+    # Since stream.wikimedia.org is cross DC, it uses the kafka main clusters.
+    # As such, it can only possibly expose streams that exist on kafka main,
+    # which are all produced via eventgate-main.
+    # Only request streams from EventStreamConfig API that have
+    # destination_event_service == 'eventgate-main'
+    stream_config_uri: 'https://api-ro.discovery.wmnet/w/api.php?format=json&action=streamconfigs&all_settings=true&constraints=destination_event_service=eventgate-main'
+    stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
+    stream_config_object_path: streams
+    # Since we manually restrict the list of allowed streams, there's no need
+    # to refresh stream_config to look for new streams.
+    # Set ttl to 0 to only look up stream configs at service start up.
+    stream_config_ttl: 0
 
-      test:
+    # Only these streams will be exposed.
+    allowed_streams:
+      - mediawiki.page-create
+      - mediawiki.page-delete
+      - mediawiki.page-move
+      - mediawiki.page-undelete
+      - mediawiki.page-properties-change
+      - mediawiki.page-links-change
+      - mediawiki.recentchange
+      - mediawiki.revision-create
+      - mediawiki.revision-visibility-change
+      - mediawiki.revision-score
+      - eventgate-main.test.event
+
+    # Before integrating with EventStreamConfig API,
+    # stream route to topic name mapping was explicitly declared here.
+    # The routes here did not include the 'mediawiki.' prefix
+    # that the streams are actually named with, so we add
+    # the previously configured stream route names as
+    # stream_aliases for backwards API compatibily.
+    # These defaults will be merged in with what is obtained
+    # from stream_config_uri.
+    stream_config_defaults:
+      mediawiki.page-create:
+        description: |-
+          MediaWiki page create events. This page create stream
+          is just the first revision create event for each page.
+          As such, it reuses the mediawiki/revision/create schema.
+        stream_aliases: [page-create]
+      mediawiki.page-delete:
+        stream_aliases: [page-delete]
+      mediawiki.page-links-change:
+        stream_aliases: [page-links-change]
+      mediawiki.page-move:
+        stream_aliases: [page-move]
+      mediawiki.page-properties-change:
+        stream_aliases: [page-properties-change]
+      mediawiki.page-undelete:
+        stream_aliases: [page-undelete]
+      mediawiki.recentchange:
+        stream_aliases: [recentchange]
+      mediawiki.revision-create:
+        stream_aliases: [revision-create]
+      mediawiki.revision-score:
+        description: |-
+          MediaWiki revision score events. Every new revision in an
+          ORES enabled wiki should have a revision-score event.
+          This schema is structured differnetly than ORES API results, as
+          event schemas should map well into RDBMS / SQL environments where
+          columns must be strongly typed.
+          NOTE: Only the most commonly used ORES model scores are included in
+          each event (the ones returned by https://ores.wikimedia.org/v3/precache).
+        stream_aliases: [revision-score]
+      eventgate-main.test.event:
         description: |-
           A test event stream. A new event is posted about once a minute.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/test/event/latest
-        topics:
-          - eqiad.test.event
-          - codfw.test.event
+        stream_aliases: [test]
 
-      page-create:
-        description: |-
-          Mediawiki Page create events. This page create stream is just the first revision create
-          event for each page. As such, it reuses the mediawiki/revision/create schema.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/create/latest
-        topics:
-          - eqiad.mediawiki.page-create
-          - codfw.mediawiki.page-create
-
-      page-delete:
-        description: |-
-          Mediawiki Page delete events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/delete/latest
-        topics:
-          - eqiad.mediawiki.page-delete
-          - codfw.mediawiki.page-delete
-
-      page-move:
-        description: |-
-          Mediawiki Page move (rename) events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/move/latest
-        topics:
-          - eqiad.mediawiki.page-move
-          - codfw.mediawiki.page-move
-
-      page-undelete:
-        description: |-
-          Mediawiki Page un-delete events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/undelete/latest
-        topics:
-          - eqiad.mediawiki.page-undelete
-          - codfw.mediawiki.page-undelete
-
-      page-properties-change:
-        description: |-
-          Mediawiki Page Properties change events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/properties-change/latest
-        topics:
-          - eqiad.mediawiki.page-properties-change
-          - codfw.mediawiki.page-properties-change
-
-      page-links-change:
-        description: |-
-          Mediawiki Page Links change events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/page/links-change/latest
-        topics:
-          - eqiad.mediawiki.page-links-change
-          - codfw.mediawiki.page-links-change
-
-      recentchange:
-        description: |-
-          Mediawiki RecentChanges feed.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/recentchange/latest
-        topics:
-          - eqiad.mediawiki.recentchange
-          - codfw.mediawiki.recentchange
-
-      revision-create:
-        description: |-
-          Mediawiki Revision create events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/create/latest
-        topics:
-          - eqiad.mediawiki.revision-create
-          - codfw.mediawiki.revision-create
-
-      revision-visibility-change:
-        description: |-
-          Mediawiki Revision visiblity change events.
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/visibility-change/latest
-        topics:
-          - eqiad.mediawiki.revision-visibility-change
-          - codfw.mediawiki.revision-visibility-change
-
-      revision-score:
-        description: |-
-          Mediawiki Revision Score feed. Every new revision in an ORES enabled wiki should have a
-          revision-score event. This schema is structured differnetly than ORES API results, as
-          event schemas should map well into RDBMS / SQL environments where columns must be
-          strongly typed.
-          NOTE: Only the most commonly used ORES model scores are included in each event
-          (the ones returned by https://ores.wikimedia.org/v3/precache).
-          Schema: https://schema.wikimedia.org/repositories/primary/jsonschema/mediawiki/revision/score/latest
-        topics:
-          - eqiad.mediawiki.revision-score
-          - codfw.mediawiki.revision-score
 
 networkpolicy:
   egress:
@@ -331,3 +305,13 @@ networkpolicy:
         port: 9092
       - protocol: tcp
         port: 9093
+    # Allow schema.svc.{eqiad,codfw} for eventstreams
+    # These are used to auto-generate OpenAPI docs.
+    - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 8190
+    - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 8190
