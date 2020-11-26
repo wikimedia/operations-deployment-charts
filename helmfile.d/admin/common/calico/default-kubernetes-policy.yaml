@@ -1465,5 +1465,13 @@
   dst_ports:
     - 3306
 
+# similar-users needs access to m2-master. Since the IP might change, for now open up 3306/tcp entirely
+- action: allow
+  src_selector: calico/k8s_ns == 'similar-users'
+  protocol: tcp
+  dst_ports:
+    - 3306
+
+
   # Deny everything else
 - action: deny

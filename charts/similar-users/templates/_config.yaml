@@ -1,0 +1,28 @@
+{{- define "config.app" }}
+# User-agent used for querying Wikidata API
+CUSTOM_UA: "Wikimedia Similar Users service"
+
+LOG_LEVEL: {{ .Values.main_app.log_level }}
+
+ENABLE_UI: False
+
+MWAPI_RETRIES: 10
+
+# To be removed in future
+EARLIEST_TS: '2020-01-01T00:00:00Z'
+MOST_RECENT_REV_TS: '2020-09-30T23:59:59Z'
+
+SQLALCHEMY_TRACK_MODIFICATIONS: False
+
+TEMPORAL_OFFSET: '(-1, 0, 1)'
+#TODO what should these be?
+NAMESPACES: [0, 1, 118]
+#TODO move this out of configuration?
+EDIT_WINDOW: 5
+
+ALLOWED_PROJECTS: ["wikipedia"]
+
+BASIC_AUTH_USERNAME: '{{ .Values.main_app.mwaccess_user }}'
+
+LISTEN_IP: 0.0.0.0
+{{- end }}

@@ -1,0 +1,66 @@
+helm_scaffold_version: 0.2
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/mediawiki-services-similar-users
+  version: latest
+  port: 14110
+  command: ["gunicorn"]
+  args: ["-b", "0.0.0.0:14110", "similar_users.wsgi:app"]
+  requests:
+    cpu: 100m
+    memory: 600Mi
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  liveness_probe:
+    tcpSocket:
+      port: 14110
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 14110
+
+  log_level: WARN
+
+  # username and password used by mediawiki to access the service -
+  # these are populared by the private repo in prod.
+  mwaccess_user: sockpuppet
+
+service:
+  deployment: minikube
+  port:
+    name: similar-users
+    port: 14110
+    targetPort: 14110
+    nodePort: null
+config:
+  public: {}
+  private:
+    # These fake passwords will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
+    BASIC_AUTH_PASSWORD: "similar_users_http_pass"
+    SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://simiar_users_user:similar_users_pass@localhost/similar_users'
+
+tls:
+  enabled: false # Switch to true in production
+  public_port: 4110 # the port where TLS will be exposed
+  image_version: 1.15.1-3
+  upstream_timeout: "180.0s"
+  certs: # these come from secrets
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+debug:
+  enabled: false
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false

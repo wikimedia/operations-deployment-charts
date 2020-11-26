@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-base-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{- if .Values.puppet_ca_crt }}
+  puppetca.crt.pem: |-
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{ end -}}
