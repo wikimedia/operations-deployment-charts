@@ -130,13 +130,14 @@ end
 # Does so by running helm template (injecting value fixture files if present)
 # If kubeyaml is available, also run kubeyaml.
 def check_template(chart, fixture = nil, kubeyaml = nil)
+  helm = helm_version(chart)
   if fixture != nil
     # When passing multiple values, concatenate them
     quoted = fixture.map{ |x| "-f '#{x}'" }.join " "
-    command = "helm template #{quoted} '#{chart}'"
+    command = "#{helm} template #{quoted} '#{chart}'"
     error = "Error checking #{chart}, value files: #{fixture}"
   else
-    command = "helm template '#{chart}'"
+    command = "#{helm} template '#{chart}'"
     error = "Error checking #{chart}"
   end
   success, output = _exec command
@@ -235,6 +236,33 @@ def validate_helmfile_full(filepath)
   results
 end
 
+# Determine which helm version (2 or 3) needs to be used to lint/template the chart
+# Returns the helm binary name to use (helm2 or helm3)
+def helm_version(chart)
+  path_to_chart_yaml = File.join(chart, 'Chart.yaml')
+  begin
+    error = "Parsing #{path_to_chart_yaml}"
+    chart_yaml = YAML.load_file(path_to_chart_yaml)
+  rescue Psych::SyntaxError => e
+    report_yaml_parse_error("Chart.yaml", error, chart_yaml, e)
+    raise('Failure parsing Chart.yaml')
+  rescue StandardError => e
+    puts error.red
+    puts e
+    raise('Generic failure interpreting Chart.yaml')
+  end
+
+  error = "Failed to determine helm version for #{chart}"
+  if chart_yaml['apiVersion'] == 'v1'
+    return 'helm2'
+  elsif chart_yaml['apiVersion'] == 'v2'
+    return 'helm3'
+  else
+    puts error.red
+    puts e
+    raise('Failed to determine helm version to use')
+  end
+end
 
 ## RAKE TASKS
 
@@ -244,7 +272,8 @@ task :lint do
   results = {}
   all_charts.each do |chart|
     puts "Linting #{chart}"
-    results[chart] =  system("helm lint '#{chart}'")
+    helm = helm_version(chart)
+    results[chart] =  system("#{helm} lint '#{chart}'")
   end
   pprint "Helm lint summary:", results
   raise_if_failed results
