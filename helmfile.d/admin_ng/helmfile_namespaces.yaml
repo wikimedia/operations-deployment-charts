@@ -153,9 +153,9 @@ releases:
                     - name: TILLER_HISTORY_MAX
                       value: "0"
                     - name: KUBERNETES_SERVICE_HOST
-                      value: {{ $.Environment.Values.kubernetesServiceHost | quote }}
+                      value: {{ $.Environment.Values.kubernetesApi.host | quote }}
                     - name: KUBERNETES_SERVICE_PORT
-                      value: {{ $.Environment.Values.kubernetesServicePort | quote }}
+                      value: {{ $.Environment.Values.kubernetesApi.port | quote }}
                     livenessProbe:
                       failureThreshold: 3
                       httpGet:

@@ -1,6 +1,8 @@
 # Defaults applied to all clusters
 #
-kubernetesServicePort: "6443"
+kubernetesApi:
+  port: 6443
+
 tillerImage: docker-registry.discovery.wmnet/tiller:2.16.7-wmf1
 
 limitranges:
