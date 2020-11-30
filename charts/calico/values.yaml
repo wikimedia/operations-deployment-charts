@@ -1,0 +1,75 @@
+# Default values for calico.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Globals (not deployment/application specific)
+
+# Overwrite the default KUBERNETES_ environment variables for the container
+# to work around the IP SAN limitation of puppet CA
+kubernetesApi:
+  host: ""
+  port: ""
+
+image:
+  # Just the repository name. Image name will be per application (see below)
+  repository: docker-registry.wikimedia.org
+  # Overrides the images tags (whose default is the chart appVersion).
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# BGPConfiguration for this calico setup.
+# See: https://docs.projectcalico.org/reference/resources/bgpconfig
+BGPConfiguration: {}
+#  asNumber: 64603
+#  nodeToNodeMeshEnabled: false
+
+# Array of BGPPeers to create.
+# See: https://docs.projectcalico.org/reference/resources/bgppeer
+BGPPeers: {}
+#  cr1-eqiad:
+#    asNumber: 14907
+#    peerIP: "208.80.154.196"
+
+# Array of IPPools to create.
+# See: https://docs.projectcalico.org/reference/resources/ippool
+IPPools: {}
+#  my-ipv4-pool:
+#    cidr: "10.64.75.0/24"
+#  my-ipv6-pool:
+#    cidr: "2620:0:861:babe::/64"
+
+# Typha
+typha:
+  imageName: calico/typha
+  replicaCount: 3
+  resources: {}
+  tolerations: {}
+  nodeSelector: {}
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: k8s-app
+                operator: In
+                values:
+                  - calico-typha
+          topologyKey: failure-domain.beta.kubernetes.io/zone
+
+# calico node
+calicoNode:
+  imageName: calico/node
+  resources:
+    # This is hardcoded in calico-node manifests, don't know...
+    requests:
+      cpu: 250m
+
+# kube-controllers
+kubeControllers:
+  imageName: calico/kube-controllers
+  resources: {}
+  tolerations: {}
+  nodeSelector: {}
+  affinity: {}

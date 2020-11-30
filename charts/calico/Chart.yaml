@@ -1,0 +1,10 @@
+apiVersion: v2
+name: calico
+description: WMF Calico setup
+type: application
+version: 0.1.0
+appVersion: 3.17.0
+dependecies:
+  - name: calico-crds
+    version: 0.1.0
+    repository: "file://../calico-crds"

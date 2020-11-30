@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calico-typha
+  namespace: kube-system
+  labels:
+    {{- include "calico.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.typha.replicaCount }}
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      k8s-app: calico-typha
+      {{- include "calico.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9093"
+      labels:
+        k8s-app: calico-typha
+        {{- include "calico.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: calico-node
+      # Since Calico can't network a pod until Typha is up, we need to run Typha itself
+      # as a host-networked pod.
+      hostNetwork: true
+      priorityClassName: system-cluster-critical
+      securityContext:
+        fsGroup: 65534
+      containers:
+        - name: calico-typha
+          image: "{{ .Values.image.repository }}/{{ .Values.typha.imageName }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden.
+                name: calico-kubernetes-services-endpoint
+                optional: true
+          env:
+            # Enable "info" logging by default. Can be set to "debug" to increase verbosity.
+            - name: TYPHA_LOGSEVERITYSCREEN
+              value: "info"
+            # Disable logging to file and syslog since those don't make sense in Kubernetes.
+            - name: TYPHA_LOGFILEPATH
+              value: "none"
+            - name: TYPHA_LOGSEVERITYSYS
+              value: "none"
+            # Monitor the Kubernetes API to find the number of running instances and rebalance
+            # connections.
+            - name: TYPHA_CONNECTIONREBALANCINGMODE
+              value: "kubernetes"
+            - name: TYPHA_DATASTORETYPE
+              value: "kubernetes"
+            - name: TYPHA_HEALTHENABLED
+              value: "true"
+            # Since Typha is host-networked, this opens a port on the host.
+            - name: TYPHA_PROMETHEUSMETRICSENABLED
+              value: "true"
+            - name: TYPHA_PROMETHEUSMETRICSPORT
+              value: "9093"
+            # Location of the CA bundle Typha uses to authenticate calico/node; volume mount
+            #- name: TYPHA_CAFILE
+            #  value: /calico-typha-ca/typhaca.crt
+            # Common name on the calico/node certificate
+            #- name: TYPHA_CLIENTCN
+            #  value: calico-node
+            # Location of the server certificate for Typha; volume mount
+            #- name: TYPHA_SERVERCERTFILE
+            #  value: /calico-typha-certs/typha.crt
+            # Location of the server certificate key for Typha; volume mount
+            #- name: TYPHA_SERVERKEYFILE
+            #  value: /calico-typha-certs/typha.key
+          ports:
+            - containerPort: 5473
+              name: calico-typha
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 9098
+              host: localhost
+            periodSeconds: 30
+            initialDelaySeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 9098
+              host: localhost
+            periodSeconds: 10
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources:
+            {{- toYaml .Values.typha.resources | nindent 12 }}
+      nodeSelector:
+        kubernetes.io/os: linux
+      {{- with .Values.typha.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.typha.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+        # Mark the pod as a critical add-on for rescheduling.
+        - key: CriticalAddonsOnly
+          operator: Exists
+      {{- with .Values.typha.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: calico-typha
+  namespace: kube-system
+  labels:
+    k8s-app: calico-typha
+    {{- include "calico.labels" . | nindent 4 }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      k8s-app: calico-typha
+      {{- include "calico.selectorLabels" . | nindent 6 }}

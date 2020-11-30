@@ -1,0 +1,11 @@
+{{- range $name, $spec := .Values.IPPools }}
+apiVersion: crd.projectcalico.org/v1
+kind: IPPool
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "calico.labels" $ | nindent 4 }}
+spec:
+  {{- toYaml $spec | nindent 2 }}
+---
+{{- end }}{{/* end range */}}

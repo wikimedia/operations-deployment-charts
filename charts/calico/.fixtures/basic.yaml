@@ -1,0 +1,28 @@
+kubernetesApi:
+  host: "nonexisting.api.host.wmnet"
+  port: 42
+
+# FIXME: Copy this to values for staging-eqiad
+IPPools:
+  my-ipv4-pool:
+    cidr: "10.64.75.0/24"
+  my-ipv6-pool:
+    cidr: "2620:0:861:babe::/64"
+
+BGPPeers:
+  cr1-eqiad-ipv4:
+    asNumber: 14907
+    peerIP: "208.80.154.196"
+  cr2-eqiad-ipv4:
+    asNumber: 14907
+    peerIP: "208.80.154.197"
+  cr1-eqiad-ipv6:
+    asNumber: 14907
+    peerIP: "2620:0:861:ffff::1"
+  cr2-eqiad-ipv6:
+    asNumber: 14907
+    peerIP: "2620:0:861:ffff::2"
+
+BGPConfiguration:
+  asNumber: 64603
+  nodeToNodeMeshEnabled: false
