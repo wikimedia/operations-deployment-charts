@@ -923,6 +923,8 @@ worker_heartbeat_timeout: false
 # Logger info
 logging:
   level:  {{ .Values.main_app.log_level | default "info" }}
+  sampled_levels:
+    error/commit_check: 1
   streams:
     - type: stdout
       named_levels: true
