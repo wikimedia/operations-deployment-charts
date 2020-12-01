@@ -266,6 +266,14 @@ end
 
 ## RAKE TASKS
 
+# This is just to ensure the repo is up to date as one may
+# experience weird behaviour if not.
+desc 'Runs helm(2/3) repo update'
+task :repo_update do
+  system('helm repo update')
+  system('helm3 repo update')
+end
+
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
 task :lint do
@@ -312,7 +320,7 @@ task :validate_deployments do
     tp.run do
       radix, deployment = File.split(File.dirname(helmfile))
       # Skip the example, and env-wide helmfiles
-      next if ['_example_', 'eqiad', 'codfw', 'staging'].include? deployment
+      next if ['_example_',].include? deployment
       deployment_results = validate_helmfile_full helmfile
       res = deployment_results
       mutex.synchronize do
@@ -396,4 +404,4 @@ task :validate_envoy_config do
   end
 end
 
-task :default => [:lint, :validate_template, :validate_deployments, :validate_envoy_config]
+task :default => [:repo_update, :lint, :validate_template, :validate_deployments, :validate_envoy_config]
