@@ -1,0 +1,19 @@
+apiVersion: v1
+description: A Helm chart for Apertium on WMF Kubernetes infrastructure
+name: apertium
+kubeVersion: ">=1.8"
+version: 0.0.1
+keywords:
+- apertium
+- language
+- translation
+home: https://www.mediawiki.org/wiki/Content_translation/Machine_Translation/Apertium
+sources:
+- https://github.com/wikimedia/mediawiki-services-apertium
+- https://github.com/apertium
+maintainers:
+- name: Alexandros Kosiaris
+  email: akosiaris@wikimedia.org
+- name: Kartik Mistry
+  email: kmistry@wikimedia.org
+tillerVersion: ">=2.8"
