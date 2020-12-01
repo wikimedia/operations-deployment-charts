@@ -793,17 +793,27 @@ spec: &spec
 {{ if .Values.main_app.changeprop.features.wikidata_description_on_edit }}
               wikidata_description_on_edit:
                 topic: mediawiki.revision-create
-                match:
-                  meta:
-                    domain: www.wikidata.org
-                  page_namespace: 0
-                  # It's impossible to modify a comment in wikidata while editing the entity.
-                  comment: '/wbeditentity|wbsetdescription|undo|restore/'
-                  rev_content_changed: true
-                exec:
-                  method: post
-                  uri: '/sys/links/wikidata_descriptions'
-                  body: '{{ `{{globals.message}}` }}'
+                cases:
+                  - match:
+                      meta:
+                        domain: www.wikidata.org
+                      page_namespace: 0
+                      # It's impossible to modify a comment in wikidata while editing the entity.
+                      comment: '/wbeditentity|wbsetdescription|undo|restore/'
+                      rev_content_changed: true
+                    exec:
+                      method: post
+                      uri: '/sys/links/wikidata_descriptions'
+                      body: '{{ `{{globals.message}}` }}'
+                  - match:
+                      meta:
+                        domain: www.wikidata.org
+                      page_namespace: 0
+                      rev_is_revert: true
+                    exec:
+                      method: post
+                      uri: '/sys/links/wikidata_descriptions'
+                      body: '{{ `{{globals.message}}` }}'
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.wikidata_description_on_undelete }}
               wikidata_description_on_undelete:
