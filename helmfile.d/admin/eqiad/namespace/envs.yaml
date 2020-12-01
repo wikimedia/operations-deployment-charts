@@ -77,6 +77,12 @@ environments:
     - ../../common/values.yaml
     - cluster.yaml
     - values/eventstreams.yaml
+  eventstreams-internal:
+    missingFileHandler: Warn
+    values:
+    - ../../common/values.yaml
+    - cluster.yaml
+    - values/eventstreams-internal.yaml
   eventgate-analytics-external:
     missingFileHandler: Warn
     values:
