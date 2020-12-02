@@ -12,7 +12,7 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: 2020-11-19-183059-production
+  version: 2020-12-02-151648-production
   conf:
     kafka:
       conf:
@@ -61,14 +61,18 @@ main_app:
     # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
     # NOTE: we need all_settings, otherwise we will not receive the stream's schema_title, which
     # is what EventGate needs to verify that an event of a given schema is allowed in a stream.
-    stream_config_uri: 'https://api-ro.discovery.wmnet/w/api.php?format=json&action=streamconfigs&all_settings=true&constraints=destination_event_service=eventgate-analytics-external&streams=<%= stream %>'
+    stream_config_uri: 'https://api-ro.discovery.wmnet/w/api.php?format=json&action=streamconfigs&all_settings=true&constraints=destination_event_service=eventgate-analytics-external&streams=<%= streams %>'
+    stream_config_uri_streams_delimiter: '|'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}    # Re-request for yet unknown streams at runtime
-    stream_config_is_dynamic: true
     # Expect the stream -> settings map in the response at this subobject key
     stream_config_object_path: streams
+    stream_config_is_dynamic: true
     # Expire and re-request dynamic stream configs every 5 minutes
     stream_config_ttl: 300
     stream_config_recache_on_expire: true
+    stream_config_precache_list:
+    - eventgate-analytics-external.test.event
+    - eventgate-analytics-external.error.validation
 
 networkpolicy:
   egress:
