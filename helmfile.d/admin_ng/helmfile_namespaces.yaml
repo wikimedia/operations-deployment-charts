@@ -5,7 +5,7 @@ releases:
     namespace: kube-system
     values:
       - templates:
-      {{- range $namespace, $value := .Environment.Values.namespaces }}
+      {{- range $namespace, $values := .Environment.Values.namespaces }}
           - |
             apiVersion: v1
             kind: Namespace
@@ -27,7 +27,7 @@ releases:
             subjects:
             - apiGroup: rbac.authorization.k8s.io
               kind: User
-              name: {{ $value | getOrNil "deployUser" | default $namespace }}
+              name: {{ $values | getOrNil "deployUser" | default $namespace }}
           - |
             # Bind the default service account of this namespace to the allow-using-psp Role
             # See podsecuritypolicies/helmfile.yaml
@@ -67,7 +67,8 @@ releases:
             - kind: ServiceAccount
               name: tiller
               namespace: {{ $namespace }}
-      {{- with $.Environment.Values.limitranges }}
+      {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
+      {{- with $limitranges}}
           - |
             apiVersion: v1
             kind: LimitRange
@@ -97,7 +98,8 @@ releases:
                       memory: {{ .pod.max.memory | quote }}
                   type: Pod
       {{- end }}
-      {{- with $.Environment.Values.resourcequota }}
+      {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
+      {{- with $resourcequota }}
           - |
             apiVersion: v1
             kind: ResourceQuota

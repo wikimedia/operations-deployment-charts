@@ -1,0 +1,14 @@
+kubernetesApi:
+  host: kubemaster.svc.codfw.wmnet
+
+namespaces:
+  mobileapps:
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "600"
+          memory: "250Gi"
+        limits:
+          cpu: "600"
+          memory: "250Gi"

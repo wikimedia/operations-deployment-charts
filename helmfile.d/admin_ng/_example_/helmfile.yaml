@@ -1,0 +1,17 @@
+# You can include multiple releases in your helmfile, but you can't specify environments
+# as they are defined in the parent helmfile.
+#
+# Each defined release will be installed into every environment.
+#
+# Be sure to include your new helmfile into the "bases:" array in the parent helmfile.
+releases:
+  - name: RELEASE_NAME
+    namespace: kube-system
+    chart: wmf-stable/_EXAMPLE_
+    missingFileHandler: Warn
+    values:
+      - "values/values.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
