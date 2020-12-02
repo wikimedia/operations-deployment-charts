@@ -27,15 +27,11 @@ main_app:
     - /error/1.0.0
     - /test/event/1.0.0
 
-    # /srv/service/schemas/event/{primary,secondary} is in the eventgate-wikmiedia image cloned at
-    # image build time from https://gerrit.wikimedia.org/r/schemas/event/{primary,secondary}
-    # http://schema.discovery.wmnet hosts a more up to date clone of the secondary (and other)
-    # event schema repositories. These will all be used when looking up schemas.
-    # By also using a remote schema URI, eventgate can discover new schemas without rebuilding the
-    # image.
+    # http://schema.discovery.wmnet hosts up to date clones of our
+    # event schema repositories. Since eventgate-analytics-external needs to be more dynamic without
+    # new schemas and versions, it is configured to only use the remote schema repos.
     schema_base_uris:
-    - 'file:///srv/service/schemas/event/primary/jsonschema/'
-    - 'file:///srv/service/schemas/event/secondary/jsonschema/'
+    - 'https://schema.discovery.wmnet/repositories/primary/jsonschema/'
     - 'https://schema.discovery.wmnet/repositories/secondary/jsonschema/'
 
     # If test_events is set, EventGate will set up a /v1/_test/events
