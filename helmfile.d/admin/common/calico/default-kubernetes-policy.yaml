@@ -1338,15 +1338,15 @@
   dst_ports:
     - 6379
 
-  # recommendation-api
+  # recommendation-api, linkrecommendation
 - action: allow
-  src_selector: calico/k8s_ns == 'recommendation-api'
+  src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
   dst_net: 10.64.16.19/32 # dbproxy1015
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
-  src_selector: calico/k8s_ns == 'recommendation-api'
+  src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
   dst_net: 10.192.16.9/32 # dbproxy2002
   protocol: tcp
   dst_ports:
