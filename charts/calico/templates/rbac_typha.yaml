@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: calico-node
+  name: calico-typha
   namespace: kube-system
   labels:
     {{- include "calico.labels" . | nindent 4 }}
@@ -9,27 +9,26 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: calico-node
+  name: calico-typha
 rules:
   - apiGroups: [""]
     resources:
+      - pods
+      - namespaces
+      - serviceaccounts
       - endpoints
       - services
+      - nodes
     verbs:
       # Used to discover service IPs for advertisement.
       - watch
       - list
-      # Used to discover Typhas.
-      - get
-  - apiGroups: [""]
+  - apiGroups: ["networking.k8s.io"]
     resources:
-      - nodes/status
+      - networkpolicies
     verbs:
-      # Needed for clearing NodeNetworkUnavailable flag.
-      - patch
-      # Calico stores some configuration information in node annotations.
-      - update
-  # Calico monitors various CRDs for config.
+      - watch
+      - list
   - apiGroups: ["crd.projectcalico.org"]
     resources:
       - globalfelixconfigs
@@ -42,52 +41,35 @@ rules:
       - globalnetworkpolicies
       - globalnetworksets
       - networkpolicies
-      - networksets
       - clusterinformations
       - hostendpoints
       - blockaffinities
+      - networksets
     verbs:
       - get
       - list
       - watch
-  # Calico must create and update some CRDs on startup.
   - apiGroups: ["crd.projectcalico.org"]
     resources:
-      - ippools
-      - felixconfigurations
+      # I'm not sure why these are commented out, the install-typha docs do so
+      # https://docs.projectcalico.org/getting-started/kubernetes/hardway/install-typha
+      #- ippools
+      #- felixconfigurations
       - clusterinformations
     verbs:
+      - get
       - create
       - update
-  # Calico stores some configuration information on the node.
-  - apiGroups: [""]
-    resources:
-      - nodes
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups: ["crd.projectcalico.org"]
-    resources:
-      - ipamconfigs
-    verbs:
-      - get
-  # Block affinities must also be watchable by confd for route aggregation.
-  - apiGroups: ["crd.projectcalico.org"]
-    resources:
-      - blockaffinities
-    verbs:
-      - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: calico-node
+  name: calico-typha
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: calico-node
+  name: calico-typha
 subjects:
 - kind: ServiceAccount
-  name: calico-node
+  name: calico-typha
   namespace: kube-system
