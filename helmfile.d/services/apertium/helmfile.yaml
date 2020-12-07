@@ -39,13 +39,15 @@ releases:
     <<: *default
   - name: staging
     <<: *default
+  - name: plain
+    <<: *default
 environments:
   staging:
     values:
       - releases: [staging]
   eqiad:
     values:
-      - releases: [production]
+      - releases: [production, plain]
   codfw:
     values:
-      - releases: [production]
+      - releases: [production, plain]

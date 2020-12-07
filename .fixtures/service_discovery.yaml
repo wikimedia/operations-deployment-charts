@@ -239,6 +239,13 @@ services_proxy:
       address: wikifeeds.discovery.wmnet
       port: 8889
       encryption: false
+  apertium:
+    port: 6018
+    timeout: 120s
+    upstream:
+      address: apertium.discovery.wmnet
+      port: 4737
+      encryption: true
   parsoid-async:
     keepalive: 4s
     port: 6502
