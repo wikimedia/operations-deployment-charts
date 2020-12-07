@@ -54,15 +54,14 @@ service:
     port: 8000 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
-  public: {}
-  private:
-    DB_HOST: "snakeoil"
-    DB_PORT: "snakeoil"
-    DB_USER: "snakeoil"
-    DB_DATABASE: "snakeoil"
-    DB_PASSWORD: "snakeoil"
+  public:
+    DB_PORT: 3306
     DB_BACKEND: "mysql"
-
+  private:
+    # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
+    DB_PASSWORD: "snakeoil"
+    # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
+    DB_ADMIN_PASSWORD: "snakeoil"
 tls:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
@@ -70,7 +69,9 @@ tls:
   upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:
+    # This placeholder will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     cert: "snakeoil"
+    # This placeholder will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     key: "snakeoil"
   # Enable telemetry
   telemetry:
