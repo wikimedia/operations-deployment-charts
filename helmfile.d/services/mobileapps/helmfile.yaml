@@ -37,8 +37,6 @@ templates:
 releases:
   - name: production
     <<: *default
-  - name: nontls
-    <<: *default
   - name: staging
     <<: *default
 environments:
@@ -47,7 +45,7 @@ environments:
       - releases: [staging]
   eqiad:
     values:
-      - releases: [production, nontls]
+      - releases: [production]
   codfw:
     values:
-      - releases: [production, nontls]
+      - releases: [production]
