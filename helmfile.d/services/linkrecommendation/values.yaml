@@ -1,0 +1,43 @@
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.1
+main_app:
+  image: wikimedia/research-mwaddlink
+  limits:
+    cpu: 1
+    memory: 500Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8000
+  port: 8000
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8000
+  requests:
+    cpu: 750m
+    memory: 200Mi
+  version: 2020-11-27-140342-production
+monitoring:
+  enabled: false
+  image_version: latest
+resources:
+  replicas: 8
+service:
+  deployment: production
+config:
+  public:
+    DB_HOST: "m2-master.eqiad.wmnet"
+    DB_PORT: 3306
+    DB_USER: "linkrecommendation"
+    DB_ADMIN_USER: "adminlinkrecommendation"
+    DB_BACKEND: "mysql"
+    DB_DATABASE: "mwaddlink"
+tls:
+  enabled: true
+  telemetry:
+    enabled: true
+networkpolicy:
+  egress:
+    enabled: true
