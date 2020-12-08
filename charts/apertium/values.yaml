@@ -34,7 +34,8 @@ service:
 
 tls:
   enabled: false
-  public_port: 2737
+  image_version: 1.13.1-2
+  public_port: 4737
   upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:
@@ -44,6 +45,9 @@ tls:
   telemetry:
     enabled: true
     port: 9361
+debug:
+  enabled: false
+  ports: []
 
 networkpolicy:
   egress:
