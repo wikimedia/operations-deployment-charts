@@ -86,7 +86,7 @@ spec:
 {{- end }}
 {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version | default "latest" }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
