@@ -59,6 +59,7 @@ config:
     PARSOID_URL: "http://parsoid-{{ .Release.Name }}"
     ENABLE_VISUAL_EDITOR: "false"
     DB_SERVER: "{{ .Release.Name }}-mariadb"
+    ENABLE_DEBUG_LOGGING: "true"
   private:
     WIKI_ADMIN_PASS: "adminpass"
     DB_PASS: "password"

@@ -175,8 +175,12 @@ if ( !defined( 'STDERR' ) ) {
 	define( 'STDERR', fopen( 'php://stderr', 'w' ) );
 }
 
-if ( !isset( $maintClass ) || ( isset( $maintClass ) && $maintClass !== 'PHPUnitMaintClass' ) ) {
-	$wgMWLoggerDefaultSpi = [
-		'class' => \MediaWiki\Logger\ConsoleSpi::class,
-	];
+if ( getenv( 'ENABLE_DEBUG_LOGGING' ) === 'true' ) {
+    if ( !isset( $maintClass ) || ( isset( $maintClass ) && $maintClass !== 'PHPUnitMaintClass' ) ) {
+        # This enables debug logging which can be quite verbose.  It will even
+        # include supposedly-suppressed PHP warnings.
+        $wgMWLoggerDefaultSpi = [
+            'class' => \MediaWiki\Logger\ConsoleSpi::class,
+        ];
+    }
 }
