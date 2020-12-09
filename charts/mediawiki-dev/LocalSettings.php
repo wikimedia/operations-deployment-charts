@@ -15,9 +15,12 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit;
 }
 
-
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
+
+# Make it easier to verify correct operation when there are multiple replicas
+$wgShowHostnames = true;
+
 
 $wgSitename = getenv( 'WIKI_NAME' );
 $wgMetaNamespace = str_replace( ' ', '_', $wgSitename );
