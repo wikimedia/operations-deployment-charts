@@ -21,7 +21,6 @@ main_app:
   version: 2020-11-27-140342-production
 monitoring:
   enabled: false
-  image_version: latest
 resources:
   replicas: 8
 service:
@@ -36,8 +35,12 @@ config:
     DB_DATABASE: "mwaddlink"
 tls:
   enabled: true
+  public_port: 4005
   telemetry:
     enabled: true
 networkpolicy:
   egress:
     enabled: true
+    dst_ports:
+      - port: 3306
+        protocol: tcp
