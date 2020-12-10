@@ -23,7 +23,7 @@ From this directory:
 | `main_app.version` | The image tag | `latest` |
 | `main_app.ports` | The container ports to expose | `[80]`
 | `main_app.command` | The command to run to override the entrypoint | `'["/bin/bash", "-c"]'` |
-| `main_app.args` | The args to give to the command | `'/var/config/setup.sh && php-fpm7.2 -D && /usr/sbin/apache2ctl -D FOREGROUND'`
+| `main_app.args` | The args to give to the command | `image default` |
 | `main_app.requests.cpu` | CPU allocation | `100m` |
 | `main_app.requests.memory` | Memory allocation | `100Mi` |
 | `main_app.limits.cpu` | CPU limit | `1.2` |

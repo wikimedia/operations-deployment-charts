@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-db-{{ template "wmf.releasename" . }}-x{{ randAlphaNum 8 | lower }}x
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: setup-db
+          command: [ /var/config/setup.sh ]
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+{{ include "mediawiki-env" . | indent 10 }}
+{{ include "mediawiki-volumeMounts" . | indent 10 }}
+{{ include "mediawiki-volumes" . | indent 6 }}

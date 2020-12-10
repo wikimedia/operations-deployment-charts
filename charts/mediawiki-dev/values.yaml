@@ -13,8 +13,6 @@ main_app:
   port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80
-  command: '["/bin/bash", "-c"]' # use to override the entrypoint command ex: '["node"]'
-  args: '/var/config/setup.sh && php-fpm7.2 -D && /usr/sbin/apache2ctl -D FOREGROUND'
   requests:
     cpu: 100m
     memory: 100Mi
