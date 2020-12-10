@@ -50,32 +50,13 @@ spec:
           readinessProbe:
           {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
           {{- end }}
-          env:
-            - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
-          {{- range $k, $v := .Values.config.public }}
-            - name: {{ $k | upper }}
-              value: {{ tpl $v $ | quote }}
-          {{- end }}
-          {{- range $k, $v := .Values.config.private }}
-            - name: {{ $k | upper }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
-                  key: {{ $k }}
-          {{- end }}
+{{ include "mediawiki-env" . | indent 10 }}
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-          volumeMounts:
-{{- with .Values.main_app.volumeMounts }}
-{{ toYaml . | indent 12 }}
-{{- end }}
-            - name: secret-volume
-              mountPath: /var/config
-              readOnly: false
+{{ include "mediawiki-volumeMounts" . | indent 10 }}
 {{- if .Values.main_app.xdebug.enabled }}
             - name: {{ .Release.Name }}-xdebug
               mountPath: /etc/php/7.2/fpm/conf.d/20-xdebug.ini
@@ -104,18 +85,7 @@ spec:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
 {{- end }}
-      volumes:
-        - name: secret-volume
-          secret:
-            secretName: {{ include "wmf.releasename" . }}-secret-files
-            items:
-            - key: LocalSettings.php
-              path: LocalSettings.php
-              mode: 365
-            - key: setup.sh
-              path: setup.sh
-              mode: 365
-        {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
+{{ include "mediawiki-volumes" . | indent 6 }}
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
@@ -131,6 +101,3 @@ spec:
           configMap:
             name: {{ template "wmf.releasename" . }}-xhprof-ini
         {{- end }}
-{{- with .Values.main_app.volumes }}
-{{ toYaml . | indent 8 }}
-{{- end }}
