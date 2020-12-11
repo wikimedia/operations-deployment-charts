@@ -27,6 +27,22 @@ releases:
                 - /metrics
               verbs: ["get"]
         # ClusterRoleBindings
+        ## wmf-node-authorization adds the kubelet users group ("system:nodes")
+        ## to the system:node ClusterRole so that the kubelet's can register nodes
+        ## with the API. See:
+        ## https://kubernetes.io/docs/reference/access-authn-authz/node/#migration-considerations
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: wmf-node-authorization
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: system:node
+          subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: system:nodes
         ## Used by rsyslog
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
