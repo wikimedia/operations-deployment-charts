@@ -8,7 +8,7 @@ releases:
     chart: wmf-stable/calico
     missingFileHandler: Warn
     needs:
-      - calico-crds
+      - kube-system/calico-crds
     values:
       - "values/values.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
