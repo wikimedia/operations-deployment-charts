@@ -169,6 +169,14 @@ if ( getenv('ENABLE_VISUAL_EDITOR') === "true" ) {
     }
 }
 
+
+if ($l10n_cache = getenv('L10N_CACHE')) {
+    $wgLocalisationCacheConf['storeClass'] = LCStoreCDB::class;
+    // This should be a hostdir volume.  The directory will be created if it doesn't exist.
+    $wgLocalisationCacheConf['storeDirectory'] = $l10n_cache . "/" . MW_VERSION;
+    $wgLocalisationCacheConf['manualRecache'] = true;
+}
+
 // With this configuration, you can view MediaWiki's logs by running
 // kubectl logs -f default-mediawiki-{...}
 if ( !defined( 'STDERR' ) ) {

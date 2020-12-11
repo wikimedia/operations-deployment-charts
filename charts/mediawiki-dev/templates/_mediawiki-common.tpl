@@ -6,6 +6,10 @@ Templates for common sections of container specs
 env:
   - name: SERVICE_IDENTIFIER
     value: {{ template "wmf.releasename" . }}
+{{- if .Values.main_app.usel10nCache }}
+  - name: L10N_CACHE
+    value: /tmp/l10n-cache
+{{- end }}
 {{- range $k, $v := .Values.config.public }}
   - name: {{ $k | upper }}
     value: {{ tpl $v $ | quote }}
@@ -28,6 +32,11 @@ volumeMounts:
   - name: secret-volume
     mountPath: /var/config
     readOnly: false
+{{- if .Values.main_app.usel10nCache }}
+  - name: l10n-cache
+    mountPath: /tmp/l10n-cache
+    readOnly: false
+{{- end }}
 {{- end -}}
 
 {{- define "mediawiki-volumes" -}}
@@ -42,6 +51,15 @@ volumes:
       - key: setup.sh
         path: setup.sh
         mode: 0555
+{{- if .Values.main_app.usel10nCache }}
+      - key: setup-l10n.sh
+        path: setup-l10n.sh
+        mode: 0555
+  - name: l10n-cache
+    hostPath:
+      path: {{ .Values.main_app.l10nNodePath | required "main_app.l10nNodePath is required when main_app.usel10nCache is true" }}
+      type: DirectoryOrCreate
+{{- end }}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 2 }}
 {{- end }}

@@ -55,3 +55,13 @@ From this directory:
 | `config.private.DB_PASS` | The database password | `"password"` |
 | `config.private.WG_SECRET_KEY` | A secret key | `"d964ce98b272c2115d5f4960563af8fb8f02ff968bbb0d62bdf4e1e4c18393ed"` |
 | `config.private.WG_UPGRADE_KEY` | A key for upgrading | `aed8ffeb5b5fba9e` |
+
+### Localisation related settings
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `main_app.usel10nCache` | Whether to enable the localisation cache | `false` |
+| `main_app.l10nNodePath` | The directory on each node where localisation files will be stored. Must be specified if `main_app.usel10nCache` is true | `null` |
+| `main_app.owner` | uid:gid that the mediawiki container runs as.  This is passed to `chown` to prepare a hostPath when `main_app.usel10nCache` is true | `"65533:65533"` |
+| `main_app.rootImage`| Image to use when we need to run as root (e.g., to chown a bind-mounted hostPath) | `wikimedia-stretch` |
+| `main_app.rootImageVersion`| rootImage tag | `latest` |

@@ -10,6 +10,10 @@ resources:
 main_app:
   image: wikimedia/mediawiki-core
   version: dev
+  # name/version of the image to use when we need to run as root
+  # (e.g., to chown a bind-mounted hostDir)
+  rootImage: wikimedia-stretch
+  rootImageVersion: latest
   port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80
@@ -19,6 +23,11 @@ main_app:
   limits:
     cpu: 1.2
     memory: 500Mi
+  usel10nCache: false
+  l10nNodePath: ""
+  # uid/gid that the mediawiki container runs under.  This should be expressed in a
+  # form suitable to passing to chown.
+  owner: "65533:65533"
   liveness_probe:
     tcpSocket:
       port: 8080
