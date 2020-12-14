@@ -80,6 +80,9 @@ spec:
             # Auto-detect the BGP IP address.
             - name: IP
               value: "autodetect"
+            # Auto-detect the BGP IPv6 address.
+            - name: IP6
+              value: "autodetect"
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
