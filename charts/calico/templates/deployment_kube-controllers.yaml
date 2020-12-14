@@ -30,7 +30,7 @@ spec:
       {{- end }}
       serviceAccountName: calico-kube-controllers
       priorityClassName: system-cluster-critical
-      dnsPolicy: default
+      dnsPolicy: Default
       containers:
         - name: calico-kube-controllers
           image: "{{ .Values.image.repository }}/{{ .Values.kubeControllers.imageName }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
