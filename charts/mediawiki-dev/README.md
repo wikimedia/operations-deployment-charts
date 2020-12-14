@@ -30,7 +30,7 @@ From this directory:
 | `main_app.limits.memory` | Memory limit | `500Mi` |
 | `main_app.liveness_probe.tcpSocket.port` | The port to use for healthchecks | `8080` |
 | `main_app.readiness_probe.httpGet.path` | The endpoint to check for readiness | `/index.php/Special:BlankPage` |
-| `main_app.readiness_probe.httpGet.port1` | The port to use for readiness checks | `8080` |
+| `main_app.readiness_probe.httpGet.port` | The port to use for readiness checks | `8080` |
 | `main_app.volumes` | Volumes to mount to the container. Useful for overriding LocalSettings or sharing local files | `[]` |
 | `main_app.volumeMounts` | Mounted volumes to make accesible | `[]` |
 | `main_app.xdebug.enabled` | Whether to enable xdebug | `false` |
