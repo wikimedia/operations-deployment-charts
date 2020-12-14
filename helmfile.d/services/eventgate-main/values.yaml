@@ -12,6 +12,8 @@ resources:
 main_app:
   name: eventgate-main
   version: 2020-11-16-212345-production
+  limits:
+    memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
   conf:
     schema_base_uris:
     - "file:///srv/service/schemas/event/primary/jsonschema/"
