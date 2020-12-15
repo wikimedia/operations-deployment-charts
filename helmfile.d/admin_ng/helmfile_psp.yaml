@@ -14,13 +14,13 @@ releases:
             privileged: true
             allowPrivilegeEscalation: true
             allowedCapabilities:
-            - '*'
+              - '*'
             volumes:
-            - '*'
+              - '*'
             hostNetwork: true
             hostPorts:
-            - min: 0
-              max: 65535
+              - min: 0
+                max: 65535
             hostIPC: true
             hostPID: true
             runAsUser:
@@ -84,21 +84,21 @@ releases:
           metadata:
             name: allow-privileged-psp
           rules:
-          - apiGroups: ['policy']
-            resources: ['podsecuritypolicies']
-            verbs:     ['use']
-            resourceNames:
-            - privileged
+            - apiGroups: ['policy']
+              resources: ['podsecuritypolicies']
+              verbs:     ['use']
+              resourceNames:
+                - privileged
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
             name: allow-restricted-psp
           rules:
-          - apiGroups: ['policy']
-            resources: ['podsecuritypolicies']
-            verbs:     ['use']
-            resourceNames:
-            - restricted
+            - apiGroups: ['policy']
+              resources: ['podsecuritypolicies']
+              verbs:     ['use']
+              resourceNames:
+                - restricted
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: RoleBinding
           metadata:
@@ -109,9 +109,9 @@ releases:
             kind: ClusterRole
             name: allow-privileged-psp
           subjects:
-          - apiGroup: rbac.authorization.k8s.io
-            kind: Group
-            name: system:serviceaccounts:kube-system
-          - kind: Group
-            apiGroup: rbac.authorization.k8s.io
-            name: system:authenticated
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: system:serviceaccounts:kube-system
+            - kind: Group
+              apiGroup: rbac.authorization.k8s.io
+              name: system:authenticated

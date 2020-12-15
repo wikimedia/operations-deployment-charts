@@ -25,9 +25,9 @@ releases:
               kind: ClusterRole
               name: view
             subjects:
-            - apiGroup: rbac.authorization.k8s.io
-              kind: User
-              name: {{ $values | getOrNil "deployUser" | default $namespace }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ $values | getOrNil "deployUser" | default $namespace }}
           - |
             # Bind the default service account of this namespace to the allow-using-psp Role
             # See podsecuritypolicies/helmfile.yaml
@@ -41,12 +41,12 @@ releases:
               kind: ClusterRole
               name: allow-restricted-psp
             subjects:
-            - apiGroup: rbac.authorization.k8s.io
-              kind: Group
-              name: system:serviceaccounts:{{ $namespace }}
-            - kind: Group
-              apiGroup: rbac.authorization.k8s.io
-              name: system:authenticated
+              - apiGroup: rbac.authorization.k8s.io
+                kind: Group
+                name: system:serviceaccounts:{{ $namespace }}
+              - kind: Group
+                apiGroup: rbac.authorization.k8s.io
+                name: system:authenticated
           - |
             apiVersion: v1
             kind: ServiceAccount
@@ -64,9 +64,9 @@ releases:
               kind: ClusterRole
               name: tiller
             subjects:
-            - kind: ServiceAccount
-              name: tiller
-              namespace: {{ $namespace }}
+              - kind: ServiceAccount
+                name: tiller
+                namespace: {{ $namespace }}
       {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
       {{- with $limitranges}}
           - |
@@ -78,24 +78,24 @@ releases:
             spec:
               limits:
                 - min:
-                      cpu: {{ .container.min.cpu  | quote }}
-                      memory: {{ .container.min.memory | quote }}
+                    cpu: {{ .container.min.cpu  | quote }}
+                    memory: {{ .container.min.memory | quote }}
                   max:
-                      cpu: {{ .container.max.cpu  | quote }}
-                      memory: {{ .container.max.memory | quote }}
+                    cpu: {{ .container.max.cpu  | quote }}
+                    memory: {{ .container.max.memory | quote }}
                   defaultRequest:
-                      cpu: {{ .container.defaultRequest.cpu | quote }}
-                      memory: {{ .container.defaultRequest.memory | quote }}
+                    cpu: {{ .container.defaultRequest.cpu | quote }}
+                    memory: {{ .container.defaultRequest.memory | quote }}
                   default:
-                      cpu: {{ .container.default.cpu | quote}}
-                      memory: {{ .container.default.memory | quote }}
+                    cpu: {{ .container.default.cpu | quote}}
+                    memory: {{ .container.default.memory | quote }}
                   type: Container
                 - min:
-                      cpu: {{ .pod.min.cpu | quote }}
-                      memory: {{ .pod.min.memory | quote }}
+                    cpu: {{ .pod.min.cpu | quote }}
+                    memory: {{ .pod.min.memory | quote }}
                   max:
-                      cpu: {{ .pod.max.cpu | quote }}
-                      memory: {{ .pod.max.memory | quote }}
+                    cpu: {{ .pod.max.cpu | quote }}
+                    memory: {{ .pod.max.memory | quote }}
                   type: Pod
       {{- end }}
       {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
@@ -108,13 +108,13 @@ releases:
               namespace: {{ $namespace }}
             spec:
               hard:
-                  {{- if .pods  }}
-                  pods: {{ .pods | quote }}
-                  {{- end }}
-                  requests.cpu: {{ .compute.requests.cpu  | quote}}
-                  requests.memory: {{ .compute.requests.memory | quote }}
-                  limits.cpu: {{ .compute.limits.cpu | quote }}
-                  limits.memory: {{ .compute.limits.memory | quote }}
+                {{- if .pods  }}
+                pods: {{ .pods | quote }}
+                {{- end }}
+                requests.cpu: {{ .compute.requests.cpu  | quote}}
+                requests.memory: {{ .compute.requests.memory | quote }}
+                limits.cpu: {{ .compute.limits.cpu | quote }}
+                limits.memory: {{ .compute.limits.memory | quote }}
       {{- end }}
       {{/* Deploy tiller into each namespace */}}
           - |
@@ -150,14 +150,14 @@ releases:
                     image: {{ $.Environment.Values.tillerImage | quote }}
                     imagePullPolicy: IfNotPresent
                     env:
-                    - name: TILLER_NAMESPACE
-                      value: {{ $namespace }}
-                    - name: TILLER_HISTORY_MAX
-                      value: "0"
-                    - name: KUBERNETES_SERVICE_HOST
-                      value: {{ $.Environment.Values.kubernetesApi.host | quote }}
-                    - name: KUBERNETES_SERVICE_PORT
-                      value: {{ $.Environment.Values.kubernetesApi.port | quote }}
+                      - name: TILLER_NAMESPACE
+                        value: {{ $namespace }}
+                      - name: TILLER_HISTORY_MAX
+                        value: "0"
+                      - name: KUBERNETES_SERVICE_HOST
+                        value: {{ $.Environment.Values.kubernetesApi.host | quote }}
+                      - name: KUBERNETES_SERVICE_PORT
+                        value: {{ $.Environment.Values.kubernetesApi.port | quote }}
                     livenessProbe:
                       failureThreshold: 3
                       httpGet:
@@ -169,12 +169,12 @@ releases:
                       successThreshold: 1
                       timeoutSeconds: 1
                     ports:
-                    - containerPort: 44134
-                      name: tiller
-                      protocol: TCP
-                    - containerPort: 44135
-                      name: http
-                      protocol: TCP
+                      - containerPort: 44134
+                        name: tiller
+                        protocol: TCP
+                      - containerPort: 44135
+                        name: http
+                        protocol: TCP
                     readinessProbe:
                       failureThreshold: 3
                       httpGet:
