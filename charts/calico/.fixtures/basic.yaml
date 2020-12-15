@@ -26,3 +26,18 @@ BGPPeers:
 BGPConfiguration:
   asNumber: 64603
   nodeToNodeMeshEnabled: false
+
+GlobalNetworkPolicies:
+  important-web:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          selector: 'k8s-app == "important-web"'
+          ports:
+            - 80
+            - 443
