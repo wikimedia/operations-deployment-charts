@@ -26,6 +26,15 @@ releases:
             - nonResourceURLs:
                 - /metrics
               verbs: ["get"]
+        ## Used by tiller
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: tiller
+          rules:
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io"]
+              resources: ["*"]
+              verbs: ["*"]
         # ClusterRoleBindings
         ## wmf-node-authorization adds the kubelet users group ("system:nodes")
         ## to the system:node ClusterRole so that the kubelet's can register nodes
