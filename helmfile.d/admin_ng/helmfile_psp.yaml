@@ -13,10 +13,8 @@ releases:
           spec:
             privileged: true
             allowPrivilegeEscalation: true
-            allowedCapabilities:
-              - '*'
-            volumes:
-              - '*'
+            allowedCapabilities: ['*']
+            volumes: ['*']
             hostNetwork: true
             hostPorts:
               - min: 0
@@ -36,10 +34,10 @@ releases:
           metadata:
             name: restricted
             annotations:
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
               apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+              seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
               apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
-              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
-              seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
           spec:
             privileged: false
             # Required to prevent escalations to root.
@@ -99,6 +97,7 @@ releases:
               verbs:     ['use']
               resourceNames:
                 - restricted
+        # RoleBinding to allow privileged Pods in kube-system
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: RoleBinding
           metadata:
@@ -109,9 +108,9 @@ releases:
             kind: ClusterRole
             name: allow-privileged-psp
           subjects:
+            # If Pod's are created via a controller (deployment, replicaset) the Pod's service
+            # account needs access to the PSP.
+            # This grants access to all service accounts within the kube-system namespace.
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: system:serviceaccounts:kube-system
-            - kind: Group
-              apiGroup: rbac.authorization.k8s.io
-              name: system:authenticated
