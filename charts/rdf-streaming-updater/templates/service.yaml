@@ -15,6 +15,9 @@ spec:
   ports:
   - name: webui
     port: 8081
+    {{- if .Values.service.port.nodePort }}
+    nodePort: {{ .Values.service.port.nodePort }}
+    {{- end }}
   selector:
     app: {{ template "wmf.chartname" . }}-jobmanager
     release: {{ .Release.Name }}
