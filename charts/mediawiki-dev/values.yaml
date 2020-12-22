@@ -10,10 +10,6 @@ resources:
 main_app:
   image: wikimedia/mediawiki-core
   version: dev
-  # name/version of the image to use when we need to run as root
-  # (e.g., to chown a bind-mounted hostDir)
-  rootImage: wikimedia-stretch
-  rootImageVersion: latest
   port: 80 # port used for wmf.appbaseurl used by service-checker
   ports:
     - 80

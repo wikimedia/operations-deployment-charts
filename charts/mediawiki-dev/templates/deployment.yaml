@@ -36,8 +36,10 @@ spec:
             - chown
             - {{ .Values.main_app.owner | required "main_app.owner must be set if main_app.usel10nCache is true" | quote }}
             - /tmp/l10n-cache
-          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.rootImage }}:{{ .Values.main_app.rootImageVersion }}"
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          securityContext:
+            runAsUser: 0
 {{ include "mediawiki-volumeMounts" . | indent 10 }}
         - name: rebuild-l10n-cache
           command: [ /var/config/setup-l10n.sh ]

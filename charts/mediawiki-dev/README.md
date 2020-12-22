@@ -63,5 +63,3 @@ From this directory:
 | `main_app.usel10nCache` | Whether to enable the localisation cache | `false` |
 | `main_app.l10nNodePath` | The directory on each node where localisation files will be stored. Must be specified if `main_app.usel10nCache` is true | `null` |
 | `main_app.owner` | uid:gid that the mediawiki container runs as.  This is passed to `chown` to prepare a hostPath when `main_app.usel10nCache` is true | `"65533:65533"` |
-| `main_app.rootImage`| Image to use when we need to run as root (e.g., to chown a bind-mounted hostPath) | `wikimedia-stretch` |
-| `main_app.rootImageVersion`| rootImage tag | `latest` |
