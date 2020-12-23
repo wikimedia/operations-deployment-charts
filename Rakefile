@@ -446,6 +446,11 @@ task :test_scaffold do
     # run scaffolding first
     sc = Scaffold.new('example', 'test-scaffold', "9090")
     sc.run()
+    # Add a fixture for php apps
+    File.open("charts/test-scaffold/.fixtures/php.yaml", "w") do |fh|
+      data = {main_app: {type: "php"}}
+      fh.write(data.to_yaml)
+    end
     Rake::Task[:lint].invoke(charts)
     Rake::Task[:validate_template].invoke(charts)
   ensure

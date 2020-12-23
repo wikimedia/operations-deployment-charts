@@ -8,6 +8,13 @@ docker:
 resources:
   replicas: 1
 main_app:
+  # Application type.
+  # Currently supported values are:
+  # - "default", for an application running from a single container, and emitting
+  #   metrics via statsd or prometheus. Most service-runner based services fall into this category.
+  # - "php" for php-based applications. The base images expect the code to live in
+  #   /srv/app and to have an index.php file as entrypoint.
+  type: "default"
   image: $IMAGE_NAME
   version: latest # we use latest everywhere in the defaults.
   port: $PORT # port exposed as a Service, also used by service-checker.
@@ -36,14 +43,17 @@ main_app:
   #   - name: myvolumename
   #      hostPath:
   #        path: /myvolumepath # where on the host machine
-
   # add here any mounted volumes to make accessible to the container. Example:
   # volumeMounts:
   #   - name: myvolumename # the name from your volume above
   #     mountPath: /path/ # where it should live in your container
 
 monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
+  # If the application emits its metrics using statsd, we need to use the prometheus-statsd exporter
+  # For service-runner based apps using service-runner < 2.8, this should be set to true
+  uses_statsd: true
   # image_version: latest # image_version is defined globally by SRE. May be overridden here, though.
 service:
   deployment: minikube # valid values are "production" and "minikube"
@@ -66,9 +76,9 @@ tls:
   certs:
     cert: "snakeoil"
     key: "snakeoil"
-# Add here, via our "secret" system, the cert/key pairs
-#   cert: "your cert here"
-#   key: "your key here"
+  # Add here, via our "secret" system, the cert/key pairs
+  #   cert: "your cert here"
+  #   key: "your key here"
   # Enable telemetry
   telemetry:
     enabled: true
@@ -83,3 +93,28 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+php:
+  httpd:
+    version: "2.4.38-1-s1"
+    port: "8080"
+    exporter_version: 0.0.1
+    requests:
+      cpu: 200m # Just some sample, edit this
+      memory: 200Mi # Just some sample, edit this
+    limits:
+      cpu: 1 # Just some sample, edit this
+      memory: 400Mi # Just some sample, edit this
+  fcgi_mode: FCGI_TCP
+  exporter_version: 0.0.1
+  servergroup: main
+  opcache:
+    size: "200"
+    nofiles: "1000"
+  apc:
+    size: "200M"
+  workers: 2
+  timeout: 60
+# See the dockerfiles for the the php-fpm base image to know what can be tweaked.
+# Those can be passed via config.public above.
+
