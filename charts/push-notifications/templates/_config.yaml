@@ -93,6 +93,7 @@ services:
         headers:
           host: {{ .Values.main_app.mwapi_host_header }}
           user-agent: '{{ `{{user-agent}}` }}'
+          x-forwarded-proto: https
         body: '{{ `{{ default(request.query, {}) }}` }}'
       mw_subscription_manager_username: {{ .Values.main_app.mw_subscription_manager_username }}
       mw_subscription_manager_password: {{ .Values.main_app.mw_subscription_manager_password }}
