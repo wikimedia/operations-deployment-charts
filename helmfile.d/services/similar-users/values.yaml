@@ -1,0 +1,24 @@
+main_app:
+
+  version: 2021-01-15-155735-production
+  log_level: info
+  db:
+    host: m2-master.eqiad.wmnet
+
+service:
+  deployment: production
+  port:
+    nodePort: 8087
+
+tls:
+  enabled: true
+
+resources:
+  replicas: 5
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_ports:
+      - port: 3306
+        protocol: tcp
