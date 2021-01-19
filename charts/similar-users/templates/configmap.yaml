@@ -14,3 +14,4 @@ data:
   puppetca.crt.pem: |-
 {{ .Values.puppet_ca_crt | indent 4 }}
 {{ end -}}
+{{ include "tls.config" . }}
