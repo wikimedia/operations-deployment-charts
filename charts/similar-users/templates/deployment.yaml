@@ -79,10 +79,10 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- with .Values.main_app.volumeMounts }}
           volumeMounts:
             - name: {{ .Release.Name }}-base-config
               mountPath: /etc/similar-users/
+{{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
 {{- end }}
         {{- include "tls.container" . | indent 8}}
