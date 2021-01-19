@@ -2,11 +2,12 @@
 # User-agent used for querying Wikidata API
 CUSTOM_UA: "Wikimedia Similar Users service"
 
-LOG_LEVEL: {{ .Values.main_app.log_level }}
+LOG_LEVEL: {{ .Values.main_app.log_level | upper }}
 
 ENABLE_UI: False
 
 MWAPI_RETRIES: 10
+MWAPI_ORIGIN: {{ .Values.main_app.mwapi_origin }}
 
 # To be removed in future
 EARLIEST_TS: '2020-01-01T00:00:00Z'

@@ -19,16 +19,14 @@ main_app:
   liveness_probe:
     tcpSocket:
       port: 14110
-  readiness_probe:
-    httpGet:
-      path: /healthz
-      port: 14110
 
   log_level: WARN
 
   # username and password used by mediawiki to access the service -
   # these are populared by the private repo in prod.
   mwaccess_user: sockpuppet
+
+  mwapi_origin: api-rw.discovery.wmnet
 
 service:
   deployment: minikube
