@@ -63,6 +63,9 @@ spec:
               value: {{ template "wmf.releasename" . }}
             - name: CONFIG_PATH
               value: /etc/similar-users/config.yaml
+            # required to pass cert validation when connecting to mwapi discovery endpoint
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/similar-users/puppetca.crt.pem
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
