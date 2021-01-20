@@ -28,6 +28,10 @@ main_app:
 
   mwapi_origin: api-rw.discovery.wmnet
 
+  # any additional arguments for gunicorn - see https://docs.gunicorn.org/en/latest/settings.html
+  gunicorn_args: ""
+  worker_timeout: 30 #seconds, 30 is the default
+
 service:
   deployment: minikube
   port:

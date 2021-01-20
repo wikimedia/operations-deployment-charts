@@ -66,6 +66,8 @@ spec:
             # required to pass cert validation when connecting to mwapi discovery endpoint
             - name: REQUESTS_CA_BUNDLE
               value: /etc/similar-users/puppetca.crt.pem
+            - name: GUNICORN_CMD_ARGS
+              value: "--timeout {{ .Values.main_app.worker_timeout }} {{ .Values.main_app.gunicorn_args }}"
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
