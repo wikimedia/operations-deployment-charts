@@ -36,13 +36,7 @@ templates:
 releases:
   - name: main
     <<: *default
-  - name: canary
-    <<: *default
-  - name: test
-    <<: *default
 
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
 environments:
   staging:
     values:
