@@ -35,6 +35,24 @@ main_app:
       # Enable Kafka consumer TLS (no authentication, just encryption).
       security.protocol: ssl
 
+    # Limit the number of connected clients from the same
+    # X-Client-IP per eventstreams process to 2.
+    # There are a limited number of connection slots from frontend routers (25 per varnish?).
+    # A greedy user could potentially use up all the frontend slots and starve out other clients.
+    # If a user is trying to open multiple connections
+    # and they happen to be routed to the same worker, they
+    # will be denied.  This is unfortunate if the client
+    # is only opening a few connections, but they should
+    # eventually be able to get through to multiple workers.
+    # In prod we run 8 replicas per DC (== # workers, since num_workers: 1).
+    # A malfunctioning client could still use up 16 (2*8) total
+    # connections, but this should still be less than the total
+    # number of frontend connection slots.  This is better
+    # than being able to use them all up. :/
+    # See also: https://phabricator.wikimedia.org/T226808#5292059
+    # (A global counter and limit of client connections per IP would be much better.)
+    client_ip_connection_limit: 2
+
     # Use the EventStreamConfig API to discover streams and topics.
     # Since stream.wikimedia.org is cross DC, it uses the kafka main clusters.
     # As such, it can only possibly expose streams that exist on kafka main,
