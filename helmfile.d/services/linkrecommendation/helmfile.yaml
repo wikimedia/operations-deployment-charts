@@ -37,6 +37,8 @@ templates:
 releases:
   - name: production
     <<: *default
+  - name: external
+    <<: *default
   - name: staging
     <<: *default
 environments:
@@ -45,7 +47,7 @@ environments:
       - releases: [staging]
   eqiad:
     values:
-      - releases: [production]
+      - releases: [production, external]
   codfw:
     values:
-      - releases: [production]
+      - releases: [production, external]
