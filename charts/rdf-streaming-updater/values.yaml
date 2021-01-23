@@ -12,10 +12,10 @@ main_app:
   replicas: 1
   requests:
     cpu: 100m
-    memory: 200Mi # Just some sample, edit these
+    memory: 700Mi
   limits:
     cpu: 200m
-    memory: 400Mi # Just some sample, edit these
+    memory: 800Mi
   liveness_probe:
     tcpSocket:
       port: 6123
@@ -29,7 +29,7 @@ main_app:
     consumer_group: wdqs_streaming_updater_test
     brokers: kafka-jumbo1001.eqiad.wmnet:9092
     output_topic: wdqs_streaming_updater_test
-    checkpoint_dir: swift://updater.thanos-swift/streaming_updater/checkpoints
+    checkpoint_dir: swift://thanos-swift/streaming_updater/checkpoints
     spurious_events_dir: file:///streaming_updater/spurious_events
     late_events_dir: file:///streaming_updater/late_events
     failed_ops_dir: file:///streaming_updater/failed_events
@@ -41,18 +41,20 @@ main_app:
     decide_mut_op_parallelism: 1
     generate_diff_parallelism: 1
     task_slots: 2
-    job_manager_mem : 200m
-    task_manager_mem: 200m
+    job_manager_mem : 600m
+    task_manager_mem: 1000m
     parallelism: 1
+    swift_auth_url: "https://thanos-swift.discovery.wmnet/auth/v1.0"
+    swift_username: "wdqs:flink"
 
 task_manager:
-  replicas: 2
+  replicas: 1
   requests:
-    cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 200Mi # Just some sample, edit these
+    cpu: 100m
+    memory: 1000Mi
   limits:
-    cpu: 200m # Just some sample, edit these
-    memory: 400Mi # Just some sample, edit these
+    cpu: 200m
+    memory: 1100Mi
   liveness_probe:
     tcpSocket:
       port: 6122
@@ -73,7 +75,7 @@ service:
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private:
-    thanos_api_key: some_secret_key
+    swift_api_key: some_secret_key
 
 tls:
   enabled: false # Switch to true in production

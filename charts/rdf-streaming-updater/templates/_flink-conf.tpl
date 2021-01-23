@@ -11,7 +11,7 @@ parallelism.default: {{ .Values.main_app.config.parallelism }}
 metrics.reporters: prom
 metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
 metrics.reporter.prom.port: 9102
-swift.service.thanos-swift.auth.url: {{ .Values.main_app.config.thanos_auth_url }}
-swift.service.thanos-swift.username: {{ .Values.main_app.config.thanos_username }}
-swift.service.thanos-swift.apikey: {{ .Values.config.private.thanos_api_key}}
+swift.service.thanos-swift.auth.url: {{ .Values.main_app.config.swift_auth_url }}
+swift.service.thanos-swift.username: {{ .Values.main_app.config.swift_username }}
+swift.service.thanos-swift.apikey: {{ .Values.config.private.swift_api_key}}
 {{- end -}}
