@@ -21,9 +21,9 @@ spec:
       annotations:
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        prometheus.io/scrape: "true"
         {{ end -}}
         prometheus.io/port: "9102"
-        prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
