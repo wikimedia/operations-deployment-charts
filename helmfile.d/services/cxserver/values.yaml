@@ -2,9 +2,6 @@ docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.2
-discovery:
-  listeners:
-  - apertium
 main_app:
   image: wikimedia/mediawiki-services-cxserver
   #jwt_secret:
@@ -85,6 +82,7 @@ discovery:
   listeners:
     - mwapi-async
     - restbase-for-services
+    - apertium
 networkpolicy:
   egress:
     enabled: true
