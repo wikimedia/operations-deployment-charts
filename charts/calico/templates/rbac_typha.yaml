@@ -23,6 +23,12 @@ rules:
       # Used to discover service IPs for advertisement.
       - watch
       - list
+  - apiGroups: [""]
+    resources:
+      - endpoints
+    verbs:
+      # Used to discover running typhas (for rebalance)
+      - get
   - apiGroups: ["networking.k8s.io"]
     resources:
       - networkpolicies
