@@ -1,0 +1,37 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "wmf.releasename" . }}-load-datasets
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: "@hourly"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: {{ template "wmf.releasename" . }}-load-datasets
+            image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+            env:
+            {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+            {{- end }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" . }}-secret-config
+                  key: DB_ADMIN_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" . }}-secret-config
+                  key: DB_ADMIN_PASSWORD
+            imagePullPolicy: {{ .Values.docker.pull_policy }}
+            command: [ "/usr/bin/python3", "load-datasets.py", "--download", "--path=/tmp/datasets" ]

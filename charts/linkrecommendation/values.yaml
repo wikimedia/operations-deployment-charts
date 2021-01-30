@@ -56,7 +56,11 @@ service:
 config:
   public:
     DB_PORT: 3306
+    DB_HOST: ""
     DB_BACKEND: "mysql"
+    DB_DATABASE: "mwaddlink"
+    DB_USER: "linkrecommendation"
+    DB_ADMIN_USER: "adminlinkrecommendation"
   private:
     # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     DB_PASSWORD: "snakeoil"

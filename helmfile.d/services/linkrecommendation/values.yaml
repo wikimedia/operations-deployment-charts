@@ -18,7 +18,7 @@ main_app:
   requests:
     cpu: 750m
     memory: 200Mi
-  version: 2021-01-26-193929-production
+  version: 2021-02-15-112536-production
 monitoring:
   enabled: true
 resources:
@@ -28,11 +28,6 @@ service:
 config:
   public:
     DB_HOST: "m2-master.eqiad.wmnet"
-    DB_PORT: 3306
-    DB_USER: "linkrecommendation"
-    DB_ADMIN_USER: "adminlinkrecommendation"
-    DB_BACKEND: "mysql"
-    DB_DATABASE: "mwaddlink"
 tls:
   enabled: true
   public_port: 4005
