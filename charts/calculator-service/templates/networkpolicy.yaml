@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
+    - Ingress
+  ingress:
+    - ports:
+      - port: {{ .Values.main_app.port }}
+        protocol: TCP
+      {{- if .Values.debug.enabled }}
+      {{- range .Values.debug.ports }}
+      - port: {{ . }}
+        protocol: TCP
+      {{- end }}{{- end }}
+      {{- include "tls.networkpolicy" . | indent 6}}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+{{- end }}
