@@ -268,6 +268,9 @@ static_resources:
                             # the upstream IP in cases of more than one IP in the list.
                             header_name: x-client-ip
                             descriptor_key: client_ip
+{{- /*
+BEGIN descriptions/mobileapps_cluster route definition
+*/}}
               - name: descriptions
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
@@ -289,6 +292,8 @@ static_resources:
                     substitution: '/\2.\1.org/v1/page/description/\3'
                   cluster: mobileapps_cluster
                   rate_limits: *api_rate_limits_config
+{{- /* END descriptions/mobileapps_cluster route definition */}}
+{{- /* BEGIN pathing_map route definition */}}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
               - name: core
 {{- if $strip_cookies }}
@@ -320,6 +325,32 @@ static_resources:
                   # we figure out how to exclude /w and /wiki
                   rate_limits: *api_rate_limits_config
 {{- end }}
+{{- /* END pathing_map route definition */}}
+{{- /* BEGIN discovery_endpoints route definition */}}
+{{- range $discovery_route, $discovery_opts := .Values.main_app.discovery_endpoints }}
+              - name: {{ $discovery_route }}_route
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+{{- end }}
+                match:
+                  safe_regex:
+                    google_re2: {}
+                    regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                route:
+                  cors:
+                    allow_origin_string_match:
+                      - prefix: "*"
+                    allow_headers: "authorization"
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                    substitution: '/\1'
+                  cluster: {{ $discovery_route}}_cluster
+                  rate_limits: *api_rate_limits_config
+{{- end }}
+{{- /* END discovery_endpoints route definition */}}
           http_filters:
           - name: envoy.health_check
             typed_config:
@@ -459,6 +490,7 @@ static_resources:
 {{- end }}
   clusters:
 {{- $idle_timeout := .Values.main_app.idle_timeout -}}
+{{- /* BEGIN endpoints cluster definition */}}
 {{- range $cluster_name, $cluster_opts := .Values.main_app.endpoints }}
   - name: {{ $cluster_name }}
     connect_timeout: 0.25s
@@ -516,6 +548,42 @@ static_resources:
                 x_wikimedia_debug_server: {{ $host }}
 {{- end }}
 {{- end }}
+{{- /* END endpoints cluster definition */}}
+{{- /* BEGIN discovery cluster definition */}}
+{{- range $cluster_name, $cluster_opts := .Values.main_app.discovery_endpoints }}
+  - name: {{ $cluster_name }}_cluster
+    connect_timeout: 0.25s
+    max_requests_per_connection: 1000
+    common_http_protocol_options:
+      idle_timeout: {{ $idle_timeout }}
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    # required for non-ipv6 services on localhost or elsewhere
+    dns_lookup_family: V4_ONLY
+{{- if $cluster_opts.tls }}
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          tls_params:
+            tls_minimum_protocol_version: TLSv1_2
+            cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+          validation_context:
+            trusted_ca:
+              filename: /etc/api-gateway/puppetca.crt.pem
+{{- end }}
+    load_assignment:
+      cluster_name: {{ $cluster_name }}_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $cluster_name }}
+                port_value: {{ $cluster_opts.port }}
+{{- end }}
+{{- /* END discovery cluster definition */}}
 {{- if .Values.main_app.ratelimiter }}
   - name: rate_limit_cluster
     type: static
