@@ -3,6 +3,12 @@ require 'tmpdir'
 require 'rake/tasklib'
 require 'open3'
 require 'yaml'
+require 'readline'
+
+# Load local modules
+$LOAD_PATH.unshift File.expand_path('.')
+require '.rake_modules/scaffold'
+
 
 ERROR_CONTEXT_LINES = 4
 PRIVATE_STUB = '.fixtures/private_stub.yaml'
@@ -276,9 +282,14 @@ end
 
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
-task :lint do
+task :lint, [:charts] do |t, args|
+  if args.nil?
+    charts = all_charts
+  else
+    charts = args[:charts]
+  end
   results = {}
-  all_charts.each do |chart|
+  charts.each do |chart|
     puts "Linting #{chart}"
     helm = helm_version(chart)
     results[chart] =  system("#{helm} lint '#{chart}'")
@@ -288,13 +299,18 @@ task :lint do
 end
 
 desc 'Runs helm template on all charts'
-task :validate_template do
+task :validate_template, [:charts] do |t, args|
+  if args.nil?
+    charts = all_charts
+  else
+    charts = args[:charts]
+  end
   # Detect kubeyaml, if present also semantically validate YAML
   # Note that we only do this in this task, to avoid heavily increased execution
   # times
   kubeyaml = which('kubeyaml')
   results = {}
-  all_charts.each do |chart|
+  charts.each do |chart|
     results[chart] = check_template chart, nil, kubeyaml
     fixtures = FileList.new("#{chart}/.fixtures/*.yaml")
     fixtures.each do |fixture|
@@ -404,4 +420,37 @@ task :validate_envoy_config do
   end
 end
 
-task :default => [:repo_update, :lint, :validate_template, :validate_deployments, :validate_envoy_config]
+# Scaffolding
+desc 'Create a new chart'
+task :scaffold, [:image, :service, :port] do |task,args|
+  def get_data(arg, msg)
+    if arg.nil?
+      puts msg
+      Readline.readline("> ", true)
+    else
+      arg
+    end
+  end
+  port = get_data(args[:port], "Please input the PORT on which the service will run")
+  service = get_data(args[:service], "Please input the NAME of the service")
+  image = get_data(args[:image], "Please input the IMAGE full label for the service")
+
+  sc = Scaffold.new(image, service, port)
+  sc.run()
+end
+
+desc 'Validate a sample chart generated from scaffolding'
+task :test_scaffold do
+  charts = ['charts/test-scaffold']
+  begin
+    # run scaffolding first
+    sc = Scaffold.new('example', 'test-scaffold', "9090")
+    sc.run()
+    Rake::Task[:lint].invoke(charts)
+    Rake::Task[:validate_template].invoke(charts)
+  ensure
+    FileUtils.rm_rf(charts[0])
+  end
+end
+
+task :default => [:repo_update, :test_scaffold, :lint, :validate_template, :validate_deployments, :validate_envoy_config]
