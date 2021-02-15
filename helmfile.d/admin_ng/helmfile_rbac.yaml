@@ -32,7 +32,7 @@ releases:
           metadata:
             name: tiller
           rules:
-            - apiGroups: ["", "extensions", "apps", "networking.k8s.io"]
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
               resources: ["*"]
               verbs: ["*"]
         # ClusterRoleBindings
