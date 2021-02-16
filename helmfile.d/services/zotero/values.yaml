@@ -9,13 +9,6 @@ docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.2
-logging:
-  enabled: false
-  fluent_bit_version: latest
-  limits:
-    cpu: 100m
-    memory: 200Mi
-  output_match: '*'
 main_app:
   image: wikimedia/mediawiki-services-zotero
   limits:
