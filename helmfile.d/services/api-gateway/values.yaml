@@ -1,6 +1,6 @@
 main_app:
 
-  version: 1.16.0
+  version: 1.16.0-2
   telemetry_port: 1667
 
   jwt:
@@ -9,7 +9,7 @@ main_app:
 
   ratelimiter:
     enabled: true
-    version: 1.5.1
+    version: 1.5.1-s2
     log_level: debug
     redis_host: localhost
     redis_port: 6379
@@ -19,7 +19,7 @@ main_app:
 
   access_log:
     type: eventgate
-    image_version: 1.5.3-0
+    image_version: 1.5.3-2
 
   endpoints:
     appserver_cluster:
@@ -63,4 +63,4 @@ tls:
 # Only used by ratelimiter for metrics - envoy uses prometheus native metrics
 monitoring:
   enabled: true
-  image_version: 0.0.5
+  image_version: 0.0.9
