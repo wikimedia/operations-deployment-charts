@@ -1,3 +1,4 @@
+{{- if .Values.cronJobEnabled -}}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -33,3 +34,4 @@ spec:
                   key: DB_ADMIN_PASSWORD
             imagePullPolicy: {{ .Values.docker.pull_policy }}
             command: [ "/usr/bin/python3", "load-datasets.py", "--download", "--path=/tmp/datasets" ]
+{{- end }}
