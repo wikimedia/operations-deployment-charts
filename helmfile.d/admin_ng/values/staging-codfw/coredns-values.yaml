@@ -1,3 +1,8 @@
+# This is before coredns works, we can't rely on internal DNS, so use the external one
+kubernetesApi:
+  host: kubestagemaster.svc.codfw.wmnet
+  port: 6443
+
 replicaCount: 2
 
 service:
