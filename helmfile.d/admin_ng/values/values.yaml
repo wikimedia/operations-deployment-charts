@@ -1,5 +1,53 @@
 # Defaults applied to all clusters
 #
+#
+GlobalNetworkPolicies:
+  # Allow icmp for all pods and all directions. Useful in debugging
+  allow-all-icmp:
+    types:
+      - Ingress
+      - Egress
+    ingress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+    egress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+  # Allow tillers to talk to the kubernetes API. Note that we aren't able
+  # to select the "default" namespace where the service resides are it has no
+  # selectable Endpoints (it does have Endpoints, but calico doesn't seem to be
+  # able to select them as there are no pods powering those endpoints)
+  kubernetes-api:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        source:
+          selector: 'name == "tiller"'
+        destination:
+          ports:
+            - 443
+            - 6443
+  default-deny:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    egress:
+      # Allow all namespaces to communicate to DNS pods
+      - action: Allow
+        protocol: UDP
+        destination:
+          selector: 'k8s-app == "kube-dns"'
+          ports:
+            - 53
+
 kubernetesApi:
   port: 6443
 
