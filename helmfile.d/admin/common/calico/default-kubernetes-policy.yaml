@@ -10,6 +10,8 @@
   dst_net: 10.192.64.0/21
 - action: allow
   dst_net: 10.64.75.0/24
+- action: allow
+  dst_net: 10.192.75.0/24
 
 # Allow DNS
 - action: allow
@@ -59,22 +61,6 @@
     - 8080
   dst_net: 2620:0:860:2:208:80:153:61/128 # urldownloader2002
   protocol: tcp
-
-  # Allow logstash
-- action: allow
-  dst_ports:
-    - 10514
-    - 11514
-  dst_net: 10.2.2.36/32
-  protocol: tcp
-- action: allow
-  dst_ports:
-    - 8324
-    - 10514
-    - 11514
-    - 12201
-  dst_net: 10.2.2.36/32
-  protocol: udp
 
   # Allow restbase
 - action: allow

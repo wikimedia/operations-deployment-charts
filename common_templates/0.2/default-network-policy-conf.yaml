@@ -4,6 +4,7 @@ networkpolicy:
     - cidr: 10.64.64.0/21
     - cidr: 10.192.64.0/21
     - cidr: 10.64.75.0/24
+    - cidr: 10.192.75.0/24  # staging-codfw k8s
       # Allow DNS
     - cidr: 10.3.0.1/32
       ports:
@@ -43,23 +44,6 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 8080
-    # Allow logstash
-    - cidr: 10.2.2.36/32
-      ports:
-      - protocol: tcp
-        port: 10514
-      - protocol: tcp
-        port: 11514
-    - cidr: 10.2.2.36/32
-      ports:
-      - protocol: udp
-        port: 8324
-      - protocol: udp
-        port: 10514
-      - protocol: udp
-        port: 11514
-      - protocol: udp
-        port: 12201
     # Allow restbase
     - cidr: 10.2.2.17/32
       ports:
