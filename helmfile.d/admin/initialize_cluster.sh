@@ -14,7 +14,7 @@ KUBECONFIG=${KUBECONFIG:-"/etc/kubernetes/kubeconfig"}
 NAMESPACE=$1
 KUBERNETES_SERVICE_HOST=$2
 KUBERNETES_SERVICE_PORT=$3
-TILLER_IMAGE=${TILLER_IMAGE:-"docker-registry.discovery.wmnet/tiller:2.16.7-wmf1"}
+TILLER_IMAGE=${TILLER_IMAGE:-"docker-registry.discovery.wmnet/tiller:2.16.7-3"}
 
 
 # Annotate the namespace so that calico will enforce a default deny network policy
