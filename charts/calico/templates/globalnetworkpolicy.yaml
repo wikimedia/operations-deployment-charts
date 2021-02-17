@@ -1,7 +1,4 @@
 {{- range $name, $spec := .Values.GlobalNetworkPolicies }}
-{{- if and (eq $.Values.GlobalNetworkPolicyDefaultDeny true) (eq $name "default-deny") }}
-  {{- fail "Disable GlobalNetworkPolicyDefaultDeny if you want to define your own GlobalNetworkPolicy named 'default-deny'" }}
-{{- end }}
 apiVersion: crd.projectcalico.org/v1
 kind: GlobalNetworkPolicy
 metadata:
@@ -12,24 +9,3 @@ spec:
   {{- toYaml $spec | nindent 2 }}
 ---
 {{- end }}{{/* end range */}}
-{{- if .Values.GlobalNetworkPolicyDefaultDeny }}
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
-metadata:
-  name: default-deny
-  labels:
-    {{- include "calico.labels" . | nindent 4 }}
-spec:
-  namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
-  types:
-    - Ingress
-    - Egress
-  egress:
-    {{- /* allow all namespaces to communicate to DNS pods */}}
-    - action: Allow
-      protocol: UDP
-      destination:
-        selector: 'k8s-app == "kube-dns"'
-        ports:
-          - 53
-{{- end }}{{/* end if */}}
