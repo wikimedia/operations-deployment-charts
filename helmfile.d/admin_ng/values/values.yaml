@@ -4,6 +4,7 @@
 GlobalNetworkPolicies:
   # Allow icmp for all pods and all directions. Useful in debugging
   allow-all-icmp:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
       - Ingress
       - Egress
