@@ -104,7 +104,7 @@ service:
   port: 8082
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_ports:
     - port: 9042
       protocol: tcp
