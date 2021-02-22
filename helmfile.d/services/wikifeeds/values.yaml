@@ -31,7 +31,7 @@ main_app:
       port: 8889
 monitoring:
   enabled: true
-  image_version: 0.0.5
+  image_version: 0.0.9
 service:
   deployment: production
   port:
@@ -45,6 +45,7 @@ config:
   private: {}
 tls:
   enabled: true
+  image_version: 1.15.1-4
   resources:
     requests:
       cpu: 500m
