@@ -1,0 +1,61 @@
+helm_scaffold_version: 0.2
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: wikimedia/operations-software-tegola
+  version: latest
+  port: 8080
+  args: ["serve", "--config", "/etc/tegola/config.toml"]
+  requests:
+    cpu: 1m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 400Mi
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+  readiness_probe:
+    httpGet:
+      path: /capabilities
+      port: 8080
+  # Values to connect to kartodock and the local postgres environment
+  # Needs to be overriden with deployment specific details
+  postgres:
+    host: postgres-postgis
+    port: 5432
+    database: gis
+    user: default
+service:
+  deployment: minikube
+  port:
+    name: http
+    targetPort: 8080
+    port: 8080
+    nodePort: null
+config:
+  public: {}
+  private:
+    TEGOLA_POSTGRES_PASSWORD: "secret"
+tls:
+  enabled: false
+  public_port: 4105
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 9361
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+networkpolicy:
+  egress:
+    enabled: false

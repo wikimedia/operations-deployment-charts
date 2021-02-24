@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        prometheus.io/port: "9102"
+        prometheus.io/scrape: "true"
+        {{- include "tls.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+{{ toYaml .Values.affinity | indent 6 }}
+      {{- end }}
+      containers:
+        # The main application container
+        - name: {{ template "wmf.releasename" . }}
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- if .Values.main_app.command }}
+          command:
+            {{- range .Values.main_app.command }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.main_app.args }}
+          args:
+            {{- range .Values.main_app.args }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.main_app.port }}
+          {{- if .Values.debug.enabled }}
+          {{- range .Values.debug.ports }}
+            - containerPort: {{ . }}
+          {{- end }}{{ end }}
+          {{- if .Values.main_app.liveness_probe }}
+          livenessProbe:
+          {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.main_app.readiness_probe }}
+          readinessProbe:
+          {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "wmf.releasename" . }}
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- range $k, $v := .Values.config.private }}
+            - name: {{ $k | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  key: {{ $k }}
+          {{- end }}
+          resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.limits | indent 14 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/tegola
+        {{- include "tls.container" . | indent 8}}
+      volumes:
+        {{- include "tls.volume" . | indent 8}}
+        - name: config-volume
+          configMap:
+            name: config-{{ .Release.Name }}

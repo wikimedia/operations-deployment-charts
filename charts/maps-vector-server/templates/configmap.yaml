@@ -1,0 +1,14 @@
+{{ include "tls.config" . }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-{{ .Release.Name }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.toml: |- {{ include "config.app" . | indent 4 }}
