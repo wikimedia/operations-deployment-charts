@@ -147,7 +147,7 @@ networkpolicy:
       - protocol: tcp
         port: 9093
 
-      # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
+    # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
     - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
       ports:
       - protocol: tcp
@@ -156,3 +156,13 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 8190
+    # Allow api-ro
+    - cidr: 10.2.2.22/32
+      ports:
+      - protocol: tcp
+        port: 443
+    - cidr: 10.2.1.22/32
+      ports:
+      - protocol: tcp
+        port: 443
+
