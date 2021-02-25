@@ -26,7 +26,7 @@
 * `kubectl get pods` -> shows running pods in k8 cluster
 * `kubectl describe pods` -> shows more detailed information about pods
 * `kubectl logs -f <podname>` -> follow the logs for a particular pod
-* `kubectl port-forward <job-manager-pod-name> 8081:8081` -> view Flink dashboard UI (http://localhost:8081)
+* `minikube service rdf-streaming-updater-flink-ui` -> opens url for Flink UI
 
 ### tear down
 * remove flink installation: helm uninstall flink

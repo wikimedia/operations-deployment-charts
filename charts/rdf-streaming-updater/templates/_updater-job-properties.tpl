@@ -6,14 +6,16 @@ hostname: www.wikidata.org
 # path to the generated checkpoints
 checkpoint_dir: {{ .Values.main_app.config.checkpoint_dir }}
 ##
-# path to store "spurious" events, events that are inconsistent with the state of the application
-spurious_events_dir: {{ .Values.main_app.config.spurious_events_dir }}
+# endpoint to fetch the configuration for WMF event streams
+# only used for side outputs running through kafka
+event_stream_config_endpoint: {{ .Values.main_app.config.event_stream_config_endpoint }}
 ##
-# path to events considered "late" with the event reordering operation
-late_events_dir: {{ .Values.main_app.config.late_events_dir }}
+# job name for updater
+job_name {{ .Values.main_app.config.job_name }}
 ##
-# path to events we were unable to fetch the data for
-failed_ops_dir: {{ .Values.main_app.config.failed_ops_dir }}
+# output topic prefix (must be the current datacenter)
+# only used by side outputs for now
+output_topic_prefix: {{ .Values.main_app.config.output_topic_prefix }}
 ##
 # kafka brokers used to consume and produce messages
 brokers: {{ .Values.main_app.config.brokers }}

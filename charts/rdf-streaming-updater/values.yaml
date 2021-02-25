@@ -29,10 +29,7 @@ main_app:
     consumer_group: wdqs_streaming_updater_test
     brokers: kafka-jumbo1001.eqiad.wmnet:9092
     output_topic: wdqs_streaming_updater_test
-    checkpoint_dir: swift://thanos-swift/streaming_updater/checkpoints
-    spurious_events_dir: file:///streaming_updater/spurious_events
-    late_events_dir: file:///streaming_updater/late_events
-    failed_ops_dir: file:///streaming_updater/failed_events
+    checkpoint_dir: file:///streaming_updater/checkpoints
     input_idleness: 2000
     checkpoint_interval: 30000
     checkpoint_timeout: 900000
@@ -46,6 +43,8 @@ main_app:
     parallelism: 1
     swift_auth_url: "https://thanos-swift.discovery.wmnet/auth/v1.0"
     swift_username: "wdqs:flink"
+    event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
+    output_topic_prefix: eqiad
 
 task_manager:
   replicas: 1
