@@ -74,7 +74,7 @@ main_app:
         stream: eventgate-main.test.event
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_nets:
       # Allow Kafka for eventgate-main
       # main-eqiad:
