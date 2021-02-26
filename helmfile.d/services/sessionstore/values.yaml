@@ -98,7 +98,7 @@ service:
   port: 8081
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_nets:
       - cidr: 10.64.0.141/32 # sessionstore1001
         ports:
