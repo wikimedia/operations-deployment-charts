@@ -69,89 +69,129 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 10.64.0.175/32
+    - cidr: 10.64.0.175/32 # kafka-jumbo1001
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.0.176/32
+    - cidr: 10.64.0.176/32 # kafka-jumbo1002
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.16.99/32
+    - cidr: 10.64.16.99/32 # kafka-jumbo1003
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.32.159/32
+    - cidr: 10.64.32.159/32 # kafka-jumbo1004
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.32.160/32
+    - cidr: 10.64.32.160/32 # kafka-jumbo1005
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.48.117/32
+    - cidr: 10.64.48.117/32 # kafka-jumbo1006
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:101:10:64:0:175/128
+    - cidr: 10.64.32.106/32 # kafka-jumbo1007
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:101:10:64:0:176/128
+    - cidr: 10.64.48.121/32 # kafka-jumbo1008
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:102:10:64:16:99/128
+    - cidr: 10.64.48.140/32 # kafka-jumbo1009
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:103:10:64:32:159/128
+    - cidr: 2620:0:861:101:10:64:0:175/128 # kafka-jumbo1001
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:103:10:64:32:160/128
+    - cidr: 2620:0:861:101:10:64:0:176/128 # kafka-jumbo1002
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:107:10:64:48:117/128
+    - cidr: 2620:0:861:102:10:64:16:99/128 # kafka-jumbo1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:159/128 # kafka-jumbo1004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:160/128 # kafka-jumbo1005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:117/128 # kafka-jumbo1006
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:103:10:64:32:106/128 # kafka-jumbo1007
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:121/128 # kafka-jumbo1008
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:140/128 # kafka-jumbo1009
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
 
-      # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
+    # Allow schema.svc.{eqiad,codfw} for eventgate-analytics
     - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
       ports:
       - protocol: tcp
         port: 8190
+      - protocol: tcp
+        port: 443
     - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
       ports:
       - protocol: tcp
         port: 8190
-      # Allow api-ro
+      - protocol: tcp
+        port: 443
+    # Allow api-ro
     - cidr: 10.2.2.22/32
       ports:
       - protocol: tcp
