@@ -1,0 +1,99 @@
+# Default values for shellbox.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.2
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  type: "php"
+  image: wikimedia/mediawiki-libs-shellbox:score
+  version: score
+  port: 8080 # port exposed as a Service, also used by service-checker.
+  command: []
+  args: []
+  requests:
+    cpu: 100m
+    memory: 1024Mi
+  limits:
+    cpu: 1
+    # $wgMaxShellMemory is 1024M, plus resources for other pod components
+    memory: 2048Mi
+  volumeMounts:
+    - name: shellbox-config
+      mountPath: "/srv/app/config"
+      readOnly: true
+
+
+monitoring:
+  enabled: true
+  # Will use statsd for metrics eventually
+  uses_statsd: true
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8080 # the number or name of the exposed port on the container
+    port: 8080 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {}
+  private: {}
+
+shellbox:
+  secret_key: "@@ CHANGE THIS @@"
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 8080 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Add here, via our "secret" system, the cert/key pairs
+  #   cert: "your cert here"
+  #   key: "your key here"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false
+
+php:
+  httpd:
+    version: "2.4.38-1-s1"
+    port: "8080"
+    exporter_version: 0.0.1
+    requests:
+      cpu: 200m # Just some sample, edit this
+      memory: 200Mi # Just some sample, edit this
+    limits:
+      cpu: 1 # Just some sample, edit this
+      memory: 400Mi # Just some sample, edit this
+  fcgi_mode: FCGI_TCP
+  exporter_version: 0.0.1
+  servergroup: main
+  opcache:
+    size: "200"
+    nofiles: "1000"
+  apc:
+    size: "200M"
+  workers: 2
+  timeout: 60
+# See the dockerfiles for the the php-fpm base image to know what can be tweaked.
+# Those can be passed via config.public above.
+
