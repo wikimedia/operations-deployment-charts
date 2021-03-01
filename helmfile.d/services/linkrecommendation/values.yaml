@@ -18,7 +18,7 @@ main_app:
   requests:
     cpu: 750m
     memory: 200Mi
-  version: 2021-02-22-214432-production
+  version: 2021-03-01-110913-production
 monitoring:
   enabled: true
 resources:
@@ -28,6 +28,7 @@ service:
 config:
   public:
     DB_HOST: "m2-master.eqiad.wmnet"
+    ANALYTICS_BASE_URL: http://thorium.eqiad.wmnet/published/datasets/one-off/research-mwaddlink/
 tls:
   enabled: true
   public_port: 4005
@@ -39,3 +40,16 @@ networkpolicy:
     dst_ports:
       - port: 3306
         protocol: tcp
+    dst_nets:
+      - cidr: 10.64.53.26/32 # thorium.eqiad.wmnet
+        ports:
+        - port: 80
+          protocol: tcp
+        - port: 8443
+          protocol: tcp
+      - cidr: 2620:0:861:108:10:64:53:26/128 # thorium.eqiad.wmnet
+        ports:
+        - port: 80
+          protocol: tcp
+        - port: 8443
+          protocol: tcp

@@ -12,8 +12,18 @@ spec:
   schedule: "@hourly"
   concurrencyPolicy: Forbid
   jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        chart: {{ template "wmf.chartid" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
     spec:
       backoffLimit: 1
+      metadata:
+        labels:
+          app: {{ template "wmf.chartname" . }}
+          release: {{ .Release.Name }}
       template:
         spec:
           restartPolicy: Never
