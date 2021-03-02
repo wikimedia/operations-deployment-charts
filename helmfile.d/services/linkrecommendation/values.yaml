@@ -18,7 +18,7 @@ main_app:
   requests:
     cpu: 750m
     memory: 200Mi
-  version: 2021-03-02-193926-production
+  version: 2021-03-15-022240-production
 monitoring:
   enabled: true
 resources:
@@ -34,6 +34,9 @@ tls:
   public_port: 4005
   telemetry:
     enabled: true
+discovery:
+  listeners:
+    - mwapi-async
 networkpolicy:
   egress:
     enabled: true

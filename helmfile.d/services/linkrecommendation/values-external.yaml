@@ -3,3 +3,10 @@ resources:
   replicas: 1
 tls:
   public_port: 4006
+config:
+  public:
+    # This is set only for the external traffic release of the linkrecommendation service.
+    # The proxy API URL is only needed for handling GET requests, where calls to the MW
+    # API are needed to obtain additional data for request handling. The internal traffic
+    # releases use POST requests that include all data needed for request handling.
+    MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/api.php
