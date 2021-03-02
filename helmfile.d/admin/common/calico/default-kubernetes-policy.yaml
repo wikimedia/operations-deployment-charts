@@ -1443,6 +1443,18 @@
   protocol: tcp
   dst_ports:
     - 4102
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.2.23/32 # linkrecommendation.discovery.wmnet (eqiad)
+  protocol: tcp
+  dst_ports:
+    - 4006
+- action: allow
+  src_selector: calico/k8s_ns == 'api-gateway'
+  dst_net: 10.2.1.23/32 # linkrecommendation.discovery.wmnet (codfw)
+  protocol: tcp
+  dst_ports:
+    - 4006
 
   # recommendation-api needs access to m2-master. Since the IP might change, for now open up 3306/tcp entirely
 - action: allow

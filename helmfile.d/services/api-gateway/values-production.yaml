@@ -113,6 +113,14 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4102
+    - cidr: 10.2.2.23/32 # linkrecommendation.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4006
+    - cidr: 10.2.1.23/32 # linkrecommendation.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4006
 
 resources:
   replicas: 4
