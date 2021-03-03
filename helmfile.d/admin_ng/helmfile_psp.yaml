@@ -59,8 +59,10 @@ releases:
             hostIPC: false
             hostPID: false
             runAsUser:
-              # Require the container to run without root privileges.
-              rule: 'MustRunAsNonRoot'
+              # Basically allow root for now to unblock cluster upgrades from:
+              # https://phabricator.wikimedia.org/T274262
+              # This is status quo on current clusters, so no security degradation.
+              rule: 'RunAsAny'
             seLinux:
               # This policy assumes the nodes are using AppArmor rather than SELinux.
               rule: 'RunAsAny'
