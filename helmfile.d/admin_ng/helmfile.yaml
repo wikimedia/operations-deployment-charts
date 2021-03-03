@@ -3,14 +3,14 @@ environments:
 #    values:
 #      - "values/values.yaml"
 #      - "values/{{ .Environment.Name }}/values.yaml"
-#  staging-eqiad:
-#    values:
-#      - "values/values.yaml"
-#      - "values/{{ .Environment.Name }}/values.yaml"
 #  codfw:
 #    values:
 #      - "values/values.yaml"
 #      - "values/{{ .Environment.Name }}/values.yaml"
+  staging-eqiad:
+    values:
+      - "values/values.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
   staging-codfw:
     values:
       - "values/values.yaml"
