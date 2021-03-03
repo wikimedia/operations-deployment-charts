@@ -9,6 +9,10 @@ releases:
     namespace: kube-system
     chart: wmf-stable/_EXAMPLE_
     missingFileHandler: Warn
+    needs:
+      # This is to ensure this helmfile is processed after networking and DNS is set up properly
+      # If you are sure you don't depend on that, remove the "needs".
+      - kube-system/coredns
     values:
       - "values/values.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults

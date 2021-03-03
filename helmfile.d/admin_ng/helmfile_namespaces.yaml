@@ -3,6 +3,8 @@ releases:
   - name: namespaces
     chart: wmf-stable/raw
     namespace: kube-system
+    needs:
+      - kube-system/coredns
     values:
       - templates:
       {{- range $namespace, $values := .Environment.Values.namespaces }}
