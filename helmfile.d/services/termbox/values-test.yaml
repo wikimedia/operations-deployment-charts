@@ -7,7 +7,7 @@ config:
     MEDIAWIKI_REQUEST_TIMEOUT: 3000
     MESSAGES_CACHE_MAX_AGE: 60000
     WIKIBASE_REPO: https://test.wikidata.org/w
-    WIKIBASE_REPO_HOSTNAME_ALIAS: api-rw.discovery.wmnet
+    WIKIBASE_REPO_HOSTNAME_ALIAS: api-ro.discovery.wmnet
 main_app:
   liveness_probe:
     tcpSocket:
@@ -17,7 +17,7 @@ main_app:
     httpGet:
       path: /_info
       port: 3031
-  version: 2021-03-01-112916-production
+  version: 2020-01-03-160726-production
 service:
   deployment: production
   port: 3031
