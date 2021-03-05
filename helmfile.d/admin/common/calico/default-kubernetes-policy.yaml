@@ -1341,67 +1341,67 @@
     - 8443
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.0.134 # dbproxy1012.eqiad.wmnet
+  dst_net: 10.64.0.134/32 # dbproxy1012.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.0.135 # dbproxy1013.eqiad.wmnet
+  dst_net: 10.64.0.135/32 # dbproxy1013.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.16.18 # dbproxy1014.eqiad.wmnet
+  dst_net: 10.64.16.18/32 # dbproxy1014.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.16.19 # dbproxy1015.eqiad.wmnet
+  dst_net: 10.64.16.19/32 # dbproxy1015.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.48.42 # dbproxy1016.eqiad.wmnet
+  dst_net: 10.64.48.42/32 # dbproxy1016.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.48.43 # dbproxy1017.eqiad.wmnet
+  dst_net: 10.64.48.43/32 # dbproxy1017.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.32.179 # dbproxy1020.eqiad.wmnet
+  dst_net: 10.64.32.179/32 # dbproxy1020.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.64.32.180 # dbproxy1021.eqiad.wmnet
+  dst_net: 10.64.32.180/32 # dbproxy1021.eqiad.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.192.0.129 # dbproxy2001.codfw.wmnet
+  dst_net: 10.192.0.129/32 # dbproxy2001.codfw.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.192.16.9 # dbproxy2002.codfw.wmnet
+  dst_net: 10.192.16.9/32 # dbproxy2002.codfw.wmnet
   protocol: tcp
   dst_ports:
     - 3306
 - action: allow
   src_selector: calico/k8s_ns == 'recommendation-api' || calico/k8s_ns == 'linkrecommendation'
-  dst_net: 10.192.32.137 # dbproxy2003.codfw.wmnet
+  dst_net: 10.192.32.137/32 # dbproxy2003.codfw.wmnet
   protocol: tcp
   dst_ports:
     - 3306
