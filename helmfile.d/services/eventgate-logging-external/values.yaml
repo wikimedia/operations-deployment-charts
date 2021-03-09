@@ -19,12 +19,22 @@ resources:
 
 main_app:
   name: eventgate-logging-external
-  version: 2021-01-25-183848-production
+  version: 2021-03-09-204312-production
   conf:
     # eventgate-logging-external is used to intake w3c browser reportingapi reports
     # like Network Error Logging.  Since reportingapi is not POSTing via sendBeacon,
     # we need to set access-control-allow-origin: '*'.
     cors: '*'
+
+    # For eventgate-logging-external's incoming requests, the CDN layer performs a
+    # GeoIP lookup and attaches a bunch of data as request headers.
+    # This attaches those headers to the produced event.
+    http_request_headers_to_fields:
+      x-geoip-isp: http.request_headers.x-geoip-isp
+      x-geoip-organization: http.request_headers.x-geoip-organization
+      x-geoip-as-number: http.request_headers.x-geoip-as-number
+      x-geoip-country: http.request_headers.x-geoip-country
+      x-geoip-subdivision: http.request_headers.x-geoip-subdivision
 
     kafka:
       conf:
