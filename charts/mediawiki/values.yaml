@@ -1,0 +1,223 @@
+# Default values for MediaWiki.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  image: placeholder-for-mediawiki-image-name
+  version: latest # we use latest everywhere in the defaults.
+  port: 443 # port exposed as a Service, also used by service-checker.
+  # Limits that make sense for a local dev:
+  # 1 - 4 Gb of RAM is the minimum for having some APC + opcache for all
+  #     the code + 4xncpu workers.
+  # For production (i.e. multiversion) installs, you will need:
+  # - 400 Mb for opcache (~ 50 Mb for strings)
+  # - 1 GB for apcu (maybe something more for appservers)
+  # - 500 Mb per worker
+  # - 500mi CPU per worker + 500mi for the master process
+  requests:
+    cpu: 1000m
+    memory: 3500Mi # This allows up to 5 workers
+  limits:
+    cpu: 2000m
+    memory: 4000Mi
+  liveness_probe:
+    tcpSocket:
+      port: 443
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 443
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+  # If the application emits its metrics using statsd, we need to use the prometheus-statsd exporter
+  # For service-runner based apps using service-runner < 2.8, this should be set to true
+  uses_statsd: false
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 443 # the number or name of the exposed port on the container
+    port: 443 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 443 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Add here, via our "secret" system, the cert/key pairs
+  #   cert: "your cert here"
+  #   key: "your key here"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false
+
+php:
+  httpd:
+    version: "2.4.38-1-s1"
+    port: "8080"
+    exporter_version: 0.0.1
+    requests:
+      cpu: 200m
+      memory: 600Mi
+    limits:
+      cpu: 1
+      memory: 800Mi
+  fcgi_mode: FCGI_TCP
+  exporter_version: 0.0.1
+  servergroup: main
+  # Values for local development
+  opcache:
+    size: "200" # Megabytes. Probably needs a boost in production
+    nofiles: "1000" # Number of files. Definitely needs a boost in production
+  apc:
+    size: "400M" #
+  workers: "5" # You need 2 at the very least.
+  timeout: "60"
+# See the dockerfiles for the the php-fpm base image to know what can be tweaked.
+# Those can be passed via config.public above.
+
+mw:
+  domain_suffix: "local"
+  httpd:
+    image_tag: latest
+    health_host: test.local
+  mcrouter:
+    enabled: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 1
+        memory: 200Mi
+    image_tag: mcrouter:latest
+    exporter_version: latest
+    route_prefix: local/mw # change this in production based on datacenter
+    cross_region_timeout: 250
+    cross_cluster_timeout: 100
+    probe_timeout: 60000
+    timeouts_until_tko: 3
+    num_proxies: 5
+    zone: local
+    pools:
+      - name: test-pool
+        zone: local
+        servers:
+          - 10.10.10.10
+          - 10.10.10.11
+        failover:
+          - 10.10.10.12
+      - name: remote-pool
+        zone: remote
+        servers:
+          - 10.100.1.2
+          - 10.100.1.3
+        failover:
+          - 10.100.1.4
+    routes:
+      # Remember - at least one of your zones must match the route_prefix above
+      - route: /local/mw
+        type: standalone
+        failover: true
+        pool: test-pool
+      - route: /local/mw-wan
+        type: replica
+        pool: test-pool
+        remote:
+          route: /remote/mw-wan
+          pool: remote-pool
+
+  nutcracker:
+    enabled: false
+    image_tag: nutcracker:latest
+    exporter_version: latest
+    resources:
+      requests:
+        cpu: 200m
+        memory: 50Mi
+      limits:
+        cpu: 400m
+        memory: 100Mi
+    # To be defined in the private files
+    redis_password: "1234"
+    pools:
+      - name: pool-A
+        port: 12000
+        servers:
+          - shard: "1"
+            host: 10.10.10.100
+            port: 6379
+          - shard: "2"
+            host: 10.10.10.100
+            port: 6380
+  sites:
+    - name: wikipedia.local
+      priority: 1
+      defaults:
+        ensure: present
+        public_rewrites: true
+      vhosts:
+        - name: wikipedia.local
+          server_aliases:
+            - "*.wikipedia.org"
+          docroot: "/srv/mediawiki/docroot/wikipedia.org"
+          short_urls: true
+          upload_rewrite:
+            domain_catchall: wikipedia.org
+            rewrite_prefix: wikipedia
+          legacy_rewrites: true
+          variant_aliases:
+            - sr
+            - sr-ec
+            - sr-el
+            - zh
+            - zh-hans
+            - zh-hant
+            - zh-cn
+            - zh-hk
+            - zh-my
+            - zh-mo
+            - zh-sg
+            - zh-tw
+          additional_rewrites:
+            early: []
+            late:
+              - "# moved wikistats off NFS"
+              - "    RewriteRule ^/wikistats(/(.*$)|$) %{ENV:RW_PROTO}://stats.wikimedia.org/$2
+                [R=302,L]"
+    - name: static
+      priority: 2
+      content: |+
+        <Virtualhost *:8080>
+          Servername test
+          ServerAlias test.local
+          DocumentRoot /srv/mediawiki/docroot/standard-docroot
+        </VirtualHost>
+
