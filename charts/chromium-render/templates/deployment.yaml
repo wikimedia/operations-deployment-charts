@@ -104,4 +104,4 @@ spec:
         {{- include "tls.volume" . | indent 8}}
         - name: config-volume
           configMap:
-            name: config-{{ .Release.Name }}
+            name: {{ template "wmf.releasename" . }}-config

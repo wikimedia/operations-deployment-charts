@@ -18,6 +18,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config-{{ .Release.Name }}
+  name: {{ template "wmf.releasename" . }}-config
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
