@@ -20,11 +20,11 @@ spec:
         heritage: {{ .Release.Service }}
     spec:
       backoffLimit: 1
-      metadata:
-        labels:
-          app: {{ template "wmf.chartname" . }}
-          release: {{ .Release.Name }}
       template:
+        metadata:
+          labels:
+            app: {{ template "wmf.chartname" . }}
+            release: {{ .Release.Name }}
         spec:
           restartPolicy: Never
           containers:
