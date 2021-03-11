@@ -9,6 +9,6 @@ spec:
   - name: '{{ template "wmf.releasename" . }}-curl-ui'
     image: "{{ .Values.docker.registry }}/wmfdebug"
     imagePullPolicy: {{ .Values.docker.pull_policy }}
-    args: ["curl", "http://{{ template "wmf.releasename" . }}-jobmanager:8081/"]
+    args: ["curl", "http://{{ template "wmf.releasename" . }}-ui:8081"]
   dnsPolicy: ClusterFirst
   restartPolicy: Never
