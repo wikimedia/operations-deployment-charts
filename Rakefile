@@ -283,7 +283,7 @@ end
 all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
 desc 'Runs helm lint on all charts'
 task :lint, [:charts] do |t, args|
-  if args.nil?
+  if args.nil? || args.count == 0
     charts = all_charts
   else
     charts = args[:charts]
@@ -300,7 +300,7 @@ end
 
 desc 'Runs helm template on all charts'
 task :validate_template, [:charts] do |t, args|
-  if args.nil?
+  if args.nil? || args.count == 0
     charts = all_charts
   else
     charts = args[:charts]
@@ -452,7 +452,9 @@ task :test_scaffold do
       fh.write(data.to_yaml)
     end
     Rake::Task[:lint].invoke(charts)
+    Rake::Task[:lint].reenable
     Rake::Task[:validate_template].invoke(charts)
+    Rake::Task[:validate_template].reenable
   ensure
     FileUtils.rm_rf(charts[0])
   end
