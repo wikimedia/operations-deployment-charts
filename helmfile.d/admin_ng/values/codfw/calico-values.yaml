@@ -16,15 +16,8 @@ BGPPeers:
     asNumber: 14907
     peerIP: "2620:0:860:ffff::2"
 
-# TODO: Aggregate the IPv4 pools into respective /21 on cluster reinit
 IPPools:
-  ipv4-1:
-    cidr: "10.192.64.0/24"
-  ipv4-2:
-    cidr: "10.192.65.0/24"
-  ipv4-3:
-    cidr: "10.192.66.0/23"
-  ipv4-4:
-    cidr: "10.192.68.0/22"
+  ipv4:
+    cidr: "10.192.64.0/21"
   ipv6:
     cidr: "2620:0:860:cabe::/64"
