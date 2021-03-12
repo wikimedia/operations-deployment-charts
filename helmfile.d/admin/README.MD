@@ -1,3 +1,4 @@
+# THIS IS DEPRECATED AND OLD, don't use it #
 # Admin workflow
 
 This repo intends to keep the namespace creation and namespaced policies
