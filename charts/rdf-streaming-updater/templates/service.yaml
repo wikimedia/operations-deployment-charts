@@ -10,6 +10,7 @@ metadata:
     chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    component: jobmanager-ui
 spec:
   type: NodePort
   ports:
@@ -18,27 +19,6 @@ spec:
     {{- if .Values.service.port.nodePort }}
     nodePort: {{ .Values.service.port.nodePort }}
     {{- end }}
-  selector:
-    app: {{ template "wmf.chartname" . }}-jobmanager
-    release: {{ .Release.Name }}
-    component: jobmanager
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "wmf.releasename" . }}-jobmanager
-  labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: ClusterIP
-  ports:
-  - name: rpc
-    port: 6123
-  - name: blob-server
-    port: 6124
   selector:
     app: {{ template "wmf.chartname" . }}-jobmanager
     release: {{ .Release.Name }}

@@ -5,6 +5,7 @@ helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
+  # Create and a flink image instead of using this one
   image: wikimedia/wikidata-query-flink-rdf-streaming-updater
   version: latest
 
@@ -21,30 +22,29 @@ main_app:
       port: 6123
     initialDelaySeconds: 30
     periodSeconds: 60
-  readiness_probe:
-    httpGet:
-      path: /
-      port: 8081
   config:
-    consumer_group: wdqs_streaming_updater_test
-    brokers: kafka-jumbo1001.eqiad.wmnet:9092
-    output_topic: wdqs_streaming_updater_test
-    checkpoint_dir: file:///streaming_updater/checkpoints
-    input_idleness: 2000
-    checkpoint_interval: 30000
-    checkpoint_timeout: 900000
-    consumer_parallelism: 1
-    reordering_parallelism: 1
-    decide_mut_op_parallelism: 1
-    generate_diff_parallelism: 1
     task_slots: 2
     job_manager_mem : 600m
     task_manager_mem: 1000m
+    blob_server_port: 6124
+    jobmanager_rpc_port: 6123
+    taskmanager_rpc_port: 6122
+    queryable_state_proxy_port: 6125
+    prometheus_reporter_port: 9102
     parallelism: 1
     swift_auth_url: "https://thanos-swift.discovery.wmnet/auth/v1.0"
     swift_username: "wdqs:flink"
-    event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
-    output_topic_prefix: eqiad
+    # the cluster id used by flink H/A components
+    # see https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/deployment/config/#kubernetes-cluster-id
+    # the cluster id is used by flink to name some k8s resources it creates like h/a configmaps
+    # this name must unique in the k8s namespace but it's advised to make it globally unique in the infrastructure
+    # to avoid ambiguities.
+    cluster_id: flink-cluster
+    # storage used by flink's H/A components, it's required to recover running jobs when the jobmanager fails
+    # unexpectedly.
+    # It must be overridden and set with a durable object storage like swift and not a local folder like here (used for testing only)
+    ha_storage_dir: file:///streaming_updater/ha_storage_dir
+    additional_flink_settings: {}
 
 task_manager:
   replicas: 1
@@ -60,9 +60,6 @@ task_manager:
     initialDelaySeconds: 30
     periodSeconds: 60
 
-monitoring:
-  enabled: false
-  image_version: latest
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:

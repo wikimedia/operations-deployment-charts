@@ -23,27 +23,26 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{ if .Values.monitoring.enabled -}}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-        {{ end -}}
-        prometheus.io/port: "9102"
+        checksum/log4j-conf: {{ .Files.Get "config/log4j-console.properties" | sha256sum }}
+        checksum/flink-conf: {{ include "flink-conf" . | sha256sum }}
+        prometheus.io/port: "{{ .Values.main_app.config.prometheus_reporter_port }}"
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
+      serviceAccountName: {{ template "wmf.releasename" . }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}-jobmanager
           image: "{{ .Values.docker.registry }}/{{ .Values.docker.image }}:{{ .Values.docker.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
-          command: ["/opt/flink/bin/standalone-job.sh", "start-foreground", "--job-classname", "org.wikidata.query.rdf.updater.UpdaterJob", "/opt/flink/conf/updater-job.properties"
-]
+          command: ["/opt/flink/bin/jobmanager.sh", "start-foreground", "$(POD_IP)"]
           ports:
-            - containerPort: 6123
+            - containerPort: {{ .Values.main_app.config.jobmanager_rpc_port }}
               name: rpc
-            - containerPort: 6124
+            - containerPort: {{ .Values.main_app.config.blob_server_port }}
               name: blob-server
             - containerPort: {{ .Values.service.port.targetPort }}
               name: webui
@@ -56,6 +55,11 @@ spec:
           {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
           {{- end }}
           env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
           {{- range $k, $v := .Values.config.public }}
@@ -77,21 +81,8 @@ spec:
           volumeMounts:
           - name: flink-config-volume
             mountPath: /opt/flink/conf
-{{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-metrics-exporter
-              mountPath: /etc/monitoring
-{{- end }}
         {{- include "tls.container" . | indent 8}}
       volumes:
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
-        {{- end }}
         {{- include "tls.volume" . | indent 8}}
         - name: flink-config-volume
           configMap:
@@ -101,5 +92,3 @@ spec:
               path: flink-conf.yaml
             - key: log4j-console.properties
               path: log4j-console.properties
-            - key: updater-job.properties
-              path: updater-job.properties

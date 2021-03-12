@@ -23,16 +23,16 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{ if .Values.monitoring.enabled -}}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-        {{ end -}}
-        prometheus.io/port: "9102"
+        checksum/log4j-conf: {{ .Files.Get "config/log4j-console.properties" | sha256sum }}
+        checksum/flink-conf: {{ include "flink-conf" . | sha256sum }}
+        prometheus.io/port: "{{ .Values.main_app.config.prometheus_reporter_port }}"
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
 {{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
+      serviceAccountName: {{ template "wmf.releasename" . }}
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}-taskmanager
@@ -40,9 +40,9 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           command: ["/opt/flink/bin/taskmanager.sh", "start-foreground"]
           ports:
-            - containerPort: 6122
+            - containerPort: {{ .Values.main_app.config.taskmanager_rpc_port }}
               name: rpc
-            - containerPort: 6125
+            - containerPort: {{ .Values.main_app.config.queryable_state_proxy_port }}
               name: query-state
           {{- if .Values.task_manager.liveness_probe }}
           livenessProbe:
@@ -74,21 +74,8 @@ spec:
           volumeMounts:
           - name: flink-config-volume
             mountPath: /opt/flink/conf
-{{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-metrics-exporter
-              mountPath: /etc/monitoring
-{{- end }}
         {{- include "tls.container" . | indent 8}}
       volumes:
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
-        {{- end }}
         {{- include "tls.volume" . | indent 8}}
         - name: flink-config-volume
           configMap:

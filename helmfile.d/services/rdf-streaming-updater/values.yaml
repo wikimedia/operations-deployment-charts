@@ -1,0 +1,55 @@
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
+  version: 2021-03-11-234830-production
+
+main_app:
+  replicas: 1
+  requests:
+    cpu: 1000m
+    memory: 1600M
+  limits:
+    cpu: 1000m
+    memory: 1600M
+  config:
+    task_slots: 4
+    job_manager_mem : 1600m
+    task_manager_mem: 2048m
+    parallelism: 12
+    swift_auth_url: http://localhost:6022/auth/v1.0
+    swift_username: wdqs:flink
+
+task_manager:
+  replicas: 3
+  requests:
+    cpu: 4000m
+    memory: 2048M
+  limits:
+    cpu: 4000m
+    memory: 2048M
+
+service:
+  deployment: production
+  port:
+    port: 14007 # the port number desired to be exposed to the cluster
+config:
+  public: {}
+  private:
+    swift_api_key: some_secret_key
+tls:
+  enabled: true
+  public_port: 4007
+  upstream_timeout: "180.0s"
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+discovery:
+  listeners:
+    - thanos-swift
+    - mwapi-async
+    - schema
+networkpolicy:
+  egress:
+    enabled: true

@@ -1,0 +1,6 @@
+main_app:
+  config:
+    cluster_id: rdf-streaming-updater-codfw-flink-cluster
+# thanos is replicated between clusters so we want a separate bucket for
+# the flink HA storage
+    ha_storage_dir: swift://rdf-streaming-updater-codfw.thanos-swift/flink_ha_storage

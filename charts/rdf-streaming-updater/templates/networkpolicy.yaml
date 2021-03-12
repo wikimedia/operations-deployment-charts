@@ -24,21 +24,18 @@ spec:
             app: {{ template "wmf.chartname" . }}-jobmanager
             release: {{ .Release.Name }}
       ports:
-        - port: 6122
+        - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
           protocol: TCP
-        - port: 6125
+        - port: {{ .Values.main_app.config.queryable_state_proxy_port }}
           protocol: TCP
-    {{- if or .Values.monitoring.enabled (and .Values.tls.enabled .Values.tls.telemetry.enabled) }}
     - ports:
-      {{- if .Values.monitoring.enabled }}
-      - port: 9102
+      # flink's native prometheus endpoint
+      - port: {{ .Values.main_app.config.prometheus_reporter_port }}
         protocol: TCP
-      {{- end }}
       {{- if and .Values.tls.enabled .Values.tls.telemetry.enabled }}
       - port: {{ .Values.tls.telemetry.port }}
         protocol: TCP
       {{- end }}
-    {{- end }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
@@ -73,23 +70,20 @@ spec:
             app: {{ template "wmf.chartname" . }}-taskmanager
             release: {{ .Release.Name }}
       ports:
-        - port: 6123
+        - port: {{ .Values.main_app.config.jobmanager_rpc_port }}
           protocol: TCP
-        - port: 6124
+        - port: {{ .Values.main_app.config.blob_server_port }}
           protocol: TCP
-    {{ if or .Values.debug.enabled .Values.monitoring.enabled .Values.tls.enabled }}
     - ports:
+      # flink's native prometheus endpoint
+      - port: {{ .Values.main_app.config.prometheus_reporter_port }}
+        protocol: TCP
       {{- if .Values.debug.enabled }}
       {{- range .Values.debug.ports }}
       - port: {{ . }}
         protocol: TCP
       {{- end }}{{- end }}
-      {{- if .Values.monitoring.enabled }}
-      - port: 9102
-        protocol: TCP
-      {{- end }}
       {{- include "tls.networkpolicy" . | indent 6 }}
-      {{- end }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}

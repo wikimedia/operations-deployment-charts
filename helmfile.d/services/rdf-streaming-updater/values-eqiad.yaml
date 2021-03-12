@@ -1,0 +1,6 @@
+main_app:
+  config:
+    cluster_id: rdf-streaming-updater-eqiad-flink-cluster
+# thanos is replicated between clusters so we want a separate bucket for
+# the flink HA storage
+    ha_storage_dir: swift://rdf-streaming-updater-eqiad.thanos-swift/flink_ha_storage
