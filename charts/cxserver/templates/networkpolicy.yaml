@@ -24,6 +24,8 @@ spec:
         {{- if .Values.monitoring }}
       - port: 9102
         protocol: TCP
+      - port: 9090
+        protocol: TCP
         {{- end }}
     {{- include "tls.networkpolicy" . | indent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}

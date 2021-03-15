@@ -20,12 +20,9 @@ logging:
       named_levels: true
 
 {{- if .Values.monitoring.enabled }}
-# Statsd metrics reporter
 metrics:
-  name: cxserver
-  host: localhost
-  port: 9125
-  type: statsd
+  port: 9090
+  type: prometheus
 {{- end }}
 
 # TODO: Figure this out in production
