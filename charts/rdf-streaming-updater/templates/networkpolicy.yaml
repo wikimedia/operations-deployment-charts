@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "wmf.releasename" . }}-taskmanager
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -10,7 +10,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "wmf.chartname" . }}-taskmanager
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
@@ -18,17 +18,67 @@ spec:
   {{- end }}
     - Ingress
   ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: {{ template "wmf.chartname" . }}-jobmanager
+            release: {{ .Release.Name }}
+      ports:
+        - port: 6122
+          protocol: TCP
+        - port: 6125
+          protocol: TCP
+    {{- if or .Values.monitoring.enabled (and .Values.tls.enabled .Values.tls.telemetry.enabled) }}
     - ports:
-      - port: 6123
+      {{- if .Values.monitoring.enabled }}
+      - port: 9102
         protocol: TCP
-      - port: 6124
+      {{- end }}
+      {{- if and .Values.tls.enabled .Values.tls.telemetry.enabled }}
+      - port: {{ .Values.tls.telemetry.port }}
         protocol: TCP
-      - port: 8081
-        protocol: TCP
-      - port: 6122
-        protocol: TCP
-      - port: 6125
-        protocol: TCP
+      {{- end }}
+    {{- end }}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+{{- end }}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-jobmanager
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}-jobmanager
+      release: {{ .Release.Name }}
+  policyTypes:
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: {{ template "wmf.chartname" . }}-taskmanager
+            release: {{ .Release.Name }}
+      ports:
+        - port: 6123
+          protocol: TCP
+        - port: 6124
+          protocol: TCP
+    {{ if or .Values.debug.enabled .Values.monitoring.enabled .Values.tls.enabled }}
+    - ports:
       {{- if .Values.debug.enabled }}
       {{- range .Values.debug.ports }}
       - port: {{ . }}
@@ -38,7 +88,8 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
-      {{- include "tls.networkpolicy" . | indent 6}}
+      {{- include "tls.networkpolicy" . | indent 6 }}
+      {{- end }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}

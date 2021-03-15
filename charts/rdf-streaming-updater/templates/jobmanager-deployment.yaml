@@ -45,7 +45,7 @@ spec:
               name: rpc
             - containerPort: 6124
               name: blob-server
-            - containerPort: 8081
+            - containerPort: {{ .Values.service.port.targetPort }}
               name: webui
           {{- if .Values.main_app.liveness_probe }}
           livenessProbe:
