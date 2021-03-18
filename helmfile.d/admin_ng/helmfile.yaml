@@ -15,6 +15,18 @@ environments:
     values:
       - "values/values.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+  # Machine Learning clusters
+  ml-serve-eqiad:
+    values:
+      - "values/values.yaml"
+      - "values/ml-serve-values.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+  ml-serve-codfw:
+    values:
+      - "values/values.yaml"
+      - "values/ml-serve-values.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+
 ---
 bases:
   - helmfile_rbac.yaml
