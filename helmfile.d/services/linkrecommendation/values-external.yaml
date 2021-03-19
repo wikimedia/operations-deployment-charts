@@ -10,3 +10,8 @@ config:
     # API are needed to obtain additional data for request handling. The internal traffic
     # releases use POST requests that include all data needed for request handling.
     MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/api.php
+    # Swagger UI is disabled for all releases except external traffic.
+    SWAGGER_UI_ENABLED: 1
+    # Needed so that the API docs can load assets correctly when served from
+    # https://api.wikimedia.org/service/linkrecommendation/apidocs/
+    SWAGGER_UI_URL_PREFIX: /service/linkrecommendation/
