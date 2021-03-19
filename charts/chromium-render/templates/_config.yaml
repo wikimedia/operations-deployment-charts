@@ -29,12 +29,9 @@ logging:
       named_levels: true
 
 {{- if .Values.monitoring.enabled }}
-# Statsd metrics reporter
 metrics:
-  name: chromium-render
-  host: localhost
-  port: 9125
-  type: statsd
+  port: 9102
+  type: prometheus
 {{- end }}
 
 services:
