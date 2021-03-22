@@ -9,13 +9,12 @@ require 'readline'
 $LOAD_PATH.unshift File.expand_path('.')
 require '.rake_modules/scaffold'
 
-
 ERROR_CONTEXT_LINES = 4
-PRIVATE_STUB = '.fixtures/private_stub.yaml'
-HELM_REPO = 'stable'
-HELMFILE_GLOB = "helmfile.d/services/**/helmfile.yaml"
-KUBERNETES_VERSIONS = "1.19,1.16,1.12"
-HELMFILE_ENV = 'eqiad'
+PRIVATE_STUB = '.fixtures/private_stub.yaml'.freeze
+HELM_REPO = 'stable'.freeze
+HELMFILE_GLOB = 'helmfile.d/services/**/helmfile.yaml'.freeze
+KUBERNETES_VERSIONS = '1.19,1.16,1.12'.freeze
+HELMFILE_ENV = 'eqiad'.freeze
 
 # Extend string to add color output
 class String
@@ -28,6 +27,7 @@ class String
   end
 
   private
+
   def colour(colour_code)
     "\e[#{colour_code}m#{self}\e[0m"
   end
@@ -43,12 +43,13 @@ class ThreadPool
         catch(:exit) do
           loop do
             job = @jobs.pop
-            job.call()
+            job.call
           end
         end
       end
     end
   end
+
   def run(&block)
     @jobs << block
   end
@@ -64,9 +65,9 @@ end
 
 # pretty-print output
 def pprint(title, data)
-  puts "=="
+  puts '=='
   puts title
-  puts ""
+  puts ''
   data.each do |chart, success|
     if success
       puts "#{chart.ljust(72)}OK".green
@@ -78,17 +79,17 @@ end
 
 # Checks the output of _exec
 def raise_if_failed(data)
-  data.each{ |_, success| raise('Failure') unless success }
+  data.each { |_, success| raise('Failure') unless success }
 end
 
 # Executes a command, returns an array [true/false, String], first element
 # denoting success or failure, second one being stdout/stderr
-def _exec(command, input=nil, nostderr=false)
+def _exec(command, input = nil, nostderr = false)
   ret = []
-  Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+  Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
     if input
       stdin.write(input)
-      stdin.close()
+      stdin.close
     end
     out = stdout.gets(nil)
     err = stderr.gets(nil)
@@ -99,7 +100,7 @@ def _exec(command, input=nil, nostderr=false)
       out = nostderr ? out : err
       ret = [false, out]
     end
-  }
+  end
   ret
 end
 
@@ -131,15 +132,14 @@ def report_yaml_parse_error(cmd, msg, output, e)
   puts lines[e.line + 1, post_lines].join "\n"
 end
 
-
 # Checks an helm chart.
 # Does so by running helm template (injecting value fixture files if present)
 # If kubeyaml is available, also run kubeyaml.
 def check_template(chart, fixture = nil, kubeyaml = nil)
   helm = helm_version(chart)
-  if fixture != nil
+  if !fixture.nil?
     # When passing multiple values, concatenate them
-    quoted = fixture.map{ |x| "-f '#{x}'" }.join " "
+    quoted = fixture.map { |x| "-f '#{x}'" }.join ' '
     command = "#{helm} template #{quoted} '#{chart}'"
     error = "Error checking #{chart}, value files: #{fixture}"
   else
@@ -152,6 +152,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
     begin
       YAML.load_stream(output) do |resource|
         next unless resource
+
         docs << resource['kind']
         # not doing anything here, we're just verifying it loads for now.
       end
@@ -172,13 +173,14 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
         t = Thread.new do
           # Remove the # Source: line. It can be helpful if the template ends up
           # fully empty as kubeyaml won't then emit a useless warning
-          source = doc.match(/^# Source: [a-zA-Z0-9\/\.-]*$/)
-          doc = doc.strip.gsub(/^# Source: [a-zA-Z0-9\/\.-]*$/, '').strip
+          source = doc.match(%r{^# Source: [a-zA-Z0-9/\.-]*$})
+          doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9/\.-]*$}, '').strip
           next if doc.length == 0
+
           succ, out = _exec command, doc, true
-          if not succ
+          unless succ
             puts error.red
-            puts "Error validating semantically YAML"
+            puts 'Error validating semantically YAML'
             puts "Kubeyaml says:\n#{out}\n for:\n#{source}"
             success = succ
           end
@@ -193,9 +195,8 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
     puts "Error running #{command}:"
     puts output
   end
-  return success
+  success
 end
-
 
 # parses an helmfile and returns the status of running 'helmfile lint'
 # for all environments.
@@ -204,12 +205,12 @@ end
 def validate_helmfile_full(filepath)
   # Do everything in a tempdir
   results = {}
-  helm_home = ENV['HELM_HOME'] || File.expand_path("~/.helm")
+  helm_home = ENV['HELM_HOME'] || File.expand_path('~/.helm')
   dir_to_copy, file = File.split filepath
   Dir.mktmpdir do |dir|
     # Copy HELM_HOME so that we don't incur in race conditions when running in
     # parallel, see T261313
-    local_helm_home = File.join dir, ".helm"
+    local_helm_home = File.join dir, '.helm'
     FileUtils.cp_r helm_home, local_helm_home
     # Copy the original dir files to the tmpdir
     FileUtils.cp_r "#{dir_to_copy}/.", dir
@@ -219,13 +220,13 @@ def validate_helmfile_full(filepath)
 
     # Patch helmfile so that .fixtures.yaml is used instead of
     # /etc/helmfile-defaults/general-#{env}.yaml
-    if File.exists? fixtures
+    if File.exist? fixtures
       source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
       File.write filename, source
     end
     ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e staging -f #{filename} build", nil, true
     # If we can't run helmfile build, we need to bail out early.
-    return {'staging' => false} unless ok
+    return { 'staging' => false } unless ok
 
     helmfile_raw_data = YAML.safe_load(data)
     envs = helmfile_raw_data['environments'].keys
@@ -250,7 +251,7 @@ def helm_version(chart)
     error = "Parsing #{path_to_chart_yaml}"
     chart_yaml = YAML.load_file(path_to_chart_yaml)
   rescue Psych::SyntaxError => e
-    report_yaml_parse_error("Chart.yaml", error, chart_yaml, e)
+    report_yaml_parse_error('Chart.yaml', error, chart_yaml, e)
     raise('Failure parsing Chart.yaml')
   rescue StandardError => e
     puts error.red
@@ -260,9 +261,9 @@ def helm_version(chart)
 
   error = "Failed to determine helm version for #{chart}"
   if chart_yaml['apiVersion'] == 'v1'
-    return 'helm2'
+    'helm2'
   elsif chart_yaml['apiVersion'] == 'v2'
-    return 'helm3'
+    'helm3'
   else
     puts error.red
     puts e
@@ -280,31 +281,31 @@ task :repo_update do
   system('helm3 repo update')
 end
 
-all_charts = FileList.new('charts/**/Chart.yaml').map{ |x| File.dirname(x)}
+all_charts = FileList.new('charts/**/Chart.yaml').map { |x| File.dirname(x) }
 desc 'Runs helm lint on all charts'
-task :lint, [:charts] do |t, args|
-  if args.nil? || args.count == 0
-    charts = all_charts
-  else
-    charts = args[:charts]
-  end
+task :lint, [:charts] do |_t, args|
+  charts = if args.nil? || args.count == 0
+             all_charts
+           else
+             args[:charts]
+           end
   results = {}
   charts.each do |chart|
     puts "Linting #{chart}"
     helm = helm_version(chart)
-    results[chart] =  system("#{helm} lint '#{chart}'")
+    results[chart] = system("#{helm} lint '#{chart}'")
   end
-  pprint "Helm lint summary:", results
+  pprint 'Helm lint summary:', results
   raise_if_failed results
 end
 
 desc 'Runs helm template on all charts'
-task :validate_template, [:charts] do |t, args|
-  if args.nil? || args.count == 0
-    charts = all_charts
-  else
-    charts = args[:charts]
-  end
+task :validate_template, [:charts] do |_t, args|
+  charts = if args.nil? || args.count == 0
+             all_charts
+           else
+             args[:charts]
+           end
   # Detect kubeyaml, if present also semantically validate YAML
   # Note that we only do this in this task, to avoid heavily increased execution
   # times
@@ -316,11 +317,12 @@ task :validate_template, [:charts] do |t, args|
     fixtures.each do |fixture|
       # Exclude the private stub if present.
       next if fixture.include? PRIVATE_STUB
+
       fixture_name = File.basename(fixture, '.yaml')
       results["#{chart} => #{fixture_name}"] = check_template chart, [fixture], kubeyaml
     end
   end
-  pprint "Helm template summary:", results
+  pprint 'Helm template summary:', results
   raise_if_failed results
 end
 
@@ -336,7 +338,8 @@ task :validate_deployments do
     tp.run do
       radix, deployment = File.split(File.dirname(helmfile))
       # Skip the example, and env-wide helmfiles
-      next if ['_example_',].include? deployment
+      next if ['_example_'].include? deployment
+
       deployment_results = validate_helmfile_full helmfile
       res = deployment_results
       mutex.synchronize do
@@ -347,15 +350,15 @@ task :validate_deployments do
     end
   end
   tp.join
-  pprint "Helmfile deployments check summary:", results
+  pprint 'Helmfile deployments check summary:', results
   raise_if_failed results
 end
 
 desc 'Validate the envoy configuration'
 task :validate_envoy_config do
-  puts "Generating and verifying the envoy configuration..."
+  puts 'Generating and verifying the envoy configuration...'
   # run helm template for a specific fixture that generates a service proxy and tls terminator
-  command = "helm template --values .fixtures/service_discovery.yaml charts/termbox"
+  command = 'helm template --values .fixtures/service_discovery.yaml charts/termbox'
   res, out = _exec command
   unless res
     puts out.red
@@ -363,13 +366,14 @@ task :validate_envoy_config do
   end
   # Extract the envoy configuration, write it to a file
   begin
-    config = ""
+    config = ''
     YAML.load_stream(out) do |resource|
-      next unless resource["kind"] == "ConfigMap" \
-        && resource["metadata"] \
-        && resource["metadata"]["name"] \
-        && resource["metadata"]["name"].end_with?("envoy-config-volume")
-      config = resource["data"]["envoy.yaml"]
+      next unless resource['kind'] == 'ConfigMap' \
+        && resource['metadata'] \
+        && resource['metadata']['name'] \
+        && resource['metadata']['name'].end_with?('envoy-config-volume')
+
+      config = resource['data']['envoy.yaml']
     end
   rescue StandardError => e
     puts e.red
@@ -393,15 +397,15 @@ task :validate_envoy_config do
   else
     dest = '.tmp'
     # Now create a temp directory where we write the yaml file, then run docker to verify it works.
-    FileUtils.mkdir '.tmp', mode: 0777
+    FileUtils.mkdir '.tmp', mode: 0o777
     at_exit { FileUtils.remove_entry '.tmp' }
   end
 
   f = File.open "#{dest}/envoy.yaml", 'w'
   f.write config
-  f.close()
+  f.close
   # If we're copying the file into the container, it needs to be world-readable
-  File.chmod 0755, "#{dest}/envoy.yaml" unless has_envoy
+  File.chmod 0o755, "#{dest}/envoy.yaml" unless has_envoy
 
   FileUtils.cp_r('.fixtures/ssl/', "#{dest}/")
 
@@ -414,7 +418,7 @@ task :validate_envoy_config do
   res, out = _exec cmd
   if !res
     puts out.red
-    raise("Failure")
+    raise('Failure')
   else
     puts out.green
   end
@@ -422,21 +426,21 @@ end
 
 # Scaffolding
 desc 'Create a new chart'
-task :scaffold, [:image, :service, :port] do |task,args|
+task :scaffold, [:image, :service, :port] do |_task, args|
   def get_data(arg, msg)
     if arg.nil?
       puts msg
-      Readline.readline("> ", true)
+      Readline.readline('> ', true)
     else
       arg
     end
   end
-  port = get_data(args[:port], "Please input the PORT on which the service will run")
-  service = get_data(args[:service], "Please input the NAME of the service")
-  image = get_data(args[:image], "Please input the IMAGE full label for the service")
+  port = get_data(args[:port], 'Please input the PORT on which the service will run')
+  service = get_data(args[:service], 'Please input the NAME of the service')
+  image = get_data(args[:image], 'Please input the IMAGE full label for the service')
 
   sc = Scaffold.new(image, service, port)
-  sc.run()
+  sc.run
 end
 
 desc 'Validate a sample chart generated from scaffolding'
@@ -444,11 +448,11 @@ task :test_scaffold do
   charts = ['charts/test-scaffold']
   begin
     # run scaffolding first
-    sc = Scaffold.new('example', 'test-scaffold', "9090")
-    sc.run()
+    sc = Scaffold.new('example', 'test-scaffold', '9090')
+    sc.run
     # Add a fixture for php apps
-    File.open("charts/test-scaffold/.fixtures/php.yaml", "w") do |fh|
-      data = {main_app: {type: "php"}}
+    File.open('charts/test-scaffold/.fixtures/php.yaml', 'w') do |fh|
+      data = { main_app: { type: 'php' } }
       fh.write(data.to_yaml)
     end
     Rake::Task[:lint].invoke(charts)
@@ -460,4 +464,4 @@ task :test_scaffold do
   end
 end
 
-task :default => [:repo_update, :test_scaffold, :lint, :validate_template, :validate_deployments, :validate_envoy_config]
+task default: %i[repo_update test_scaffold lint validate_template validate_deployments validate_envoy_config]
