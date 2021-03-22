@@ -1,8 +1,8 @@
 environments:
-#  eqiad:
-#    values:
-#      - "values/values.yaml"
-#      - "values/{{ .Environment.Name }}/values.yaml"
+  eqiad:
+    values:
+      - "values/values.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
   codfw:
     values:
       - "values/values.yaml"
