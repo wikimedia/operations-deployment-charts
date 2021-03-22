@@ -66,9 +66,9 @@ Create kubernetes master/api environment variables
 - name: KUBERNETES_SERVICE_PORT_HTTPS
   value: "{{ .Values.kubernetesApi.port }}"
 - name: KUBERNETES_PORT
-  value: "{{ printf "tcp://%s:%s" .Values.kubernetesApi.host .Values.kubernetesApi.port}}"
+  value: "tcp://{{ .Values.kubernetesApi.host }}:{{ .Values.kubernetesApi.port }}"
 - name: KUBERNETES_PORT_443_TCP
-  value: "{{ printf "tcp://%s:%s" .Values.kubernetesApi.host .Values.kubernetesApi.port}}"
+  value: "tcp://{{ .Values.kubernetesApi.host }}:{{ .Values.kubernetesApi.port }}"
 - name: KUBERNETES_PORT_443_TCP_PORT
   value: "{{ .Values.kubernetesApi.port }}"
 {{- end -}}
