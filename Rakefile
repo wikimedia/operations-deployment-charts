@@ -271,6 +271,16 @@ def helm_version(chart)
   end
 end
 
+def get_charts(args, fallback)
+  if args.nil? || args.count == 0
+    charts = fallback
+  else
+    charts = args[:charts]
+    charts = charts.split(',').map { |d| "charts/#{d}" } if charts.is_a?(String)
+  end
+  charts
+end
+
 ## RAKE TASKS
 
 # This is just to ensure the repo is up to date as one may
@@ -284,11 +294,7 @@ end
 all_charts = FileList.new('charts/**/Chart.yaml').map { |x| File.dirname(x) }
 desc 'Runs helm lint on all charts'
 task :lint, [:charts] do |_t, args|
-  charts = if args.nil? || args.count == 0
-             all_charts
-           else
-             args[:charts]
-           end
+  charts = get_charts(args, all_charts)
   results = {}
   charts.each do |chart|
     puts "Linting #{chart}"
@@ -301,11 +307,8 @@ end
 
 desc 'Runs helm template on all charts'
 task :validate_template, [:charts] do |_t, args|
-  charts = if args.nil? || args.count == 0
-             all_charts
-           else
-             args[:charts]
-           end
+  charts = get_charts(args, all_charts)
+
   # Detect kubeyaml, if present also semantically validate YAML
   # Note that we only do this in this task, to avoid heavily increased execution
   # times
