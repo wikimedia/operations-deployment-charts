@@ -10,10 +10,10 @@ monitoring:
   enabled: true
 service:
   deployment: production
-  port:
-    nodePort: 3030
 tls:
   enabled: true
+  telemetry:
+    enabled: true
 networkpolicy:
   egress:
     enabled: true
