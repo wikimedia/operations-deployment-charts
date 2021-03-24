@@ -15,3 +15,6 @@ config:
     # Needed so that the API docs can load assets correctly when served from
     # https://api.wikimedia.org/service/linkrecommendation/apidocs/
     SWAGGER_UI_URL_PREFIX: /service/linkrecommendation/
+    # TODO: Once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/674562 is
+    # merged we can remove this block and use the default 30 second value.
+    GUNICORN_TIMEOUT: 15
