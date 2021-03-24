@@ -333,11 +333,13 @@ BEGIN descriptions/mobileapps_cluster route definition
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
+
                 match:
                   safe_regex:
                     google_re2: {}
                     regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
                 route:
+                  timeout: {{ $discovery_opts.timeout | default "15s" }}
                   cors:
                     allow_origin_string_match:
                       - prefix: "*"
@@ -555,7 +557,7 @@ BEGIN descriptions/mobileapps_cluster route definition
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
     common_http_protocol_options:
-      idle_timeout: {{ $idle_timeout }}
+      idle_timeout: $idle_timeout
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
