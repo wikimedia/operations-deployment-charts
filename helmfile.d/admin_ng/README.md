@@ -13,7 +13,7 @@ directly related to any chart/deployment.
 ## namespaces (helmfile_namespaces.yaml)
 Deploys **all** namespaces, plus:
 * RoleBinding for deploy users
-* RoleBinding for deafult system account
+* RoleBinding for default system account
 * LimitRange
 * ResourceQuota
 
@@ -26,7 +26,7 @@ Deploys **all** namespaces, plus:
 ## rbac-rules (helmfile_rbac.yaml)
 RBAC stuff that does not directly relate to a helm deployment
 * ClusterRole for deploy users and prometheus
-* ClusterRoleBinging for rsyslog (**TODO:** incestigate why that's needed and what it does)
+* ClusterRoleBinging for rsyslog (**TODO:** investigate why that's needed and what it does)
 * ClusterRoleBindings for prometheus to access api-metrics and heapster
 
 # Additional releases
