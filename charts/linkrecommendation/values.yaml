@@ -63,6 +63,13 @@ config:
     DB_ADMIN_USER: "adminlinkrecommendation"
     ANALYTICS_BASE_URL: "https://analytics.wikimedia.org/published/datasets/one-off/research-mwaddlink/"
     GUNICORN_TIMEOUT: 30
+    # The proxy API URL is only needed for handling GET requests, where calls to the MW
+    # API are needed to obtain additional data for request handling. The internal traffic
+    # releases use POST requests that include all data needed for request handling.
+    # As such, this is only really needed for the external traffic release, but enable
+    # for all releases so that service-checker-swagger can validate the GET example provided
+    # by the service.
+    MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/api.php
   private:
     # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     DB_PASSWORD: "snakeoil"
