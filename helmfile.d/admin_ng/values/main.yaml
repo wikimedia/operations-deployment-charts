@@ -1,0 +1,104 @@
+# List all namespaces that should be created in every ServiceOps cluster
+# Set "<namespace-name>.deployUser: foo" for deploy username different from <namespace-name>
+namespaces:
+  apertium: {}
+  api-gateway: {}
+  blubberoid: {}
+  changeprop: {}
+  changeprop-jobqueue: {}
+  citoid: {}
+  cxserver: {}
+  echostore: {}
+  eventgate-analytics: {}
+  eventgate-analytics-external: {}
+  eventgate-logging-external: {}
+  eventgate-main: {}
+  eventstreams: {}
+  eventstreams-internal: {}
+  linkrecommendation: {}
+  mathoid: {}
+  mobileapps: {}
+  proton: {}
+  push-notifications: {}
+  recommendation-api: {}
+  sessionstore: {}
+  similar-users: {}
+  termbox: {}
+  wikifeeds: {}
+  zotero: {}
+
+GlobalNetworkPolicies:
+  # Allow icmp for all pods and all directions. Useful in debugging
+  allow-all-icmp:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    ingress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+    egress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+  # Allow tillers to talk to the kubernetes API. Note that we aren't able
+  # to select the "default" namespace where the service resides are it has no
+  # selectable Endpoints (it does have Endpoints, but calico doesn't seem to be
+  # able to select them as there are no pods powering those endpoints)
+  kubernetes-api:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        source:
+          selector: 'name == "tiller"'
+        destination:
+          ports:
+            - 443
+            - 6443
+  default-deny:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    egress:
+      # Allow all namespaces to communicate to DNS pods
+      - action: Allow
+        protocol: UDP
+        destination:
+          selector: 'k8s-app == "kube-dns"'
+          ports:
+            - 53
+  # This allows egress from all pods to all pods. Ingress still needs to be allowed by the destination, though.
+  allow-pod-to-pod:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "10.64.64.0/21"
+            # codfw
+            - "10.192.64.0/21"
+            # staging-eqiad
+            - "10.64.75.0/24"
+            # staging-codfw
+            - "10.192.75.0/24"
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "2620:0:861:cabe::/64"
+            # codfw
+            - "2620:0:860:cabe::/64"
+            # staging-eqiad
+            - "2620:0:861:babe::/64"
+            # staging-codfw
+            - "2620:0:860:babe::/64"

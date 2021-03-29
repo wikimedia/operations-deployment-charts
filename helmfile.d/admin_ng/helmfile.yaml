@@ -2,29 +2,33 @@ environments:
   eqiad:
     values:
       - "values/common.yaml"
+      - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
   codfw:
     values:
       - "values/common.yaml"
+      - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
   staging-eqiad:
     values:
       - "values/common.yaml"
+      - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
   staging-codfw:
     values:
       - "values/common.yaml"
+      - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
   # Machine Learning clusters
   ml-serve-eqiad:
     values:
       - "values/common.yaml"
-      - "values/ml-serve-values.yaml"
+      - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
   ml-serve-codfw:
     values:
       - "values/common.yaml"
-      - "values/ml-serve-values.yaml"
+      - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
 
 ---
