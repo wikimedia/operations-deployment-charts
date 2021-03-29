@@ -557,7 +557,7 @@ BEGIN descriptions/mobileapps_cluster route definition
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
     common_http_protocol_options:
-      idle_timeout: $idle_timeout
+      idle_timeout: {{ $idle_timeout }}
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
