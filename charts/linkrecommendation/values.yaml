@@ -69,7 +69,7 @@ config:
     # As such, this is only really needed for the external traffic release, but enable
     # for all releases so that service-checker-swagger can validate the GET example provided
     # by the service.
-    MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/api.php
+    MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/rest.php
   private:
     # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     DB_PASSWORD: "snakeoil"
