@@ -9,15 +9,15 @@ main_app:
   concurrency: 1
 
   changeprop:
-    mwapi_uri: http://deployment-mediawiki-07.deployment-prep.eqiad.wmflabs/w/api.php
+    mwapi_uri: http://deployment-mediawiki11.deployment-prep.eqiad1.wikimedia.cloud/w/api.php
     event_service_uri: http://deployment-eventgate-3.deployment-prep.eqiad.wmflabs:8292/v1/events
     ores:
       uris:
         - http://deployment-ores01.deployment-prep.eqiad.wmflabs:8081
 
-    purge_host: deployment-cache-text05.deployment-prep.eqiad.wmflabs
+    purge_host: deployment-cache-text06.deployment-prep.eqiad.wmflabs
 
-    restbase_uri: http://deployment-restbase02.deployment-prep.eqiad.wmflabs:7231
+    restbase_uri: http://deployment-restbase03.deployment-prep.eqiad1.wikimedia.cloud:7231
     domain_zone: beta\.wmflabs\.org
 
   log_level: warn
