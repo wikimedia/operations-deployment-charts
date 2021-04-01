@@ -8,5 +8,3 @@ config:
     # Needed so that the Swagger UI can load assets correctly when served from
     # https://api.wikimedia.org/service/linkrecommendation/
     URL_PREFIX: /service/linkrecommendation/
-    # TODO: Once T277297 is resolved we can remove this block and use the chart's default 30 second value.
-    GUNICORN_TIMEOUT: 15
