@@ -1,3 +1,8 @@
+# This is before coredns works, we can't rely on internal DNS, so use the external one
+kubernetesApi:
+  host: kubemaster.svc.eqiad.wmnet
+  port: 6443
+
 BGPConfiguration:
   asNumber: 64601
   nodeToNodeMeshEnabled: false
