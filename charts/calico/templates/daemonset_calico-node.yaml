@@ -136,7 +136,7 @@ spec:
           securityContext:
             privileged: true
           resources:
-            {{- toYaml .Values.typha.resources | nindent 12 }}
+            {{- toYaml .Values.calicoNode.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /lib/modules
               name: lib-modules

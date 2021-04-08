@@ -51,12 +51,14 @@ spec:
               command:
               - /usr/bin/check-status
               - -r
+          resources:
+            {{- toYaml .Values.kubeControllers.resources | nindent 12 }}
       nodeSelector:
         kubernetes.io/os: linux
-      {{- with .Values.typha.nodeSelector }}
+      {{- with .Values.kubeControllers.nodeSelector }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.typha.affinity }}
+      {{- with .Values.kubeControllers.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -66,7 +68,7 @@ spec:
           operator: Exists
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
-      {{- with .Values.typha.tolerations }}
+      {{- with .Values.kubeControllers.tolerations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
 ---
