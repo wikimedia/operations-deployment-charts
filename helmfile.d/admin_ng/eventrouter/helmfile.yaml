@@ -6,8 +6,9 @@ releases:
     needs:
       - kube-system/coredns
     values:
-      - "values/common.yaml" # Generic default values for all environments
-      - "values/{{ .Environment.Name }}/values.yaml" # Environment specific defaults
-      - "{{`{{ .Release.Name }}`}}/values.yaml" # Release specific overrides
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
-      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml" # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)

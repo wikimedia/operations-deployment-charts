@@ -1,7 +1,11 @@
+# cluster_group is used to identify a group of similar clusters (like for one in eqiad and one in codfw)
+# that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
+cluster_group: ml-serve
+
 # Defaults applied to all ML clusters
 
-# Override/clear the policies from common.yaml
+# No default network policies
 GlobalNetworkPolicies: {}
 
-# Override/clear namespaces from common.yaml
+# No namespaces
 namespaces: {}

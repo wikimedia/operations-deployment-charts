@@ -1,11 +1,14 @@
 # New rules
 * Environments are clusters now (as in helmfile.d/services)
+* There is a value "cluster_group" to group a number of environments (clusters) together
+** The cluster_group (if any) is defined in the clusters values.yaml at `values/< .Environment.Name >/values.yaml`
 * There is one helmfile to rule them all (helmfile.yaml)
 * You can deploy a cluster using only `helmfile -e staging-codfw sync`
 
 # Basic releases
-Global defaults for basic releases are defined in `values/values.yaml`.
-They can be overridden per environment (cluster) in `values/< .Environment.Name >/values.yaml`
+Global defaults for basic releases are defined in `values/common.yaml`.
+They can be overridden per cluster_group `values/< .Values.cluster_group >/values.yaml` and
+environment (cluster) in `values/< .Environment.Name >/values.yaml`.
 
 Basic releases should use the `wmf-stable/raw` chart only to deploy objects not
 directly related to any chart/deployment.
@@ -32,5 +35,6 @@ RBAC stuff that does not directly relate to a helm deployment
 # Additional releases
 Everything else should come in it's own folder containing it's own helmfile **with releases only**.
 Default values applied to all clusters should live in `< folder >/values.yaml`.
-They can be overridden per environment in `values/< .Environment.Name >/values.yaml`
+They can be overridden per environment in `values/< .Environment.Name >/values.yaml`,
+per cluster_group in `values/< .Values.cluster_group >/values.yaml`
 and or per release and environment in `values/< .Environment.Name >/< .Release.Name >-values.yaml`.

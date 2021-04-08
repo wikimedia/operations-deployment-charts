@@ -1,3 +1,7 @@
+# cluster_group is used to identify a group of similar clusters (like for one in eqiad and one in codfw)
+# that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
+cluster_group: main
+
 # List all namespaces that should be created in every ServiceOps cluster
 # Set "<namespace-name>.deployUser: foo" for deploy username different from <namespace-name>
 namespaces:
