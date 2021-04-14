@@ -36,6 +36,9 @@ templates:
 # TODO: convert to the new release naming scheme
 releases:
   - name: production
+    installed: false
+    <<: *default
+  - name: internal
     <<: *default
   - name: external
     <<: *default
@@ -47,7 +50,7 @@ environments:
       - releases: [staging]
   eqiad:
     values:
-      - releases: [production, external]
+      - releases: [production, internal, external]
   codfw:
     values:
-      - releases: [production, external]
+      - releases: [production, internal, external]
