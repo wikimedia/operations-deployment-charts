@@ -33,11 +33,7 @@ templates:
             "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
           ]
 
-# TODO: convert to the new release naming scheme
 releases:
-  - name: production
-    installed: false
-    <<: *default
   - name: internal
     <<: *default
   - name: external
@@ -50,7 +46,7 @@ environments:
       - releases: [staging]
   eqiad:
     values:
-      - releases: [production, internal, external]
+      - releases: [internal, external]
   codfw:
     values:
-      - releases: [production, internal, external]
+      - releases: [internal, external]
