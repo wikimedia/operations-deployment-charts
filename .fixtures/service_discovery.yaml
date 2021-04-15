@@ -71,10 +71,11 @@ services_proxy:
   eventgate-main:
     keepalive: 4.5s
     port: 6005
-    timeout: 25s
+    timeout: 61s
     retry_policy:
       retry_on: 5xx
       num_retries: 2
+      per_try_timeout: 20s
     upstream:
       address: eventgate-main.discovery.wmnet
       port: 4492
