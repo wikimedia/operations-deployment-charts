@@ -104,37 +104,37 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 10.64.0.181/32 # logstash1010
+    - cidr: 10.64.16.205/32 # kafka-logging1001
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.16.30/32 # logstash1011
+    - cidr: 10.64.32.142/32 # kafka-logging1002
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 10.64.48.177/32 # logstash1012
+    - cidr: 10.64.48.66/32 # kafka-logging1003
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:101:10:64:0:181/128 # logstash1010
+    - cidr: 2620:0:861:102:10:64:16:205/128 # kafka-logging1001
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:102:10:64:16:30/128 # logstash1011
+    - cidr: 2620:0:861:103:10:64:32:142/128 # kafka-logging1002
       ports:
       - protocol: tcp
         port: 9092
       - protocol: tcp
         port: 9093
-    - cidr: 2620:0:861:107:10:64:48:177/128 # logstash1012
+    - cidr: 2620:0:861:107:10:64:48:66/128 # kafka-logging1003
       ports:
       - protocol: tcp
         port: 9092
