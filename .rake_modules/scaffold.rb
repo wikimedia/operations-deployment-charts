@@ -41,7 +41,7 @@ class Scaffold
     copytree
     puts 'Linking common templates'
     link_common_templates
-    puts "You can edit your chart (if needed!) at #{Dir.pwd}#{service_for ''}"
+    puts "You can edit your chart (if needed!) at #{Dir.pwd}/#{service_for ''}"
   end
 
   private
