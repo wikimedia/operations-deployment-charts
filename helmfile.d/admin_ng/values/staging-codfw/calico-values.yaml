@@ -6,6 +6,8 @@ kubernetesApi:
 BGPConfiguration:
   asNumber: 64604
   nodeToNodeMeshEnabled: false
+  serviceClusterIPs:
+    - cidr: 10.192.76.0/24
 
 BGPPeers:
   cr1-codfw-ipv4:
