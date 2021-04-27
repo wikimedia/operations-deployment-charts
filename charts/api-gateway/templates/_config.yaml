@@ -295,21 +295,26 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- /* END descriptions/mobileapps_cluster route definition */}}
 {{- /* BEGIN pathing_map route definition */}}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
-              - name: core
+              - name: pathing_map_core
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
-                match:
+                match: &mw_match_{{ $route_opts.host | replace "." "_" }}
                   safe_regex:
                     google_re2: {}
                     regex: '^{{ $api_route }}$'
-                metadata:
+                  headers:
+                    - name: ":method"
+                      safe_regex_match:
+                        google_re2: {}
+                        regex: "(GET|HEAD|OPTIONS)"
+                metadata: &mw_metadata_{{ $route_opts.host | replace "." "_" }}
                   filter_metadata:
                     envoy.lua:
                       lua_lang: '{{ $route_opts.lua_lang }}'
                       dst_host: '{{ $route_opts.host }}'
-                route:
+                route: &mw_route_{{ $route_opts.host | replace "." "_" }}
                   cors:
                     allow_origin_string_match:
                       - prefix: "*"
@@ -324,8 +329,24 @@ BEGIN descriptions/mobileapps_cluster route definition
                   # TODO: switch to virtual host level rate limits once
                   # we figure out how to exclude /w and /wiki
                   rate_limits: *api_rate_limits_config
+              - name: pathing_map_core_rw
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
 {{- end }}
-{{- /* END pathing_map route definition */}}
+                match:
+                  safe_regex:
+                    google_re2: {}
+                    regex: '^{{ $api_route }}$'
+                  headers:
+                    - name: ":method"
+                      safe_regex_match:
+                        google_re2: {}
+                        regex: "(POST|PUT|PATCH|DELETE)"
+                metadata: *mw_metadata_{{ $route_opts.host | replace "." "_" }}
+                route: *mw_route_{{ $route_opts.host | replace "." "_" }}
+{{- end }}
+{{- /* END pathing_map route definition - read methods*/}}
 {{- /* BEGIN discovery_endpoints route definition */}}
 {{- range $discovery_route, $discovery_opts := .Values.main_app.discovery_endpoints }}
               - name: {{ $discovery_route }}_route

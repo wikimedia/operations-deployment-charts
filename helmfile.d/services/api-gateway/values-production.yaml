@@ -12,11 +12,12 @@ main_app:
       path: /v1/events?hasty=true
 
   endpoints:
-    mwapi_cluster:
+    mwapi_cluster: &mwapi_cluster
       tls: true
       type: STRICT_DNS
       hosts:
         api-rw.discovery.wmnet: 443
+    mwapi_rw_cluster: *mwapi_cluster
     appserver_cluster:
       tls: true
       type: STRICT_DNS

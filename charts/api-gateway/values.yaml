@@ -75,6 +75,11 @@ main_app:
       hosts: {}
       # Specifies the host to support debug routing to via X-Wikimedia-Debug
       debug_hosts: {}
+    mwapi_rw_cluster:
+      type: LOGICAL_DNS
+      hosts: {}
+      # Specifies the host to support debug routing to via X-Wikimedia-Debug
+      debug_hosts: {}
     # used for /feed/
     restbase_cluster:
       type: LOGICAL_DNS
