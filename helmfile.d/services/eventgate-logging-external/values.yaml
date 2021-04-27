@@ -176,6 +176,42 @@ networkpolicy:
         port: 9092
       - protocol: tcp
         port: 9093
+    - cidr: 10.192.0.94/32 # kafka-logging2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:101:10:192:0:94/128 # kafka-logging2001
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.16.50/32 # kafka-logging2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:102:10:192:16:50/128 # kafka-logging2002
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.32.24/32 # kafka-logging2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:103:10:192:32:24/128 # kafka-logging2003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
     # Allow api-ro
     - cidr: 10.2.2.22/32
       ports:
