@@ -35,4 +35,6 @@ spec:
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
     {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
+    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}

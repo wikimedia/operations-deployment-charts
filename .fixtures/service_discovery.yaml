@@ -47,6 +47,9 @@ services_proxy:
       num_retries: 1
     xfp: https
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: parsoid-php.discovery.wmnet
       port: 443
       encryption: true
@@ -54,6 +57,9 @@ services_proxy:
     port: 6003
     timeout: 3s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: mathoid.discovery.wmnet
       port: 10042
       encryption: false
@@ -65,6 +71,9 @@ services_proxy:
       retry_on: 5xx
       num_retries: 1
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: eventgate-analytics.discovery.wmnet
       port: 4592
       encryption: true
@@ -77,6 +86,9 @@ services_proxy:
       num_retries: 2
       per_try_timeout: 20s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: eventgate-main.discovery.wmnet
       port: 4492
       encryption: true
@@ -84,6 +96,9 @@ services_proxy:
     port: 6006
     timeout: 2.5s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: sessionstore.discovery.wmnet
       port: 8081
       encryption: true
@@ -91,6 +106,9 @@ services_proxy:
     port: 6007
     timeout: 2.5s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: echostore.discovery.wmnet
       port: 8082
       encryption: true
@@ -102,6 +120,9 @@ services_proxy:
       retry_on: 5xx
       num_retries: 2
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: termbox.discovery.wmnet
       port: 4004
       encryption: true
@@ -109,6 +130,9 @@ services_proxy:
     port: 6009
     timeout: 10s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: wdqs-internal.discovery.wmnet
       port: 80
       encryption: false
@@ -116,6 +140,9 @@ services_proxy:
     port: 6010
     timeout: 10s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: ores.discovery.wmnet
       port: 8081
       encryption: false
@@ -131,6 +158,9 @@ services_proxy:
     port: 6101
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: ms-fe.svc.eqiad.wmnet
       port: 443
       encryption: true
@@ -138,6 +168,9 @@ services_proxy:
     port: 6201
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: ms-fe.svc.codfw.wmnet
       port: 443
       encryption: true
@@ -145,6 +178,9 @@ services_proxy:
     port: 6102
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.eqiad.wmnet
       port: 9243
       encryption: true
@@ -152,6 +188,9 @@ services_proxy:
     port: 6202
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.codfw.wmnet
       port: 9243
       encryption: true
@@ -159,6 +198,9 @@ services_proxy:
     port: 6103
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.eqiad.wmnet
       port: 9443
       encryption: true
@@ -166,6 +208,9 @@ services_proxy:
     port: 6203
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.codfw.wmnet
       port: 9443
       encryption: true
@@ -173,6 +218,9 @@ services_proxy:
     port: 6104
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.eqiad.wmnet
       port: 9643
       encryption: true
@@ -180,6 +228,9 @@ services_proxy:
     port: 6204
     timeout: 50s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: search.svc.codfw.wmnet
       port: 9643
       encryption: true
@@ -187,6 +238,9 @@ services_proxy:
     port: 6012
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: mobileapps.discovery.wmnet
       port: 8888
       encryption: false
@@ -194,6 +248,9 @@ services_proxy:
     port: 6666
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: graphoid.discovery.wmnet
       port: 19000
       encryption: false
@@ -201,6 +258,9 @@ services_proxy:
     port: 6020
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: aqs.discovery.wmnet
       port: 7232
       encryption: false
@@ -208,6 +268,9 @@ services_proxy:
     port: 6013
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: proton.discovery.wmnet
       port: 4030
       encryption: true
@@ -215,6 +278,9 @@ services_proxy:
     port: 6014
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: citoid.discovery.wmnet
       port: 1970
       encryption: false
@@ -222,6 +288,9 @@ services_proxy:
     port: 6015
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: cxserver-https.discovery.wmnet
       port: 4002
       encryption: true
@@ -229,6 +298,9 @@ services_proxy:
     port: 6016
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: recommendation-api.discovery.wmnet
       port: 9632
       encryption: false
@@ -236,6 +308,9 @@ services_proxy:
     port: 6017
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: wikifeeds.discovery.wmnet
       port: 8889
       encryption: false
@@ -243,6 +318,9 @@ services_proxy:
     port: 6018
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: apertium.discovery.wmnet
       port: 4737
       encryption: true
@@ -255,6 +333,9 @@ services_proxy:
       num_retries: 1
     xfp: https
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: parsoid-php.discovery.wmnet
       port: 443
       encryption: true
@@ -263,6 +344,9 @@ services_proxy:
     port: 6500
     timeout: 120s
     upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
       address: api-rw.discovery.wmnet
       port: 443
       encryption: true

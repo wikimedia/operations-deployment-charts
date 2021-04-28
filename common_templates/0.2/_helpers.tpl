@@ -49,4 +49,43 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+{{/* Auto-define egress networkpolicies for all authorized listeners from envoy */}}
+{{- define "wmf.networkpolicy.egress.discovery" }}
+{{- if .Values.discovery | default false -}}
+  {{- range $name := .Values.discovery.listeners }}
+    {{- $listener := index $.Values.services_proxy $name }}
+    {{- with $listener.upstream }}
+# Network egress to {{ $name }}
+- to:
+  {{- range .ips }}
+  - ipBlock:
+    cidr: {{ . }}
+  {{- end }}
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+    {{- end }} {{/* end with upstream */}}
+  {{- end }} {{/* end range listeners */}}
+{{- end }}
+{{- end -}}
+
+{{/* Auto-generate egress networkpolicies for kafka brokers */}}
+{{- define "wmf.networkpolicy.egress.kafka" -}}
+{{- $clusters := .Values.kafka_brokers -}}
+{{- with .Values.kafka.allowed_clusters }}
+{{- $ips := index $clusters . -}}
+# Brokers in the kafka cluster {{ . }}
+- to:
+{{- range $ips }}
+  - ipBlock:
+    cidr: {{ . }}/32
+{{- end }}
+  ports:
+  - protocol: TCP
+    port: 9092
+  - protocol: TCP
+    port: 9093
+{{- end }}
 {{- end -}}

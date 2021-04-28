@@ -118,3 +118,6 @@ php:
 # See the dockerfiles for the the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
