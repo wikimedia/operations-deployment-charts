@@ -66,9 +66,9 @@ services:
       #   - user-agent
       #   - x-request-id
       # User-Agent HTTP header to use for requests
-      userAgent: "Citoid (Wikimedia tool; learn more at https://www.mediawiki.org/wiki/Citoid)"
+      user_agent: "Citoid (Wikimedia tool; learn more at https://www.mediawiki.org/wiki/Citoid)"
       # contact e-mail address; used for making crossRef requests
-      mailto: services@lists.wikimedia.org
+      mailto: noc@wikimedia.org
       # whether Citoid should use Zotero
       {{ if .Values.main_app.zotero -}}
       zotero: true
