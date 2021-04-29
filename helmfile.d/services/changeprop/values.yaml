@@ -68,6 +68,30 @@ networkpolicy:
         port: 9092
       - protocol: tcp
         port: 9093
+    - cidr: 10.192.48.38/32 # kafka-main2004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:104:10:192:48:38/128 # kafka-main2004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.192.48.46/32 # kafka-main2005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:860:104:10:192:48:46/128 # kafka-main2005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
     - cidr: 10.64.0.200/32 # kafka-main1001
       ports:
       - protocol: tcp
@@ -99,6 +123,30 @@ networkpolicy:
       - protocol: tcp
         port: 9093
     - cidr: 2620:0:861:103:10:64:32:90/128 # kafka-main1003
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.48.30/32 #kafka-main1004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:30/128 #kafka-main1004
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 10.64.48.31/32 #kafka-main1005
+      ports:
+      - protocol: tcp
+        port: 9092
+      - protocol: tcp
+        port: 9093
+    - cidr: 2620:0:861:107:10:64:48:31/128 #kafka-main1005
       ports:
       - protocol: tcp
         port: 9092
