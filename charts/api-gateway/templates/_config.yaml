@@ -314,7 +314,7 @@ BEGIN descriptions/mobileapps_cluster route definition
                     envoy.lua:
                       lua_lang: '{{ $route_opts.lua_lang }}'
                       dst_host: '{{ $route_opts.host }}'
-                route: &mw_route_{{ $route_opts.host | replace "." "_" }}
+                route:
                   cors:
                     allow_origin_string_match:
                       - prefix: "*"
@@ -344,7 +344,21 @@ BEGIN descriptions/mobileapps_cluster route definition
                         google_re2: {}
                         regex: "(POST|PUT|PATCH|DELETE)"
                 metadata: *mw_metadata_{{ $route_opts.host | replace "." "_" }}
-                route: *mw_route_{{ $route_opts.host | replace "." "_" }}
+                route:
+                  cors:
+                    allow_origin_string_match:
+                      - prefix: "*"
+                    allow_headers: "authorization"
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^{{ $api_route }}$'
+                    substitution: '{{ $route_opts.path }}'
+                  cluster: mwapi_rw_cluster
+                  host_rewrite_header: "x-internal-host"
+                  # TODO: switch to virtual host level rate limits once
+                  # we figure out how to exclude /w and /wiki
+                  rate_limits: *api_rate_limits_config
 {{- end }}
 {{- /* END pathing_map route definition - read methods*/}}
 {{- /* BEGIN discovery_endpoints route definition */}}
@@ -354,7 +368,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
-
                 match:
                   safe_regex:
                     google_re2: {}
