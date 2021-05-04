@@ -75,17 +75,17 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{- define "wmf.networkpolicy.egress.kafka" -}}
 {{- $clusters := .Values.kafka_brokers -}}
 {{- with .Values.kafka.allowed_clusters }}
-{{- $ips := index $clusters . -}}
+{{- $cidrs := index $clusters . -}}
 # Brokers in the kafka cluster {{ . }}
 - to:
-{{- range $ips }}
+{{- range $cidrs }}
   - ipBlock:
-    cidr: {{ . }}/32
-{{- end }}
+    cidr: {{ . }}
   ports:
   - protocol: TCP
     port: 9092
   - protocol: TCP
     port: 9093
+{{- end }}
 {{- end }}
 {{- end -}}
