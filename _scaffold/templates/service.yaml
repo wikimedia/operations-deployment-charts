@@ -1,3 +1,5 @@
+{{ if not (hasSuffix "canary" .Release.Name) }}
+
 {{ include "tls.service" . }}
 {{ if not .Values.tls.enabled }}
 ---
@@ -14,7 +16,7 @@ spec:
   type: NodePort
   selector:
     app: {{ template "wmf.chartname" . }}
-    release: {{ .Release.Name }}
+    routed_via: {{ .Release.Name }}
   ports:
     - name: {{ .Values.service.port.name }}
       targetPort: {{ .Values.service.port.targetPort }}
@@ -45,4 +47,5 @@ spec:
       targetPort: {{ $port }}
       port: {{ $port }}
     {{- end }}
+{{- end }}
 {{- end }}
