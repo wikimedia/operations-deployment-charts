@@ -24,6 +24,9 @@ main_app:
       port: 8080
   # Values to connect to kartodock and the local postgres environment
   # Needs to be overriden with deployment specific details
+  # NOTE: Currently only the following PostGIS hosts support the SQL queries defined in the chart
+  # * maps1009.eqiad.wmnet
+  # * maps2009.codfw.wmnet
   postgres:
     host: postgres-postgis
     port: 5432
