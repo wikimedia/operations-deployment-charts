@@ -5,8 +5,8 @@ helm_scaffold_version: 0.1
 main_app:
   image: wikimedia/research-mwaddlink
   limits:
-    cpu: 1600m
-    memory: 550Mi
+    cpu: 4
+    memory: 650Mi
   liveness_probe:
     tcpSocket:
       port: 8000
@@ -16,8 +16,8 @@ main_app:
       path: /healthz
       port: 8000
   requests:
-    cpu: 750m
-    memory: 400Mi # Based on data from https://grafana.wikimedia.org/goto/JKjTBSQGz
+    cpu: 1750m
+    memory: 500Mi # Based on data from https://grafana.wikimedia.org/goto/JKjTBSQGz
   version: 2021-04-20-081457-production
 monitoring:
   enabled: true
