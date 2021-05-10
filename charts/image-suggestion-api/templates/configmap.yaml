@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-{{ .Release.Name }}
+data:
+  config.yaml: |- {{ include "config.app" . | nindent 4  }}
+{{ include "tls.config" . }}
