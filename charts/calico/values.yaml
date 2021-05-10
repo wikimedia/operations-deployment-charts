@@ -51,10 +51,10 @@ typha:
   replicaCount: 1
   resources:
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 150Mi
     limits:
-      cpu: 100m
+      cpu: 150m
       memory: 150Mi
   tolerations: {}
   nodeSelector: {}
@@ -74,7 +74,6 @@ calicoNode:
   imageName: calico/node
   resources:
     requests:
-      cpu: 350m
       memory: 400Mi
     limits:
       cpu: 350m
@@ -85,10 +84,10 @@ kubeControllers:
   imageName: calico/kube-controllers
   resources:
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 150Mi
     limits:
-      cpu: 100m
+      cpu: 150m
       memory: 150Mi
   tolerations: {}
   nodeSelector: {}
