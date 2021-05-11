@@ -74,9 +74,9 @@ calicoNode:
   imageName: calico/node
   resources:
     requests:
+      cpu: 350m
       memory: 400Mi
     limits:
-      cpu: 350m
       memory: 400Mi
 
 # kube-controllers
