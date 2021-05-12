@@ -2,4 +2,86 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 123.123.123.123/24
+      - cidr: 123.123.123.123/24
+# The discovery stuff adds networkpolicies.
+tls:
+  enabled: true
+  public_port: 4004 # the port where TLS will be exposed
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  ca: |-
+    -- begin --
+    abcdef
+    -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+discovery:
+  listeners:
+    - parsoid
+    - parsoid-php
+    - mathoid
+    - mwapi-async
+    - parsoid-async
+    - swift-eqiad
+    - swift-codfw
+    - search-omega-eqiad
+    - search-chi-eqiad
+services_proxy:
+  parsoid-php:
+    keepalive: 4s
+    port: 6002
+    timeout: 8s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    xfp: https
+    upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
+      address: parsoid-php.discovery.wmnet
+      port: 443
+      encryption: true
+  mathoid:
+    port: 6003
+    timeout: 3s
+    upstream:
+      ips:
+        - 10.2.1.1/32
+        - 20.3.1.1/32
+      address: mathoid.discovery.wmnet
+      port: 10042
+      encryption: false
+  eventgate-analytics:
+    keepalive: 4.5s
+    port: 6004
+    timeout: 10s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    upstream:
+      ips:
+        - 100.2.1.1/32
+        - 200.3.1.1/32
+      address: eventgate-analytics.discovery.wmnet
+      port: 4592
+      encryption: true
+# Kafka brokers also enable additional networkpolicy templates
+kafka_brokers:
+  test:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  test1:
+    - 4.3.2.1/32
+kafka:
+  allowed_clusters:
+    - test

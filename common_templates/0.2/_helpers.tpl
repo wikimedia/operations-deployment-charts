@@ -61,7 +61,7 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 - to:
   {{- range .ips }}
   - ipBlock:
-    cidr: {{ . }}
+      cidr: {{ . }}
   {{- end }}
   ports:
   - protocol: TCP
@@ -74,18 +74,20 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{/* Auto-generate egress networkpolicies for kafka brokers */}}
 {{- define "wmf.networkpolicy.egress.kafka" -}}
 {{- $clusters := .Values.kafka_brokers -}}
-{{- with .Values.kafka.allowed_clusters }}
-{{- $cidrs := index $clusters . -}}
-# Brokers in the kafka cluster {{ . }}
+{{- if .Values.kafka.allowed_clusters }}
+{{- range $c := .Values.kafka.allowed_clusters }}
+{{- $cidrs := index $clusters $c -}}
+# Brokers in the kafka cluster {{ $c }}
 - to:
 {{- range $cidrs }}
   - ipBlock:
-    cidr: {{ . }}
+      cidr: {{ . }}
   ports:
   - protocol: TCP
     port: 9092
   - protocol: TCP
     port: 9093
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end -}}
