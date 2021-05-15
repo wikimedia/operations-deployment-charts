@@ -4,8 +4,7 @@ Your release is named {{ .Release.Name }}.
 
 To learn more about the release, try:
 
-  $ helm status {{ .Release.Name  }}
-  $ helm get {{ .Release.Name }}
+  $ helmfile -e {{ .Release.Name  }} status
 
 {{- if eq .Values.service.deployment "minikube" }}
 You are using minikube, which means it's really easy to access your service. Run the following
