@@ -124,6 +124,61 @@ static_resources:
 {{- range $domain := .Values.main_app.domains }}
               - {{ $domain }}
 {{- end }}
+              rate_limits:
+                # For authenticated requests, the following descriptor is produced:
+                # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
+                # Applying limit/unit for client_id/user_id pair.
+                #
+                # If JWT is absent, no descriptor generated.
+                # If override is missing, descriptor is ignored since it's not configured in the service
+                - stage: 0
+                  actions:
+                    - metadata:
+                        source: DYNAMIC
+                        descriptor_key: client_id
+                        metadata_key:
+                          key: envoy.filters.http.jwt_authn
+                          path:
+                            - key: jwt_payload
+                            - key: aud
+                    - metadata:
+                        source: DYNAMIC
+                        descriptor_key: user_id
+                        # TODO: envoy 1.16 default_value: anon - still works,
+                        # some corner cases might exist when the limit is not applied for anon
+                        metadata_key:
+                          key: envoy.filters.http.jwt_authn
+                          path:
+                            - key: jwt_payload
+                            - key: sub
+                  limit:
+                    dynamic_metadata:
+                      metadata_key:
+                        key: envoy.filters.http.jwt_authn
+                        path:
+                          - key: jwt_payload
+                          - key: ratelimit
+                # For authenticated requests emit the following descriptor:
+                # - {value: ("client_id_anon_fallback","<class>")("remote_address","123.123.123.123)}
+                # which will be ignored by the service, since we only match on "anon" class.
+                # For unauthenticated requests <class> would fallback to "anon", and the statically
+                # configured limit will kick in.
+                - stage: 0
+                  actions:
+                    - metadata:
+                        source: DYNAMIC
+                        descriptor_key: user_class_anon_fallback
+                        #TODO: envoy 1.16 default_value: anon - until envoy 1.16 anon limits will not be applied
+                        metadata_key:
+                          key: envoy.filters.http.jwt_authn
+                          path:
+                            - key: jwt_payload
+                            - key: aud
+                    - request_headers:
+                        # Use x-client-ip because Envoy's X-forwarded-for won't trust
+                        # the upstream IP in cases of more than one IP in the list.
+                        header_name: x-client-ip
+                        descriptor_key: client_ip
               routes:
               - name: api-portal-redirect
                 match:
@@ -134,6 +189,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: api-portal
                 match:
                   prefix: "/wiki/"
@@ -143,6 +201,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: api-portal-static
                 match:
                   prefix: "/static/"
@@ -152,6 +213,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: api-portal-restbase
                 match:
                   prefix: "/api/rest_v1/"
@@ -162,6 +226,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: favicon
                 match:
                   path: "/favicon.ico"
@@ -171,6 +238,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: robotstxt
                 match:
                   path: "/robots.txt"
@@ -180,6 +250,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: appletouch-icon
                 match:
                   path: "/apple-touch-icon.png"
@@ -189,6 +262,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: api-portal
                 match:
                   prefix: "/w/"
@@ -198,6 +274,9 @@ static_resources:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
               - name: feed
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
@@ -216,61 +295,6 @@ static_resources:
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: restbase_cluster
-                  rate_limits: &api_rate_limits_config
-                    # For authenticated requests, the following descriptor is produced:
-                    # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
-                    # Applying limit/unit for client_id/user_id pair.
-                    #
-                    # If JWT is absent, no descriptor generated.
-                    # If override is missing, descriptor is ignored since it's not configured in the service
-                    - stage: 0
-                      actions:
-                        - metadata:
-                            source: DYNAMIC
-                            descriptor_key: client_id
-                            metadata_key:
-                              key: envoy.filters.http.jwt_authn
-                              path:
-                                - key: jwt_payload
-                                - key: aud
-                        - metadata:
-                            source: DYNAMIC
-                            descriptor_key: user_id
-                            # TODO: envoy 1.16 default_value: anon - still works,
-                            # some corner cases might exist when the limit is not applied for anon
-                            metadata_key:
-                              key: envoy.filters.http.jwt_authn
-                              path:
-                                - key: jwt_payload
-                                - key: sub
-                      limit:
-                        dynamic_metadata:
-                          metadata_key:
-                            key: envoy.filters.http.jwt_authn
-                            path:
-                              - key: jwt_payload
-                              - key: ratelimit
-                    # For authenticated requests emit the following descriptor:
-                    # - {value: ("client_id_anon_fallback","<class>")("remote_address","123.123.123.123)}
-                    # which will be ignored by the service, since we only match on "anon" class.
-                    # For unauthenticated requests <class> would fallback to "anon", and the statically
-                    # configured limit will kick in.
-                    - stage: 0
-                      actions:
-                        - metadata:
-                            source: DYNAMIC
-                            descriptor_key: user_class_anon_fallback
-                            #TODO: envoy 1.16 default_value: anon - until envoy 1.16 anon limits will not be applied
-                            metadata_key:
-                              key: envoy.filters.http.jwt_authn
-                              path:
-                                - key: jwt_payload
-                                - key: aud
-                        - request_headers:
-                            # Use x-client-ip because Envoy's X-forwarded-for won't trust
-                            # the upstream IP in cases of more than one IP in the list.
-                            header_name: x-client-ip
-                            descriptor_key: client_ip
 {{- /*
 BEGIN descriptions/mobileapps_cluster route definition
 */}}
@@ -294,7 +318,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
                     substitution: '/\2.\1.org/v1/page/description/\3'
                   cluster: mobileapps_cluster
-                  rate_limits: *api_rate_limits_config
 {{- /* END descriptions/mobileapps_cluster route definition */}}
 {{- /* BEGIN pathing_map route definition */}}
 {{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
@@ -331,7 +354,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                   host_rewrite_header: "x-internal-host"
                   # TODO: switch to virtual host level rate limits once
                   # we figure out how to exclude /w and /wiki
-                  rate_limits: *api_rate_limits_config
               - name: pathing_map_core_rw
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
@@ -361,7 +383,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                   host_rewrite_header: "x-internal-host"
                   # TODO: switch to virtual host level rate limits once
                   # we figure out how to exclude /w and /wiki
-                  rate_limits: *api_rate_limits_config
 {{- end }}
 {{- /* END pathing_map route definition - read methods*/}}
 {{- /* BEGIN discovery_endpoints route definition */}}
@@ -387,7 +408,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
                     substitution: '/\1'
                   cluster: {{ $discovery_route}}_cluster
-                  rate_limits: *api_rate_limits_config
 {{- end }}
 {{- /* END discovery_endpoints route definition */}}
           http_filters:
