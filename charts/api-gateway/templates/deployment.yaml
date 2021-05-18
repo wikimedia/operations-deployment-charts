@@ -148,7 +148,7 @@ spec:
 {{- if .Values.main_app.echoapi }}
         - name: {{ .Release.Name }}-echoapi
           image: echoapi:latest
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          imagePullPolicy: Never
           ports:
             - containerPort: 8888
 {{- end }}

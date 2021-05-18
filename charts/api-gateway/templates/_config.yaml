@@ -27,12 +27,12 @@ static_resources:
           http_filters:
           - name: envoy.health_check
             typed_config:
-              "@type": type.googleapis.com/envoy.config.filter.http.health_check.v2.HealthCheck
+              "@type": type.googleapis.com/envoy.extensions.filters.http.health_check.v3.HealthCheck
               pass_through_mode: false
               headers:
                 - name: ":path"
                   exact_match: "/healthz"
-          - name: envoy.router
+          - name: envoy.filters.http.router
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
@@ -225,14 +225,16 @@ static_resources:
                     # If override is missing, descriptor is ignored since it's not configured in the service
                     - stage: 0
                       actions:
-                        - dynamic_metadata:
+                        - metadata:
+                            source: DYNAMIC
                             descriptor_key: client_id
                             metadata_key:
                               key: envoy.filters.http.jwt_authn
                               path:
                                 - key: jwt_payload
                                 - key: aud
-                        - dynamic_metadata:
+                        - metadata:
+                            source: DYNAMIC
                             descriptor_key: user_id
                             # TODO: envoy 1.16 default_value: anon - still works,
                             # some corner cases might exist when the limit is not applied for anon
@@ -255,7 +257,8 @@ static_resources:
                     # configured limit will kick in.
                     - stage: 0
                       actions:
-                        - dynamic_metadata:
+                        - metadata:
+                            source: DYNAMIC
                             descriptor_key: user_class_anon_fallback
                             #TODO: envoy 1.16 default_value: anon - until envoy 1.16 anon limits will not be applied
                             metadata_key:
@@ -390,7 +393,7 @@ BEGIN descriptions/mobileapps_cluster route definition
           http_filters:
           - name: envoy.health_check
             typed_config:
-              "@type": type.googleapis.com/envoy.config.filter.http.health_check.v2.HealthCheck
+              "@type": type.googleapis.com/envoy.extensions.filters.http.health_check.v3.HealthCheck
               pass_through_mode: false
               headers:
                 - name: ":path"
