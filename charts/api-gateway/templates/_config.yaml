@@ -81,19 +81,22 @@ static_resources:
 {{ fail "Invalid access_log.type" }}
 {{- end }}
               log_format:
+                omit_empty_values: true
                 json_format:
-                  # TODO: unflatten when support for nested logs is added to envoy
                   $schema: "/api-gateway/request/1.0.0"
-                  meta.uri: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
-                  meta.request_id: "%REQ(X-REQUEST-ID)%"
-                  meta.dt: "%START_TIME(%FT%TZ)%"
-                  meta.domain: "%REQ(HOST)%"
-                  meta.stream: "api-gateway.request"
-                  http.method: "%REQ(:METHOD)%"
-                  http.protocol: "%PROTOCOL%"
-                  http.status_code: "%RESPONSE_CODE%"
-                  http.client_ip: "%REQ(X-FORWARDED-FOR)%"
-                  http.request_headers.user-agent: "%REQ(USER-AGENT)%"
+                  meta:
+                    uri: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                    request_id: "%REQ(X-REQUEST-ID)%"
+                    dt: "%START_TIME(%FT%TZ)%"
+                    domain: "%REQ(HOST)%"
+                    stream: "api-gateway.request"
+                  http:
+                    method: "%REQ(:METHOD)%"
+                    protocol: "%PROTOCOL%"
+                    status_code: "%RESPONSE_CODE%"
+                    client_ip: "%REQ(X-FORWARDED-FOR)%"
+                    request_headers:
+                      user-agent: "%REQ(USER-AGENT)%"
                   total_time_ms: "%DURATION%"
                   client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:aud)%"
                   route: "%ROUTE_NAME%"
