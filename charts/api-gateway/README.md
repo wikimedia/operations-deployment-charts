@@ -32,5 +32,5 @@ To communicate with the api gateway, you'll need to forward the port locally:
 ```
 kubectl get pods # Look up the name of your api gateway pod
 kubectl port-forward $POD_NAME 7000:8087
-curl -v http://localhost:7000/core/v1/wikipedia/en/foo/bar/baz
+curl -v -H "x-client-ip: 123.123.123.123" http://localhost:7000/core/v1/wikipedia/en/foo/bar/baz # this should return a HTTP 429 with the default setup
 ```
