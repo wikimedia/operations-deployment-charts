@@ -117,73 +117,52 @@ main_app:
     - 127.0.0.1:*
 
   # This map maps URLs that will be requested of api.wikimedia.org to
-  # a *path* that is requested of the appservers. The *host* is set on
-  # this request according to the language specified in the *path*
-  # URI. The *lua_lang* path is used to extract this language and then
-  # substitute it into the *host*.
-
-  # Consider: https://api.wikimedia.org/core/v1/wikipedia/ga/page/Veigeat%C3%B3ireachas
-  # 1) The API gateway matches the URL path
-  # 2) the lua_lang is used in LUA to extract the language
-  # 3) the path is formatted based on the path provided
-  # 4) the host header is set by doing a replace on LANGUAGE
-  # 5) the x-internal-host header is set
-  # 6) envoy rewrites the Host header via `host_rewrite_header`
-
+  # a *path* that is requested of the appservers. The map key is a
+  # api.wikimedia.org/{path} regex match. Path property is a regex
+  # substitution to compute the appserver path, and 'host' property
+  # is a regex substitution used to compute the host header value
+  # to send to the appserver.
   #TODO regex on v1
   pathing_map:
     '/core/v1/wikipedia/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikipedia.org'
-      lua_lang: '/core/v1/wikipedia/(%a+)/.*'
+      host: '\1.wikipedia.org'
     '/core/v1/wiktionary/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wiktionary.org'
-      lua_lang: '/core/v1/wiktionary/(%a+)/.*'
+      host: '\1.wiktionary.org'
     '/core/v1/commons/(.*)':
       path: '/w/rest.php/v1/\1'
       host: 'commons.wikimedia.org'
-      lua_lang: ''
     '/core/v1/wikibooks/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikibooks.org'
-      lua_lang: '/core/v1/wikibooks/(%a+)/.*'
+      host: '\1.wikibooks.org'
     '/core/v1/wikiquote/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikiquote.org'
-      lua_lang: '/core/v1/wikiquote/(%a+)/.*'
+      host: '\1.wikiquote.org'
     '/core/v1/wikiversity/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikiversity.org'
-      lua_lang: '/core/v1/wikiversity/(%a+)/.*'
+      host: '\1.wikiversity.org'
     '/core/v1/mediawiki/(.*)':
       path: '/w/rest.php/v1/\1'
       host: 'www.mediawiki.org'
-      lua_lang: ''
     '/core/v1/wikidata/(.*)':
       path: '/w/rest.php/v1/\1'
       host: 'www.wikidata.org'
-      lua_lang: ''
     '/core/v1/wikisource/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikisource.org'
-      lua_lang: '/core/v1/wikisource/(%a+)/.*'
+      host: '\1.wikisource.org'
     '/core/v1/wikivoyage/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikivoyage.org'
-      lua_lang: '/core/v1/wikivoyage/(%a+)/.*'
+      host: '\1.wikivoyage.org'
     '/core/v1/meta/(.*)':
       path: '/w/rest.php/v1/\1'
       host: 'meta.wikimedia.org'
-      lua_lang: ''
     '/core/v1/wikinews/(\w+)/(.*)':
       path: '/w/rest.php/v1/\2'
-      host: 'LANGUAGE.wikinews.org'
-      lua_lang: '/core/v1/wikinews/(%a+)/.*'
+      host: '\1.wikinews.org'
     '/core/v1/wikispecies/(.*)':
       path: '/w/rest.php/v1/\1'
       host: 'species.wikimedia.org'
-      lua_lang: ''
 
 nutcracker:
   enabled: false

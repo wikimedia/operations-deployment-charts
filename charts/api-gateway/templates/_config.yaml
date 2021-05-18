@@ -187,9 +187,6 @@ static_resources:
                 redirect:
                   path_redirect: '/wiki/'
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -199,9 +196,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -211,9 +205,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -224,9 +215,6 @@ static_resources:
                   cluster: restbase_cluster
                   prefix_rewrite: "/api.wikimedia.org/v1/"
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -236,9 +224,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -248,9 +233,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -260,9 +242,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -272,9 +251,6 @@ static_resources:
                 route:
                   cluster: appserver_cluster
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
@@ -327,7 +303,7 @@ BEGIN descriptions/mobileapps_cluster route definition
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
-                match: &mw_match_{{ $route_opts.host | replace "." "_" }}
+                match:
                   safe_regex:
                     google_re2: {}
                     regex: '^{{ $api_route }}$'
@@ -336,11 +312,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       safe_regex_match:
                         google_re2: {}
                         regex: "(GET|HEAD|OPTIONS)"
-                metadata: &mw_metadata_{{ $route_opts.host | replace "." "_" }}
-                  filter_metadata:
-                    envoy.lua:
-                      lua_lang: '{{ $route_opts.lua_lang }}'
-                      dst_host: '{{ $route_opts.host }}'
                 route:
                   cors:
                     allow_origin_string_match:
@@ -352,9 +323,11 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
                   cluster: mwapi_cluster
-                  host_rewrite_header: "x-internal-host"
-                  # TODO: switch to virtual host level rate limits once
-                  # we figure out how to exclude /w and /wiki
+                  host_rewrite_path_regex:
+                    pattern:
+                      google_re2: {}
+                      regex: '^{{ $api_route }}.*'
+                    substitution: '{{ $route_opts.host }}'
               - name: pathing_map_core_rw
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
@@ -369,7 +342,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       safe_regex_match:
                         google_re2: {}
                         regex: "(POST|PUT|PATCH|DELETE)"
-                metadata: *mw_metadata_{{ $route_opts.host | replace "." "_" }}
                 route:
                   cors:
                     allow_origin_string_match:
@@ -381,9 +353,11 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
                   cluster: mwapi_rw_cluster
-                  host_rewrite_header: "x-internal-host"
-                  # TODO: switch to virtual host level rate limits once
-                  # we figure out how to exclude /w and /wiki
+                  host_rewrite_path_regex:
+                    pattern:
+                      google_re2: {}
+                      regex: '^{{ $api_route }}.*'
+                    substitution: '{{ $route_opts.host }}'
 {{- end }}
 {{- /* END pathing_map route definition - read methods*/}}
 {{- /* BEGIN discovery_endpoints route definition */}}
@@ -479,23 +453,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       requirements:
                         - provider_name: wikimedia
                         - allow_missing: {}
-          - name: envoy.filters.http.lua
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-              inline_code: |
-                function envoy_on_request(request_handle)
-                  local path = request_handle:headers():get(":path")
-
-                  local metadata = request_handle:metadata()
-                  lua_lang = metadata:get("lua_lang")
-                  if lua_lang ~= '' and lua_lang ~= nil then
-                    site_lang = string.match(path, lua_lang)
-                    internal_host = string.gsub(metadata:get("dst_host"), "LANGUAGE", site_lang)
-                  else
-                    internal_host = metadata:get("dst_host")
-                  end
-                  request_handle:headers():add("x-internal-host", internal_host)
-                end
 {{- end }}
 {{- if .Values.main_app.ratelimiter }}
           - name: envoy.filters.http.ratelimit
