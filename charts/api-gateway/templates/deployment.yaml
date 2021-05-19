@@ -145,12 +145,15 @@ spec:
               mountPath: /etc/nutcracker
               readOnly: true
 {{- end }}
-{{- if .Values.main_app.echoapi }}
-        - name: {{ .Release.Name }}-echoapi
-          image: echoapi:latest
-          imagePullPolicy: Never
+{{- if .Values.main_app.http_https_echo }}
+        - name: {{ .Release.Name }}-http-https-echo
+          image: mendhak/http-https-echo:latest
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: 8888
+          env:
+            - name: HTTP_PORT
+              value: "8888"
 {{- end }}
 {{- if .Values.main_app.dev_redis }}
         - name: {{ .Release.Name }}-redis
