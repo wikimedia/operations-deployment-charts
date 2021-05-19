@@ -39,7 +39,7 @@ main_app:
     - 127.0.0.1:*
 
   endpoints:
-    mwapi_cluster: &mwapi_cluster
+    mwapi_cluster:
       tls: false
       type: STRICT_DNS
       hosts:
@@ -47,7 +47,6 @@ main_app:
         badhost: 8888
       debug_hosts:
         localhost: 9999
-    mwapi_rw_cluster: *mwapi_cluster
     restbase_cluster:
       type: STRICT_DNS
       hosts:

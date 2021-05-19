@@ -34,13 +34,12 @@ main_app:
       tls: true
       hosts:
         restbase.discovery.wmnet: 7443
-    mwapi_cluster: &mwapi_cluster
+    mwapi_cluster:
       debug_hosts:
         mwdebug1001.eqiad.wmnet: 443
         mwdebug1002.eqiad.wmnet: 443
         mwdebug2001.codfw.wmnet: 443
         mwdebug2002.codfw.wmnet: 443
-    mwapi_rw_cluster: *mwapi_cluster
     mobileapps_cluster:
       type: LOGICAL_DNS
       tls: true

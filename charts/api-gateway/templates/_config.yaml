@@ -127,6 +127,19 @@ static_resources:
 {{- range $domain := .Values.main_app.domains }}
               - {{ $domain }}
 {{- end }}
+              virtual_clusters:
+                - headers:
+                    - name: ":method"
+                      safe_regex_match:
+                        google_re2: {}
+                        regex: "(POST|PUT|PATCH|DELETE)"
+                  name: rw
+                - headers:
+                    - name: ":method"
+                      safe_regex_match:
+                        google_re2: {}
+                        regex: "(GET|HEAD|OPTIONS)"
+                  name: r
               rate_limits:
                 # For authenticated requests, the following descriptor is produced:
                 # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
@@ -304,11 +317,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                   safe_regex:
                     google_re2: {}
                     regex: '^{{ $api_route }}$'
-                  headers:
-                    - name: ":method"
-                      safe_regex_match:
-                        google_re2: {}
-                        regex: "(GET|HEAD|OPTIONS)"
                 route:
                   cors: *api_cors
                   regex_rewrite:
@@ -317,33 +325,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
                   cluster: mwapi_cluster
-                  host_rewrite_path_regex:
-                    pattern:
-                      google_re2: {}
-                      regex: '^{{ $api_route }}.*'
-                    substitution: '{{ $route_opts.host }}'
-              - name: pathing_map_core_rw
-{{- if $strip_cookies }}
-                request_headers_to_remove: ["cookie"]
-                response_headers_to_remove: ["set-cookie"]
-{{- end }}
-                match:
-                  safe_regex:
-                    google_re2: {}
-                    regex: '^{{ $api_route }}$'
-                  headers:
-                    - name: ":method"
-                      safe_regex_match:
-                        google_re2: {}
-                        regex: "(POST|PUT|PATCH|DELETE)"
-                route:
-                  cors: *api_cors
-                  regex_rewrite:
-                    pattern:
-                      google_re2: {}
-                      regex: '^{{ $api_route }}$'
-                    substitution: '{{ $route_opts.path }}'
-                  cluster: mwapi_rw_cluster
                   host_rewrite_path_regex:
                     pattern:
                       google_re2: {}

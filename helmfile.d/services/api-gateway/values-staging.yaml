@@ -27,13 +27,12 @@ main_app:
       hosts:
         mwdebug1001.eqiad.wmnet: 443
         mwdebug1002.eqiad.wmnet: 443
-    mwapi_cluster: &mwapi_cluster
+    mwapi_cluster:
       tls: true
       type: STRICT_DNS
       hosts:
         mwdebug1001.eqiad.wmnet: 443
         mwdebug1002.eqiad.wmnet: 443
-    mwapi_rw_cluster: *mwapi_cluster
     mobileapps_cluster:
       type: STRICT_DNS
       tls: true
