@@ -501,6 +501,7 @@ BEGIN descriptions/mobileapps_cluster route definition
               domain: wikimedia
               stage: 0
               timeout: 0.25s
+              enable_x_ratelimit_headers: DRAFT_VERSION_03
               rate_limit_service:
                 transport_api_version: V3
                 grpc_service:
