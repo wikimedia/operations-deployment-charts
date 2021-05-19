@@ -40,6 +40,8 @@ def exec_helmfile_command(command, source, &block)
   results = {}
   helm_home = ENV['HELM_HOME'] || File.expand_path('~/.helm')
   dir_to_copy, file = File.split source
+  return {} unless File.directory? dir_to_copy
+
   Dir.mktmpdir do |dir|
     # Copy HELM_HOME so that we don't incur in race conditions when running in
     # parallel, see T261313
@@ -431,12 +433,19 @@ task deployment_diffs: :check_dep do
   original = {}
   # Now get the originals
   Git.open('.').back_to('origin/master') do
-    original = get_all_manifests(deployments)
+    original_deployments = FileList.new(HELMFILE_GLOB)
+    original = get_all_manifests(original_deployments)
   end
-  change.each do |lbl, manifest|
-    diffs = diff(original[lbl], manifest)
+  change.each do |label, manifest|
+    # If the deployment is new, we want to output it all as a diff.
+    original_manifest = if original.include? label
+                          original[label]
+                        else
+                          ''
+    end
+    diffs = diff(original_manifest, manifest)
     if diffs != ''
-      puts "#{lbl.ljust(72)}DIFFS FOUND"
+      puts "#{label.ljust(72)}DIFFS FOUND"
       puts diffs
     end
   end
