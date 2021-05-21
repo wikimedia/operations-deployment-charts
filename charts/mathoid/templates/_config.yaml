@@ -22,10 +22,8 @@ logging:
 {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
 metrics:
-  name: mathoid
-  host: localhost
-  port: 9125
-  type: statsd
+  port: 9102
+  type: prometheus
 {{- end }}
 
 services:
