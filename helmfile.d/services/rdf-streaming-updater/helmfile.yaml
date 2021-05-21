@@ -11,8 +11,7 @@ helmDefaults:
 templates:
   default: &default
     namespace: rdf-streaming-updater
-    # TODO: use flink-session-cluster
-    chart: wmf-stable/rdf-streaming-updater
+    chart: wmf-stable/flink-session-cluster
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
     # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
