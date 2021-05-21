@@ -16,6 +16,10 @@ main_app:
       port: 4592
       path: /v1/events?hasty=true
 
+  ratelimiter:
+    anon_limit:
+      requests_per_unit: 20
+
   endpoints:
     appserver_cluster:
       type: STRICT_DNS
