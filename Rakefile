@@ -398,7 +398,9 @@ task :helm_diffs, [:charts] => :check_dep do |_t, args|
   end
   original = {}
   Git.open('.').back_to('origin/master') do
-    original = run_with_fixtures(charts) do |chart, fixtures, _|
+    all_original_charts = FileList.new('charts/**/Chart.yaml').map { |x| File.dirname(x) }
+    original_charts = get_charts(args, all_original_charts)
+    original = run_with_fixtures(original_charts) do |chart, fixtures, _|
       exec_helm_template(chart, fixtures)
     end
   end
