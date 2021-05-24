@@ -1,0 +1,49 @@
+main_app:
+  image: restricted/mediawiki-multiversion
+  version: production
+  registry:  docker-registry.discovery.wmnet
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 1000m
+    memory: 1000Mi
+
+service:
+  deployment: production
+  port:
+    nodePort: 4444
+resources:
+  replicas: 1
+
+tls:
+  enabled: false
+  public_port: 4444
+monitoring:
+  enabled: true
+
+debug:
+  enabled: false
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: true
+
+# See the dockerfiles for the the php-fpm base image to know what can be tweaked.
+# Those can be passed via config.public above.
+php:
+  fcgi_mode: FCGI_TCP
+mw:
+  domain_suffix: "local"
+  httpd:
+    image: mediawiki-webserver
+    verision: latest
+  mcrouter:
+    enabled: true
+    image_tag: mcrouter:latest
+    exporter_version: latest
+  nutcracker:
+    enabled: true
+    image_tag: nutcracker:latest
+    exporter_version: latest

@@ -1,0 +1,94 @@
+mw:
+  mcrouter:
+    pools:
+    - name: eqiad
+      zone: local
+      servers: &eqiad_servers
+        - 10.64.0.80
+        - 10.64.0.81
+        - 10.64.0.82
+        - 10.64.0.83
+        - 10.64.0.84
+        - 10.64.16.108
+        - 10.64.0.125
+        - 10.64.16.109
+        - 10.64.0.124
+        - 10.64.32.208
+        - 10.64.32.209
+        - 10.64.32.210
+        - 10.64.32.211
+        - 10.64.32.212
+        - 10.64.48.155
+        - 10.64.48.156
+        - 10.64.48.157
+        - 10.64.48.158
+      failover:
+        - 10.64.0.53
+        - 10.64.32.101
+        - 10.64.48.32
+    - name: codfw
+      zone: remote
+      servers:
+        - 10.192.0.169
+        - 10.192.16.57
+        - 10.192.32.115
+        - 10.192.48.95
+  nutcracker:
+    pools:
+      - eqiad:
+        name: eqiad
+        servers:
+        - shard: shard01
+          host: 10.64.0.80
+          port: 6379
+        - shard: shard02
+          host: 10.64.0.81
+          port: 6379
+        - shard: shard03
+          host: 10.64.0.82
+          port: 6379
+        - shard: shard04
+          host: 10.64.0.83
+          port: 6379
+        - shard: shard05
+          host: 10.64.0.84
+          port: 6379
+        - shard: shard06
+          host: 10.64.16.108
+          port: 6379
+        - shard: shard07
+          host: 10.64.16.109
+          port: 6379
+        - shard: shard08
+          host: 10.64.0.80
+          port: 6379
+        - shard: shard09
+          host: 10.64.0.124
+          port: 6379
+        - shard: shard10
+          host: 10.64.32.208
+          port: 6379
+        - shard: shard11
+          host: 10.64.32.209
+          port: 6379
+        - shard: shard12
+          host: 10.64.32.210
+          port: 6379
+        - shard: shard13
+          host: 10.64.32.211
+          port: 6379
+        - shard: shard14
+          host: 10.64.32.212
+          port: 6379
+        - shard: shard15
+          host: 10.64.48.155
+          port: 6379
+        - shard: shard16
+          host: 10.64.48.156
+          port: 6379
+        - shard: shard17
+          host: 10.64.48.157
+          port: 6379
+        - shard: shard18
+          host: 10.64.48.158
+          port: 6379
