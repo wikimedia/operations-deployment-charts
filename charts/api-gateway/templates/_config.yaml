@@ -128,18 +128,24 @@ static_resources:
               - {{ $domain }}
 {{- end }}
               virtual_clusters:
-                - headers:
+                - name: r
+                  headers:
                     - name: ":method"
                       safe_regex_match:
                         google_re2: {}
                         regex: "(POST|PUT|PATCH|DELETE)"
-                  name: rw
-                - headers:
+                    - name: ":path"
+                      exact_match: "/healthz"
+                      invert_match: true
+                - name: rw
+                  headers:
                     - name: ":method"
                       safe_regex_match:
                         google_re2: {}
                         regex: "(GET|HEAD|OPTIONS)"
-                  name: r
+                    - name: ":path"
+                      exact_match: "/healthz"
+                      invert_match: true
               rate_limits:
                 # For authenticated requests, the following descriptor is produced:
                 # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
