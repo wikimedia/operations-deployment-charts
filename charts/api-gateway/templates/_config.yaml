@@ -128,7 +128,7 @@ static_resources:
               - {{ $domain }}
 {{- end }}
               virtual_clusters:
-                - name: r
+                - name: rw
                   headers:
                     - name: ":method"
                       safe_regex_match:
@@ -137,7 +137,7 @@ static_resources:
                     - name: ":path"
                       exact_match: "/healthz"
                       invert_match: true
-                - name: rw
+                - name: r
                   headers:
                     - name: ":method"
                       safe_regex_match:
@@ -368,6 +368,7 @@ BEGIN descriptions/mobileapps_cluster route definition
               headers:
                 - name: ":path"
                   exact_match: "/healthz"
+          - name: envoy.filters.http.cors
 {{- if .Values.main_app.jwt.enabled }}
           - name: envoy.filters.http.jwt_authn
             typed_config:
@@ -461,7 +462,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                     key: x_wikimedia_debug_server
                     value: none
                     type: STRING
-          - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
 {{- if .Values.tls.enabled }}
       transport_socket:
