@@ -105,6 +105,8 @@ php:
 
 mw:
   domain_suffix: "local"
+  egress:
+    database_networks: "10.0.0.0/8"
   httpd:
     image_tag: latest
     health_host: test.local

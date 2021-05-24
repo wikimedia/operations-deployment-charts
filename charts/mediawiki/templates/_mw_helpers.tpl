@@ -49,4 +49,16 @@ Network egress for MediaWiki
     {{- end }}
   {{- end }}
 {{- end }}
+{{- with .egress.database_networks }}
+{{/* databases. For now we just ask for a CIDR and open ports 3306 and 3311 through 3320 */}}
+- to:
+  - ipBlock:
+      cidr: {{ . }}
+  ports:
+  {{- $ports := list 3306 3310 3311 3312 3313 3314 3315 3316 3317 3318 3319 3320 -}}
+  {{- range $ports }}
+  - protocol: TCP
+    port: {{.}}
+  {{- end }}
+{{- end }}
 {{- end -}}
