@@ -423,7 +423,7 @@ task :helm_diffs, [:charts] => :check_dep do |_t, args|
 end
 
 desc 'Show diffs in deployments introduced by the patch'
-task deployment_diffs: :check_dep do
+task deployment_diffs: %i[check_dep repo_update] do
   results = {}
   deployments = FileList.new(HELMFILE_GLOB)
   # Do not overwhelm the charts repo,
