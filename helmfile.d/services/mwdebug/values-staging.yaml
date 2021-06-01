@@ -1,38 +1,18 @@
 mw:
   mcrouter:
-    pools:
-    - name: eqiad
-      zone: local
-      servers: &eqiad_servers
-        - 10.64.0.80
-        - 10.64.0.81
-        - 10.64.0.82
-        - 10.64.0.83
-        - 10.64.0.84
-        - 10.64.16.108
-        - 10.64.0.125
-        - 10.64.16.109
-        - 10.64.0.124
-        - 10.64.32.208
-        - 10.64.32.209
-        - 10.64.32.210
-        - 10.64.32.211
-        - 10.64.32.212
-        - 10.64.48.155
-        - 10.64.48.156
-        - 10.64.48.157
-        - 10.64.48.158
-      failover:
-        - 10.64.0.53
-        - 10.64.32.101
-        - 10.64.48.32
-    - name: codfw
-      zone: remote
-      servers:
-        - 10.192.0.169
-        - 10.192.16.57
-        - 10.192.32.115
-        - 10.192.48.95
+    route_prefix: eqiad/mw
+    zone: eqiad
+    routes:
+      - route: /eqiad/mw
+        type: standalone
+        pool: eqiad-servers
+        failover: true
+      - route: /eqiad/mw-wan
+        type: replica
+        pool: eqiad-servers
+        remote:
+          route: /codfw/mw-wan
+          pool: codfw-proxies
   nutcracker:
     pools:
       - eqiad:
