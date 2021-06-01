@@ -107,7 +107,7 @@
   - name: shared-socket
     mountPath: /run/shared
   {{ end -}}
-{{- if .Values.monitoring.enabled -}}
+{{- if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter
 # apache exporter on port 9117
