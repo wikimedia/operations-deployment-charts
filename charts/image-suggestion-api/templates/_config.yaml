@@ -69,6 +69,7 @@ services:
         method: post
         uri: {{ .Values.main_app.mwapi_uri }}
         headers:
+          host: '{{ `{{request.params.domain}}` }}'
           user-agent: '{{ `{{user-agent}}` }}'
         body: '{{ `{{request.body}}` }}'
       # the template used for contacting RESTBase

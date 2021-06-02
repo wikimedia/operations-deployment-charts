@@ -1,0 +1,18 @@
+main_app:
+  mwapi_uri: http://localhost:6500
+  restbase_uri: http://localhost:6503
+  version: 2021-08-19-171553-production
+tls:
+  enabled: true
+  public_port: 4009
+service:
+  deployment: production
+resources:
+  replicas: 4
+discovery:
+  listeners:
+    - mwapi-async
+    - restbase-for-services
+networkpolicy:
+  egress:
+    enabled: true
