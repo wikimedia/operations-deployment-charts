@@ -1,0 +1,73 @@
+# The baseline for this config was gathered in:
+# https://github.com/knative/docs/blob/release-0.18/docs/install/installing-istio.md
+
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  values:
+    global:
+      hub: docker-registry.discovery.wmnet/istio
+      tag: 1.9.5-2
+      imagePullPolicy: IfNotPresent
+      useMCP: false
+      jwtPolicy: first-party-jwt
+
+  addonComponents:
+    pilot:
+      enabled: true
+    prometheus:
+      enabled: false
+
+  components:
+    ingressGateways:
+      # This is the default Ingress Gateway installed via istioctl, the one
+      # that should be exposed to LVS.
+      # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
+      # but we override the list to:
+      # 1) Change the default service type from LoadBalancer to NodePort
+      # 2) Add fixed nodePort configurations (easier to configure LVS endpoints).
+      # 3) Remove config for port 80 (not needed).
+      # Please note that Istio needs specific Gateway, VirtualHost, Routes, etc..
+      # configs to implement a L7 reverse proxy, and those needs to be configured
+      # separately. In the Kubeflow use case, Knative-serving takes care of these
+      # configurations (see the related helm chart).
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          service:
+            type: NodePort
+            ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+              protocol: TCP
+              nodePort: 15021
+            - port: 443
+              targetPort: 8443
+              name: https
+              protocol: TCP
+              nodePort: 8443
+      # This is an internal gateway that is used by Knative. It differs from
+      # the main ingressgateway in the following:
+      # 1) It doesn't require any TLS specific config since we don't encrypt
+      #    traffic inside the Istio mesh.
+      # 2) It doesn't need any NodePort configuration since it will not be
+      #    exposed to LVS, it only needs to be available inside the k8s cluster.
+      - name: cluster-local-gateway
+        enabled: true
+        label:
+          istio: cluster-local-gateway
+          app: cluster-local-gateway
+        k8s:
+          service:
+            type: ClusterIP
+            ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+            - port: 80
+              name: http2
+              targetPort: 8080
+            - port: 443
+              name: https
+              targetPort: 8443
