@@ -1,13 +1,13 @@
-main_app:
-  image: restricted/mediawiki-multiversion
-  version: production
+docker:
   registry:  docker-registry.discovery.wmnet
+main_app:
+  image: "restricted/mediawiki-multiversion:2021-05-14-194825-publish"
   requests:
-    cpu: 500m
-    memory: 500Mi
-  limits:
     cpu: 1000m
     memory: 1000Mi
+  limits:
+    cpu: 2000m
+    memory: 2000Mi
 
 service:
   deployment: production
@@ -34,15 +34,24 @@ networkpolicy:
 # Those can be passed via config.public above.
 php:
   fcgi_mode: FCGI_TCP
-mw:
-  domain_suffix: "local"
+  exporter_version: 0.0.2
   httpd:
-    image: mediawiki-webserver
-    verision: latest
+    exporter_version: 0.0.3
+mw:
+  domain_suffix: "org"
+  httpd:
+    image_tag: "restricted/mediawiki-webserver:2021-04-19-173449-webserver"
   mcrouter:
     enabled: true
     image_tag: mcrouter:latest
-    exporter_version: latest
+    exporter_version: 0.0.1-2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 1
+        memory: 200Mi
     pools:
     - name: eqiad-servers
       zone: eqiad
@@ -84,8 +93,8 @@ mw:
   #TODO: add the codfw servers and the eqiad proxies
   nutcracker:
     enabled: true
-    image_tag: nutcracker:latest
-    exporter_version: latest
+    image_tag: nutcracker:0.0.4
+    exporter_version: 0.0.2
     resources:
       requests:
         cpu: 200m
