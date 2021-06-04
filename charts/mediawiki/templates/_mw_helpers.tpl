@@ -16,7 +16,7 @@ labels:
   heritage: {{ .Release.Service }}
 {{ end }}
 
-{{/* 
+{{/*
 
 Network egress for MediaWiki
 
@@ -61,4 +61,12 @@ Network egress for MediaWiki
     port: {{.}}
   {{- end }}
 {{- end }}
+{{- range .egress.etcd_servers }}
+- to:
+  - ipBlock:
+      cidr: {{ .ip }}/32
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+{{- end -}}
 {{- end -}}

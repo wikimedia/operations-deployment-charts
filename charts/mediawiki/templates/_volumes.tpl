@@ -3,6 +3,10 @@
 - name: {{ template "wmf.releasename" . }}-httpd-sites
   configMap:
     name: {{ template "wmf.releasename" . }}-httpd-sites-config
+# Datacenter
+- name: {{ template "wmf.releasename" . }}-wikimedia-cluster
+  configMap:
+    name: {{ template "wmf.releasename" . }}-wikimedia-cluster-config
 # TLS configurations
 {{- include "tls.volume" . }}
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" -}}

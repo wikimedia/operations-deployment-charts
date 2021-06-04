@@ -104,9 +104,12 @@ php:
 # Those can be passed via config.public above.
 
 mw:
+  # The datacenter. To be overridden in deployments.
+  datacenter: local
   domain_suffix: "local"
   egress:
     database_networks: "10.0.0.0/8"
+    etcd_servers: [] # If present, they need to have the form "{ip: <>, port: <>}"
   httpd:
     image_tag: latest
   mcrouter:

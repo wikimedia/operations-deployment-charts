@@ -101,8 +101,12 @@
 {{ toYaml .Values.main_app.requests | indent 6 }}
     limits:
 {{ toYaml .Values.main_app.limits | indent 6 }}
-  {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   volumeMounts:
+  # TODO: use an env variable for this.
+  - name: {{ $release }}-wikimedia-cluster
+    mountPath: /etc/wikimedia-cluster
+    subPath: wikimedia-cluster
+  {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   # Mount the shared socket volume
   - name: shared-socket
     mountPath: /run/shared
