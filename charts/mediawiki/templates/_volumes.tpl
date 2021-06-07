@@ -7,6 +7,15 @@
 - name: {{ template "wmf.releasename" . }}-wikimedia-cluster
   configMap:
     name: {{ template "wmf.releasename" . }}-wikimedia-cluster-config
+{{- if .Values.puppet_ca_crt }}
+# CA bundle
+- name: {{ template "wmf.releasename" . }}-ca-bundle
+  configMap:
+    name: {{ template "wmf.releasename" . }}-ca-bundle-config
+    items:
+    - key: puppet-ca
+      path: certs/ca-certificates.crt
+{{- end }}
 # TLS configurations
 {{- include "tls.volume" . }}
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" -}}

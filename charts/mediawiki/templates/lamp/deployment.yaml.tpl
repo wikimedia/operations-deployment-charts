@@ -106,6 +106,10 @@
   - name: {{ $release }}-wikimedia-cluster
     mountPath: /etc/wikimedia-cluster
     subPath: wikimedia-cluster
+  {{- if .Values.puppet_ca_crt }}
+  - name: {{ $release }}-ca-bundle
+    mountPath: /etc/ssl
+  {{- end }}
   {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   # Mount the shared socket volume
   - name: shared-socket
