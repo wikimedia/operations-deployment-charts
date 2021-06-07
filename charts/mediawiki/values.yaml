@@ -10,7 +10,7 @@ resources:
 main_app:
   image: placeholder-for-mediawiki-image-name
   version: latest # we use latest everywhere in the defaults.
-  port: 443 # port exposed as a Service, also used by service-checker.
+  port: 14444 # port exposed as a Service, also used by service-checker.
   # Limits that make sense for a local dev:
   # 1 - 4 Gb of RAM is the minimum for having some APC + opcache for all
   #     the code + 4xncpu workers.
@@ -25,13 +25,6 @@ main_app:
   limits:
     cpu: 2000m
     memory: 4000Mi
-  liveness_probe:
-    tcpSocket:
-      port: 443
-  readiness_probe:
-    httpGet:
-      path: /
-      port: 443
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -44,8 +37,8 @@ service:
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 443 # the number or name of the exposed port on the container
-    port: 443 # the number of the port desired to be exposed to the cluster
+    targetPort: 14444 # the number or name of the exposed port on the container
+    port: 14444 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
@@ -54,7 +47,7 @@ config:
 tls:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
-  public_port: 443 # the port where TLS will be exposed
+  public_port: 4444 # the port where TLS will be exposed
   upstream_timeout: "180.0s"
   # To be defined in a private space
   certs:
