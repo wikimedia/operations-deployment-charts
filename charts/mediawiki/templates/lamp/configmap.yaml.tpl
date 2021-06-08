@@ -21,5 +21,6 @@ kind: ConfigMap
 metadata:
   name: {{ template "wmf.releasename" . }}-ca-bundle-config
 data:
-  puppet-ca: {{ .Values.puppet_ca_crt }}
+  puppet-ca: |
+{{ .Values.puppet_ca_crt | indent 4 }}
 {{- end }}
