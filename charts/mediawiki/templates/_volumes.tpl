@@ -13,17 +13,17 @@
   configMap:
     name: {{ template "wmf.releasename" . }}-ca-bundle-config
     items:
-    - key: puppet-ca
+    - key:   puppet-ca
       path: certs/ca-certificates.crt
 {{- end }}
 # TLS configurations
 {{- include "tls.volume" . }}
-{{- if eq .Values.php.fcgi_mode "FCGI_UNIX" -}}
+{{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
 # Shared unix socket for php apps
 - name: shared-socket
   emptydir: {}
-{{- end -}}
-{{- if .Values.mw.mcrouter.enabled -}}
+{{- end }}
+{{- if .Values.mw.mcrouter.enabled }}
 # Mcrouter configuration
 - name: {{ template "wmf.releasename" . }}-mcrouter-config
   configMap:
