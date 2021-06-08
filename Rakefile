@@ -93,7 +93,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
         # not doing anything here, we're just verifying it loads for now.
       end
     rescue Psych::SyntaxError => e
-      report_yaml_parse_error(command, error, output, e)
+      report_yaml_parse_error("helm template #{chart} -f #{fixture.join(' -f ')}", 'Error parsing the helm template output', output, e)
       success = false
     rescue StandardError => e
       success = false
