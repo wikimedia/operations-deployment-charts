@@ -19,8 +19,18 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-ca-bundle-config
+  name: {{ template "wmf.releasename" . }}-ca-config
 data:
-  puppet-ca: |
+  ca.crt: |
 {{ .Values.puppet_ca_crt | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-php-curl-config
+data:
+  "20-curl-mw.ini": |
+    curl.cainfo="/etc/ssl/ca.crt"
+    openssl.cafile="/etc/ssl/ca.crt"
+
 {{- end }}

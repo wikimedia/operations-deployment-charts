@@ -8,13 +8,15 @@
   configMap:
     name: {{ template "wmf.releasename" . }}-wikimedia-cluster-config
 {{- if .Values.puppet_ca_crt }}
-# CA bundle
-- name: {{ template "wmf.releasename" . }}-ca-bundle
+# Puppet CA. TODO: instead of loading it here, we should use
+# a deb package installing our own ca bundles in the final images.
+- name: {{ template "wmf.releasename" . }}-internal-ca
   configMap:
-    name: {{ template "wmf.releasename" . }}-ca-bundle-config
-    items:
-    - key:   puppet-ca
-      path: certs/ca-certificates.crt
+    name: {{ template "wmf.releasename" . }}-ca-config
+# PHP configuration to use the puppet CA
+- name: {{ template "wmf.releasename" . }}-php-curl
+  configMap:
+    name: {{ template "wmf.releasename" . }}-php-curl-config
 {{- end }}
 # TLS configurations
 {{- include "tls.volume" . }}

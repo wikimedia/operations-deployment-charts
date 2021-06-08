@@ -107,8 +107,11 @@
     mountPath: /etc/wikimedia-cluster
     subPath: wikimedia-cluster
   {{- if .Values.puppet_ca_crt }}
-  - name: {{ $release }}-ca-bundle
+  - name: {{ $release }}-internal-ca
     mountPath: /etc/ssl
+  - name: {{ $release }}-php-curl
+    mountPath: /etc/php/7.2/fpm/conf.d/20-curl-mw.ini
+    subPath: 20-curl-mw.ini
   {{- end }}
   {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   # Mount the shared socket volume
