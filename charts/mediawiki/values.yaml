@@ -10,7 +10,7 @@ resources:
 main_app:
   image: placeholder-for-mediawiki-image-name
   version: latest # we use latest everywhere in the defaults.
-  port: 14444 # port exposed as a Service, also used by service-checker.
+  port: 8080 # This is the same as php.httpd.port
   # Limits that make sense for a local dev:
   # 1 - 4 Gb of RAM is the minimum for having some APC + opcache for all
   #     the code + 4xncpu workers.
