@@ -1,0 +1,7 @@
+The CRDs are copied from upstream:
+https://github.com/knative/serving/releases/download/v0.18.1/serving-crds.yaml
+
+This is a separate chart from the actual Knative serving chart because helm does
+currently not have a proper way for upgrading/deleting CRDs provided in the
+"crds" directory of a helm chart, see:
+https://helm.sh/docs/chart_best_practices/custom_resource_definitions/
