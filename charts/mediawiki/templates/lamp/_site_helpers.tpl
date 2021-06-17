@@ -10,12 +10,12 @@
     ServerName {{ .name }}
     DocumentRoot {{ .docroot }}
 
-    {{- if .server_aliases }}
-    {{- range .server_aliases }}
+{{- if .server_aliases }}
+  {{- range .server_aliases }}
     ServerAlias {{ . }}
-    {{ end }}
+  {{- end }}
     UseCanonicalName {{ .canonical_name }}
-    {{ end }}
+{{- end }}
 
     AllowEncodedSlashes {{ .encoded_slashes }}
 
@@ -28,7 +28,7 @@
     RewriteRule . - [E=RW_PROTO:%{HTTP:X-Forwarded-Proto}]
     RewriteCond %{ENV:RW_PROTO} !=https
     RewriteRule . - [E=RW_PROTO:http]
-{{- end -}}
+{{- end }}
 
 {{- with .upload_rewrite }}
 {{- if .domain_catchall }}
@@ -40,9 +40,10 @@
     RewriteRule ^/upload/(.*)$ %{ENV:RW_PROTO}://upload.wikimedia.org/{{ .rewrite_prefix }}/$1 [R=302]
 {{- end }}
 {{- end }}
+{{- if .additional_rewrites.early }}
     # Custom rewrite rules (early)
     {{ .additional_rewrites.early | join "\n" }}
-
+{{- end }}
     ### Common rewrite rules for all wikis
 
     # Redirect /wiki, /w to the fcgi backend
@@ -88,9 +89,10 @@
     # Early phase 2 compatibility URLs
     RewriteRule ^/wiki\.phtml$ %{ENV:RW_PROTO}://%{SERVER_NAME}/w/index.php [R=301,L]
 {{- end }}
+{{- if .additional_rewrites.late }}
     # Custom rewrite rules (late)
     {{ .additional_rewrites.late | join "\n" }}
-
+{{- end }}
 {{ range .variant_aliases }}
     RewriteRule ^/{{ . }} /w/index.php [L]
 {{- end }}

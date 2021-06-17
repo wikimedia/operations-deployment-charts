@@ -204,7 +204,6 @@ mw:
             - zh-sg
             - zh-tw
           additional_rewrites:
-            early: []
             late:
               - "# moved wikistats off NFS"
               - "    RewriteRule ^/wikistats(/(.*$)|$) %{ENV:RW_PROTO}://stats.wikimedia.org/$2
