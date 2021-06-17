@@ -40,9 +40,11 @@
     RewriteRule ^/upload/(.*)$ %{ENV:RW_PROTO}://upload.wikimedia.org/{{ .rewrite_prefix }}/$1 [R=302]
 {{- end }}
 {{- end }}
-{{- if .additional_rewrites.early }}
+{{- with .additional_rewrites }}
+  {{- if .early }}
     # Custom rewrite rules (early)
-    {{ .additional_rewrites.early | join "\n" }}
+    {{ .early | join "\n" }}
+  {{- end }}
 {{- end }}
     ### Common rewrite rules for all wikis
 
@@ -89,9 +91,11 @@
     # Early phase 2 compatibility URLs
     RewriteRule ^/wiki\.phtml$ %{ENV:RW_PROTO}://%{SERVER_NAME}/w/index.php [R=301,L]
 {{- end }}
-{{- if .additional_rewrites.late }}
+{{- with .additional_rewrites }}
+  {{- if .late }}
     # Custom rewrite rules (late)
-    {{ .additional_rewrites.late | join "\n" }}
+    {{ .late | join "\n" }}
+  {{- end }}
 {{- end }}
 {{ range .variant_aliases }}
     RewriteRule ^/{{ . }} /w/index.php [L]
