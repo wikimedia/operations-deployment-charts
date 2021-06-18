@@ -1,4 +1,4 @@
-{{- if .Values.monitoring.enabled }}
+{{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
 ---
 apiVersion: v1
 kind: ConfigMap
