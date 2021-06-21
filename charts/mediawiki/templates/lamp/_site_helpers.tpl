@@ -7,7 +7,7 @@
 {{- define "mw-vhost" }}  ## add a default if no priority
 # VirtualHost for {{ .name }}
 <VirtualHost *:{{ .port }}>
-    ServerName {{ .server_name }}
+    ServerName {{ .server_name | default .name }}
     DocumentRoot {{ .docroot }}
 
 {{- if .server_aliases }}
