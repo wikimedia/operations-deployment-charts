@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kubeflow-kfserving-inference
+description: WMF Kubeflow Kfserving Serving Inference serv
+type: application
+version: 0.1.0
+appVersion: 0.0.1
+dependecies:
+  - name: kubeflow-kfserving
+    version: 0.1.0
+    repository: "file://../kubeflow-kfserving"

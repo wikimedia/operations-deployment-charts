@@ -1,0 +1,23 @@
+This is a simple Helm chart to instantiate the InferenceService resources
+needed by Kubeflow's Kfserving to create services.
+
+The idea is to configure values to something like:
+
+inference_services:
+  - name: enwiki-goodfaith
+    spec:
+      predictor:
+        containers:
+        - name: kfserving-container
+          image: accraze/kfserving-custom-model
+          imagePullPolicy: IfNotPresent
+  - name: ...
+
+The fact that there may be multiple InferenceService for the same chart is related
+to how models will be grouped together. For example, we may want to deploy all
+the ORES-related models (100+) in the same namespace (like inference-ores),
+meanwhile other models (say for example image recognition, etc..) in another
+namespace. The idea is to control this via helmfile, having multiple releases
+based on the groups of models to deploy.
+Istio will take care of doing the http(s) proxy between external clients and models
+using the "Host" header passed by the client.

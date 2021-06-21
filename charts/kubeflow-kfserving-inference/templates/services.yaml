@@ -1,0 +1,11 @@
+{{- range .Values.inference_services }}
+apiVersion: serving.kubeflow.org/v1beta1
+kind: InferenceService
+metadata:
+  name: {{ .name | quote }}
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    controller-tools.k8s.io: "1.0"
+spec: {{- .spec | toYaml | nindent 2 }}
+{{- end }}

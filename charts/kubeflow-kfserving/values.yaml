@@ -1,0 +1,27 @@
+# Default values for Kubeflow Kfserving.
+
+helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+agent:
+  image: kubeflow-kfserving-agent
+  version: 0.6.0-1
+
+controller:
+  image: kubeflow-kfserving-controller
+  version: 0.6.0-1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+
+webhook:
+  tls:
+    certs:
+      cert: "snakeoil"
+      key: "snakeoil"
