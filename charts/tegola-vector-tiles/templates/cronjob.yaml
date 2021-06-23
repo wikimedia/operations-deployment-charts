@@ -1,0 +1,62 @@
+{{- if .Values.tilePregeneration.cronJobEnabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "wmf.releasename" . }}-pregeneration
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: "{{ .Values.tilePregeneration.schedule }}"
+  concurrencyPolicy: "{{ .Values.tilePregeneration.concurrencyPolicy }}"
+  jobTemplate:
+    metadata:
+      name: {{ template "wmf.releasename" . }}-pregeneration
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        chart: {{ template "wmf.chartid" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      parallelism: {{ .Values.tilePregeneration.parallelism }}
+      backoffLimit: {{ .Values.tilePregeneration.backoffLimit }}
+      template:
+        spec:
+          restartPolicy: "{{ .Values.tilePregeneration.restartPolicy }}"
+          containers:
+          - name: {{ template "wmf.releasename" . }}-pregeneration
+            image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+            env:
+            {{- range $k, $v := .Values.config.public }}
+              - name: {{ $k | upper }}
+                value: {{ $v }}
+            {{- end }}
+            {{- range $k, $v := .Values.config.private }}
+              - name: {{ $k | upper }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "wmf.releasename" $ }}-secret-config
+                    key: {{ $k }}
+            {{- end }}
+            imagePullPolicy: {{ .Values.docker.pull_policy }}
+            {{- if .Values.tilePregeneration.command }}
+            command:
+              {{- range .Values.tilePregeneration.command }}
+              - {{ . | quote }}
+              {{- end }}
+            {{- end }}
+            volumeMounts:
+              - name: config-volume
+                mountPath: /etc/tegola
+            resources:
+              requests:
+{{ toYaml .Values.main_app.requests | indent 16 }}
+              limits:
+{{ toYaml .Values.main_app.limits | indent 16 }}
+          volumes:
+            - name: config-volume
+              configMap:
+                name: config-{{ .Release.Name }}
+{{- end }}

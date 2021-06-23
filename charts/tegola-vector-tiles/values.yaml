@@ -49,7 +49,11 @@ service:
     port: 8080
     nodePort: null
 config:
-  public: {}
+  public:
+    TEGOLA_BROKER_URL: "kafka://kafka-hostname:9092"
+    TEGOLA_QUEUE_NAME: "tegola-maps-tile-pregeneration"
+    TEGOLA_PATH: "/srv/service/cmd/tegola/tegola"
+    TEGOLA_CONFIG_PATH: "/etc/tegola/config.toml"
   private:
     TEGOLA_POSTGRES_PASSWORD: "secret"
     AWS_ACCESS_KEY_ID: "s3_compatible_swift_key_id"
@@ -73,3 +77,22 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+# Tile pregeneration runs as a cronjob.
+# Every job consumes tasks from a queue in batches until no task is left.
+# Each batch is consumed as input to the tegola cache command.
+
+# Pregeneration cronjob defaults
+# - Run once a day (`schedule: @midnight`)
+# - Consider job failed on first failure (`backoffLimit: 0`)
+# - Spawn one pod that runs the pregeneration script (`parallelism: 1`)
+# - Don't spawn a new job if the previous one is still running (`concurrencyPolicy: Forbid`)
+tilePregeneration:
+  cronJobEnabled: false
+  schedule: "@midnight"
+  restartPolicy: "Never"
+  backoffLimit: 0
+  parallelism: 1
+  concurrencyPolicy: Forbid
+  command:
+    - "/srv/service/scripts/pregenerate-maps-tiles.sh"
