@@ -1,0 +1,12 @@
+---
+services_proxy:
+  thanos-swift:
+    port: 6022
+    timeout: 120s
+    upstream:
+      ips:
+        - 10.2.1.54/32
+        - 10.2.2.54/32
+      address: thanos-swift.discovery.wmnet
+      port: 443
+      encryption: true
