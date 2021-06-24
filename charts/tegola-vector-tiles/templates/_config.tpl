@@ -1,5 +1,12 @@
 {{- define "config.app" }}
 
+{{- if .Values.tileCaching.enabled }}
+[[cache]]
+{{- range $k, $v := .Values.tileCaching.config }}
+{{ $k }} = {{ kindIs "string" $v | ternary ($v | quote) $v}}
+{{- end }}
+{{- end }}
+
 [[providers]]
 name = "osm"
 type = "mvt_postgis"
