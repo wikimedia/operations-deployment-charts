@@ -22,7 +22,7 @@ Which values are included varies depending on the cluster and release. So for ex
 - substitute `SERVICE_NAME` in helmfile.yaml with the name of your service.
 - verify you want all releases listed; Do you plan on having a canary release? Do you need a "test" release in staging?
 - you will need a namespace, you can make a CR in the admin folder on this repo (see the README.MD file under `admin/`) but a cluster administrator needs to apply it.
-- the serviceops team ( `#wikimedia-serviceops` on freenode) will need to create a valid kubeconfig for interacting with the cluster.
+- the serviceops team ( `#wikimedia-serviceops` on libera chat) will need to create a valid kubeconfig for interacting with the cluster.
 - if you need external traffic, serviceops also needs to configure LVS and DNS to enable you to receive traffic from outside or from other WMF services.
 
 
