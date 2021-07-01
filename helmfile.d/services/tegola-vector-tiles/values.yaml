@@ -7,6 +7,12 @@ resources:
 main_app:
   image: wikimedia/operations-software-tegola
   version: 2021-06-22-123938-production
+  requests:
+    cpu: 200m
+    memory: 200Mi
+  limits:
+    cpu: 400m
+    memory: 400Mi
 monitoring:
   enabled: true
 service:
