@@ -13,6 +13,8 @@ main_app:
   limits:
     cpu: 400m
     memory: 400Mi
+  postgres:
+    user: tilerator
 monitoring:
   enabled: true
 service:
@@ -22,8 +24,6 @@ tls:
   public_port: 4105
   telemetry:
     enabled: true
-postgres:
-  user: tilerator
 tileCaching:
   enabled: true
   config:
