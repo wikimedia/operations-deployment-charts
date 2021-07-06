@@ -21,9 +21,8 @@ logging:
 # Statsd metrics reporter
 metrics:
   name: {{ .Values.main_app.name }}
-  host: localhost
-  port: 9125
-  type: statsd
+  type: prometheus
+  port: 9102
 {{- end }}
 
 {{- if .Values.main_app.extra_service_runner_conf }}

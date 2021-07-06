@@ -168,7 +168,7 @@ main_app:
         # See also: https://phabricator.wikimedia.org/T218268#5049090
         broker.address.family: v4
         # Emit rdkafka stats every 30 seconds
-        # (Prometheus will only scrape statsd-exporterd every 60 seconds).
+        # (Prometheus will only scrape every 60 seconds).
         statistics.interval.ms: 30000
         # Set these to enable Kafka producer TLS (no authentication, just encryption).
         #security.protocol: ssl

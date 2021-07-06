@@ -26,9 +26,6 @@ spec:
         {{ if .Values.main_app.stream_config -}}
         checksum/stream-config: {{ include "stream.config" . | sha256sum }}
         {{ end -}}
-        {{ if .Values.monitoring.enabled -}}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-        {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8 }}
@@ -82,14 +79,6 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.monitoring.enabled }}
-        - name: metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: metrics-exporter-config-volume
-              mountPath: /etc/monitoring
-{{- end }}
 {{- if .Values.debug_mode_enabled | default false }}
         - name: {{ .Values.main_app.name }}-wmfdebug
           image: {{ .Values.docker.registry }}/wmfdebug:latest

@@ -21,19 +21,4 @@ data:
   # like schema.discovery.wmnet:443
   puppetca.crt.pem: |-
 {{ .Values.puppet_ca_crt | default "snakeoil" | indent 4 }}
-{{- if .Values.monitoring.enabled }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "wmf.releasename" . }}-metrics-exporter-config
-  labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  prometheus-statsd.conf: |-
-{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
-{{ end }}
 {{ include "tls.config" . }}
