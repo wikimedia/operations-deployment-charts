@@ -1,3 +1,7 @@
 main_app:
+  # service-runner + Prometheus may work better if we don't use nodejs clustering.
+  # The default is 1 worker anyway, maybe it is better to not use multiple processes
+  # if we aren't actually distributing work via service-runner cluster.
+  num_workers: 0
   conf:
     topic_prefix: staging.
