@@ -4,7 +4,11 @@
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
-num_workers: {{ .Values.main_app.num_workers | default 1 }}
+# NOTE: If main_app.num_workers is set to 0, it will evaluate to false in
+# a template conditional.  The user may want to set num_workers to 0, so
+# we need to check it in a different way.
+# See: https://github.com/helm/helm/issues/3164#issuecomment-709537506
+num_workers: {{ if not (kindIs "invalid" .Values.main_app.num_workers) }}{{ .Values.main_app.num_workers }}{{ else }}{{ 1 }}{{ end }}
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
