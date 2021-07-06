@@ -126,3 +126,60 @@ discovery:
     - cloudelastic-chi-eqiad
     - cloudelastic-omega-eqiad
     - cloudelastic-psi-eqiad
+
+
+# network egress for various services
+networkpolicy:
+  egress:
+    dst_nets:
+    # swift is covered by envoy even if still not used in mediawiki.
+    # url-downloader is covered by the default egress rules
+    # redis_lock is covered by the nutcracker-originated rules for redis
+    # Common defs
+    #IRC - TODO: define the port range once we upgrade k8s
+    # irc1001
+    - cidr: 208.80.155.105/32
+    # irc2001
+    - cidr: 208.80.153.62/32
+    # xenon
+    # mwlog1002
+    - cidr: 10.64.32.141/32
+      port: 6379
+    # statsd
+    # graphite1004 / statsd.eqiad.wmnet
+    - cidr: 10.64.16.149/32
+      port: 9125
+    # eventlogging
+    # eventlog1001
+    - cidr: 10.64.32.167/32
+      port: 8421
+    # logstash
+    # logstash.svc.eqiad.wmnet
+    - cidr: 10.2.2.36/32
+    # DC-specific defs
+    ## Eqiad
+    # Poolcounter
+    # poolcounter1004
+    - cidr: 10.64.0.151/32
+      port: 7531
+    # poolcounter1005
+    - cidr: 10.64.32.236/32
+      port: 7531
+    # udp2log
+    # mwlog1002
+    - cidr: 10.64.32.141/32
+      port: 8420
+
+    ## Codfw
+    # Poolcounter
+    # poolcounter2003
+    - cidr: 10.192.0.132/32
+      port: 7531
+    # poolcounter2004
+    - cidr: 10.192.16.129/32
+      port: 7531
+    # udp2log
+    # mwlog2002
+    - cidr: 10.192.32.9/32
+      port: 8420
+
