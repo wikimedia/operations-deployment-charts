@@ -27,7 +27,7 @@ spec:
     spec:
       # TODO: add affinity rules to ensure even distribution across rows
       {{- if .Values.affinity }}
-        {{- toYaml .Values.affinity | indent 6 }}
+{{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
       containers:
       {{- include "lamp.deployment" . | indent 8 }}
