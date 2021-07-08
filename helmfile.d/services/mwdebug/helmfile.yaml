@@ -19,6 +19,8 @@ templates:
     missingFileHandler: Warn
     values:
       - /etc/helmfile-defaults/mediawiki/httpd.yaml # Virtual host data used as input for _site_helpers.yaml
+      - /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml # mcrouter pools, puppet generated
+      - /etc/helmfile-defaults/mediawiki/nutcracker_pools.yaml # nutcracker pools, puppet generated
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/mwdebug/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
@@ -37,7 +39,6 @@ templates:
 releases:
   - name: pinkunicorn
     <<: *default
-
 
 # Please note: you might not need to declare all of these releases. Most applications
 # might be fine just declaring "main" everywhere.
