@@ -1,30 +1,8 @@
 affinity:
   nodeSelector:
     kubernetes.io/hostname: kubernetes1017.eqiad.wmnet
-tls:
-  enabled: true
 
 mw:
-  egress:
-    etcd_servers:
-      # conf1004
-      - ip: 10.64.0.23
-        port: 4001
-      # conf1005
-      - ip: 10.64.16.29
-        port: 4001
-      # conf1006
-      - ip: 10.64.48.167
-        port: 4001
-      # conf2004
-      - ip: 10.192.16.45
-        port: 4001
-      # conf2005
-      - ip: 10.192.32.52
-        port: 4001
-      # conf2006
-      - ip: 10.192.48.59
-        port: 4001
   datacenter: eqiad
   mcrouter:
     route_prefix: eqiad/mw
@@ -40,63 +18,3 @@ mw:
         remote:
           route: /codfw/mw-wan
           pool: codfw-proxies
-  nutcracker:
-    pools:
-      - eqiad:
-        port: 12000
-        name: eqiad
-        servers:
-          - shard: shard01
-            host: 10.64.0.80
-            port: 6379
-          - shard: shard02
-            host: 10.64.0.81
-            port: 6379
-          - shard: shard03
-            host: 10.64.0.82
-            port: 6379
-          - shard: shard04
-            host: 10.64.0.83
-            port: 6379
-          - shard: shard05
-            host: 10.64.0.84
-            port: 6379
-          - shard: shard06
-            host: 10.64.16.108
-            port: 6379
-          - shard: shard07
-            host: 10.64.16.109
-            port: 6379
-          - shard: shard08
-            host: 10.64.0.80
-            port: 6379
-          - shard: shard09
-            host: 10.64.0.124
-            port: 6379
-          - shard: shard10
-            host: 10.64.32.208
-            port: 6379
-          - shard: shard11
-            host: 10.64.32.209
-            port: 6379
-          - shard: shard12
-            host: 10.64.32.210
-            port: 6379
-          - shard: shard13
-            host: 10.64.32.211
-            port: 6379
-          - shard: shard14
-            host: 10.64.32.212
-            port: 6379
-          - shard: shard15
-            host: 10.64.48.155
-            port: 6379
-          - shard: shard16
-            host: 10.64.48.156
-            port: 6379
-          - shard: shard17
-            host: 10.64.48.157
-            port: 6379
-          - shard: shard18
-            host: 10.64.48.158
-            port: 6379
