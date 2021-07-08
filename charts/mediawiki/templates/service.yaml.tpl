@@ -1,6 +1,6 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
 {{ include "tls.service" . }}
-{{ if not .Values.tls.enabled }}
+{{ if or .Values.service.expose_http (not .Values.tls.enabled) }}
 ---
 apiVersion: v1
 kind: Service

@@ -3,7 +3,7 @@ docker:
 main_app:
   image: "restricted/mediawiki-multiversion:2021-07-01-232810-publish"
   requests:
-    cpu: 1000m
+    cpu: 1800m
     memory: 1000Mi
   limits:
     cpu: 2000m
@@ -12,7 +12,7 @@ main_app:
 service:
   deployment: production
   port:
-    nodePort: 4444
+    nodePort: 8444
 resources:
   replicas: 1
 

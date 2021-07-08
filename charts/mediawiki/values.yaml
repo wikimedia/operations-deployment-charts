@@ -34,11 +34,12 @@ monitoring:
   uses_statsd: false
 service:
   deployment: minikube # valid values are "production" and "minikube"
+  expose_http: false # set this to true if you want to expose both the the https and http endpoint
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 14444 # the number or name of the exposed port on the container
-    port: 14444 # the number of the port desired to be exposed to the cluster
+    targetPort: 8080 # the number or name of the exposed port on the container
+    port: 8080 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap

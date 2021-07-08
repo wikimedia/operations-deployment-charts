@@ -2,6 +2,9 @@ affinity:
   nodeSelector:
     kubernetes.io/hostname: kubernetes2017.codfw.wmnet
 
+service:
+  expose_http: true
+
 mw:
   datacenter: codfw
   mcrouter:
