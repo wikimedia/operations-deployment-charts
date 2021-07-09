@@ -29,6 +29,7 @@ debug:
 # See the dockerfiles for the the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 php:
+  servergroup: kube-mwdebug
   fcgi_mode: FCGI_TCP
   exporter_version: 0.0.2
   httpd:
