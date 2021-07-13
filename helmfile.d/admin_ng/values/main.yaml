@@ -3,7 +3,10 @@
 cluster_group: main
 
 # List all namespaces that should be created in every ServiceOps cluster
-# Set "<namespace-name>.deployUser: foo" for deploy username different from <namespace-name>
+# Some overrides are possible:
+# <namespace-name>:
+#   deployUser: "foo" Set deploy username (defaults to "<namespace-name>")
+#   tillerClusterRole: "foo" ClusterRole to bind the tiller ServiceAccount to (defaults to "tiller")
 namespaces:
   apertium: {}
   api-gateway: {}

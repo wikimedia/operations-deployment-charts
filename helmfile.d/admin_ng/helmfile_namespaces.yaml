@@ -64,7 +64,7 @@ releases:
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
-              name: tiller
+              name: {{ $values | getOrNil "tillerClusterRole" | default "tiller" }}
             subjects:
               - kind: ServiceAccount
                 name: tiller

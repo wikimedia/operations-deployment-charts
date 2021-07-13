@@ -35,6 +35,19 @@ releases:
             - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
               resources: ["*"]
               verbs: ["*"]
+        ## Used by tiller
+        ## Flink deployments need permissions to add roles and role bindings
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: tiller-flink
+          rules:
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+            - apiGroups: ["rbac"]
+              resources: ["roles", "rolebindings"]
+              verbs: ["*"]
         # ClusterRoleBindings
         ## wmf-node-authorization adds the kubelet users group ("system:nodes")
         ## to the system:node ClusterRole so that the kubelet's can register nodes
