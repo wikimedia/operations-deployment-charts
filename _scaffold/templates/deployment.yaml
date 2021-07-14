@@ -21,12 +21,12 @@ spec:
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{- if .Values.monitoring.enabled -}}
+        {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
-          {{- if .Values.monitoring.uses_statsd -}}
+          {{- if .Values.monitoring.uses_statsd }}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-          {{- end -}}
-        {{- end -}}
+          {{- end }}
+        {{- end }}
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
