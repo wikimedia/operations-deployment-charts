@@ -7,7 +7,7 @@ spec:
   values:
     global:
       hub: docker-registry.discovery.wmnet/istio
-      tag: 1.9.5-2
+      tag: 1.9.5-3
       imagePullPolicy: IfNotPresent
       useMCP: false
       jwtPolicy: first-party-jwt
@@ -17,8 +17,19 @@ spec:
       enabled: true
     prometheus:
       enabled: false
+    grafana:
+      enabled: false
+    zipkin:
+      enabled: false
 
   components:
+    pilot:
+      k8s:
+        env:
+        - name: 'KUBERNETES_SERVICE_HOST'
+          value: 'kubernetes.default.svc.cluster.local'
+        - name: 'KUBERNETES_SERVICE_PORT'
+          value: '443'
     ingressGateways:
       # This is the default Ingress Gateway installed via istioctl, the one
       # that should be exposed to LVS.
