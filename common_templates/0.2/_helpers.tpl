@@ -74,7 +74,7 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{/* Auto-generate egress networkpolicies for kafka brokers */}}
 {{- define "wmf.networkpolicy.egress.kafka" -}}
 {{- $clusters := .Values.kafka_brokers -}}
-{{- if .Values.kafka.allowed_clusters }}
+{{- if .Values.kafka }}{{ if .Values.kafka.allowed_clusters }}
 {{- range $c := .Values.kafka.allowed_clusters }}
 {{- $cidrs := index $clusters $c -}}
 # Brokers in the kafka cluster {{ $c }}
@@ -87,7 +87,7 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
     port: 9092
   - protocol: TCP
     port: 9093
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end }} {{/* end range cidrs */}}
+{{- end }} {{/* end range allowed_clusters */}}
+{{- end }}{{ end }} {{/* end if's */}}
 {{- end -}}
