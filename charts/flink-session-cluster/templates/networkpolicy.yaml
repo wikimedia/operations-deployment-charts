@@ -32,14 +32,13 @@ spec:
       # flink's native prometheus endpoint
       - port: {{ .Values.main_app.config.prometheus_reporter_port }}
         protocol: TCP
-      {{- if and .Values.tls.enabled .Values.tls.telemetry.enabled }}
-      - port: {{ .Values.tls.telemetry.port }}
-        protocol: TCP
-      {{- end }}
+      {{- include "tls.networkpolicy" . | indent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
     {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
+    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
 
 ---
@@ -88,4 +87,6 @@ spec:
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
     {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
+    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
