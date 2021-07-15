@@ -11,6 +11,9 @@ docker:
 
 main_app:
   replicas: 1
+  # REST endpoint, must be the same as .Values.service.port.targetPort (used to feed the rest.port in the flink conf)
+  # This is needed by the tls template
+  port: 8081
   requests:
     cpu: 100m
     memory: 700Mi
