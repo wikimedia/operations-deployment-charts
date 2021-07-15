@@ -31,7 +31,9 @@ def exec_helm_template(chart, fixture = nil)
     command = "#{helm} template '#{chart}'"
     error = "Error checking #{chart}"
   end
-  _exec command
+  ret = _exec command
+  ret.append(command)
+  ret
 end
 
 # Run an helmfile command on each environment declared in source.
@@ -82,7 +84,7 @@ end
 # Does so by running helm template (injecting value fixture files if present)
 # If kubeyaml is available, also run kubeyaml.
 def check_template(chart, fixture = nil, kubeyaml = nil)
-  success, output = exec_helm_template(chart, fixture)
+  success, output, command = exec_helm_template(chart, fixture)
   if success
     docs = []
     begin
@@ -97,7 +99,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
       success = false
     rescue StandardError => e
       success = false
-      puts error.red
+      puts "Error parsing the helm template output".red
       puts e
     end
     if kubeyaml
@@ -126,8 +128,7 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
     end
   else
     # Error happens before yaml validation
-    puts error.red
-    puts "Error running #{command}:"
+    puts "Error running \"#{command}\":".red
     puts output
   end
   success
