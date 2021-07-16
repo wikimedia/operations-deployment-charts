@@ -28,7 +28,7 @@ tileCaching:
   enabled: true
   config:
     type: "s3"  # S3 compatible API on swift
-    endpoint: "localhost:6022"  # envoy thanos-swift listener is on port 6022
+    endpoint: "http://localhost:6022"  # envoy thanos-swift listener is on port 6022
 
 discovery:
   listeners:
