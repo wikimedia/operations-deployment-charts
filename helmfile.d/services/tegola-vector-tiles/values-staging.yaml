@@ -3,6 +3,10 @@ resources:
 main_app:
   postgres:
     host: 10.64.32.8 # maps1009
+tileCaching:
+  enabled: true
+  config:
+    bucket: "tegola-swift-staging-container"
 config:
   public:
     TEGOLA_SQL_DEBUG: "LAYER_SQL:EXECUTE_SQL"
