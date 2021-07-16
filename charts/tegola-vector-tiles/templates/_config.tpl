@@ -1,7 +1,7 @@
 {{- define "config.app" }}
 
 {{- if .Values.tileCaching.enabled }}
-[[cache]]
+[cache]
 {{- range $k, $v := .Values.tileCaching.config }}
 {{ $k }} = {{ kindIs "string" $v | ternary ($v | quote) $v}}
 {{- end }}
