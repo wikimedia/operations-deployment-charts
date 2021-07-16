@@ -4,3 +4,7 @@ main_app:
 # thanos is replicated between clusters so we want a separate bucket for
 # the flink HA storage
     ha_storage_dir: swift://rdf-streaming-updater-codfw.thanos-swift/flink_ha_storage
+
+kafka:
+  allowed_clusters:
+    - main-codfw

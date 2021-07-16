@@ -16,3 +16,11 @@ services_proxy:
       address: restbase.discovery.wmnet
       port: 7443
       encryption: true
+
+kafka_brokers:
+  main-eqiad:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  main-codfw:
+    - 2.2.3.4/32
+    - 2620::8:102:2:2:3:4/128
