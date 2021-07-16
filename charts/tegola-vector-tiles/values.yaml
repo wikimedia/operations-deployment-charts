@@ -15,13 +15,13 @@ main_app:
   limits:
     cpu: 1m
     memory: 400Mi
-#  liveness_probe:
-#    tcpSocket:
-#      port: 8080
-#  readiness_probe:
-#    httpGet:
-#      path: /capabilities
-#      port: 8080
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+  readiness_probe:
+    httpGet:
+      path: /capabilities
+      port: 8080
   # Values to connect to kartodock and the local postgres environment
   # Needs to be overriden with deployment specific details
   # NOTE: Currently only the following PostGIS hosts support the SQL queries defined in the chart
