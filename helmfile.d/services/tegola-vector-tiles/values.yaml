@@ -28,16 +28,15 @@ tileCaching:
   enabled: true
   config:
     type: "s3"  # S3 compatible API on swift
-    endpoint: "http://localhost:6022"  # envoy thanos-swift listener is on port 6022
-
-discovery:
-  listeners:
-    - thanos-swift
+    endpoint: "thanos-swift.discovery.wmnet"
 
 networkpolicy:
   egress:
     enabled: true
     # Allow connection to postgress masters/secondary instances running on maps* hosts
+    # We tried to use envoy's thanos-swift listener, but we run into issues with the
+    # s3 client, so we are keeping it simple for now, by allowing direct connections
+    # to thanos-swift
     dst_nets:
       - cidr: 10.64.0.79/32 # maps1001.eqiad.wmnet
         ports:
@@ -114,4 +113,12 @@ networkpolicy:
       - cidr: 10.192.48.166/32 # maps2010.codfw.wmnet
         ports:
         - port: 5432
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
           protocol: tcp
