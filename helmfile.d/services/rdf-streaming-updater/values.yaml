@@ -18,7 +18,7 @@ main_app:
     job_manager_mem : 1600m
     task_manager_mem: 2048m
     parallelism: 12
-    swift_auth_url: http://localhost:6022/auth/v1.0
+    swift_auth_url: https://thanos-swift.discovery.wmnet/auth/v1.0
     swift_username: wdqs:flink
 
 task_manager:
@@ -47,9 +47,18 @@ tls:
     key: "snakeoil"
 discovery:
   listeners:
-    - thanos-swift
     - mwapi-async
     - schema
 networkpolicy:
   egress:
     enabled: true
+  dst_nets:
+    - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+      ports:
+      - port: 443
+        protocol: tcp
+    - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+      ports:
+      - port: 443
+        protocol: tcp
+
