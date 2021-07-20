@@ -52,13 +52,12 @@ discovery:
 networkpolicy:
   egress:
     enabled: true
-  dst_nets:
-    - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
-      ports:
-      - port: 443
-        protocol: tcp
-    - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
-      ports:
-      - port: 443
-        protocol: tcp
-
+    dst_nets:
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
