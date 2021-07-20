@@ -1,7 +1,7 @@
 docker:
   registry: docker-registry.discovery.wmnet
 main_app:
-  image: "restricted/mediawiki-multiversion:2021-07-01-232810-publish"
+  image: "restricted/mediawiki-multiversion:2021-07-19-180314-publish"
   requests:
     cpu: 1800m
     memory: 1000Mi
@@ -63,7 +63,7 @@ mw:
     image_tag: "restricted/mediawiki-webserver:2021-04-19-173449-webserver"
   mcrouter:
     enabled: true
-    image_tag: mcrouter:latest
+    image_tag: mcrouter:0.41.0-4-20210718
     exporter_version: 0.0.1-2
     resources:
       requests:
