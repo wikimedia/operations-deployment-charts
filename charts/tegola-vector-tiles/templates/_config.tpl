@@ -7,6 +7,9 @@
 {{- end }}
 {{- end }}
 
+[observer]
+type = "prometheus"
+
 [[providers]]
 name = "osm"
 type = "mvt_postgis"

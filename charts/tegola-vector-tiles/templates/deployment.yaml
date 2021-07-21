@@ -20,7 +20,7 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        prometheus.io/port: "9102"
+        prometheus.io/port: "8080"
         prometheus.io/scrape: "true"
         {{- include "tls.annotations" . | indent 8}}
     spec:
