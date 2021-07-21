@@ -37,6 +37,7 @@ tileCaching:
   config:
     type: "s3"  # S3 compatible API on swift
     endpoint: "thanos-swift.discovery.wmnet"  # Swift HTTP endpoint hostname
+    region: "US"
     bucket: "tegola-swift-container"  # Swift container name
     basepath: "tegola-cache"  # Optional, use a directory and not top level of swift container
     force_path_style: true  # Workaround to default S3 SDK behaviour to use domain based buckets
