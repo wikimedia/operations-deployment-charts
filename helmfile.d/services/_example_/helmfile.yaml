@@ -3,7 +3,6 @@ helmDefaults:
   verify: false
   atomic: true
   timeout: 600
-  recreatePods: false
   force: false
   args:
     - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-{{ .Environment.Name }}.config"
@@ -12,6 +11,8 @@ templates:
   default: &default
     namespace: SERVICE_NAME
     chart: wmf-stable/SERVICE_NAME
+    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
     # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
