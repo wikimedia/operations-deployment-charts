@@ -13,6 +13,11 @@
     value: {{ .Values.php.servergroup }}
   - name: APACHE_RUN_PORT
     value: "{{ .Values.php.httpd.port }}"
+  # Set the pod name as the value of the Server: header.
+  - name: SERVER_SIGNATURE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
   ports:
   - name: httpd
     containerPort: {{ .Values.php.httpd.port }}
