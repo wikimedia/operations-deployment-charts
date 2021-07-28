@@ -53,6 +53,9 @@ spec:
           {{- toYaml .Values.task_manager.readiness_probe | nindent 12 }}
           {{- end }}
           env:
+            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+            {{- include "kubernetesApiEnv" . | nindent 12 }}
+            {{- end }}
             - name: SERVICE_IDENTIFIER
               value: {{ template "wmf.releasename" . }}
           {{- range $k, $v := .Values.config.public }}
