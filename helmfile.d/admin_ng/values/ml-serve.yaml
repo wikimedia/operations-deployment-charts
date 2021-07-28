@@ -10,3 +10,28 @@ GlobalNetworkPolicies: {}
 # No namespaces
 namespaces:
   knative-serving: {}
+
+net_istio:
+  controller:
+    image: knative-net-istio-controller
+    version: 0.18.1-3
+  webhook:
+    image: knative-net-istio-webhook
+    version: 0.18.1-3
+
+core:
+  queue_proxy:
+    image: knative-serving-queue
+    version: 0.18.1-4
+  activator:
+    image: knative-serving-activator
+    version: 0.18.1-3
+  autoscaler:
+    image: knative-serving-autoscaler
+    version: 0.18.1-3
+  controller:
+    image: knative-serving-controller
+    version: 0.18.1-3
+  webhook:
+    image: knative-serving-webhook
+    version: 0.18.1-3
