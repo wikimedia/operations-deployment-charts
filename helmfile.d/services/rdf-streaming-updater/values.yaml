@@ -20,6 +20,10 @@ main_app:
     parallelism: 12
     swift_auth_url: https://thanos-swift.discovery.wmnet/auth/v1.0
     swift_username: wdqs:flink
+    additional_flink_settings:
+      # FIXME: re-enable hostname verification of the k8s api server
+      # see https://phabricator.wikimedia.org/T287443#7240416
+      env.java.opts: -Dkubernetes.disable.hostname.verification=true
 
 task_manager:
   replicas: 3
