@@ -1,7 +1,7 @@
 templates:
   default: &default
     namespace: knative-serving
-    chart: wmf-stable/{{ .Release.Name }}
+    chart: "wmf-stable/{{`{{ .Release.Name }}`}}"
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
