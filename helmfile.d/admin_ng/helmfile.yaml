@@ -25,11 +25,13 @@ environments:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - install_knative: true
   ml-serve-codfw:
     values:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - install_knative: true
 
 ---
 bases:
@@ -39,6 +41,7 @@ bases:
   - coredns/helmfile.yaml
   - helmfile_namespaces.yaml
   - eventrouter/helmfile.yaml
+  - knative-serving/helmfile.yaml
 
 hooks:
   - events: ["prepare"]

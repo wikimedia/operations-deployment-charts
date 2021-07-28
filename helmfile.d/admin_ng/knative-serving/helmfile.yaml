@@ -1,12 +1,15 @@
+templates:
+  default: &default
+    namespace: knative-serving
+    chart: wmf-stable/{{ .Release.Name }}
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
+
 releases:
   - name: knative-serving-crds
-    namespace: knative-serving
-    chart: wmf-stable/knative-serving-crds
-    missingFileHandler: Warn
+    <<: *default
   - name: knative-serving
-    namespace: knative-serving                                                 # NOTE: The namespace is hardcoded in multiple charts.
-    chart: wmf-stable/knative-serving
-    missingFileHandler: Warn
+    <<: *default
     needs:
       - knative-serving/knative-serving-crds
     values:
