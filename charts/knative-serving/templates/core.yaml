@@ -1478,6 +1478,9 @@ spec:
               cpu: {{ .Values.core.activator.resources.limits.cpu }}
               memory: {{ .Values.core.activator.resources.requests.memory }}
           env:
+            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- end }}
             # Run Activator with GC collection when newly generated memory is 500%.
             - name: GOGC
               value: "500"
@@ -1621,6 +1624,10 @@ spec:
               cpu: {{ .Values.core.autoscaler.resources.limits.cpu }}
               memory: {{ .Values.core.autoscaler.resources.requests.memory }}
           env:
+            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- end }}
+              value: '443'
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -1740,6 +1747,10 @@ spec:
               cpu: {{ .Values.core.controller.resources.limits.cpu }}
               memory: {{ .Values.core.controller.resources.requests.memory }}
           env:
+            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- end }}
+              value: '443'
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -1843,6 +1854,10 @@ spec:
               cpu: {{ .Values.core.webhook.resources.limits.cpu }}
               memory: {{ .Values.core.webhook.resources.requests.memory }}
           env:
+            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- end }}
+              value: '443'
             - name: POD_NAME
               valueFrom:
                 fieldRef:

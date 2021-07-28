@@ -20,7 +20,7 @@ net_istio:
         - '*'
   controller:
     image: knative-net-istio-controller
-    version: 0.18.1-2
+    version: 0.18.1-3
     resources:
       requests:
         cpu: 30m
@@ -30,7 +30,7 @@ net_istio:
         memory: 400Mi
   webhook:
     image: knative-net-istio-webhook
-    version: 0.18.1-2
+    version: 0.18.1-3
     resources:
       requests:
         cpu: 20m
@@ -41,10 +41,10 @@ net_istio:
 core:
   queue_proxy:
     image: knative-serving-queue
-    version: 0.18.1-3
+    version: 0.18.1-4
   activator:
     image: knative-serving-activator
-    version: 0.18.1-2
+    version: 0.18.1-3
     autoscaling:
       minReplicas: 1
       maxReplicas: 20
@@ -59,7 +59,7 @@ core:
         memory: 600Mi
   autoscaler:
     image: knative-serving-autoscaler
-    version: 0.18.1-2
+    version: 0.18.1-3
     replicaCount: 1
     resources:
       requests:
@@ -70,7 +70,7 @@ core:
         memory: 400Mi
   controller:
     image: knative-serving-controller
-    version: 0.18.1-2
+    version: 0.18.1-3
     resources:
       requests:
         cpu: 100m
@@ -80,7 +80,7 @@ core:
         memory: 1000Mi
   webhook:
     image: knative-serving-webhook
-    version: 0.18.1-2
+    version: 0.18.1-3
     resources:
       requests:
         cpu: 100m
@@ -88,3 +88,7 @@ core:
       limits:
         cpu: 500m
         memory: 500Mi
+
+kubernetesApi:
+  host: kubernetes.default.svc.cluster.local
+  port: 443
