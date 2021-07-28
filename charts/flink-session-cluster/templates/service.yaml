@@ -20,7 +20,7 @@ spec:
     nodePort: {{ .Values.service.port.nodePort }}
     {{- end }}
   selector:
-    app: {{ template "wmf.chartname" . }}-jobmanager
+    app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
     component: jobmanager
 {{- end }}

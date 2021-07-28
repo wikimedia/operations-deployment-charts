@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}-jobmanager
+  name: {{ template "wmf.releasename" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}-jobmanager
+    # the tls template will select app=chartname,release=Release.name for the service endpoint
+    app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -11,14 +12,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}-jobmanager
+      app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
       component: jobmanager
   replicas: {{ .Values.main_app.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}-jobmanager
+        app: {{ template "wmf.chartname" . }}
         component: jobmanager
         release: {{ .Release.Name }}
       annotations:
@@ -35,7 +36,7 @@ spec:
       serviceAccountName: {{ template "wmf.releasename" . }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}-jobmanager
+        - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.docker.image }}:{{ .Values.docker.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           command: ["/opt/flink/bin/jobmanager.sh", "start-foreground", "$(POD_IP)"]

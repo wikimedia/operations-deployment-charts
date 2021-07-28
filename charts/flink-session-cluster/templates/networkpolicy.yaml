@@ -21,7 +21,7 @@ spec:
     - from:
       - podSelector:
           matchLabels:
-            app: {{ template "wmf.chartname" . }}-jobmanager
+            app: {{ template "wmf.chartname" . }}
             release: {{ .Release.Name }}
       ports:
         - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
@@ -46,7 +46,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-jobmanager
+  name: {{ template "wmf.releasename" . }}
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -55,7 +55,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}-jobmanager
+      app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
