@@ -16,7 +16,7 @@ require '.rake_modules/utils'
 PRIVATE_STUB = '.fixtures/private_stub.yaml'.freeze
 HELM_REPO = 'stable'.freeze
 HELMFILE_GLOB = 'helmfile.d/services/**/helmfile.yaml'.freeze
-KUBERNETES_VERSIONS = '1.19,1.16,1.12'.freeze
+KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
 
 # execute helm template
