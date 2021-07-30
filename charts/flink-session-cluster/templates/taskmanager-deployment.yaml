@@ -36,7 +36,7 @@ spec:
       containers:
         # The main application container
         - name: {{ template "wmf.releasename" . }}-taskmanager
-          image: "{{ .Values.docker.registry }}/{{ .Values.docker.image }}:{{ .Values.docker.version }}"
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           command: ["/opt/flink/bin/taskmanager.sh", "start-foreground"]
           ports:

@@ -2,10 +2,13 @@
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
+  # TODO: cleanup
   image: wikimedia/wikidata-query-flink-rdf-streaming-updater
   version: 2021-07-26-125114-production
 
 main_app:
+  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
+  version: 2021-07-26-125114-production
   replicas: 1
   requests:
     cpu: 1000m

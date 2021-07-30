@@ -5,11 +5,11 @@ helm_scaffold_version: 0.1 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
-  # Create and a flink image instead of using this one
-  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
-  version: latest
 
 main_app:
+  # Create a dedicated flink image instead of using this one
+  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
+  version: latest
   replicas: 1
   # REST endpoint, must be the same as .Values.service.port.targetPort (used to feed the rest.port in the flink conf)
   # This is needed by the tls template
