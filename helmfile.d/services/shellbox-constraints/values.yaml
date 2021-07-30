@@ -1,0 +1,14 @@
+main_app:
+  image: wikimedia/mediawiki-libs-shellbox:2021-07-30-202328-php-rpc
+
+service:
+  deployment: production
+  port:
+    nodePort: 4010
+
+tls:
+  enabled: true
+  public_port: 4010
+
+resources:
+  replicas: 8
