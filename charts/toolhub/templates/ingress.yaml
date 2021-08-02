@@ -1,0 +1,22 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+        - backend:
+            service:
+              name: {{ template "wmf.releasename" . }}
+              port:
+                number: {{ .Values.main_app.port }}
+          pathType: ImplementationSpecific
+{{- end }}

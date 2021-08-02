@@ -1,0 +1,44 @@
+{{- if .Values.jobs.init_db -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db-{{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      # Automatic pod cleanup, requires Kubernetes v1.21 [beta]
+      # ttlSecondsAfterFinished: 86400
+      containers:
+        - name: init-db
+          command:
+            - /var/config/setup.sh
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          env:
+            {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- range $k, $v := .Values.config.private }}
+            - name: {{ $k | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  key: {{ $k }}
+            {{- end }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /var/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "wmf.releasename" . }}-job-config
+            defaultMode: 0555
+{{- end }}

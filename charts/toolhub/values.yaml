@@ -1,0 +1,171 @@
+# Default values for toolhub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.3
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  type: "default"
+  image: wikimedia/wikimedia-toolhub
+  version: latest
+  port: 8000 # port exposed as a Service, also used by service-checker.
+  command: []
+  args: []
+  requests:
+    cpu: 100m # FIXME: how much do we need?
+    memory: 200Mi # FIXME: how much do we need?
+  limits:
+    cpu: 1 # FIXME
+    memory: 400Mi # FIXME
+  liveness_probe:
+    tcpSocket:
+      port: 8000
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8000
+
+monitoring:
+  enabled: true
+  uses_statsd: false
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http
+    targetPort: 8000 # the number or name of the exposed port on the container
+    port: 8000 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public:
+    DJANGO_SETTINGS_MODULE: toolhub.settings
+    # == Logging ==
+    # List of handlers to enable
+    LOGGING_HANDLERS: console
+    # Base log level to emit
+    LOGGING_LEVEL: WARNING
+    # 'file' handler output file
+    LOGGING_FILE_FILENAME: /dev/null
+    # == Tracing ==
+    # HTTP header to extract tracing id from
+    LOG_REQUEST_ID_HEADER: HTTP_X_REQUEST_ID
+    # Header for returning trace id to client
+    REQUEST_ID_RESPONSE_HEADER: X-Request-ID
+    # Header for propigating trace id to services
+    OUTGOING_REQUEST_ID_HEADER: X-Request-ID
+    # == Development mode ==
+    # Enable development mode debug features (error pages, etc)
+    DJANGO_DEBUG: False
+    # Local dev only hack. Needs DEBUG=True.
+    FIREFOX_DEVTOOL_HACK: False
+    # == Security ==
+    # Comma-separated list of Host/X-Forwarded-Host header allowed values
+    DJANGO_ALLOWED_HOSTS: "*"
+    # Ensure TLS enabled and restrict cookies to https
+    REQUIRE_HTTPS: False
+    # Https redirect hostname
+    SSL_CANONICAL_HOST: toolhub.wikimedia.org
+    # == Database ==
+    DB_ENGINE: django.db.backends.mysql
+    DB_NAME: toolhub
+    DB_USER: toolhub
+    DB_HOST: localhost
+    DB_PORT: 3306
+    # == Cache ==
+    CACHE_BACKEND: django_prometheus.cache.backends.locmem.LocMemCache
+    CACHE_LOCATION: ""
+    # == Elasticsearch ==
+    ES_HOSTS: localhost:9200
+    ES_INDEX_REPLICAS: 0
+    ES_INDEX_SHARDS: 1
+    ES_DSL_AUTOSYNC: True
+    ES_DSL_PARALLEL: True
+    # == OAuth2 client ==
+    WIKIMEDIA_OAUTH2_URL: https://meta.wikimedia.org/w/rest.php
+    # The following OAuth2 key is deliberately public and tied to
+    # `http://toolhub.test/` which can only be used in local testing.
+    # https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1
+    WIKIMEDIA_OAUTH2_KEY: 11dec83f263af1b9f480488512556cb1
+    # == Static assets ==
+    STATIC_ROOT: /srv/app/staticfiles
+    # == HTTP client proxy ==
+    # Outbound http request proxy
+    HTTP_PROXY: ""
+    # Outbound https request proxy
+    HTTPS_PROXY: ""
+    # CA override for intercepting https proxy
+    CURL_CA_BUNDLE: ""
+
+  private:
+    # Django core setting. Used for session signing and as default crypto key
+    DJANGO_SECRET_KEY: snakeoil
+    # MariaDB database password
+    DB_PASSWORD: snakeoil
+    # OAuth2 grant private key
+    # The following OAuth2 private key is deliberately public and tied to
+    # `http://toolhub.test/` which can only be used in local testing.
+    # https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1
+    WIKIMEDIA_OAUTH2_SECRET: 67e66d1131ed22dc1c79304cae27d04880b16293
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 4011 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # Add here, via our "secret" system, the cert/key pairs
+  #   cert: "your cert here"
+  #   key: "your key here"
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: false
+
+jobs:
+  # Optional one-time job to initialize and populate the database with demo
+  # data.
+  init_db: false
+
+ingress:
+  # Optional ingress for use with minikube.
+  enabled: false
+  host: toolhub.test
+
+elasticsearch:
+  # Optional Elasticsearch single node cluster for use with minikube.
+  enabled: false
+  # https://github.com/elastic/helm-charts/tree/v6.8.18/elasticsearch
+  roles:
+    master: "true"
+    ingest: "false"
+    data: "true"
+  replicas: 1
+  minimumMasterNodes: 1
+  esJavaOpts: "-Xms512m -Xmx512m"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
+# Cruft needed for generated templates/deployment.yaml
+php:
+  fcgi_mode: unused
