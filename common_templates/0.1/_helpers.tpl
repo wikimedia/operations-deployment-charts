@@ -78,8 +78,8 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{- range $c := .Values.kafka.allowed_clusters }}
 {{- $cidrs := index $clusters $c -}}
 # Brokers in the kafka cluster {{ $c }}
-- to:
 {{- range $cidrs }}
+- to:
   - ipBlock:
       cidr: {{ . }}
   ports:
