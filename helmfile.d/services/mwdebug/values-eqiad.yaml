@@ -1,6 +1,14 @@
-affinity:
-  nodeSelector:
-    kubernetes.io/hostname: kubernetes1017.eqiad.wmnet
+main_app:
+  requests:
+    cpu: 3000m
+  limits:
+    cpu: 3500m
+resources:
+  replicas: 2
+service:
+  expose_http: true
+php:
+  workers: 8
 
 mw:
   datacenter: eqiad
