@@ -10,12 +10,15 @@
 */}}
 {{ if .Values.tls.enabled }}
 {{ include "tls.service" . }}
-{{- end }}
----
+{{- else }}
+{{/*
+# Only enable the main app http port if we are not using TLS.
+# https://phabricator.wikimedia.org/T255871
+*/}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "wmf.releasename" . }}-http-service
   labels:
     chart: {{ template "wmf.chartname" . }}
     app: {{ .Values.main_app.name }}
@@ -35,8 +38,26 @@ spec:
     {{- if .Values.service.port -}}
     nodePort: {{ .Values.service.port }}
     {{- end }}
+{{- end }}
+
 {{- if .Values.debug_mode_enabled | default false }}
-  # debug_mode_enabled is true. Allow connections to Node Inspector.
+---
+# debug_mode_enabled is true. Allow connections to Node Inspector.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wmf.releasename" . }}-debug-service
+  labels:
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    chart: {{ template "wmf.chartname" . }}
+    app: {{ .Values.main_app.name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   - name: node-inspector-master
     protocol: TCP
     port: 9229
