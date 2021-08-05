@@ -75,3 +75,9 @@ Together with all annotations like:
 ```
 cert-manager.io/inject-ca-from: kfserving-system/serving-cert
 ```
+
+The path for the go binary to run for the kfserving controller needs to be changed
+from /manager to /usr/bin/manager.
+
+With 0.6 a web-app was introduced, but this chart currently doesn't support it.
+Clean up all resources with "kfserving-models-web-app" accordingly.
