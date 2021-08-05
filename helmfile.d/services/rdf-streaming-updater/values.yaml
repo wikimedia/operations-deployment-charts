@@ -1,11 +1,10 @@
-
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 
 main_app:
   image: wikimedia/wikidata-query-flink-rdf-streaming-updater
-  version: 2021-07-26-125114-production
+  version: 2021-08-05-153619-production
   replicas: 1
   requests:
     cpu: 1000m
@@ -15,7 +14,7 @@ main_app:
     memory: 1600M
   config:
     task_slots: 4
-    job_manager_mem : 1600m
+    job_manager_mem: 1600m
     task_manager_mem: 2048m
     parallelism: 12
     swift_auth_url: https://thanos-swift.discovery.wmnet/auth/v1.0
@@ -47,41 +46,41 @@ tls:
     key: "snakeoil"
 discovery:
   listeners:
-    - mwapi-async
-    - schema
+  - mwapi-async
+  - schema
 networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
-        ports:
-        - port: 443
-          protocol: tcp
-      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
-        ports:
-        - port: 443
-          protocol: tcp
-      - cidr: 10.64.0.117/32 # kubemaster1001.eqiad.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
-      - cidr: 10.64.32.116/32 # kubemaster1002.eqiad.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
-      - cidr: 10.192.0.56/32 # kubemaster2001.codfw.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
-      - cidr: 10.192.16.48/32 # kubemaster2002.codfw.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
-      - cidr: 10.64.16.203/32 # kubestagemaster1001.eqiad.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
-      - cidr: 10.192.48.10/32 # kubestagemaster2001.codfw.wmnet
-        ports:
-        - port: 6443
-          protocol: tcp
+    - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+      ports:
+      - port: 443
+        protocol: tcp
+    - cidr: 10.2.1.54/32   # thanos-swift.svc.codfw.wmnet
+      ports:
+      - port: 443
+        protocol: tcp
+    - cidr: 10.64.0.117/32   # kubemaster1001.eqiad.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.64.32.116/32   # kubemaster1002.eqiad.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.192.0.56/32   # kubemaster2001.codfw.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.192.16.48/32   # kubemaster2002.codfw.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.64.16.203/32   # kubestagemaster1001.eqiad.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.192.48.10/32   # kubestagemaster2001.codfw.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
