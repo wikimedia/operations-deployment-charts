@@ -9,3 +9,11 @@ namespaces:
         limits:
           cpu: "600"
           memory: "250Gi"
+  mwdebug:
+    tiller_resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 200m
+        memory: 1000Mi
