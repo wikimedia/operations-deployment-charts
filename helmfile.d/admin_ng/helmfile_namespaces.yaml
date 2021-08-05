@@ -160,6 +160,16 @@ releases:
                         value: {{ $.Environment.Values.kubernetesApi.host | quote }}
                       - name: KUBERNETES_SERVICE_PORT
                         value: {{ $.Environment.Values.kubernetesApi.port | quote }}
+                    {{- $resources := $values | getOrNil "tiller_resources" | default false }}
+                    {{- if $resources }}
+                    resources:
+                      requests:
+                        cpu: {{ $resources.requests.cpu }}
+                        memory: {{ $resources.requests.memory }}
+                      limits:
+                        cpu: {{ $resources.limits.cpu }}
+                        memory: {{ $resources.limits.memory }}
+                    {{- end }}
                     livenessProbe:
                       failureThreshold: 3
                       httpGet:
