@@ -125,6 +125,8 @@ resources:
     value: "{{ .Values.php.opcache.size }}"
   - name: PHP__opcache__max_accelerated_files
     value: "{{ .Values.php.opcache.nofiles }}"
+  - name: FPM__request_slowlog_timeout
+    value: "{{ .Values.php.slowlog_timeout }}"
   - name: FPM__request_terminate_timeout
     value: "{{ .Values.php.timeout }}"
   - name: PHP__apc__shm_size
