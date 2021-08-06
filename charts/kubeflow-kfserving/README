@@ -8,7 +8,7 @@ chart, this one only takes care of the base Kfserving setup.
 
 There is one TLS certificate that is mandatory for this chart, namely the one
 used by the Webhook (upgrade/compatibility between api versions, admission, etc..).
-The TLS certificate needs to placed into kfserving-webhook-server-secret (see secret.yaml),
+The TLS certificate needs to placed into kfserving-webhook-server-cert (see secret.yaml),
 using the following (default) CN/SANS:
 - CN: kfserving-webhook-server-service.kfserving-system.svc.cluster.local
 - SANs: kfserving-webhook-server-service.kfserving-system.svc,
