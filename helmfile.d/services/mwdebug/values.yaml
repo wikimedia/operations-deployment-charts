@@ -183,3 +183,8 @@ networkpolicy:
         ports:
           - protocol: UDP
             port: 8420
+
+# Only deploy to nodes without spinning disks T288345
+affinity:
+  nodeSelector:
+    node.kubernetes.io/disk-type: ssd
