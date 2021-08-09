@@ -57,6 +57,11 @@
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.php.slowlog_timeout }}
+  securityContext:
+    capabilities:
+      add: ["SYS_PTRACE"] # This is needed to produce a slow log
+  {{- end }}
   env:
   - name: SERVERGROUP
     value: {{ .Values.php.servergroup }}
@@ -78,6 +83,8 @@
     value: {{ .Values.php.apc.size }}
   - name: FPM__pm__max_children
     value: "{{ .Values.php.workers }}"
+  - name: FPM__request_slowlog_timeout
+    value: "{{ .Values.php.slowlog_timeout }}"
   - name: FCGI_URL
     value: "0.0.0.0:9000"
   - name: FCGI_ALLOW
