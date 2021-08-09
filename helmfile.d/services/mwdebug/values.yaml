@@ -1,20 +1,18 @@
 docker:
   registry: docker-registry.discovery.wmnet
 main_app:
-  image: "restricted/mediawiki-multiversion:2021-07-26-084018-publish"
   requests:
-    cpu: 1800m
-    memory: 1000Mi
+    cpu: 3000m
   limits:
-    cpu: 2000m
-    memory: 2000Mi
+    cpu: 3500m
+resources:
+  replicas: 2
 
 service:
   deployment: production
+  expose_http: true
   port:
     nodePort: 8444
-resources:
-  replicas: 1
 
 tls:
   enabled: true

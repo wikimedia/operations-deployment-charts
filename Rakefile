@@ -63,9 +63,14 @@ def exec_helmfile_command(command, source, &block)
       source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
       File.write filename, source
     end
-    ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e staging -f #{filename} build", nil, true
+
+    data = nil
+    ['staging', 'eqiad'].each do |e|
+      ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, true
+      break if ok
+    end
     # If we can't run helmfile build, we need to bail out early.
-    return { 'staging' => false } unless ok
+    return { 'default' => false } if data.nil?
 
     helmfile_raw_data = YAML.safe_load(data)
     envs = helmfile_raw_data['environments'].keys
