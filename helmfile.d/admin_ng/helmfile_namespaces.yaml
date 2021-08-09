@@ -33,15 +33,16 @@ releases:
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
+            {{- $pspClusterRole := $values | getOrNil "pspClusterRole" | default "allow-restricted-psp"}}
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
-              name: allow-restricted-psp
+              name: allow-psp
               namespace: {{ $namespace }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
-              name: allow-restricted-psp
+              name: {{ $pspClusterRole }}
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: Group

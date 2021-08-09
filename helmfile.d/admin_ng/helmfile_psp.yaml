@@ -77,6 +77,57 @@ releases:
                 - min: 1
                   max: 65535
             readOnlyRootFilesystem: false
+        # The mediawiki PSP is the restricted PSP with some additional grants needed for mediawiki
+        - apiVersion: policy/v1beta1
+          kind: PodSecurityPolicy
+          metadata:
+            name: mediawiki
+            annotations:
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
+              apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+              seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
+              apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+          spec:
+            privileged: false
+            # Required to prevent escalations to root.
+            allowPrivilegeEscalation: false
+            allowedCapabilities:
+              - SYS_PTRACE
+            # This is redundant with non-root + disallow privilege escalation,
+            # but we can provide it for defense in depth.
+            requiredDropCapabilities:
+              - ALL
+            # Allow core volume types.
+            volumes:
+              - 'configMap'
+              - 'emptyDir'
+              - 'projected'
+              - 'secret'
+              - 'downwardAPI'
+              # Assume that persistentVolumes set up by the cluster admin are safe to use.
+              - 'persistentVolumeClaim'
+            hostNetwork: false
+            hostIPC: false
+            hostPID: false
+            runAsUser:
+              # Require the container to run without root privileges.
+              rule: 'MustRunAsNonRoot'
+            seLinux:
+              # This policy assumes the nodes are using AppArmor rather than SELinux.
+              rule: 'RunAsAny'
+            supplementalGroups:
+              rule: 'MustRunAs'
+              ranges:
+                # Forbid adding the root group.
+                - min: 1
+                  max: 65535
+            fsGroup:
+              rule: 'MustRunAs'
+              ranges:
+                # Forbid adding the root group.
+                - min: 1
+                  max: 65535
+            readOnlyRootFilesystem: false
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
@@ -97,6 +148,16 @@ releases:
               verbs:     ['use']
               resourceNames:
                 - restricted
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: allow-mediawiki-psp
+          rules:
+            - apiGroups: ['policy']
+              resources: ['podsecuritypolicies']
+              verbs:     ['use']
+              resourceNames:
+                - mediawiki
         # RoleBinding to allow privileged Pods in kube-system
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: RoleBinding
