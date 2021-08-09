@@ -1,0 +1,52 @@
+{{- if .Values.crawler.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "wmf.releasename" . }}-crawler
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: "{{ .Values.crawler.schedule }}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        chart: {{ template "wmf.chartid" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: {{ template "wmf.chartname" . }}
+            release: {{ .Release.Name }}
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ template "wmf.releasename" . }}-crawler
+              image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+              imagePullPolicy: {{ .Values.docker.pull_policy }}
+              command:
+                - /usr/local/bin/poetry
+                - run
+                - python3
+                - manage.py
+                - crawl
+              env:
+                {{- range $k, $v := .Values.config.public }}
+                - name: {{ $k | upper }}
+                  value: {{ $v | quote }}
+                {{- end }}
+                {{- range $k, $v := .Values.config.private }}
+                - name: {{ $k | upper }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "wmf.releasename" $ }}-secret-config
+                      key: {{ $k }}
+                {{- end }}
+{{- end }}

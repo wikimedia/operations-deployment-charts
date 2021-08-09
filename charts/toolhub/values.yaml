@@ -137,6 +137,12 @@ networkpolicy:
   egress:
     enabled: false
 
+crawler:
+  # Enable CronJob for toolinfo url crawler
+  enabled: true
+  # Schedule for crawler job
+  schedule: "@hourly"
+
 jobs:
   # Optional one-time job to initialize and populate the database with demo
   # data.
