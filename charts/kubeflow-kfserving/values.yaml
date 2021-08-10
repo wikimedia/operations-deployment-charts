@@ -22,11 +22,14 @@ controller:
 
 storage_initializer:
   image: kubeflow-kfserving-storage-initializer
-  version: 0.6.0-1
-  memoryRequest: 100Mi
-  memoryLimit: 1Gi
-  cpuRequest: 100m
-  cpuLimit: 1
+  version: 0.6.0-2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 1Gi
+      cpu: 1
 
 
 webhook:

@@ -16435,7 +16435,7 @@ apiVersion: v1
 data:
   agent: |-
     {
-        "image" : {{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}
+        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}"
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -16443,7 +16443,7 @@ data:
     }
   batcher: |-
     {
-        "image" : {{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }},
+        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}",
         "memoryRequest": "1Gi",
         "memoryLimit": "1Gi",
         "cpuRequest": "1",
@@ -16483,7 +16483,7 @@ data:
     }
   logger: |-
     {
-        "image" : {{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }},
+        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -16606,10 +16606,10 @@ data:
   storageInitializer: |-
     {
         "image" : "{{ $.Values.docker.registry }}/{{ $.Values.storage_initializer.image }}:{{ $.Values.storage_initializer.version }}",
-        "memoryRequest": {{ $.Values.storage_initializer.memoryRequest | quote }},
-        "memoryLimit": {{ $.Values.storage_initializer.memoryLimit | quote }},
-        "cpuRequest": {{ $.Values.storage_initializer.cpuRequest | quote }},
-        "cpuLimit": {{ $.Values.storage_initializer.cpuLimit | quote }}
+        "memoryRequest": {{ $.Values.storage_initializer.resources.requests.memory | quote }},
+        "memoryLimit": {{ $.Values.storage_initializer.resources.limits.memory | quote }},
+        "cpuRequest": {{ $.Values.storage_initializer.resources.requests.cpu | quote }},
+        "cpuLimit": {{ $.Values.storage_initializer.resources.limits.cpu | quote }}
     }
   transformers: |-
     {
