@@ -20,6 +20,15 @@ controller:
       cpu: 100m
       memory: 300Mi
 
+storage_initializer:
+  image: kubeflow-kfserving-storage-initializer
+  version: 0.6.0-1
+  memoryRequest: 100Mi
+  memoryLimit: 1Gi
+  cpuRequest: 100m
+  cpuLimit: 1
+
+
 webhook:
   tls:
     certs:

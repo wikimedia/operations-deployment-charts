@@ -16605,11 +16605,11 @@ data:
     }
   storageInitializer: |-
     {
-        "image" : "gcr.io/kfserving/storage-initializer:v0.6.0",
-        "memoryRequest": "100Mi",
-        "memoryLimit": "1Gi",
-        "cpuRequest": "100m",
-        "cpuLimit": "1"
+        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.storage_initializer.image }}:{{ $.Values.storage_initializer.version }}",
+        "memoryRequest": {{ $.Values.storage_initializer.memoryRequest | quote }},
+        "memoryLimit": {{ $.Values.storage_initializer.memoryLimit | quote }},
+        "cpuRequest": {{ $.Values.storage_initializer.cpuRequest | quote }},
+        "cpuLimit": {{ $.Values.storage_initializer.cpuLimit | quote }}
     }
   transformers: |-
     {
