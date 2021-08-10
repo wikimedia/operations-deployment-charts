@@ -81,35 +81,6 @@ mw:
         cpu: 200m
         memory: 100Mi
 
-discovery:
-  listeners:
-    - parsoid-php
-    - mathoid
-    - eventgate-analytics
-    - eventgate-analytics-external
-    - eventgate-main
-    - sessionstore
-    - echostore
-    - termbox
-    - push-notifications
-    - shellbox
-    - shellbox-constraints
-    - wdqs-internal
-    - ores
-    - restbase
-    - cxserver
-    - swift-eqiad
-    - swift-codfw
-    - search-chi-eqiad
-    - search-chi-codfw
-    - search-omega-eqiad
-    - search-omega-codfw
-    - search-psi-eqiad
-    - search-psi-codfw
-    - cloudelastic-chi-eqiad
-    - cloudelastic-omega-eqiad
-    - cloudelastic-psi-eqiad
-
 # network egress for various services
 networkpolicy:
   egress:
