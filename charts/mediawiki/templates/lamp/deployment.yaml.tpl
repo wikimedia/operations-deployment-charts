@@ -85,8 +85,6 @@
     value: "{{ .Values.php.workers }}"
   - name: FPM__request_slowlog_timeout
     value: "{{ .Values.php.slowlog_timeout }}"
-  - name: FCGI_URL
-    value: "0.0.0.0:9000"
   - name: FCGI_ALLOW
     value: "127.0.0.1"
   {{- range $k, $v := .Values.config.public }}
