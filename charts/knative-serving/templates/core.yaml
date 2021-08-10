@@ -1747,6 +1747,10 @@ spec:
               cpu: {{ .Values.core.controller.resources.limits.cpu }}
               memory: {{ .Values.core.controller.resources.requests.memory }}
           env:
+            # Needed to be able to trust the docker-registry's CA certificate
+            # provided in the Docker image by the {wmf,ca}-certificates debs.
+            - name: SSL_CERT_DIR
+              value: /usr/share/ca-certificates
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
             {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}

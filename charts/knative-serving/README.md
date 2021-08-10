@@ -50,3 +50,11 @@ Please also add the following snippet to the `env` specs of all containers:
 {{- end }}
 ```
 This is needed to avoid TLS certificate validation errors due to the absence of IP SANs.
+
+We also need to add the following bit to the controller deployment's specs:
+```
++            # Needed to be able to trust the docker-registry's CA certificate
++            # provided in the Docker image by the {wmf,ca}-certificates debs.
++            - name: SSL_CERT_DIR
++              value: /usr/share/ca-certificates
+```
