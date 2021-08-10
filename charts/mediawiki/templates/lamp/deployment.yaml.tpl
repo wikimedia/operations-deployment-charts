@@ -69,7 +69,7 @@
     value: {{ .Values.php.fcgi_mode }}
   - name: FCGI_URL
     {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
-    value: "127.0.0.1:9000"
+    value: "0.0.0.0:9000"
     {{- else }}
     value: "unix:///run/shared/fpm-www.sock"
     {{- end }}
