@@ -42,6 +42,8 @@ spec:
           ports:
             - containerPort: {{ .Values.main_app.config.taskmanager_rpc_port }}
               name: rpc
+            - containerPort: {{ .Values.main_app.config.taskmanager_data_port }}
+              name: data
             - containerPort: {{ .Values.main_app.config.queryable_state_proxy_port }}
               name: query-state
           {{- if .Values.task_manager.liveness_probe }}

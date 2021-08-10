@@ -26,6 +26,8 @@ spec:
       ports:
         - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
           protocol: TCP
+        - port: {{ .Values.main_app.config.taskmanager_data_port }}
+          protocol: TCP
         - port: {{ .Values.main_app.config.queryable_state_proxy_port }}
           protocol: TCP
     - ports:

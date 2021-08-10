@@ -12,6 +12,7 @@ taskmanager.numberOfTaskSlots: {{ .Values.main_app.config.task_slots }}
 blob.server.port: {{ .Values.main_app.config.blob_server_port }}
 jobmanager.rpc.port: {{ .Values.main_app.config.jobmanager_rpc_port }}
 taskmanager.rpc.port: {{ .Values.main_app.config.taskmanager_rpc_port }}
+taskmanager.data.port: {{ .Values.main_app.config.taskmanager_data_port }}
 queryable-state.proxy.ports: {{ .Values.main_app.config.queryable_state_proxy_port }}
 jobmanager.memory.process.size: {{ .Values.main_app.config.job_manager_mem }}
 taskmanager.memory.process.size: {{ .Values.main_app.config.task_manager_mem }}
