@@ -9,6 +9,9 @@ cluster_group: main
 #   tillerClusterRole: "foo" ClusterRole to bind the tiller ServiceAccount to (defaults to "tiller")
 #   tiller_resources: {} Provide a resource block for the tiller pod in this namespace to use (defaults to {}).
 #   pspClusterRole: "foo" The name of the ClusterRole granting access to the PSP this namespace will use (defaults to "allow-restricted-psp").
+#
+#   Note: if the ClusterRoleBinding already exists in the namespace, it will need to be deleted first and then recreated with the new ClusterRole
+
 namespaces:
   apertium: {}
   api-gateway: {}
