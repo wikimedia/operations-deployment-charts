@@ -89,3 +89,16 @@ Please also add the following snippet to the `env` specs of all containers:
 {{- end }}
 ```
 This is needed to avoid TLS certificate validation errors due to the absence of IP SANs.
+
+We also modify the `inferenceservice-config` configmap with:
+```
+ingress: |-
+  {
+      "ingressGateway" : "knative-serving/knative-ingress-gateway",
+      "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local",
+      "localGateway" : "knative-serving/knative-local-gateway",
+      "localGatewayService" : "{{ $.Values.ingress.local_gateway_service }}"
+  }
+```
+We need to set `cluster-local-gateway.istio-system.svc.cluster.local` with Knative
+<= 0.18 (from 0.19+ there is no need due to the knative-local-gateway).

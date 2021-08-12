@@ -22,7 +22,7 @@ controller:
 
 storage_initializer:
   image: kubeflow-kfserving-storage-initializer
-  version: 0.6.0-2
+  version: 0.6.0-4
   resources:
     requests:
       cpu: 100m
@@ -31,6 +31,10 @@ storage_initializer:
       memory: 1Gi
       cpu: 1
 
+ingress:
+  # Upstream sets knative-local-gateway.istio-system.svc.cluster.local,
+  # but the value doesn't work with knative <= 0.18.
+  local_gateway_service: cluster-local-gateway.istio-system.svc.cluster.local
 
 webhook:
   tls:
