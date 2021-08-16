@@ -8,3 +8,10 @@ tileCaching:
   enabled: true
   config:
     bucket: "tegola-swift-staging-container"
+config:
+  public:
+    TEGOLA_BROKER_URL: "kafka://10.64.16.146:9092" # kafka-test1006.eqiad.wmnet
+    TEGOLA_QUEUE_NAME: "tegola-staging"
+kafka:
+  allowed_clusters:
+    - test-eqiad

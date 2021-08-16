@@ -10,3 +10,15 @@ services_proxy:
       address: thanos-swift.discovery.wmnet
       port: 443
       encryption: true
+kafka_brokers:
+  test-eqiad:
+    - 10.64.16.146/32    # kafka-test1006.eqiad.wmnet
+    - 2620::861:102:10:64:16:146/128
+    - 10.64.16.158/32    # kafka-test1007.eqiad.wmnet
+    - 2620::861:102:10:64:16:158/128
+    - 10.64.16.163/32    # kafka-test1008.eqiad.wmnet
+    - 2620::861:102:10:64:16:163/128
+    - 10.64.16.164/32    # kafka-test1009.eqiad.wmnet
+    - 2620::861:102:10:64:16:164/128
+    - 10.64.16.165/32    # kafka-test1010.eqiad.wmnet
+    - 2620::861:102:10:64:16:165/128
