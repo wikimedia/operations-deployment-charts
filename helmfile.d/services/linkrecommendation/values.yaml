@@ -28,7 +28,7 @@ service:
 config:
   public:
     DB_HOST: "m2-master.eqiad.wmnet"
-    ANALYTICS_BASE_URL: http://thorium.eqiad.wmnet/published/datasets/one-off/research-mwaddlink/
+    ANALYTICS_BASE_URL: http://analytics-web.discovery.wmnet/published/datasets/one-off/research-mwaddlink/
 tls:
   enabled: true
   public_port: 4005
@@ -92,6 +92,18 @@ networkpolicy:
         - port: 8443
           protocol: tcp
       - cidr: 2620:0:861:108:10:64:53:26/128 # thorium.eqiad.wmnet
+        ports:
+        - port: 80
+          protocol: tcp
+        - port: 8443
+          protocol: tcp
+      - cidr: 10.64.21.14/32 # an-web1001.eqiad.wmnet
+        ports:
+        - port: 80
+          protocol: tcp
+        - port: 8443
+          protocol: tcp
+      - cidr: 2620:0:861:105:10:64:21:14/128 # an-web1001.eqiad.wmnet
         ports:
         - port: 80
           protocol: tcp
