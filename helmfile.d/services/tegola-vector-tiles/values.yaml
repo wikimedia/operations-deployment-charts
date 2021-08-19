@@ -39,22 +39,6 @@ networkpolicy:
     # s3 client, so we are keeping it simple for now, by allowing direct connections
     # to thanos-swift
     dst_nets:
-      - cidr: 10.64.0.79/32 # maps1001.eqiad.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 10.64.16.42/32 # maps1002.eqiad.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 10.64.32.117/32 # maps1003.eqiad.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 10.64.48.154/32 # maps1004.eqiad.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
       - cidr: 10.64.0.12/32 # maps1005.eqiad.wmnet
         ports:
         - port: 5432
@@ -76,18 +60,6 @@ networkpolicy:
         - port: 5432
           protocol: tcp
       - cidr: 10.64.48.6/32 # maps1010.eqiad.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 110.192.0.144/32 # maps2001.codfw.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 10.192.32.146/32 # maps2003.codfw.wmnet
-        ports:
-        - port: 5432
-          protocol: tcp
-      - cidr: 10.192.48.57/32 # maps2004.codfw.wmnet
         ports:
         - port: 5432
           protocol: tcp
