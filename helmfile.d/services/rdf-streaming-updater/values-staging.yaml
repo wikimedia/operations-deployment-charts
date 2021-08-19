@@ -5,6 +5,9 @@ main_app:
 # the flink HA storage
     ha_storage_dir: swift://rdf-streaming-updater-staging.thanos-swift/flink_ha_storage
 
+task_manager:
+  replicas: 1
+
 kafka:
   # unclear where staging is actually running so allow both kafka-main clusters
   # TODO: ideally we'd like to use a "test" cluster (test-eqiad?) but we need actual data and it's unclear if the test
