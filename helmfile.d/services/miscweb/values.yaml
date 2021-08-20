@@ -3,3 +3,9 @@ resources:
 docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
+main_app:
+  image: wikimedia/operations-container-miscweb
+  version: production
+  limits:
+    cpu: 1
+    memory: 1Gi
