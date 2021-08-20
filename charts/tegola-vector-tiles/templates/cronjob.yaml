@@ -23,6 +23,10 @@ spec:
       parallelism: {{ .Values.tilePregeneration.parallelism }}
       backoffLimit: {{ .Values.tilePregeneration.backoffLimit }}
       template:
+        metadata:
+          labels:
+            app: {{ template "wmf.chartname" . }}
+            release: {{ .Release.Name }}
         spec:
           restartPolicy: "{{ .Values.tilePregeneration.restartPolicy }}"
           containers:
