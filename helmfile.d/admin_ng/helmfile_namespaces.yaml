@@ -204,4 +204,21 @@ releases:
                   serviceAccount: tiller
                   serviceAccountName: tiller
                   terminationGracePeriodSeconds: 30
-      {{- end }} {{/* end range */}}
+      {{- end }} {{/* end range namespaces */}}
+      {{/* Deploy a PriorityClass ResourceQuota object to permitted namespaces */}}
+      {{- range $namespace := .Environment.Values.allowCriticalPodsInNamespace }}
+          - |
+            apiVersion: v1
+            kind: ResourceQuota
+            metadata:
+              name: priorityclass
+              namespace: {{ $namespace }}
+            spec:
+              scopeSelector:
+                matchExpressions:
+                  - operator: In
+                    scopeName: PriorityClass
+                    values:
+                      - system-cluster-critical
+                      - system-node-critical
+      {{- end }} {{/* end range allowCriticalPodsInNamespace */}}

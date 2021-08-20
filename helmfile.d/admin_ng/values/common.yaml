@@ -3,6 +3,15 @@
 namespaces: {}
 GlobalNetworkPolicies: {}
 
+# A list of namespaces we allow to schedule critical pods in.
+# Critical pods in this context are pods with priorityClassName set to
+# system-cluster-critical or system-node-critical.
+# See:
+# * https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+# * https://kubernetes.io/docs/concepts/policy/resource-quotas/#limit-priority-class-consumption-by-default
+allowCriticalPodsInNamespace:
+  - kube-system
+
 # For cluster components like calico/coredns, override this in the specific
 # environment files as it differs per cluster. You need to set it to avoid the
 # chicken/egg problem
