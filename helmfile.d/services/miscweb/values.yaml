@@ -3,6 +3,9 @@ resources:
 docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
+service:
+  port:
+    nodePort: 4111
 main_app:
   image: wikimedia/operations-container-miscweb
   version: production
