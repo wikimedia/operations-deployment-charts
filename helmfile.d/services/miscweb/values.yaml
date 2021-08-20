@@ -4,6 +4,7 @@ docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
 service:
+  deployment: production
   port:
     nodePort: 4111
 main_app:
