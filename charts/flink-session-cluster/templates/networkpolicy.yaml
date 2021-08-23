@@ -30,6 +30,18 @@ spec:
           protocol: TCP
         - port: {{ .Values.main_app.config.queryable_state_proxy_port }}
           protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ template "wmf.chartname" . }}-taskmanager
+              release: {{ .Release.Name }}
+      ports:
+        - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
+          protocol: TCP
+        - port: {{ .Values.main_app.config.taskmanager_data_port }}
+          protocol: TCP
+        - port: {{ .Values.main_app.config.queryable_state_proxy_port }}
+          protocol: TCP
     - ports:
       # flink's native prometheus endpoint
       - port: {{ .Values.main_app.config.prometheus_reporter_port }}
@@ -73,6 +85,7 @@ spec:
       ports:
         - port: {{ .Values.main_app.config.jobmanager_rpc_port }}
           protocol: TCP
+
         - port: {{ .Values.main_app.config.blob_server_port }}
           protocol: TCP
     - ports:
