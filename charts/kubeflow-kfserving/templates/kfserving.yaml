@@ -16435,7 +16435,7 @@ apiVersion: v1
 data:
   agent: |-
     {
-        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}"
+        "image" : "{{ $.Values.docker.registry }}/{{ $.Values.agent.image }}:{{ $.Values.agent.version }}",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
