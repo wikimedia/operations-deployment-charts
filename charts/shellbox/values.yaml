@@ -9,7 +9,7 @@ resources:
   replicas: 1
 main_app:
   type: "php"
-  image: wikimedia/mediawiki-libs-shellbox:score
+  image: wikimedia/mediawiki-libs-shellbox
   version: score
   port: 8080 # port exposed as a Service, also used by service-checker.
   command: []
