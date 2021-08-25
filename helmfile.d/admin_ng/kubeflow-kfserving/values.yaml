@@ -1,3 +1,7 @@
 docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
+
+storage_initializer:
+  image: kubeflow-kfserving-storage-initializer
+  version: 0.6.0-5
