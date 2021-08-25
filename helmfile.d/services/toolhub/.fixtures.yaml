@@ -1,0 +1,44 @@
+---
+# Fake /etc/helmfile-defaults/general-eqiad.yaml data
+services_proxy:
+  search-chi-eqiad:
+    port: 6102
+    timeout: 50s
+    upstream:
+      ips:
+        - 10.2.1.30/32
+        - 10.2.2.30/32
+      address: search.svc.eqiad.wmnet
+      port: 9243
+      encryption: true
+  search-chi-codfw:
+    port: 6202
+    timeout: 50s
+    upstream:
+      ips:
+        - 10.2.1.30/32
+        - 10.2.2.30/32
+      address: search.svc.codfw.wmnet
+      port: 9243
+      encryption: true
+
+# Fake /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml data
+mw:
+  mcrouter:
+    pools:
+      - name: eqiad-servers
+        zone: eqiad
+        servers: [10.0.0.1, 10.0.0.2]
+        failover: [10.0.0.3, 10.0.0.4]
+      - name: codfw-servers
+        zone: codfw
+        servers: [10.1.0.1, 10.1.0.2]
+        failover: [10.1.0.3, 10.1.0.4]
+      - name: eqiad-proxies
+        zone: eqiad
+        servers: [10.2.0.1, 10.2.0.2]
+        failover: [10.2.0.3, 10.2.0.4]
+      - name: codfw-proxies
+        zone: codfw
+        servers: [10.3.0.1, 10.3.0.2]
+        failover: [10.3.0.3, 10.3.0.4]
