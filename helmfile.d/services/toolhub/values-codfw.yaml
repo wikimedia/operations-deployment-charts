@@ -1,0 +1,19 @@
+discovery:
+  listeners:
+    - search-https_codfw
+
+mcrouter:
+  zone: codfw
+  route_prefix: codfw/toolhub
+  routes:
+    - route: /codfw/toolhub
+      type: standalone
+      failover: true
+      # Pool config from /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml
+      pool: codfw-servers
+
+config:
+  public:
+    DB_HOST: m5-master.codfw.wmnet
+    ES_HOSTS: localhost:6202  # Envoy proxy to search-chi-codfw
+    HTTP_PROXY: http://url-downloader.codfw.wikimedia.org:8080

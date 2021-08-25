@@ -1,0 +1,58 @@
+main_app:
+  version: 2021-08-30-150231-production
+
+resources:
+  replicas: 2
+
+service:
+  deployment: production
+
+tls:
+  enabled: true
+  public_port: 4011
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      # search.svc.{eqiad,codfw}.wmnet is covered by envoy
+      # url-downloader is covered by default egress rules
+      - cidr: 10.64.0.98/32  # {db1128,m5-master}.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.16.35/32  # T288720: db1132.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.192.48.47/32  # {dbproxy2004,m5-master}.codfw.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+
+discovery:
+  listeners:
+    - search-chi-codfw
+    - search-chi-eqiad
+
+mcrouter:
+  enabled: true
+  zone: eqiad
+  route_prefix: eqiad/toolhub
+  routes:
+    - route: /eqiad/toolhub
+      type: standalone
+      failover: true
+      # Pool config from /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml
+      pool: eqiad-servers
+
+config:
+  public:
+    REQUIRE_HTTPS: True
+    DB_HOST: m5-master.eqiad.wmnet
+    CACHE_BACKEND: django_prometheus.cache.backends.memcached.MemcachedCache
+    CACHE_LOCATION: mcrouter:11213  # Sidecar container
+    ES_HOSTS: localhost:6102  # Envoy proxy to search-chi-eqiad
+    ES_INDEX_REPLICAS: 2
+    WIKIMEDIA_OAUTH2_KEY: 89c2e5fbbbbe57687b8757c46cb74901
+    HTTP_PROXY: http://url-downloader.eqiad.wikimedia.org:8080
