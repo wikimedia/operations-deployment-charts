@@ -43,6 +43,8 @@ config:
   public:
     DJANGO_SETTINGS_MODULE: toolhub.settings
     # == Logging ==
+    # Log event formatter to use
+    LOGGING_CONSOLE_FORMATTER: ecs
     # List of handlers to enable
     LOGGING_HANDLERS: console
     # Base log level to emit
