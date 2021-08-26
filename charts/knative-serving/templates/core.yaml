@@ -1477,7 +1477,7 @@ spec:
               memory: {{ .Values.core.activator.resources.requests.memory }}
             limits:
               cpu: {{ .Values.core.activator.resources.limits.cpu }}
-              memory: {{ .Values.core.activator.resources.requests.memory }}
+              memory: {{ .Values.core.activator.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
             {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
@@ -1623,7 +1623,7 @@ spec:
               memory: {{ .Values.core.autoscaler.resources.requests.memory }}
             limits:
               cpu: {{ .Values.core.autoscaler.resources.limits.cpu }}
-              memory: {{ .Values.core.autoscaler.resources.requests.memory }}
+              memory: {{ .Values.core.autoscaler.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
             {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
@@ -1747,7 +1747,7 @@ spec:
               memory: {{ .Values.core.controller.resources.requests.memory }}
             limits:
               cpu: {{ .Values.core.controller.resources.limits.cpu }}
-              memory: {{ .Values.core.controller.resources.requests.memory }}
+              memory: {{ .Values.core.controller.resources.limits.memory }}
           env:
             # Needed to be able to trust the docker-registry's CA certificate
             # provided in the Docker image by the {wmf,ca}-certificates debs.
@@ -1859,7 +1859,7 @@ spec:
               memory: {{ .Values.core.webhook.resources.requests.memory }}
             limits:
               cpu: {{ .Values.core.webhook.resources.limits.cpu }}
-              memory: {{ .Values.core.webhook.resources.requests.memory }}
+              memory: {{ .Values.core.webhook.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
             {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
