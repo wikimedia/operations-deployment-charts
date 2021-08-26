@@ -49,6 +49,7 @@ main_app:
     # It must be overridden and set with a durable object storage like swift and not a local folder like here (used for testing only)
     ha_storage_dir: file:///streaming_updater/ha_storage_dir
     additional_flink_settings: {}
+    logging_level: INFO
 
 task_manager:
   replicas: 1

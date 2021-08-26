@@ -12,5 +12,5 @@ data:
   flink-conf.yaml: |-
 {{ include "flink-conf" . | indent 4 }}
   log4j-console.properties: |-
-{{ .Files.Get "config/log4j-console.properties" | indent 4 }}
+{{ tpl (.Files.Get "config/log4j-console.properties") . | indent 4 }}
 {{ include "tls.config" . }}

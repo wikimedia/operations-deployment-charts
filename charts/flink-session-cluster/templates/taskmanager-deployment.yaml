@@ -23,7 +23,7 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        checksum/log4j-conf: {{ .Files.Get "config/log4j-console.properties" | sha256sum }}
+        checksum/log4j-conf: {{ tpl (.Files.Get "config/log4j-console.properties") . | sha256sum }}
         checksum/flink-conf: {{ include "flink-conf" . | sha256sum }}
         prometheus.io/port: "{{ .Values.main_app.config.prometheus_reporter_port }}"
         prometheus.io/scrape: "true"
