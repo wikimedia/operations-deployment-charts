@@ -11,7 +11,9 @@ spec:
       imagePullPolicy: IfNotPresent
       useMCP: false
       jwtPolicy: first-party-jwt
-
+      proxy:
+        componentLogLevel: "misc:info"
+        logLevel: info
   addonComponents:
     pilot:
       enabled: true
@@ -25,6 +27,7 @@ spec:
   components:
     pilot:
       k8s:
+        replicaCount: 2
         env:
         - name: 'KUBERNETES_SERVICE_HOST'
           value: 'kubernetes.default.svc.cluster.local'
@@ -37,7 +40,10 @@ spec:
       # but we override the list to:
       # 1) Change the default service type from LoadBalancer to NodePort
       # 2) Add fixed nodePort configurations (easier to configure LVS endpoints).
-      # 3) Remove config for port 80 (not needed).
+      # 3) Remove config for port 80 since it is not needed. This option has been
+      #    temporarily re-enabled to ease testing.
+      # 4) Add replicas to istio pods since we don't have autoscaling enabled
+      #    (needs a metrics server etc..).
       # Please note that Istio needs specific Gateway, VirtualHost, Routes, etc..
       # configs to implement a L7 reverse proxy, and those needs to be configured
       # separately. In the Kubeflow use case, Knative-serving takes care of these
@@ -45,6 +51,7 @@ spec:
       - name: istio-ingressgateway
         enabled: true
         k8s:
+          replicaCount: 2
           service:
             type: NodePort
             ports:
@@ -53,6 +60,11 @@ spec:
               name: status-port
               protocol: TCP
               nodePort: 15021
+            - port: 80
+              targetPort: 8080
+              name: http2
+              protocol: TCP
+              nodePort: 8081
             - port: 443
               targetPort: 8443
               name: https
@@ -70,6 +82,7 @@ spec:
           istio: cluster-local-gateway
           app: cluster-local-gateway
         k8s:
+          replicaCount: 2
           service:
             type: ClusterIP
             ports:
