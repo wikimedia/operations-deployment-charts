@@ -345,6 +345,7 @@ metadata:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
     networking.knative.dev/ingress-provider: istio
 spec:
+  replicas: {{ .Values.net_istio.controller.replicaCount }}
   selector:
     matchLabels:
       app: networking-istio
@@ -424,6 +425,7 @@ metadata:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
     networking.knative.dev/ingress-provider: istio
 spec:
+  replicas: {{ .Values.net_istio.webhook.replicaCount }}
   selector:
     matchLabels:
       app: istio-webhook

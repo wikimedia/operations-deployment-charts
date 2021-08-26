@@ -21,6 +21,7 @@ net_istio:
   controller:
     image: knative-net-istio-controller
     version: 0.18.1-3
+    replicaCount: 1
     resources:
       requests:
         cpu: 30m
@@ -31,6 +32,7 @@ net_istio:
   webhook:
     image: knative-net-istio-webhook
     version: 0.18.1-3
+    replicaCount: 1
     resources:
       requests:
         cpu: 20m
@@ -45,6 +47,7 @@ core:
   activator:
     image: knative-serving-activator
     version: 0.18.1-3
+    replicaCount: 1
     autoscaling:
       minReplicas: 1
       maxReplicas: 20
@@ -71,6 +74,7 @@ core:
   controller:
     image: knative-serving-controller
     version: 0.18.1-3
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m
@@ -81,6 +85,7 @@ core:
   webhook:
     image: knative-serving-webhook
     version: 0.18.1-3
+    replicaCount: 1
     resources:
       requests:
         cpu: 100m

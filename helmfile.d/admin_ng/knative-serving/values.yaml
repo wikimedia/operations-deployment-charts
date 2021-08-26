@@ -1,3 +1,18 @@
 docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
+
+net_istio:
+  controller:
+    replicaCount: 2
+  webhook:
+    replicaCount: 2
+core:
+  activator:
+    replicaCount: 2
+  autoscaler:
+    replicaCount: 2
+  controller:
+    replicaCount: 2
+  webhook:
+    replicaCount: 2
