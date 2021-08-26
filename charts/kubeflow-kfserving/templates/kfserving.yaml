@@ -16719,11 +16719,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 100m
-            memory: 300Mi
+            cpu: {{ $.Values.controller.resources.limits.cpu }}
+            memory: {{ $.Values.controller.resources.limits.memory }}
           requests:
-            cpu: 100m
-            memory: 200Mi
+            cpu: {{ $.Values.controller.resources.requests.cpu }}
+            memory: {{ $.Values.controller.resources.requests.memory }}
         volumeMounts:
         - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: cert
