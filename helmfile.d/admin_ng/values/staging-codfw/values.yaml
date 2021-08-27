@@ -15,3 +15,10 @@ namespaces:
   ci:
     deployUser: jenkins
     tillerClusterRole: tiller-flink
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          memory: "20Gi"
+        limits:
+          memory: "20Gi"
