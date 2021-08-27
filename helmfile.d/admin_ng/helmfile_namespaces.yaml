@@ -16,11 +16,11 @@ releases:
               annotations:
                 net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
           - |
-            # Bind the deploy user to the view Role for this namespace
+            # Bind the deployer read-only user to the view Role for this namespace
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
-              name: deploy
+              name: view
               namespace: {{ $namespace }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
@@ -31,7 +31,7 @@ releases:
                 kind: User
                 name: {{ $values | getOrNil "deployUser" | default $namespace }}
           - |
-            # Bind the deploy user and all service account of this namespace to
+            # Bind the deployer read-only user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
             {{- $pspClusterRole := $values | getOrNil "pspClusterRole" | default "allow-restricted-psp"}}
             apiVersion: rbac.authorization.k8s.io/v1

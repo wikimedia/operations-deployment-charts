@@ -5,11 +5,11 @@ releases:
     values:
       - resources:
         # ClusterRoles
-        ## Use by deployers
+        ## Aggregates additional permission to view ClusterRole, not used directly
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
-            name: deploy
+            name: view-and-portforward
             labels:
               # Add these permissions to the "view" default role.
               rbac.authorization.k8s.io/aggregate-to-view: "true"
