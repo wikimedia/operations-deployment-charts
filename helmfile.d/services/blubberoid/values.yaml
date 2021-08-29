@@ -10,14 +10,6 @@ main_app:
   limits:
     cpu: 1
     memory: 100Mi
-  liveness_probe:
-    tcpSocket:
-      port: 8748
-  port: 8748
-  readiness_probe:
-    httpGet:
-      path: /?spec
-      port: 8748
   requests:
     cpu: 100m
     memory: 100Mi
@@ -30,9 +22,9 @@ resources:
   replicas: 4
 service:
   deployment: production
-  port: 8748
 tls:
   enabled: true
+  public_port: 4666
   telemetry:
     enabled: true
 networkpolicy:
