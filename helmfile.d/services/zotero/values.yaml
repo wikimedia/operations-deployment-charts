@@ -14,10 +14,6 @@ main_app:
   limits:
     cpu: 1
     memory: 2Gi
-  liveness_probe:
-    tcpSocket:
-      port: 1969
-  port: 1969
   requests:
     cpu: 200m
     memory: 200Mi
@@ -29,7 +25,6 @@ resources:
   replicas: 10
 service:
   deployment: production
-  port: 1969
 networkpolicy:
   egress:
     enabled: true
@@ -50,3 +45,4 @@ tls:
   telemetry:
     enabled: true
   enabled: true
+  public_port: 4969
