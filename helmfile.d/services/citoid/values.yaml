@@ -10,15 +10,7 @@ main_app:
   limits:
     cpu: 1
     memory: 400Mi
-  liveness_probe:
-    tcpSocket:
-      port: 1970
-  port: 1970
   proxy: http://url-downloader.eqiad.wikimedia.org:8080
-  readiness_probe:
-    httpGet:
-      path: /_info
-      port: 1970
   requests:
     cpu: 100m
     memory: 100Mi
@@ -32,9 +24,9 @@ resources:
   replicas: 8
 service:
   deployment: production
-  port: 1970
 tls:
   enabled: true
+  public_port: 4003
   telemetry:
     enabled: true
 networkpolicy:
