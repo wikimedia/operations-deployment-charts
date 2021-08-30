@@ -8,9 +8,6 @@ main_app:
   limits:
     cpu: 1
     memory: 400Mi
-  liveness_probe:
-    tcpSocket:
-      port: 8080
   mt:
     Apertium:
       api: http://localhost:6019
@@ -54,14 +51,9 @@ main_app:
     - codfw.wmnet
     - discovery.wmnet
     - localhost
-  port: 8080
   proxy: http://url-downloader.codfw.wikimedia.org:8080
   ratelimiter_key: x-client-ip
   ratelimiter_rate: 10
-  readiness_probe:
-    httpGet:
-      path: /_info
-      port: 8080
   requests:
     cpu: 100m
     memory: 100Mi
@@ -73,9 +65,9 @@ resources:
   replicas: 8
 service:
   deployment: production
-  port: 8080
 tls:
   enabled: true
+  public_port: 4002
   telemetry:
     enabled: true
 discovery:

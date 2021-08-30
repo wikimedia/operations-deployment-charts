@@ -1,3 +1,6 @@
+{{ include "tls.service" . }}
+{{ if not .Values.tls.enabled }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,6 +23,7 @@ spec:
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
     {{- end }}
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -40,4 +44,3 @@ spec:
   - name: kademlia
     protocol: UDP
     port: {{ .Values.main_app.kademlia_port }}
-{{ include "tls.service" . }}
