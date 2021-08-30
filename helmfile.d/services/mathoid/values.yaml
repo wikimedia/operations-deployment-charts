@@ -10,14 +10,6 @@ main_app:
   limits:
     cpu: 1
     memory: 1G
-  liveness_probe:
-    tcpSocket:
-      port: 10044
-  port: 10044
-  readiness_probe:
-    httpGet:
-      path: /_info
-      port: 10044
   requests:
     cpu: 100m
     memory: 200Mi
@@ -28,8 +20,8 @@ resources:
   replicas: 30
 service:
   deployment: production
-  port: 10042
 tls:
+  public_port: 4001
   enabled: true
 networkpolicy:
   egress:
