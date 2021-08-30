@@ -297,17 +297,19 @@ task validate_envoy_config: :check_dep do
   end
   # Extract the envoy configuration, write it to a file
   begin
+    error = 'Extracting envoy config from "helm template" output'
     config = ''
     YAML.load_stream(out) do |resource|
-      next unless resource['kind'] == 'ConfigMap' \
+      next unless resource != nil \
+        && resource['kind'] == 'ConfigMap' \
         && resource['metadata'] \
         && resource['metadata']['name'] \
         && resource['metadata']['name'].end_with?('envoy-config-volume')
-
       config = resource['data']['envoy.yaml']
     end
   rescue StandardError => e
-    puts e.red
+    puts error.red
+    puts e
     raise('Failure reading the helm yaml template')
   end
   begin
