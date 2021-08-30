@@ -368,6 +368,32 @@ BEGIN descriptions/mobileapps_cluster route definition
                   cluster: {{ $discovery_route}}_cluster
 {{- end }}
 {{- /* END discovery_endpoints route definition */}}
+{{- /* BEGIN staging_endpoints route definition */}}
+{{- if eq .Release.Name "staging" }}
+{{- if .Values.main_app.staging_endpoints }}
+{{- range $staging_route, $staging_opts := .Values.main_app.staging_endpoints }}
+              - name: {{ $staging_route }}_route
+{{- if $strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+{{- end }}
+                match:
+                  safe_regex:
+                    google_re2: {}
+                    regex: '^/staging/{{ $staging_opts.path }}/(.*)$'
+                route:
+                  timeout: {{ $staging_opts.timeout | default "15s" }}
+                  cors: *api_cors
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/staging/{{ $staging_opts.path }}/(.*)$'
+                    substitution: '/\1'
+                  cluster: {{ $staging_route}}_cluster
+{{- end }}
+{{- end }}
+{{- end }}
+{{- /* END staging_endpoints route definition */}}
           http_filters:
           - name: envoy.health_check
             typed_config:
@@ -487,6 +513,7 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- $idle_timeout := .Values.main_app.idle_timeout -}}
 {{- /* BEGIN endpoints cluster definition */}}
 {{- range $cluster_name, $cluster_opts := .Values.main_app.endpoints }}
+{{ if $cluster_opts }}
   - name: {{ $cluster_name }}
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
@@ -543,7 +570,47 @@ BEGIN descriptions/mobileapps_cluster route definition
                 x_wikimedia_debug_server: {{ $host }}
 {{- end }}
 {{- end }}
+{{- end }}
 {{- /* END endpoints cluster definition */}}
+{{- /* BEGIN staging cluster definition */}}
+{{- if eq .Release.Name "staging" }}
+{{- if .Values.main_app.staging_endpoints }}
+{{- range $cluster_name, $cluster_opts := .Values.main_app.staging_endpoints }}
+  - name: {{ $cluster_name }}_cluster
+    connect_timeout: 0.25s
+    max_requests_per_connection: 1000
+    common_http_protocol_options:
+      idle_timeout: {{ $idle_timeout }}
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    # required for non-ipv6 services on localhost or elsewhere
+    dns_lookup_family: V4_ONLY
+{{- if $cluster_opts.tls }}
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          tls_params:
+            tls_minimum_protocol_version: TLSv1_2
+            cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+          validation_context:
+            trusted_ca:
+              filename: /etc/api-gateway/puppetca.crt.pem
+{{- end }}
+    load_assignment:
+      cluster_name: {{ $cluster_name }}_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $cluster_name }}
+                port_value: {{ $cluster_opts.port }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- /* END staging cluster definition */}}
 {{- /* BEGIN discovery cluster definition */}}
 {{- range $cluster_name, $cluster_opts := .Values.main_app.discovery_endpoints }}
   - name: {{ $cluster_name }}_cluster

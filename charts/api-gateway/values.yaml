@@ -88,16 +88,22 @@ main_app:
       type: LOGICAL_DNS
       hosts: {}
       debug_hosts: {}
-    # Hosts with $service.discovery.wmnet records
-    # Note that discovery_hosts behaves differently to the hosts dictionaries above.
-    # the format of each entry is:
-    # myservice.discovery.wmnet:
-    #   tls: true
-    #   port: 12345
-    #   path: myservicename
-    # This will map api.wikimedia.org/service/myservicename/v1 to
-    # myservice.discovery.wmnet:12345 internally.
-    discovery_endpoints: {}
+  # Hosts with $service.discovery.wmnet records
+  # Note that discovery_hosts behaves differently to the hosts dictionaries above.
+  # the format of each entry is:
+  # myservice.discovery.wmnet:
+  #   tls: true
+  #   port: 12345
+  #   path: myservicename
+  # This will map api.wikimedia.org/service/myservicename to
+  # myservice.discovery.wmnet:12345 internally.
+  discovery_endpoints: {}
+
+  # This dictionary behaves the exact same but only for the staging
+  # instance of the gateway and for
+  # https://staging.svc.eqiad.wmnet:8087/staging/myservicename on the internal
+  # wmf network
+  staging_endpoints: {}
 
   # run a local redis container for testing - see README for
   # instructions
