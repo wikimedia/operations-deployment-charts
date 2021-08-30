@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -64,13 +64,13 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | helm_scaffold_version | float | `0.3` | Version of scaffold used to create this chart |
 | ingress | object | `{"enabled":false,"host":"toolhub.test"}` | Optional ingress for use with minikube. |
 | jobs | object | `{"init_db":false}` | Optional one-time job to initialize and populate the database with demo data. |
-| main_app | object | `{"args":[],"command":[],"image":"wikimedia/wikimedia-toolhub","limits":{"cpu":1,"memory":"400Mi"},"liveness_probe":{"tcpSocket":{"port":8000}},"port":8000,"readiness_probe":{"httpGet":{"path":"/healthz","port":8000}},"requests":{"cpu":"100m","memory":"200Mi"},"type":"default","version":"latest"}` | Shared app settings |
+| main_app | object | `{"args":[],"command":[],"image":"wikimedia/wikimedia-toolhub","limits":{"cpu":1,"memory":"512Mi"},"liveness_probe":{"tcpSocket":{"port":8000}},"port":8000,"readiness_probe":{"httpGet":{"path":"/healthz","port":8000}},"requests":{"cpu":"250m","memory":"128Mi"},"type":"default","version":"latest"}` | Shared app settings |
 | main_app.image | string | `"wikimedia/wikimedia-toolhub"` | Image name to pull from docker.registry |
-| main_app.limits | object | `{"cpu":1,"memory":"400Mi"}` | Hard pod resource limits |
+| main_app.limits | object | `{"cpu":1,"memory":"512Mi"}` | Hard pod resource limits |
 | main_app.liveness_probe | object | `{"tcpSocket":{"port":8000}}` | Pod liveness check settings |
 | main_app.port | int | `8000` | Port exposed as a Service, also used by service-checker. |
 | main_app.readiness_probe | object | `{"httpGet":{"path":"/healthz","port":8000}}` | Pod readiness check settings |
-| main_app.requests | object | `{"cpu":"100m","memory":"200Mi"}` | Initial pod resource limits |
+| main_app.requests | object | `{"cpu":"250m","memory":"128Mi"}` | Initial pod resource limits |
 | main_app.version | string | `"latest"` | Image version to pull from docker.registry |
 | monitoring | object | `{"enabled":true,"uses_statsd":false}` | Monitoring config |
 | networkpolicy | object | `{"egress":{"enabled":false}}` | Networking settings |

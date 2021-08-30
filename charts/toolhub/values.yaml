@@ -27,12 +27,12 @@ main_app:
   args: []
   # -- Initial pod resource limits
   requests:
-    cpu: 100m # FIXME: how much do we need?
-    memory: 200Mi # FIXME: how much do we need?
+    cpu: 250m
+    memory: 128Mi
   # -- Hard pod resource limits
   limits:
-    cpu: 1 # FIXME
-    memory: 400Mi # FIXME
+    cpu: 1
+    memory: 512Mi
   # -- Pod liveness check settings
   liveness_probe:
     tcpSocket:
