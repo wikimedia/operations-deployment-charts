@@ -7,11 +7,11 @@ main_app:
   version: 2021-08-30-075334-production
   replicas: 1
   requests:
-    cpu: 1000m
+    cpu: 500m
     memory: 1600M
   limits:
     cpu: 1000m
-    memory: 1600M
+    memory: 1650M
   config:
     task_slots: 4
     job_manager_mem: 1600m
@@ -23,11 +23,11 @@ main_app:
 task_manager:
   replicas: 3
   requests:
-    cpu: 4000m
+    cpu: 1000m
     memory: 2048M
   limits:
     cpu: 4000m
-    memory: 2048M
+    memory: 2100M
 
 service:
   deployment: production
