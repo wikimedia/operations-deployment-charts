@@ -48,6 +48,28 @@ releases:
             - apiGroups: ["rbac.authorization.k8s.io"]
               resources: ["roles", "rolebindings"]
               verbs: ["*"]
+        ## Used by deploy users
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy
+          rules:
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+        ## Used by deploy users
+        ## Flink deploy users need permissions to add roles and role bindings
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-flink
+          rules:
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+            - apiGroups: ["rbac.authorization.k8s.io"]
+              resources: ["roles", "rolebindings"]
+              verbs: ["*"]
         # ClusterRoleBindings
         ## wmf-node-authorization adds the kubelet users group ("system:nodes")
         ## to the system:node ClusterRole so that the kubelet's can register nodes

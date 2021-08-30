@@ -13,8 +13,9 @@ resourcequota:
 
 namespaces:
   ci:
-    deployUser: jenkins
+    readOnlyUser: jenkins
     tillerClusterRole: tiller-flink
+    deployClusterRole: deploy-flink
     resourcequota:
       pods: {}
       compute:

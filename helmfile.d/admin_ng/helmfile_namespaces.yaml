@@ -29,9 +29,24 @@ releases:
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default $namespace }}
+                name: {{ $values | getOrNil "readOnlyUser" | default $namespace }}
           - |
-            # Bind the deployer read-only user and all service account of this namespace to
+            # Bind the deployer user to the deploy Role for this namespace
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: deploy
+              namespace: {{ $namespace }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: {{ $values | getOrNil "deployClusterRole" | default "deploy" }}
+            subjects:
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ $values | getOrNil "deployUser" | default | list $namespace "deploy" | join "-" }}
+          - |
+            # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
             {{- $pspClusterRole := $values | getOrNil "pspClusterRole" | default "allow-restricted-psp"}}
             apiVersion: rbac.authorization.k8s.io/v1
@@ -49,7 +64,7 @@ releases:
                 name: system:serviceaccounts:{{ $namespace }}
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default $namespace }}
+                name: {{ $values | getOrNil "deployUser" | default | list $namespace "deploy" | join "-" }}
           - |
             apiVersion: v1
             kind: ServiceAccount
