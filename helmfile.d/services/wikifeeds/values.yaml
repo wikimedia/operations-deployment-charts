@@ -10,7 +10,6 @@ main_app:
   mwapi_uri: http://localhost:6500/w/api.php
   restbase_uri: http://localhost:6503
   version: 2021-06-22-075256-production
-  port: 8889
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
@@ -22,28 +21,16 @@ main_app:
   limits:
     cpu: 2500m
     memory: 1300Mi
-  liveness_probe:
-    tcpSocket:
-      port: 8889
-  readiness_probe:
-    httpGet:
-      path: /_info
-      port: 8889
 monitoring:
   enabled: true
 service:
   deployment: production
-  port:
-    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
-    targetPort: 8889 # the number or name of the exposed port on the container
-    port: 8889 # the number of the port desired to be exposed to the cluster
-    nodePort: 8889
 config:
   public: {}
   private: {}
 tls:
   enabled: true
+  public_port: 4101
   resources:
     requests:
       cpu: 500m
