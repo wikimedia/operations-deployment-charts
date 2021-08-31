@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -72,6 +72,11 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | main_app.readiness_probe | object | `{"httpGet":{"path":"/healthz","port":8000}}` | Pod readiness check settings |
 | main_app.requests | object | `{"cpu":"250m","memory":"128Mi"}` | Initial pod resource limits |
 | main_app.version | string | `"latest"` | Image version to pull from docker.registry |
+| mcrouter | object | `{"cross_cluster_timeout":100,"cross_region_timeout":250,"enabled":false,"exporter_version":"latest","image_tag":"mcrouter:latest","num_proxies":5,"probe_timeout":60000,"resources":{"limits":{"cpu":1,"memory":"200Mi"},"requests":{"cpu":"200m","memory":"100Mi"}},"route_prefix":"local/toolhub","routes":[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}],"timeouts_until_tko":3,"zone":"local"}` | Mcrouter sidecar configuration |
+| mcrouter.enabled | bool | `false` | Enable Mcrouter |
+| mcrouter.route_prefix | string | `"local/toolhub"` | Default route prefix. Should vary based on datacenter. |
+| mcrouter.routes | list | `[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}]` | Routes to configure for mcrouter |
+| mcrouter.zone | string | `"local"` | Zone of this deployment. Used to determine local/remote pools. |
 | monitoring | object | `{"enabled":true,"uses_statsd":false}` | Monitoring config |
 | networkpolicy | object | `{"egress":{"enabled":false}}` | Networking settings |
 | php | object | `{"fcgi_mode":"unused"}` | Cruft needed for generated templates/deployment.yaml |

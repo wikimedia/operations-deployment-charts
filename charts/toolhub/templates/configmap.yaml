@@ -14,6 +14,7 @@ data:
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
 {{ include "tls.config" . }}
+{{ include "mcrouter.config" . }}
 ---
 apiVersion: v1
 kind: ConfigMap

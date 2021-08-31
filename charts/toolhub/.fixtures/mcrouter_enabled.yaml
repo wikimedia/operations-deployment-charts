@@ -1,0 +1,23 @@
+mcrouter:
+  enabled: true
+
+# Fake /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml data
+mw:
+  mcrouter:
+    pools:
+      - name: eqiad-servers
+        zone: eqiad
+        servers: [10.0.0.1, 10.0.0.2]
+        failover: [10.0.0.3, 10.0.0.4]
+      - name: codfw-servers
+        zone: codfw
+        servers: [10.1.0.1, 10.1.0.2]
+        failover: [10.1.0.3, 10.1.0.4]
+      - name: eqiad-proxies
+        zone: eqiad
+        servers: [10.2.0.1, 10.2.0.2]
+        failover: [10.2.0.3, 10.2.0.4]
+      - name: codfw-proxies
+        zone: codfw
+        servers: [10.3.0.1, 10.3.0.2]
+        failover: [10.3.0.3, 10.3.0.4]
