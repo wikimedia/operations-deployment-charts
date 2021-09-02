@@ -215,7 +215,7 @@ All these routes can either include a failover pool or not.
       command:
         - /bin/healthz
   volumeMounts:
-    - name: {{ template "wmf.releasename" . }}-mcrouter-config
+    - name: {{ template "wmf.releasename" . }}-mcrouter-config-volume
       mountPath: /etc/mcrouter
   resources:
     requests:
@@ -256,3 +256,11 @@ data:
 {{ include "mcrouter.config_template" . | indent 4 }}
 {{- end }}
 {{- end -}}{{/* "mcrouter.config" */}}
+
+{{- define "mcrouter.volume" -}}
+{{- if .Values.mcrouter.enabled }}
+- name: {{ template "wmf.releasename" . }}-mcrouter-config-volume
+  configMap:
+      name: {{ template "wmf.releasename" . }}-mcrouter-config
+{{- end }}
+{{- end -}}{{/* "mcrouter.volume" */}}
