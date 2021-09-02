@@ -1,15 +1,17 @@
 # The following values should be tuned when benchmarking, probably
 main_app:
   requests:
-    cpu: 3000m
+    cpu: 4500m
+    mem: 1500Mi
   limits:
-    cpu: 3500m
+    cpu: 5000m
+    mem: 3000Mi
 resources:
-  replicas: 4
+  replicas: 8
 service:
   expose_http: true
 php:
-  workers: 8
+  workers: 12
 
 # mw site-specific configurations
 mw:
