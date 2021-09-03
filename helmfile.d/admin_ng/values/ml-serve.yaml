@@ -12,6 +12,27 @@ namespaces:
   knative-serving: {}
 
 net_istio:
+  ingressgateway:
+    servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - '*'
+    - hosts:
+        - 'inference.discovery.wmnet'
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        # Please note:
+        # This corresponds to the name of a TLS Secret deployed
+        # to the istio-system namespace. We do it via the 'secrets' chart
+        # in the knative-serving helmfile config (the chart is a dependency).
+        credentialName: inference-tls-cert
   controller:
     image: knative-net-istio-controller
     version: 0.18.1-3

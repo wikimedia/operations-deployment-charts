@@ -5,13 +5,23 @@ templates:
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
+  istio_secrets: &istio_secrets
+    namespace: istio-system
+    chart: "wmf-stable/{{`{{ .Release.Name }}`}"
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
+
+
 releases:
   - name: knative-serving-crds
     <<: *default
+  - name: secrets
+    <<: *istio_secrets
   - name: knative-serving
     <<: *default
     needs:
       - knative-serving/knative-serving-crds
+      - istio-system/secrets
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
