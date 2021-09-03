@@ -34,7 +34,7 @@ monitoring:
   uses_statsd: false
 service:
   deployment: minikube # valid values are "production" and "minikube"
-  expose_http: false # set this to true if you want to expose both the the https and http endpoint
+  expose_http: false # set this to true if you want to expose both the https and http endpoint
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
@@ -95,7 +95,7 @@ php:
   workers: "5" # You need 2 at the very least.
   timeout: "60"
   slowlog_timeout: 0
-# See the dockerfiles for the the php-fpm base image to know what can be tweaked.
+# See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 
 mw:
