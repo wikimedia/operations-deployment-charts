@@ -20,7 +20,7 @@ end
 def check_binary(binary)
   if which(binary).nil?
     tasks = Rake.application.top_level_tasks.join(' ')
-    puts "You need #{binary} to run this task. Please install it or use run_locally['#{tasks}'] to run in a docker container".red
+    puts "You need #{binary} to run this task. Please install it or run \"rake run_locally['#{tasks}']\" to run in a docker container".red
     raise
   end
 end
