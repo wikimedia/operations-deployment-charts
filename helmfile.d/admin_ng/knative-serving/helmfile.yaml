@@ -7,7 +7,7 @@ templates:
 
   istio_secrets: &istio_secrets
     namespace: istio-system
-    chart: "wmf-stable/{{`{{ .Release.Name }}`}"
+    chart: "wmf-stable/secrets"
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
