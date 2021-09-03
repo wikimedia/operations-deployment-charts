@@ -7,7 +7,7 @@ templates:
 
   istio_secrets: &istio_secrets
     namespace: istio-system
-    chart: "wmf-stable/secrets"
+    chart: "wmf-stable/{{`{{ .Release.Name }}`}}"
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
@@ -17,15 +17,17 @@ releases:
     <<: *default
   - name: secrets
     <<: *istio_secrets
+    values:
+      - "/etc/helmfile-defaults/private/knative-serving/{{ .Environment.Name }}.yaml"           # The TLS certificate is defined by Knative-serving
   - name: knative-serving
     <<: *default
     needs:
       - knative-serving/knative-serving-crds
       - istio-system/secrets
     values:
-      - "values/common.yaml"                                                   # Generic default values for all environments
-      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
-      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
-      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
-      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+      - "values/common.yaml"                                                                     # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                                                # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                                             # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                                  # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"                   # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/private/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"  # Secrets (from private puppet repo)
