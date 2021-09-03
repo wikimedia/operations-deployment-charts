@@ -69,7 +69,7 @@ spec:
               targetPort: 8443
               name: https
               protocol: TCP
-              nodePort: 8443
+              nodePort: 18443
       # This is an internal gateway that is used by Knative. It differs from
       # the main ingressgateway in the following:
       # 1) It doesn't require any TLS specific config since we don't encrypt
