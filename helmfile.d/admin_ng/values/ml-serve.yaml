@@ -30,6 +30,7 @@ net_istio:
         protocol: HTTPS
       tls:
         mode: SIMPLE
+        minProtocolVersion: 'TLSV1_2'
         # Please note:
         # This corresponds to the name of a TLS Secret deployed
         # to the istio-system namespace. We do it via the 'secrets' chart
