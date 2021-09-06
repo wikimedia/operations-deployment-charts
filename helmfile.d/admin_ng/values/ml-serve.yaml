@@ -7,7 +7,6 @@ cluster_group: ml-serve
 # No default network policies
 GlobalNetworkPolicies: {}
 
-# No namespaces
 namespaces:
   kube-system:
     systemNamespace: true
@@ -19,6 +18,7 @@ namespaces:
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
+  revscoring-editquality: {}
 
 net_istio:
   ingressgateway:
