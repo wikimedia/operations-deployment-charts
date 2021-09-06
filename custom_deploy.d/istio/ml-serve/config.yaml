@@ -60,11 +60,6 @@ spec:
               name: status-port
               protocol: TCP
               nodePort: 15021
-            - port: 80
-              targetPort: 8080
-              name: http2
-              protocol: TCP
-              nodePort: 8081
             - port: 443
               targetPort: 8443
               name: https
