@@ -1,0 +1,83 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  hub: docker-registry.discovery.wmnet/istio
+  tag: 1.9.5-3
+  meshConfig:
+    # This enables access logging in istio-proxy, which means all sidecars
+    # as well as all ingress and egress gateways.
+    # https://istio.io/latest/docs/tasks/observability/logs/
+    accessLogFile: /dev/stdout
+  components:
+    base:
+      enabled: true
+    pilot:
+      enabled: true
+    cni:
+      enabled: false
+    egressGateways:
+      - enabled: false
+        name: istio-egressgateway
+    ingressGateways:
+      - enabled: true
+        name: istio-ingressgateway
+    istiodRemote:
+      enabled: false
+  values:
+    global:
+      istioNamespace: istio-system
+      # Kubernetes v1.16 does not support third-party-jwt
+      jwtPolicy: first-party-jwt
+      # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires galley (--set galley.enabled=true).
+      useMCP: false
+      logAsJson: true
+      logging:
+        # Default: default:info
+        level: default:info
+      # TODO: Figure this out
+      pilotCertProvider: istiod
+      priorityClassName: "system-cluster-critical"
+      proxy:
+        autoInject: disabled
+        # Log level for proxy, applies to gateways and sidecars.
+        # Expected values are: trace|debug|info|warning|error|critical|off
+        # Default: warning
+        logLevel: warning
+    pilot:
+      autoscaleEnabled: false # overwritten
+      env:
+        KUBERNETES_SERVICE_HOST: "kubernetes.default.svc.cluster.local"
+        KUBERNETES_SERVICE_PORT: "443"
+    gateways:
+      istio-ingressgateway:
+        name: istio-ingressgateway
+        autoscaleEnabled: false # overwritten
+        type: NodePort # overwritten
+        # Need to list all ports here to be able to provide static nodePorts
+        ports:
+          - port: 15021
+            targetPort: 15021
+            name: status-port
+            protocol: TCP
+            nodePort: 30021
+          - port: 80
+            targetPort: 8080
+            name: http2
+            protocol: TCP
+            nodePort: 30080
+          - port: 443
+            targetPort: 8443
+            name: https
+            protocol: TCP
+            nodePort: 30443
+          - port: 15012
+            targetPort: 15012
+            name: tcp-istiod
+            protocol: TCP
+            nodePort: 30012
+          # This is the port where sni routing happens
+          - port: 15443
+            targetPort: 15443
+            name: tls
+            protocol: TCP
+            nodePort: 31443
