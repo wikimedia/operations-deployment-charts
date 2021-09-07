@@ -86,6 +86,7 @@ php:
   fcgi_mode: FCGI_TCP
   exporter_version: 0.0.1
   servergroup: main
+  auto_prepend_file: "/srv/mediawiki/wmf-config/PhpAutoPrepend.php"
   # Values for local development
   opcache:
     size: "200" # Megabytes. Probably needs a boost in production
