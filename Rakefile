@@ -18,6 +18,7 @@ HELM_REPO = 'stable'.freeze
 HELMFILE_GLOB = 'helmfile.d/services/**/helmfile.yaml'.freeze
 KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
+ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
 
 # execute helm template
 def exec_helm_template(chart, fixture = nil)
@@ -457,6 +458,19 @@ task deployment_diffs: %i[check_dep repo_update] do
     if diffs != ''
       puts "#{label.ljust(72)}DIFFS FOUND"
       puts diffs
+    end
+  end
+end
+
+desc 'Validate istio configuration'
+task validate_istio_config: :check_dep do
+  check_binary(ISTIOCTL_VERSION)
+  FileList.new('custom_deploy.d/istio/*/config.yaml').each do |config|
+    ok, out = _exec "#{ISTIOCTL_VERSION} validate -f #{config}"
+    unless ok
+      puts "Failed to verify istio config '#{config}':".red
+      puts out
+      raise('Failure')
     end
   end
 end
