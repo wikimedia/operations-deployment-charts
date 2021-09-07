@@ -158,20 +158,3 @@ releases:
               verbs:     ['use']
               resourceNames:
                 - mediawiki
-        # RoleBinding to allow privileged Pods in kube-system
-        - apiVersion: rbac.authorization.k8s.io/v1
-          kind: RoleBinding
-          metadata:
-            name: psp-privileged
-            namespace: kube-system
-          roleRef:
-            apiGroup: rbac.authorization.k8s.io
-            kind: ClusterRole
-            name: allow-privileged-psp
-          subjects:
-            # If Pod's are created via a controller (deployment, replicaset) the Pod's service
-            # account needs access to the PSP.
-            # This grants access to all service accounts within the kube-system namespace.
-            - apiGroup: rbac.authorization.k8s.io
-              kind: Group
-              name: system:serviceaccounts:kube-system

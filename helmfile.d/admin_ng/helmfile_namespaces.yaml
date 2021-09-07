@@ -8,6 +8,11 @@ releases:
     values:
       - templates:
       {{- range $namespace, $values := .Environment.Values.namespaces }}
+        {{/* Don't mess with Kubernetes builtin namespaces while still allow to deploy to it */}}
+        {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
+        {{/* All builtin namespaces are system namespaces */}}
+        {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
+        {{- if eq $isBuiltinNamespace false }}
           - |
             apiVersion: v1
             kind: Namespace
@@ -15,6 +20,8 @@ releases:
               name: {{ $namespace }}
               annotations:
                 net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
+        {{- end }}
+        {{- if eq $isSystemNamespace false }}
           - |
             # Bind the deployer read-only user to the view Role for this namespace
             apiVersion: rbac.authorization.k8s.io/v1
@@ -85,8 +92,8 @@ releases:
               - kind: ServiceAccount
                 name: tiller
                 namespace: {{ $namespace }}
-      {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
-      {{- with $limitranges}}
+          {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
+          {{- with $limitranges}}
           - |
             apiVersion: v1
             kind: LimitRange
@@ -115,9 +122,9 @@ releases:
                     cpu: {{ .pod.max.cpu | quote }}
                     memory: {{ .pod.max.memory | quote }}
                   type: Pod
-      {{- end }}
-      {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
-      {{- with $resourcequota }}
+          {{- end }}
+          {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
+          {{- with $resourcequota }}
           - |
             apiVersion: v1
             kind: ResourceQuota
@@ -133,8 +140,8 @@ releases:
                 requests.memory: {{ .compute.requests.memory | quote }}
                 limits.cpu: {{ .compute.limits.cpu | quote }}
                 limits.memory: {{ .compute.limits.memory | quote }}
-      {{- end }}
-      {{/* Deploy tiller into each namespace */}}
+          {{- end }}
+          {{/* Deploy tiller into each namespace */}}
           - |
             apiVersion: apps/v1
             kind: Deployment
@@ -219,9 +226,28 @@ releases:
                   serviceAccount: tiller
                   serviceAccountName: tiller
                   terminationGracePeriodSeconds: 30
-      {{- end }} {{/* end range namespaces */}}
-      {{/* Deploy a PriorityClass ResourceQuota object to permitted namespaces */}}
-      {{- range $namespace := .Environment.Values.allowCriticalPodsInNamespace }}
+        {{- else }} {{/* else if eq $isSystemNamespace false */}}
+          - |
+            # Bind all service account of this namespace to the desired clusterrole.
+            # See helmfile_psp.yaml
+            {{- $pspClusterRole := $values | get "pspClusterRole" "allow-restricted-psp" }}
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: allow-psp
+              namespace: {{ $namespace }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: {{ $pspClusterRole }}
+            subjects:
+              # If Pod's are created via a controller (deployment, replicaset) the Pod's service
+              # account needs access to the PSP.
+              - apiGroup: rbac.authorization.k8s.io
+                kind: Group
+                name: system:serviceaccounts:{{ $namespace }}
+        {{- end }} {{/* end if eq $isSystemNamespace false */}}
+        {{- if $values | get "allowCriticalPods" false }}
           - |
             apiVersion: v1
             kind: ResourceQuota
@@ -236,4 +262,5 @@ releases:
                     values:
                       - system-cluster-critical
                       - system-node-critical
-      {{- end }} {{/* end range allowCriticalPodsInNamespace */}}
+        {{- end }}
+      {{- end }} {{/* end range namespaces */}}

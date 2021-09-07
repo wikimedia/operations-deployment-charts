@@ -9,7 +9,13 @@ GlobalNetworkPolicies: {}
 
 # No namespaces
 namespaces:
-  knative-serving: {}
+  kube-system:
+    systemNamespace: true
+    allowCriticalPods: true
+    pspClusterRole: allow-privileged-psp
+  knative-serving:
+    systemNamespace: true
+    allowCriticalPods: true
 
 net_istio:
   ingressgateway:

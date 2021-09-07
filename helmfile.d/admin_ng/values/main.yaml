@@ -5,16 +5,34 @@ cluster_group: main
 # List all namespaces that should be created in every ServiceOps cluster
 # Some overrides are possible:
 # <namespace-name>:
-#   readOnlyUser: "foo" Set read-only username (defaults to "<namespace-name>")
-#   deployUser: "foo" Set deploy username (defaults to "<namespace-name>-deploy")
-#   tillerClusterRole: "foo" ClusterRole to bind the tiller ServiceAccount to (defaults to "tiller")
-#   deployClusterRole: "foo" ClusterRole to bind the deploy user to (defaults to "deploy")
-#   tiller_resources: {} Provide a resource block for the tiller pod in this namespace to use (defaults to {}).
-#   pspClusterRole: "foo" The name of the ClusterRole granting access to the PSP this namespace will use (defaults to "allow-restricted-psp").
+#   readOnlyUser: "foo"
+#     Set read-only username (defaults to "<namespace-name>")
+#   deployUser: "foo"
+#     Set deploy username (defaults to "<namespace-name>-deploy")
+#   tillerClusterRole: "foo"
+#     ClusterRole to bind the tiller ServiceAccount to (defaults to "tiller")
+#   deployClusterRole: "foo"
+#     ClusterRole to bind the deploy user to (defaults to "deploy")
+#   tiller_resources: {}
+#     Provide a resource block for the tiller pod in this namespace to use (defaults to {}).
+#   pspClusterRole: "foo"
+#     The name of the ClusterRole granting access to the PSP this namespace will use (defaults to "allow-restricted-psp").
+#     Note: If the ClusterRoleBinding already exists in the namespace, it will need to be deleted first and then recreated with the new ClusterRole
+#   systemNamespace: true
+#     Don't deploy users, tiller or resource quota into this namespace.
+#     Kubernetes builtin namespaces (default, kube-.*) are always treated as system namespaces for safety reasons.
+#   allowCriticalPods: true
+#     Critical pods in this context are pods with priorityClassName set to system-cluster-critical or system-node-critical.
+#     See:
+#     * https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+#     * https://kubernetes.io/docs/concepts/policy/resource-quotas/#limit-priority-class-consumption-by-default
 #
-#   Note: if the ClusterRoleBinding already exists in the namespace, it will need to be deleted first and then recreated with the new ClusterRole
 
 namespaces:
+  kube-system:
+    systemNamespace: true
+    allowCriticalPods: true
+    pspClusterRole: allow-privileged-psp
   apertium: {}
   api-gateway: {}
   apple-search: {}
