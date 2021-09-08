@@ -15,7 +15,7 @@ require '.rake_modules/utils'
 
 PRIVATE_STUB = '.fixtures/private_stub.yaml'.freeze
 HELM_REPO = 'stable'.freeze
-HELMFILE_GLOB = 'helmfile.d/services/**/helmfile.yaml'.freeze
+HELMFILE_GLOB = 'helmfile.d/*services/**/helmfile.yaml'.freeze
 KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
@@ -75,7 +75,7 @@ def exec_helmfile_command(command, source, environments = nil, &block)
       # Run helmfile build to verify the helmfile is sane.
       # If it is, the output of build will be used to parse all defined environments from.
       data = nil
-      ['staging', 'eqiad'].each do |e|
+      ['staging', 'eqiad', 'ml-serve-eqiad'].each do |e|
         ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, true
         break if ok
       end
