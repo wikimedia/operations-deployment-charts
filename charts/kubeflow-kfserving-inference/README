@@ -3,15 +3,44 @@ needed by Kubeflow's Kfserving to create services.
 
 The idea is to configure values to something like:
 
+docker:
+  registry: docker-registry.wikimedia.org/wikimedia
+  imagePullPolicy: IfNotPresent
+
+inference:
+  image: "machinelearning-liftwing-inference-services-editquality"
+  version: "2021-09-01-140944-production"
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    controller-tools.k8s.io: "1.0"
+  base_env:
+  - name: WIKI_URL
+    value: https://api-ro.discovery.wmnet
+  - name: REQUESTS_CA_BUNDLE
+    value: /usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt
+
 inference_services:
   - name: enwiki-goodfaith
-    spec:
-      predictor:
-        containers:
-        - name: kfserving-container
-          image: accraze/kfserving-custom-model
-          imagePullPolicy: IfNotPresent
-  - name: ...
+    predictor_config:
+      minReplicas: 2
+      canaryTrafficPercent: 10
+    custom_env:
+    - name: INFERENCE_NAME
+      value: enwiki-goodfaith
+    - name: WIKI_HOST
+      value: en.wikipedia.org
+    - name: STORAGE_URI
+      value: s3://wmf-ml-models/goodfaith/enwiki/202105140814/
+  - name: itwiki-goodfaith
+    image_version: '42'
+    image: 'some-nice-custom-image-different-from-default'
+    custom_env:
+    [..]
+
+Every inference_services entry will correspond to an InferenceService resource,
+that will be composed by the base/common config stated in "inference" plus some
+custom one.
 
 The fact that there may be multiple InferenceService for the same chart is related
 to how models will be grouped together. For example, we may want to deploy all

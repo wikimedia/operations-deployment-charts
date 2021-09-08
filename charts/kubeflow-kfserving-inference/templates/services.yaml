@@ -3,9 +3,31 @@ apiVersion: serving.kubeflow.org/v1beta1
 kind: InferenceService
 metadata:
   name: {{ .name | quote }}
+  {{- with $.Values.inference.annotations }}
   annotations:
-    sidecar.istio.io/inject: "false"
+  {{- range $k, $v := . }}
+    {{ $k }}: {{ $v }}
+  {{- end }}
+  {{- end }}
+  {{- with $.Values.inference.labels }}
   labels:
-    controller-tools.k8s.io: "1.0"
-spec: {{- .spec | toYaml | nindent 2 }}
+  {{- range $k, $v := . }}
+    {{ $k }}: {{ $v }}
+  {{- end }}
+  {{- end }}
+spec:
+  predictor:
+    {{- range $k, $v := .predictor_config }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+    containers:
+    - name: kfserving-container-{{ .name }}
+      image: {{ $.Values.docker.registry }}/{{ .image | default $.Values.inference.image }}:{{ .image_version | default $.Values.inference.version }}
+      imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
+      env:
+      {{- range concat $.Values.inference.base_env .custom_env }}
+      - name: {{ .name }}
+        value: {{ .value }}
+      {{- end }}
+---
 {{- end }}
