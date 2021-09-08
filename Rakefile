@@ -475,18 +475,6 @@ task validate_istio_config: :check_dep do
   end
 end
 
-def check_docker
-  unless which('docker')
-    puts 'You need to install docker'.red
-    raise
-  end
-  `docker version`
-  if $?.exitstatus != 0
-    puts "You need to be able to run docker commands as uid #{Process.uid}"
-    raise
-  end
-end
-
 desc 'Run other tasks locally within the CI docker images'
 task :run_locally, [:cmdargs] do |_t, args|
   check_docker
