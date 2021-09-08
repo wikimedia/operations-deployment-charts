@@ -20,6 +20,9 @@ KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
 
+# admin_validate will store the generated manifest files here to be used by admin_diff
+admin_ng_manifests = {}
+
 # execute helm template
 def exec_helm_template(chart, fixture = nil)
   helm = helm_version(chart)
@@ -37,12 +40,13 @@ def exec_helm_template(chart, fixture = nil)
   ret
 end
 
-# Run an helmfile command on each environment declared in source.
+# Run an helmfile command on each environment declared in source (unless environments are passed as argument)
 # Returns an hash environment => block.call success, output
-def exec_helmfile_command(command, source, &block)
+def exec_helmfile_command(command, source, environments = nil, &block)
   results = {}
   helm_home = ENV['HELM_HOME'] || File.expand_path('~/.helm')
   dir_to_copy, file = File.split source
+  environments = environments.is_a?(String) ? [environments] : environments
   return {} unless File.directory? dir_to_copy
 
   Dir.mktmpdir do |dir|
@@ -65,22 +69,28 @@ def exec_helmfile_command(command, source, &block)
       File.write filename, source
     end
 
-    data = nil
-    ['staging', 'eqiad'].each do |e|
-      ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, true
-      break if ok
-    end
-    # If we can't run helmfile build, we need to bail out early.
-    return { 'default' => false } if data.nil?
+    if environments
+      envs = environments
+    else
+      # Run helmfile build to verify the helmfile is sane.
+      # If it is, the output of build will be used to parse all defined environments from.
+      data = nil
+      ['staging', 'eqiad'].each do |e|
+        ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, true
+        break if ok
+      end
+      # If we can't run helmfile build, we need to bail out early.
+      return { 'default' => false } if data.nil?
 
-    helmfile_raw_data = YAML.safe_load(data)
-    envs = helmfile_raw_data['environments'].keys
+      helmfile_raw_data = YAML.safe_load(data)
+      envs = helmfile_raw_data['environments'].keys
+    end
 
     # now for each environment, build the list of
     # helm commands to run
     envs.each do |env|
       result = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{filename} #{command}"
-      results[env] = block.call result
+      results[env] = block.call env, result
     end
   end
   results
@@ -109,28 +119,14 @@ def check_template(chart, fixture = nil, kubeyaml = nil)
       puts e
     end
     if kubeyaml
-      threads = []
-      command = "#{kubeyaml} -versions #{KUBERNETES_VERSIONS}"
-      # split per YAML doc. See GH issue #7 as to why
-      docs = output.split(/^---/)
-      docs.each do |doc|
-        t = Thread.new do
-          # Remove the # Source: line. It can be helpful if the template ends up
-          # fully empty as kubeyaml won't then emit a useless warning
-          source = doc.match(%r{^# Source: [a-zA-Z0-9/\.-]*$})
-          doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9/\.-]*$}, '').strip
-          next if doc.length == 0
-
-          succ, out = _exec command, doc, true
-          unless succ
-            puts 'Error validating semantically YAML'
-            puts "Kubeyaml says:\n#{out}\n for:\n#{source}"
-            success = succ
-          end
+      validate_with_kubeyaml(output) do |source, result|
+        ok, out = result
+        unless ok
+          puts 'Semantical error during YAML validation'
+          puts "Kubeyaml says:\n#{out}\n for: #{source}"
+          success = ok
         end
-        threads.push(t)
       end
-      threads.each { |t| t.join }
     end
   else
     # Error happens before yaml validation
@@ -145,7 +141,7 @@ end
 # The return data are organized as follows:
 #  {environment: true/false}
 def validate_helmfile_full(filepath)
-  results = exec_helmfile_command('lint', filepath) do |result|
+  results = exec_helmfile_command('lint', filepath) do |_, result|
     ok, out = result
     puts(out) unless ok
     ok
@@ -153,6 +149,16 @@ def validate_helmfile_full(filepath)
   results
 end
 
+def get_extra_args(args, fallback = nil)
+  if args.nil? || args.extras.count == 0
+    extras = fallback
+  else
+    extras = args.extras
+  end
+end
+
+# (jayme): I might be missing something, but I don't think this is working.
+# I did expect `rake lint[calico,secrets]` to work for example but it does not.
 def get_charts(args, fallback)
   if args.nil? || args.count == 0
     charts = fallback
@@ -194,7 +200,7 @@ def get_all_manifests(deployments)
       # Skip the example, and env-wide helmfiles
       next if ['_example_'].include? deployment
 
-      manifests = exec_helmfile_command('template', helmfile) do |result|
+      manifests = exec_helmfile_command('template', helmfile) do |_, result|
         if result[0]
           result[1]
         else
@@ -213,12 +219,54 @@ def get_all_manifests(deployments)
   results
 end
 
+# Validate all YAML documents in document (expecting a single string, as generates by helm(file) template)
+# via kubeyaml
+def validate_with_kubeyaml(document, &block)
+  # Prior to extracting this function, kubeyaml was running with nthreads = number of docs
+  tp = ThreadPool.new(nthreads: 10)
+  mutex = Mutex.new
+  results = {}
+  command = "kubeyaml -versions #{KUBERNETES_VERSIONS}"
+  # Kubeyaml does only validate the first object in a yaml stream.
+  # See https://github.com/chuckha/kubeyaml/issues/7
+  docs = document.split(/^---/)
+  source = ""
+  docs.each do |doc|
+    tp.run do
+      # There may be multiple objects (doc) in one source file (document).
+      # In that case, no new Source line is emitted for following objects
+      # and we need to reuse the last one.
+      if source_match = doc.match(%r{^# Source: ([a-zA-Z0-9\/\.-]*)$})
+        new_source = source_match.captures[0]
+        if new_source != source
+          mutex.synchronize do
+            source = source_match.captures[0]
+          end
+        end
+      end
+      # Remove the # Source: line. It can be helpful if the template ends up
+      # fully empty as kubeyaml won't then emit a useless warning
+      doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9\/\.-]*$}, '').strip
+      next if doc.length == 0
+
+      result = _exec command, doc, true
+      mutex.synchronize do
+        results[source] = block.call source, result
+      end
+    end
+  end
+  tp.join
+  results
+end
+
+
 ## RAKE TASKS
 
 desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
   check_binary('helm3')
+  check_binary('helmfile')
 end
 
 # This is just to ensure the repo is up to date as one may
@@ -235,15 +283,15 @@ task :lint, [:charts] => :check_dep do |_t, args|
   charts = get_charts(args, all_charts)
   results = {}
   charts.each do |chart|
-    puts "Linting #{chart}"
     helm = helm_version(chart)
+    puts "Linting #{chart} with #{helm}"
     results[chart] = system("#{helm} lint '#{chart}'")
   end
   pprint 'Helm lint summary:', results
   raise_if_failed results
 end
 
-desc 'Runs helm template on all charts'
+desc 'Runs helm template on all charts and validate the output with kubeyaml'
 task :validate_template, [:charts] => :check_dep do |_t, args|
   charts = get_charts(args, all_charts)
 
@@ -258,7 +306,7 @@ task :validate_template, [:charts] => :check_dep do |_t, args|
   raise_if_failed results
 end
 
-desc 'Runs helm template using the helmfile values'
+desc 'Runs helmfile lint on all service deployments'
 task validate_deployments: :check_dep do
   results = {}
   deployments = FileList.new(HELMFILE_GLOB)
@@ -462,8 +510,112 @@ task deployment_diffs: %i[check_dep repo_update] do
   end
 end
 
+## RAKE TASKS admin_ng
+
+desc 'Runs helmfile lint on admin_ng for all environments'
+task admin_lint: %i[check_dep repo_update] do
+  results = validate_helmfile_full 'helmfile.d/admin_ng/helmfile.yaml'
+  pprint 'admin_ng helmfile deployments lint summary:', results
+  raise_if_failed results
+end
+
+desc 'Runs helmfile template on admin_ng for all environments and validate the output with kubeyaml'
+task admin_validate: %i[check_dep repo_update] do |_t, args|
+  check_binary('kubeyaml')
+  helmfile_path = 'helmfile.d/admin_ng/helmfile.yaml'
+  helmfile_envs = YAML.safe_load(File.read(helmfile_path))['environments'].keys
+  envs = get_extra_args(args, helmfile_envs)
+  results = {}
+
+  puts "Generating and verifying admin_ng templates #{envs}..."
+  tp = ThreadPool.new(nthreads: 3)
+  mutex = Mutex.new
+  envs.each do |env|
+    tp.run do
+      result = exec_helmfile_command('template', helmfile_path, env) do |e, r|
+        ok, out = r
+        print "admin_ng helmfile template (#{e}): "
+        if ok
+          puts "OK".green
+        else
+          puts "FAIL".red
+          puts out
+          raise('Failure')
+        end
+        out
+      end
+
+      mutex.synchronize do
+        results[env] = result[env]
+      end
+    end
+  end
+  tp.join
+
+  # validate_with_kubeyaml runs in multiple threads as well, so don't place it in the above block
+  results.each do |env, document|
+    print "admin_ng kubeyaml (#{env}): "
+    validate_with_kubeyaml(document) do |source, result|
+      ok, out = result
+      unless ok
+        puts "FAIL".red
+        puts "Error validating semantically YAML for #{env}"
+        puts "Kubeyaml says:\n#{out}\n for: #{source}"
+        raise('Failure')
+      end
+    end
+    puts "OK".green
+  end
+
+  # Store the manifests in a global variable for use by admin_diff
+  admin_ng_manifests = results
+end
+
+desc 'Shows admin diff introduced by this patch'
+task admin_diff: %i[check_dep repo_update admin_validate] do |_t, args|
+  helmfile_path = 'helmfile.d/admin_ng/helmfile.yaml'
+  helmfile_envs = YAML.safe_load(File.read(helmfile_path))['environments'].keys
+  envs = get_extra_args(args, helmfile_envs)
+  change = admin_ng_manifests # populated by admin_validate
+
+  # Now get the originals
+  original = {}
+  Git.open('.').back_to('origin/master') do
+    tp = ThreadPool.new(nthreads: 3)
+    mutex = Mutex.new
+    tp.run do
+      envs.each do |env|
+        result = exec_helmfile_command('template', helmfile_path, env) do |_, r|
+          r[1]
+        end
+        mutex.synchronize do
+          original[env] = result[env]
+        end
+      end
+    end
+    tp.join
+  end
+  change.each do |env, manifest|
+    # If the deployment is new, we want to output it all as a diff.
+    original_manifest = if original.include? env
+                          original[env]
+                        else
+                          ''
+    end
+    diffs = diff(original_manifest, manifest)
+    if diffs != ''
+      puts "#{env.ljust(72)}DIFFS FOUND"
+      puts diffs
+      puts "\n"
+    end
+  end
+end
+
+
+## RAKE TASKS custom_deploy
+
 desc 'Validate istio configuration'
-task validate_istio_config: :check_dep do
+task :validate_istio_config do
   check_binary(ISTIOCTL_VERSION)
   FileList.new('custom_deploy.d/istio/*/config.yaml').each do |config|
     ok, out = _exec "#{ISTIOCTL_VERSION} validate -f #{config}"
@@ -513,4 +665,4 @@ task :run_locally, [:cmdargs] do |_t, args|
   end
 end
 
-task default: %i[repo_update test_scaffold lint validate_template validate_deployments validate_envoy_config helm_diffs deployment_diffs]
+task default: %i[repo_update test_scaffold lint validate_template validate_deployments validate_envoy_config validate_istio_config helm_diffs deployment_diffs admin_lint admin_diff]

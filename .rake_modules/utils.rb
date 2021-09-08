@@ -72,7 +72,7 @@ end
 # Checks the output of _exec
 def raise_if_failed(data)
   data.each { |_, success| raise('Failure') unless success }
-  end
+end
 
 # Executes a command, returns an array [true/false, String], first element
 # denoting success or failure, second one being stdout/stderr
