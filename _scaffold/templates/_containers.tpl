@@ -117,10 +117,14 @@ resources:
     value: {{ .Values.php.servergroup }}
   - name: FCGI_MODE
     value: {{ .Values.php.fcgi_mode }}
+  - name: PHP__auto_prepend_file
+    value: "{{ .Values.php.auto_prepend_file }}"
   - name: PHP__opcache__memory_consumption
     value: {{ .Values.php.opcache.size }}
   - name: PHP__opcache__max_accelerated_files
     value: {{ .Values.php.opcache.nofiles }}
+  - name: PHP__opcache__interned_strings_buffer
+    value: "{{ .Values.php.opcache.interned_strings_buffer}}"
   - name: FPM__request_terminate_timeout
     value: {{ .Values.php.timeout }}
   - name: PHP__apc__shm_size
