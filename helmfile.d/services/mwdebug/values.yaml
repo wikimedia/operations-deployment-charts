@@ -19,6 +19,11 @@ service:
 tls:
   enabled: true
   public_port: 4444
+  resources:
+    requests:
+      cpu: 500m
+    limits:
+      cpu: 600m
 monitoring:
   enabled: true
 
