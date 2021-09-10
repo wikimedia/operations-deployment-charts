@@ -72,6 +72,7 @@ releases:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
                 name: {{ $values | getOrNil "deployUser" | default | list $namespace "deploy" | join "-" }}
+        {{- if eq $.Environment.Values.helmVersion "helm2" }}
           - |
             apiVersion: v1
             kind: ServiceAccount
@@ -92,6 +93,7 @@ releases:
               - kind: ServiceAccount
                 name: tiller
                 namespace: {{ $namespace }}
+        {{- end }} {{/* end if eq $.Environment.Values.helmVersion "helm2" */}}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
           {{- with $limitranges}}
           - |
@@ -141,6 +143,7 @@ releases:
                 limits.cpu: {{ .compute.limits.cpu | quote }}
                 limits.memory: {{ .compute.limits.memory | quote }}
           {{- end }}
+        {{- if eq $.Environment.Values.helmVersion "helm2" }}
           {{/* Deploy tiller into each namespace */}}
           - |
             apiVersion: apps/v1
@@ -226,6 +229,7 @@ releases:
                   serviceAccount: tiller
                   serviceAccountName: tiller
                   terminationGracePeriodSeconds: 30
+        {{- end }} {{/* end if eq $.Environment.Values.helmVersion "helm2" */}}
         {{- else }} {{/* else if eq $isSystemNamespace false */}}
           - |
             # Bind all service account of this namespace to the desired clusterrole.

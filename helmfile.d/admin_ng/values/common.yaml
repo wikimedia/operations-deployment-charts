@@ -12,6 +12,10 @@ kubernetesApi:
 
 tillerImage: docker-registry.discovery.wmnet/tiller:2.16.7-3
 
+# Set helm version for the environment, either "helm2" or "helm3".
+# This will deploy helm version specific components like tiller and RBAC objects.
+helmVersion: "helm2"
+
 limitranges:
   # check out documentation to understand this well
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/

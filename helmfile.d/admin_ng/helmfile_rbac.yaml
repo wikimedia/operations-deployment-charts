@@ -26,6 +26,7 @@ releases:
             - nonResourceURLs:
                 - /metrics
               verbs: ["get"]
+      {{- if eq .Environment.Values.helmVersion "helm2" }}
         ## Used by tiller
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -48,6 +49,7 @@ releases:
             - apiGroups: ["rbac.authorization.k8s.io"]
               resources: ["roles", "rolebindings"]
               verbs: ["*"]
+      {{- end }} {{/* end if eq .Environment.Values.helmVersion "helm2" */}}
         ## Used by deploy users
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
