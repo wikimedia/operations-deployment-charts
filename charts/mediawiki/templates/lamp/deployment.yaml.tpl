@@ -77,6 +77,8 @@
     value: "{{ .Values.php.opcache.size }}"
   - name: PHP__opcache__max_accelerated_files
     value: "{{ .Values.php.opcache.nofiles }}"
+  - name: PHP__opcache__interned_strings_buffer
+    value: "{{ .Values.php.opcache.interned_strings_buffer}}"
   - name: PHP__auto_prepend_file
     value: "{{ .Values.php.auto_prepend_file }}"
   - name: FPM__request_terminate_timeout
