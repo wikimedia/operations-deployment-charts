@@ -18,6 +18,16 @@ releases:
             kind: Namespace
             metadata:
               name: {{ $namespace }}
+              {{- $labels := $values | get "labels" dict }}
+              {{- if $.Environment.Values.NamespaceDefaultLabelName }}
+                {{- $labels := mergeOverwrite $labels (dict "kubernetes.io/metadata.name" $namespace) }}
+              {{- end }}
+              {{- with $labels }}
+              labels:
+              {{- range $k, $v := . }}
+                {{ $k }}: {{ $v }}
+              {{- end }}
+              {{- end }}
               annotations:
                 net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
         {{- end }}

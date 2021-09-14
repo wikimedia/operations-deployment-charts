@@ -7,6 +7,8 @@ cluster_group: ml-serve
 # No default network policies
 GlobalNetworkPolicies: {}
 
+# List all namespaces that should be created in every ML Serve cluster.
+# For info about what overrides are available, please check ./common.yaml.
 namespaces:
   kube-system:
     systemNamespace: true

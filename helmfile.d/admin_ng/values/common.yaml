@@ -1,7 +1,53 @@
 # Defaults applied to all clusters in all cluster_groups
 #
+# List of namespace overrides:
+# <namespace-name>:
+#   readOnlyUser: string
+#     Default: <namepace-name>
+#     The name of the read-only user for this namespace (needs to be created via private puppet).
+#   deployUser: string
+#     Default: <namepace-name>-deploy
+#     The name of the deploy user for this namespace (needs to be created
+#     via private puppet).
+#   tillerClusterRole: string
+#     Default: tiller
+#     ClusterRole to bind the tiller ServiceAccount to.
+#   deployClusterRole: string
+#     Default: deploy
+#     ClusterRole to bind the deploy user to.
+#   tiller_resources: {}
+#     Default: {}
+#     Provide a resource block for the tiller pod in this namespace to use.
+#   pspClusterRole: string
+#     Default: allow-restricted-psp
+#     The name of the ClusterRole granting access to the PSP this namespace
+#     will use.
+#     Note: If the ClusterRoleBinding already exists in the namespace,
+#     it will need to be deleted first and then recreated with
+#     the new ClusterRole.
+#   systemNamespace: bool
+#     Default: false
+#     Don't deploy users, tiller or resource quota into this namespace.
+#     Kubernetes builtin namespaces (default, kube-.*) are always treated as
+#     system namespaces for safety reasons.
+#   allowCriticalPods: bool
+#     Default: false
+#     Critical pods in this context are pods with priorityClassName
+#     set to system-cluster-critical or system-node-critical.
+#     See:
+#     * https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+#     * https://kubernetes.io/docs/concepts/policy/resource-quotas/#limit-priority-class-consumption-by-default
+#   labels: hash<string,string>
+#     Default: {}
+#     Provide a list of labels and their values to be added to the namespace.
 namespaces: {}
 GlobalNetworkPolicies: {}
+
+# Feature only available in Kubernetes 1.21+, but since we control all namespaces
+# we implemented the feature.
+# If set to true, it adds the label kubernetes.io/metadata.name=$namespace to
+# all namespaces defined via helmfile.
+NamespaceDefaultLabelName: false
 
 # For cluster components like calico/coredns, override this in the specific
 # environment files as it differs per cluster. You need to set it to avoid the

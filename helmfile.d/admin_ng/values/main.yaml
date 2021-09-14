@@ -3,39 +3,7 @@
 cluster_group: main
 
 # List all namespaces that should be created in every ServiceOps cluster
-# Some overrides are possible:
-# <namespace-name>:
-#   readOnlyUser: string
-#     Default: <namepace-name>
-#     The name of the read-only user for this namespace (needs to be created via private puppet).
-#   deployUser: string
-#     Default: <namepace-name>-deploy
-#     The name of the deploy user for this namespace (needs to be created via private puppet).
-#   tillerClusterRole: string
-#     Default: tiller
-#     ClusterRole to bind the tiller ServiceAccount to.
-#   deployClusterRole: string
-#     Default: deploy
-#     ClusterRole to bind the deploy user to.
-#   tiller_resources: {}
-#     Default: {}
-#     Provide a resource block for the tiller pod in this namespace to use.
-#   pspClusterRole: string
-#     Default: allow-restricted-psp
-#     The name of the ClusterRole granting access to the PSP this namespace will use.
-#     Note: If the ClusterRoleBinding already exists in the namespace, it will need to be deleted first and then recreated with the new ClusterRole
-#   systemNamespace: bool
-#     Default: false
-#     Don't deploy users, tiller or resource quota into this namespace.
-#     Kubernetes builtin namespaces (default, kube-.*) are always treated as system namespaces for safety reasons.
-#   allowCriticalPods: bool
-#     Default: false
-#     Critical pods in this context are pods with priorityClassName set to system-cluster-critical or system-node-critical.
-#     See:
-#     * https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
-#     * https://kubernetes.io/docs/concepts/policy/resource-quotas/#limit-priority-class-consumption-by-default
-#
-
+# For info about what overrides are available, please check ./common.yaml.
 namespaces:
   kube-system:
     systemNamespace: true
