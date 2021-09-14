@@ -106,3 +106,14 @@ resourcequota:
     limits:
       cpu: "90"
       memory: "100Gi"
+
+# Default config for Istio gateways
+# The list of ports need to be kept in sync with what stated
+# in the related custom_deploy.d's istioctl config.
+istio:
+  ingress_gateways:
+    ingressgateway:
+      ports:
+        - 8443
+        - 15443
+        - 8080

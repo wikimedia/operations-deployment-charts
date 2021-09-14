@@ -1,0 +1,95 @@
+# Setup network policies for an istio-ingressgateway setup
+#
+# Requirements:
+# This requires the istio-system namespace to be created via
+# helmfile_namspaces.yaml. Also istio needs to be deployed using
+# custom_deploy.d.
+#
+templates:
+  {{- $istio_ingress_gateways := .Environment.Values | get "istio.ingress_gateways" dict }}
+  {{- $istiod_allowed_extra_cidrs := .Environment.Values | get "istio.istiod.allowed_extra_cidrs" list }}
+  {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
+  istio-ingress-networkpolicies: &istio-ingress-networkpolicies
+    name: istio-ingress-networkpolicies
+    chart: wmf-stable/raw
+    namespace: istio-system
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_ingress\" }}{{ .Environment.Values.istio_ingress }}{{ else }}{{ false }}{{end}}`}}"
+    values:
+      - resources:
+        {{- if $kubeapi_cidrs }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: istiod
+              namespace: istio-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: istiod
+              egress:
+                # Allow the istiod pods to contact the Kubernetes API
+                - to:
+                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
+                    - ipBlock:
+                        cidr: {{ . }}
+                    {{- end }}
+                  ports:
+                    - port: 6443
+                      protocol: TCP
+              ingress:
+                # Allow prometheus to scrape
+                - ports:
+                  - port: 15014
+                    protocol: TCP
+                # Allow Istio Gateways to talk to istiod
+                - from:
+                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
+                    - ipBlock:
+                        cidr: {{ . }}
+                    {{- end }}
+                  ports:
+                    - port: 15012
+                      protocol: TCP
+                # Allow apiservers to call webhooks served by istiod
+                - from:
+                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
+                    - ipBlock:
+                        cidr: {{ . }}
+                    {{- end }}
+                  ports:
+                    - port: 15017
+                      protocol: TCP
+          {{- end }}
+          {{- range $istio_gateway, $settings := $istio_ingress_gateways }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: istio-{{ $istio_gateway }}
+              namespace: istio-system
+            spec:
+              podSelector:
+                matchLabels:
+                  app: istio-{{ $istio_gateway }}
+              ingress:
+                - ports:
+                  # Allow prometheus to scrape
+                  - port: 15020
+                    protocol: TCP
+                  # Allow traffic from other pods to its HTTP proxy ports
+                  {{- range $settings.ports }}
+                  - port: {{ . }}
+                    protocol: TCP
+                  {{- end }}
+                # Allow istiod to push updates to ingressgateway
+                # This is already allowed using the global allow-pod-to-pod rule
+                - from:
+                    - podSelector:
+                        matchLabels:
+                          app: istiod
+                  ports:
+                    - port: 15012
+                      protocol: TCP
+          {{- end }}
+
+releases:
+  - <<: *istio-ingress-networkpolicies

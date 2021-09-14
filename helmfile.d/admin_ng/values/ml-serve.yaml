@@ -137,3 +137,15 @@ limitranges:
 # See T292077
 typha:
   replicaCount: 2
+
+# Istio Gateway config for the ML cluster.
+# The list of ports need to be kept in sync with what stated
+# in the related custom_deploy.d's istioctl config.
+istio:
+  ingress_gateways:
+    ingressgateway:
+      ports:
+        - 8443
+    cluster-local-gateway:
+      ports:
+        - 8080

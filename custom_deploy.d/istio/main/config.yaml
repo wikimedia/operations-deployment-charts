@@ -2,12 +2,13 @@ apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   hub: docker-registry.discovery.wmnet/istio
-  tag: 1.9.5-3
+  tag: 1.9.5-5
   meshConfig:
     # This enables access logging in istio-proxy, which means all sidecars
     # as well as all ingress and egress gateways.
     # https://istio.io/latest/docs/tasks/observability/logs/
     accessLogFile: /dev/stdout
+    accessLogEncoding: JSON
   components:
     base:
       enabled: true
@@ -36,7 +37,8 @@ spec:
         level: default:info
       # TODO: Figure this out
       pilotCertProvider: istiod
-      priorityClassName: "system-cluster-critical"
+      # priorityClass quote in namespaces other than kube-system do not work with k8s 1.16
+      priorityClassName: ""
       proxy:
         autoInject: disabled
         # Log level for proxy, applies to gateways and sidecars.
@@ -59,7 +61,6 @@ spec:
             targetPort: 15021
             name: status-port
             protocol: TCP
-            nodePort: 30021
           - port: 80
             targetPort: 8080
             name: http2
@@ -70,11 +71,12 @@ spec:
             name: https
             protocol: TCP
             nodePort: 30443
+          # Ingressgateway does receive push notifications from
+          # istiod on this port
           - port: 15012
             targetPort: 15012
             name: tcp-istiod
             protocol: TCP
-            nodePort: 30012
           # This is the port where sni routing happens
           - port: 15443
             targetPort: 15443
