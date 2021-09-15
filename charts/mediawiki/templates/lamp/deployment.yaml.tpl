@@ -125,6 +125,11 @@
   - name: shared-socket
     mountPath: /run/shared
   {{ end -}}
+  {{- if .Values.mw.wmerrors }}
+  # php-wmerrors configuration
+  - name: {{ $release }}-wmerrors
+    mountPath: /etc/wmerrors
+  {{ end -}}
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter

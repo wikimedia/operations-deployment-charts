@@ -21,5 +21,12 @@ mw:
     enabled: true
   nutcracker:
     enabled: true
+  wmerrors:
+    file1.php: |-
+      <?php
+      echo 'Hello, world!';
+    file2.php: |-
+      <?php
+      die("test");
 monitoring:
   enabled: true

@@ -1,12 +1,13 @@
 {{- define "mw.volumes" }}
+{{ $release := include "wmf.releasename" . }}
 # Apache sites
-- name: {{ template "wmf.releasename" . }}-httpd-sites
+- name: {{ $release }}-httpd-sites
   configMap:
-    name: {{ template "wmf.releasename" . }}-httpd-sites-config
+    name: {{ $release }}-httpd-sites-config
 # Datacenter
-- name: {{ template "wmf.releasename" . }}-wikimedia-cluster
+- name: {{ $release }}-wikimedia-cluster
   configMap:
-    name: {{ template "wmf.releasename" . }}-wikimedia-cluster-config
+    name: {{ $release }}-wikimedia-cluster-config
 # TLS configurations
 {{- include "tls.volume" . }}
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
@@ -14,16 +15,21 @@
 - name: shared-socket
   emptydir: {}
 {{- end }}
+{{- if .Values.mw.wmerrors }}
+- name: {{ $release }}-wmerrors
+  configMap:
+    name: {{ $release }}-wmerrors
+{{- end }}
 {{- if .Values.mw.mcrouter.enabled }}
 # Mcrouter configuration
-- name: {{ template "wmf.releasename" . }}-mcrouter-config
+- name: {{ $release }}-mcrouter-config
   configMap:
-    name: {{ template "wmf.releasename" . }}-mcrouter-config
+    name: {{ $release }}-mcrouter-config
 {{- end }}
 {{- if .Values.mw.nutcracker.enabled }}
 # Nutcracker configuration
-- name: {{ template "wmf.releasename" . }}-nutcracker-config
+- name: {{ $release }}-nutcracker-config
   configMap:
-    name: {{ template "wmf.releasename" . }}-nutcracker-config
+    name: {{ $release }}-nutcracker-config
 {{- end }}
 {{ end }}
