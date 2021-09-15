@@ -102,3 +102,8 @@ ingress: |-
 ```
 We need to set `cluster-local-gateway.istio-system.svc.cluster.local` with Knative
 <= 0.18 (from 0.19+ there is no need due to the knative-local-gateway).
+
+The Namespace creation for `kfserving-system` is delegated to helmfile's admin_ng
+config, so when importing a new version it needs to be removed. Important: check
+the labels defined for the namespace in helmfile vs the ones shipped by upstream,
+and correct our settings in case they are different.

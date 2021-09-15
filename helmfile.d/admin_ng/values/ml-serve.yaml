@@ -20,6 +20,13 @@ namespaces:
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
+  kfserving-system:
+    systemNamespace: true
+    allowCriticalPods: true
+    labels:
+      control-plane: kfserving-controller-manager
+      controller-tools.k8s.io: "1.0"
+      istio-injection: disabled
   revscoring-editquality: {}
 
 net_istio:
