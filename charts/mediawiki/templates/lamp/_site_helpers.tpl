@@ -69,7 +69,7 @@
 
 {{- if .rewrite_static_assets }}
     # Static assets should all be funneled to static.php (T285232)
-    RewriteRule ^/static/current/(skins|resources|extensions)/(.*)$ /w/$1/$2
+    RewriteRule ^/static/current/(skins|resources|extensions)/(.*)$ /w/$1/$2 [R=301,L]
 {{- end }}
     # Multiversion static files (T99096)
     RewriteRule ^/w/skins/.*$ /w/static.php [PT]
