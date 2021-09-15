@@ -55,7 +55,7 @@ in typical memecached fashion.
 {{- define "mcrouter.pool_servers" -}}
 {{- $connfmt := "%s:11211:ascii:plain" -}}
 {{- if not .is_local -}}
-  {{- $connfmt := "%s:11214:ascii:ssl" -}}
+  {{- $connfmt = "%s:11214:ascii:ssl" -}}
 {{- end -}}
 {{- $shards := list }}
 {{- range .servers }}
