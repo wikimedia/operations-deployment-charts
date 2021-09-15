@@ -89,9 +89,9 @@ php:
   auto_prepend_file: "/srv/mediawiki/wmf-config/PhpAutoPrepend.php"
   # Values for local development
   opcache:
-    size: "200"                     # Megabytes. Probably needs a boost in production
-    nofiles: "1000"                 # Number of files. Definitely needs a boost in production
-    interned_strings_buffer: "10"   # Megabytes. Memory used to store identical strings
+    size: "200" # Megabytes. Probably needs a boost in production
+    nofiles: "1000" # Number of files. Definitely needs a boost in production
+    interned_strings_buffer: "10" # Megabytes. Memory used to store identical strings
   apc:
     size: "400M" #
   workers: "5" # You need 2 at the very least.
@@ -195,6 +195,7 @@ mw:
             domain_catchall: wikipedia.org
             rewrite_prefix: wikipedia
           legacy_rewrites: true
+          rewrite_static_assets: true
           variant_aliases:
             - sr
             - sr-ec
