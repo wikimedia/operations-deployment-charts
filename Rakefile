@@ -338,7 +338,7 @@ desc 'Validate the envoy configuration'
 task validate_envoy_config: :check_dep do
   puts 'Generating and verifying the envoy configuration...'
   # run helm template for a specific fixture that generates a service proxy and tls terminator
-  command = 'helm template --values .fixtures/service_discovery.yaml charts/termbox'
+  command = 'helm template --values .fixtures/envoy_proxy.yaml charts/tegola-vector-tiles'
   res, out = _exec command
   unless res
     puts out.red

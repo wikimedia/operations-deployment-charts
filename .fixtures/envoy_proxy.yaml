@@ -350,3 +350,16 @@ services_proxy:
       address: api-rw.discovery.wmnet
       port: 443
       encryption: true
+
+tcp_proxy:
+  listeners:
+    - maps_postgres
+tcp_services_proxy:
+   maps_postgres:
+     port: 10000
+     timeout: "60s"
+     upstreams:
+       - address: 10.0.0.88
+         port: 5432         
+       - address: 10.0.0.89
+         port: 5432
