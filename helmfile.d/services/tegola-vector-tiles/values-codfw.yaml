@@ -1,0 +1,22 @@
+# Temporarily we will use envoy as a L4 tcp proxy until envoy's
+# Postgres proxy filter is production ready
+# https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/network_filters/postgres_proxy_filter#config-network-filters-postgres-proxy
+tcp_services_proxy:
+  maps_postgres:
+    port: 5432
+    timeout: "60s"
+    upstreams:
+      # master node
+      - address: maps2009.codfw.wmnet
+        port: 5432
+      # read replicas
+      - address: maps2005.codfw.wmnet
+        port: 5432
+      - address: maps2006.codfw.wmnet
+        port: 5432
+      - address: maps2007.codfw.wmnet
+        port: 5432
+      - address: maps2008.codfw.wmnet
+        port: 5432
+      - address: maps2010.codfw.wmnet
+        port: 5432
