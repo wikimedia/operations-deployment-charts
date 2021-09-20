@@ -1,18 +1,7 @@
-main_app:
-  requests:
-    cpu: 4000m
-    memory: 1000Mi
-  limits:
-    cpu: 5000m
-    memory: 2000Mi
 resources:
-  replicas: 2
-resources:
-  replicas: 6
+  replicas: 12
 service:
   expose_http: true
-php:
-  workers: 8
 
 mw:
   datacenter: eqiad
