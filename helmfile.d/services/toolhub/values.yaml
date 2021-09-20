@@ -35,6 +35,12 @@ discovery:
     - search-chi-codfw
     - search-chi-eqiad
 
+docker:
+  # T291442: "latest" is not awesome with pullIfNotPresent
+  # Alternately, all sidecar images could be pinned, but then we would
+  # ideally also want to know when to update the pinned versions.
+  pull_policy: Always
+
 mcrouter:
   enabled: true
   zone: eqiad
