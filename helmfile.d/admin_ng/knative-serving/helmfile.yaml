@@ -18,16 +18,23 @@ releases:
   - name: secrets
     <<: *istio_secrets
     values:
-      - "/etc/helmfile-defaults/private/knative-serving/{{ .Environment.Name }}.yaml"           # The TLS certificate is defined by Knative-serving
+      # The TLS certificate is defined by Knative-serving
+      - "/etc/helmfile-defaults/private/knative-serving/{{ .Environment.Name }}.yaml"
   - name: knative-serving
     <<: *default
     needs:
       - knative-serving/knative-serving-crds
       - istio-system/secrets
     values:
-      - "values/common.yaml"                                                                     # Generic default values for all environments
-      - "values/{{ .Values.cluster_group }}.yaml"                                                # Default values for this cluster group
-      - "values/{{ .Environment.Name }}/values.yaml"                                             # Environment specific defaults
-      - "{{`{{ .Release.Name }}`}}/values.yaml"                                                  # Release specific overrides
-      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"                   # Overrides specific to release in environment
-      - "/etc/helmfile-defaults/private/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"  # Secrets (from private puppet repo)
+      # Generic default values for all environments
+      - "values/common.yaml"
+      # Default values for this cluster group
+      - "values/{{ .Values.cluster_group }}.yaml"
+      # Environment specific defaults
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # Release specific overrides
+      - "{{`{{ .Release.Name }}`}}/values.yaml"
+      # Overrides specific to release in environment
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+      # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"

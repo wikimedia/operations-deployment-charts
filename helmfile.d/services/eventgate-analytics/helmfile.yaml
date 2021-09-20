@@ -22,7 +22,7 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/eventgate-analytics/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/main_services/eventgate-analytics/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
     hooks:
