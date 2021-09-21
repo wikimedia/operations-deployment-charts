@@ -15,7 +15,8 @@ main_app:
     memory: 400Mi
   postgres:
     user: tilerator
-    max_connections: 100  # Use default from upstream
+    host: localhost
+    max_connections: 20
 monitoring:
   enabled: true
 service:
