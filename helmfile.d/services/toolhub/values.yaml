@@ -35,14 +35,11 @@ discovery:
     - search-chi-codfw
     - search-chi-eqiad
 
-docker:
-  # T291442: "latest" is not awesome with pullIfNotPresent
-  # Alternately, all sidecar images could be pinned, but then we would
-  # ideally also want to know when to update the pinned versions.
-  pull_policy: Always
-
 mcrouter:
   enabled: true
+  # FIXME: can these tags be inherited from a centrally managed config?
+  image_tag: mcrouter:0.41.0-4-20210919
+  exporter_version: 0.0.1-2
   zone: eqiad
   route_prefix: eqiad/toolhub
   routes:
