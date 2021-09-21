@@ -269,7 +269,7 @@ under 'tcp_services_proxy'.
     transport_socket:
       name: envoy.transport_sockets.tls
       typed_config:
-        "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
         common_tls_context:
           tls_params:
             tls_minimum_protocol_version: TLSv1_2
@@ -280,6 +280,11 @@ under 'tcp_services_proxy'.
     {{- end -}}
 {{- end }}
 {{- end }}
+{{- /*
+
+TCP proxies
+
+*/}}
 {{- if .Values.tcp_proxy| default false -}}
 {{- range $name := .Values.tcp_proxy.listeners }}
 {{- $listener := index $.Values.tcp_services_proxy $name }}
@@ -307,9 +312,9 @@ under 'tcp_services_proxy'.
         port_value: {{ .Values.tls.telemetry.port | default 1667 }}
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
+      - name: envoy.filters.network.http_connection_manager
         typed_config:
-          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           http_filters:
           - name: envoy.filters.http.router
             typed_config: {}
@@ -336,9 +341,21 @@ under 'tcp_services_proxy'.
       socket_address: {address: 0.0.0.0, port_value: {{ .Values.tls.public_port }} }
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
+      - name: envoy.filters.network.http_connection_manager
         typed_config:
-          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          access_log:
+          - filter:
+              status_code_filter:
+                comparison:
+                  op: "GE"
+                  value:
+                    default_value: 500
+                    runtime_key: tls_terminator_min_log_code
+            # TODO: use a stream logger once we upgrade from 1.15
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+              path: "/dev/stdout"
           http_filters:
           - name: envoy.filters.http.router
             typed_config: {}
@@ -358,7 +375,7 @@ under 'tcp_services_proxy'.
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
-          '@type': type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
           common_tls_context:
             tls_certificates:
               - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
@@ -376,12 +393,11 @@ under 'tcp_services_proxy'.
         port_value: {{ $listener.port }}
     filter_chains:
     - filters:
-      - name:  envoy.http_connection_manager
+      - name:  envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           access_log:
-          - name: envoy.file_access_log
-            filter:
+          - filter:
               status_code_filter:
                 comparison:
                   op: "GE"
@@ -389,7 +405,7 @@ under 'tcp_services_proxy'.
                     default_value: 500
                     runtime_key: {{ $name }}_min_log_code
             typed_config:
-              "@type": type.googleapis.com/envoy.config.accesslog.v2.FileAccessLog
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
               path: "/dev/stdout"
           stat_prefix: {{ $name }}_egress
           http_filters:
