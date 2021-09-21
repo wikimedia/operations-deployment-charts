@@ -59,3 +59,4 @@ config:
     ES_INDEX_REPLICAS: 2
     WIKIMEDIA_OAUTH2_KEY: 89c2e5fbbbbe57687b8757c46cb74901
     HTTP_PROXY: http://url-downloader.eqiad.wikimedia.org:8080
+    SOCIAL_AUTH_PROXIES: "http=http://url-downloader.eqiad.wikimedia.org:8080"
