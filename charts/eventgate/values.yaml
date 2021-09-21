@@ -1,6 +1,6 @@
 # Default values for EventGate.
 
-helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
+helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
@@ -9,16 +9,10 @@ resources:
 
 
 service:
-  # valid values are "production" and "minikube" and "none".
-  # If "none", no k8s Service will be deployed for this release.
+  # valid values are "production" and "minikube"
   deployment: minikube
   # You need to define this if "production" is used. In minikube environments let it autoallocate
   port: null
-  # Set routing_tag to the same (arbitrary) value for all releases that you want
-  # this k8s Service to route to.
-  # If you don't to deploy a service with a specific release (e.g. a canary), set service: false
-  # routing_tag defaults to .Release.Name, so by default a Service will only route to the release it is part of.
-  # routing_tag:
 
 tls:
   enabled: false
