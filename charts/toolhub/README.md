@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -52,6 +52,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.OUTGOING_REQUEST_ID_HEADER | string | `"X-Request-ID"` | Header for propigating trace id to services |
 | config.public.REQUEST_ID_RESPONSE_HEADER | string | `"X-Request-ID"` | Header for returning trace id to client |
 | config.public.REQUIRE_HTTPS | bool | `false` | Ensure TLS enabled and restrict cookies to https |
+| config.public.SOCIAL_AUTH_PROXIES | string | `""` | HTTP proxy settings to use with OAuth client requests. Toolhub expects value to be semicolon separated list of key=value pairs. See also https://docs.python-requests.org/en/master/user/advanced/#proxies |
 | config.public.SSL_CANONICAL_HOST | string | `"toolhub.wikimedia.org"` | Https redirect hostname |
 | config.public.STATIC_ROOT | string | `"/srv/app/staticfiles"` |  |
 | config.public.WIKIMEDIA_OAUTH2_KEY | string | `"11dec83f263af1b9f480488512556cb1"` | OAuth2 grant public key. The default value is tied to `http://toolhub.test/` which can only be used in local testing. https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1 |

@@ -115,6 +115,10 @@ config:
     # used in local testing.
     # https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1
     WIKIMEDIA_OAUTH2_KEY: 11dec83f263af1b9f480488512556cb1
+    # -- HTTP proxy settings to use with OAuth client requests.
+    # Toolhub expects value to be semicolon separated list of key=value pairs.
+    # See also https://docs.python-requests.org/en/master/user/advanced/#proxies
+    SOCIAL_AUTH_PROXIES: ""
     # == Static assets ==
     STATIC_ROOT: /srv/app/staticfiles
     # == HTTP client proxy ==
