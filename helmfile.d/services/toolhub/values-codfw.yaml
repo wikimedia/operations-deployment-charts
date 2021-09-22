@@ -16,5 +16,4 @@ config:
   public:
     DB_HOST: m5-master.codfw.wmnet
     ES_HOSTS: localhost:6202  # Envoy proxy to search-chi-codfw
-    HTTP_PROXY: http://url-downloader.codfw.wikimedia.org:8080
-    SOCIAL_AUTH_PROXIES: "http=http://url-downloader.codfw.wikimedia.org:8080"
+    http_proxy: http://url-downloader.codfw.wikimedia.org:8080

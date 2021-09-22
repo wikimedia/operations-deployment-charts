@@ -29,6 +29,23 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 3306
+      # T291447: allow direct access to text-lb nodes
+      - cidr: 208.80.154.224/32  # text-lb.eqiad.wikimedia.org
+        ports:
+          - protocol: TCP
+            port: 443
+      - cidr: 2620:0:861:ed1a::1/128  # text-lb.eqiad.wikimedia.org
+        ports:
+          - protocol: TCP
+            port: 443
+      - cidr: 208.80.153.224/32  # text-lb.codfw.wikimedia.org
+        ports:
+          - protocol: TCP
+            port: 443
+      - cidr: 2620:0:860:ed1a::1/128  # text-lb.codfw.wikimedia.org
+        ports:
+          - protocol: TCP
+            port: 443
 
 discovery:
   listeners:
@@ -58,5 +75,5 @@ config:
     ES_HOSTS: localhost:6102  # Envoy proxy to search-chi-eqiad
     ES_INDEX_REPLICAS: 2
     WIKIMEDIA_OAUTH2_KEY: 89c2e5fbbbbe57687b8757c46cb74901
-    HTTP_PROXY: http://url-downloader.eqiad.wikimedia.org:8080
-    SOCIAL_AUTH_PROXIES: "http=http://url-downloader.eqiad.wikimedia.org:8080"
+    http_proxy: http://url-downloader.eqiad.wikimedia.org:8080
+    no_proxy: mediawiki.org,wikibooks.org,wikidata.org,wikimedia.org,wikinews.org,wikipedia.org,wikiquote.org,wikisource.org,wikiversity.org,wikivoyage.org,wiktionary.org
