@@ -287,6 +287,36 @@ services_proxy:
       address: shellbox-constraints.discovery.wmnet
       port: 443
       encryption: true
+  shellbox-media:
+    port: 6026
+    timeout: 60s
+    upstream:
+      ips:
+        - 10.2.1.64/32
+        - 10.2.2.64/32
+      address: shellbox-media.discovery.wmnet
+      port: 443
+      encryption: true
+  shellbox-syntaxhighlight:
+    port: 6027
+    timeout: 60s
+    upstream:
+      ips:
+        - 10.2.1.65/32
+        - 10.2.2.65/32
+      address: shellbox-syntaxhighlight.discovery.wmnet
+      port: 443
+      encryption: true
+  shellbox-timeline:
+    port: 6028
+    timeout: 60s
+    upstream:
+      ips:
+        - 10.2.1.66/32
+        - 10.2.2.66/32
+      address: shellbox-timeline.discovery.wmnet
+      port: 443
+      encryption: true
   swift-eqiad:
     port: 6101
     timeout: 50s
