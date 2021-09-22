@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square)
+![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -42,8 +42,6 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.ES_INDEX_REPLICAS | int | `0` |  |
 | config.public.ES_INDEX_SHARDS | int | `1` |  |
 | config.public.FIREFOX_DEVTOOL_HACK | bool | `false` | Local dev only hack. Needs DEBUG=True. |
-| config.public.HTTPS_PROXY | string | `""` | Outbound https request proxy |
-| config.public.HTTP_PROXY | string | `""` |  |
 | config.public.LOGGING_CONSOLE_FORMATTER | string | `"ecs"` |  |
 | config.public.LOGGING_FILE_FILENAME | string | `"/dev/null"` | 'file' handler output file |
 | config.public.LOGGING_HANDLERS | string | `"console"` | List of log handlers to enable |
@@ -57,6 +55,9 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.STATIC_ROOT | string | `"/srv/app/staticfiles"` |  |
 | config.public.WIKIMEDIA_OAUTH2_KEY | string | `"11dec83f263af1b9f480488512556cb1"` | OAuth2 grant public key. The default value is tied to `http://toolhub.test/` which can only be used in local testing. https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1 |
 | config.public.WIKIMEDIA_OAUTH2_URL | string | `"https://meta.wikimedia.org/w/rest.php"` |  |
+| config.public.http_proxy | string | `""` |  |
+| config.public.https_proxy | string | `""` | Outbound https request proxy |
+| config.public.no_proxy | string | `""` | Outbound proxy exceptions |
 | crawler.enabled | bool | `true` | Enable CronJob for toolinfo url crawler |
 | crawler.schedule | string | `"@hourly"` | Schedule for crawler job |
 | debug | object | `{"enabled":false,"ports":[]}` | Additional resources if we want to add a port for a debugger to connect to. |

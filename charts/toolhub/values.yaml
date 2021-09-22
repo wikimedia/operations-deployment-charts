@@ -109,6 +109,7 @@ config:
     ES_DSL_AUTOSYNC: True
     ES_DSL_PARALLEL: True
     # == OAuth2 client ==
+    # -- OAuth2 request base URL
     WIKIMEDIA_OAUTH2_URL: https://meta.wikimedia.org/w/rest.php
     # -- OAuth2 grant public key.
     # The default value is tied to `http://toolhub.test/` which can only be
@@ -123,9 +124,11 @@ config:
     STATIC_ROOT: /srv/app/staticfiles
     # == HTTP client proxy ==
     # -- Outbound http request proxy
-    HTTP_PROXY: ""
+    http_proxy: ""
     # -- Outbound https request proxy
-    HTTPS_PROXY: ""
+    https_proxy: ""
+    # -- Outbound proxy exceptions
+    no_proxy: ""
     # -- CA override for intercepting https proxy
     CURL_CA_BUNDLE: ""
 
