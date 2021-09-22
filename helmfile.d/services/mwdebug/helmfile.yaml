@@ -26,7 +26,7 @@ templates:
       - /etc/helmfile-defaults/mediawiki/tlsproxy.yaml # discovery listeners
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/main_services/private/mwdebug/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/main_services/mwdebug/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/releases.yaml" # Special file controlled by other processes on the deployment host
