@@ -47,6 +47,7 @@ templates:
       - SERVICE_NAME_secrets
 
   service_secrets: &service_secrets
+    name: SERVICE_NAME-secrets
     namespace: SERVICE_NAME
     chart: "wmf-stable/secrets"
     missingFileHandler: Warn
@@ -54,8 +55,7 @@ templates:
       - "/etc/helmfile-defaults/private/ml-serve/SERVICE_NAME/{{ .Environment.Name }}.yaml"
 
 releases:
-  - name: SERVICE_NAME_secrets
-    <<: *service_secrets
+  - <<: *service_secrets
   - name: main
     <<: *default
 

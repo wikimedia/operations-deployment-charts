@@ -34,10 +34,10 @@ templates:
             "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
           ]
     needs:
-      - revscoring-editquality/service_secrets
+      - revscoring-editquality/service-secrets
 
   service_secrets: &service_secrets
-    name: service_secrets
+    name: service-secrets
     namespace: revscoring-editquality
     chart: "wmf-stable/secrets"
     missingFileHandler: Warn
