@@ -41,6 +41,8 @@ net_istio:
         cpu: 200m
         memory: 200Mi
 core:
+  # This domain will be used when creating hostnames for routes by Knative
+  default_domain: 'wikimedia.org'
   queue_proxy:
     image: knative-serving-queue
     version: 0.18.1-4

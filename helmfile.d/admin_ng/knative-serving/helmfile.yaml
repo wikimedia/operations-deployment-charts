@@ -7,7 +7,7 @@ templates:
 
   istio_secrets: &istio_secrets
     namespace: istio-system
-    chart: "wmf-stable/{{`{{ .Release.Name }}`}}"
+    chart: "wmf-stable/secrets"
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
@@ -15,7 +15,7 @@ templates:
 releases:
   - name: knative-serving-crds
     <<: *default
-  - name: secrets
+  - name: knative-secrets
     <<: *istio_secrets
     values:
       # The TLS certificate is defined by Knative-serving
@@ -24,7 +24,7 @@ releases:
     <<: *default
     needs:
       - knative-serving/knative-serving-crds
-      - istio-system/secrets
+      - istio-system/knative-secrets
     values:
       # Generic default values for all environments
       - "values/common.yaml"

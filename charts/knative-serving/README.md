@@ -58,3 +58,5 @@ We also need to add the following bit to the controller deployment's specs:
 +            - name: SSL_CERT_DIR
 +              value: /usr/share/ca-certificates
 ```
+The default route/revision hostname uses 'example.com', we set 'wikimedia.org'
+in the related config-map (it is sufficient to grep for 'example.com' to find it).
