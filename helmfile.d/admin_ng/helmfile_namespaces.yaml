@@ -25,7 +25,7 @@ releases:
               {{- with $labels }}
               labels:
               {{- range $k, $v := . }}
-                {{ $k }}: {{ $v }}
+                {{ $k }}: {{ $v | quote }}
               {{- end }}
               {{- end }}
               annotations:
