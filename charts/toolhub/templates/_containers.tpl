@@ -42,11 +42,11 @@ resources:
     - name: SERVICE_IDENTIFIER
       value: {{ template "wmf.releasename" . }}
   {{- range $k, $v := .Values.config.public }}
-    - name: {{ $k | upper }}
+    - name: {{ $k }}
       value: {{ $v | quote }}
   {{- end }}
   {{- range $k, $v := .Values.config.private }}
-    - name: {{ $k | upper }}
+    - name: {{ $k }}
       valueFrom:
         secretKeyRef:
           name: {{ template "wmf.releasename" $ }}-secret-config
