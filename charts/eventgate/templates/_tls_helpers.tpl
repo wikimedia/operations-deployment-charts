@@ -10,7 +10,7 @@
 {{- define "tls.annotations" -}}
 {{- if .Values.tls.enabled }}
 checksum/tls-config: {{ include "tls.envoy_template" . | sha256sum }}
-checksum/tls-certs: {{ printf "%s" .Values.tls.certs | sha256sum }}
+checksum/tls-certs: {{ printf "%v" (values .Values.tls.certs | sortAlpha) | sha256sum }}
 {{- if .Values.tls.telemetry.enabled }}
 envoyproxy.io/scrape: "true"
 envoyproxy.io/port: "{{ .Values.tls.telemetry.port }}"
@@ -23,7 +23,7 @@ envoyproxy.io/scrape: "false"
 {{- define "tls.container" -}}
 {{- if .Values.tls.enabled }}
 - name: {{ .Values.main_app.name }}-tls-proxy
-  image: {{ .Values.docker.registry }}/envoy:{{ .Values.tls.image_version }}
+  image: {{ .Values.docker.registry }}/envoy:{{ .Values.tls.image_version | default "latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: SERVICE_NAME
@@ -74,9 +74,10 @@ envoyproxy.io/scrape: "false"
 
 */}}
 {{- define "tls.service" -}}
+{{ if .Values.tls.enabled }}
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-tls-service
   labels:
@@ -96,7 +97,9 @@ spec:
       targetPort: {{ .Values.tls.public_port }}
       port: {{ .Values.tls.public_port }}
       nodePort: {{ .Values.tls.public_port }}
+{{- end }}
 {{- end -}}
+
 
 {{/*
 
@@ -121,6 +124,10 @@ data:
 {{ .Values.tls.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.tls.certs.key | indent 4 }}
+{{- if .Values.puppet_ca_crt }}
+  ca.crt: |-
+{{ .Values.puppet_ca_crt | indent 4 }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -195,6 +202,113 @@ static_resources:
             address:
               socket_address: {address: 127.0.0.1, port_value: 1666 }
     type: strict_dns
+{{- /*
+  Remote clusters.
+
+  To instantiate remote http clusters, you need to define two
+  data structures:
+  - A list of remote service configurations (that can be shared between charts)
+  - A list of which services you intend to reach from your service (which will be specific)
+
+  discovery:
+    listeners:
+      - svcA
+  services_proxy:
+    svcA:
+      keepalive: "5s"
+      port: 6060  # this is the local port
+      http_host: foobar.example.org  # this is the Host: header that will be added to your request
+      timeout: "60s"
+      retry_policy:
+        num_retries: 1
+        retry_on: 5xx
+      upstream:
+        address: svcA.discovery.wmnet
+        port: 10100  # this is the prot on the remote system
+        encryption: false
+
+Note: The tcp_services_proxy is using API v3
+For TCP load balancer, we define the TCP service, and then we add upstreams as a list
+under 'tcp_services_proxy'.
+  tcp_proxy:
+    listeners:
+      - tcpServiceA
+  tcp_services_proxy:
+     tcpServiceA:
+       connect_timeout: "30s"
+       max_connect_attempts: 5
+       port: 6060                    # this is the local port
+       upstreams:
+         - address: 1.2.3.4
+           port: 10100               # this is the port on the remote system
+         - address: 4.5.6.7
+           port: 10100
+*/}}
+{{- if .Values.discovery | default false -}}
+{{- range $name := .Values.discovery.listeners }}
+{{- $listener := index $.Values.services_proxy $name }}
+  - name: {{ $name }}
+    connect_timeout: 0.25s
+    {{- if $listener.keepalive }}
+    common_http_protocol_options:
+      idle_timeout: {{ $listener.keepalive }}
+    {{- end }}
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: cluster_{{ $name }}
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $listener.upstream.address }}
+                port_value: {{ $listener.upstream.port }}
+{{- /*
+  Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
+*/}}
+    max_requests_per_connection: 1000
+    {{- if $listener.upstream.encryption }}
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          tls_params:
+            tls_minimum_protocol_version: TLSv1_2
+            cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+          validation_context:
+            trusted_ca:
+              filename: /etc/envoy/ssl/ca.crt
+    {{- end -}}
+{{- end }}
+{{- end }}
+{{- /*
+
+TCP proxies
+
+*/}}
+{{- if .Values.tcp_proxy| default false -}}
+{{- range $name := .Values.tcp_proxy.listeners }}
+{{- $listener := index $.Values.tcp_services_proxy $name }}
+  - name: {{ $name }}
+    connect_timeout: {{ $listener.connect_timeout | default "30s" }}
+    type: STRICT_DNS
+    dns_lookup_family: V4_ONLY
+    load_assignment:
+      cluster_name: {{ $name }}
+      endpoints:
+      - lb_endpoints:
+      {{- range $upstream := $listener.upstreams }}
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ $upstream.address }}
+                port_value:  {{ $upstream.port }}
+      {{- end }}
+{{- end }}
+{{- end }}
   listeners:
   - address:
       socket_address:
@@ -202,11 +316,11 @@ static_resources:
         port_value: {{ .Values.tls.telemetry.port | default 1667 }}
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
+      - name: envoy.filters.network.http_connection_manager
         typed_config:
-          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           http_filters:
-          - name: envoy.router
+          - name: envoy.filters.http.router
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
@@ -231,11 +345,23 @@ static_resources:
       socket_address: {address: 0.0.0.0, port_value: {{ .Values.tls.public_port }} }
     filter_chains:
     - filters:
-      - name: envoy.http_connection_manager
+      - name: envoy.filters.network.http_connection_manager
         typed_config:
-          '@type': type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          access_log:
+          - filter:
+              status_code_filter:
+                comparison:
+                  op: "GE"
+                  value:
+                    default_value: 500
+                    runtime_key: tls_terminator_min_log_code
+            # TODO: use a stream logger once we upgrade from 1.15
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+              path: "/dev/stdout"
           http_filters:
-          - name: envoy.router
+          - name: envoy.filters.http.router
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
@@ -247,15 +373,92 @@ static_resources:
                 route:
                   cluster: local_service
                   timeout: {{ .Values.tls.upstream_timeout | default "60s" }}
-          stat_prefix: ingress_https_{{ .Values.main_app.name }}
-          server_name: {{ .Values.main_app.name }}-tls
+          stat_prefix: ingress_https_{{ .Release.Name }}
+          server_name: {{ .Release.Name }}-tls
           server_header_transformation: APPEND_IF_ABSENT
-      tls_context:
-        common_tls_context:
-          tls_certificates:
-          - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
-            private_key: {filename: /etc/envoy/ssl/service.key}
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+              - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
+                private_key: {filename: /etc/envoy/ssl/service.key}
     listener_filters:
-    - name: envoy.listener.tls_inspector
+    - name: envoy.filters.listener.tls_inspector
       typed_config: {}
+  {{- if .Values.discovery | default false -}}
+  {{- range $name := .Values.discovery.listeners }}
+  {{- $listener := index $.Values.services_proxy $name }}
+  - address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: {{ $listener.port }}
+    filter_chains:
+    - filters:
+      - name:  envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          access_log:
+          - filter:
+              status_code_filter:
+                comparison:
+                  op: "GE"
+                  value:
+                    default_value: 500
+                    runtime_key: {{ $name }}_min_log_code
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+              path: "/dev/stdout"
+          stat_prefix: {{ $name }}_egress
+          http_filters:
+          - name: envoy.filters.http.router
+            typed_config: {}
+          route_config:
+          {{- if $listener.xfp }}
+            request_headers_to_remove:
+            - x-forwarded-proto
+            request_headers_to_add:
+            - header:
+               key: "x-forwarded-proto"
+               value: "{{ $listener.xfp }}"
+          {{- end }}
+            name: {{ $name }}_route
+            virtual_hosts:
+            - name: {{ $name }}
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  {{- if $listener.http_host }}
+                  host_rewrite: {{ $listener.http_host }}
+                  {{- end }}
+                  cluster: {{ $name }}
+                  timeout: {{ $listener.timeout }}
+                  {{- if $listener.retry_policy }}
+                  retry_policy:
+                  {{- range $k, $v :=  $listener.retry_policy }}
+                    {{ $k }}: {{ $v }}
+                  {{- end -}}
+                  {{- end }}
+  {{- end -}}
+  {{- end -}}
+  {{- if .Values.tcp_proxy| default false -}}
+  {{- range $name := .Values.tcp_proxy.listeners }}
+  {{- $listener := index $.Values.tcp_services_proxy $name }}
+  - address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: {{ $listener.port }}
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.tcp_proxy
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy
+          stat_prefix: destination
+          cluster: {{$name}}
+  {{- end -}}
+  {{- end -}}
 {{- end -}}
