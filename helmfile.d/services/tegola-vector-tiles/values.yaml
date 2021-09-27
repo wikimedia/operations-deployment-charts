@@ -44,8 +44,8 @@ tcp_services_proxy:
     timeout: "60s"
     upstreams:
       # master node
-      - address: maps1009.eqiad.wmnet
-        port: 5432
+      # - address: maps1009.eqiad.wmnet
+      #   port: 5432
       # read replicas
       - address: maps1005.eqiad.wmnet
         port: 5432

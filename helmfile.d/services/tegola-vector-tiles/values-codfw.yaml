@@ -7,8 +7,8 @@ tcp_services_proxy:
     timeout: "60s"
     upstreams:
       # master node
-      - address: maps2009.codfw.wmnet
-        port: 5432
+      # - address: maps2009.codfw.wmnet
+      #   port: 5432
       # read replicas
       - address: maps2005.codfw.wmnet
         port: 5432
