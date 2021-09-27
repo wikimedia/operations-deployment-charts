@@ -176,7 +176,7 @@ static_resources:
   clusters:
   - name: local_service
     common_http_protocol_options:
-      idle_timeout: {{ .Values.tls.idle_timeout | default "5s" }}
+      idle_timeout: {{ .Values.tls.idle_timeout | default "4.5s" }}
     connect_timeout: 1.0s
     lb_policy: round_robin
     load_assignment:
