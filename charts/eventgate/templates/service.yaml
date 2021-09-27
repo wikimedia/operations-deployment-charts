@@ -1,11 +1,11 @@
-{{ if not (hasSuffix "canary" .Release.Name) }}
+{{- if ne .Values.service.deployment "none" }}
 {{/*
 #
 # Deploy a k8s Service for {{ template "wmf.releasename" . }}
-# routing to all pods (in the current k8s namespace) that are labeled with:
+# routing to all pods that are labeled with:
 #   chart: {{ template "wmf.chartname" . }}
 #   app: {{ .Values.main_app.name }}
-#   routed_via: {{ .Values.routed_via | default .Release.Name }}
+#   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
 #
 */}}
 {{ if .Values.tls.enabled }}
@@ -29,7 +29,7 @@ spec:
   selector:
     chart: {{ template "wmf.chartname" . }}
     app: {{ .Values.main_app.name }}
-    routed_via: {{ .Release.Name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   ports:
   - name: {{ .Values.main_app.name }}-http
     protocol: TCP
@@ -57,7 +57,7 @@ spec:
   selector:
     chart: {{ template "wmf.chartname" . }}
     app: {{ .Values.main_app.name }}
-    routed_via: {{ .Values.routed_via | default .Release.Name }}
+    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
   - name: node-inspector-master
     protocol: TCP
     port: 9229
@@ -71,8 +71,8 @@ spec:
 {{- else }}
 {{/*
 #
-# Skipping deployment of k8s Service for 'canary' release {{ template "wmf.releasename" . }}.
-# https://phabricator.wikimedia.org/T282148
+# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# as service.deployment is set to "{{ .Values.service.deployment }}"
 #
 */}}
 {{- end }}

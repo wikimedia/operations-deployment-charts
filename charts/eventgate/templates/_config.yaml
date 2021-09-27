@@ -46,7 +46,7 @@ services:
       # Default cors to false.
       cors: false
 {{- end }}
-      user_agent: {{ .Values.main_app.name }}
+      user_agent: {{ template "wmf.releasename" . }}
 
       eventgate_factory_module: '/srv/service/eventgate-wikimedia.js'
 
