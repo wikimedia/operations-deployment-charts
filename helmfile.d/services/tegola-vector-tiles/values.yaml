@@ -31,6 +31,7 @@ tileCaching:
   config:
     type: "s3"  # S3 compatible API on swift
     endpoint: "thanos-swift.discovery.wmnet"
+    basepath: "eqiad"
 
 # Temporarily we will use envoy as a L4 tcp proxy until envoy's
 # Postgres proxy filter is production ready
