@@ -1,5 +1,50 @@
-{{/* TLS termination related helpers */}}
+{{/*
+TLS termination related helpers.
 
+== Label conventions
+
+We try to stick with label names recommended by Helm best practices:
+
+  - app
+    The chart name being used.
+
+  - chart
+    The specific chart version
+
+  - release
+    The release within the current namespace, usually 'production' or 'canary'
+
+  - heritage
+    Always 'helm', used to indicated with k8s that the resource is managed by Helm.
+
+== Resource naming conventions
+
+k8s resources are prefixed with the wmf.releasename template,
+defined in _helpers.tpl. wmf.releasename is the chartname + the
+current release name, so usually somethign like 'chartname-production'.
+E.g. the Envoy TLS k8s Service resource is called
+'chartname-production-tls-service'.
+
+== Canary releases and Service routing
+
+The Services defined here support 'canary' releases.  This is used
+to be able to deploy changes to a limited number of pods that are routed
+real traffic, without having to deploy changes to the entire pod cluster.
+
+When a release has the -canary suffix, this template will not create a Service for the canary release. The Service resources that are created for the production
+release uses a `routed_via` selector set to .Release.Name (which will always
+be 'production', because we don't create any Service for 'canary' release).
+
+The _scaffold/templates/deployment.yaml template sets the `routed_via` label
+on pods to .Values.routed_via, defaulting to .Release.Name.
+
+To enable canary releases, you just need to override .Values.routed_via
+in your helmfile service's values-canary.yaml file and set it to 'production'.
+This will cause the canary release's pods, as well as the production release's pods,
+to all have the label `routed_via: production`.  Since the 'production' release's
+Service targets all pods that have this label, it will route to both production release and canary release pods.
+
+*/}}
 
 {{/*
 

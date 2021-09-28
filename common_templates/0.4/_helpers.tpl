@@ -1,10 +1,29 @@
-{{/* standard boilerplate safe names for kubernetes:
- - wmf.chartname is the chart name safely truncated to 63 chars
- - wmf.releasename is the current release name truncated to 63 chars
- - wmf.chartid is the full chart identifier
- The reason to limit ourselves to 63 chars is that the DNS spec in kubernetes
- limits names to that.
- We also allow overriding the chart name via the chart.name value
+{{/*
+== Standard boilerplate safe names for kubernetes
+
+The DNS spec in k8s limits names to 63 chars,
+so we do the same for names here.
+
+ - wmf.chartname
+   The chart name safely truncated to 63 chars.
+   We allow overriding this via .Values.chartName.
+
+ - wmf.releasename
+   The chart + release name truncated to 63 chars.
+
+ - wmf.chartid
+   chart name + chart version.
+
+ - wmf.appbaseurl
+   URL for the main_app port.  Uses wmf.releasename as the hostname.
+
+The reason to limit ourselves to
+
+
+NOTE: The main_app name is not used in any of these templates.
+Because we isolate our applications within k8s namespaces,
+these template variables should be unique within any given namespace.
+
 */}}
 
 {{- define "wmf.chartname" -}}
