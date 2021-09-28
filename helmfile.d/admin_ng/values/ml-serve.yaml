@@ -7,6 +7,9 @@ cluster_group: ml-serve
 # No default network policies
 GlobalNetworkPolicies: {}
 
+deployExtraClusterRoles:
+  - "kserve"
+
 # List all namespaces that should be created in every ML Serve cluster.
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
@@ -27,7 +30,8 @@ namespaces:
       control-plane: kfserving-controller-manager
       controller-tools.k8s.io: "1.0"
       istio-injection: disabled
-  revscoring-editquality: {}
+  revscoring-editquality:
+    deployClusterRole: deploy-kserve
 
 net_istio:
   ingressgateway:

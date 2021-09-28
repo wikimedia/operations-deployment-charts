@@ -2,6 +2,9 @@
 # that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
 cluster_group: main
 
+deployExtraClusterRoles:
+  - "flink"
+
 # List all namespaces that should be created in every ServiceOps cluster
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:

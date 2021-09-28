@@ -43,6 +43,13 @@
 namespaces: {}
 GlobalNetworkPolicies: {}
 
+# In helmfile_rbac.yaml we define a deploy ClusterRole and few other ones,
+# like deploy-{flink,kserve,..} with special extra settings for ad-hoc use cases.
+# To avoid deploying all extra deploy ClusterRoles to all clusters, we define
+# a list of them for each cluster config. The value of the list are the names
+# of the extra cluster roles to deploy without the common 'deploy-' prefix.
+deployExtraClusterRoles: []
+
 # Feature only available in Kubernetes 1.21+, but since we control all namespaces
 # we implemented the feature.
 # If set to true, it adds the label kubernetes.io/metadata.name=$namespace to
