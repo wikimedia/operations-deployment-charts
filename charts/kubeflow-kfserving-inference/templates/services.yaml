@@ -6,13 +6,13 @@ metadata:
   {{- with $.Values.inference.annotations }}
   annotations:
   {{- range $k, $v := . }}
-    {{ $k }}: {{ $v }}
+    {{ $k }}: {{ $v | quote }}
   {{- end }}
   {{- end }}
   {{- with $.Values.inference.labels }}
   labels:
   {{- range $k, $v := . }}
-    {{ $k }}: {{ $v }}
+    {{ $k }}: {{ $v | quote }}
   {{- end }}
   {{- end }}
 spec:
