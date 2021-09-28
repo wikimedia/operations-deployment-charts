@@ -5,7 +5,7 @@ helmDefaults:
   timeout: 600
   force: false
   args:
-    - "--kubeconfig=/etc/kubernetes/revscoring-editquality-{{ .Environment.Name }}.config"
+    - "--kubeconfig=/etc/kubernetes/revscoring-editquality-deploy-{{ .Environment.Name }}.config"
 
 templates:
   default: &default

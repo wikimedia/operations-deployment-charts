@@ -5,7 +5,7 @@ helmDefaults:
   timeout: 600
   force: false
   args:
-    - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-{{ .Environment.Name }}.config"
+    - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-deploy-{{ .Environment.Name }}.config"
 
 templates:
   default: &default
