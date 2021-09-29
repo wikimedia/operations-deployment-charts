@@ -85,25 +85,13 @@ networkpolicy:
         ports:
         - port: 3306
           protocol: tcp
-      - cidr: 10.64.53.26/32 # thorium.eqiad.wmnet
+      - cidr: 10.64.21.14/32 # an-web1001.eqiad.wmnet AKA analytics-web.discovery.wmnet
         ports:
         - port: 80
           protocol: tcp
         - port: 8443
           protocol: tcp
-      - cidr: 2620:0:861:108:10:64:53:26/128 # thorium.eqiad.wmnet
-        ports:
-        - port: 80
-          protocol: tcp
-        - port: 8443
-          protocol: tcp
-      - cidr: 10.64.21.14/32 # an-web1001.eqiad.wmnet
-        ports:
-        - port: 80
-          protocol: tcp
-        - port: 8443
-          protocol: tcp
-      - cidr: 2620:0:861:105:10:64:21:14/128 # an-web1001.eqiad.wmnet
+      - cidr: 2620:0:861:105:10:64:21:14/128 # an-web1001.eqiad.wmnet AKA analytics-web.discovery.wmnet
         ports:
         - port: 80
           protocol: tcp
