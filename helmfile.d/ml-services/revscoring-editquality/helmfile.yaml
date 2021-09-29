@@ -21,7 +21,7 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/ml-serve/revscoring-editquality/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/ml-serve_services/revscoring-editquality/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
     hooks:
@@ -42,7 +42,7 @@ templates:
     chart: "wmf-stable/secrets"
     missingFileHandler: Warn
     values:
-      - "/etc/helmfile-defaults/private/ml-serve/revscoring-editquality/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/ml-serve_services/revscoring-editquality/{{ .Environment.Name }}.yaml"
 
 releases:
   - <<: *service_secrets

@@ -29,7 +29,7 @@ templates:
       # non-env-specific values, in this repository
       - "values.yaml"
       # prod-specific secrets, controlled by SRE
-      - "/etc/helmfile-defaults/private/ml-serve/SERVICE_NAME/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/ml-serve_services/SERVICE_NAME/{{ .Environment.Name }}.yaml"
       # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml"
       # release-specific overrides
@@ -52,7 +52,7 @@ templates:
     chart: "wmf-stable/secrets"
     missingFileHandler: Warn
     values:
-      - "/etc/helmfile-defaults/private/ml-serve/SERVICE_NAME/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/ml-serve_services/SERVICE_NAME/{{ .Environment.Name }}.yaml"
 
 releases:
   - <<: *service_secrets
