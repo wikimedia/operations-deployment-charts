@@ -83,3 +83,10 @@ core:
     version: 0.18.1-3
 
 helmVersion: "helm3"
+
+# Override from default config (see ./common.yaml) to lower the min cpu limit
+# from 100m to 25m (kfserving sidecar default settings).
+limitranges:
+  container:
+    min:
+      cpu: "25m"
