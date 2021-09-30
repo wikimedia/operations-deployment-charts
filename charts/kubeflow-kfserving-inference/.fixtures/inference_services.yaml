@@ -5,6 +5,7 @@ docker:
 inference:
   image: "machinelearning-liftwing-inference-services-editquality"
   version: "2021-09-01-140944-production"
+  swift_s3_secret_name: "swift-s3-credentials"
   annotations:
     sidecar.istio.io/inject: "false"
   labels:
@@ -14,6 +15,8 @@ inference:
       value: "https://api-ro.discovery.wmnet"
     - name: REQUESTS_CA_BUNDLE
       value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+  predictor_config:
+    serviceAccountName: "revscoring-editquality"
 
 inference_services:
   - name: "enwiki-goodfaith"
