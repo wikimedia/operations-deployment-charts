@@ -15,8 +15,6 @@ inference:
       value: "https://api-ro.discovery.wmnet"
     - name: REQUESTS_CA_BUNDLE
       value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
-  predictor_config:
-    serviceAccountName: "revscoring-editquality"
 
 inference_services:
   - name: "enwiki-goodfaith"
@@ -29,6 +27,7 @@ inference_services:
         value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
   - name: itwiki-goodfaith
     predictor_config:
+      serviceAccountName: "kfserving-override"
       minReplicas: 2
       canaryTrafficPercent: 10
     custom_env:

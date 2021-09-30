@@ -17,7 +17,8 @@ metadata:
   {{- end }}
 spec:
   predictor:
-    {{- range $k, $v := .predictor_config }}
+    {{- $final_predictor_config := merge (.predictor_config | default dict) $.Values.inference.predictor_config }}
+    {{- range $k, $v := $final_predictor_config }}
     {{ $k }}: {{ $v }}
     {{- end }}
     containers:
