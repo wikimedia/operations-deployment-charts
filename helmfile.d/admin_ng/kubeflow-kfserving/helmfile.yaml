@@ -21,4 +21,4 @@ releases:
       # Overrides specific to release in environment
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
       # Secrets (from private puppet repo)
-      - "/etc/helmfile-defaults/private/kubeflow-kfserving/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/kubeflow-kfserving/{{ .Environment.Name }}.yaml"
