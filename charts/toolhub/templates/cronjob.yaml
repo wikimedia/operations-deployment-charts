@@ -19,12 +19,15 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      backoffLimit: 1
+      backoffLimit: 0
       template:
         metadata:
           labels:
             app: {{ template "wmf.chartname" . }}
             release: {{ .Release.Name }}
+          annotations:
+            checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         spec:
           restartPolicy: Never
           containers:
@@ -38,6 +41,8 @@ spec:
                 - manage.py
                 - crawl
               env:
+                - name: SERVICE_IDENTIFIER
+                  value: {{ template "wmf.releasename" . }}
                 {{- range $k, $v := .Values.config.public }}
                 - name: {{ $k }}
                   value: {{ $v | quote }}
@@ -49,4 +54,8 @@ spec:
                       name: {{ template "wmf.releasename" $ }}-secret-config
                       key: {{ $k }}
                 {{- end }}
+            {{- include "tls.container" . | indent 12}}
+            {{- include "mcrouter.container" . | indent 12}}
+          volumes:
+            {{- include "wmf.volumes" . | indent 12}}
 {{- end }}
