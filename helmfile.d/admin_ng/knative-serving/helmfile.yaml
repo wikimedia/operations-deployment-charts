@@ -19,7 +19,7 @@ releases:
     <<: *istio_secrets
     values:
       # The TLS certificate is defined by Knative-serving
-      - "/etc/helmfile-defaults/private/knative-serving/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/knative-serving/{{ .Environment.Name }}.yaml"
   - name: knative-serving
     <<: *default
     needs:
