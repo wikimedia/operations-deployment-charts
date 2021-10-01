@@ -113,6 +113,12 @@ main_app:
       TranslateRenderJob:
         enabled: true
         concurrency: 3
+      DispatchChanges:
+        enabled: true
+        concurrency: 3
+      EntityChangeNotification:
+        enabled: true
+        concurrency: 15
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
