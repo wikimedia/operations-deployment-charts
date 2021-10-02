@@ -10,7 +10,8 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.crawler.schedule }}"
-  concurrencyPolicy: Forbid
+  # https://medium.com/finnovate-io/how-to-prevent-kubernetes-cron-jobs-with-sidecar-containers-from-getting-stuck-912c0f1497a3
+  concurrencyPolicy: Replace
   jobTemplate:
     metadata:
       labels:
@@ -19,7 +20,7 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      backoffLimit: 1
+      backoffLimit: 0
       template:
         metadata:
           labels:
