@@ -32,4 +32,9 @@
   configMap:
     name: {{ $release }}-nutcracker-config
 {{- end }}
+{{- if .Values.mw.logging.rsyslog }}
+- name: {{ $release }}-rsyslog-config
+  configMap:
+    name: {{ $release }}-rsyslog-config
+{{- end }}
 {{ end }}

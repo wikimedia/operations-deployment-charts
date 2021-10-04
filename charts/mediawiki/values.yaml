@@ -222,4 +222,20 @@ mw:
           ServerAlias test.local
           DocumentRoot /srv/mediawiki/docroot/standard-docroot
         </VirtualHost>
-
+  logging:
+    kafka_brokers:
+      - host: kafka-host-1
+        port: 9001
+      - host: kafka-host-2
+        port: 6667
+    ca_cert_path: /path/to/ca.pem
+    rsyslog: false
+    requests:
+      cpu: 100Mi
+      memory: 200m
+    limits:
+      cpu: 1
+      memory: 300m
+    udp2log_hostport: somehost:9000
+common_images:
+  rsyslogd: rsyslogd:latest
