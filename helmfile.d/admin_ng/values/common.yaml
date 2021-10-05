@@ -90,7 +90,7 @@ limitranges:
       memory: "100Mi"
       cpu: "100m"
     max:
-      memory: "4Gi"
+      memory: "5Gi"
       cpu: "9"
 
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
@@ -99,7 +99,7 @@ resourcequota:
   compute:
     requests:
       cpu: "90"
-      memory: "60Gi"
+      memory: "100Gi"
     limits:
       cpu: "90"
-      memory: "60Gi"
+      memory: "100Gi"
