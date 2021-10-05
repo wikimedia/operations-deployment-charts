@@ -32,6 +32,8 @@ tileCaching:
     type: "s3"  # S3 compatible API on swift
     endpoint: "thanos-swift.discovery.wmnet"
     basepath: "eqiad"
+tilePregeneration:
+  cronJobEnabled: true
 
 config:
   public:
