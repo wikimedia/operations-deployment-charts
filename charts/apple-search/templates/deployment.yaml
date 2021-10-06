@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: "true"
+        {{- if .Values.monitoring.uses_statsd }}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        {{ end -}}
+        {{- end -}}
+        {{- include "tls.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+        {{- toYaml .Values.affinity | indent 6 }}
+      {{- end }}
+      containers:
+      {{- if eq .Values.main_app.type "php" }}
+        {{- include "php.containers" . | indent 8}}
+      {{- else -}}
+        {{- include "default.containers" . | indent 8}}
+      {{- end -}}
+      {{- include "tls.container" . | indent 8}}
+      volumes:
+      {{- include "wmf.volumes" . | indent 8}}
+
+
+
