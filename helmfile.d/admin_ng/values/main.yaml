@@ -5,6 +5,10 @@ cluster_group: main
 deployExtraClusterRoles:
   - "flink"
 
+# Add the label "kubernetes.io/metadata.name=$namespace" to all namespaces defined below.
+# This imitates the NamespaceDefaultLabelName feature gate (available in k8s >=1.21).
+NamespaceDefaultLabelName: true
+
 # List all namespaces that should be created in every ServiceOps cluster
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
