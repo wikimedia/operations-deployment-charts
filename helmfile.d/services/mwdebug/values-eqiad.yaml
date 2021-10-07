@@ -2,25 +2,6 @@ resources:
   replicas: 12
 service:
   expose_http: true
-
-tls:
-  resources:
-    requests:
-      cpu: 500m
-      memory: 100Mi
-    limits:
-      cpu: 1000m
-      memory: 400Mi
-
-php:
-  httpd:
-    requests:
-      cpu: 200m
-      memory: 200Mi
-    limits:
-      cpu: 1
-      memory: 400Mi
-
 mw:
   datacenter: eqiad
   mcrouter:

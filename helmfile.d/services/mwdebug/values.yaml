@@ -6,7 +6,7 @@ main_app:
     memory: 1000Mi
   limits:
     cpu: 5000m
-    memory: 2000Mi
+    memory: 2800Mi
 resources:
   replicas: 2
 
@@ -21,9 +21,11 @@ tls:
   public_port: 4444
   resources:
     requests:
-      cpu: 500m
+      cpu: 200m
+      memory: 100Mi
     limits:
-      cpu: 600m
+      cpu: 400m
+      memory: 350Mi
 monitoring:
   enabled: true
 
@@ -41,10 +43,18 @@ php:
   exporter_version: 0.0.2
   httpd:
     exporter_version: 0.0.3
+    requests:
+      cpu: 200m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
   opcache:
     nofiles: "16229"
     size: "500"
     interned_strings_buffer: "50"
+  apc:
+    size: "768M"
 mw:
   domain_suffix: "org"
   egress:
@@ -90,7 +100,7 @@ mw:
         cpu: 200m
         memory: 100Mi
       limits:
-        cpu: 1
+        cpu: 700m
         memory: 200Mi
   nutcracker:
     enabled: true
