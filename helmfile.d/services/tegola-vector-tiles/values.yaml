@@ -49,7 +49,7 @@ tcp_proxy:
 tcp_services_proxy:
   maps_postgres:
     port: 5432
-    timeout: "60s"
+    connect_timeout: "60s"
     upstreams:
       # master node
       # - address: maps1009.eqiad.wmnet

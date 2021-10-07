@@ -15,8 +15,6 @@ config:
 # https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/network_filters/postgres_proxy_filter#config-network-filters-postgres-proxy
 tcp_services_proxy:
   maps_postgres:
-    port: 5432
-    timeout: "60s"
     upstreams:
       # master node
       # - address: maps2009.codfw.wmnet
