@@ -27,6 +27,8 @@ spec:
           labels:
             app: {{ template "wmf.chartname" . }}
             release: {{ .Release.Name }}
+          annotations:
+            {{- include "tls.annotations" . | indent 12}}
         spec:
           restartPolicy: "{{ .Values.tilePregeneration.restartPolicy }}"
           containers:
@@ -59,7 +61,9 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 16 }}
               limits:
 {{ toYaml .Values.main_app.limits | indent 16 }}
+          {{- include "tls.container" . | indent 10}}
           volumes:
+            {{- include "tls.volume" . | indent 12}}
             - name: config-volume
               configMap:
                 name: config-{{ .Release.Name }}
