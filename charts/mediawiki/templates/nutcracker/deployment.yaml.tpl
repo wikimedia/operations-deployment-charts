@@ -2,7 +2,7 @@
 # nutcracker image
 # TODO: check if we would be better off with a daemonset
 - name: {{ template "wmf.releasename" . }}-nutcracker
-  image: {{ .Values.docker.registry }}/{{ .Values.mw.nutcracker.image_tag }}
+  image: {{ .Values.docker.registry }}/{{ .Values.common_images.nutcracker.nutcracker }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   ports:
   {{- range .Values.mw.nutcracker.pools }}
@@ -26,7 +26,7 @@
       mountPath: /etc/nutcracker
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "wmf.releasename" . }}-nutcracker-exporter
-  image: {{ .Values.docker.registry }}/prometheus-nutcracker-exporter:{{ .Values.mw.nutcracker.exporter_version }}
+  image: {{ .Values.docker.registry }}/{{ .Values.common_images.nutcracker.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   ports:
   - name: nc-metrics

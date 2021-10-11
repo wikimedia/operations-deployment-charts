@@ -118,8 +118,6 @@ mw:
       limits:
         cpu: 1
         memory: 200Mi
-    image_tag: mcrouter:latest
-    exporter_version: latest
     route_prefix: local/mw # change this in production based on datacenter
     cross_region_timeout: 250
     cross_cluster_timeout: 100
@@ -157,8 +155,6 @@ mw:
 
   nutcracker:
     enabled: false
-    image_tag: nutcracker:latest
-    exporter_version: latest
     resources:
       requests:
         cpu: 200m
@@ -239,3 +235,9 @@ mw:
     udp2log_hostport: somehost:9000
 common_images:
   rsyslogd: rsyslogd:latest
+  mcrouter:
+    mcrouter: mcrouter:latest
+    exporter: prometheus-mcrouter-exporter:latest
+  nutcracker:
+    nutcracker: nutcracker:latest
+    exporter: prometheus-nutcracker-exporter:latest
