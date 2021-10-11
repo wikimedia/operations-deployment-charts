@@ -10,8 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.crawler.schedule }}"
-  # https://medium.com/finnovate-io/how-to-prevent-kubernetes-cron-jobs-with-sidecar-containers-from-getting-stuck-912c0f1497a3
-  concurrencyPolicy: Replace
+  concurrencyPolicy: Forbid
   jobTemplate:
     metadata:
       labels:
@@ -36,11 +35,7 @@ spec:
               image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
               imagePullPolicy: {{ .Values.docker.pull_policy }}
               command:
-                - /usr/local/bin/poetry
-                - run
-                - python3
-                - manage.py
-                - crawl
+                - /srv/app/contrib/cronjob/crawler.sh
               env:
                 - name: SERVICE_IDENTIFIER
                   value: {{ template "wmf.releasename" . }}
@@ -56,7 +51,7 @@ spec:
                       key: {{ $k }}
                 {{- end }}
             {{- include "tls.container" . | indent 12}}
-            {{- include "mcrouter.container" . | indent 12}}
+            # T292861: mcrouter.container deliberately excluded
           volumes:
             {{- include "wmf.volumes" . | indent 12}}
 {{- end }}
