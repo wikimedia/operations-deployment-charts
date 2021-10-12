@@ -177,6 +177,8 @@ crawler:
   enabled: true
   # -- Schedule for crawler job
   schedule: "@hourly"
+  # -- Job concurrency policy
+  concurrencyPolicy: Forbid
 
 # -- Mcrouter sidecar configuration
 mcrouter:

@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square)
+![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -58,6 +58,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.http_proxy | string | `""` |  |
 | config.public.https_proxy | string | `""` | Outbound https request proxy |
 | config.public.no_proxy | string | `""` | Outbound proxy exceptions |
+| crawler.concurrencyPolicy | string | `"Forbid"` | Job concurrency policy |
 | crawler.enabled | bool | `true` | Enable CronJob for toolinfo url crawler |
 | crawler.schedule | string | `"@hourly"` | Schedule for crawler job |
 | debug | object | `{"enabled":false,"ports":[]}` | Additional resources if we want to add a port for a debugger to connect to. |

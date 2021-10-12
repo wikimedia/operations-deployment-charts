@@ -10,7 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.crawler.schedule }}"
-  concurrencyPolicy: Forbid
+  concurrencyPolicy: {{ .Values.crawler.concurrencyPolicy }}
   jobTemplate:
     metadata:
       labels:
