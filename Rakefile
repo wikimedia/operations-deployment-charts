@@ -75,12 +75,21 @@ def exec_helmfile_command(command, source, environments = nil, &block)
       # Run helmfile build to verify the helmfile is sane.
       # If it is, the output of build will be used to parse all defined environments from.
       data = nil
+      all_data = {}
+      ok = false
       ['staging', 'eqiad', 'ml-serve-eqiad'].each do |e|
-        ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, true
+        ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, false
+        all_data[e] = data
         break if ok
       end
       # If we can't run helmfile build, we need to bail out early.
-      return { 'default' => false } if data.nil?
+      unless ok
+        puts("Failed to run helmfile build in #{dir_to_copy}:".red)
+        all_data.each do |env, errdata|
+          puts("#{env} => #{errdata}")
+        end
+        return { 'default' => false }
+      end
 
       helmfile_raw_data = YAML.safe_load(data)
       envs = helmfile_raw_data['environments'].keys
