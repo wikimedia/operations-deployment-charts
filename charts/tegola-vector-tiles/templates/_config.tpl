@@ -106,32 +106,32 @@ tile_buffer = 8
   [[maps.layers]]
   provider_layer = "osm.landuse"
   min_zoom = 7
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.waterway"
   min_zoom = 8
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.water"
   min_zoom = 0
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.aeroway"
   min_zoom = 12
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.road"
   min_zoom = 6
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.admin"
   min_zoom = 0
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.country_label"
@@ -141,21 +141,21 @@ tile_buffer = 8
   [[maps.layers]]
   provider_layer = "osm.poi_label"
   min_zoom = 14
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.road_label"
   min_zoom = 11
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.place_label"
   min_zoom = 3
-  max_zoom = 14
+  max_zoom = 15
 
   [[maps.layers]]
   provider_layer = "osm.building"
   min_zoom = 14
-  max_zoom = 14
+  max_zoom = 15
 
 {{- end }}
