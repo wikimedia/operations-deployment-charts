@@ -184,7 +184,6 @@ crawler:
 mcrouter:
   # -- Enable Mcrouter
   enabled: false
-  image_tag: mcrouter:latest
   # -- Zone of this deployment. Used to determine local/remote pools.
   zone: local
   # -- Default route prefix. Should vary based on datacenter.
@@ -201,7 +200,6 @@ mcrouter:
     limits:
       cpu: 1
       memory: 200Mi
-  exporter_version: latest
   # -- Routes to configure for mcrouter
   routes:
     - route: /local/toolhub
@@ -237,6 +235,12 @@ elasticsearch:
     limits:
       cpu: "500m"
       memory: "1Gi"
+
+# Versions for common sidecar images
+common_images:
+  mcrouter:
+    mcrouter: mcrouter:latest
+    exporter: prometheus-mcrouter-exporter:latest
 
 # -- Cruft needed for generated templates/deployment.yaml
 php:
