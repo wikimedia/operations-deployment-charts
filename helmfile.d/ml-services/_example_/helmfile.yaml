@@ -11,7 +11,7 @@ helmDefaults:
 templates:
   default: &default
     namespace: SERVICE_NAME
-    # We limit the chart choice to kubeflow-kfserving-inference since we are
+    # We limit the chart choice to kserve-inference since we are
     # planning to support only the kserve stack for the moment.
     chart: wmf-stable/kserve-inference
     # Allow to forcibly recreate pods by passing

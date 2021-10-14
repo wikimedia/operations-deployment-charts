@@ -1,21 +1,21 @@
-This is a simple Helm chart that wraps the big yaml file that Kubeflow upstream
-provides if one wants to deploy Kfserving standalone (basically model-serving only).
+This is a simple Helm chart that wraps the big yaml file that Kserve upstream
+provides (basically model-serving only).
 
-The related InferenceService resources are managed by the kubeflow-kfserving-inference
-chart, this one only takes care of the base Kfserving setup.
+The related InferenceService resources are managed by the kserve-inference
+chart, this one only takes care of the base KServe setup.
 
 == TLS certificates ==
 
 There is one TLS certificate that is mandatory for this chart, namely the one
 used by the Webhook (upgrade/compatibility between api versions, admission, etc..).
-The TLS certificate needs to placed into kfserving-webhook-server-cert (see secret.yaml),
+The TLS certificate needs to placed into kserve-webhook-server-cert (see secret.yaml),
 using the following (default) CN/SANS:
-- CN: kfserving-webhook-server-service.kfserving-system.svc.cluster.local
-- SANs: kfserving-webhook-server-service.kfserving-system.svc,
-        kfserving-webhook-server-service.kfserving-system.svc.cluster,
-        kfserving-webhook-server-service.kfserving-system.svc.cluster.local
+- CN: kserve-webhook-server-service.kserve.svc.cluster.local
+- SANs: kserve-webhook-server-service.kserve.svc,
+        kserve-webhook-server-service.kserve.svc.cluster,
+        kserve-webhook-server-service.kserve.svc.cluster.local
 For the moment we create this certificate using the Puppet CA (via cergen).
-Please also note that for the moment the target namespace, kfserving-system, needs
+Please also note that for the moment the target namespace, kserve, needs
 to be mentioned in the CN and SANs.
 
 == Inference Services ==
@@ -23,8 +23,8 @@ to be mentioned in the CN and SANs.
 This chart provides the definition of the InferenceService CRD, that allows
 the deployment of models and their settings to serve them via Istio/Knative.
 The definition of the InferenceService endpoints will be delegated to a separate
-chart, kubeflow-kfserving-inference, this one will be used only to spin up
-the base Kfserving service and configuration.
+chart, kserve-inference, this one will be used only to spin up
+the base KServe service and configuration.
 
 == Upgrading ==
 
@@ -51,21 +51,21 @@ apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: serving-cert
-  namespace: kfserving-system
+  namespace: kserve-system
 spec:
-  commonName: kfserving-webhook-server-service.kfserving-system.svc
+  commonName: kserve-webhook-server-service.kserve.svc
   dnsNames:
-  - kfserving-webhook-server-service.kfserving-system.svc
+  - kserve-webhook-server-service.kserve.svc
   issuerRef:
     kind: Issuer
     name: selfsigned-issuer
-  secretName: kfserving-webhook-server-cert
+  secretName: kserve-webhook-server-cert
 ---
 apiVersion: cert-manager.io/v1alpha2
 kind: Issuer
 metadata:
   name: selfsigned-issuer
-  namespace: kfserving-system
+  namespace: kserve
 spec:
   selfSigned: {}
 ```
@@ -73,14 +73,14 @@ spec:
 Together with all annotations like:
 
 ```
-cert-manager.io/inject-ca-from: kfserving-system/serving-cert
+cert-manager.io/inject-ca-from: kserve/serving-cert
 ```
 
-The path for the go binary to run for the kfserving controller needs to be changed
+The path for the go binary to run for the KServe controller needs to be changed
 from /manager to /usr/bin/manager.
 
 With 0.6 a web-app was introduced, but this chart currently doesn't support it.
-Clean up all resources with "kfserving-models-web-app" accordingly.
+Clean up all resources with "kserve-models-web-app" accordingly.
 
 Please also add the following snippet to the `env` specs of all containers:
 ```
@@ -103,7 +103,7 @@ ingress: |-
 We need to set `cluster-local-gateway.istio-system.svc.cluster.local` with Knative
 <= 0.18 (from 0.19+ there is no need due to the knative-local-gateway).
 
-The Namespace creation for `kfserving-system` is delegated to helmfile's admin_ng
+The Namespace creation for `kserve` is delegated to helmfile's admin_ng
 config, so when importing a new version it needs to be removed. Important: check
 the labels defined for the namespace in helmfile vs the ones shipped by upstream,
 and correct our settings in case they are different.
