@@ -86,7 +86,7 @@ releases:
             - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
               resources: ["*"]
               verbs: ["*"]
-            - apiGroups: ["serving.kubeflow.org"]
+            - apiGroups: ["serving.kserve.io"]
               resources: ["inferenceservices"]
               verbs: ["*"]
       {{- end }}
