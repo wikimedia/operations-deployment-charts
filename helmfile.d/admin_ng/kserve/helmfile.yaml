@@ -1,0 +1,24 @@
+templates:
+  default: &default
+    chart: "wmf-stable/{{`{{ .Release.Name }}`}}"
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kserve\" }}{{ .Environment.Values.install_kserve }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: kserve
+    <<: *default
+    needs:
+      - knative-serving/knative-serving
+    values:
+      # Generic default values for all environments
+      - "values/common.yaml"
+      # Default values for this cluster group
+      - "values/{{ .Values.cluster_group }}.yaml"
+      # Environment specific defaults
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # Release specific overrides
+      - "{{`{{ .Release.Name }}`}}/values.yaml"
+      # Overrides specific to release in environment
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+      # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/kserve/{{ .Environment.Name }}.yaml"

@@ -23,11 +23,11 @@ namespaces:
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
-  kfserving-system:
+  kserve:
     systemNamespace: true
     allowCriticalPods: true
     labels:
-      control-plane: kfserving-controller-manager
+      control-plane: kserve-controller-manager
       controller-tools.k8s.io: "1.0"
       istio-injection: disabled
   revscoring-editquality:
@@ -85,7 +85,7 @@ core:
 helmVersion: "helm3"
 
 # Override from default config (see ./common.yaml) to lower the min cpu limit
-# from 100m to 25m (kfserving sidecar default settings).
+# from 100m to 25m (kserve sidecar default settings).
 limitranges:
   container:
     min:

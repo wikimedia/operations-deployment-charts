@@ -26,14 +26,14 @@ environments:
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - install_knative: true
-      - install_kfserving: true
+      - install_kserve: true
   ml-serve-codfw:
     values:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - install_knative: true
-      - install_kfserving: true
+      - install_kserve: true
 
 ---
 bases:
@@ -44,7 +44,7 @@ bases:
   - helmfile_namespaces.yaml
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
-  - kubeflow-kfserving/helmfile.yaml
+  - kserve/helmfile.yaml
 
 hooks:
   - events: ["prepare"]

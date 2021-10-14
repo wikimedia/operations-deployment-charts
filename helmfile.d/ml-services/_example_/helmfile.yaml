@@ -12,8 +12,8 @@ templates:
   default: &default
     namespace: SERVICE_NAME
     # We limit the chart choice to kubeflow-kfserving-inference since we are
-    # planning to support only the kfserving stack for the moment.
-    chart: wmf-stable/kubeflow-kfserving-inference
+    # planning to support only the kserve stack for the moment.
+    chart: wmf-stable/kserve-inference
     # Allow to forcibly recreate pods by passing
     # --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
