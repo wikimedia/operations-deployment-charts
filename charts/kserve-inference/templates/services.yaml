@@ -1,0 +1,34 @@
+{{- range .Values.inference_services }}
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: {{ .name | quote }}
+  {{- with $.Values.inference.annotations }}
+  annotations:
+  {{- range $k, $v := . }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end }}
+  {{- end }}
+  {{- with $.Values.inference.labels }}
+  labels:
+  {{- range $k, $v := . }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end }}
+  {{- end }}
+spec:
+  predictor:
+    {{- $final_predictor_config := merge (.predictor_config | default dict) $.Values.inference.predictor_config }}
+    {{- range $k, $v := $final_predictor_config }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+    containers:
+    - name: kserve-container-{{ .name }}
+      image: {{ $.Values.docker.registry }}/{{ .image | default $.Values.inference.image }}:{{ .image_version | default $.Values.inference.version }}
+      imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
+      env:
+      {{- range concat $.Values.inference.base_env .custom_env }}
+      - name: {{ .name }}
+        value: {{ .value }}
+      {{- end }}
+---
+{{- end }}

@@ -1,0 +1,48 @@
+# Default values for Kubeflow Kfserving.
+
+helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+agent:
+  image: kserve-agent
+  version: 0.7.0-1
+
+controller:
+  image: kserve-controller
+  version: 0.7.0-1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+
+storage_initializer:
+  image: kserve-storage-initializer
+  version: 0.7.0-1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+    limits:
+      memory: 1Gi
+      cpu: 1
+
+ingress:
+  # Upstream sets knative-local-gateway.istio-system.svc.cluster.local,
+  # but the value doesn't work with knative <= 0.18.
+  local_gateway_service: cluster-local-gateway.istio-system.svc.cluster.local
+  domain: 'wikimedia.org'
+
+webhook:
+  tls:
+    certs:
+      cert: "snakeoil"
+      key: "snakeoil"
+
+kubernetesApi:
+  host: kubernetes.default.svc.cluster.local
+  port: 443
