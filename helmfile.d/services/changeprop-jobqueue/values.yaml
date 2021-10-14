@@ -119,6 +119,9 @@ main_app:
       EntityChangeNotification:
         enabled: true
         concurrency: 15
+      wikibase-InjectRCRecords:
+        enabled: true
+        concurrency: 4
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
