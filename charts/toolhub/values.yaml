@@ -74,6 +74,8 @@ config:
     LOGGING_LEVEL: WARNING
     # -- 'file' handler output file
     LOGGING_FILE_FILENAME: /dev/null
+    # -- Disable warnings from urllib3 about unverfied TLS connections
+    URLLIB3_DISABLE_WARNINGS: False
     # == Tracing ==
     # -- HTTP header to extract tracing id from
     LOG_REQUEST_ID_HEADER: HTTP_X_REQUEST_ID
@@ -236,7 +238,7 @@ elasticsearch:
       cpu: "500m"
       memory: "1Gi"
 
-# Versions for common sidecar images
+# -- Versions for common sidecar images
 common_images:
   mcrouter:
     mcrouter: mcrouter:latest

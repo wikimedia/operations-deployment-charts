@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square)
+![Version: 1.0.3](https://img.shields.io/badge/Version-1.0.3-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -22,6 +22,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| common_images | object | `{"mcrouter":{"exporter":"prometheus-mcrouter-exporter:latest","mcrouter":"mcrouter:latest"}}` | Versions for common sidecar images |
 | config.private.DB_PASSWORD | string | `"snakeoil"` | MariaDB database password |
 | config.private.DJANGO_SECRET_KEY | string | `"snakeoil"` | Django core setting. Used for session signing and as default crypto key |
 | config.private.WIKIMEDIA_OAUTH2_SECRET | string | `"67e66d1131ed22dc1c79304cae27d04880b16293"` | OAuth2 grant private key. The default value is deliberately public and tied to `http://toolhub.test/` which can only be used in local testing. https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1 |
@@ -53,6 +54,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.SOCIAL_AUTH_PROXIES | string | `""` | HTTP proxy settings to use with OAuth client requests. Toolhub expects value to be semicolon separated list of key=value pairs. See also https://docs.python-requests.org/en/master/user/advanced/#proxies |
 | config.public.SSL_CANONICAL_HOST | string | `"toolhub.wikimedia.org"` | Https redirect hostname |
 | config.public.STATIC_ROOT | string | `"/srv/app/staticfiles"` |  |
+| config.public.URLLIB3_DISABLE_WARNINGS | bool | `false` | Disable warnings from urllib3 about unverfied TLS connections |
 | config.public.WIKIMEDIA_OAUTH2_KEY | string | `"11dec83f263af1b9f480488512556cb1"` | OAuth2 grant public key. The default value is tied to `http://toolhub.test/` which can only be used in local testing. https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1 |
 | config.public.WIKIMEDIA_OAUTH2_URL | string | `"https://meta.wikimedia.org/w/rest.php"` |  |
 | config.public.http_proxy | string | `""` |  |
@@ -75,7 +77,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | main_app.readiness_probe | object | `{"httpGet":{"path":"/healthz","port":8000}}` | Pod readiness check settings |
 | main_app.requests | object | `{"cpu":"250m","memory":"128Mi"}` | Initial pod resource limits |
 | main_app.version | string | `"latest"` | Image version to pull from docker.registry |
-| mcrouter | object | `{"cross_cluster_timeout":100,"cross_region_timeout":250,"enabled":false,"exporter_version":"latest","image_tag":"mcrouter:latest","num_proxies":5,"probe_timeout":60000,"resources":{"limits":{"cpu":1,"memory":"200Mi"},"requests":{"cpu":"200m","memory":"100Mi"}},"route_prefix":"local/toolhub","routes":[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}],"timeouts_until_tko":3,"zone":"local"}` | Mcrouter sidecar configuration |
+| mcrouter | object | `{"cross_cluster_timeout":100,"cross_region_timeout":250,"enabled":false,"num_proxies":5,"probe_timeout":60000,"resources":{"limits":{"cpu":1,"memory":"200Mi"},"requests":{"cpu":"200m","memory":"100Mi"}},"route_prefix":"local/toolhub","routes":[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}],"timeouts_until_tko":3,"zone":"local"}` | Mcrouter sidecar configuration |
 | mcrouter.enabled | bool | `false` | Enable Mcrouter |
 | mcrouter.route_prefix | string | `"local/toolhub"` | Default route prefix. Should vary based on datacenter. |
 | mcrouter.routes | list | `[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}]` | Routes to configure for mcrouter |
