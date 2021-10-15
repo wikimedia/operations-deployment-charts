@@ -110,7 +110,11 @@ mw:
       requests:
         cpu: 200m
         memory: 100Mi
-
+  logging:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200m
 # network egress for various services
 networkpolicy:
   egress:
