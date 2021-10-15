@@ -9,7 +9,7 @@
 # Kafka topic selection is based on the syslog message severity.
 
 module(load="mmjsonparse")
-
+module(load="omkafka")
 template(name="udp_localhost_topic" type="string" string="udp_localhost-%syslogseverity-text:::lowercase%")
 
 # Use a separate (in memory) queue to limit message processing to this ruleset only.
