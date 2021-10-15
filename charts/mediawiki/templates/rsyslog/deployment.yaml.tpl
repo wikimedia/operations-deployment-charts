@@ -20,11 +20,11 @@
     - name: KUBERNETES_RELEASE
       valueFrom:
         fieldRef:
-          fieldPath: metadata.labels.release
+          fieldPath: metadata.labels['release']
     - name: KUBERNETES_DEPLOYMENT
       valueFrom:
         fieldRef:
-          fieldPath: metadata.labels.deployment
+          fieldPath: metadata.labels['deployment']
 
   resources:
     requests:
