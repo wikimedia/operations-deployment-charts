@@ -1,5 +1,5 @@
 main_app:
-  version: 2021-10-14-111459-production
+  version: 2021-10-15-230213-production
 
 resources:
   replicas: 2
@@ -65,6 +65,7 @@ mcrouter:
 
 config:
   public:
+    URLLIB3_DISABLE_WARNINGS: True  # T292025
     REQUIRE_HTTPS: True
     DB_HOST: m5-master.eqiad.wmnet
     CACHE_BACKEND: django_prometheus.cache.backends.memcached.MemcachedCache
