@@ -1,0 +1,15 @@
+main_app:
+  pathing_map:
+    mwapi_cluster:
+      '/core/v1/wikipedia/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikipedia.org'
+      '/core/v1/wiktionary/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wiktionary.org'
+      '/core/v1/commons/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'commons.wikimedia.org'
+    mlserve_cluster:
+      '/inference/v1/(\w+)-(goodfaith|damaging)/':
+        host: '\1-\2.revscoring-editquality.wikimedia.org'

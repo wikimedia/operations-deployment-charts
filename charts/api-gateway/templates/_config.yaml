@@ -312,9 +312,11 @@ BEGIN descriptions/mobileapps_cluster route definition
                     substitution: '/\2.\1.org/v1/page/description/\3'
                   cluster: mobileapps_cluster
 {{- /* END descriptions/mobileapps_cluster route definition */}}
+{{- /* BEGIN pathing_map cluster definition */}}
+{{- range $cluster, $api_routes := .Values.main_app.pathing_map }}
 {{- /* BEGIN pathing_map route definition */}}
-{{- range $api_route, $route_opts := .Values.main_app.pathing_map }}
-              - name: pathing_map_core
+{{- range $api_route, $route_opts := $api_routes }}
+              - name: pathing_map_{{ $cluster }}
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
@@ -325,19 +327,25 @@ BEGIN descriptions/mobileapps_cluster route definition
                     regex: '^{{ $api_route }}$'
                 route:
                   cors: *api_cors
+{{- if $route_opts.path }}
                   regex_rewrite:
                     pattern:
                       google_re2: {}
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
-                  cluster: mwapi_cluster
+{{- end }}
+                  cluster: {{ $cluster }}
+{{- if $route_opts.host }}
                   host_rewrite_path_regex:
                     pattern:
                       google_re2: {}
                       regex: '^{{ $api_route }}.*'
                     substitution: '{{ $route_opts.host }}'
 {{- end }}
+{{- end }}
 {{- /* END pathing_map route definition - read methods*/}}
+{{- end }}
+{{- /* END pathing_map cluster definition */}}
 {{- /* BEGIN discovery_endpoints route definition */}}
 {{- range $discovery_route, $discovery_opts := .Values.main_app.discovery_endpoints }}
               - name: {{ $discovery_route }}_route
