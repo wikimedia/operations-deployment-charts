@@ -44,4 +44,5 @@ spec:
     {{- include "mediawiki.networkpolicy.egress" .Values.mw | indent 4 }}
     {{/* add egress rules for envoy upstream clusters. */}}
     {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
+    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}

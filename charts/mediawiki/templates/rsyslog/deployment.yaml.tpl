@@ -4,6 +4,9 @@
 - name: {{ $release }}-rsyslog
   image: {{.Values.docker.registry }}/{{ .Values.common_images.rsyslogd }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.mw.logging.debug }}
+  args: ["-dn"]
+  {{- end }}
   env:
     - name: KUBERNETES_NAMESPACE
       valueFrom:

@@ -19,6 +19,7 @@ spec:
       annotations:
         # TODO: check mcrouter can pick up changes via inotify.
         checksum/sites: {{ include "mw.web-sites" . | sha256sum }}
+        {{- include "mw.rsyslog.annotations" . | indent 8 }}
         {{- include "nutcracker.annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
