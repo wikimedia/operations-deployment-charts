@@ -140,7 +140,12 @@ networkpolicy:
       - cidr: 10.64.16.149/32
         ports:
           - protocol: UDP
-            port: 9125
+            port: 8125
+      # graphite2003 / statsd.eqiad.wmnet
+      - cidr: 10.192.0.102/32
+        ports:
+          - protocol: UDP
+            port: 8125
       # eventlogging
       # eventlog1001
       - cidr: 10.64.32.167/32
