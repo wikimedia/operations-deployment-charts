@@ -126,7 +126,7 @@
 {{- $fcgi_endpoint := ternary "unix:/run/shared/fpm-www.sock|fcgi://localhost" "fcgi://127.0.0.1:9000" (eq .Values.php.fcgi_mode "FCGI_UNIX") }}
 {{/* TODO: unify the dicts once we have multiline pipelines with go 1.16, see https://github.com/golang/go/issues/29770  */}}
 {{- $base_params := dict "port" $port "domain_suffix" $domain_suffix "fcgi_endpoint" $fcgi_endpoint }}
-{{- $tpl_defaults := dict "public_rewrites" true "legacy_rewrites" true "short_urls" false "https_only" false "encoded_slashes" "On" "canonical_name" "Off" "rewrite_static_assets" false }}
+{{- $tpl_defaults := dict "public_rewrites" true "legacy_rewrites" true "short_urls" false "https_only" false "encoded_slashes" "On" "canonical_name" "Off" "rewrite_static_assets" true }}
 {{- range .Values.mw.sites }}
   {{ template "mw-vhost-filename" . }}: |
   {{- if .content }}
