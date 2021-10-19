@@ -1424,6 +1424,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        {{ if .Values.monitoring.enabled -}}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "9090"
       labels:
         app: activator
         role: activator
@@ -1563,6 +1567,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        {{ if .Values.monitoring.enabled -}}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "9090"
       labels:
         app: autoscaler
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
@@ -1687,6 +1695,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{ if .Values.monitoring.enabled -}}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "9090"
       labels:
         app: controller
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
@@ -1798,6 +1810,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        {{ if .Values.monitoring.enabled -}}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "9090"
       labels:
         app: webhook
         role: webhook

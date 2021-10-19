@@ -5,6 +5,9 @@ docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 
+monitoring:
+  enabled: true
+
 net_istio:
   # This is the default provided by knative-serving upstream,
   # and represents the external ports that will be used

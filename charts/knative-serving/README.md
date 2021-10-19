@@ -60,3 +60,11 @@ We also need to add the following bit to the controller deployment's specs:
 ```
 The default route/revision hostname uses 'example.com', we set 'wikimedia.org'
 in the related config-map (it is sufficient to grep for 'example.com' to find it).
+
+We also inject prometheus annotations to all the container specs like the following:
+```
+{{ if .Values.monitoring.enabled -}}
+prometheus.io/scrape: "true"
+{{ end -}}
+prometheus.io/port: "9090"
+```
