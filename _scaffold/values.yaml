@@ -135,3 +135,24 @@ affinity: {}
 #                  - some-value
 #  nodeSelector:
 #    node.kubernetes.io/some-key: some-value
+
+# Allow external traffic to reach this service via a (cluster provided) ingress controller.
+# TODO: Link to fancy docs on wikitech
+ingress:
+  enabled: false
+  # gatewayHosts is a list of FQDNs this service should be reachable on.
+  # Does not need to be defined if existingGatewayName is set.
+  # Default will be {{ .Chart.name }}.discovery.wmnet
+  gatewayHosts: []
+  # If you want to attach routes of this release to an existing Gateway, provide the name
+  # of that gateway here in the format: <namespace>/<gateway-name>
+  # This is useful if you wish to make multiple releases available from the same hostname.
+  existingGatewayName: ""
+  # routeHosts is a list of FQDNs the httproutes should attach to.
+  # If existingGatewayName not set, this list might be empty (will default to gatewayHosts).
+  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
+  routeHosts: []
+  # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
+  # the service without modification.
+  # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
+  httproutes: []

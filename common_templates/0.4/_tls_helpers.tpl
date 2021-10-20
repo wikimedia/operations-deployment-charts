@@ -48,10 +48,22 @@ Service targets all pods that have this label, it will route to both production 
 
 {{/*
 
+  Generic helpers
+
+*/}}
+{{- define "tls.servicename" -}}
+{{ template "wmf.releasename" . }}-tls-service
+{{- end -}}
+
+{{- define "tls.servicefqdn" -}}
+{{ template "tls.servicename" . }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+
+{{/*
+
  Deployment templates
 
 */}}
-
 {{- define "tls.annotations" -}}
 {{- if .Values.tls.enabled }}
 checksum/tls-config: {{ include "tls.envoy_template" . | sha256sum }}
@@ -124,7 +136,7 @@ envoyproxy.io/scrape: "false"
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}-tls-service
+  name: {{ template "tls.servicename" . }}
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
