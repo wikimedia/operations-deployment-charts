@@ -1,0 +1,24 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+inference:
+  image: "machinelearning-liftwing-inference-services-draftquality"
+  version: "2021-09-16-055148-production"
+  annotations:
+    sidecar.istio.io/inject: "false"
+  base_env:
+    - name: WIKI_URL
+      value: "https://api-ro.discovery.wmnet"
+    - name: REQUESTS_CA_BUNDLE
+      value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+
+inference_services:
+  - name: "enwiki-draftquality"
+    custom_env:
+      - name: INFERENCE_NAME
+        value: "enwiki-draftquality"
+      - name: WIKI_HOST
+        value: "en.wikipedia.org"
+      - name: STORAGE_URI
+        value: "s3://wmf-ml-models/draftquality/enwiki/202107141649/"
