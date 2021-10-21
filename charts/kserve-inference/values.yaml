@@ -4,3 +4,12 @@ inference:
   swift_s3_secret_name: "swift-s3-credentials"
   predictor_config:
     serviceAccountName: "kserve"
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# All the models are wrapped in a KServer python runtime (provided by KServe),
+# that uses Tornado behind the scenes. By default we use port 8080
+main_app:
+  port: 8080

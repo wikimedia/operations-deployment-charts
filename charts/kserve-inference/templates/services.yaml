@@ -3,8 +3,10 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: {{ .name | quote }}
-  {{- with $.Values.inference.annotations }}
   annotations:
+    chart: {{ template "wmf.chartid" $ }}
+    release: {{ $.Release.Name }}
+  {{- with $.Values.inference.annotations }}
   {{- range $k, $v := . }}
     {{ $k }}: {{ $v | quote }}
   {{- end }}
