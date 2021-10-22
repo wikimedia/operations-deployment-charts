@@ -8,6 +8,10 @@ docker:
 monitoring:
   enabled: true
 
+networkpolicy:
+  egress:
+    enabled: false
+
 agent:
   image: kserve-agent
   version: 0.7.0-1
@@ -43,6 +47,7 @@ ingress:
   domain: 'wikimedia.org'
 
 webhook:
+  port: 9443
   tls:
     certs:
       cert: "snakeoil"

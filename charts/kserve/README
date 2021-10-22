@@ -116,3 +116,10 @@ The Namespace creation for `kserve` is delegated to helmfile's admin_ng
 config, so when importing a new version it needs to be removed. Important: check
 the labels defined for the namespace in helmfile vs the ones shipped by upstream,
 and correct our settings in case they are different.
+
+The webhook port is not fixed but it is a variable of the template, in order
+to re-use it for network policies:
+```
+- containerPort: {{ $.Values.webhook.port }}
+  name: webhook-server
+```

@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      control-plane: kserve-controller-manager
+  policyTypes:
+    - Ingress
+      {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+      {{- end }}
+  ingress:
+    - ports:
+      # Allow prometheus to scrape metrics
+      - port: {{ .Values.controller.metrics.port }}
+        protocol: TCP
+{{- if .Values.kubernetesMasters }}
+    # The webhook port needs to be reachable by Kubernetes Master IPs
+    - from:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: {{ .Values.webhook.port }}
+          protocol: TCP
+{{- end }}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+{{- end }}
