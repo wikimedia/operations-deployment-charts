@@ -1,0 +1,37 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+
+inference:
+  image: "machinelearning-liftwing-inference-services-articlequality"
+  version: "2021-09-08-062343-production"
+  annotations:
+    sidecar.istio.io/inject: "false"
+  base_env:
+    - name: WIKI_URL
+      value: "https://api-ro.discovery.wmnet"
+    - name: REQUESTS_CA_BUNDLE
+      value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+
+inference_services:
+  - name: "enwiki-articlequality"
+    custom_env:
+      - name: INFERENCE_NAME
+        value: "enwiki-articlequality"
+      - name: WIKI_HOST
+        value: "en.wikipedia.org"
+      - name: STORAGE_URI
+        value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/model.bin"
