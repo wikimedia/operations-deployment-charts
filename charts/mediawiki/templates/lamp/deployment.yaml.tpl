@@ -94,9 +94,17 @@
   - name: PHP__error_reporting
     value: "{{ .Values.php.error_reporting }}"
   - name: PHP__error_log
+  {{- if .Values.mw.logging.rsyslog }}
+    value: /var/log/php-fpm/error.log
+  {{- else }}
     value: "{{ .Values.php.error_log }}"
+  {{- end }}
   - name: FCGI_ALLOW
     value: "127.0.0.1"
+  {{- if .Values.mw.logging.rsyslog }}
+  - name: FPM__slowlog
+    value: /var/log/php-fpm/slowlog.log
+  {{- end }}
   {{- range $k, $v := .Values.config.public }}
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
@@ -136,6 +144,10 @@
   - name: {{ $release }}-wmerrors
     mountPath: /etc/wmerrors
   {{ end -}}
+  {{- if .Values.mw.logging.rsyslog }}
+  - name: php-logging
+    mountPath: /var/log/php-fpm
+  {{- end -}}
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter

@@ -13,7 +13,7 @@
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
 # Shared unix socket for php apps
 - name: shared-socket
-  emptydir: {}
+  emptyDir: {}
 {{- end }}
 {{- if .Values.mw.wmerrors }}
 - name: {{ $release }}-wmerrors
@@ -36,5 +36,7 @@
 - name: {{ $release }}-rsyslog-config
   configMap:
     name: {{ $release }}-rsyslog-config
+- name: php-logging
+  emptyDir: {}
 {{- end }}
 {{ end }}

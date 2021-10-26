@@ -38,5 +38,7 @@
     # Mount the shared socket volume
   - name: {{ $release }}-rsyslog-config
     mountPath: /etc/rsyslog.d
+  - name: php-logging
+    mountPath: /var/log/php-fpm
 {{- end }}
 {{- end -}}

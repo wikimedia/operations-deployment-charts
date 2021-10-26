@@ -1,0 +1,29 @@
+version=2
+rule=:%[
+    {"type": "literal", "text": "["},
+    {"name": "date", "type": "char-to", "extradata": "]"},
+    {"type": "literal", "text": "]  [pool"},
+    {"name": "pool","type": "char-to", "extradata": "]"},
+    {"type": "literal", "text": "] pid "},
+    {"name": "pid", "type": "number"},
+    {"type": "literal", "text": "#012"},
+    {"type": "literal", "text": "script_filename = "},
+    {"name": "script_filename", "type": "char-to", "extradata": "#"},
+    {"type": "literal", "text": "#012"},
+    {
+        "name": "stacktrace",
+        "type": "repeat",
+        "while": {"type":"literal", "text":"#012"},
+        "parser": [
+            {"type": "literal", "text": "["},
+            {"name": "address", "type": "char-to", "extradata": "]"},
+            {"type": "literal", "text": "] "},
+            {"name": "function", "type": "word"},
+            {"type": "literal", "text": " "},
+            {"name": "file", "type": "char-to", "extradata": ":"},
+            {"type": "literal", "text": ":"},
+            {"name": "line", "type": "number"}
+        ]
+    },
+    {"type": "literal", "text": "#"}
+    ]%
