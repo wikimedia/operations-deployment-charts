@@ -98,6 +98,8 @@ php:
   timeout: "60"
   slowlog_timeout: 0
   display_errors: "Off"
+  error_log: "/dev/stderr"
+  error_reporting: "30719" #  var_dump(E_ALL & ~E_STRICT);
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 

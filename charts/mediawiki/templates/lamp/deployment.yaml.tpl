@@ -91,6 +91,10 @@
     value: "{{ .Values.php.slowlog_timeout }}"
   - name: PHP__display_errors
     value: "{{ .Values.php.display_errors }}"
+  - name: PHP__error_reporting
+    value: "{{ .Values.php.error_reporting }}"
+  - name: PHP__error_log
+    value: "{{ .Values.php.error_log }}"
   - name: FCGI_ALLOW
     value: "127.0.0.1"
   {{- range $k, $v := .Values.config.public }}
