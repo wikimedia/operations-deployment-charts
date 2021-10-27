@@ -89,6 +89,8 @@
     value: "{{ .Values.php.workers }}"
   - name: FPM__request_slowlog_timeout
     value: "{{ .Values.php.slowlog_timeout }}"
+  - name: PHP__display_errors
+    value: "{{ .Values.php.display_errors }}"
   - name: FCGI_ALLOW
     value: "127.0.0.1"
   {{- range $k, $v := .Values.config.public }}
