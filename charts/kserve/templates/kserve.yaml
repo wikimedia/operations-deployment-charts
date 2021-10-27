@@ -12497,10 +12497,6 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    prometheus.io/port: "8080"
-    prometheus.io/scheme: http
-    prometheus.io/scrape: "true"
   labels:
     control-plane: kserve-controller-manager
     controller-tools.k8s.io: "1.0"
@@ -12558,6 +12554,12 @@ spec:
   serviceName: controller-manager-service
   template:
     metadata:
+      annotations:
+        {{ if .Values.monitoring.enabled -}}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: http
       labels:
         control-plane: kserve-controller-manager
         controller-tools.k8s.io: "1.0"

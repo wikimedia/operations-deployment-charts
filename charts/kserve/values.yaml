@@ -5,6 +5,9 @@ docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 
+monitoring:
+  enabled: true
+
 agent:
   image: kserve-agent
   version: 0.7.0-1

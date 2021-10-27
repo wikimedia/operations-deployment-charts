@@ -45,6 +45,10 @@ usually with something like:
 We don't really need it, so it can be safely removed. All the occurrences of port
 8443 in the yaml file provided by upstream should be replaced with 8080.
 
+We also move the prometheus annotations from the Service definition to
+the container definition, since our Prometheus master config automatically
+pulls annotations for pods/containers, not services.
+
 We also don't use cert-manager so the following snippet can be removed as well:
 ```
 apiVersion: cert-manager.io/v1alpha2
