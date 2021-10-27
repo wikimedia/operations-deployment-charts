@@ -18,6 +18,7 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
       {{- if .Values.tls.enabled }}
       annotations:
         {{- include "tls.annotations" . | indent 8 }}
