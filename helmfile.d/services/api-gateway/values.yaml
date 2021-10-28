@@ -52,6 +52,54 @@ main_app:
       timeout: 30s
       path: linkrecommendation
 
+  # This map maps URLs that will be requested of api.wikimedia.org to
+  # a *path* that is requested of the appservers. The map key is a
+  # api.wikimedia.org/{path} regex match. Path property is a regex
+  # substitution to compute the appserver path, and 'host' property
+  # is a regex substitution used to compute the host header value
+  # to send to the appserver.
+  #TODO regex on v1
+  pathing_map:
+    mwapi_cluster:
+      '/core/v1/wikipedia/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikipedia.org'
+      '/core/v1/wiktionary/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wiktionary.org'
+      '/core/v1/commons/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'commons.wikimedia.org'
+      '/core/v1/wikibooks/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikibooks.org'
+      '/core/v1/wikiquote/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikiquote.org'
+      '/core/v1/wikiversity/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikiversity.org'
+      '/core/v1/mediawiki/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'www.mediawiki.org'
+      '/core/v1/wikidata/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'www.wikidata.org'
+      '/core/v1/wikisource/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikisource.org'
+      '/core/v1/wikivoyage/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikivoyage.org'
+      '/core/v1/meta/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'meta.wikimedia.org'
+      '/core/v1/wikinews/(\w+)/(.*)':
+        path: '/w/rest.php/v1/\2'
+        host: '\1.wikinews.org'
+      '/core/v1/wikispecies/(.*)':
+        path: '/w/rest.php/v1/\1'
+        host: 'species.wikimedia.org'
 
   readiness_probe:
     httpGet:
