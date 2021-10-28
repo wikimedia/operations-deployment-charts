@@ -12505,7 +12505,7 @@ metadata:
 spec:
   ports:
   - name: http
-    port: 8080
+    port: {{ $.Values.controller.metrics.port }}
     targetPort: http
   selector:
     control-plane: kserve-controller-manager
@@ -12558,7 +12558,7 @@ spec:
         {{ if .Values.monitoring.enabled -}}
         prometheus.io/scrape: "true"
         {{ end -}}
-        prometheus.io/port: "8080"
+        prometheus.io/port: "{{ $.Values.controller.metrics.port }}"
         prometheus.io/scheme: http
       labels:
         control-plane: kserve-controller-manager
@@ -12566,7 +12566,7 @@ spec:
     spec:
       containers:
       - args:
-        - --metrics-addr=127.0.0.1:8080
+        - --metrics-addr=0.0.0.0:{{ $.Values.controller.metrics.port }}
         command:
         - /usr/bin/manager
         env:
