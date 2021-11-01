@@ -1,12 +1,26 @@
+{{ if  hasKey .Environment.Values "helmBinary" }}
+helmBinary: "{{ .Environment.Values.helmBinary }}"
+{{ end }}
 helmDefaults:
   tillerNamespace: push-notifications
+  createNamespace: false
   verify: false
   atomic: true
   timeout: 600
   recreatePods: false
   force: false
   args:
-    - "--kubeconfig=/etc/kubernetes/push-notifications-{{ .Environment.Name }}.config"
+    - --kubeconfig
+    - {{ if  hasKey .Environment.Values "helmBinary" }}
+      {{ if eq .Environment.Values.helmBinary "helm2" }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/push-notifications-%s.config" .Environment.Name) }}
+      {{ else }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/push-notifications-deploy-%s.config" .Environment.Name) }}
+      {{ end }}
+      {{ else }}
+      # Fallback to helm2 credentials if helmBinary is not defined
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/push-notifications-%s.config" .Environment.Name) }}
+      {{ end }}
 
 templates:
   default: &default
@@ -44,9 +58,15 @@ environments:
   staging:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   eqiad:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn

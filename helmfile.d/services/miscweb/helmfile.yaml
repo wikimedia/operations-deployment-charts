@@ -1,11 +1,25 @@
+{{ if  hasKey .Environment.Values "helmBinary" }}
+helmBinary: "{{ .Environment.Values.helmBinary }}"
+{{ end }}
 helmDefaults:
   tillerNamespace: miscweb
+  createNamespace: false
   verify: false
   atomic: true
   timeout: 600
   force: false
   args:
-    - "--kubeconfig=/etc/kubernetes/miscweb-{{ .Environment.Name }}.config"
+    - --kubeconfig
+    - {{ if  hasKey .Environment.Values "helmBinary" }}
+      {{ if eq .Environment.Values.helmBinary "helm2" }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-%s.config" .Environment.Name) }}
+      {{ else }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-deploy-%s.config" .Environment.Name) }}
+      {{ end }}
+      {{ else }}
+      # Fallback to helm2 credentials if helmBinary is not defined
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-%s.config" .Environment.Name) }}
+      {{ end }}
 
 templates:
   default: &default
@@ -42,9 +56,15 @@ environments:
   staging:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   eqiad:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn

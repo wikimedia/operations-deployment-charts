@@ -1,12 +1,26 @@
+{{ if  hasKey .Environment.Values "helmBinary" }}
+helmBinary: "{{ .Environment.Values.helmBinary }}"
+{{ end }}
 helmDefaults:
   tillerNamespace: mwdebug
+  createNamespace: false
   verify: false
   atomic: true
   timeout: 600
   recreatePods: false
   force: false
   args:
-    - "--kubeconfig=/etc/kubernetes/mwdebug-{{ .Environment.Name }}.config"
+    - --kubeconfig
+    - {{ if  hasKey .Environment.Values "helmBinary" }}
+      {{ if eq .Environment.Values.helmBinary "helm2" }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-%s.config" .Environment.Name) }}
+      {{ else }}
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-deploy-%s.config" .Environment.Name) }}
+      {{ end }}
+      {{ else }}
+      # Fallback to helm2 credentials if helmBinary is not defined
+      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-%s.config" .Environment.Name) }}
+      {{ end }}
 
 templates:
   default: &default
@@ -51,6 +65,10 @@ environments:
   eqiad:
     values:
       - releases: [pinkunicorn]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [pinkunicorn]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
