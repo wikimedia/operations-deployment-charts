@@ -23,4 +23,5 @@ spec:
     app: {{ template "wmf.chartname" . }}
     release: {{ .Release.Name }}
     component: jobmanager
+    routed_via: {{ .Release.Name }}
 {{- end }}

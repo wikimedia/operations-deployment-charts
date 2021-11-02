@@ -18,6 +18,7 @@ spec:
       labels:
         app: {{ template "wmf.chartname" . }}
         release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}

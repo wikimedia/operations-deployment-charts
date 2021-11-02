@@ -12,6 +12,7 @@ spec:
     matchLabels:
       app: {{ template "wmf.chartname" . }}
       release: {{ .Release.Name }}
+      routed_via: {{ .Values.routed_via | default .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:

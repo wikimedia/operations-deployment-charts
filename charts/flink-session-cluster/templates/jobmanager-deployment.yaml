@@ -22,6 +22,7 @@ spec:
         app: {{ template "wmf.chartname" . }}
         component: jobmanager
         release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         checksum/log4j-conf: {{ tpl (.Files.Get "config/log4j-console.properties") . | sha256sum }}
