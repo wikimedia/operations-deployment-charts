@@ -575,7 +575,7 @@ BEGIN descriptions/mobileapps_cluster route definition
         - endpoint:
             address:
               socket_address:
-                address: {{ $cluster_name }}
+                address: {{ $cluster_opts.host | default (list $cluster_name "discovery.wmnet" | join ".") }}
                 port_value: {{ $cluster_opts.port }}
 {{- end }}
 {{- /* END discovery cluster definition */}}

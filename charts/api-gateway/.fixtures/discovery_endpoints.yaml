@@ -1,0 +1,18 @@
+main_app:
+  discovery_endpoints:
+    linkrecommendation:
+      tls: true
+      port: 4006
+      timeout: 30s
+      path: linkrecommendation
+    inference:
+      tls: true
+      # Specific override if one wants to set the target enpoint
+      # to something different than endpoint.discovery.wmnet.
+      # For example, if the discovery endpoint is not completed yet
+      # (at the time of writing the ML team bootstrapped only the eqiad cluster)
+      # an admin can start testing ahead of time.
+      host: inference.svc.eqiad.wmnet
+      port: 30443
+      timeout: 30s
+      path: inference
