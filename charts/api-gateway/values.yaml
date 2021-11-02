@@ -111,11 +111,20 @@ main_app:
     - 127.0.0.1
     - 127.0.0.1:*
 
-  pathing_map:
-    mwapi_cluster:
-      '/core/v1/localtesting/(\w+)/(.*)':
-        path: '/w/rest.php/v1/\2'
-        host: '\1.wikipedia.org'
+  # This map maps URLs that will be requested of api.wikimedia.org to
+  # a *path* that is requested of the appservers. The map key is a
+  # api.wikimedia.org/{path} regex match. Path property is a regex
+  # substitution to compute the appserver path, and 'host' property
+  # is a regex substitution used to compute the host header value
+  # to send to the appserver.
+  #Example:
+  #pathing_map:
+  #  mwapi_cluster:
+  #    '/core/v1/localtesting/(\w+)/(.*)':
+  #      path: '/w/rest.php/v1/\2'
+  #      host: '\1.wikipedia.org'
+
+  pathing_map: {}
 
 nutcracker:
   enabled: false

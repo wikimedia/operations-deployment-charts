@@ -52,12 +52,6 @@ main_app:
       timeout: 30s
       path: linkrecommendation
 
-  # This map maps URLs that will be requested of api.wikimedia.org to
-  # a *path* that is requested of the appservers. The map key is a
-  # api.wikimedia.org/{path} regex match. Path property is a regex
-  # substitution to compute the appserver path, and 'host' property
-  # is a regex substitution used to compute the host header value
-  # to send to the appserver.
   #TODO regex on v1
   pathing_map:
     mwapi_cluster:
