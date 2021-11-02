@@ -1,0 +1,35 @@
+resources:
+  replicas: 2
+main_app:
+  image: wikimedia/mediawiki-services-apple-search:2021-10-24-182705-production
+  port: 8080
+service:
+  deployment: production
+
+# We go to MediaWiki via envoy
+discovery:
+  listeners:
+    - mwapi
+apple_search:
+  proxy: http://localhost:6501
+
+tls:
+  enabled: true
+  public_port: 4013
+  upstream_timeout: "60.0s"
+  # cets are defined in the private puppet repository.
+
+# Enable egress filtering.
+networkpolicy:
+  egress:
+    enabled: true
+
+# PHP fine-tuning
+php:
+  opcache:
+    size: "50"
+    nofiles: "50"
+  apc:
+    size: "64M"
+  workers: 4
+  timeout: 15
