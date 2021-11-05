@@ -1,6 +1,4 @@
-{{ if  hasKey .Environment.Values "helmBinary" }}
-helmBinary: "{{ .Environment.Values.helmBinary }}"
-{{ end }}
+helmBinary: helm3
 helmDefaults:
   tillerNamespace: miscweb
   createNamespace: false
@@ -9,17 +7,11 @@ helmDefaults:
   timeout: 600
   force: false
   args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     - --kubeconfig
-    - {{ if  hasKey .Environment.Values "helmBinary" }}
-      {{ if eq .Environment.Values.helmBinary "helm2" }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-%s.config" .Environment.Name) }}
-      {{ else }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-deploy-%s.config" .Environment.Name) }}
-      {{ end }}
-      {{ else }}
-      # Fallback to helm2 credentials if helmBinary is not defined
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-%s.config" .Environment.Name) }}
-      {{ end }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-deploy-%s.config" .Environment.Name) }}
 
 templates:
   default: &default
@@ -39,13 +31,20 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
     hooks:
-      - name: "log_sal"
-        events: ["presync"]
+      - events: ["prepare"]
         command: "helmfile_log_sal"
         args:
           [
             "{{`{{.HelmfileCommand}}`}}",
-            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
+          ]
+      - events: ["cleanup"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
+
           ]
 
 releases:

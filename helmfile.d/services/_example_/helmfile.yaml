@@ -1,6 +1,4 @@
-{{ if  hasKey .Environment.Values "helmBinary" }}
-helmBinary: "{{ .Environment.Values.helmBinary }}"
-{{ end }}
+helmBinary: helm3
 helmDefaults:
   tillerNamespace: SERVICE_NAME
   createNamespace: false
@@ -9,17 +7,11 @@ helmDefaults:
   timeout: 600
   force: false
   args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     - --kubeconfig
-    - {{ if  hasKey .Environment.Values "helmBinary" }}
-      {{ if eq .Environment.Values.helmBinary "helm2" }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-%s.config" .Environment.Name) }}
-      {{ else }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-deploy-%s.config" .Environment.Name) }}
-      {{ end }}
-      {{ else }}
-      # Fallback to helm2 credentials if helmBinary is not defined
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-%s.config" .Environment.Name) }}
-      {{ end }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-deploy-%s.config" .Environment.Name) }}
 
 templates:
   default: &default

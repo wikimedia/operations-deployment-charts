@@ -1,4 +1,4 @@
-helmBinary: "helm3"
+helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -7,6 +7,9 @@ helmDefaults:
   recreatePods: false
   force: false
   args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-deploy-%s.config" .Environment.Name) }}
 
