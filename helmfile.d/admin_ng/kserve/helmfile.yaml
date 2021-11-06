@@ -1,6 +1,7 @@
 templates:
   default: &default
     chart: "wmf-stable/{{`{{ .Release.Name }}`}}"
+    namespace: kserve
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kserve\" }}{{ .Environment.Values.install_kserve }}{{ else }}{{ false }}{{end}}`}}"
 
