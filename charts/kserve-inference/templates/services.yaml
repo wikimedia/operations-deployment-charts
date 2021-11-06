@@ -3,19 +3,18 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: {{ .name | quote }}
+  {{- with $.Values.inference.annotations }}
   annotations:
+  {{- range $k, $v := . }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end }}
+  {{- end }}
+  labels:
+    app-wmf: {{ template "wmf.chartname" $ }}
     chart: {{ template "wmf.chartid" $ }}
     release: {{ $.Release.Name }}
-  {{- with $.Values.inference.annotations }}
-  {{- range $k, $v := . }}
+  {{- range $k, $v := $.Values.inference.labels }}
     {{ $k }}: {{ $v | quote }}
-  {{- end }}
-  {{- end }}
-  {{- with $.Values.inference.labels }}
-  labels:
-  {{- range $k, $v := . }}
-    {{ $k }}: {{ $v | quote }}
-  {{- end }}
   {{- end }}
 spec:
   predictor:

@@ -9,8 +9,10 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      component: predictor
+      app-wmf: {{ template "wmf.chartname" . }}
+      chart: {{ template "wmf.chartid" . }}
       release: {{ .Release.Name }}
+      component: predictor
   policyTypes:
     - Ingress
       {{- if .Values.networkpolicy.egress.enabled }}
@@ -19,6 +21,8 @@ spec:
   ingress:
     - ports:
       - port: {{ .Values.main_app.port }}
+        protocol: TCP
+      - port: {{ .Values.main_app.queue_proxy_port }}
         protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:

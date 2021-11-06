@@ -50,3 +50,7 @@ namespace. The idea is to control this via helmfile, having multiple releases
 based on the groups of models to deploy.
 Istio will take care of doing the http(s) proxy between external clients and models
 using the "Host" header passed by the client.
+
+We use the `app-wmf` label in our charts since the `app` label is already used
+by knative-serving, that sets it equal to the revision name. The `app-wmf` value
+is useful to deploy network policies safely and consistently.
