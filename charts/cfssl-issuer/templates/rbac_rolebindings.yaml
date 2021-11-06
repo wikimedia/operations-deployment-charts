@@ -1,0 +1,39 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "cfssl-issuer.name" . }}-cert-manager-controller-approve:cfssl-issuer.wikimedia.org
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "cfssl-issuer.name" . }}-cert-manager-controller-approve:cfssl-issuer.wikimedia.org
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.cert_manager.serviceAccount }}
+  namespace: {{ .Values.cert_manager.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "cfssl-issuer.name" . }}-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "cfssl-issuer.name" . }}-manager-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ template "cfssl-issuer.name" . }}-leader-election-rolebinding
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ template "cfssl-issuer.name" . }}-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: {{ .Release.Namespace }}
