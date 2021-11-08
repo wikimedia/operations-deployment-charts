@@ -68,3 +68,13 @@ prometheus.io/scrape: "true"
 {{ end -}}
 prometheus.io/port: "9090"
 ```
+
+We add the following labels to all `kind: Deployment` definitions:
+```
+app-wmf: {{ template "wmf.chartname" . }}
+chart: {{ template "wmf.chartid" . }}
+release: {{ .Release.Name }}
+```
+We use the `app-wmf` label in our charts since the `app` label is already used
+by knative-serving. The `app-wmf` value is useful to deploy network policies
+safely and consistently.

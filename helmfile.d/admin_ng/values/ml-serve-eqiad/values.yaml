@@ -4,3 +4,8 @@ kubernetesMasters:
     - '2620:0:861:102:10:64:16:202/128'
     - '10.64.48.64/32'
     - '2620:0:861:107:10:64:48:64/128'
+
+# Context: https://knative.dev/docs/serving/tag-resolution/
+docker:
+  registry_cidrs:
+      - '10.2.2.44/32'

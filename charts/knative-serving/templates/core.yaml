@@ -1414,6 +1414,9 @@ metadata:
   namespace: knative-serving
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.core.activator.replicaCount }}
   selector:
@@ -1558,6 +1561,9 @@ metadata:
   namespace: knative-serving
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.core.autoscaler.replicaCount }}
   selector:
@@ -1686,6 +1692,9 @@ metadata:
   namespace: knative-serving
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.core.controller.replicaCount }}
   selector:
@@ -1800,6 +1809,9 @@ metadata:
   namespace: knative-serving
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.core.webhook.replicaCount }}
   selector:

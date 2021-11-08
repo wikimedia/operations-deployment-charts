@@ -344,6 +344,9 @@ metadata:
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
     networking.knative.dev/ingress-provider: istio
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.net_istio.controller.replicaCount }}
   selector:
@@ -424,6 +427,9 @@ metadata:
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
     networking.knative.dev/ingress-provider: istio
+    app-wmf: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.net_istio.webhook.replicaCount }}
   selector:
