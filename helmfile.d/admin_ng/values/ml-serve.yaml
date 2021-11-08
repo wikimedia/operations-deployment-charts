@@ -40,6 +40,12 @@ GlobalNetworkPolicies:
             # codfw
             - "2620:0:860:300::/64"
 
+# Context: https://knative.dev/docs/serving/tag-resolution/
+docker:
+  registry_cidrs:
+      - '10.2.2.44/32'
+      - '10.2.1.44/32'
+
 deployExtraClusterRoles:
   - "kserve"
 
