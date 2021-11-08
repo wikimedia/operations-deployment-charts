@@ -124,7 +124,8 @@ to re-use it for network policies:
   name: webhook-server
 ```
 
-We add the following labels to the Controller's StatefulSet definition:
+We add the following labels to the pod template of the Controller's StatefulSet
+definition:
 ```
 app-wmf: {{ template "wmf.chartname" . }}
 chart: {{ template "wmf.chartid" . }}

@@ -12544,9 +12544,6 @@ metadata:
   labels:
     control-plane: kserve-controller-manager
     controller-tools.k8s.io: "1.0"
-    app-wmf: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
   name: kserve-controller-manager
   namespace: kserve
 spec:
@@ -12566,6 +12563,9 @@ spec:
       labels:
         control-plane: kserve-controller-manager
         controller-tools.k8s.io: "1.0"
+        app-wmf: {{ template "wmf.chartname" . }}
+        chart: {{ template "wmf.chartid" . }}
+        release: {{ .Release.Name }}
     spec:
       containers:
       - args:
