@@ -12,7 +12,7 @@ spec:
       control-plane: kserve-controller-manager
   policyTypes:
     - Ingress
-      {{- if .Values.networkpolicy.egress.enabled }}
+      {{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters) }}
     - Egress
       {{- end }}
   ingress:
@@ -31,8 +31,17 @@ spec:
         - port: {{ .Values.webhook.port }}
           protocol: TCP
 {{- end }}
-{{- if .Values.networkpolicy.egress.enabled }}
+{{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters) }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    # The Controller needs to periodically check CRD definitions via K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
 {{- end }}

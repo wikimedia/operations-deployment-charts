@@ -123,3 +123,13 @@ to re-use it for network policies:
 - containerPort: {{ $.Values.webhook.port }}
   name: webhook-server
 ```
+
+We add the following labels to the Controller's StatefulSet definition:
+```
+app-wmf: {{ template "wmf.chartname" . }}
+chart: {{ template "wmf.chartid" . }}
+release: {{ .Release.Name }}
+```
+We use the `app-wmf` label in our charts since the `app` label is already used
+by kserve. The `app-wmf` value is useful to deploy network policies
+safely and consistently.
