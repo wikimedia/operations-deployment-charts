@@ -4,8 +4,41 @@ cluster_group: ml-serve
 
 # Defaults applied to all ML clusters
 
-# No default network policies
-GlobalNetworkPolicies: {}
+# The policies are WIP
+# Context: https://phabricator.wikimedia.org/T289834
+GlobalNetworkPolicies:
+  allow-dns:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      # Allow all namespaces to communicate to DNS pods
+      - action: Allow
+        protocol: UDP
+        destination:
+          selector: 'k8s-app == "kube-dns"'
+          ports:
+            - 53
+  # This allows egress from all pods to all pods. Ingress still needs to be allowed by the destination, though.
+  allow-pod-to-pod:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "10.64.78.0/23"
+            # codfw
+            - "10.192.78.0/23"
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "2620:0:861:300::/64"
+            # codfw
+            - "2620:0:860:300::/64"
 
 deployExtraClusterRoles:
   - "kserve"
