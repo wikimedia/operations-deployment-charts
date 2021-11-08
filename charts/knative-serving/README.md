@@ -69,7 +69,7 @@ prometheus.io/scrape: "true"
 prometheus.io/port: "9090"
 ```
 
-We add the following labels to all `kind: Deployment` definitions:
+We add the following labels to all `kind: Deployment` pod template definitions:
 ```
 app-wmf: {{ template "wmf.chartname" . }}
 chart: {{ template "wmf.chartid" . }}
