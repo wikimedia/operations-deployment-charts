@@ -1,8 +1,8 @@
-{{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters)}}
+{{- if .Values.kubernetesMasters }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "wmf.releasename" . }}-ingress-istio-webhook
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -10,22 +10,20 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      serving.knative.dev/release: {{ .Chart.AppVersion }}
+      app: istio-webhook
       app-wmf: {{ template "wmf.chartname" . }}
       chart: {{ template "wmf.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
-    - Egress
-  egress:
-    # The Knative pods are Controllers that periodically check CRDs via K8s API.
-    - to:
+    - Ingress
+  ingress:
+    # The webhook port needs to be reachable by Kubernetes Master IPs
+    - from:
       {{- range $cidr := .Values.kubernetesMasters.cidrs }}
       - ipBlock:
           cidr: {{ $cidr }}
       {{- end }}
       ports:
-        - port: 443
-          protocol: TCP
-        - port: 6443
+        - port: 8443
           protocol: TCP
 {{- end }}

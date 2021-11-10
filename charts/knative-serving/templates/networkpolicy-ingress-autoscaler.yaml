@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-ingress-autoscaler
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: autoscaler
+      app-wmf: {{ template "wmf.chartname" . }}
+      chart: {{ template "wmf.chartid" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+      # The Activator pod reports metrics to the Autoscaler when buffering
+      # requests for scale-to-zero deployments.
+      # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
+      # For more info about how ports are used:
+      # kubectl describe service autoscaler -n knative-serving
+    - from:
+      - podSelector:
+          matchLabels:
+            app: activator
+            app-wmf: {{ template "wmf.chartname" . }}
+            chart: {{ template "wmf.chartid" . }}
+            release: {{ .Release.Name }}
+      ports:
+        - port: 8080
+          protocol: TCP

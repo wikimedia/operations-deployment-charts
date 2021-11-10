@@ -1,0 +1,24 @@
+{{ if .Values.monitoring.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-ingress-common
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      serving.knative.dev/release: {{ .Chart.AppVersion }}
+      app-wmf: {{ template "wmf.chartname" . }}
+      chart: {{ template "wmf.chartid" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+      # Prometheus metrics
+      - port: 9090
+        protocol: TCP
+{{- end }}
