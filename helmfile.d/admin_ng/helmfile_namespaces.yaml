@@ -103,7 +103,7 @@ releases:
               - kind: ServiceAccount
                 name: tiller
                 namespace: {{ $namespace }}
-        {{- end }} {{/* end if eq $.Environment.Values.helmVersion "helm2" */}}
+        {{- end }}{{- /* end if eq $.Environment.Values.helmVersion "helm2" */}}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
           {{- with $limitranges}}
           - |
@@ -154,7 +154,7 @@ releases:
                 limits.memory: {{ .compute.limits.memory | quote }}
           {{- end }}
         {{- if eq $.Environment.Values.helmVersion "helm2" }}
-          {{/* Deploy tiller into each namespace */}}
+          {{- /* Deploy tiller into each namespace */}}
           - |
             apiVersion: apps/v1
             kind: Deployment
@@ -239,8 +239,8 @@ releases:
                   serviceAccount: tiller
                   serviceAccountName: tiller
                   terminationGracePeriodSeconds: 30
-        {{- end }} {{/* end if eq $.Environment.Values.helmVersion "helm2" */}}
-        {{- else }} {{/* else if eq $isSystemNamespace false */}}
+        {{- end }}{{- /* end if eq $.Environment.Values.helmVersion "helm2" */}}
+        {{- else }}{{- /* else if eq $isSystemNamespace false */}}
           - |
             # Bind all service account of this namespace to the desired clusterrole.
             # See helmfile_psp.yaml
@@ -260,7 +260,7 @@ releases:
               - apiGroup: rbac.authorization.k8s.io
                 kind: Group
                 name: system:serviceaccounts:{{ $namespace }}
-        {{- end }} {{/* end if eq $isSystemNamespace false */}}
+        {{- end }}{{- /* end if eq $isSystemNamespace false */}}
         {{- if $values | get "allowCriticalPods" false }}
           - |
             apiVersion: v1
@@ -277,4 +277,4 @@ releases:
                       - system-cluster-critical
                       - system-node-critical
         {{- end }}
-      {{- end }} {{/* end range namespaces */}}
+      {{- end }}{{- /* end range namespaces */}}
