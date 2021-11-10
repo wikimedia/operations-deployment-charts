@@ -21,6 +21,7 @@ environments:
       - "values/{{ .Environment.Name }}/values.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_ingress: true
+      - install_cert_manager: true
   # Machine Learning clusters
   ml-serve-eqiad:
     values:
@@ -47,6 +48,7 @@ bases:
   - helmfile_psp.yaml
   - calico/helmfile.yaml
   - coredns/helmfile.yaml
+  - cert-manager/helmfile.yaml
   - helmfile_namespaces.yaml
   - helmfile_istio-ingress.yaml
   - eventrouter/helmfile.yaml

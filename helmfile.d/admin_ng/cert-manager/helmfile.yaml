@@ -1,0 +1,43 @@
+# You can include multiple releases in your helmfile, but you can't specify environments
+# as they are defined in the parent helmfile.
+#
+# Each defined release will be installed into every environment.
+#
+# Be sure to include your new helmfile into the "bases:" array in the parent helmfile.
+templates:
+  default: &default
+    namespace: cert-manager
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_cert_manager\" }}{{ .Environment.Values.install_cert_manager }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: cfssl-issuer-crds
+    chart: wmf-stable/cfssl-issuer-crds
+    <<: *default
+  - name: cert-manager
+    chart: wmf-stable/cert-manager
+    <<: *default
+    needs:
+      - kube-system/coredns
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "cert-manager/{{`{{ .Release.Name }}`}}-values.yaml"                   # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
+  - name: cfssl-issuer
+    chart: wmf-stable/cfssl-issuer
+    <<: *default
+    needs:
+      - cert-manager/cert-manager
+      - cert-manager/cfssl-issuer-crds
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "cert-manager/{{`{{ .Release.Name }}`}}-values.yaml"                   # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
