@@ -11,12 +11,28 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-
 # This chart will need to grant additional roles to the cert-manager
 # service account.
 cert_manager:
   namespace: cert-manager
   serviceAccount: cert-manager
+
+# Configure one or more cfssl Issuers here
+issuers: {}
+#  foo-issuer:
+#    kind: Issuer # or ClusterIssuer
+#    namespace: "some-namespace" # only needed in case of Issuer, ignored for ClusterIssuer
+#    # authSecretName can be an existing Secret object or a new Secret managed by this chart
+#    # with the content provided in .authSecret.
+#    authSecretName: "clusterissuer-sample-credentials"
+#    url: "https://api.simple-cfssl.svc.cluster.local:30888,https://dead.end.local"
+#    label: "intermediate1"
+#    profile: "server" # optional
+#    # If authSecret is provided, a secret named .authSecretName will be created
+#    # in the namespace of this issuer (release namespace in case of ClusterIssuer)
+#    authSecret:
+#      key: "plaintext key, will be base64 encoded by template"
+#      additional_data: "base64 data, as this might be binary" # optional
 
 nameOverride: ""
 fullnameOverride: ""

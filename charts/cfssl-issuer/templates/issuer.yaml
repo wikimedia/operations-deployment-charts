@@ -1,0 +1,17 @@
+{{- range $name, $spec := .Values.issuers }}
+apiVersion: cfssl-issuer.wikimedia.org/v1alpha1
+kind: {{ required "Issuer kind must be set" $spec.kind }}
+metadata:
+  name: {{ $name }}
+  {{- if eq $spec.kind "Issuer" }}
+  namespace: {{ required "Issuer needs a namespace" $spec.namespace }}
+  {{- end }}
+  labels:
+    {{- include "cfssl-issuer.labels" $ | nindent 4 }}
+spec:
+  {{- $_ := unset $spec "kind" }}
+  {{- $_ := unset $spec "namespace" }}
+  {{- $_ := unset $spec "authSecret" }}
+  {{- toYaml $spec | nindent 2 }}
+---
+{{- end}}

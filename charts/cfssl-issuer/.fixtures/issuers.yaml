@@ -1,0 +1,30 @@
+issuers:
+  foo-issuer:
+    kind: Issuer # or ClusterIssuer
+    namespace: "issuer-namespace" # only needed in case of Issuer, ignored for ClusterIssuer
+    authSecretName: "generic-credentials"
+    url: "https://api.simple-cfssl.svc.cluster.local:30888,https://dead.end.local"
+    label: "intermediate1"
+    profile: "server" # optional
+  bar-issuer:
+    kind: ClusterIssuer
+    authSecretName: "generic-credentials"
+    url: "https://api.simple-cfssl.svc.cluster.local:30888,https://dead.end.local"
+    label: "intermediate1"
+  foobar-issuer:
+    kind: Issuer # or ClusterIssuer
+    namespace: "issuer-namespace" # only needed in case of Issuer, ignored for ClusterIssuer
+    authSecretName: "foobar-issuer-credentials"
+    url: "https://api.simple-cfssl.svc.cluster.local:30888,https://dead.end.local"
+    label: "intermediate1"
+    profile: "server" # optional
+    authSecret:
+      key: "foobar-issuer secret key"
+  barfoo-issuer:
+    kind: ClusterIssuer
+    authSecretName: "barfoo-issuer-credentials"
+    url: "https://api.simple-cfssl.svc.cluster.local:30888,https://dead.end.local"
+    label: "intermediate1"
+    authSecret:
+      key: "barfoo-issuer secret key"
+      additional_data: "not base64"
