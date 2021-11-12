@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-ingress-common
+  name: {{ template "wmf.releasename" . }}-prometheus
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}

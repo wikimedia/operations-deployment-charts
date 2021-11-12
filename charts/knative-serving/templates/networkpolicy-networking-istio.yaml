@@ -1,8 +1,8 @@
-{{- if .Values.kubernetesMasters }}
+{{- if .Values.networkpolicy.egress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-ingress-istio-webhook
+  name: {{ template "wmf.releasename" . }}-networking-istio
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -10,20 +10,20 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: istio-webhook
+      app: networking-istio
       app-wmf: {{ template "wmf.chartname" . }}
       chart: {{ template "wmf.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
-    - Ingress
-  ingress:
-    # The webhook port needs to be reachable by Kubernetes Master IPs
-    - from:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
+    - Egress
+  egress:
+      # The Networking Istio pod needs to periodically probe all
+      # the InferenceService pods to make sure that the Istio routes are alive.
+    - to:
+      - podSelector:
+          matchLabels:
+            app-wmf: kserve-inference
       ports:
-        - port: 8443
+        - port: 8080
           protocol: TCP
 {{- end }}

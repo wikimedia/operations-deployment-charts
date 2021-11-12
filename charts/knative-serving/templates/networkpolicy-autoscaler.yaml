@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-ingress-autoscaler
+  name: {{ template "wmf.releasename" . }}-autoscaler
   labels:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
@@ -15,6 +15,32 @@ spec:
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress
+{{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  egress:
+      # The Autoscaler pod needs to be able to fetch Prometheus metrics from
+      # all InferenceService pods to apply scaling policies correctly.
+    - to:
+      - podSelector:
+          matchLabels:
+            app-wmf: kserve-inference
+      ports:
+        - port: 9090
+          protocol: TCP
+{{- if .Values.kubernetesMasters }}
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
+{{- end }}
   ingress:
       # The Activator pod reports metrics to the Autoscaler when buffering
       # requests for scale-to-zero deployments.

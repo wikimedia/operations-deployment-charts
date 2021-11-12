@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-activator
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: activator
+      app-wmf: {{ template "wmf.chartname" . }}
+      chart: {{ template "wmf.chartid" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+{{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters)}}
+    - Egress
+  egress:
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
+  ingress:
+      # The Activator pod can buffer requests when a pod is scaled down to zero.
+      # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
+      # To understand what ports do, check:
+      # kubectl describe service activator-service -n knative-serving
+      # This policy may need further refinement since the Activator pod is
+      # configured to be health checked via Kubelet Probe, that (in our current
+      # config) results as traffic coming from the loopback interface.
+      # Ideally we should limit traffic from Istio pods and Kubelet probes.
+    - ports:
+      - port: 8012
+        protocol: TCP
+      - port: 8013
+        protocol: TCP
