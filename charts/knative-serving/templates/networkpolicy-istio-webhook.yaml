@@ -16,6 +16,21 @@ spec:
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress
+{{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  egress:
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
   ingress:
     # The webhook port needs to be reachable by Kubernetes Master IPs
     - from:
