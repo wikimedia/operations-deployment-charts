@@ -26,4 +26,17 @@ spec:
       ports:
         - port: 8080
           protocol: TCP
+{{- if (.Values.kubernetesMasters)}}
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
 {{- end }}
