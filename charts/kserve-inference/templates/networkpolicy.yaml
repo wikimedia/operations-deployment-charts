@@ -24,8 +24,11 @@ spec:
         protocol: TCP
       - port: {{ .Values.main_app.queue_proxy_port }}
         protocol: TCP
+      # The Knative Autoscaler pod fetches data from the queue-proxy
+      # Prometheus endpoint.
+      - port: {{ .Values.main_app.queue_proxy_metrics_port }}
+        protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
 {{- end }}

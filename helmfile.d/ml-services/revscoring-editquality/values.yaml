@@ -14,6 +14,21 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
+      # Allow uncached MW API
+      # FIXME: This should be probably taken from default-network-policy-conf,
+      # but it is currently too broad for this use case.
+      - cidr: 10.2.2.22/32
+        ports:
+        - protocol: tcp
+          port: 80
+        - protocol: tcp
+          port: 443
+      - cidr: 10.2.1.22/32
+        ports:
+        - protocol: tcp
+          port: 80
+        - protocol: tcp
+          port: 443
 
 inference:
   image: "machinelearning-liftwing-inference-services-editquality"
