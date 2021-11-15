@@ -3,10 +3,10 @@
 service:
   # Don't deploy a k8s Service for this canary release
   deployment: none
-  # the production release sets its deployed k8s Service routing_tag
+  # the production release sets its deployed k8s Service routed_via
   # to this value, causing its Service to also route to pods that are
   # part of this canary release.
-  routing_tag: eventgate-main
+  routed_via: eventgate-main
 
 # We only need one replica in the canary release.
 resources:

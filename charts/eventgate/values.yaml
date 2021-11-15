@@ -14,11 +14,11 @@ service:
   deployment: minikube
   # You need to define this if "production" is used. In minikube environments let it autoallocate
   port: null
-  # Set routing_tag to the same (arbitrary) value for all releases that you want
+  # Set routed_via to the same (arbitrary) value for all releases that you want
   # this k8s Service to route to.
   # If you don't to deploy a service with a specific release (e.g. a canary), set service: false
-  # routing_tag defaults to .Release.Name, so by default a Service will only route to the release it is part of.
-  # routing_tag:
+  # routed_via defaults to template "wmf.chartname", so by default a Service will only route to the release it is part of.
+  # routed_via:
 
 tls:
   enabled: false

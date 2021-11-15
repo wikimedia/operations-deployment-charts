@@ -3,9 +3,8 @@
 #
 # Deploy a k8s Service for {{ template "wmf.releasename" . }}
 # routing to all pods that are labeled with:
-#   chart: {{ template "wmf.chartname" . }}
-#   app: {{ .Values.main_app.name }}
-#   routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
+#   app: {{ template "wmf.chartname" . }}
+#   routed_via: {{ .Release.Name }}
 #
 */}}
 {{ if .Values.tls.enabled }}
@@ -20,16 +19,15 @@ kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-http-service
   labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    chart: {{ template "wmf.chartname" . }}
     app: {{ .Values.main_app.name }}
-    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
+    routed_via: {{ .Release.Name }}
   ports:
   - name: {{ .Values.main_app.name }}-http
     protocol: TCP
@@ -48,16 +46,15 @@ kind: Service
 metadata:
   name: {{ template "wmf.releasename" . }}-debug-service
   labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
-    routing_tag: {{ .Values.service.routing_tag | default .Release.Name }}
+    app: {{ template "wmf.chartname" . }}
+    release: {{ .Release.Name }}
   - name: node-inspector-master
     protocol: TCP
     port: 9229
