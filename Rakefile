@@ -62,16 +62,26 @@ def exec_helmfile_command(command, source, environments = nil, &block)
     # Copy the original dir files to the tmpdir
     FileUtils.cp_r "#{dir_to_copy}/.", dir
     filename = File.join dir, file
-    fixtures = File.join(dir, '.fixtures.yaml')
     source = File.read(filename)
+
+    # Copy all charts (and common templates) here because concurrent
+    # "helm dep build" will fail otherwise.
+    FileUtils.cp_r File.join(File.dirname(__FILE__), "common_templates"), dir
+    FileUtils.cp_r File.join(File.dirname(__FILE__), "charts"), dir
+    tmp_charts_dir = File.join(dir, 'charts')
+
+    # Replace references to chart(s) in the repository with local ones
+    # to also catch changes to charts that are not released yet.
+    source.gsub!('chart: wmf-stable', "chart: #{tmp_charts_dir}")
 
     # Patch helmfile so that .fixtures.yaml is used instead of
     # /etc/helmfile-defaults/general-#{env}.yaml
     # The file is a go text-template so we can't load the yaml and modify it.
+    fixtures = File.join(dir, '.fixtures.yaml')
     if File.exist? fixtures
       source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
-      File.write filename, source
     end
+    File.write filename, source
 
     if environments
       envs = environments
@@ -338,7 +348,10 @@ task :lint, [:charts] => :repo_update do |_t, args|
   charts.each do |chart|
     helm = helm_version(chart)
     puts "Linting #{chart} with #{helm}"
-    results[chart] = system("#{helm} lint '#{chart}'")
+    res, output = _exec("#{helm} lint '#{chart}'")
+    results[chart] = res
+    # surpress warnings about symlinks, see https://github.com/helm/helm/issues/7019
+    puts output.split("\n").select{|l| !l[/found symbolic link/] }
   end
   pprint 'Helm lint summary:', results
   raise_if_failed results
