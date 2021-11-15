@@ -3,11 +3,13 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   name: {{ .name | quote }}
-  {{- with $.Values.inference.annotations }}
   annotations:
-  {{- range $k, $v := . }}
+    {{ if $.Values.monitoring.enabled -}}
+    prometheus.io/scrape: "true"
+    {{ end -}}
+    prometheus.io/port: {{ $.Values.main_app.queue_proxy.revision_metrics_port }}
+  {{- range $k, $v := $.Values.inference.annotations }}
     {{ $k }}: {{ $v | quote }}
-  {{- end }}
   {{- end }}
   labels:
     app-wmf: {{ template "wmf.chartname" $ }}

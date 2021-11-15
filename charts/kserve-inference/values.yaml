@@ -9,11 +9,16 @@ networkpolicy:
   egress:
     enabled: false
 
+monitoring:
+  enabled: false
+
 # All the models are wrapped in a KServer python runtime (provided by KServe),
 # that uses Tornado behind the scenes. By default we use port 8080.
 # Knative-serving adds a container called 'queue-proxy' to every InferenceService
 # pod, that is responsible to assess if traffic can reach the KServe container.
 main_app:
   port: 8080
-  queue_proxy_port: 8012
-  queue_proxy_metrics_port: 9090
+  queue_proxy:
+    port: 8012
+    metrics_port: 9090
+    revision_metrics_port: 9091

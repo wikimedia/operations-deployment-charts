@@ -30,6 +30,9 @@ networkpolicy:
         - protocol: tcp
           port: 443
 
+monitoring:
+  enabled: true
+
 inference:
   image: "machinelearning-liftwing-inference-services-articlequality"
   version: "2021-09-08-062343-production"

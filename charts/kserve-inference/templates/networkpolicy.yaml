@@ -22,11 +22,15 @@ spec:
     - ports:
       - port: {{ .Values.main_app.port }}
         protocol: TCP
-      - port: {{ .Values.main_app.queue_proxy_port }}
+      - port: {{ .Values.main_app.queue_proxy.port }}
         protocol: TCP
       # The Knative Autoscaler pod fetches data from the queue-proxy
       # Prometheus endpoint.
-      - port: {{ .Values.main_app.queue_proxy_metrics_port }}
+      - port: {{ .Values.main_app.queue_proxy.metrics_port }}
+        protocol: TCP
+      # The queue-proxy exposes metrics about Knative revision traffic
+      # handled (HTTP return codes etc..)
+      - port: {{ .Values.main_app.queue_proxy.revision_metrics_port }}
         protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
