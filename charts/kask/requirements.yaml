@@ -5,7 +5,7 @@ dependencies:
   # helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
 - name: cassandra
   version: ">= 0.11.1"
-  repository: https://kubernetes-charts-incubator.storage.googleapis.com/ 
+  repository: https://charts.helm.sh/incubator
   # Only require cassandra if subcharts.cassandra is set to true in values
   # or --set subcharts.cassandra=true
   condition: subcharts.cassandra
