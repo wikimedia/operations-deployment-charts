@@ -127,22 +127,28 @@ def diff(original, changed)
   output
 end
 
+
+def yaml_load_file(yaml_path)
+  dir, file = File.split yaml_path
+  begin
+    error = "Parsing #{yaml_path}"
+    yaml = YAML.load_file(yaml_path)
+  rescue Psych::SyntaxError => e
+    report_yaml_parse_error(yaml_type, error, yaml, e)
+    raise("Failure parsing #{file}")
+  rescue StandardError => e
+    puts error.red
+    puts e
+    raise("Generic failure interpreting #{file}")
+  end
+  yaml
+end
+
 # Determine which helm version (2 or 3) needs to be used to lint/template the chart
 # Returns the helm binary name to use (helm2 or helm3)
 def helm_version(chart)
   path_to_chart_yaml = File.join(chart, 'Chart.yaml')
-  begin
-    error = "Parsing #{path_to_chart_yaml}"
-    chart_yaml = YAML.load_file(path_to_chart_yaml)
-  rescue Psych::SyntaxError => e
-    report_yaml_parse_error('Chart.yaml', error, chart_yaml, e)
-    raise('Failure parsing Chart.yaml')
-  rescue StandardError => e
-    puts error.red
-    puts e
-    raise('Generic failure interpreting Chart.yaml')
-  end
-
+  chart_yaml = yaml_load_file(path_to_chart_yaml)
   error = "Failed to determine helm version for #{chart}"
   if chart_yaml['apiVersion'] == 'v1'
     'helm2'

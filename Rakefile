@@ -4,7 +4,7 @@ require 'rake/tasklib'
 require 'open3'
 require 'yaml'
 require 'readline'
-
+require 'digest/md5'
 require 'fileutils'
 
 # Load local modules
@@ -16,12 +16,16 @@ require '.rake_modules/utils'
 PRIVATE_STUB = '.fixtures/private_stub.yaml'.freeze
 HELM_REPO = 'stable'.freeze
 HELMFILE_GLOB = 'helmfile.d/*services/**/helmfile.yaml'.freeze
+CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
 KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
 
 # admin_validate will store the generated manifest files here to be used by admin_diff
 admin_ng_manifests = {}
+
+# all_charts stores a list of all chart directories
+all_charts = FileList.new(CHARTS_GLOB).map { |x| File.dirname(x) }
 
 # execute helm template
 def exec_helm_template(chart, fixture = nil)
@@ -283,17 +287,52 @@ task :check_dep do
   check_binary('helmfile')
 end
 
-# This is just to ensure the repo is up to date as one may
-# experience weird behaviour if not.
-desc 'Runs helm(2/3) repo update'
+# This is to ensure that all repos are available and up to date
+desc 'Add and update all needed helm repositories'
 task repo_update: :check_dep do
+  repo_urls = []
+  all_charts.each do |path_to_chart|
+    path_to_chart_yaml = File.join path_to_chart, 'Chart.yaml'
+    chart_yaml = yaml_load_file(path_to_chart_yaml)
+    dependencies = []
+    if chart_yaml['apiVersion'] == 'v1'
+      # Read requirements.yaml
+      path_to_requirements_yaml = File.join path_to_chart, 'requirements.yaml'
+      next unless File.exists? path_to_requirements_yaml
+      requirements_yaml = yaml_load_file(path_to_requirements_yaml)
+      if requirements_yaml['dependencies']
+        dependencies = requirements_yaml['dependencies']
+      end
+    elsif chart_yaml['apiVersion'] == 'v2'
+      # Dependencies are to be defined in Chart.yaml
+      if chart_yaml['dependencies']
+        dependencies = chart_yaml['depencencies']
+      end
+    else
+      puts error.red
+      puts e
+      raise('Failed to determine helm version to use')
+    end
+
+    next unless dependencies
+    dependencies.each do |dep|
+      raise("Only http(s) URLs supported for helm dependencies (#{path_to_chart_yaml})") unless dep['repository'].match(/^http/)
+      repo_urls << dep['repository'].chomp('/')
+    end
+  end
+
+  repo_urls.uniq.each do |repo_url|
+    repo_hash = Digest::MD5.hexdigest(repo_url)
+    puts("Adding helm2/3 repo #{repo_url} as #{repo_hash}")
+    system("helm2 repo add #{repo_hash} #{repo_url}")
+    system("helm3 repo add --force-update #{repo_hash} #{repo_url}")
+  end
   system('helm repo update')
   system('helm3 repo update')
 end
 
-all_charts = FileList.new('charts/**/Chart.yaml').map { |x| File.dirname(x) }
 desc 'Runs helm lint on all charts'
-task :lint, [:charts] => :check_dep do |_t, args|
+task :lint, [:charts] => :repo_update do |_t, args|
   charts = get_charts(args, all_charts)
   results = {}
   charts.each do |chart|
@@ -306,7 +345,7 @@ task :lint, [:charts] => :check_dep do |_t, args|
 end
 
 desc 'Runs helm template on all charts and validate the output with kubeyaml'
-task :validate_template, [:charts] => :check_dep do |_t, args|
+task :validate_template, [:charts] => :repo_update do |_t, args|
   charts = get_charts(args, all_charts)
 
   # Detect kubeyaml, if present also semantically validate YAML
@@ -321,7 +360,7 @@ task :validate_template, [:charts] => :check_dep do |_t, args|
 end
 
 desc 'Runs helmfile lint on all service deployments'
-task validate_deployments: :check_dep do
+task validate_deployments: :repo_update do
   results = {}
   deployments = FileList.new(HELMFILE_GLOB)
   # Do not overwhelm the charts repo,
@@ -461,7 +500,7 @@ task test_scaffold: :check_dep do
 end
 
 desc 'Show diff introduced by the patch'
-task :helm_diffs, [:charts] => :check_dep do |_t, args|
+task :helm_diffs, [:charts] => :repo_update do |_t, args|
   charts = get_charts(args, all_charts)
   change = {}
   change = run_with_fixtures(charts) do |chart, fixtures, _|
@@ -469,12 +508,13 @@ task :helm_diffs, [:charts] => :check_dep do |_t, args|
   end
   original = {}
   Git.open('.').back_to('origin/master') do
-    all_original_charts = FileList.new('charts/**/Chart.yaml').map { |x| File.dirname(x) }
+    all_original_charts = FileList.new(CHARTS_GLOB).map { |x| File.dirname(x) }
     original_charts = get_charts(args, all_original_charts)
     original = run_with_fixtures(original_charts) do |chart, fixtures, _|
       exec_helm_template(chart, fixtures)
     end
   end
+  puts("Helm diffs summary:\n\n")
   change.each do |label, result|
     success, manifest = result
     if success
@@ -486,7 +526,7 @@ task :helm_diffs, [:charts] => :check_dep do |_t, args|
         diffs = diff(orig_manifest, manifest)
       end
       if diffs != ''
-        puts "#{label.ljust(72)}DIFFS FOUND"
+        puts "#{label.ljust(72)}DIFFS FOUND#{' (new chart)' if !original.include?(label)}"
         puts diffs
       end
     else
@@ -509,6 +549,7 @@ task deployment_diffs: %i[check_dep repo_update] do
     original_deployments = FileList.new(HELMFILE_GLOB)
     original = get_all_manifests(original_deployments)
   end
+  puts("Deployment diffs summary:\n\n")
   change.each do |label, manifest|
     # If the deployment is new, we want to output it all as a diff.
     original_manifest = if original.include? label
@@ -518,7 +559,7 @@ task deployment_diffs: %i[check_dep repo_update] do
     end
     diffs = diff(original_manifest, manifest)
     if diffs != ''
-      puts "#{label.ljust(72)}DIFFS FOUND"
+      puts "#{label.ljust(72)}DIFFS FOUND#{' (new deployment)' if original_manifest == ''}"
       puts diffs
     end
   end
