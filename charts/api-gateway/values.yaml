@@ -11,7 +11,7 @@ main_app:
   version: latest
   port: 8087
   command: ["/usr/bin/envoy"]
-  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
+  args: ["-c", "/etc/api-gateway/config.yaml"]
   requests:
     cpu: 500m
     memory: 500Mi
