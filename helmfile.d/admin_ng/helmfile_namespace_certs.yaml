@@ -1,0 +1,47 @@
+# Setup TLS certificates for all service namespaces
+#
+# This adds a TLS certificate (in the istio-system namespace) for each namespace created,
+# so services in those namespace can may use them when configuring ingress.
+
+templates:
+  default: &default
+    chart: wmf-stable/raw
+    namespace: istio-system
+    installedTemplate: {{ .Environment.Values | get "namespace_certificates" false }}
+
+releases:
+  - name: namespace-certificates
+    <<: *default
+    needs:
+      - kube-system/namespaces
+      - cert-manager/cert-manager
+    values:
+      - templates:
+      {{- range $namespace, $values := .Environment.Values.namespaces }}
+        {{/* Don't mess with Kubernetes builtin namespaces while still allow to deploy to it */}}
+        {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
+        {{/* All builtin namespaces are system namespaces */}}
+        {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
+        {{- if eq $isSystemNamespace false }}
+          {{- $tlsHostname := $values | get "tlsHostname" $namespace }}
+          - |
+            # Create a default certificate object in istio-system namespace
+            apiVersion: cert-manager.io/v1
+            kind: Certificate
+            metadata:
+              name: {{ $namespace }}
+              namespace: istio-system
+            spec:
+              commonName: {{ $tlsHostname }}.discovery.wmnet
+              secretName: {{ $namespace }}-tls-certificate
+              dnsNames:
+                - {{ $tlsHostname }}.discovery.wmnet
+                - {{ $tlsHostname }}.svc.codfw.wmnet
+                - {{ $tlsHostname }}.svc.eqiad.wmnet
+              issuerRef:
+                # This references the cfssl ClusterIssuer "discovery" defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
+                name: discovery
+                group: cfssl-issuer.wikimedia.org
+                kind: ClusterIssuer
+        {{- end }}{{- /* end if eq $isSystemNamespace false */}}
+      {{- end }}{{- /* end range namespaces */}}

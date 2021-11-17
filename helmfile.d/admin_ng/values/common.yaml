@@ -37,6 +37,13 @@
 #   labels: hash<string,string>
 #     Default: {}
 #     Provide a list of labels and their values to be added to the namespace.
+#   tlsHostname: string
+#     Default <namespace-name>
+#     Each namespace will have TLS certificate issued that can be used with Istio-Ingresscontroller.
+#     That certificate will be issued for the subject alt names:
+#     - {{ $tlsHostname }}.discovery.wmnet
+#     - {{ $tlsHostname }}.svc.codfw.wmnet
+#     - {{ $tlsHostname }}.svc.eqiad.wmnet
 namespaces: {}
 GlobalNetworkPolicies: {}
 

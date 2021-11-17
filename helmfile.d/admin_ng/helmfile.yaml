@@ -22,6 +22,7 @@ environments:
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       - install_cert_manager: true
+      - namespace_certificates: true
   # Machine Learning clusters
   ml-serve-eqiad:
     values:
@@ -50,6 +51,7 @@ bases:
   - coredns/helmfile.yaml
   - helmfile_namespaces.yaml
   - cert-manager/helmfile.yaml
+  - helmfile_namespace_certs.yaml
   - helmfile_istio-gateways.yaml
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
