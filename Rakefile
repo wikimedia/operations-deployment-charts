@@ -109,10 +109,12 @@ def exec_helmfile_command(command, source, environments = nil, &block)
       envs = helmfile_raw_data['environments'].keys
     end
 
-    # now for each environment, build the list of
-    # helm commands to run
+    # now for each environment, run helmfile
+    # --skip-deps skips updating repositories and helm chart dependencies over and over again.
+    # This requires the dependencies to be available in the git checkout, but this is how we currently
+    # handle it anyways.
     envs.each do |env|
-      result = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{filename} #{command}"
+      result = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{filename} #{command} --skip-deps"
       results[env] = block.call env, result
     end
   end
@@ -232,6 +234,8 @@ def get_all_manifests(deployments)
         if result[0]
           result[1]
         else
+          puts("Failed to helmfile template #{helmfile}".red)
+          puts(result[1])
           ''
         end
       end
