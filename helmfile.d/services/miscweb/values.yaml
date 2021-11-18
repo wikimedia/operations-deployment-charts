@@ -1,15 +1,20 @@
 resources:
   replicas: 2
+
 docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
+
 service:
   deployment: production
-  port:
-    nodePort: 4111
+
 main_app:
   image: wikimedia/operations-container-miscweb
   version: 2021-10-13-225516-production
   limits:
     cpu: 1
     memory: 1Gi
+
+tls:
+  enabled: true
+  public_port: 4111
