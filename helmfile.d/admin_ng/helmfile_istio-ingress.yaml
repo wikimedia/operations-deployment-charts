@@ -43,9 +43,10 @@ templates:
                     protocol: TCP
                 # Allow Istio Gateways to talk to istiod
                 - from:
-                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
-                    - ipBlock:
-                        cidr: {{ . }}
+                    {{- range $istio_gateway, $settings := $istio_ingress_gateways }}
+                    - podSelector:
+                        matchLabels:
+                          app: istio-{{ $istio_gateway }}
                     {{- end }}
                   ports:
                     - port: 15012
