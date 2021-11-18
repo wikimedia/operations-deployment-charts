@@ -49,7 +49,7 @@ end
 def exec_helmfile_command(command, source, environments = nil, &block)
   results = {}
   helm_home = ENV['HELM_HOME'] || File.expand_path('~/.helm')
-  dir_to_copy, file = File.split source
+  dir_to_copy, helmfile_name = File.split source
   environments = environments.is_a?(String) ? [environments] : environments
   return {} unless File.directory? dir_to_copy
 
@@ -61,27 +61,35 @@ def exec_helmfile_command(command, source, environments = nil, &block)
     FileUtils.cp_r helm_home, local_helm_home
     # Copy the original dir files to the tmpdir
     FileUtils.cp_r "#{dir_to_copy}/.", dir
-    filename = File.join dir, file
-    source = File.read(filename)
 
     # Copy all charts (and common templates) here because concurrent
     # "helm dep build" will fail otherwise.
     FileUtils.cp_r File.join(File.dirname(__FILE__), "common_templates"), dir
     FileUtils.cp_r File.join(File.dirname(__FILE__), "charts"), dir
     tmp_charts_dir = File.join(dir, 'charts')
-
-    # Replace references to chart(s) in the repository with local ones
-    # to also catch changes to charts that are not released yet.
-    source.gsub!('chart: wmf-stable', "chart: #{tmp_charts_dir}")
-
-    # Patch helmfile so that .fixtures.yaml is used instead of
-    # /etc/helmfile-defaults/general-#{env}.yaml
-    # The file is a go text-template so we can't load the yaml and modify it.
+    main_helmfile_path = File.join dir, helmfile_name
     fixtures = File.join(dir, '.fixtures.yaml')
-    if File.exist? fixtures
-      source.sub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
+
+    # Patch helmfiles so that .fixtures.yaml is used instead of
+    # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
+    # * /etc/helmfile-defaults/private/admin/#{env}.yaml for admin_ng helmfiles
+    # Also replace references to charts in wmf-stable repo with the local path.
+    #
+    # The files are go text-templates so we can't load the yaml and modify it.
+    helmfile_glob = File.join(dir, '**/helmfile*.yaml')
+    FileList.new(helmfile_glob).each do |helmfile_path|
+      helmfile = File.read(helmfile_path)
+      # Replace references to charts in the repository with local ones
+      # to also catch changes to charts that are not released yet.
+      helmfile.gsub!(/^(\s*chart:\s+["']{0,1})wmf-stable\//, "\\1#{tmp_charts_dir.chomp('/').concat('/')}")
+      if File.exist? fixtures
+        # For service helmfiles
+        helmfile.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
+        # For admin_ng helmfiles
+        helmfile.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures)
+      end
+      File.write helmfile_path, helmfile
     end
-    File.write filename, source
 
     if environments
       envs = environments
@@ -92,7 +100,7 @@ def exec_helmfile_command(command, source, environments = nil, &block)
       all_data = {}
       ok = false
       ['staging', 'eqiad', 'ml-serve-eqiad'].each do |e|
-        ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{filename} build", nil, false
+        ok, data = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{e} -f #{main_helmfile_path} build", nil, false
         all_data[e] = data
         break if ok
       end
@@ -114,7 +122,7 @@ def exec_helmfile_command(command, source, environments = nil, &block)
     # This requires the dependencies to be available in the git checkout, but this is how we currently
     # handle it anyways.
     envs.each do |env|
-      result = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{filename} #{command} --skip-deps"
+      result = _exec "HELM_HOME=#{local_helm_home} helmfile -e #{env} -f #{main_helmfile_path} #{command} --skip-deps"
       results[env] = block.call env, result
     end
   end
@@ -723,6 +731,7 @@ task :run_locally, [:cmdargs] do |_t, args|
       cmd = [
         'docker',
         'run',
+        '--pull always',
         '--rm',
         "--user #{Process.uid}",
         "-v #{dir}:/src:rw",
