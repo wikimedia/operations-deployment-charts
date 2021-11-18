@@ -75,6 +75,9 @@ templates:
                   # Allow prometheus to scrape
                   - port: 15020
                     protocol: TCP
+                  # Port used to send readiness probes.
+                  - port: 15021
+                    protocol: TCP
                   # Allow traffic from other pods to its HTTP proxy ports
                   {{- range $settings.ports }}
                   - port: {{ . }}
