@@ -3,13 +3,27 @@
 cluster_group: ml-serve
 
 # Defaults applied to all ML clusters
-
-# The policies are WIP
-# Context: https://phabricator.wikimedia.org/T289834
 GlobalNetworkPolicies:
-  allow-dns:
+  # Allow icmp for all pods and all directions. Useful in debugging
+  allow-all-icmp:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
+      - Ingress
+      - Egress
+    ingress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+    egress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+  default-deny:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
       - Egress
     egress:
       # Allow all namespaces to communicate to DNS pods
