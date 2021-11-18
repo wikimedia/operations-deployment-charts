@@ -25,7 +25,7 @@ templates:
             spec:
               podSelector:
                 matchLabels:
-                  app: istiod
+                  istio: pilot
               egress:
                 # Allow the istiod pods to contact the Kubernetes API
                 - to:
@@ -46,7 +46,7 @@ templates:
                     {{- range $istio_gateway, $settings := $istio_ingress_gateways }}
                     - podSelector:
                         matchLabels:
-                          app: istio-{{ $istio_gateway }}
+                          istio: {{ $istio_gateway }}
                     {{- end }}
                   ports:
                     - port: 15012
@@ -70,7 +70,7 @@ templates:
             spec:
               podSelector:
                 matchLabels:
-                  app: istio-{{ $istio_gateway }}
+                  istio: {{ $istio_gateway }}
               ingress:
                 - ports:
                   # Allow prometheus to scrape
@@ -89,7 +89,7 @@ templates:
                 - from:
                     - podSelector:
                         matchLabels:
-                          app: istiod
+                          istio: pilot
                   ports:
                     - port: 15012
                       protocol: TCP
