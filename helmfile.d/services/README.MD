@@ -12,7 +12,7 @@ Which values are included varies depending on the cluster and release. So for ex
 - $chart/values.yaml # the values.yaml file contained within the helm chart
 - "/etc/helmfile-defaults/general-eqiad.yaml" # general default values, controlled by SRE
 - "values.yaml" # non-env-specific values, in this repository
-- "/etc/helmfile-defaults/private/SERVICE_NAME/eqiad.yaml" # prod-specific secrets, controlled by SRE
+- "/etc/helmfile-defaults/private/main_services/SERVICE_NAME/eqiad.yaml" # prod-specific secrets, controlled by SRE
 - "values-eqiad.yaml" # env-specific overrides
 - "values-main.yaml" # release-specific overrides
 ```
