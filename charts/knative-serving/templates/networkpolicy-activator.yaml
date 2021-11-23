@@ -35,10 +35,13 @@ spec:
       # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
       # To understand what ports do, check:
       # kubectl describe service activator-service -n knative-serving
-      # This policy may need further refinement since the Activator pod is
-      # configured to be health checked via Kubelet Probe, that (in our current
-      # config) results as traffic coming from the loopback interface.
-      # Ideally we should limit traffic from Istio pods and Kubelet probes.
+    - from:
+      - podSelector:
+          matchLabels:
+            istio: ingressgateway
+      - podSelector:
+          matchLabels:
+            istio: cluster-local-gateway
     - ports:
       - port: 8012
         protocol: TCP
