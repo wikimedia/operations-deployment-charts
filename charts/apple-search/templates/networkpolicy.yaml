@@ -35,6 +35,9 @@ spec:
       # php-fpm-exporter
       - port: 9118
         protocol: TCP
+      # php-level monitoring
+      - port: 9181
+        protocol: TCP
       {{- end }}
       {{- include "tls.networkpolicy" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}
