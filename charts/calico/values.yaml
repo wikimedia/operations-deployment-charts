@@ -39,7 +39,21 @@ IPPools: {}
 #    cidr: "10.64.75.0/24"
 #  my-ipv6-pool:
 #    cidr: "2620:0:861:babe::/64"
-#
+
+# Configuration for the calico IPAM module, unfortunately I cant find decicated docs.
+# An introduction to IPAM can be found at:
+# https://projectcalico.docs.tigera.io/networking/get-started-ip-addresses
+# The defaults I pulled from https://github.com/projectcalico/libcalico-go
+IPAMConfig:
+  # autoAllocateBlocks: If true (the default) IP blocks are allocated to node
+  # on demand.
+  autoAllocateBlocks: true
+  # maxBlocksPerHost: If non-zero, is the max number of blocks that can be
+  # assigned to each host.
+  maxBlocksPerHost: 0
+  # strictAffinity: If false (the default), nodes can borrow IPs out of IP
+  # blocks assigned to other nodes.
+  strictAffinity: false
 
 # Array of global network policies
 # See: https://docs.projectcalico.org/reference/resources/globalnetworkpolicy

@@ -46,6 +46,10 @@
 namespaces: {}
 GlobalNetworkPolicies: {}
 
+IPAMConfig:
+  # Prohibit nodes from borrowing IPs out of other nodes IPAM blocks (T296303)
+  strictAffinity: true
+
 # In helmfile_rbac.yaml we define a deploy ClusterRole and few other ones,
 # like deploy-{flink,kserve,..} with special extra settings for ad-hoc use cases.
 # To avoid deploying all extra deploy ClusterRoles to all clusters, we define
