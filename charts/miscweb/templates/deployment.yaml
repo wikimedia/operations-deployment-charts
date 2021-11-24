@@ -30,7 +30,7 @@ spec:
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
-        {{- toYaml .Values.affinity | indent 6 }}
+{{ toYaml .Values.affinity | indent 6 }}
       {{- end }}
       containers:
       {{- include "default.containers" . | indent 8}}
