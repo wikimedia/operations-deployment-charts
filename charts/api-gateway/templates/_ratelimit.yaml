@@ -1,18 +1,45 @@
 {{- define "ratelimit.config" }}
+{{ $anon_unit := .Values.main_app.ratelimiter.anon_limit.unit -}}
+{{ $default_unit := .Values.main_app.ratelimiter.default_limit.unit -}}
+---
 domain: wikimedia
 descriptors:
-  - key: user_class_anon_fallback
-    value: anon
+  - key: route_name
+    value: core
     descriptors:
-      - key: client_ip
-        rate_limit:
-          requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
-          unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
-  # Normally would be overriden by JWT override set OAuthRateLimiter
-  - key: client_id
+      - key: user_class_anon_fallback
+        value: anon
+        descriptors:
+          - key: client_ip
+            rate_limit:
+              requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
+              unit: {{ $anon_unit }}
+      # Normally would be overriden by JWT override set OAuthRateLimiter
+      - key: client_id
+        descriptors:
+          - key: user_id
+            rate_limit:
+              requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
+              unit: {{ $default_unit }}
+{{- range $discovery_route, $discovery_opts := .Values.main_app.discovery_endpoints }}
+{{- if $discovery_opts.ratelimit_config }}
+  - key: route_name
+    value: {{ $discovery_route }}
     descriptors:
-      - key: user_id
-        rate_limit:
-          requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
-          unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
+      - key: user_class_anon_fallback
+        value: anon
+        descriptors:
+          - key: client_ip
+            rate_limit:
+              unit: {{ $anon_unit }}
+              requests_per_unit: {{ $discovery_opts.ratelimit_config.anon_limit }}
+      # Normally would be overriden by JWT override set OAuthRateLimiter
+      - key: client_id
+        descriptors:
+          - key: user_id
+            rate_limit:
+              unit: {{ $default_unit }}
+              requests_per_unit: {{ $discovery_opts.ratelimit_config.default_limit }}
+{{- end }}
+{{- end }}
 {{- end }}
