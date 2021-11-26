@@ -30,7 +30,7 @@ spec:
         {{- include "tls.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
-        {{- toYaml .Values.affinity | indent 6 }}
+      {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
       {{- if eq .Values.main_app.type "php" }}

@@ -40,8 +40,7 @@ spec:
             - echo "CREATE KEYSPACE IF NOT EXISTS kask WITH REPLICATION = { 'class':'SimpleStrategy', 'replication_factor':1}; CREATE TABLE IF NOT EXISTS kask.values (key text PRIMARY KEY, value blob);" | cqlsh {{ $hostname }}
       {{ end }}
       {{- if .Values.affinity }}
-      affinity:
-{{ toYaml .Values.affinity | indent 8 }}
+      {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       {{- if .Values.tolerations }}
       tolerations:

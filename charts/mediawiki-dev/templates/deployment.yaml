@@ -28,7 +28,7 @@ spec:
         prometheus.io/scrape: "true"
     spec:
       {{- if .Values.affinity }}
-{{ toYaml .Values.affinity | indent 6 }}
+      {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
 {{- if .Values.main_app.usel10nCache }}
       initContainers:
