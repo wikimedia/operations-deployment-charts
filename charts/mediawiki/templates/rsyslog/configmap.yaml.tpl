@@ -32,7 +32,7 @@ ruleset(name="slowlog_to_kafka") {
   {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 }
 # Here we use readMode=1, which makes rsyslog treat paragraphs as a single log message.
-input(type="imfile" file="/var/log/php-fpm/slowlog.log" tag="php-fpm-slowlog" readMode=1 ruleset="slowlog_to_kafka")
+input(type="imfile" file="/var/log/php-fpm/slowlog.log" tag="php-fpm-slowlog" readMode="1" ruleset="slowlog_to_kafka")
 
 # PHP-FPM logs
 template(name="php-fpm-topic" type="string" string="rsyslog-%syslogseverity-text::lowercase%")
