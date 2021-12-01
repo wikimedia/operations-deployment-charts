@@ -40,7 +40,7 @@ inference:
     sidecar.istio.io/inject: "false"
   base_env:
     - name: WIKI_URL
-      value: "https://api-ro.discovery.wmnet"
+      value: "http://istio-egressgateway.istio-system.svc.cluster.local"
     - name: REQUESTS_CA_BUNDLE
       value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
 
