@@ -9,15 +9,9 @@
 #     Default: <namepace-name>-deploy
 #     The name of the deploy user for this namespace (needs to be created
 #     via private puppet).
-#   tillerClusterRole: string
-#     Default: tiller
-#     ClusterRole to bind the tiller ServiceAccount to.
 #   deployClusterRole: string
 #     Default: deploy
 #     ClusterRole to bind the deploy user to.
-#   tiller_resources: {}
-#     Default: {}
-#     Provide a resource block for the tiller pod in this namespace to use.
 #   pspClusterRole: string
 #     Default: allow-restricted-psp
 #     The name of the ClusterRole granting access to the PSP this namespace
@@ -27,7 +21,7 @@
 #     the new ClusterRole.
 #   systemNamespace: bool
 #     Default: false
-#     Don't deploy users, tiller or resource quota into this namespace.
+#     Don't deploy users or resource quota into this namespace.
 #     Kubernetes builtin namespaces (default, kube-.*) are always treated as
 #     system namespaces for safety reasons.
 #   allowCriticalPods: bool
@@ -69,12 +63,6 @@ NamespaceDefaultLabelName: true
 kubernetesApi:
   host: kubernetes.default.svc.cluster.local
   port: 443
-
-tillerImage: docker-registry.discovery.wmnet/tiller:2.16.7-3
-
-# Set helm version for the environment, either "helm2" or "helm3".
-# This will deploy helm version specific components like tiller and RBAC objects.
-helmVersion: "helm2"
 
 limitranges:
   # check out documentation to understand this well

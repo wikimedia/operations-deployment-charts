@@ -10,13 +10,6 @@ namespaces:
           cpu: "600"
           memory: "250Gi"
   mwdebug:
-    tiller_resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        cpu: 500m
-        memory: 1000Mi
     resourcequota:
       pods: {}
       compute:

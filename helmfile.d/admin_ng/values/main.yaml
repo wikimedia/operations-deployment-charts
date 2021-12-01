@@ -42,7 +42,6 @@ namespaces:
   proton: {}
   push-notifications: {}
   rdf-streaming-updater:
-    tillerClusterRole: tiller-flink
     deployClusterRole: deploy-flink
   recommendation-api: {}
   sessionstore: {}
@@ -75,23 +74,6 @@ GlobalNetworkPolicies:
         protocol: ICMP
       - action: Allow
         protocol: ICMPv6
-  # Allow tillers to talk to the kubernetes API. Note that we aren't able
-  # to select the "default" namespace where the service resides are it has no
-  # selectable Endpoints (it does have Endpoints, but calico doesn't seem to be
-  # able to select them as there are no pods powering those endpoints)
-  kubernetes-api:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
-    types:
-      - Egress
-    egress:
-      - action: Allow
-        protocol: TCP
-        source:
-          selector: 'name == "tiller"'
-        destination:
-          ports:
-            - 443
-            - 6443
   default-deny:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
