@@ -40,5 +40,9 @@
     mountPath: /etc/rsyslog.d
   - name: php-logging
     mountPath: /var/log/php-fpm
+  # We need to read files created by www-data and with mode
+  # 0600
+  securityContext:
+    runAsUser: 33
 {{- end }}
 {{- end -}}
