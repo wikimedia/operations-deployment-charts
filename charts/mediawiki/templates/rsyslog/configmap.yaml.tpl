@@ -6,7 +6,7 @@ action(type="omkafka"
         dynatopic.cachesize="1000"
         partitions.auto="on"
         template="{{ .template | default "syslog_cee" }}"
-        queue.type="LinkedList" queue.size="10000" queue.filename="udp_localhost_compat"
+        queue.type="LinkedList" queue.size="10000" queue.filename="{{ .name }}"
         queue.highWatermark="7000" queue.lowWatermark="6000"
         queue.checkpointInterval="5"
         confParam=[ "security.protocol=ssl",
@@ -27,21 +27,19 @@ module(load="mmnormalize")
 # PHP-FPM slowlogs
 # Slowlogs are sent to a specialized topic, mediawiki.php-fpm.slowlog
 template(name="php-slowlog-topic" type="string" string="mediawiki.php-fpm.slowlog")
-ruleset(
-  name="slowlog_to_kafka"
+ruleset(name="slowlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-slowlog.rb")
-  {{- dict "Values" .Values "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
-)
+  {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+}
 # Here we use readMode=1, which makes rsyslog treat paragraphs as a single log message.
-input(type="imfile" mode="inotify" file="/var/log/php-fpm/slowlog.log" tag="php-fpm-slowlog" readMode=1 ruleset="slowlog_to_kafka")
+input(type="imfile" file="/var/log/php-fpm/slowlog.log" tag="php-fpm-slowlog" readMode=1 ruleset="slowlog_to_kafka")
 
 # PHP-FPM logs
 template(name="php-fpm-topic" type="string" string="rsyslog-%syslogseverity-text::lowercase%")
-ruleset(
-  name="errorlog_to_kafka"
+ruleset(name="errorlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-errorlog.rb")
-  {{- dict "Values" .Values "topic" "php-fpm-topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
-)
+  {{- dict "Values" .Values "name" "errorlog" "topic" "php-fpm-topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+}
 input(type="imfile" mode="inotify" addMetadata="on" file="/var/log/php-fpm/error.log" tag="php-fpm-error" ruleset="errorlog_to_kafka")
 
 
@@ -56,7 +54,7 @@ template(name="udp_localhost_topic" type="string" string="udp_localhost-%syslogs
 # Use a separate (in memory) queue to limit message processing to this ruleset only.
 ruleset(name="udp_localhost_to_kafka" queue.type="LinkedList") {
   action(type="mmjsonparse" name="mmjsonparse_udp_localhost")
-  {{- dict "Values" .Values "topic" "udp_localhost_topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+  {{- dict "Values" .Values "name" "udp_localhost_compat" "topic" "udp_localhost_topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 }
 
 input(type="imudp" port="10514" address="{{ .Values.mw.logging.allowed_address }}" ruleset="udp_localhost_to_kafka")
