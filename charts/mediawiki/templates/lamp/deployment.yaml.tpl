@@ -93,6 +93,14 @@
     value: "{{ .Values.php.display_errors }}"
   - name: PHP__error_reporting
     value: "{{ .Values.php.error_reporting }}"
+  {{- if .Values.php.devel_mode }}
+  - name: PHP__opcache__validate_timestamps
+    value: "1"
+  - name: PHP__opcache__revalidate_freq
+    value: "0"
+  - name: FPM__catch_workers_output
+    value: "1"
+  {{- end }}
   - name: PHP__error_log
   {{- if .Values.mw.logging.rsyslog }}
     value: /var/log/php-fpm/error.log
