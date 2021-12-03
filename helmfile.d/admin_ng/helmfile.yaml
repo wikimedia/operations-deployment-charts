@@ -20,7 +20,7 @@ environments:
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       # Deploy network policies for a istio ingresscontroller setup
-      - istio_ingress: true
+      - istio_gateways: true
       - install_cert_manager: true
   # Machine Learning clusters
   ml-serve-eqiad:
@@ -30,8 +30,8 @@ environments:
       - "values/{{ .Environment.Name }}/values.yaml"
       - install_knative: true
       - install_kserve: true
-      # Deploy network policies for a istio ingresscontroller setup
-      - istio_ingress: true
+      # Deploy network policies for a Istio setup
+      - istio_gateways: true
   ml-serve-codfw:
     values:
       - "values/common.yaml"
@@ -39,8 +39,8 @@ environments:
       - "values/{{ .Environment.Name }}/values.yaml"
       - install_knative: true
       - install_kserve: true
-      # Deploy network policies for a istio ingresscontroller setup
-      - istio_ingress: true
+      # Deploy network policies for a Istio setup
+      - istio_gateways: true
 
 ---
 bases:
@@ -50,7 +50,7 @@ bases:
   - coredns/helmfile.yaml
   - helmfile_namespaces.yaml
   - cert-manager/helmfile.yaml
-  - helmfile_istio-ingress.yaml
+  - helmfile_istio-gateways.yaml
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
   - kserve/helmfile.yaml

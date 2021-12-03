@@ -1,4 +1,4 @@
-# Setup network policies for an istio-ingressgateway setup
+# Setup network policies for the setup of Istio gateways
 #
 # Requirements:
 # This requires the istio-system namespace to be created via
@@ -6,14 +6,14 @@
 # custom_deploy.d.
 #
 templates:
-  {{- $istio_ingress_gateways := .Environment.Values | get "istio.ingress_gateways" dict }}
+  {{- $istio_gateways := .Environment.Values | get "istio.gateways" dict }}
   {{- $istiod_allowed_extra_cidrs := .Environment.Values | get "istio.istiod.allowed_extra_cidrs" list }}
   {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
-  istio-ingress-networkpolicies: &istio-ingress-networkpolicies
-    name: istio-ingress-networkpolicies
+  istio-gateways-networkpolicies: &istio-gateways-networkpolicies
+    name: istio-gateways-networkpolicies
     chart: wmf-stable/raw
     namespace: istio-system
-    installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_ingress\" }}{{ .Environment.Values.istio_ingress }}{{ else }}{{ false }}{{end}}`}}"
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_gateways\" }}{{ .Environment.Values.istio_gateways }}{{ else }}{{ false }}{{end}}`}}"
     values:
       - resources:
         {{- if $kubeapi_cidrs }}
@@ -43,7 +43,7 @@ templates:
                     protocol: TCP
                 # Allow Istio Gateways to talk to istiod
                 - from:
-                    {{- range $istio_gateway, $settings := $istio_ingress_gateways }}
+                    {{- range $istio_gateway, $settings := $istio_gateways }}
                     - podSelector:
                         matchLabels:
                           istio: {{ $istio_gateway }}
@@ -61,7 +61,7 @@ templates:
                     - port: 15017
                       protocol: TCP
           {{- end }}
-          {{- range $istio_gateway, $settings := $istio_ingress_gateways }}
+          {{- range $istio_gateway, $settings := $istio_gateways }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
@@ -93,7 +93,19 @@ templates:
                   ports:
                     - port: 15012
                       protocol: TCP
+          {{- $egress_endpoints := $settings | get "egress_endpoints" dict }}
+          {{- with $egress_endpoints }}
+              egress:
+          {{- range $endpoint_settings := . }}
+                - to:
+                  - ipBlock:
+                      cidr: {{ $endpoint_settings.cidr }}
+                  ports:
+                    - port: {{ $endpoint_settings.port }}
+                      protocol: {{ $endpoint_settings.protocol }}
+          {{- end }}
+          {{- end }}
           {{- end }}
 
 releases:
-  - <<: *istio-ingress-networkpolicies
+  - <<: *istio-gateways-networkpolicies

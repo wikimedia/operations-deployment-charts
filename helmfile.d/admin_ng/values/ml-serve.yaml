@@ -156,10 +156,26 @@ typha:
 # The list of ports need to be kept in sync with what stated
 # in the related custom_deploy.d's istioctl config.
 istio:
-  ingress_gateways:
+  gateways:
     ingressgateway:
       ports:
         - 8443
     cluster-local-gateway:
       ports:
         - 8080
+    egressgateway:
+      ports:
+        - 8080
+      egress_endpoints:
+        - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+          port: 443
+          protocol: TCP
+        - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+          port: 443
+          protocol: TCP
+        - cidr: 10.2.2.22/32 # api.svc.eqiad.wmnet
+          port: 443
+          protocol: TCP
+        - cidr: 10.2.1.22/32 # api.svc.codfw.wmnet
+          port: 443
+          protocol: TCP
