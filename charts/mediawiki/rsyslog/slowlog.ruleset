@@ -1,19 +1,19 @@
 version=2
 rule=:%[
-    {"type": "literal", "text": "["},
+    {"type": "literal", "text": "\\n["},
     {"name": "date", "type": "char-to", "extradata": "]"},
     {"type": "literal", "text": "]  [pool"},
     {"name": "pool","type": "char-to", "extradata": "]"},
     {"type": "literal", "text": "] pid "},
     {"name": "pid", "type": "number"},
-    {"type": "literal", "text": "#012"},
+    {"type": "literal", "text": "\\n"},
     {"type": "literal", "text": "script_filename = "},
-    {"name": "script_filename", "type": "char-to", "extradata": "#"},
-    {"type": "literal", "text": "#012"},
+    {"name": "script_filename", "type": "char-to", "extradata": "\\n"},
+    {"type": "literal", "text": "\\n"},
     {
         "name": "stacktrace",
         "type": "repeat",
-        "while": {"type":"literal", "text":"#012"},
+        "while": {"type":"literal", "text":"\\n"},
         "parser": [
             {"type": "literal", "text": "["},
             {"name": "address", "type": "char-to", "extradata": "]"},
@@ -24,6 +24,5 @@ rule=:%[
             {"type": "literal", "text": ":"},
             {"name": "line", "type": "number"}
         ]
-    },
-    {"type": "literal", "text": "#"}
+    }
     ]%

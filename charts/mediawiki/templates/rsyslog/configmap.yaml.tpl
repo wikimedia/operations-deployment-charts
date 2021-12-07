@@ -30,8 +30,18 @@ ruleset(name="slowlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-slowlog.rb")
   {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 }
-# Here we use readMode=1, which makes rsyslog treat paragraphs as a single log message.
-input(type="imfile" file="/var/log/php-fpm/slowlog.log" tag="php-fpm-slowlog" readMode="1" ruleset="slowlog_to_kafka")
+# In theory, rsyslog should be able to read this file using 'readMode=1', which allows to read paragraphs.
+# But, sadly, php-fpm writes the blank line *before* the stack trace, making imfile unable to read from such file
+# So we move to use startmgs.regex to match the blank line. This OTOH means we only log when the next message arrives
+# (as we know a log message has finished only once the next one starts)
+# This also means that the raw message now encodes newlines as "\\n" and not "#012" as it did with readMode=1
+input(
+  type="imfile"
+  file="/var/log/php-fpm/slowlog.log"
+  tag="php-fpm-slowlog"
+  startmsg.regex="^$"
+  ruleset="slowlog_to_kafka"
+)
 
 # PHP-FPM logs
 template(name="php-fpm-topic" type="string" string="rsyslog-%syslogseverity-text::lowercase%")
