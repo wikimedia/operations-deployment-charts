@@ -6,8 +6,6 @@
   {{- $has_volumes = 1 -}}
 {{ else if (and .Values.monitoring.enabled .Values.monitoring.uses_statsd) }}
   {{- $has_volumes = 1 -}}
-{{ else if (and (eq .Values.main_app.type "php") (eq .Values.php.fcgi_mode "FCGI_UNIX") )}}
-  {{- $has_volumes = 1 -}}
 {{ else }}
   {{/*Yes this is redundant but it's more readable*/}}
   {{- $has_volumes = 0 -}}

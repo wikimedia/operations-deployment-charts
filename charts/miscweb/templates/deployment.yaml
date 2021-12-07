@@ -36,5 +36,6 @@ spec:
       {{- include "default.containers" . | indent 8}}
       {{- include "tls.container" . | indent 8}}
       {{- include "httpd-exporter" . | indent 8}}
-
+      volumes:
+      {{- include "wmf.volumes" . | indent 8}}
 
