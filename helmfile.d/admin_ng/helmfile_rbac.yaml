@@ -26,6 +26,15 @@ releases:
             - nonResourceURLs:
                 - /metrics
               verbs: ["get"]
+        ## Used by imagecatalog
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: imagecatalog
+          rules:
+            - apiGroups: [""]
+              resources: ["namespaces", "pods"]
+              verbs: ["list", "get"]
         ## Used by deploy users
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -123,3 +132,16 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: api-metrics
+        ## Used by imagecatalog
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: imagecatalog
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: imagecatalog
+          subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: User
+              name: imagecatalog
