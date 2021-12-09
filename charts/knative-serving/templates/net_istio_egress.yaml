@@ -1,0 +1,69 @@
+{{- with $.Values.net_istio.egressgateway }}
+# This file is not shipped by the Knative serving upstream code,
+# it is specific to the WMF set up that the ML team is trying to use.
+# Since we don't have a specific chart for Istio Gateway/VS/etc.. configs,
+# and since Knative ships with Istio-specific configurations, this chart
+# seems the best place to add extra Egress gateway configurations.
+# In the future the code/configs below may be moved elsewhere.
+#
+# For every service that we want to proxy via the egress gateway, we need to
+# define:
+# 1) A Gateway resource to instruct the gateway about what endpoints will
+#    be accepted, namely the ones that will have routes.
+# 2) For every endpoint, we need to define:
+# 2-1) A ServiceEntry resource that establish what endpoints can be reached from
+#      within the mesh (even if we don't really use it for the moment).
+# 2-2) A VirtualService resource that implements basic L7 routing rules.
+# 2-3) A DestinationRule resource that establish how/if traffic is split
+#      between multiple backends following a certain versioning.
+#      For example, we could have two different versions of the same endpoint
+#      and route part of the traffic to one and part to the other one, based
+#      on some logic. For egress we don't really need it but we have to specify
+#      a basic entry to make everything working.
+#
+# The above resources are probably a little too much for a simple egress proxy
+# use case, but if we follow the Istio way then enabling a full mTLS mesh
+# will surely be easier (in the future).
+#
+# Assumption: to keep it simple, this config assumes that there is only one
+# Istio egress gateway called 'egressgateway'. If more complex deployments are
+# needed (like multiple egress gateways etc..) we'll need to add more
+# configurability to the code below.
+
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-egressgateway
+  namespace: knative-serving
+  labels:
+    serving.knative.dev/release: "{{ $.Chart.AppVersion }}"
+spec:
+  selector:
+    istio: egressgateway
+  servers: {{- .gateway.servers | toYaml | nindent 4 }}
+---
+{{- range .service_entries }}
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: https-endpoints-{{ .host }}
+spec: {{- . | toYaml | nindent 2}}
+---
+{{- end }}
+{{- range .virtual_services }}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .name }}
+spec: {{- . | toYaml | nindent 2}}
+---
+{{- end }}
+{{- range .destination_rules }}
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ .name }}
+spec: {{- . | toYaml | nindent 2}}
+---
+{{- end }}
+{{- end }}
