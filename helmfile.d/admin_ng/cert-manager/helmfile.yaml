@@ -11,11 +11,6 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_cert_manager\" }}{{ .Environment.Values.install_cert_manager }}{{ else }}{{ false }}{{end}}`}}"
 
 releases:
-  - name: cfssl-issuer-crds
-    chart: wmf-stable/cfssl-issuer-crds
-    <<: *default
-    needs:
-      - kube-system/namespaces
   - name: cert-manager
     chart: wmf-stable/cert-manager
     <<: *default
@@ -30,6 +25,11 @@ releases:
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
       - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
+  - name: cfssl-issuer-crds
+    chart: wmf-stable/cfssl-issuer-crds
+    <<: *default
+    needs:
+      - kube-system/namespaces
   - name: cfssl-issuer
     chart: wmf-stable/cfssl-issuer
     <<: *default
@@ -44,3 +44,29 @@ releases:
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
       - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
+  - name: cert-manager-networkpolicies
+    chart: wmf-stable/raw
+    <<: *default
+    needs:
+      - kube-system/namespaces
+    values:
+      - resources:
+        {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
+        {{- if $kubeapi_cidrs }}
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: cert-manager
+            spec:
+              podSelector: {}
+              egress:
+                # Allow all pods in this namespace to contact the Kubernetes API
+                - to:
+                    {{- range $kubeapi_cidrs }}
+                    - ipBlock:
+                        cidr: {{ . }}
+                    {{- end }}
+                  ports:
+                    - port: 6443
+                      protocol: TCP
+        {{- end }}
