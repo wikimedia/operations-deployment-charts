@@ -14,11 +14,14 @@ releases:
   - name: cfssl-issuer-crds
     chart: wmf-stable/cfssl-issuer-crds
     <<: *default
+    needs:
+      - kube-system/namespaces
   - name: cert-manager
     chart: wmf-stable/cert-manager
     <<: *default
     needs:
       - kube-system/coredns
+      - kube-system/namespaces
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
