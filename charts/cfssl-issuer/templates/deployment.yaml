@@ -23,8 +23,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - /manager
           args:
             - --metrics-addr=127.0.0.1:8080
             - --enable-leader-election
