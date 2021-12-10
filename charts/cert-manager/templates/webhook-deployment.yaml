@@ -96,6 +96,11 @@ spec:
           securityContext:
             {{- toYaml .Values.webhook.containerSecurityContext | nindent 12 }}
           {{- end }}
+          envFrom:
+          - configMapRef:
+              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden.
+              name: {{ include "webhook.fullname" . }}-k8s-api-env
+              optional: true
           env:
           - name: POD_NAMESPACE
             valueFrom:

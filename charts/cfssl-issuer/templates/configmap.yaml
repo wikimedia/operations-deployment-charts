@@ -1,0 +1,13 @@
+{{- with .Values.kubernetesApi }}
+# This ConfigMap is used to overwrite the default kubernetes API environment
+# variables to work around the IP SAN limitation of puppet CA.
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "cfssl-issuer.fullname" $ }}-k8s-api-env
+  labels:
+    {{- include "cfssl-issuer.labels" $ | nindent 4 }}
+data:
+  KUBERNETES_SERVICE_HOST: "{{ .host }}"
+  KUBERNETES_SERVICE_PORT: "{{ .port }}"
+{{- end }}
