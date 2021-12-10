@@ -8,7 +8,7 @@ rule=:%[
     {"name": "pid", "type": "number"},
     {"type": "literal", "text": "\\n"},
     {"type": "literal", "text": "script_filename = "},
-    {"name": "script_filename", "type": "char-to", "extradata": "\\n"},
+    {"name": "script_filename", "type": "string-to", "extradata": "\\n"},
     {"type": "literal", "text": "\\n"},
     {
         "name": "stacktrace",
