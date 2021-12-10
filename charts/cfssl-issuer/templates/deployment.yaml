@@ -24,7 +24,6 @@ spec:
           image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-            - --metrics-addr=127.0.0.1:8080
             - --enable-leader-election
           envFrom:
           - configMapRef:
@@ -35,14 +34,17 @@ spec:
             - name: metrics
               containerPort: 8080
               protocol: TCP
+            - name: healthz
+              containerPort: 8081
+              protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: metrics
+              path: /healthz
+              port: healthz
           readinessProbe:
             httpGet:
-              path: /
-              port: metrics
+              path: /readyz
+              port: healthz
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

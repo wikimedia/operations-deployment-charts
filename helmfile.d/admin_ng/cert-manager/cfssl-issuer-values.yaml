@@ -1,12 +1,11 @@
 replicaCount: 2
 image:
   repository: docker-registry.discovery.wmnet
-  tag: 0.1.0-1
 
 issuers:
   discovery:
     kind: ClusterIssuer
-    url: https://pki.discovery.wmnet/
+    url: https://pki.discovery.wmnet:8443
     label: discovery
     authSecretName: issuer-discovery-authkey
     # authSecret will be overridden by /etc/helmfile-defaults/*/cfssl-issuer/*.yaml
