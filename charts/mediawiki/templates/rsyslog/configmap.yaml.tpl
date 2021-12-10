@@ -29,6 +29,9 @@ template(name="php-slowlog-topic" type="string" string="mediawiki.php-fpm.slowlo
 ruleset(name="slowlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-slowlog.rb")
   {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+{{- if .Values.mw.logging.debug }}
+  action(type="omfile" file="/var/log/php-fpm/slowlog-debug.log" template="unparsed")
+{{- end }}
 }
 # In theory, rsyslog should be able to read this file using 'readMode=1', which allows to read paragraphs.
 # But, sadly, php-fpm writes the blank line *before* the stack trace, making imfile unable to read from such file
@@ -48,6 +51,9 @@ template(name="php-fpm-topic" type="string" string="rsyslog-%syslogseverity-text
 ruleset(name="errorlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-errorlog.rb")
   {{- dict "Values" .Values "name" "errorlog" "topic" "php-fpm-topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+{{- if .Values.mw.logging.debug }}
+  action(type="omfile" file="/var/log/php-fpm/errorlog-debug.log" template="unparsed")
+{{- end }}
 }
 input(type="imfile" addMetadata="on" file="/var/log/php-fpm/error.log" tag="php-fpm-error" ruleset="errorlog_to_kafka")
 
