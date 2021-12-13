@@ -48,7 +48,7 @@ The resulting files and changes should then be uploaded to
 Linters and tests
 -----------------
 
-Charts are linted using `helm lint` and `helm template`; the resulting
+Charts are linted using `helm3 lint` and `helm3 template`; the resulting
 templates are also checked to ensure they produce valid YAML files.
 
 Many charts use feature flags like `monitoring.enabled: true` to include or

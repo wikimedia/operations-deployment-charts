@@ -29,14 +29,13 @@ all_charts = FileList.new(CHARTS_GLOB).map { |x| File.dirname(x) }
 
 # execute helm template
 def exec_helm_template(chart, fixture = nil)
-  helm = helm_version(chart)
   if !fixture.nil?
     # When passing multiple values, concatenate them
     quoted = fixture.map { |x| "-f '#{x}'" }.join ' '
-    command = "#{helm} template #{quoted} '#{chart}'"
+    command = "helm template #{quoted} '#{chart}'"
     error = "Error checking #{chart}, value files: #{fixture}"
   else
-    command = "#{helm} template '#{chart}'"
+    command = "helm template '#{chart}'"
     error = "Error checking #{chart}"
   end
   ret = _exec command
@@ -305,8 +304,15 @@ end
 desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
-  check_binary('helm3')
   check_binary('helmfile')
+
+  res, output = _exec("helm version --short")
+  helm_version = output.split(".").first
+
+  if helm_version != "v3"
+    raise('helm2 not supported, use helm3 binary')
+  end
+
 end
 
 # This is to ensure that all repos are available and up to date
@@ -317,6 +323,7 @@ task repo_update: :check_dep do
     path_to_chart_yaml = File.join path_to_chart, 'Chart.yaml'
     chart_yaml = yaml_load_file(path_to_chart_yaml)
     dependencies = []
+    # remove v1 support after T295750
     if chart_yaml['apiVersion'] == 'v1'
       # Read requirements.yaml
       path_to_requirements_yaml = File.join path_to_chart, 'requirements.yaml'
@@ -345,12 +352,10 @@ task repo_update: :check_dep do
 
   repo_urls.uniq.each do |repo_url|
     repo_hash = Digest::MD5.hexdigest(repo_url)
-    puts("Adding helm2/3 repo #{repo_url} as #{repo_hash}")
-    system("helm2 repo add #{repo_hash} #{repo_url}")
-    system("helm3 repo add --force-update #{repo_hash} #{repo_url}")
+    puts("Adding helm repo #{repo_url} as #{repo_hash}")
+    system("helm repo add --force-update #{repo_hash} #{repo_url}")
   end
   system('helm repo update')
-  system('helm3 repo update')
 end
 
 desc 'Runs helm lint on all charts'
@@ -358,9 +363,8 @@ task :lint, [:charts] => :repo_update do |_t, args|
   charts = get_charts(args, all_charts)
   results = {}
   charts.each do |chart|
-    helm = helm_version(chart)
-    puts "Linting #{chart} with #{helm}"
-    res, output = _exec("#{helm} lint '#{chart}'")
+    puts "Linting #{chart} with helm"
+    res, output = _exec("helm lint '#{chart}'")
     results[chart] = res
     # surpress warnings about symlinks, see https://github.com/helm/helm/issues/7019
     puts output.split("\n").select{|l| !l[/found symbolic link/] }
