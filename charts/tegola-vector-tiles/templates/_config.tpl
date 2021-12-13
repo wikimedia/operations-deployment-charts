@@ -67,7 +67,7 @@ password = "${TEGOLA_POSTGRES_PASSWORD}"
   geometry_type = "point"
   geometry_fieldname = "geom"
   id_fieldname = "osm_id"
-  sql = "SELECT osm_id, ST_AsMVTGeom(geometry, !BBOX!) AS geom, name, name_, scalerank, code FROM layer_country_label(!BBOX!, !ZOOM!, !PIXEL_WIDTH!)"
+  sql = "SELECT osm_id, ST_AsMVTGeom(geometry, !BBOX!, 4096, 1024) AS geom, name, name_, scalerank, code FROM layer_country_label(!BBOX!, !ZOOM!, !PIXEL_WIDTH!)"
 
   [[providers.layers]]
   name = "poi_label"
