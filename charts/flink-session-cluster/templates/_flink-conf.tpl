@@ -30,4 +30,6 @@ high-availability: org.apache.flink.kubernetes.highavailability.KubernetesHaServ
 high-availability.storageDir: {{ .Values.main_app.config.ha_storage_dir}}
 restart-strategy: fixed-delay
 restart-strategy.fixed-delay.attempts: 10
+
+env.java.opts: -Dlog4j2.formatMsgNoLookups=true
 {{- end -}}
