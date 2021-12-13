@@ -33,6 +33,9 @@ spec:
           value: 'kubernetes.default.svc.cluster.local'
         - name: 'KUBERNETES_SERVICE_PORT'
           value: '443'
+    egressGateways:
+      - name: istio-egressgateway
+        enabled: true
     ingressGateways:
       # This is the default Ingress Gateway installed via istioctl, the one
       # that should be exposed to LVS.
