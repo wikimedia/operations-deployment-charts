@@ -53,20 +53,43 @@ releases:
       - resources:
         {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
         {{- if $kubeapi_cidrs }}
-          - apiVersion: networking.k8s.io/v1
-            kind: NetworkPolicy
-            metadata:
-              name: cert-manager
-            spec:
-              podSelector: {}
-              egress:
-                # Allow all pods in this namespace to contact the Kubernetes API
-                - to:
-                    {{- range $kubeapi_cidrs }}
-                    - ipBlock:
-                        cidr: {{ . }}
-                    {{- end }}
-                  ports:
-                    - port: 6443
-                      protocol: TCP
+        - apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: cert-manager
+          spec:
+            podSelector: {}
+            egress:
+              # Allow all pods in this namespace to contact the Kubernetes API
+              - to:
+                  {{- range $kubeapi_cidrs }}
+                  - ipBlock:
+                      cidr: {{ . }}
+                  {{- end }}
+                ports:
+                  - port: 6443
+                    protocol: TCP
         {{- end }}
+        - apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: cfssl-issuer
+          spec:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: cfssl-issuer
+            egress:
+              # Allow cfssl-issuer to reach pki.discovery.wmnet
+              # FIXME: Hardcoded IPs here
+              - to:
+                - ipBlock:
+                    cidr: 10.64.0.10/32
+                - ipBlock:
+                    cidr: 2620:0:861:101:10:64:0:10/128
+                - ipBlock:
+                    cidr: 10.192.0.35/32
+                - ipBlock:
+                    cidr: 2620:0:860:101:10:192:0:35/128
+                ports:
+                - port: 8443
+                  protocol: TCP
