@@ -39,7 +39,7 @@ php:
   slowlog_timeout: 1
   workers: 8
   servergroup: kube-mwdebug
-  fcgi_mode: FCGI_TCP
+  fcgi_mode: FCGI_UNIX
   exporter_version: 0.0.2
   httpd:
     exporter_version: 0.0.3
