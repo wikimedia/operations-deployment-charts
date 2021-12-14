@@ -20,6 +20,12 @@
   configMap:
     name: {{ $release }}-wmerrors
 {{- end }}
+{{- if .Values.debug.php.enabled }}
+# php debug volume
+- name: php-debug
+  configMap:
+    name: php-debug-config
+{{- end }}
 {{- if .Values.mw.mcrouter.enabled }}
 # Mcrouter configuration
 - name: {{ $release }}-mcrouter-config

@@ -23,3 +23,14 @@ metadata:
 data:
 {{ .Values.mw.wmerrors | toYaml | indent 2 }}
 {{- end -}}
+{{- if .Values.debug.php.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: php-debug-config
+data:
+{{- range $k, $v := .Values.debug.php.contents }}
+  "{{ $k }}.php": {{ $v | toYaml | indent 4 }}
+{{- end }}
+{{- end -}}

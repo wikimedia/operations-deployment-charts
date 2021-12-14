@@ -67,6 +67,20 @@ debug:
   enabled: false
   # Define here any port that you want to expose for debugging purposes
   ports: []
+  # By default do not enable this, but by default at least provide a way to
+  # dump the $_SERVER variables; this should also be used to inject files into
+  # the running deployments for e.g. debugging a production environment.
+  php:
+    enabled: false
+    contents:
+      vardump: |-
+        <html>
+        <body>
+        <?php
+        var_dump($_SERVER);
+        ?>
+        </body>
+        </html>
 
 networkpolicy:
   egress:
