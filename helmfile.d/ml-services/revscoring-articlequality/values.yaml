@@ -5,6 +5,8 @@ docker:
 networkpolicy:
   egress:
     enabled: true
+    # We should use the egress gateway by default to call endpoints.
+    # In this case, we allow the pods to call the Swift endpoint directly.
     dst_nets:
       - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
         ports:
@@ -14,21 +16,6 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
-      # Allow uncached MW API
-      # FIXME: This should be probably taken from default-network-policy-conf,
-      # but it is currently too broad for this use case.
-      - cidr: 10.2.2.22/32
-        ports:
-        - protocol: tcp
-          port: 80
-        - protocol: tcp
-          port: 443
-      - cidr: 10.2.1.22/32
-        ports:
-        - protocol: tcp
-          port: 80
-        - protocol: tcp
-          port: 443
 
 monitoring:
   enabled: true
@@ -40,7 +27,7 @@ inference:
     sidecar.istio.io/inject: "false"
   base_env:
     - name: WIKI_URL
-      value: "https://api-ro.discovery.wmnet"
+      value: "https://istio-egressgateway.istio-system.svc.cluster.local"
     - name: REQUESTS_CA_BUNDLE
       value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
 
