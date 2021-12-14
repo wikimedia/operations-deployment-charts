@@ -45,6 +45,10 @@
   - name: shared-socket
     mountPath: /run/shared
   {{- end }}
+  {{- if .Values.debug.php.enabled }}
+  - name: php-debug
+    mountPath: /srv/mediawiki/w/debug
+  {{- end }}
   # Note: we use subpaths here. Given subpaths are implemented with bind mounts,
   # they won't be updated when the configmap is updated.
   # This is ok because we're re-deploying the pods when that happens.
@@ -156,6 +160,10 @@
   - name: php-logging
     mountPath: /var/log/php-fpm
   {{- end -}}
+  {{- if .Values.debug.php.enabled }}
+  - name: php-debug
+    mountPath: /srv/mediawiki/w/debug
+  {{- end }}
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter
