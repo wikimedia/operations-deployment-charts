@@ -69,6 +69,29 @@ releases:
                 ports:
                   - port: 6443
                     protocol: TCP
+        - apiVersion: networking.k8s.io/v1
+          kind: NetworkPolicy
+          metadata:
+            name: cert-manager-webhook
+          spec:
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: webhook
+            ingress:
+              # Allow ingress from masters to webhook
+              # Also allow staging-codfw nodes, because of masquarade-all
+              - from:
+                  - ipBlock:
+                      cidr: 10.192.0.195/32
+                  - ipBlock:
+                      cidr: 10.192.16.137/32
+                  {{- range $kubeapi_cidrs }}
+                  - ipBlock:
+                      cidr: {{ . }}
+                  {{- end }}
+                ports:
+                  - port: 10250
+                    protocol: TCP
         {{- end }}
         - apiVersion: networking.k8s.io/v1
           kind: NetworkPolicy
