@@ -144,23 +144,6 @@ def yaml_load_file(yaml_path)
   yaml
 end
 
-# Determine which helm version (2 or 3) needs to be used to lint/template the chart
-# Returns the helm binary name to use (helm2 or helm3)
-def helm_version(chart)
-  path_to_chart_yaml = File.join(chart, 'Chart.yaml')
-  chart_yaml = yaml_load_file(path_to_chart_yaml)
-  error = "Failed to determine helm version for #{chart}"
-  if chart_yaml['apiVersion'] == 'v1'
-    'helm2'
-  elsif chart_yaml['apiVersion'] == 'v2'
-    'helm3'
-  else
-    puts error.red
-    puts e
-    raise('Failed to determine helm version to use')
-  end
-end
-
 def check_docker
   unless which('docker')
     puts 'You need to install docker'.red

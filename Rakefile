@@ -310,7 +310,7 @@ task :check_dep do
   helm_version = output.split(".").first
 
   if helm_version != "v3"
-    raise('helm2 not supported, use helm3 binary')
+    raise("Only helm v3 is supported. Installed helm version is #{helm_version}")
   end
 
 end
