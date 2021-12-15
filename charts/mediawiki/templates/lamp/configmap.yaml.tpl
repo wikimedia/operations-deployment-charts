@@ -34,3 +34,12 @@ data:
   "{{ $k }}.php": {{ $v | toYaml | indent 4 }}
 {{- end }}
 {{- end -}}
+{{- if .Values.mw.httpd.additional_config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: httpd-early-config
+data:
+  00-aaa.conf: {{- .Values.mw.httpd.additional_config | toYaml | indent 4 }}
+{{- end }}

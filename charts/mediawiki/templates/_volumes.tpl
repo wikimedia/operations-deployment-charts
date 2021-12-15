@@ -4,6 +4,12 @@
 - name: {{ $release }}-httpd-sites
   configMap:
     name: {{ $release }}-httpd-sites-config
+{{- if .Values.mw.httpd.additional_config }}
+# Additional httpd debug configuration
+- name: httpd-early
+  configMap:
+    name: httpd-early-config
+{{- end }}
 # Datacenter
 - name: {{ $release }}-wikimedia-cluster
   configMap:

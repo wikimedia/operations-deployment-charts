@@ -57,6 +57,15 @@
     mountPath: /etc/apache2/sites-enabled/{{ template "mw-vhost-filename" . }}
     subPath: {{ template "mw-vhost-filename" . }}
   {{- end }}
+  {{- if .Values.mw.httpd.additional_config }}
+  # Allow us to inject configurations *before* everything else is evaluated
+  # To this end we also pick a non-descriptive name that OTOH guarantees
+  # the configuration will be loaded soon.
+  # See apache.conf in the mediawiki-httpd image to see precisely when this is loaded.
+  - name: httpd-early
+    mountPath: /etc/apache2/conf-enabled/00-aaa.conf
+    subPath: 00-aaa.conf
+  {{- end }}
 ### The MediaWiki container
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}

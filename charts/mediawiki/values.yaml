@@ -74,13 +74,9 @@ debug:
     enabled: false
     contents:
       vardump: |-
-        <html>
-        <body>
         <?php
+        header("Content-Type: text/plain");
         var_dump($_SERVER);
-        ?>
-        </body>
-        </html>
 
 networkpolicy:
   egress:
@@ -128,6 +124,10 @@ mw:
     etcd_servers: [] # If present, they need to have the form "{ip: <>, port: <>}"
   httpd:
     image_tag: latest
+    # Add here any apache configuration you might want to test/preload.
+    # It will be loaded before all the rest of conf-available and after modules have loaded.
+    # See https://github.com/wikimedia/operations-docker-images-production-images/blob/master/images/MediaWiki/httpd/apache2/apache2.conf
+    additional_config: false
   mcrouter:
     enabled: false
     resources:
