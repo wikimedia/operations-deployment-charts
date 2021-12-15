@@ -8,15 +8,36 @@ image:
   repository: cert-manager/controller
   tag: "1.5.4-2"
   replicaCount: 2
+resources:
+  requests:
+    cpu: 100m
+    memory: 120Mi
+  limits:
+    cpu: 100m
+    memory: 200Mi
 webhook:
   image:
     registry: docker-registry.discovery.wmnet
     repository: cert-manager/webhook
     tag: "1.5.4-2"
   replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 50Mi
+    limits:
+      cpu: 100m
+      memory: 100Mi
 cainjector:
   image:
     registry: docker-registry.discovery.wmnet
     repository: cert-manager/cainjector
     tag: "1.5.4-2"
   replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 120Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
