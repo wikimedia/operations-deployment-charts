@@ -36,6 +36,8 @@ spec:
     egressGateways:
       - name: istio-egressgateway
         enabled: true
+        k8s:
+          replicaCount: 2
     ingressGateways:
       # This is the default Ingress Gateway installed via istioctl, the one
       # that should be exposed to LVS.
