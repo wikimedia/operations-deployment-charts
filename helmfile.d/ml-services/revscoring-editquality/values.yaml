@@ -21,30 +21,33 @@ monitoring:
   enabled: true
 
 inference:
-  image: "machinelearning-liftwing-inference-services-editquality"
-  version: "2021-12-09-053217-production"
   annotations:
     sidecar.istio.io/inject: "false"
-  base_env:
-    - name: WIKI_URL
-      value: "https://istio-egressgateway.istio-system.svc.cluster.local"
-    - name: REQUESTS_CA_BUNDLE
-      value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2021-12-09-053217-production"
+    base_env:
+      - name: WIKI_URL
+        value: "https://istio-egressgateway.istio-system.svc.cluster.local"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
 
 inference_services:
   - name: "enwiki-goodfaith"
-    custom_env:
-      - name: INFERENCE_NAME
-        value: "enwiki-goodfaith"
-      - name: WIKI_HOST
-        value: "en.wikipedia.org"
-      - name: STORAGE_URI
-        value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+    predictor:
+      custom_env:
+        - name: INFERENCE_NAME
+          value: "enwiki-goodfaith"
+        - name: WIKI_HOST
+          value: "en.wikipedia.org"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
   - name: "enwiki-damaging"
-    custom_env:
-      - name: INFERENCE_NAME
-        value: "enwiki-damaging"
-      - name: WIKI_HOST
-        value: "en.wikipedia.org"
-      - name: STORAGE_URI
-        value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
+    predictor:
+      custom_env:
+        - name: INFERENCE_NAME
+          value: "enwiki-damaging"
+        - name: WIKI_HOST
+          value: "en.wikipedia.org"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"

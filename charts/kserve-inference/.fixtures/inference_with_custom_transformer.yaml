@@ -1,0 +1,61 @@
+# In this fixture we have several inference services composed by predictors and
+# transformers.
+# A generic transformer config (inherited by all inference services) is provided,
+# and some custom transformer configs are applied only on some models
+# to override the generic config.
+
+docker:
+  registry: docker-registry.wikimedia.org/wikimedia
+  imagePullPolicy: IfNotPresent
+
+inference:
+  swift_s3_secret_name: "swift-s3-credentials"
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    controller-tools.k8s.io: "1.0"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2021-09-01-140944-production"
+    base_env:
+      - name: SOME_ENV_VAR
+        value: "some-value"
+
+inference_services:
+  - name: "enwiki-goodfaith"
+    predictor:
+      custom_env:
+        - name: INFERENCE_NAME
+          value: "enwiki-goodfaith"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+  - name: itwiki-goodfaith
+    predictor:
+      config:
+        serviceAccountName: "kserve-override"
+        minReplicas: 2
+        canaryTrafficPercent: 10
+      custom_env:
+        - name: INFERENCE_NAME
+          value: "itwiki-goodfaith"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/itwiki/202106140815/"
+    transformer:
+      image: "machinelearning-liftwing-inference-services-editquality-transformer-custom"
+      image_version: "4224"
+      config:
+        serviceAccountName: "kserve-transformer-override"
+        minReplicas: 2
+        canaryTrafficPercent: 10
+      custom_env:
+        - name: WIKI_HOST
+          value: "es.wikipedia.org"
+  - name: eswiki-goodfaith
+    predictor:
+      image: machinelearning-liftwing-inference-services-editquality-custom
+      image_version: '42'
+      custom_env:
+        - name: INFERENCE_NAME
+          value: "eswiki-goodfaith"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/eswiki/202106140815/"

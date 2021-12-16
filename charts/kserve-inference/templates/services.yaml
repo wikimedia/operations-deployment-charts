@@ -19,19 +19,44 @@ metadata:
     {{ $k }}: {{ $v | quote }}
   {{- end }}
 spec:
+  # Assumption: the predictor is mandatory, so some config (either generic or
+  # custom) is supposed to be present.
   predictor:
-    {{- $final_predictor_config := merge (.predictor_config | default dict) $.Values.inference.predictor_config }}
+    {{- $generic_predictor := $.Values.inference.predictor | default dict }}
+    {{- $custom_predictor := .predictor | default dict }}
+    {{- $final_predictor_config := merge ($custom_predictor.config | default dict) ($generic_predictor.config | default dict) }}
     {{- range $k, $v := $final_predictor_config }}
     {{ $k }}: {{ $v }}
     {{- end }}
     containers:
-    - name: kserve-container-{{ .name }}
-      image: {{ $.Values.docker.registry }}/{{ .image | default $.Values.inference.image }}:{{ .image_version | default $.Values.inference.version }}
+    - name: kserve-predictor-{{ .name }}
+      image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.image_version | default $generic_predictor.version }}
       imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
       env:
-      {{- range concat $.Values.inference.base_env .custom_env }}
+      {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
       - name: {{ .name }}
         value: {{ .value }}
       {{- end }}
+  {{- if or $.Values.inference.transformer .transformer }}
+  # If there is a generic transformer set in the inference config
+  # we render it, giving the possibility to the admins to override
+  # values in each model's config.
+  transformer:
+    {{- $generic_transformer := $.Values.inference.transformer | default dict }}
+    {{- $custom_transformer := .transformer | default dict }}
+    {{- $final_transformer_config := merge ($custom_transformer.config | default dict) ($generic_transformer.config | default dict) }}
+    {{- range $k, $v := $final_transformer_config }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+    containers:
+    - name: kserve-transformer-{{ .name }}
+      image: {{ $.Values.docker.registry }}/{{ $custom_transformer.image | default $generic_transformer.image }}:{{ $custom_transformer.image_version | default $generic_transformer.version }}
+      imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
+      env:
+      {{- range concat ($generic_transformer.base_env | default list) ($custom_transformer.custom_env | default list) }}
+      - name: {{ .name }}
+        value: {{ .value }}
+      {{- end }}
+  {{- end }}
 ---
 {{- end }}
