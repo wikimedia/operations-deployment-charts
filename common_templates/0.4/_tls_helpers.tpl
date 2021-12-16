@@ -351,6 +351,9 @@ TCP proxies
 {{- end }}
 {{- end }}
   listeners:
+  {{- /*
+    Admin listener. Only allows access to /stats and a static /healthz url
+  */}}
   - address:
       socket_address:
         address: 0.0.0.0
@@ -382,6 +385,13 @@ TCP proxies
                   status: 403
                   body: {inline_string: "You can't access this url."}
           stat_prefix: admin_interface
+  {{- /*
+    TLS termination for the downstream service.
+
+    It listens on tls.public_port, and forwards traffic to main_app.port on localhost.
+    If an application needs to add headers (maybe to inject the connecting IP address)
+    it can declare tls.request_headers_to_add, an array of maps with "header" / "value" / "append"
+  */}}
   - address:
       socket_address: {address: 0.0.0.0, port_value: {{ .Values.tls.public_port }} }
     filter_chains:
@@ -406,6 +416,15 @@ TCP proxies
             typed_config: {}
           http_protocol_options: {accept_http_10: true}
           route_config:
+            {{- if .Values.tls.request_headers_to_add | default false }}
+            request_headers_to_add:
+            {{- range .Values.tls.request_headers_to_add }}
+              - header:
+                  key: {{ .Header }}
+                  value: {{ .Value }}
+                append: {{ .Append | default false }}
+            {{- end }}
+            {{- end }}
             virtual_hosts:
             - domains: ['*']
               name: tls_termination
@@ -428,6 +447,9 @@ TCP proxies
     listener_filters:
     - name: envoy.filters.listener.tls_inspector
       typed_config: {}
+  {{- /*
+    Discovery listeners
+  */}}
   {{- if .Values.discovery | default false -}}
   {{- range $name := .Values.discovery.listeners }}
   {{- $listener := index $.Values.services_proxy $name }}

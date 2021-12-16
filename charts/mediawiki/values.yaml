@@ -61,6 +61,16 @@ tls:
   telemetry:
     enabled: true
     port: 9361
+  # Inject the Ip address of the connecting server, as x-client-ip, to be consumed
+  # by mod_remoteip upstream, so that we never end up with REMOTE_ADDR equal to localhost,
+  # which triggers a soft block in mediawiki.
+  # We chose to append the header because mod_remoteip always uses the first it encounters in the request,
+  # so if there is an original one it is preserved. This is more important for access logs than
+  # for any functionality. See T297613
+  request_headers_to_add:
+    - header: "x-client-ip"
+      value: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
+      append: true
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

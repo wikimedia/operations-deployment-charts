@@ -97,6 +97,7 @@ mw:
       LoadModule remoteip_module /usr/lib/apache2/modules/mod_remoteip.so
       RemoteIPHeader X-Client-IP
       RemoteIPInternalProxy 10.0.0.0/8
+      RemoteIPInternalProxy 127.0.0.1/32
   mcrouter:
     enabled: true
     image_tag: mcrouter:0.41.0-4-20210718
