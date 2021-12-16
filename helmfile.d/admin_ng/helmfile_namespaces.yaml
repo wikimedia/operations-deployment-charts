@@ -61,7 +61,7 @@ releases:
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default | list $namespace "deploy" | join "-" }}
+                name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
@@ -81,7 +81,7 @@ releases:
                 name: system:serviceaccounts:{{ $namespace }}
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default | list $namespace "deploy" | join "-" }}
+                name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
           {{- with $limitranges}}
           - |
