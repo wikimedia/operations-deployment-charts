@@ -44,6 +44,8 @@ inference_services:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/"
     transformer:
+      image: "machinelearning-liftwing-inference-services-articlequality-transformer"
+      image_version: "2021-12-17-183428-production"
       custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
