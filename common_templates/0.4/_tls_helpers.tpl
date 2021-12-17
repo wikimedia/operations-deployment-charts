@@ -421,7 +421,7 @@ TCP proxies
             {{- range $hdr := .Values.tls.request_headers_to_add }}
               - header:
                   key: {{ $hdr.header }}
-                  value: {{ $hdr.value }}
+                  value: "{{ $hdr.value }}"
                 append: {{ $hdr.append | default false }}
             {{- end }}
             {{- end }}
