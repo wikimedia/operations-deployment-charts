@@ -17,6 +17,8 @@ monitoring:
 # that uses Tornado behind the scenes. By default we use port 8080.
 # Knative-serving adds a container called 'queue-proxy' to every InferenceService
 # pod, that is responsible to assess if traffic can reach the KServe container.
+# To simplify our settings, we assume that if transformers are used, they will
+# listen on the same default port as the predictors.
 main_app:
   port: 8080
   queue_proxy:

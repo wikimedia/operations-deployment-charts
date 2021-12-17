@@ -1,38 +1,40 @@
+{{- range tuple "predictor" "transformer" }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "wmf.releasename" $ }}-{{ . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
+    app: {{ template "wmf.chartname" $ }}
+    chart: {{ template "wmf.chartid" $ }}
+    release: {{ $.Release.Name }}
 spec:
   podSelector:
     matchLabels:
-      app-wmf: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
-      release: {{ .Release.Name }}
-      component: predictor
+      app-wmf: {{ template "wmf.chartname" $ }}
+      chart: {{ template "wmf.chartid" $ }}
+      release: {{ $.Release.Name }}
+      component: {{ . }}
   policyTypes:
     - Ingress
-      {{- if .Values.networkpolicy.egress.enabled }}
+      {{- if $.Values.networkpolicy.egress.enabled }}
     - Egress
       {{- end }}
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
+      - port: {{ $.Values.main_app.port }}
         protocol: TCP
-      - port: {{ .Values.main_app.queue_proxy.port }}
+      - port: {{ $.Values.main_app.queue_proxy.port }}
         protocol: TCP
       # The Knative Autoscaler pod fetches data from the queue-proxy
       # Prometheus endpoint.
-      - port: {{ .Values.main_app.queue_proxy.metrics_port }}
+      - port: {{ $.Values.main_app.queue_proxy.metrics_port }}
         protocol: TCP
       # The queue-proxy exposes metrics about Knative revision traffic
       # handled (HTTP return codes etc..)
-      - port: {{ .Values.main_app.queue_proxy.revision_metrics_port }}
+      - port: {{ $.Values.main_app.queue_proxy.revision_metrics_port }}
         protocol: TCP
-{{- if .Values.networkpolicy.egress.enabled }}
+{{- if $.Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" $.Values }}
+{{- end }}
 {{- end }}
