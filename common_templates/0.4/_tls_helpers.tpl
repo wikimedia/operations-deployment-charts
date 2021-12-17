@@ -418,11 +418,11 @@ TCP proxies
           route_config:
             {{- if .Values.tls.request_headers_to_add | default false }}
             request_headers_to_add:
-            {{- range .Values.tls.request_headers_to_add }}
+            {{- range $hdr := .Values.tls.request_headers_to_add }}
               - header:
-                  key: {{ .Header }}
-                  value: {{ .Value }}
-                append: {{ .Append | default false }}
+                  key: {{ $hdr.header }}
+                  value: {{ $hdr.value }}
+                append: {{ $hdr.append | default false }}
             {{- end }}
             {{- end }}
             virtual_hosts:
