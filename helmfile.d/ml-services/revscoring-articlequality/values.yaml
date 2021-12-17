@@ -26,6 +26,9 @@ inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-articlequality"
     version: "2021-12-09-053243-production"
+  transformer:
+    image: "machinelearning-liftwing-inference-services-articlequality-transformer"
+    version: "2021-12-09-053243-production"
     base_env:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
@@ -38,13 +41,9 @@ inference_services:
       custom_env:
         - name: INFERENCE_NAME
           value: "enwiki-articlequality"
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/"
     transformer:
-      image: "machinelearning-liftwing-inference-services-articlequality-transformer"
-      image_version: "2021-12-09-053243-production"
       custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
