@@ -306,7 +306,7 @@ task :check_dep do
   check_binary('helm')
   check_binary('helmfile')
 
-  res, output = _exec("helm version --short")
+  res, output = _exec("helm version --client --short")
   helm_version = output.split(".").first
 
   if helm_version != "v3"
