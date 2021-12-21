@@ -1,8 +1,5 @@
-{{ if  hasKey .Environment.Values "helmBinary" }}
-helmBinary: "{{ .Environment.Values.helmBinary }}"
-{{ end }}
+helmBinary: "helm3"
 helmDefaults:
-  tillerNamespace: mwdebug
   createNamespace: false
   verify: false
   atomic: true
@@ -10,17 +7,8 @@ helmDefaults:
   recreatePods: false
   force: false
   args:
-    - --kubeconfig
-    - {{ if  hasKey .Environment.Values "helmBinary" }}
-      {{ if eq .Environment.Values.helmBinary "helm2" }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-%s.config" .Environment.Name) }}
-      {{ else }}
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-deploy-%s.config" .Environment.Name) }}
-      {{ end }}
-      {{ else }}
-      # Fallback to helm2 credentials if helmBinary is not defined
-      {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-%s.config" .Environment.Name) }}
-      {{ end }}
+     - "--kubeconfig"
+     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mwdebug-deploy-%s.config" .Environment.Name) }}
 
 templates:
   default: &default
@@ -46,14 +34,22 @@ templates:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/releases.yaml" # Special file controlled by other processes on the deployment host
     hooks:
-      - name: "log_sal"
-        events: ["presync"]
+      - events: ["prepare"]
         command: "helmfile_log_sal"
         args:
           [
             "{{`{{.HelmfileCommand}}`}}",
-            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
           ]
+      - events: ["cleanup"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
+
+          ]
+
 
 releases:
   - name: pinkunicorn
@@ -65,10 +61,7 @@ environments:
   eqiad:
     values:
       - releases: [pinkunicorn]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
   codfw:
     values:
       - releases: [pinkunicorn]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
+

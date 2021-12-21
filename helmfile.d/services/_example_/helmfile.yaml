@@ -44,14 +44,15 @@ templates:
         args:
           [
             "{{`{{.HelmfileCommand}}`}}",
-            "[{{ .Environment.Name }}] START helmfile.d/services/{{ .Release.Namespace }}: {{`{{.HelmfileCommand}}`}} on {{ .Release.Name }}",
+            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
           ]
       - events: ["cleanup"]
         command: "helmfile_log_sal"
         args:
           [
             "{{`{{.HelmfileCommand}}`}}",
-            "[{{ .Environment.Name }}] DONE helmfile.d/services/{{ .Release.Namespace }}: {{`{{.HelmfileCommand}}`}} on {{ .Release.Name }}",
+            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
+
           ]
 
 
