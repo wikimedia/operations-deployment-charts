@@ -39,14 +39,21 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
     hooks:
-      - name: "log_sal"
-        events: ["presync"]
+      - events: ["prepare"]
         command: "helmfile_log_sal"
         args:
           [
             "{{`{{.HelmfileCommand}}`}}",
-            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+            "[{{ .Environment.Name }}] START helmfile.d/services/{{ .Release.Namespace }}: {{`{{.HelmfileCommand}}`}} on {{ .Release.Name }}",
           ]
+      - events: ["cleanup"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{ .Environment.Name }}] DONE helmfile.d/services/{{ .Release.Namespace }}: {{`{{.HelmfileCommand}}`}} on {{ .Release.Name }}",
+          ]
+
 
 releases:
   - name: main
