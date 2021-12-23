@@ -44,21 +44,28 @@ spec:
                   used to authenticate against cfssl API as well as an optional "additional_data"
                   field.
                 type: string
+              bundle:
+                description: A boolean specifying whether to include an "optimal"
+                  certificate bundle instead of the certificate.
+                type: boolean
               label:
-                description: A string specifying which signer to be appointed to sign
-                  the CSR. Label is mandatory as the info endpoint of the CFSSL API
-                  (which is used for health checking the API) requires it to be set.
+                description: A string specifying which CFSSL signer to be appointed
+                  to sign the CSR. Label is mandatory as the info endpoint of the
+                  CFSSL API (which is used for health checking the API) requires it
+                  to be set.
                 type: string
               profile:
-                description: A string specifying the signing profile for the signer.
+                description: A string specifying the signing profile for the CFSSL
+                  signer (a signer may have multiple different profiles configured).
                   If omitted, the "default" profile is used.
                 type: string
               url:
-                description: 'URL is the base URL for the endpoint of the signing
-                  service, for example: "https://sample-signer.example.com/api". If
-                  multiple comma seperated URLs are given and the first server cannot
-                  be reached, the next is used. The client will proceed in this manner
-                  until the list of servers is exhausted, and then an error is returned.'
+                description: 'URL is one or more base URLs for the CFSSL API, for
+                  example: "https://sample-signer.example.com/api,https//cfssl.example.com".
+                  If multiple comma seperated URLs are given and the first server
+                  cannot be reached, the next is used. The client will proceed in
+                  this manner until the list of servers is exhausted, and then an
+                  error is returned.'
                 type: string
             required:
             - authSecretName
@@ -163,21 +170,28 @@ spec:
                   used to authenticate against cfssl API as well as an optional "additional_data"
                   field.
                 type: string
+              bundle:
+                description: A boolean specifying whether to include an "optimal"
+                  certificate bundle instead of the certificate.
+                type: boolean
               label:
-                description: A string specifying which signer to be appointed to sign
-                  the CSR. Label is mandatory as the info endpoint of the CFSSL API
-                  (which is used for health checking the API) requires it to be set.
+                description: A string specifying which CFSSL signer to be appointed
+                  to sign the CSR. Label is mandatory as the info endpoint of the
+                  CFSSL API (which is used for health checking the API) requires it
+                  to be set.
                 type: string
               profile:
-                description: A string specifying the signing profile for the signer.
+                description: A string specifying the signing profile for the CFSSL
+                  signer (a signer may have multiple different profiles configured).
                   If omitted, the "default" profile is used.
                 type: string
               url:
-                description: 'URL is the base URL for the endpoint of the signing
-                  service, for example: "https://sample-signer.example.com/api". If
-                  multiple comma seperated URLs are given and the first server cannot
-                  be reached, the next is used. The client will proceed in this manner
-                  until the list of servers is exhausted, and then an error is returned.'
+                description: 'URL is one or more base URLs for the CFSSL API, for
+                  example: "https://sample-signer.example.com/api,https//cfssl.example.com".
+                  If multiple comma seperated URLs are given and the first server
+                  cannot be reached, the next is used. The client will proceed in
+                  this manner until the list of servers is exhausted, and then an
+                  error is returned.'
                 type: string
             required:
             - authSecretName
