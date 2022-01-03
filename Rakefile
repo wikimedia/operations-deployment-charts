@@ -323,24 +323,9 @@ task repo_update: :check_dep do
     path_to_chart_yaml = File.join path_to_chart, 'Chart.yaml'
     chart_yaml = yaml_load_file(path_to_chart_yaml)
     dependencies = []
-    # remove v1 support after T295750
-    if chart_yaml['apiVersion'] == 'v1'
-      # Read requirements.yaml
-      path_to_requirements_yaml = File.join path_to_chart, 'requirements.yaml'
-      next unless File.exists? path_to_requirements_yaml
-      requirements_yaml = yaml_load_file(path_to_requirements_yaml)
-      if requirements_yaml['dependencies']
-        dependencies = requirements_yaml['dependencies']
-      end
-    elsif chart_yaml['apiVersion'] == 'v2'
-      # Dependencies are to be defined in Chart.yaml
-      if chart_yaml['dependencies']
-        dependencies = chart_yaml['depencencies']
-      end
-    else
-      puts error.red
-      puts e
-      raise('Failed to determine helm version to use')
+    # Dependencies are to be defined in Chart.yaml
+    if chart_yaml['dependencies']
+      dependencies = chart_yaml['depencencies']
     end
 
     next unless dependencies
