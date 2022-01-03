@@ -1,7 +1,7 @@
 apiVersion: v2
 description: A Helm chart for changepropagation
 name: changeprop
-version: 0.10.0
+version: 0.10.1
 kubeVersion: ">=1.8"
 keywords:
 - changeprop
@@ -16,7 +16,7 @@ dependencies:
     # kafka-dev can be deployed for development purposes
     # ./charts/kafka-dev is symlinked to ../kafka-dev
   - name: kafka-dev
-    version: ">= 0.0.5"
+    version: ">= 0.1.0"
     repository: https://helm-charts.wikimedia.org/stable/
     # Only require kafka-dev if subcharts.kafka is set to true in values
     # or --set subcharts.kafka=true
