@@ -6,7 +6,7 @@ main_app:
     ha_storage_dir: swift://rdf-streaming-updater-staging.thanos-swift/flink_ha_storage
 
 task_manager:
-  replicas: 1
+  replicas: 2
 
 kafka:
   # unclear where staging is actually running so allow both kafka-main clusters
