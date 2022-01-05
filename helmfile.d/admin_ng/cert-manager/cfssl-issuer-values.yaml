@@ -7,6 +7,7 @@ issuers:
     kind: ClusterIssuer
     url: https://pki.discovery.wmnet:8443
     label: discovery
+    bundle: true
     authSecretName: issuer-discovery-authkey
     # authSecret will be overridden by /etc/helmfile-defaults/*/cfssl-issuer/*.yaml
     # but for helm to actually merge values, the key must be defined here as well.
