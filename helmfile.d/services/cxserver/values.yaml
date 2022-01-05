@@ -17,6 +17,11 @@ main_app:
       languages: config/Elia.yaml
       #key:
       #apiId:
+    Flores:
+      api: https://ofv2f85z7g.execute-api.us-east-1.amazonaws.com/default/getTranslation
+      languages: config/Flores.yaml
+      #key:
+      #secret:
     Google:
       api: https://www.googleapis.com/language/translate/v2
       #key:
@@ -58,7 +63,7 @@ main_app:
     cpu: 100m
     memory: 100Mi
   restbase_host: localhost:6503
-  version: 2021-10-25-123807-production
+  version: 2022-01-21-123444-production
 monitoring:
   enabled: true
 resources:
