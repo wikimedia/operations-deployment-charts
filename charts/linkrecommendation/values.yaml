@@ -70,6 +70,7 @@ config:
     # for all releases so that service-checker-swagger can validate the GET example provided
     # by the service.
     MEDIAWIKI_PROXY_API_URL: http://localhost:6500/w/rest.php
+    MEDIAWIKI_PROXY_API_BASE_URL: http://localhost:6500/w/
   private:
     # This fake password will be replaced via https://wikitech.wikimedia.org/wiki/Puppet#Private_puppet
     DB_PASSWORD: "snakeoil"
