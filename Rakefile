@@ -59,7 +59,7 @@ def exec_helmfile_command(command, source, environments = nil, &block)
     abort("unable to find helm home: #{helm_home}. Do you need to run helm init?") unless File.directory?(helm_home)
     FileUtils.cp_r helm_home, local_helm_home
     # Copy the original dir files to the tmpdir
-    FileUtils.cp_r "#{dir_to_copy}/.", dir
+    FileUtils.cp_Lr "#{dir_to_copy}/.", dir
 
     # Copy all charts (and common templates) here because concurrent
     # "helm dep build" will fail otherwise.
