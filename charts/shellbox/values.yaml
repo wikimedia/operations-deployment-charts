@@ -9,8 +9,6 @@ resources:
   replicas: 1
 main_app:
   type: "php"
-  image: wikimedia/mediawiki-libs-shellbox
-  version: score
   port: 8080 # port exposed as a Service, also used by service-checker.
   command: []
   args: []
@@ -25,7 +23,6 @@ main_app:
     - name: shellbox-config
       mountPath: "/srv/app/config"
       readOnly: true
-
 
 monitoring:
   enabled: true
@@ -45,7 +42,14 @@ config:
 
 shellbox:
   secret_key: "@@ CHANGE THIS @@"
-
+  # If version is not empty, the image used for shellbox will be
+  # $registry/wikimedia/mediawiki-libs-shellbox:$version-$flavour
+  # while it will just be
+  # $registry/wikimedia/mediawiki-libs-shellbox:$flavour
+  # otherwise. This is done so that you can control the shellbox version for all variants with a single,
+  # global setting.
+  version: ""
+  flavour: score
 tls:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.

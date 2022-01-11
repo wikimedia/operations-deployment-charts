@@ -27,6 +27,7 @@ templates:
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "global.yaml" # single file included in all shellbox instances
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/main_services/shellbox-syntaxhighlight/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides

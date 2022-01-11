@@ -114,7 +114,7 @@ resources:
     mountPath: /run/shared
   {{- end }}
 - name: {{ template "wmf.releasename" . }}-app
-  image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}
+  image: {{ .Values.docker.registry }}/wikimedia/mediawiki-libs-shellbox:{{ if .Values.shellbox.version }}{{ .Values.shellbox.version }}-{{ end }}{{ .Values.shellbox.flavour }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
   - name: SERVERGROUP

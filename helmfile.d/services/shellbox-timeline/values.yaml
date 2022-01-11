@@ -1,9 +1,11 @@
 main_app:
-  version: 2021-11-01-180934-timeline
   requests:
     cpu: 1500m
   limits:
     cpu: 2
+
+shellbox:
+  flavour: timeline
 
 service:
   deployment: production
