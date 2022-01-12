@@ -56,7 +56,18 @@ spec:
       - name: istio-ingressgateway
         enabled: true
         k8s:
-          replicaCount: 2
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: istio-ingressgateway
+            patches:
+            - path: kind
+              value: DaemonSet
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
           service:
             type: NodePort
             ports:
@@ -82,6 +93,18 @@ spec:
           istio: cluster-local-gateway
           app: cluster-local-gateway
         k8s:
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: cluster-local-gateway
+            patches:
+            - path: kind
+              value: DaemonSet
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
           replicaCount: 2
           service:
             type: ClusterIP
