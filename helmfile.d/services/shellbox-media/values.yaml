@@ -1,8 +1,8 @@
 main_app:
   requests:
-    cpu: 1500m
+    cpu: 3
   limits:
-    cpu: 2
+    cpu: 3
 
 shellbox:
   flavour: media
@@ -17,4 +17,4 @@ php:
   workers: 4
 
 resources:
-  replicas: 12
+  replicas: 8
