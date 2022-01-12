@@ -8,12 +8,13 @@ tls:
   public_port: 4592 # the port where TLS will be exposed
 main_app:
   name: eventgate-analytics
-  version: 2021-07-15-185242-production
+  version: 2022-01-11-142353-production
   conf:
     kafka:
       conf:
         metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
         security.protocol: ssl
+        ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
     schema_precache_uris:
     - /error/1.0.0
     - /test/event/1.0.0

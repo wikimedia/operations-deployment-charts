@@ -4,4 +4,5 @@ main_app:
       conf:
         metadata.broker.list: kafka-main2001.codfw.wmnet:9093,kafka-main2002.codfw.wmnet:9093,kafka-main2003.codfw.wmnet:9093,kafka-main2004.codfw.wmnet:9093,kafka-main2005.codfw.wmnet:9093
         security.protocol: ssl
+        ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
     topic_prefix: codfw.
