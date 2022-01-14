@@ -605,6 +605,10 @@ data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
   queueSidecarImage: {{ .Values.docker.registry }}/{{ .Values.core.queue_proxy.image }}:{{ .Values.core.queue_proxy.version }}
+  queueSidecarCPURequest: {{ .Values.core.queue_proxy.resources.requests.cpu }}
+  queueSidecarCPULimit: {{ .Values.core.queue_proxy.resources.limits.cpu }}
+  queueSidecarMemoryRequest: {{ .Values.core.queue_proxy.resources.requests.memory }}
+  queueSidecarMemoryLimit: {{ .Values.core.queue_proxy.resources.limits.memory }}
   _example: |
     ################################
     #                              #

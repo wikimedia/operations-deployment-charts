@@ -49,6 +49,13 @@ core:
   queue_proxy:
     image: knative-serving-queue
     version: 0.18.1-4
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 150Mi
+      limits:
+        cpu: 1000m
+        memory: 150Mi
   activator:
     image: knative-serving-activator
     version: 0.18.1-3
