@@ -134,10 +134,8 @@ main_app:
 
 nutcracker:
   enabled: false
-  version: latest
   port: 6379
   servers: [] # The form is <IP>:<port>:<db> "name" for each element
-
 
 monitoring:
   enabled: false
@@ -168,3 +166,7 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+common_images:
+  nutcracker:
+    nutcracker: latest

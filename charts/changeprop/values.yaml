@@ -103,7 +103,6 @@ main_app:
 
 nutcracker:
   enabled: false
-  version: latest # But lock this down to a specific version in production
   servers: [] # The form is <IP>:<port>:<db> "name" for each element
 
 subcharts:
@@ -161,3 +160,7 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+common_images:
+  nutcracker:
+    nutcracker: latest

@@ -134,7 +134,7 @@ spec:
 {{- end }}
 {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker
-          image: {{ .Values.docker.registry }}/nutcracker:{{ .Values.nutcracker.version }}
+          image: {{ .Values.docker.registry }}/nutcracker:{{ .Values.common_images.nutcracker.nutcracker }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           args:
             - "-o"
