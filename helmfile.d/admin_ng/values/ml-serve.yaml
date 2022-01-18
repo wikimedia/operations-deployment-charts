@@ -268,3 +268,7 @@ istio:
         - cidr: 10.2.1.22/32 # api.svc.codfw.wmnet
           port: 443
           protocol: TCP
+
+issuers:
+  discovery:
+    profile: k8s_mlserve
