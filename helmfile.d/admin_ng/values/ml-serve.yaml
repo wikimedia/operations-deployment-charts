@@ -83,6 +83,9 @@ namespaces:
       control-plane: kserve-controller-manager
       controller-tools.k8s.io: "1.0"
       istio-injection: disabled
+  cert-manager:
+    systemNamespace: true
+    allowCriticalPods: true
   revscoring-editquality:
     deployClusterRole: deploy-kserve
   revscoring-draftquality:
