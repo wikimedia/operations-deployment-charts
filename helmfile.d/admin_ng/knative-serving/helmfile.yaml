@@ -5,26 +5,13 @@ templates:
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
 
-  istio_secrets: &istio_secrets
-    namespace: istio-system
-    chart: "wmf-stable/secrets"
-    missingFileHandler: Warn
-    installed: false
-    installedTemplate: false
-
 releases:
   - name: knative-serving-crds
     <<: *default
-  - name: knative-secrets
-    <<: *istio_secrets
-    values:
-      # The TLS certificate is defined by Knative-serving
-      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/knative-serving/{{ .Environment.Name }}.yaml"
   - name: knative-serving
     <<: *default
     needs:
       - knative-serving/knative-serving-crds
-      - istio-system/knative-secrets
     values:
       # Generic default values for all environments
       - "values/common.yaml"
