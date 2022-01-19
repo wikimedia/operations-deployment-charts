@@ -76,6 +76,13 @@ namespaces:
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
+    deployTLSCertificate: true
+    # See helmfile_namespace_certs.yaml for more info
+    # The helmfile config deploys, by default, a TLS cert
+    # with hostname == namespace for every non-system namespace.
+    # In our case, we have only one istio TLS config that is deployed
+    # via knative-serving.
+    tlsHostname: inference
   kserve:
     systemNamespace: true
     allowCriticalPods: true
@@ -88,10 +95,13 @@ namespaces:
     allowCriticalPods: true
   revscoring-editquality:
     deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
   revscoring-draftquality:
     deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
   revscoring-articlequality:
     deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
 
 net_istio:
   ingressgateway:
