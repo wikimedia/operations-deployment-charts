@@ -44,6 +44,11 @@
 #     - {{ $tlsHostname }}.discovery.wmnet
 #     - {{ $tlsHostname }}.svc.codfw.wmnet
 #     - {{ $tlsHostname }}.svc.eqiad.wmnet
+#   deployTLSCertificate:
+#     Default: false when the systemNamespace flag or the isBuiltinNamespace one
+#     is true, and true in all the other cases.
+#     Whether or not to deploy the TLS certificate <tlsHostname>
+#     to the istio-system namespace.
 namespaces: {}
 GlobalNetworkPolicies: {}
 

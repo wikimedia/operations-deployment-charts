@@ -22,7 +22,8 @@ releases:
         {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
         {{/* All builtin namespaces are system namespaces */}}
         {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
-        {{- if eq $isSystemNamespace false }}
+        {{ $deployTLSCertificate := $values | get "deployTLSCertificate" (ne $isSystemNamespace true) }}
+        {{- if eq $deployTLSCertificate true }}
           {{- $tlsHostname := $values | get "tlsHostname" $namespace }}
           - |
             # Create a default certificate object in istio-system namespace
