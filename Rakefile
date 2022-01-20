@@ -6,6 +6,8 @@ require 'yaml'
 require 'readline'
 require 'digest/md5'
 require 'fileutils'
+require 'open-uri'
+require 'base64'
 
 # Load local modules
 $LOAD_PATH.unshift File.expand_path('.')
@@ -46,6 +48,7 @@ def exec_helm_template(chart, fixture = nil)
   ret
 end
 
+
 # Run an helmfile command on each environment declared in source (unless environments are passed as argument)
 # Returns an hash environment => block.call success, output
 def exec_helmfile_command(command, source, environments = nil, &block)
@@ -66,15 +69,19 @@ def exec_helmfile_command(command, source, environments = nil, &block)
 
     # Copy all charts (and common templates) here because concurrent
     # "helm dep build" will fail otherwise.
-    FileUtils.cp_r File.join(File.dirname(__FILE__), "common_templates"), dir
-    FileUtils.cp_r File.join(File.dirname(__FILE__), "charts"), dir
+    root = File.dirname(__FILE__)
+    FileUtils.cp_r File.join(root, "common_templates"), dir
+    FileUtils.cp_r File.join(root, "charts"), dir
     tmp_charts_dir = File.join(dir, 'charts')
     main_helmfile_path = File.join dir, helmfile_name
+    # Copy the services proxy listeners definitions
+    FileUtils.cp File.join(root, LISTENERS_FIXTURE), dir
     fixtures = File.join(dir, '.fixtures.yaml')
 
     # Patch helmfiles so that .fixtures.yaml is used instead of
     # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
     # * /etc/helmfile-defaults/private/admin/#{env}.yaml for admin_ng helmfiles
+    # * For services, also add the service-proxy fixture
     # Also replace references to charts in wmf-stable repo with the local path.
     #
     # The files are go text-templates so we can't load the yaml and modify it.
@@ -84,11 +91,15 @@ def exec_helmfile_command(command, source, environments = nil, &block)
       # Replace references to charts in the repository with local ones
       # to also catch changes to charts that are not released yet.
       helmfile.gsub!(/^(\s*chart:\s+["']{0,1})wmf-stable\//, "\\1#{tmp_charts_dir.chomp('/').concat('/')}")
+      # Add fixtures.
+      # For services, we patch helmfile unconditionally
+      helmfile.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
       if File.exist? fixtures
-        # For service helmfiles
-        helmfile.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures)
-        # For admin_ng helmfiles
+        # Patch admin_ng as well, if the fixtures file exists
         helmfile.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures)
+      else
+        # if the fixtures file doesn't exist, just use the listeners default fixture instead.
+        FileUtils.cp LISTENERS_FIXTURE, fixtures
       end
       File.write helmfile_path, helmfile
     end
@@ -745,6 +756,7 @@ task :refresh_fixtures do
   URI.open(LISTENERS_DEFINITIONS_URL) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
+    # We don't really need an upstream to be accurate here.
     upstream_mock = {"address" => "mock.discovery.wmnet", "port" => 443, "encryption" => true}
     data = hiera["profile::services_proxy::envoy::listeners"].map{|x| x["upstream"] = upstream_mock; [x.delete("name"), x]}.to_h
 

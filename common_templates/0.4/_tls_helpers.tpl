@@ -300,6 +300,9 @@ under 'tcp_services_proxy'.
 {{- if .Values.discovery | default false -}}
 {{- range $name := .Values.discovery.listeners }}
 {{- $listener := index $.Values.services_proxy $name }}
+{{- if not $listener }}
+{{-  fail (printf "Listener %s not found in the proxies" $name) }}
+{{-  end }}
   - name: {{ $name }}
     connect_timeout: 0.25s
     {{- if $listener.keepalive }}

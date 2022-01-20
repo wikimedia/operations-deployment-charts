@@ -8,3 +8,11 @@ services_proxy:
       address: api-rw.discovery.wmnet
       port: 443
       encryption: true
+  restbase-for-services:
+    port: 6503
+    timeout: 10s
+    xfp: https
+    upstream:
+      address: restbase.discovery.wmnet
+      port: 7443
+      encryption: true

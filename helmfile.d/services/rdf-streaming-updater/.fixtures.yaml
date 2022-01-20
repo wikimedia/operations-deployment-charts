@@ -16,6 +16,14 @@ services_proxy:
       address: restbase.discovery.wmnet
       port: 7443
       encryption: true
+  schema:
+    port: 6023
+    service: schema
+    timeout: 120s
+    upstream:
+      address: mock.discovery.wmnet
+      port: 443
+      encryption: true
 
 kafka_brokers:
   main-eqiad:

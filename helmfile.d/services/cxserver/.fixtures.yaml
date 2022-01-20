@@ -16,3 +16,12 @@ services_proxy:
       address: restbase.discovery.wmnet
       port: 7443
       encryption: true
+  apertium:
+    port: 6019
+    service: apertium
+    timeout: 120s
+    keepalive: 4.5s
+    upstream:
+      address: mock.discovery.wmnet
+      port: 443
+      encryption: true

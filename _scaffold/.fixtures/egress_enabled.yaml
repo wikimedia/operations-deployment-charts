@@ -26,15 +26,9 @@ tls:
     port: 9361
 discovery:
   listeners:
-    - parsoid
     - parsoid-php
     - mathoid
-    - mwapi-async
-    - parsoid-async
-    - swift-eqiad
-    - swift-codfw
-    - search-omega-eqiad
-    - search-chi-eqiad
+    - eventgate-analytics
 services_proxy:
   parsoid-php:
     keepalive: 4s
