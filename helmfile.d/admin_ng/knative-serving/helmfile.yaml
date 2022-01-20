@@ -9,8 +9,8 @@ templates:
     namespace: istio-system
     chart: "wmf-stable/secrets"
     missingFileHandler: Warn
-    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else }}{{ false }}{{end}}`}}"
-
+    installed: false
+    installedTemplate: false
 
 releases:
   - name: knative-serving-crds
