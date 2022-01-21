@@ -25,12 +25,6 @@ namespaces:
           cpu: "20"
           memory: "20Gi"
 
-istio:
-  istiod:
-    allowed_extra_cidrs:
-      - "10.192.0.195/32"  # kubestage2001
-      - "10.192.16.137/32" # kubestage2002
-
 kubernetesMasters:
   cidrs:
     - "10.192.48.10/32"

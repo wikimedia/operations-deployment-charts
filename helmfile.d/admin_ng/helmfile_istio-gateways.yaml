@@ -7,7 +7,6 @@
 #
 templates:
   {{- $istio_gateways := .Environment.Values | get "istio.gateways" dict }}
-  {{- $istiod_allowed_extra_cidrs := .Environment.Values | get "istio.istiod.allowed_extra_cidrs" list }}
   {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
   istio-gateways-networkpolicies: &istio-gateways-networkpolicies
     name: istio-gateways-networkpolicies
@@ -29,7 +28,7 @@ templates:
               egress:
                 # Allow the istiod pods to contact the Kubernetes API
                 - to:
-                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
+                    {{- range $kubeapi_cidrs }}
                     - ipBlock:
                         cidr: {{ . }}
                     {{- end }}
@@ -53,7 +52,7 @@ templates:
                       protocol: TCP
                 # Allow apiservers to call webhooks served by istiod
                 - from:
-                    {{- range (concat $kubeapi_cidrs $istiod_allowed_extra_cidrs) }}
+                    {{- range $kubeapi_cidrs }}
                     - ipBlock:
                         cidr: {{ . }}
                     {{- end }}
