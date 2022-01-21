@@ -30,7 +30,7 @@ inference:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
       - name: REQUESTS_CA_BUNDLE
-        value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 inference_services:
   - name: "enwiki-goodfaith"
