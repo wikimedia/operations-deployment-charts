@@ -18,7 +18,7 @@ spec:
   ingress:
     - ports:
       # Allow prometheus to scrape metrics
-      - port: {{ .Values.controller.metrics.port }}
+      - port: {{ .Values.kserve.controller.metrics.port }}
         protocol: TCP
 {{- if .Values.kubernetesMasters }}
     # The webhook port needs to be reachable by Kubernetes Master IPs
@@ -28,7 +28,7 @@ spec:
           cidr: {{ $cidr }}
       {{- end }}
       ports:
-        - port: {{ .Values.webhook.port }}
+        - port: {{ .Values.kserve.webhook.port }}
           protocol: TCP
 {{- end }}
 {{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters) }}

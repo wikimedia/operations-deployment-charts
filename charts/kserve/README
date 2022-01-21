@@ -14,9 +14,14 @@ using the following (default) CN/SANS:
 - SANs: kserve-webhook-server-service.kserve.svc,
         kserve-webhook-server-service.kserve.svc.cluster,
         kserve-webhook-server-service.kserve.svc.cluster.local
-For the moment we create this certificate using the Puppet CA (via cergen).
 Please also note that for the moment the target namespace, kserve, needs
 to be mentioned in the CN and SANs.
+
+There Certificate is currently provisioned via cert-manager. We previously
+supported a custom Secret and the Puppet CA, but not anymore.
+
+When importing a new version please check the cert-manager code that we use,
+since it contains some conditionals to support both use cases.
 
 == Inference Services ==
 
@@ -54,7 +59,9 @@ We also move the prometheus annotations from the Service definition to
 the container definition, since our Prometheus master config automatically
 pulls annotations for pods/containers, not services.
 
-We also don't use cert-manager so the following snippet can be removed as well:
+The chart supports cert-manager so the following snippet is customized for
+our use case (for example, we don't need the self-signed issuer since we have
+our own intermediate CA to use):
 ```
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
@@ -69,7 +76,10 @@ spec:
     kind: Issuer
     name: selfsigned-issuer
   secretName: kserve-webhook-server-cert
----
+```
+
+The following snipped can be removed (not used due to what written above):
+```
 apiVersion: cert-manager.io/v1alpha2
 kind: Issuer
 metadata:
@@ -79,7 +89,8 @@ spec:
   selfSigned: {}
 ```
 
-Together with all annotations like:
+The annotations like the following are added with conditionals in our code
+(namely if we use or not cert-manager, see above):
 
 ```
 cert-manager.io/inject-ca-from: kserve/serving-cert

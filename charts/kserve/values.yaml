@@ -12,46 +12,47 @@ networkpolicy:
   egress:
     enabled: true
 
-agent:
-  image: kserve-agent
-  version: 0.7.0-1
+kserve:
+  agent:
+    image: kserve-agent
+    version: 0.7.0-1
 
-controller:
-  metrics:
-    port: 8080
-  image: kserve-controller
-  version: 0.7.0-1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 200Mi
-    limits:
-      cpu: 100m
-      memory: 300Mi
+  controller:
+    metrics:
+      port: 8080
+    image: kserve-controller
+    version: 0.7.0-1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 100m
+        memory: 300Mi
 
-storage_initializer:
-  image: kserve-storage-initializer
-  version: 0.7.0-1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 100Mi
-    limits:
-      memory: 1Gi
-      cpu: 1
+  storage_initializer:
+    image: kserve-storage-initializer
+    version: 0.7.0-1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        memory: 1Gi
+        cpu: 1
 
-ingress:
-  # Upstream sets knative-local-gateway.istio-system.svc.cluster.local,
-  # but the value doesn't work with knative <= 0.18.
-  local_gateway_service: cluster-local-gateway.istio-system.svc.cluster.local
-  domain: 'wikimedia.org'
+  ingress:
+    # Upstream sets knative-local-gateway.istio-system.svc.cluster.local,
+    # but the value doesn't work with knative <= 0.18.
+    local_gateway_service: cluster-local-gateway.istio-system.svc.cluster.local
+    domain: 'wikimedia.org'
 
-webhook:
-  port: 9443
-  tls:
-    certs:
-      cert: "snakeoil"
-      key: "snakeoil"
+  webhook:
+    port: 9443
+    tls:
+      certs:
+        cert: "snakeoil"
+        key: "snakeoil"
 
 kubernetesApi:
   host: kubernetes.default.svc.cluster.local
