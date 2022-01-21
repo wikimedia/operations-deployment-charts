@@ -1,4 +1,4 @@
-{{- with $.Values.net_istio.egressgateway }}
+{{- with .Values.net_istio.egressgateway }}
 # This file is not shipped by the Knative serving upstream code,
 # it is specific to the WMF set up that the ML team is trying to use.
 # Since we don't have a specific chart for Istio Gateway/VS/etc.. configs,
@@ -66,4 +66,21 @@ metadata:
 spec: {{ .spec | toYaml | nindent 2 }}
 ---
 {{- end }}
+{{- end }}
+{{- if .Values.net_istio.cert_manager }}
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: egress-tls-cert
+  namespace: istio-system
+spec:
+  commonName: istio-egressgateway.istio-system.svc
+  dnsNames:
+  - istio-egressgateway.istio-system.svc
+  issuerRef:
+    name: {{ .Values.net_istio.cert_manager.issuerRef.name }}
+    group: {{ .Values.net_istio.cert_manager.issuerRef.group }}
+    kind: {{ .Values.net_istio.cert_manager.issuerRef.kind }}
+  secretName: egress-tls-cert
+---
 {{- end }}

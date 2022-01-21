@@ -1,0 +1,8 @@
+net_istio:
+  cert_manager:
+    issuerRef:
+      # This references the cfssl ClusterIssuer "discovery"
+      # defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
+      name: discovery
+      group: cfssl-issuer.wikimedia.org
+      kind: ClusterIssuer
