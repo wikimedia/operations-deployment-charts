@@ -534,7 +534,7 @@ BEGIN descriptions/mobileapps_cluster route definition
             cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
           validation_context:
             trusted_ca:
-              filename: /etc/api-gateway/puppetca.crt.pem
+              filename: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
     lb_subset_config:
       fallback_policy: "DEFAULT_SUBSET"
@@ -596,7 +596,7 @@ BEGIN descriptions/mobileapps_cluster route definition
             cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
           validation_context:
             trusted_ca:
-              filename: /etc/api-gateway/puppetca.crt.pem
+              filename: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
     load_assignment:
       cluster_name: {{ $cluster_name }}_cluster
@@ -633,7 +633,7 @@ BEGIN descriptions/mobileapps_cluster route definition
             cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
           validation_context:
             trusted_ca:
-              filename: /etc/api-gateway/puppetca.crt.pem
+              filename: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
     load_assignment:
       cluster_name: {{ $cluster_name }}_cluster
