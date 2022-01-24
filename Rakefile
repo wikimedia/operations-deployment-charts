@@ -21,6 +21,9 @@ KUBERNETES_VERSIONS = '1.19,1.16'.freeze
 HELMFILE_ENV = 'eqiad'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
 
+# This returns a base64-encoded value.
+LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'
+LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
 # admin_validate will store the generated manifest files here to be used by admin_diff
 admin_ng_manifests = {}
 
@@ -732,6 +735,24 @@ task :run_locally, [:cmdargs] do |_t, args|
       puts cmd
       puts `#{cmd}`
     end
+  end
+end
+
+desc 'Update the proxy_listeners fixture'
+task :refresh_fixtures do
+  puts "Downloading the service proxy definitions"
+  # Download the services proxy file from puppet.
+  URI.open(LISTENERS_DEFINITIONS_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded)
+    upstream_mock = {"address" => "mock.discovery.wmnet", "port" => 443, "encryption" => true}
+    data = hiera["profile::services_proxy::envoy::listeners"].map{|x| x["upstream"] = upstream_mock; [x.delete("name"), x]}.to_h
+
+    File.open(LISTENERS_FIXTURE, 'w') do |out|
+      res = {"services_proxy" => data}
+      YAML.dump(res, out)
+    end
+    puts "New version saved at #{LISTENERS_FIXTURE}"
   end
 end
 
