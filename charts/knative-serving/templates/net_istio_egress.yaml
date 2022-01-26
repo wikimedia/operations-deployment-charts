@@ -77,6 +77,8 @@ spec:
   commonName: istio-egressgateway.istio-system.svc
   dnsNames:
   - istio-egressgateway.istio-system.svc
+  - istio-egressgateway.istio-system.svc.cluster
+  - istio-egressgateway.istio-system.svc.cluster.local
   issuerRef:
     name: {{ .Values.net_istio.cert_manager.issuerRef.name }}
     group: {{ .Values.net_istio.cert_manager.issuerRef.group }}
