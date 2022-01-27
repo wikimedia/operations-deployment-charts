@@ -175,6 +175,13 @@ net_istio:
               number: 443
             tls:
               mode: SIMPLE
+          # Circuit breaking settings, applied
+          # to each egress gateway pod (no aggregation is done).
+          connectionPool:
+            tcp:
+              maxConnections: 100
+            http:
+              http1MaxPendingRequests: 20
     - name: https-thanos-swift
       spec:
         host: thanos-swift.discovery.wmnet
@@ -184,6 +191,13 @@ net_istio:
               number: 443
             tls:
               mode: SIMPLE
+          # Circuit breaking settings, applied
+          # to each egress gateway pod (no aggregation is done).
+          connectionPool:
+            tcp:
+              maxConnections: 20
+            http:
+              http1MaxPendingRequests: 5
     virtual_services:
     - name: thanos-swift-vs
       spec:
