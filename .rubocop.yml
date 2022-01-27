@@ -1,0 +1,12 @@
+# We don't write ruby with the annoying accepted style of
+# 1-line methods that becomes undebuggable. Sue me, rubyists.
+Metrics/LineLength: { Max: 120 }
+Metrics/MethodLength: { Max: 30 }
+Metrics/ClassLength: { Max: 200 }
+# Also, our methods do stuff.
+# So there is some complexity.
+Metrics/AbcSize: { Max: 30 }
+Metrics/CyclomaticComplexity: { Max: 20 }
+Metrics/PerceivedComplexity: { Max: 10 }
+# We want our specs to be as long as we like
+Metrics/BlockLength: { Enabled: false }

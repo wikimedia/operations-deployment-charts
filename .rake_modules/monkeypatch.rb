@@ -15,6 +15,17 @@ class String
     colour(32)
   end
 
+  def bold
+    colour(1)
+  end
+
+  # This implementation is simplistic but should
+  # work well enough for us
+  def indent(count, char = ' ')
+    padding = char * count
+    split("\n").map { |l| padding + l }.join("\n")
+  end
+
   private
 
   def colour(colour_code)
@@ -59,6 +70,7 @@ module FileUtils
     path = Pathname.new(src)
     path.find do |x|
       next unless x.symlink?
+
       begin
         # this will raise Errno::ENOENT if the link is broken
         # we avoid failing CI because someone added a broken link,

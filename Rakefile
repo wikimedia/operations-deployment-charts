@@ -10,10 +10,10 @@ require 'open-uri'
 require 'base64'
 
 # Load local modules
-$LOAD_PATH.unshift File.expand_path('.')
-require '.rake_modules/scaffold'
-require '.rake_modules/monkeypatch'
-require '.rake_modules/utils'
+require_relative '.rake_modules/scaffold'
+require_relative '.rake_modules/monkeypatch'
+require_relative '.rake_modules/utils'
+require_relative '.rake_modules/tester/tester'
 
 PRIVATE_STUB = '.fixtures/private_stub.yaml'.freeze
 HELM_REPO = 'stable'.freeze
@@ -339,7 +339,7 @@ task repo_update: :check_dep do
     dependencies = []
     # Dependencies are to be defined in Chart.yaml
     if chart_yaml['dependencies']
-      dependencies = chart_yaml['depencencies']
+      dependencies = chart_yaml['dependencies']
     end
 
     next unless dependencies
@@ -768,4 +768,46 @@ task :refresh_fixtures do
   end
 end
 
+import pp
+
+task :check, [:kind, :tests, :assets] do |_, args|
+  # This task is supposed to only be called by upstream ones
+  # so it *has* args
+  view = Tester.view args
+  options = {}
+  options[:assets] = args[:assets].split('/') unless args[:assets].nil?
+  options[:tests] = args[:tests].split('/') unless args[:tests].nil?
+  pattern = case args[:kind]
+            when 'charts'
+              CHARTS_GLOB
+            when 'deployments'
+              HELMFILE_GLOB
+            when 'admin'
+              'admin'
+            end
+  tr = Tester.runner pattern, options
+  tr.run
+  puts view.render(tr)
+  abort("validation failed") unless tr.failed.empty?
+end
+
+desc 'Run checks for all the charts.'
+task :check_charts, [:tests, :charts] do |_, args|
+  args = {} if args.nil?
+  Rake::Task[:check].invoke('charts', args.fetch(:tests, nil), args.fetch(:charts, nil))
+  Rake::Task[:check].reenable
+end
+
+desc 'Run checks for all deployments.'
+task :check_deployments, %i[tests deployments] do |_, args|
+  args = {} if args.nil?
+  Rake::Task[:check].invoke('deployments', args.fetch(:tests, nil), args.fetch(:deployments, nil))
+  Rake::Task[:check].reenable
+end
+
+desc 'Run checks for the admin section'
+task :check_admin do
+  Rake::Task[:check].invoke('admin', nil, nil)
+  Rake::Task[:check].reenable
+end
 task default: %i[repo_update test_scaffold lint validate_template validate_deployments validate_envoy_config validate_istio_config helm_diffs deployment_diffs admin_lint admin_diff]

@@ -1,0 +1,146 @@
+---
+# Source: foobar/templates/networkpolicy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: foobar-RELEASE-NAME
+  labels:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+spec:
+  podSelector:
+    matchLabels:
+      app: foobar
+      release: RELEASE-NAME
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 8087
+          protocol: TCP
+---
+# Source: foobar/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: foobar-RELEASE-NAME-secret-config
+  labels:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+type: Opaque
+---
+# Source: foobar/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: foobar-RELEASE-NAME-base-config
+  labeles:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+data:
+  config.yaml: |-
+    this-is-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadeta:
+  name: foobar-RELEASE-NAME-ratelimit-config
+  labels:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+data:
+  config.yaml: |-
+    domain: wikimedia
+---
+# Source: this-is-an-empty-doc-and-should-be-skipped
+---
+# Source: foobar/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: foobar-RELEASE-NAME
+  labels:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+spec:
+  type: NodePort
+  selector:
+    app: foobar
+    release: RELEASE-NAME
+    routed_via: RELEASE-NAME
+  ports:
+    - name: foobar
+      targetPort: 8087
+      port: 8087
+---
+# Source: foobar/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foobar-RELEASE-NAME
+  labels:
+    app: foobar
+    chart: foobar-0.4.3
+    release: RELEASE-NAME
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:
+      app: foobar
+      release: RELEASE-NAME
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: foobar
+        release: RELEASE-NAME
+        routed_via: RELEASE-NAME
+      annotations:
+        prometheus.io/port: "9102"
+
+    spec:
+      containers:
+        # The main application container
+        - name: foobar-RELEASE-NAME
+          image: "docker-registry.wikimedia.org/envoy-future:latest"
+          imagePullPolicyi2IfNotPresent
+          command:
+            - /usr/bin/envoy
+          args:
+            - -c
+            - /etc/foobar/config.yaml
+          ports:
+            - containerPort: 8087
+          livenessProbe:
+            tcpSocket:
+              port: 8087
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: foobar-RELEASE-NAME
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+            limits:
+              cpu: 1
+              memory: 800Mi
+          volumeMounts:
+            - name: RELEASE-NAME-base-config
+              mountPath: /etc/foobar/
+      volumes:
+        - name: RELEASE-NAME-base-config
+          configMap:
+            name: foobar-RELEASE-NAME-base-config
+        - name: RELEASE-NAME-ratelimit-config
+          configMap:
+            name: foobar-RELEASE-NAME-ratelimit-config

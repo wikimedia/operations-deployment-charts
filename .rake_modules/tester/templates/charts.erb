@@ -1,0 +1,62 @@
+################### REPORTING ON CHARTS ###############################
+<%- if has_lv? %>
+== LINTING AND VALIDATION ==
+
+  <% ok.keys.each do |lbl| -%>
+  <%= lbl.ljust(60) %><%= report(true) %>
+  <% end -%>
+  <% failed.keys.each do |lbl| -%>
+  <%= lbl.ljust(60) %><%= report(false) %>
+  <% end -%>
+
+  <% unless failed.empty? %># Errors found in the charts:<% end %>
+  <% failed.each do  |lbl, asset| -%>
+  === Report for <%= lbl.bold %>
+
+  <% unless (asset.result[:lint].nil?) -%>
+  Lint:<%= report(asset.result[:lint].ok?).rjust(60) %>
+  <% unless asset.result[:lint].ok? -%>
+
+  helm lint output:
+  ----------------
+  <%= asset.result[:lint].out.indent(2) %>
+
+  ----------------
+  <% end  # closes the errors clause -%>
+  <% end # closes lint clause-%>
+
+  Validate: <%= report(asset.validate_errors.empty?).rjust(54) %>
+  <% asset.validate_errors.each do |lbl, error| -%>
+
+  Report for test case <%= lbl.red %>
+  -------------------------------
+
+  <% if error.is_a?(KubeyamlTestOutcome) -%>
+  <% error.err.each do  |l, e| %>
+  <%= l.red %>: <%= e.split("\n").shift %>
+  <% end # closes kubeyaml error loop-%>
+  <% else -%>
+  Yaml validation error:
+  <%= error.err.indent(2) %>
+  <% end # closes error if -%>
+  <% end # closes validate clause -%>
+  <% end # closes failed loop -%>
+
+<% end # closes if has_lv? -%>
+<% if has_diff? -%>
+
+== Diffs in charts
+  <% if with_diffs.empty? %>  <%= "No diffs found".bold %><% end %>
+  <% with_diffs.each do |lbl,asset| %>
+
+  === Diffs for <%= lbl.bold %>
+
+  <% asset.diffs.each do |diff_lbl,outcome| -%>
+  Diff for test case <%= diff_lbl.red %>
+  -------------------------------
+  <%= outcome.out.indent(2) %>
+  -------------------------------
+  <% end # closes the diffs loop -%>
+  <% end # closes the assets loop -%>
+  <% end # closes if has_diff? %>
+  ######################### END CHARTS ##################################
