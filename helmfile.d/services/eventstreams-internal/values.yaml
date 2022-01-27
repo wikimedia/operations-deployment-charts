@@ -14,7 +14,7 @@ resources:
 
 main_app:
   name: eventstreams-internal
-  version: 2021-03-11-200606-production
+  version: 2022-01-20-101239-production
 
   requests:
     cpu: 200m
@@ -33,6 +33,7 @@ main_app:
       statistics.interval.ms: 60000
       # Enable Kafka consumer TLS (no authentication, just encryption).
       security.protocol: ssl
+      ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
     # Use the EventStreamConfig API to discover streams and topics.
     # This will expose all declared streams, However, since evenstreams-internal is backed
