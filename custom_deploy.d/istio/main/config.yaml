@@ -22,6 +22,19 @@ spec:
     ingressGateways:
       - enabled: true
         name: istio-ingressgateway
+        k8s:
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: istio-ingressgateway
+            patches:
+            - path: kind
+              value: DaemonSet
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
     istiodRemote:
       enabled: false
   values:
@@ -55,6 +68,7 @@ spec:
         name: istio-ingressgateway
         autoscaleEnabled: false # overwritten
         type: NodePort # overwritten
+        externalTrafficPolicy: Local
         # Need to list all ports here to be able to provide static nodePorts
         ports:
           - port: 15021
