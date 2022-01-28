@@ -44,6 +44,12 @@ releases:
             - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
               resources: ["*"]
               verbs: ["*"]
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["*"]
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
+              verbs: ["*"]
       {{- range .Environment.Values.deployExtraClusterRoles }}
       {{- if eq . "flink" }}
         ## Used by deploy users
@@ -58,6 +64,12 @@ releases:
               verbs: ["*"]
             - apiGroups: ["rbac.authorization.k8s.io"]
               resources: ["roles", "rolebindings"]
+              verbs: ["*"]
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["*"]
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
               verbs: ["*"]
       {{- end }}
       {{- if eq . "kserve" }}
