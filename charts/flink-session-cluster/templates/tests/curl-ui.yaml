@@ -3,7 +3,8 @@ kind: Pod
 metadata:
   name: '{{ template "wmf.releasename" . }}-curl-ui'
   annotations:
-    "helm.sh/hook": test-success
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   containers:
   - name: '{{ template "wmf.releasename" . }}-curl-ui'
