@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.0.3](https://img.shields.io/badge/Version-1.0.3-informational?style=flat-square)
+![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -16,7 +16,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://helm.elastic.co | elasticsearch | ^6.8.18 |
+| https://helm.elastic.co | elasticsearch | 6.8.18 |
 
 ## Values
 
