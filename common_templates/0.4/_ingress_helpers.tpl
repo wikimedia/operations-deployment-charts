@@ -16,11 +16,12 @@ This requires TLS to be enabled as well (_tls_helpers.tpl).
 Default HTTPRoute destination to be added if none given via .Values
 */}}
 {{- define "default_httproute_destination" -}}
-name: "default-destination"
-destination:
-  host: {{ template "tls.servicefqdn" . }}
-  port:
-    number: {{ .Values.tls.public_port }}
+- name: "default-destination"
+  route:
+  - destination:
+      host: {{ template "tls.servicefqdn" . }}
+      port:
+        number: {{ .Values.tls.public_port }}
 {{- end -}}
 
 {{/*
@@ -124,16 +125,10 @@ spec:
   {{- if gt (len .Values.ingress.httproutes) 0 -}}
   {{- range $route := .Values.ingress.httproutes }}
   - {{ $route | toYaml | indent 4 | trim }}
-    {{/* Add the default destination if httproute has none */ -}}
-    {{- if not (hasKey $route "route") -}}
-    route:
-    - {{ include "default_httproute_destination" $ | indent 6 | trim }}
-    {{- end -}}
   {{- end }}
   {{- else -}} {{/* if gt (len .Values.ingress.httproutes) 0 */}}
   {{/* Default: Route everything to default destination */ -}}
-  - route:
-    - {{ include "default_httproute_destination" . | indent 6 | trim }}
+  {{ include "default_httproute_destination" . | indent 2 | trim }}
   {{- end }}
 {{- end -}}{{/* Values.ingress.enabled */}}
 {{- end -}}{{/* define */}}
