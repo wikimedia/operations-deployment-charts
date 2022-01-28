@@ -70,6 +70,7 @@ spec:
                 type: RollingUpdate
           service:
             type: NodePort
+            externalTrafficPolicy: Local
             ports:
             - port: 15021
               targetPort: 15021
