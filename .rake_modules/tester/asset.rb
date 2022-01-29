@@ -441,7 +441,12 @@ module Tester
     end
   end
 
-  # Class for testing admin assets. Not 100% sure if it will need to be extended.
+  # Class for testing admin assets.
   class AdminAsset < HelmfileAsset
+    # Given we have only one admin asset with multiple "fixtures",
+    # We allow to actually select the fixtures
+    def filter_fixtures(to_run)
+      @fixtures.filter! { |_, v| to_run.include?(v) } unless to_run.nil?
+    end
   end
 end
