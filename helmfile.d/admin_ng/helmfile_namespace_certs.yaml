@@ -33,12 +33,22 @@ releases:
               name: {{ $namespace }}
               namespace: istio-system
             spec:
+              {{ if hasPrefix "staging-" $.Environment.Name }}
+              commonName: {{ $tlsHostname }}.staging.discovery.wmnet
+              {{- else }}
               commonName: {{ $tlsHostname }}.discovery.wmnet
+              {{ end }}
               secretName: {{ $namespace }}-tls-certificate
               dnsNames:
+              {{ if hasPrefix "staging-" $.Environment.Name }}
+                - {{ $tlsHostname }}.staging.discovery.wmnet
+                - {{ $tlsHostname }}.staging.svc.codfw.wmnet
+                - {{ $tlsHostname }}.staging.svc.eqiad.wmnet
+              {{- else }}
                 - {{ $tlsHostname }}.discovery.wmnet
                 - {{ $tlsHostname }}.svc.codfw.wmnet
                 - {{ $tlsHostname }}.svc.eqiad.wmnet
+              {{ end }}
               issuerRef:
                 # This references the cfssl ClusterIssuer "discovery" defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
                 name: discovery
