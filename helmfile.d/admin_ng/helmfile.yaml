@@ -14,6 +14,12 @@ environments:
       - "values/common.yaml"
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      # Deploy network policies for a istio ingresscontroller setup
+      - istio_gateways: true
+      # Deploy cert-manager & cfssl-issuer
+      - install_cert_manager: true
+      # Create default service certificates
+      - namespace_certificates: true
   staging-codfw:
     values:
       - "values/common.yaml"
@@ -21,7 +27,9 @@ environments:
       - "values/{{ .Environment.Name }}/values.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
+      # Deploy cert-manager & cfssl-issuer
       - install_cert_manager: true
+      # Create default service certificates
       - namespace_certificates: true
   # Machine Learning clusters
   ml-serve-eqiad:
