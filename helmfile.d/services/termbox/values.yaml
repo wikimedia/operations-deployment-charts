@@ -40,3 +40,10 @@ discovery:
 networkpolicy:
   egress:
     enabled: true
+# Termbox image has reached a size where it is not guaranteed to be
+# downloaded and extracted within 2m on nodes with spinning disks.
+# This affinity will force termbox to only be scheduled on nodes
+# with SSD's to work around this.
+affinity:
+  nodeSelector:
+    node.kubernetes.io/disk-type: ssd
