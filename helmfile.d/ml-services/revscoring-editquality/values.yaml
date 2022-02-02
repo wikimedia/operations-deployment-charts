@@ -54,6 +54,8 @@ inference_services:
       custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
   - name: "enwiki-damaging"
     predictor:
       custom_env:
@@ -67,3 +69,5 @@ inference_services:
       custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
