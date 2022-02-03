@@ -29,6 +29,14 @@ inference:
   transformer:
     image: "machinelearning-liftwing-inference-services-articlequality-transformer"
     version: "2021-12-17-183428-production"
+    # The articlequality models are needed on the transformer pods
+    # due to how feature extraction is implemented.
+    # We need to set the config value below to allow the transformers to be able
+    # to fetch the Secret containing the S3/Swift credentials.
+    # See also the STORAGE_URI vars that we set for each inference_services
+    # transformer entry.
+    config:
+      serviceAccountName: "kserve"
     base_env:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
@@ -47,3 +55,5 @@ inference_services:
       custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/"
