@@ -34,6 +34,14 @@ inference:
   transformer:
     image: "machinelearning-liftwing-inference-services-editquality-transformer"
     version: "2022-02-02-174851-publish"
+    # The editquality models are needed on the transformer pods
+    # due to how feature extraction is implemented.
+    # We need to set this value to allow the transformers to be able
+    # to fetch the Secret containing the S3/Swift credentials.
+    # See also the STORAGE_URI vars that we set for each inference_services
+    # transformer entry.
+    config:
+      serviceAccountName: "kserve"
     base_env:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
