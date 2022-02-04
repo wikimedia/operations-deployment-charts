@@ -31,7 +31,11 @@ List of hosts (FQDN) the Gateway should be configured for
 {{- if .Values.ingress.gatewayHosts -}}
 {{- .Values.ingress.gatewayHosts | toYaml }}
 {{- else -}}
+{{- if .Values.ingress.staging -}}
+- {{ .Release.Namespace }}.staging.discovery.wmnet
+{{- else -}}
 - {{ .Release.Namespace }}.discovery.wmnet
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -168,13 +172,23 @@ spec:
       the subjectAltNames provided here.
 
       Unfortunately out cergen certificates do not include {{ template "tls.servicefqdn" . }}
-      right now. So add gatewayHosts (which will default to {{ .Release.Namespace }}.discovery.wmnet)
-      and routeHosts as well in case externalGatewayName is set. One of them should match, so
-      this is fine until all tls-proxies have cert-manager certs.
+      right now. To not have to refresh them, trust {{ .Release.Namespace }}.discovery.wmnet
+      (that's what cergen certs should have in SAN in production) as well as
+      default-staging-certificate.wmnet (which is the generic cert we use in staging)
+      by default. Also trust gatewaysHosts and routeHosts provided by the user.
+      This might lead to duplicate entries in the subjectAltNames list, but that is not a problem
+      for istio/envoy.
 
-      Including both templates might lead to duplicate entries, need to check if that is fine.
+      TODO: When cergen certs have been replaced with cert-manager ones, it should be safe to
+      only trust {{ template "tls.servicefqdn" . }}.
       */}}
       subjectAltNames:
+      {{- if .Values.ingress.staging }}
+      - staging.svc.eqiad.wmnet
+      - staging.svc.codfw.wmnet
+      {{- else }}
+      - {{ .Release.Namespace }}.discovery.wmnet
+      {{- end }}
       - {{ template "tls.servicefqdn" . }}
       {{- include "ingress.gatewayHosts" . | nindent 6 }}
       {{- include "ingress.routeHosts" . | nindent 6 }}

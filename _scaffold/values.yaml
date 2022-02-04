@@ -140,9 +140,13 @@ affinity: {}
 # TODO: Link to fancy docs on wikitech
 ingress:
   enabled: false
+  # Setting staging to true will change the default FQDN used as gatewayHost to
+  # {{ .Release.Namespace }}.staging.discovery.wmnet and will ensure that default
+  # staging cergen certificates will be trusted.
+  staging: false
   # gatewayHosts is a list of FQDNs this service should be reachable on.
   # Does not need to be defined if existingGatewayName is set.
-  # Default will be {{ .Chart.name }}.discovery.wmnet
+  # Default will be {{ .Release.Namespace }}.discovery.wmnet
   gatewayHosts: []
   # If you want to attach routes of this release to an existing Gateway, provide the name
   # of that gateway here in the format: <namespace>/<gateway-name>
