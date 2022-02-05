@@ -1,9 +1,12 @@
 helm_scaffold_version: 0.3
+
 docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
+
 resources:
-  replicas: 1
+  replicas: 9
+
 main_app:
   image: wikimedia/operations-software-tegola
   version: 2021-11-18-210902-production
@@ -16,30 +19,29 @@ main_app:
   postgres:
     user: tilerator
     host: localhost
-    max_connections: 5
+    max_connections: 20
+
 monitoring:
   enabled: true
+
 service:
   deployment: production
+
 tls:
   enabled: true
   public_port: 4105
   telemetry:
     enabled: true
+
 tileCaching:
   enabled: true
   config:
     type: "s3"  # S3 compatible API on swift
     endpoint: "thanos-swift.discovery.wmnet"
-    basepath: "eqiad-v0.0.1"
+
 tilePregeneration:
   cronJobEnabled: true
-  parallelism: 4
-
-config:
-  public:
-    TEGOLA_BROKER_URL: "kafka://kafka-main1001.eqiad.wmnet:9092"
-    TEGOLA_QUEUE_NAME: "eqiad.maps.tiles_change"
+  parallelism: 6
 
 # Temporarily we will use envoy as a L4 tcp proxy until envoy's
 # Postgres proxy filter is production ready
@@ -47,25 +49,11 @@ config:
 tcp_proxy:
   listeners:
     - maps_postgres
+
 tcp_services_proxy:
   maps_postgres:
     port: 5432
     connect_timeout: "60s"
-    upstreams:
-      # master node
-      # - address: maps1009.eqiad.wmnet
-      #   port: 5432
-      # read replicas
-      - address: maps1005.eqiad.wmnet
-        port: 5432
-      - address: maps1006.eqiad.wmnet
-        port: 5432
-      - address: maps1007.eqiad.wmnet
-        port: 5432
-      - address: maps1008.eqiad.wmnet
-        port: 5432
-      - address: maps1010.eqiad.wmnet
-        port: 5432
 
 networkpolicy:
   egress:
@@ -131,7 +119,3 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
-kafka:
-  allowed_clusters:
-    - test-eqiad
-    - main-eqiad
