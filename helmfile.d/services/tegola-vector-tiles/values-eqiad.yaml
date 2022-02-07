@@ -28,6 +28,10 @@ tileCaching:
   config:
     basepath: "eqiad-v0.0.1"
 
+# avoid concurrency with codfw when pushing data to Swift
+tilePregeneration:
+  schedule: "0 12 * * *"
+
 kafka:
   allowed_clusters:
     - main-eqiad
