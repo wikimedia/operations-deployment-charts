@@ -36,22 +36,23 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/releases.yaml" # Special file controlled by other processes on the deployment host
-    hooks:
-      - events: ["prepare"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
-          ]
-      - events: ["cleanup"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
 
-          ]
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/mwdebug: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/mwdebug: {{`{{.HelmfileCommand}}`}}",
+
+      ]
 
 
 releases:

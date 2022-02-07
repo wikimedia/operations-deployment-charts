@@ -31,22 +31,23 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/citoid/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-    hooks:
-      - events: ["prepare"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
-          ]
-      - events: ["cleanup"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
 
-          ]
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/citoid: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/citoid: {{`{{.HelmfileCommand}}`}}",
+
+      ]
 
 # TODO: convert to the new release naming scheme
 releases:
