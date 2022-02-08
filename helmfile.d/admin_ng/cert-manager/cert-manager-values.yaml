@@ -7,14 +7,17 @@ image:
   registry: docker-registry.discovery.wmnet
   repository: cert-manager/controller
   tag: "1.5.4-2"
-  replicaCount: 2
+
+# Config for cert-manager itself
+replicaCount: 2
 resources:
   requests:
-    cpu: 100m
-    memory: 120Mi
+    cpu: 200m
+    memory: 250Mi
   limits:
-    cpu: 100m
-    memory: 200Mi
+    cpu: 500m
+    memory: 500Mi
+
 webhook:
   image:
     registry: docker-registry.discovery.wmnet
@@ -23,11 +26,11 @@ webhook:
   replicaCount: 2
   resources:
     requests:
-      cpu: 100m
-      memory: 50Mi
-    limits:
-      cpu: 100m
+      cpu: 200m
       memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 150Mi
 cainjector:
   image:
     registry: docker-registry.discovery.wmnet
@@ -36,8 +39,8 @@ cainjector:
   replicaCount: 2
   resources:
     requests:
-      cpu: 100m
-      memory: 120Mi
+      cpu: 200m
+      memory: 150Mi
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 200Mi
