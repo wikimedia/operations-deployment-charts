@@ -49,6 +49,10 @@ releases:
                 - {{ $tlsHostname }}.svc.codfw.wmnet
                 - {{ $tlsHostname }}.svc.eqiad.wmnet
               {{ end }}
+              # revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificat's history.
+              # If not set, cert-manager will not clean up old CertificateRequests at all. Setting this to 2 makes to have the CR from the
+              # previous Certificate still around after refresh.
+              revisionHistoryLimit: 2
               issuerRef:
                 # This references the cfssl ClusterIssuer "discovery" defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
                 name: discovery
