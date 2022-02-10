@@ -45,7 +45,7 @@ main_app:
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
         enabled: true
-        concurrency: 10
+        concurrency: 20
       constraintsRunCheck:
         enabled: true
         concurrency: 30
@@ -147,8 +147,8 @@ main_app:
         partitioner_concurrency: 200
         partition:
           # This is the concurrency of the individual partitions, so overall concurrency
-          # is 8 * 20 = 160
-          concurrency: 20
+          # is 8 * 30 = 240
+          concurrency: 30
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       htmlCacheUpdate:
@@ -170,8 +170,8 @@ main_app:
         partitioner_concurrency: 50
         partition:
           # This is the concurrency of the individual partitions, so overall concurrency
-          # is 100 * 3 = 300
-          concurrency: 100
+          # is 150 * 3 = 450
+          concurrency: 150
           reenqueue_delay: 3600
           retry_limit: 0
 
