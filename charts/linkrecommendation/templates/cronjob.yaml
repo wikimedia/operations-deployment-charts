@@ -43,7 +43,7 @@ spec:
                   name: {{ template "wmf.releasename" . }}-secret-config
                   key: DB_ADMIN_PASSWORD
             imagePullPolicy: {{ .Values.docker.pull_policy }}
-            command: [ "/usr/bin/python3", "load-datasets.py", "--download", "--path=/tmp/datasets" ]
+            command: [ "/usr/bin/python3", "load-datasets.py", "--download", "--path=/tmp/datasets", "--output-format=json" ]
             resources:
               requests:
 {{ toYaml .Values.main_app.requests | indent 16 }}
