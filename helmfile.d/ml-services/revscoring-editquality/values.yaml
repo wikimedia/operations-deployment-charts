@@ -31,22 +31,6 @@ inference:
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
-  transformer:
-    image: "machinelearning-liftwing-inference-services-editquality-transformer"
-    version: "2022-02-02-174851-publish"
-    # The editquality models are needed on the transformer pods
-    # due to how feature extraction is implemented.
-    # We need to set this value to allow the transformers to be able
-    # to fetch the Secret containing the S3/Swift credentials.
-    # See also the STORAGE_URI vars that we set for each inference_services
-    # transformer entry.
-    config:
-      serviceAccountName: "kserve"
-    base_env:
-      - name: WIKI_URL
-        value: "https://istio-egressgateway.istio-system.svc.cluster.local"
-      - name: REQUESTS_CA_BUNDLE
-        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 inference_services:
   - name: "enwiki-goodfaith"
@@ -58,23 +42,11 @@ inference_services:
           value: "en.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
-    transformer:
-      custom_env:
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
   - name: "enwiki-damaging"
     predictor:
       custom_env:
         - name: INFERENCE_NAME
           value: "enwiki-damaging"
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
-    transformer:
-      custom_env:
         - name: WIKI_HOST
           value: "en.wikipedia.org"
         - name: STORAGE_URI
