@@ -25,7 +25,7 @@ inference:
     sidecar.istio.io/inject: "false"
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
-    version: "2022-02-10-175027-publish"
+    version: "2022-02-16-163721-publish"
     base_env:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
@@ -33,6 +33,24 @@ inference:
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 revscoring_inference_services:
+  - wiki: "ar"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/arwiki/20220214192124/"
+  - wiki: "ar"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/arwiki/20220214192125/"
+  - wiki: "bn"
+    model: "reverted"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/reverted/bnwiki/20220214192126/"
   - wiki: "bs"
     model: "damaging"
     predictor:
