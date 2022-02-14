@@ -1,15 +1,6 @@
 replicaCount: 2
 image:
   repository: docker-registry.discovery.wmnet
-  tag: 0.2.1-1
-
-resources:
-  requests:
-    cpu: 200m
-    memory: 150Mi
-  limits:
-    cpu: 200m
-    memory: 250Mi
 
 issuers:
   discovery:
