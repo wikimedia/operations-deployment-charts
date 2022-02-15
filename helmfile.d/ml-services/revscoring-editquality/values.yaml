@@ -32,22 +32,16 @@ inference:
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
-inference_services:
-  - name: "enwiki-goodfaith"
+revscoring_inference_services:
+  - wiki: "en"
+    model: "goodfaith"
     predictor:
       custom_env:
-        - name: INFERENCE_NAME
-          value: "enwiki-goodfaith"
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
-  - name: "enwiki-damaging"
+  - wiki: "en"
+    model: "damaging"
     predictor:
       custom_env:
-        - name: INFERENCE_NAME
-          value: "enwiki-damaging"
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
