@@ -1,0 +1,47 @@
+# In this fixture we have several inference services composed only by predictors,
+# without any transformer set.
+
+docker:
+  registry: docker-registry.wikimedia.org/wikimedia
+  imagePullPolicy: IfNotPresent
+
+inference:
+  swift_s3_secret_name: "swift-s3-credentials"
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    controller-tools.k8s.io: "1.0"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2021-09-01-140944-production"
+    base_env:
+      - name: WIKI_URL
+        value: "https://api-ro.discovery.wmnet"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+
+revscoring_inference_services:
+  - wiki: "en"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+  - wiki: "it"
+    model: "goodfaith"
+    predictor:
+      config:
+        serviceAccountName: "kserve-override"
+        minReplicas: 2
+        canaryTrafficPercent: 10
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/itwiki/202106140815/"
+  - wiki: "es"
+    model: "goodfaith"
+    predictor:
+      image: machinelearning-liftwing-inference-services-editquality-custom
+      image_version: '42'
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/eswiki/202106140815/"

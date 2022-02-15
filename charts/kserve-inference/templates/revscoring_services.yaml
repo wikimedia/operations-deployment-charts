@@ -1,0 +1,49 @@
+{{- range .Values.revscoring_inference_services }}
+# This is a special config for revscoring-based InferenceService.
+# Please don't use it for any other use case, see the more generic service.yaml.
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: "{{ .wiki }}wiki-{{ .model}}"
+  annotations:
+    {{ if $.Values.monitoring.enabled -}}
+    prometheus.io/scrape: "true"
+    {{ end -}}
+    prometheus.io/port: {{ $.Values.main_app.queue_proxy.revision_metrics_port | quote }}
+  {{- range $k, $v := $.Values.inference.annotations }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end }}
+  labels:
+    app-wmf: {{ template "wmf.chartname" $ }}
+    chart: {{ template "wmf.chartid" $ }}
+    release: {{ $.Release.Name }}
+  {{- range $k, $v := $.Values.inference.labels }}
+    {{ $k }}: {{ $v | quote }}
+  {{- end }}
+spec:
+  # The predictor is the only supported config for the moment,
+  # since transformers don't fit very well in the revscoring architecture.
+  predictor:
+    {{- $generic_predictor := $.Values.inference.predictor | default dict }}
+    {{- $custom_predictor := .predictor | default dict }}
+    {{- $final_predictor_config := merge ($custom_predictor.config | default dict) ($generic_predictor.config | default dict) }}
+    {{- range $k, $v := $final_predictor_config }}
+    {{ $k }}: {{ $v }}
+    {{- end }}
+    containers:
+    - name: kserve-predictor-{{ .wiki }}wiki-{{ .model}}
+      image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.image_version | default $generic_predictor.version }}
+      imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
+      env:
+      # To have a more DRY config, we add INFERENCE_NAME and WIKI_HOST
+      # automatically.
+      - name: INFERENCE_NAME
+        value: {{ .wiki }}wiki-{{ .model}}
+      - name: WIKI_HOST
+        value: {{ .wiki }}.wikipedia.org
+      {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
+      - name: {{ .name }}
+        value: {{ .value }}
+      {{- end }}
+---
+{{- end }}
