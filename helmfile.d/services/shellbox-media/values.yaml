@@ -6,10 +6,10 @@ main_app:
   # Use a local-disk tmp to improve performance for
   # large files. T292322
   volumes:
-    - name: local_disk_tmp
+    - name: local-disk-tmp
       emptyDir: {}
   volumeMounts:
-    - name: local_disk_tmp
+    - name: local-disk-tmp
       mountPath: /tmp
 shellbox:
   flavour: media
