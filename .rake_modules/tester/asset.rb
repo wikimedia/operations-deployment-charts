@@ -91,12 +91,15 @@ module Tester
       r = @result[:validate]
       cached_templates.each do |label, outcome|
         r[label] = outcome
-        # If we successfully rendered the template,
-        # also run yaml validation and eventually
-        # kubeyaml, if present.
-        next unless outcome.ok?
-
+        # Given we run both helm and helmfile with --debug,
+        # we move on to the next stages of validation even
+        # if the rendered template is invalid,
+        # as our validate_yaml has a better diagnostic output
+        # than what helm gives us. So here we proceed even if outcome.ok? is false.
         # yaml validation.
+        # So if we had any output at all to stdout, proceed to yaml validation
+        next if !outcome.ok? && outcome.out.nil?
+
         r[label] = validate_yaml outcome
         next unless r[label].ok?
 
@@ -275,8 +278,10 @@ module Tester
     private
 
     # Returns a hash of fixture_name => fixture_path
-    def collect_fixtures
-      fixtures = FileList.new("#{@path}/.fixtures/*.yaml").reject { |f| f.include?(ChartAsset::PRIVATE_STUB) }
+    def collect_fixtures(chdir = nil)
+      real_path = chdir.nil? ? @path : File.join(chdir, @path)
+
+      fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f| f.include?(ChartAsset::PRIVATE_STUB) }
       all = fixtures.map do |f|
         fl = File.basename(f, '.yaml')
         name = "#{@path} => #{fl}"
@@ -291,7 +296,9 @@ module Tester
     def templates(chdir = nil)
       # Container for all templates
       outcomes = {}
-      @fixtures.each do |label, fixture|
+      # we need to collect fixtures again if we're in an alternative source
+      fix = chdir.nil? ?  fixtures : collect_fixtures(chdir)
+      fix.each do |label, fixture|
         quoted = fixture.nil? ? '' : "-f '#{fixture}'"
         # --debug will output yaml even if it's invalid
         command = "helm template --debug #{quoted} '#{@path}'"
@@ -342,11 +349,12 @@ module Tester
 
     private
 
-    def collect_fixtures
+    def collect_fixtures(chdir = nil)
       res = nil
+      real_path = chdir.nil? ? path : File.join(chdir, path)
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
-        res = _exec("helmfile -e #{env} build", nil, path)
+        res = _exec("helmfile -e #{env} build", nil, real_path)
         return YAML.safe_load(res.out)['environments'].keys.map { |e| ["#{label}/#{e}", e] }.to_h if res.ok?
       end
       # If we get here, it means we failed to compile the helmfile
@@ -377,7 +385,9 @@ module Tester
     def templates(alt_source = nil)
       src = alt_source.nil? ? @origin : alt_source
       outcomes = {}
-      fixtures.each do |label, environment|
+      # we need to collect fixtures again if we're in an alternative source
+      fix = alt_source.nil? ? fixtures : collect_fixtures(alt_source)
+      fix.each do |label, environment|
         outcomes[label] = _helmfile(command: 'template', environment: environment, source: src)
         # If we got a yaml parse error, we will let the validation
         # take that into account, and output better diagnostics.
@@ -415,7 +425,8 @@ module Tester
     # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
     # * /etc/helmfile-defaults/private/admin/#{env}.yaml for admin_ng helmfiles
     # * For services, also add the service-proxy fixture
-    # Also replace references to charts in wmf-stable repo with the local path.
+    # Also replace references to charts in wmf-stable repo with the local path,
+    # and add --debug to the helm args
     def patch_helmfile(dir)
       charts_dir = File.join dir, 'charts'
       helmfile_glob = File.join(dir, '**/helmfile*.yaml')
@@ -425,6 +436,8 @@ module Tester
         # Replace references to charts in the repository with local ones
         # to also catch changes to charts that are not released yet.
         content.gsub!(%r{^(\s*chart:\s+["']{0,1})wmf-stable/}, "\\1#{charts_dir.chomp('/').concat('/')}")
+        # Prepend --debug to the list of args, so we get the yaml output even in case of error.
+        content.gsub!(/^(\s*\- )\-\-kubeconfig$/m, "\\1--debug\n\\0")
         # Add fixtures.
         # For services, we patch helmfile unconditionally
         content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures_file)
