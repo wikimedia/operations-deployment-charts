@@ -3,7 +3,14 @@ main_app:
     cpu: 3
   limits:
     cpu: 3
-
+  # Use a local-disk tmp to improve performance for
+  # large files. T292322
+  volumes:
+    - name: local_disk_tmp
+      emptyDir: {}
+  volumeMounts:
+    - name: local_disk_tmp
+      mountPath: /tmp
 shellbox:
   flavour: media
 service:
