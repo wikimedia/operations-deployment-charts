@@ -6,14 +6,14 @@
   {{- $has_volumes = 1 -}}
 {{ else if (and .Values.monitoring.enabled .Values.monitoring.uses_statsd) }}
   {{- $has_volumes = 1 -}}
-{{ else if (and (eq .Values.main_app.type "php") (eq .Values.php.fcgi_mode "FCGI_UNIX") )}}
+{{ else if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   {{- $has_volumes = 1 -}}
 {{ else }}
   {{/*Yes this is redundant but it's more readable*/}}
   {{- $has_volumes = 0 -}}
 {{end}}
 {{ if eq $has_volumes 1 }}
-  {{- if eq .Values.main_app.type "php" }}
+  {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
 # Shared unix socket for php apps
 - name: shared-socket
   emptyDir: {}
@@ -30,15 +30,12 @@
 - name: shellbox-config
   configMap:
       name: {{ template "wmf.releasename" . }}-shellbox-config
-  {{ with .Values.main_app.volumes }}
+{{ with .Values.main_app.volumes }}
     {{- toYaml . }}
-  {{- end }}
+{{- end }}
 - name: shellbox-httpd-config
   configMap:
       name: {{ template "wmf.releasename" . }}-shellbox-httpd-config
-  {{ with .Values.main_app.volumes }}
-    {{- toYaml . }}
-  {{- end }}
 {{ else }}
 []
 {{- end }}

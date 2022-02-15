@@ -34,11 +34,7 @@ spec:
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
-      {{- if eq .Values.main_app.type "php" }}
-        {{- include "php.containers" . | indent 8}}
-      {{- else -}}
-        {{- include "default.containers" . | indent 8}}
-      {{- end -}}
+      {{- include "php.containers" . | indent 8}}
       {{- include "tls.container" . | indent 8}}
       volumes:
       {{- include "wmf.volumes" . | indent 8}}

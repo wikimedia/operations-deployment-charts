@@ -8,7 +8,6 @@ docker:
 resources:
   replicas: 1
 main_app:
-  type: "php"
   port: 8080 # port exposed as a Service, also used by service-checker.
   command: []
   args: []
@@ -19,10 +18,6 @@ main_app:
     cpu: 1
     # $wgMaxShellMemory is 1024M, plus resources for other pod components
     memory: 2048Mi
-  volumeMounts:
-    - name: shellbox-config
-      mountPath: "/srv/app/config"
-      readOnly: true
 
 monitoring:
   enabled: true
