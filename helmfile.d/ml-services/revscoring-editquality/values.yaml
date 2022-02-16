@@ -33,6 +33,30 @@ inference:
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 revscoring_inference_services:
+  - wiki: "bs"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/bswiki/20220214192128/"
+  - wiki: "bs"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/bswiki/20220214192131/"
+  - wiki: "ca"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/cawiki/20220214192132/"
+  - wiki: "ca"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/cawiki/20220214192134/"
   - wiki: "en"
     model: "goodfaith"
     predictor:
