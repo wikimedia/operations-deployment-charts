@@ -111,3 +111,30 @@ revscoring_inference_services:
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
+  - wiki: "el"
+    model: "reverted"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/reverted/elwiki/20220214192140/"
+  - wiki: "enwiktionary"
+    model: "reverted"
+    host: en.wiktionary.org
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/reverted/enwiktionary/20220214192146/"
+  - wiki: "eswikibooks"
+    model: "damaging"
+    host: es.wikibooks.org
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/eswikibooks/20220214192149/"
+  - wiki: "eswikibooks"
+    model: "goodfaith"
+    host: es.wikibooks.org
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/eswikibooks/20220214192150/"
