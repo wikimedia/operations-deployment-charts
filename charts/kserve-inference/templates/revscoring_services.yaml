@@ -40,7 +40,7 @@ spec:
       - name: INFERENCE_NAME
         value: {{ .wiki }}wiki-{{ .model}}
       - name: WIKI_HOST
-        value: {{ .wiki }}.wikipedia.org
+        value: {{ .host | default (list .wiki "wikipedia.org" | join ".") }}
       {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
       - name: {{ .name }}
         value: {{ .value }}
