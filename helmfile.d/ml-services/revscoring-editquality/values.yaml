@@ -138,3 +138,29 @@ revscoring_inference_services:
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/eswikibooks/20220214192150/"
+  - wiki: "es"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/eswiki/20220214192151/"
+  - wiki: "es"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/eswiki/20220214192152/"
+  - wiki: "eswikiquote"
+    model: "damaging"
+    host: es.wikiquote.org
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/eswikiquote/20220214192153/"
+  - wiki: "eswikiquote"
+    model: "goodfaith"
+    host: es.wikiquote.org
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/eswikiquote/20220214192155/"
