@@ -142,6 +142,8 @@ net_istio:
         hosts:
           - "thanos-swift.discovery.wmnet"
           - "*.wikipedia.org"
+          - "*.wiktionary.org"
+          - "*.wikibooks.org"
           # This is needed since the Egress gateway will terminate
           # TLS traffic for this endpoint (but different HTTP Host header
           # or TLS SNI).
@@ -219,6 +221,8 @@ net_istio:
       spec:
         hosts:
         - "*.wikipedia.org"
+        - "*.wiktionary.org"
+        - "*.wikibooks.org"
         gateways:
         - istio-egressgateway
         http:
