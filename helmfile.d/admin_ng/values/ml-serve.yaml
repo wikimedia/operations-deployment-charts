@@ -144,6 +144,7 @@ net_istio:
           - "*.wikipedia.org"
           - "*.wiktionary.org"
           - "*.wikibooks.org"
+          - "*.wikiquote.org"
           # This is needed since the Egress gateway will terminate
           # TLS traffic for this endpoint (but different HTTP Host header
           # or TLS SNI).
@@ -223,6 +224,7 @@ net_istio:
         - "*.wikipedia.org"
         - "*.wiktionary.org"
         - "*.wikibooks.org"
+        - "*.wikiquote.org"
         gateways:
         - istio-egressgateway
         http:
