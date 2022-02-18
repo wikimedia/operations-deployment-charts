@@ -60,6 +60,7 @@ spec:
         logLevel: warning
     pilot:
       autoscaleEnabled: false # overwritten
+      replicaCount: 2
       env:
         KUBERNETES_SERVICE_HOST: "kubernetes.default.svc.cluster.local"
         KUBERNETES_SERVICE_PORT: "443"
