@@ -188,3 +188,27 @@ revscoring_inference_services:
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/fawiki/20220214192201/"
+  - wiki: "fi"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/fiwiki/20220214192203/"
+  - wiki: "fi"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/fiwiki/20220214192206/"
+  - wiki: "fr"
+    model: "damaging"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/damaging/frwiki/20220214192208/"
+  - wiki: "fr"
+    model: "goodfaith"
+    predictor:
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/goodfaith/frwiki/20220214192209/"
