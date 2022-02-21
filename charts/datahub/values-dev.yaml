@@ -1,0 +1,68 @@
+elasticsearchSetupJob:
+  enabled: true
+
+kafkaSetupJob:
+  enabled: true
+
+mysqlSetupJob:
+  enabled: true
+
+kafka: &kafka
+  allowed_clusters: []
+
+kafka_brokers: &kafka_brokers
+  {}
+
+config: &config
+  public: {}
+  private:
+    datahub_encryption_key: encryption_key_secret
+    elasticsearch_password: elasticsearch_secret
+    mysql_password: datahub
+    token_service_signing_key: token_service_signing_key_secret
+
+datahub-frontend:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-gms:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-mce-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-mae-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+global:
+  elasticsearch:
+    host: "elasticsearch-master"
+    port: "9200"
+
+  kafka:
+    bootstrap:
+      server: "prerequisites-kafka:9092"
+    schemaregistry:
+      url: "http://prerequisites-cp-schema-registry:8081"
+    zookeeper:
+      server: "prerequisites-zookeeper:2181"
+
+  sql:
+    datasource:
+      host: "prerequisites-mysql:3306"
+      hostForMysqlClient: "prerequisites-mysql"
+      port: "3306"
+      url: "jdbc:mysql://prerequisites-mysql:3306/datahub?verifyServerCertificate=false&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2"
+      driver: "com.mysql.cj.jdbc.Driver"
+      username: "root"

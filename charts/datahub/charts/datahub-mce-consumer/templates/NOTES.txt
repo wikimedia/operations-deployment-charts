@@ -1,0 +1,8 @@
+Thank you for installing {{ template "wmf.chartname" . }}.
+
+Your release is named {{ template "wmf.releasename" . }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ template "wmf.releasename" . }}
+  $ helm get {{ template "wmf.releasename" . }}

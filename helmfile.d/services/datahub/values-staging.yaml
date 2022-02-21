@@ -1,0 +1,63 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.64.53.41/32                  # an-test-coord1001
+      - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
+      - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+      - cidr: 10.64.0.24/32                   # karapace1001
+      - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+      - cidr: 10.64.16.145/32                 # zookeeper-test1002
+      - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
+
+# Kafka brokers also enable additional networkpolicy templates
+kafka: &kafka
+  allowed_clusters:
+    - test-eqiad
+
+datahub-frontend:
+  ingress:
+    staging: true
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 10.64.53.41/32                  # an-test-coord1001
+        - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
+        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+        - cidr: 208.80.154.79/32                # ldap-eqiad (seaborgium)
+        - cidr: 2620:0:861:3:208:80:154:79/64   # ldap-eqiad (seaborgium)
+
+datahub-gms:
+  ingress:
+    staging: true
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 10.64.53.41/32                  # an-test-coord1001
+        - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
+        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.64.0.24/32                   # karapace1001
+        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+
+datahub-mae-consumer:
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 10.2.2.71/32 # datahubsearch.svc.eqiad.wmnet
+
+global:
+  elasticsearch:
+    prefix: "staging-"
+  kafka:
+    bootstrap:
+      server: "kafka-test1006.eqiad.wmnet:9092"
+    zookeeper:
+      server: "zookeeper-test1002.eqiad.wmnet:2181"
+  sql:
+    datasource:
+      host: "an-test-coord1001.eqiad.wmnet:3306"
+      hostForMysqlClient: "an-test-coord1001.eqiad.wmnet"
+      port: "3306"
+      url: "jdbc:mysql://an-test-coord1001.eqiad.wmnet:3306/datahub?verifyServerCertificate=true&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2"
+      driver: "com.mysql.cj.jdbc.Driver"
+      username: "datahub"

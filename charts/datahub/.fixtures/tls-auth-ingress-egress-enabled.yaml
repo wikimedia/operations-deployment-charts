@@ -1,0 +1,87 @@
+elasticsearchSetupJob:
+  enabled: true
+
+kafkaSetupJob:
+  enabled: true
+
+mysqlSetupJob:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+
+kafka: &kafka
+  allowed_clusters: []
+
+kafka_brokers: &kafka_brokers
+  {}
+
+config: &config
+  public: {}
+  private:
+    datahub_encryption_key: encryption_key_secret
+    elasticsearch_password: elasticsearch_secret
+    mysql_password: datahub
+    token_service_signing_key: token_service_signing_key_secret
+
+datahub-frontend:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+  tls:
+    enabled
+  ingress:
+    enabled:
+    gatewayHost:
+      default: "datahub-frontend"
+      disableDefaultHosts: false
+      extraFQDNs:
+        - datahub.wikimedia.org
+    extraGatewayHosts:
+       - datahub.wikimedia.org
+
+datahub-gms:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+  tls:
+    enabled
+  ingress:
+    enabled:
+    gatewayHost:
+      default: "datahub-gms"
+      disableDefaultHosts: false
+
+datahub-mce-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-mae-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+global:
+  datahub_analytics_enabled: true
+
+  elasticsearch:
+    auth: enabled
+    useSSL: true
+
+  datahub:
+    metadata_service_authentication:
+      enabled: true
+
+  kafka:
+  bootstrap:
+    server: "dummy"
+
+  sql:
+    datasource:
+      hostForMysqlClient: dummy

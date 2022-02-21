@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: "true"
+        {{- end }}
+        {{- include "tls.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+      {{- include "default.containers.frontend" . | indent 8}}
+      {{- include "tls.container" . | indent 8}}
+      volumes:
+      {{- include "wmf.volumes" . | indent 8}}

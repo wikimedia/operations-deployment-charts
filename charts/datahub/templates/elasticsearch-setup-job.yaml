@@ -1,0 +1,85 @@
+{{- if .Values.elasticsearchSetupJob.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "wmf.releasename" . }}-elasticsearch-setup-job
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+    {{- with .Values.global.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.elasticsearchSetupJob.serviceAccount }}
+      serviceAccountName: {{ . }}
+    {{- end }}
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: elasticsearch-setup-job
+          image: "{{ .Values.docker.registry }}/{{ .Values.elasticsearchSetupJob.image.repository }}:{{ .Values.elasticsearchSetupJob.image.tag }}"
+          imagePullPolicy: {{ .Values.elasticsearchSetupJob.imagePullPolicy | default "IfNotPresent" }}
+          env:
+            - name: ELASTICSEARCH_HOST
+              value: {{ .Values.global.elasticsearch.host | quote }}
+            - name: ELASTICSEARCH_PORT
+              value: {{ .Values.global.elasticsearch.port | quote }}
+            {{- with .Values.global.elasticsearch.useSSL }}
+            - name: ELASTICSEARCH_USE_SSL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.global.elasticsearch.auth }}
+            - name: ELASTICSEARCH_USERNAME
+              value: {{ .username }}
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "wmf.releasename" . }}-secret-config
+                  key: elasticsearch_password
+            {{- end }}
+            {{- with .Values.global.elasticsearch.indexPrefix }}
+            - name: INDEX_PREFIX
+              value: {{ . }}
+            {{- end }}
+            - name: DATAHUB_ANALYTICS_ENABLED
+              value: {{ .Values.global.datahub_analytics_enabled | quote }}
+          {{- with .Values.elasticsearchSetupJob.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 300m
+              memory: 256Mi
+      {{- with .Values.elasticsearchSetupJob.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.elasticsearchSetupJob.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.elasticsearchSetupJob.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}

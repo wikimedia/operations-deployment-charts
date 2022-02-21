@@ -1,0 +1,111 @@
+# Default values for datahub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  type: "default"
+  image: wikimedia/datahub-frontend
+  version: latest
+  port: 9002
+  command: []
+  args: []
+  requests:
+    cpu: 500m
+    memory: 512M
+  limits:
+    cpu: 1
+    memory: 1G
+  liveness_probe:
+    tcpSocket:
+      port: 9002
+  readiness_probe:
+    httpGet:
+      path: /admin
+      port: 9002
+
+monitoring:
+  enabled: false
+  uses_statsd: false
+  # image_version: latest # image_version is defined globally by SRE. May be overridden here, though.
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http
+    targetPort: 9002
+    port: 9002
+    nodePort: null
+config:
+  public:
+    JAVA_OPTS: "-Xms512m -Xmx512m -Dhttp.port=9002 -Dconfig.file=/datahub/datahub-frontend/conf/application.conf -Djava.security.auth.login.config=/datahub/datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=/datahub/datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null"
+
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false # Switch to true in production
+  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+  public_port: 9002 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 9361
+
+debug:
+  enabled: false
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: true
+
+# Optional affinity settings
+affinity: {}
+
+ingress:
+  enabled: false
+  keepNodePort: false
+  staging: false
+  gatewayHosts:
+    default: ""
+    disableDefaultHosts: false
+    extraFQDNs: []
+  existingGatewayName: ""
+  routeHosts: []
+  httproutes: []
+
+# The global parameters below are replicated here primarily in order to make
+# sure that 'helm lint' doesn't fail when validating this chart individually
+# In general these values should be set at the parent chart level, since these
+# subcharts are unlikely to be installed individually
+global:
+  datahub_analytics_enabled: true
+
+  elasticsearch:
+    host: "dummy"
+    port: "dummy"
+
+  kafka:
+    bootstrap:
+      server: "dummy"
+
+  datahub:
+    gms:
+      port: "8080"
+    play:
+      mem:
+        buffer:
+          size: "100m"
+
+    metadata_service_authentication:
+      enabled: false
+      systemClientId: "__datahub_system"
+#
+# End of global values

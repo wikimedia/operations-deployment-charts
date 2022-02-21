@@ -1,0 +1,27 @@
+apiVersion: v2
+name: datahub
+description: A Helm chart for DataHub at the Wikimedia Foundation
+type: application
+# This is the chart version. This version should be incremented each time changes are
+# made to the chart and its templates, including the app version.
+version: 0.0.1
+appVersion: "0.8.26"
+# This is the version number of the app being deployed. This version number should be
+# incremented each time you make changes to the application.
+dependencies:
+  - name: datahub-gms
+    version: 0.0.1
+    condition: datahub-gms.enabled
+  - name: datahub-frontend
+    version: 0.0.1
+    condition: datahub-frontend.enabled
+  - name: datahub-mae-consumer
+    version: 0.0.1
+    condition: datahub_standalone_consumers_enabled
+  - name: datahub-mce-consumer
+    version: 0.0.1
+    condition: datahub_standalone_consumers_enabled
+maintainers:
+  - name: Wikimedia Data Engineering team
+    email: analytics@wikimedia.org
+icon: https://raw.githubusercontent.com/linkedin/datahub/master/docs-website/static/img/datahub-logo-color-mark.svg

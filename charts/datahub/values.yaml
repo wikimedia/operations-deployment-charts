@@ -1,0 +1,129 @@
+# Default values for datahub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+# This is used as a conditional to determine whether or not the mce and mae
+# consumer jobs are deployed
+datahub_standalone_consumers_enabled: true
+
+# Start of batch job configuration. These values are used by three setup jobs
+# that setup elasticsearch (aka opensearch), kafka, and mysql (aka mariadb).
+# The jobs run in the context of the parent chart
+elasticsearchSetupJob:
+  enabled: false
+  image:
+    repository: wikimedia/datahub-elasticsearch-setup
+    tag: latest
+
+kafkaSetupJob:
+  enabled: false
+  image:
+    repository: wikimedia/datahub-kafka-setup
+    tag: latest
+
+mysqlSetupJob:
+  enabled: false
+  image:
+    repository: wikimedia/datahub-mysql-setup
+    tag: latest
+
+# This networkpolicy applies to all three setup jobs (Elasticsearch, Kafka, MySQL)
+# but is not passed down to the subcharts
+networkpolicy:
+  egress:
+    enabled: false
+# End of batch job configuration
+
+# Start of subchart configuration
+kafka: &kafka
+  allowed_clusters: []
+
+kafka_brokers: &kafka_brokers
+  {}
+
+config: &config
+  public: {}
+  private:
+    datahub_encryption_key: ""    # This is used for at-rest encryption
+    elasticsearch_password: ""    # This is used to encrypt the ES data in-flight
+    mysql_password: ""            # This is the MySQL user account password
+    token_service_signing_key: "" # This is used for GMS server authentication
+
+datahub-frontend:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-gms:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-mce-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+
+datahub-mae-consumer:
+  kafka: *kafka
+  kafka_brokers: *kafka_brokers
+  config:
+    <<: *config
+# End of subchart configuration
+
+# Start of global values. Values configured here will be made available to all
+# dependent charts. Therefore this is the correct place to set values for use
+# in the frontend, gms, mce-consumer, and mae-consumer pods.
+#
+# Note that changes made here should be replicated to the values.yaml files in
+# each of the dependent charts. The reason for this is to ensure that
+# 'helm validate' works on each dependent chart when validated individually.
+#
+global:
+  graph_service_impl: elasticsearch
+  datahub_analytics_enabled: true
+
+  elasticsearch:
+    host: ~
+    port: ~
+
+  kafka:
+    bootstrap:
+      server: ~
+    schemaregistry:
+      url: ~
+    zookeeper:
+      server: ~
+
+  sql:
+    datasource:
+      host: ~
+      hostForMysqlClient: ~
+      port: ~
+      url: ~
+      driver: "com.mysql.cj.jdbc.Driver"
+      username: ~
+
+  datahub:
+    gms:
+      port: "8080"
+    play:
+      mem:
+        buffer:
+          size: "100m"
+
+    managed_ingestion:
+      enabled: false
+
+    metadata_service_authentication:
+      enabled: false
+      systemClientId: "__datahub_system"
+#
+# End of global values

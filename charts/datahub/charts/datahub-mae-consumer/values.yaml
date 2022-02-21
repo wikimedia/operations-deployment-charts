@@ -1,0 +1,82 @@
+# Default values for datahub.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  type: "default"
+  image: wikimedia/datahub-mae-consumer
+  version: latest # we use latest everywhere in the defaults.
+  command: []
+  args: []
+  requests:
+    cpu: 500m
+    memory: 512M
+  limits:
+    cpu: 1
+    memory: 1G
+
+monitoring:
+  enabled: true
+  uses_statsd: false
+  # image_version: latest # image_version is defined globally by SRE. May be overridden here, though.
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+tls:
+  enabled: false # Switch to true in production
+
+debug:
+  enabled: false
+  ports: []
+
+networkpolicy:
+  egress:
+    enabled: true
+
+affinity: {}
+
+ingress:
+  enabled: false
+  staging: false
+  gatewayHosts: []
+  existingGatewayName: ""
+  routeHosts: []
+  httproutes: []
+
+# The global parameters below are replicated here primarily in order to make
+# sure that 'helm lint' doesn't fail when validating this chart individually
+# In general these values should be set at the parent chart level, since these
+# subcharts are unlikely to be installed individually
+global:
+  graph_service_impl: elasticsearch
+  datahub_analytics_enabled: true
+
+  elasticsearch:
+    host: "dummy"
+    port: "dummy"
+
+  kafka:
+    bootstrap:
+      server: "dummy"
+    schemaregistry:
+      url: "dummy"
+
+  datahub:
+    gms:
+      port: "8080"
+
+    managed_ingestion:
+      enabled: false
+
+    metadata_service_authentication:
+      enabled: false
+      systemClientId: "__datahub_system"
+#
+# End of global values
