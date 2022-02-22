@@ -27,6 +27,15 @@ spec:
     {{- $generic_predictor := $.Values.inference.predictor | default dict }}
     {{- $custom_predictor := .predictor | default dict }}
     {{- $final_predictor_config := merge ($custom_predictor.config | default dict) ($generic_predictor.config | default dict) }}
+    {{- $s3_storage_base_uri := .s3_storage_base_uri | default $.Values.inference.s3_storage_base_uri }}
+    # The wiki names are usually something like "en", "it", etc..
+    # But in some cases, we have "enwikitionary", "enwikibooks". Thes are corner
+    # cases, but we have to include them in our logic. If "wiki" is found in
+    # the wiki variable value, it will be used as is for the s3 path, otherwise
+    # the suffix "wiki" will be appended.
+    # en => en + "wiki"
+    # enwikibooks => enwikibooks
+    {{- $s3_storage_wiki_name := ternary .wiki (list .wiki "wiki" | join "") (regexMatch ".*(wiki|wiktionary).*" .wiki) }}
     {{- range $k, $v := $final_predictor_config }}
     {{ $k }}: {{ $v }}
     {{- end }}
@@ -41,6 +50,8 @@ spec:
         value: {{ .wiki }}wiki-{{ .model}}
       - name: WIKI_HOST
         value: {{ .host | default (list .wiki "wikipedia.org" | join ".") }}
+      - name: STORAGE_URI
+        value: {{ $s3_storage_base_uri }}/{{ .model }}/{{ $s3_storage_wiki_name }}/{{ .version }}/
       {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
       - name: {{ .name }}
         value: {{ .value }}

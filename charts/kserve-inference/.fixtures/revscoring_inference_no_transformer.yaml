@@ -7,6 +7,7 @@ docker:
 
 inference:
   swift_s3_secret_name: "swift-s3-credentials"
+  s3_storage_base_uri: "s3://wmf-ml-models"
   annotations:
     sidecar.istio.io/inject: "false"
   labels:
@@ -23,32 +24,29 @@ inference:
 revscoring_inference_services:
   - wiki: "en"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+    version: "202105140814"
   - wiki: "it"
     model: "goodfaith"
+    version: "202106140815"
     predictor:
       config:
         serviceAccountName: "kserve-override"
         minReplicas: 2
         canaryTrafficPercent: 10
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/itwiki/202106140815/"
   - wiki: "es"
     model: "goodfaith"
+    version: "202106140815"
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
       image_version: '42'
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/eswiki/202106140815/"
   - wiki: "eswikibooks"
     model: "goodfaith"
     host: es.wikibooks.org
+    version: "202106140815"
+  - wiki: "es"
+    model: "goodfaith"
+    version: "202106140815"
+    s3_storage_base_uri: "s3://wmf-ml-models-other"
     predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/eswikibooks/202106140815/"
+      image: machinelearning-liftwing-inference-services-editquality-custom
+      image_version: '42'

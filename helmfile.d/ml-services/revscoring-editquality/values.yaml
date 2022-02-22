@@ -23,6 +23,7 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "false"
+  s3_storage_base_uri: "s3://wmf-ml-models"
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
     version: "2022-02-17-100432-publish"
@@ -35,210 +36,109 @@ inference:
 revscoring_inference_services:
   - wiki: "ar"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/arwiki/20220214192124/"
+    version: "20220214192124"
   - wiki: "ar"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/arwiki/20220214192125/"
+    version: "20220214192125"
   - wiki: "bn"
     model: "reverted"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reverted/bnwiki/20220214192126/"
+    version: "20220214192126"
   - wiki: "bs"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/bswiki/20220214192128/"
+    version: "20220214192128"
   - wiki: "bs"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/bswiki/20220214192131/"
+    version: "20220214192131"
   - wiki: "ca"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/cawiki/20220214192132/"
+    version: "0220214192132"
   - wiki: "ca"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/cawiki/20220214192134/"
+    version: "20220214192134"
   - wiki: "cs"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/cswiki/20220214192135/"
+    version: "20220214192135"
   - wiki: "cs"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/cswiki/20220214192137/"
+    version: "20220214192137"
   - wiki: "de"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/dewiki/20220214192138/"
+    version: "20220214192138"
   - wiki: "de"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/dewiki/20220214192139/"
+    version: "20220214192139"
   - wiki: "en"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+    version: "202105140814"
   - wiki: "en"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/enwiki/202105260914/"
+    version: "202105260914"
   - wiki: "el"
     model: "reverted"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reverted/elwiki/20220214192140/"
+    version: "20220214192140"
   - wiki: "enwiktionary"
     model: "reverted"
     host: en.wiktionary.org
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reverted/enwiktionary/20220214192146/"
+    version: "0220214192146"
   - wiki: "eswikibooks"
     model: "damaging"
     host: es.wikibooks.org
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/eswikibooks/20220214192149/"
+    version: "20220214192149"
   - wiki: "eswikibooks"
     model: "goodfaith"
     host: es.wikibooks.org
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/eswikibooks/20220214192150/"
+    version: "20220214192150"
   - wiki: "es"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/eswiki/20220214192151/"
+    version: "0220214192151"
   - wiki: "es"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/eswiki/20220214192152/"
+    version: "20220214192152"
   - wiki: "eswikiquote"
     model: "damaging"
     host: es.wikiquote.org
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/eswikiquote/20220214192153/"
+    version: "20220214192153"
   - wiki: "eswikiquote"
     model: "goodfaith"
     host: es.wikiquote.org
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/eswikiquote/20220214192155/"
+    version: "20220214192155"
   - wiki: "et"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/etwiki/20220214192156/"
+    version: "20220214192156"
   - wiki: "et"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/etwiki/20220214192158/"
+    version: "20220214192158"
   - wiki: "fa"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/fawiki/20220214192200/"
+    version: "0220214192200"
   - wiki: "fa"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/fawiki/20220214192201/"
+    version: "20220214192201"
   - wiki: "fi"
     model: "damaging"
     predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/fiwiki/20220214192203/"
+    version: "20220214192203"
   - wiki: "fi"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/fiwiki/20220214192206/"
+    version: "20220214192206"
   - wiki: "fr"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/frwiki/20220214192208/"
+    version: "20220214192208"
   - wiki: "fr"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/frwiki/20220214192209/"
+    version: "20220214192209"
   - wiki: "gl"
     model: "reverted"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reverted/glwiki/20220214192210/"
+    version: "20220214192210"
   - wiki: "he"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/hewiki/20220214192211/"
+    version: "20220214192211"
   - wiki: "he"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/hewiki/20220214192215/"
+    version: "20220214192215"
   - wiki: "hi"
     model: "damaging"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/damaging/hiwiki/20220214192216/"
+    version: "20220214192216"
   - wiki: "hi"
     model: "goodfaith"
-    predictor:
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/goodfaith/hiwiki/20220214192218/"
+    version: "20220214192218"
