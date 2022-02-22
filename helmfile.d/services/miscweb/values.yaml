@@ -19,6 +19,9 @@ tls:
   enabled: true
   public_port: 4111
 
+ingress:
+  enabled: true
+
 # Only deploy to nodes without spinning disks
 affinity:
   nodeSelector:
