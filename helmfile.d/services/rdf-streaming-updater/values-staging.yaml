@@ -7,6 +7,12 @@ main_app:
 
 task_manager:
   replicas: 2
+  requests:
+    cpu: 500m
+    memory: 2048M
+  limits:
+    cpu: 1000m
+    memory: 2048M
 
 kafka:
   # unclear where staging is actually running so allow both kafka-main clusters
