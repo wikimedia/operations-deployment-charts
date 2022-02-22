@@ -830,6 +830,10 @@ metadata:
   annotations:
     knative.dev/example-checksum: "4b89cfa0"
 data:
+  max-non-active-revisions: "{{ .Values.core.max_non_active_revisions }}"
+  min-non-active-revisions: "{{ .Values.core.min_non_active_revisions }}"
+  retain-since-create-time: "{{ .Values.core.retain_since_create_time }}"
+  retain-since-last-active-time: "{{ .Values.core.retain_since_last_active_time }}"
   _example: |
     ################################
     #                              #

@@ -44,6 +44,10 @@ net_istio:
         cpu: 200m
         memory: 200Mi
 core:
+  max_non_active_revisions: 2
+  min_non_active_revisions: 1
+  retain_since_create_time: "disabled"
+  retain_since_last_active_time: "disabled"
   # This domain will be used when creating hostnames for routes by Knative
   default_domain: 'wikimedia.org'
   queue_proxy:
