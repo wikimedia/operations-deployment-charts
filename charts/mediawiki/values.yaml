@@ -138,6 +138,21 @@ mw:
     # It will be loaded before all the rest of conf-available and after modules have loaded.
     # See https://github.com/wikimedia/operations-docker-images-production-images/blob/master/images/MediaWiki/httpd/apache2/apache2.conf
     additional_config: false
+  localmemcached:
+    # Enable to start memcache daemons in the pod, one for each of the
+    # ports listed.  These can serve as placeholders for
+    # mcrouter/nutcracker to allow for image testing in non-production
+    # environments.  If this section is enabled then the mcrouter and
+    # nutcracker sections must be disabled.
+    enabled: false
+    ports: [ 11212, 11213 ]
+    resources:
+      requests:
+        cpu: 200m
+        memory: 80Mi
+      limits:
+        cpu: 200m
+        memory: 80Mi
   mcrouter:
     enabled: false
     resources:
@@ -271,3 +286,4 @@ common_images:
   nutcracker:
     nutcracker: nutcracker:latest
     exporter: prometheus-nutcracker-exporter:latest
+  memcached: memcached:latest

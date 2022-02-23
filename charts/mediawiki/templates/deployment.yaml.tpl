@@ -38,6 +38,9 @@ spec:
       {{- if .Values.mw.nutcracker.enabled }}
         {{- include "nutcracker.deployment" . | indent 8 }}
       {{- end }}
+      {{- if .Values.mw.localmemcached.enabled }}
+        {{- include "localmemcached.deployment" . | indent 8 }}
+      {{- end }}
       {{- include "tls.container" . | indent 8}}
       {{- include "rsyslog.deployment" . | indent 8 }}
       volumes:
