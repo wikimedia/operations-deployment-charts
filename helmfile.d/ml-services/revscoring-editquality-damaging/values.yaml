@@ -1,0 +1,84 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # We should use the egress gateway by default to call endpoints.
+    # In this case, we allow the pods to call the Swift endpoint directly.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+
+monitoring:
+  enabled: true
+
+inference:
+  annotations:
+    sidecar.istio.io/inject: "false"
+  s3_storage_base_uri: "s3://wmf-ml-models"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2022-02-17-100432-publish"
+    base_env:
+      - name: WIKI_URL
+        value: "https://istio-egressgateway.istio-system.svc.cluster.local"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+
+# revscoring_inference_services:
+#   - wiki: "ar"
+#     model: "damaging"
+#     version: "20220214192124"
+#   - wiki: "bs"
+#     model: "damaging"
+#     version: "20220214192128"
+#   - wiki: "ca"
+#     model: "damaging"
+#     version: "20220214192132"
+#   - wiki: "cs"
+#     model: "damaging"
+#     version: "20220214192135"
+#   - wiki: "de"
+#     model: "damaging"
+#     version: "20220214192138"
+#   - wiki: "en"
+#     model: "damaging"
+#     version: "202105260914"
+#   - wiki: "eswikibooks"
+#     model: "damaging"
+#     host: es.wikibooks.org
+#     version: "20220214192149"
+#   - wiki: "es"
+#     model: "damaging"
+#     version: "20220214192151"
+#   - wiki: "eswikiquote"
+#     model: "damaging"
+#     host: es.wikiquote.org
+#     version: "20220214192153"
+#   - wiki: "et"
+#     model: "damaging"
+#     version: "20220214192156"
+#   - wiki: "fa"
+#     model: "damaging"
+#     version: "20220214192200"
+#   - wiki: "fi"
+#     model: "damaging"
+#     predictor:
+#     version: "20220214192203"
+#   - wiki: "fr"
+#     model: "damaging"
+#     version: "20220214192208"
+#   - wiki: "he"
+#     model: "damaging"
+#     version: "20220214192211"
+#   - wiki: "hi"
+#     model: "damaging"
+#     version: "20220214192216"
