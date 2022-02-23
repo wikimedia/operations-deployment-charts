@@ -24,6 +24,7 @@ inference:
   annotations:
     sidecar.istio.io/inject: "false"
   s3_storage_base_uri: "s3://wmf-ml-models"
+  model: "reverted"
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
     version: "2022-02-17-100432-publish"
@@ -35,15 +36,11 @@ inference:
 
 revscoring_inference_services:
   - wiki: "bn"
-    model: "reverted"
     version: "20220214192126"
   - wiki: "el"
-    model: "reverted"
     version: "20220214192140"
   - wiki: "enwiktionary"
-    model: "reverted"
     host: en.wiktionary.org
     version: "20220214192146"
   - wiki: "gl"
-    model: "reverted"
     version: "20220214192210"

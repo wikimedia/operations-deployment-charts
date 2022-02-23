@@ -8,6 +8,7 @@ docker:
 inference:
   swift_s3_secret_name: "swift-s3-credentials"
   s3_storage_base_uri: "s3://wmf-ml-models"
+  model: goodfaith
   annotations:
     sidecar.istio.io/inject: "false"
   labels:
@@ -23,10 +24,8 @@ inference:
 
 revscoring_inference_services:
   - wiki: "en"
-    model: "goodfaith"
     version: "202105140814"
   - wiki: "it"
-    model: "goodfaith"
     version: "202106140815"
     predictor:
       config:
@@ -34,17 +33,14 @@ revscoring_inference_services:
         minReplicas: 2
         canaryTrafficPercent: 10
   - wiki: "es"
-    model: "goodfaith"
     version: "202106140815"
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
       image_version: '42'
   - wiki: "eswikibooks"
-    model: "goodfaith"
     host: es.wikibooks.org
     version: "202106140815"
   - wiki: "es"
-    model: "goodfaith"
     version: "202106140815"
     s3_storage_base_uri: "s3://wmf-ml-models-other"
     predictor:
