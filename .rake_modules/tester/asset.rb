@@ -280,7 +280,7 @@ module Tester
     # Returns a hash of fixture_name => fixture_path
     def collect_fixtures(chdir = nil)
       real_path = chdir.nil? ? @path : File.join(chdir, @path)
-
+      return [] unless File.exists? real_path
       fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f| f.include?(ChartAsset::PRIVATE_STUB) }
       all = fixtures.map do |f|
         fl = File.basename(f, '.yaml')
@@ -352,6 +352,7 @@ module Tester
     def collect_fixtures(chdir = nil)
       res = nil
       real_path = chdir.nil? ? path : File.join(chdir, path)
+      return [] unless File.exists? real_path
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
         res = _exec("helmfile -e #{env} build", nil, real_path)
