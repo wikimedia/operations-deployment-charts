@@ -93,18 +93,6 @@ namespaces:
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
-  revscoring-editquality:
-    deployClusterRole: deploy-kserve
-    deployTLSCertificate: false
-    resourcequota:
-      pods: {}
-      compute:
-        requests:
-          cpu: "180"
-          memory: "200Gi"
-        limits:
-          cpu: "180"
-          memory: "200Gi"
   revscoring-editquality-goodfaith:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
