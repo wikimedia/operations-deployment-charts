@@ -141,7 +141,7 @@ module Tester
         end
       end
       new_labels = cached_templates.keys
-      head.keys.reject { |k| new_labels.include? k }.each do
+      head.keys.reject { |k| new_labels.include? k }.each do |k|
         diffs[k] = TestOutcome.new('', "#{label} has been removed", 2, "diff-for #{label}")
       end
     end
@@ -321,6 +321,12 @@ module Tester
       @helmfile = File.basename path
       @origin = Dir.pwd
       super(path, to_run)
+    end
+
+    # Set the asset to have failed.
+    def bad(msg, cmd)
+      @result[:lint] = {'all': TestOutcome.new('', msg, 1, cmd)}
+      @bad = true
     end
 
     def label
