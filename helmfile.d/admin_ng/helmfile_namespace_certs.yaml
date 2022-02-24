@@ -25,6 +25,7 @@ releases:
         {{ $deployTLSCertificate := $values | get "deployTLSCertificate" (ne $isSystemNamespace true) }}
         {{- if eq $deployTLSCertificate true }}
           {{- $tlsHostname := $values | get "tlsHostname" $namespace }}
+          {{- $tlsExtraSANs := $values | get "tlsExtraSANs" nil }}
           - |
             # Create a default certificate object in istio-system namespace
             apiVersion: cert-manager.io/v1
@@ -48,7 +49,10 @@ releases:
                 - {{ $tlsHostname }}.discovery.wmnet
                 - {{ $tlsHostname }}.svc.codfw.wmnet
                 - {{ $tlsHostname }}.svc.eqiad.wmnet
-              {{ end }}
+              {{- end }}
+              {{- if $tlsExtraSANs -}}
+                {{ $tlsExtraSANs | toYaml | nindent 16 }}
+              {{- end }}
               # revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificat's history.
               # If not set, cert-manager will not clean up old CertificateRequests at all. Setting this to 2 makes to have the CR from the
               # previous Certificate still around after refresh.

@@ -39,11 +39,15 @@
 #     Provide a list of labels and their values to be added to the namespace.
 #   tlsHostname: string
 #     Default <namespace-name>
-#     Each namespace will have TLS certificate issued that can be used with Istio-Ingresscontroller.
+#     Each namespace will have TLS certificate issued that can be used with Istio-Ingressgateway.
 #     That certificate will be issued for the subject alt names:
 #     - {{ $tlsHostname }}.discovery.wmnet
 #     - {{ $tlsHostname }}.svc.codfw.wmnet
 #     - {{ $tlsHostname }}.svc.eqiad.wmnet
+#   tlsExtraSANs: list
+#     Default: []
+#     A list of additional names to be added to the SANs of the default TLS certificate that will be used by
+#     Istio-Ingressgateway.
 #   deployTLSCertificate:
 #     Default: false when the systemNamespace flag or the isBuiltinNamespace one
 #     is true, and true in all the other cases.
