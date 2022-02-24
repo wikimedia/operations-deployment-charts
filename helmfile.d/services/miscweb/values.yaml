@@ -21,6 +21,9 @@ tls:
 
 ingress:
   enabled: true
+  gatewayHosts:
+    - miscweb.discovery.wmnet
+    - static-bugzilla.wikimedia.org
 
 # Only deploy to nodes without spinning disks
 affinity:
