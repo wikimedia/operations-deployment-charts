@@ -30,6 +30,8 @@ main_app:
 
   concurrency: 50
 
+  num_workers: 1
+
   # Log threshold. Defaults info in template if not defined here
   log_level: debug
 
@@ -100,6 +102,8 @@ main_app:
     port: 6379
     pass:
 
+logging:
+  samples: {}
 
 nutcracker:
   enabled: false

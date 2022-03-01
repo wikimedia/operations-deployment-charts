@@ -258,6 +258,12 @@ logging:
   streams:
     - type: stdout
       named_levels: true
+{{- if .Values.logging.samples }}
+  sampled_levels:
+{{- range $level, $rate :=  .Values.logging.samples }}
+    {{ $level }}: {{ $rate }}
+{{ end -}}
+{{ end }}
 
 # Statsd metrics reporter
 metrics:
