@@ -1,5 +1,4 @@
 main_app:
-  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
   image: envoy-future
   version: latest
   telemetry_port: 1667
@@ -107,17 +106,6 @@ main_app:
       hosts:
         localhost: 8888
         badhost: 8888
-
-  discovery_endpoints:
-    mydummyservice:
-      tls: false
-      port: 4006
-      timeout: 30s
-      path: mydummyservice
-      ratelimit_config:
-        anon_limt: 2
-        default_limit: 3
-
 
   jwks:
     kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="

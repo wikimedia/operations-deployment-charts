@@ -148,19 +148,13 @@ static_resources:
                       invert_match: true
               rate_limits:
                 # For authenticated requests, the following descriptor is produced:
-                # - {value: ("route_name", "<route_name>")("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
+                # - {value: ("client_id","<aud>")("user_id","<uid>"), override:(value:1000,unit:MINUTE)}
                 # Applying limit/unit for client_id/user_id pair.
                 #
                 # If JWT is absent, no descriptor generated.
                 # If override is missing, descriptor is ignored since it's not configured in the service
                 - stage: 0
                   actions:
-                    - metadata:
-                        descriptor_key: route_name
-                        metadata_key:
-                          key: envoy.filters.http.ratelimit
-                          path:
-                            - key: route_name
                     - metadata:
                         source: DYNAMIC
                         descriptor_key: client_id
@@ -185,18 +179,12 @@ static_resources:
                           - key: jwt_payload
                           - key: ratelimit
                 # For authenticated requests emit the following descriptor:
-                # - {value: ("route_name", "<route_name>")("user_class_anon_fallback","<class>")("client_ip","123.123.123.123)}
+                # - {value: ("user_class_anon_fallback","<class>")("client_ip","123.123.123.123)}
                 # which will be ignored by the service, since we only match on "anon" class.
                 # For unauthenticated requests <class> would fallback to "anon", and the statically
                 # configured limit will kick in.
                 - stage: 0
                   actions:
-                    - metadata:
-                        descriptor_key: route_name
-                        metadata_key:
-                          key: envoy.filters.http.ratelimit
-                          path:
-                            - key: route_name
                     - metadata:
                         source: DYNAMIC
                         descriptor_key: user_class_anon_fallback
@@ -378,12 +366,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
                     substitution: '/\1'
                   cluster: {{ $discovery_route}}_cluster
-{{- if $discovery_opts.ratelimit_config }}
-                metadata:
-                  filter_metadata:
-                    envoy.filters.http.ratelimit:
-                      route_name: {{ $discovery_route }}
-{{- end }}
 {{- end }}
 {{- /* END discovery_endpoints route definition */}}
 {{- /* BEGIN staging_endpoints route definition */}}
@@ -575,8 +557,6 @@ BEGIN descriptions/mobileapps_cluster route definition
             filter_metadata:
               envoy.lb:
                 x_wikimedia_debug_server: none
-              envoy.filters.http.ratelimit:
-                route_name: core
 {{- end }}
 {{- range $host, $port := $cluster_opts.debug_hosts }}
         - endpoint:
@@ -588,8 +568,6 @@ BEGIN descriptions/mobileapps_cluster route definition
             filter_metadata:
               envoy.lb:
                 x_wikimedia_debug_server: {{ $host }}
-              envoy.filters.http.ratelimit:
-                route_name: core
 {{- end }}
 {{- end }}
 {{- end }}
