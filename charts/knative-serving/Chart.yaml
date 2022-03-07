@@ -2,9 +2,9 @@ apiVersion: v2
 name: knative-serving
 description: WMF Knative Serving setup
 type: application
-version: 0.1.22
+version: 0.1.23
 appVersion: v0.18.1
-dependecies:
+dependencies:
   - name: knative-serving-crds
     version: 0.1.0
-    repository: "file://../knative-serving-crds"
+    repository: https://helm-charts.wikimedia.org/stable/

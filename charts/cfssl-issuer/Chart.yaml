@@ -2,9 +2,9 @@ apiVersion: v2
 name: cfssl-issuer
 description: cert-manager issuer for CFSSL multirootca API
 type: application
-version: 0.2.2
+version: 0.2.3
 appVersion: 0.2.2-1
-dependecies:
+dependencies:
   - name: cfssl-issuer-crds
     version: 0.2.2
-    repository: "file://../cfssl-issuer-crds"
+    repository: https://helm-charts.wikimedia.org/stable/
