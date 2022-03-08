@@ -2,9 +2,9 @@ apiVersion: v2
 name: calico
 description: WMF Calico setup
 type: application
-version: 0.1.16
+version: 0.1.15
 appVersion: 3.17.0
-dependencies:
+dependecies:
   - name: calico-crds
     version: 0.1.0
-    repository: https://helm-charts.wikimedia.org/stable/
+    repository: "file://../calico-crds"
