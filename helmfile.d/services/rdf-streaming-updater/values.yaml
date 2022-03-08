@@ -4,7 +4,7 @@ docker:
 
 main_app:
   image: wikimedia/wikidata-query-flink-rdf-streaming-updater
-  version: 2021-09-28-162738-production
+  version: 2022-03-08-171055-production
   replicas: 1
   requests:
     cpu: 500m
@@ -19,6 +19,7 @@ main_app:
     parallelism: 12
     swift_auth_url: https://thanos-swift.discovery.wmnet/auth/v1.0
     swift_username: wdqs:flink
+    swift_s3_endpoint: thanos-swift.discovery.wmnet
 
 task_manager:
   replicas: 6

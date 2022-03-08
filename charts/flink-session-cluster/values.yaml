@@ -38,6 +38,7 @@ main_app:
     parallelism: 1
     swift_auth_url: "https://thanos-swift.discovery.wmnet/auth/v1.0"
     swift_username: "wdqs:flink"
+    swift_s3_endpoint: thanos-swift.discovery.wmnet
     # the cluster id used by flink H/A components
     # see https://ci.apache.org/projects/flink/flink-docs-release-1.13/docs/deployment/config/#kubernetes-cluster-id
     # the cluster id is used by flink to name some k8s resources it creates like h/a configmaps
