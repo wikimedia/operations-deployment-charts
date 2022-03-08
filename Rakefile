@@ -50,7 +50,9 @@ task repo_update: :check_dep do
     next unless dependencies
 
     dependencies.each do |dep|
-      unless dep['repository'].match(/^http/) || dep['repository'].empty
+      next unless dep.has_key?('repository')
+
+      unless dep['repository'].match(/^http/)
         raise("Only http(s) URLs supported for non-local helm dependencies (#{path_to_chart_yaml})")
       end
 
