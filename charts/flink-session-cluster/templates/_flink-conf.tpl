@@ -25,7 +25,7 @@ swift.service.thanos-swift.auth.url: {{ .Values.main_app.config.swift_auth_url }
 swift.service.thanos-swift.username: {{ .Values.main_app.config.swift_username }}
 swift.service.thanos-swift.apikey: {{ .Values.config.private.swift_api_key}}
 s3.access-key: {{ .Values.main_app.config.swift_username }}
-s3.secret-key: {{ .Values.main_app.config.swift_api_key }}
+s3.secret-key: {{ .Values.config.private.swift_api_key }}
 s3.endpoint: {{ .Values.main_app.config.swift_s3_endpoint }}
 s3.path.style.access: true
 kubernetes.cluster-id:  {{ .Values.main_app.config.cluster_id}}
