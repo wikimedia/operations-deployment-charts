@@ -129,3 +129,17 @@ Values are provided via puppet profile::kubernetes::deployment_server::general *
 - name: KUBERNETES_PORT_443_TCP_PORT
   value: "{{ .Values.kubernetesApi.port }}"
 {{- end -}}
+
+{{/* Return Service.spec.type that should be used for services.
+If Ingress is enabled, this returns ClusterIP unless ingress.keepNodePort is true. If keepNodePort is true or Ingress is disabled, this should return NodePort.
+*/}}
+{{- define "wmf.serviceType" -}}
+{{/* Fail safe lookups to not break compatibility if ingress is not at all defined */}}
+{{- with .Values.ingress | default (dict "enabled" false) -}}
+{{- if and (.enabled | default false) (not (.keepNodePort | default false)) -}}
+ClusterIP
+{{- else -}}
+NodePort
+{{- end -}}
+{{- end -}}
+{{- end -}}

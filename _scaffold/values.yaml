@@ -55,6 +55,7 @@ monitoring:
   # For service-runner based apps using service-runner < 2.8, this should be set to true
   uses_statsd: true
   # image_version: latest # image_version is defined globally by SRE. May be overridden here, though.
+
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:
@@ -63,6 +64,7 @@ service:
     targetPort: $PORT # the number or name of the exposed port on the container
     port: $PORT # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
@@ -140,6 +142,11 @@ affinity: {}
 # TODO: Link to fancy docs on wikitech
 ingress:
   enabled: false
+  # By default, enabling ingress will switch the charts services from type NodePort to
+  # ClusterIP. While that is fine for new services it may not be desired during transition
+  # of existing ones from dedicated LVS to Ingress.
+  # By setting keepNodePort to true, the services will stay of type NodePort.
+  keepNodePort: false
   # Setting staging to true will change the default FQDN used as gatewayHost to
   # {{ .Release.Namespace }}.staging.discovery.wmnet and will ensure that default
   # staging cergen certificates will be trusted.

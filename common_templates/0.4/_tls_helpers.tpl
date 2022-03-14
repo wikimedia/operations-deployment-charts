@@ -143,7 +143,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: NodePort
+  type: {{ template "wmf.serviceType" . }}
   selector:
     app: {{ template "wmf.chartname" . }}
     routed_via: {{ .Release.Name }}
@@ -151,7 +151,9 @@ spec:
     - name: {{ template "wmf.releasename" . }}-https
       protocol: TCP
       port: {{ .Values.tls.public_port }}
+      {{- if eq (include "wmf.serviceType" .) "NodePort" }}
       nodePort: {{ .Values.tls.public_port }}
+      {{- end }}
 {{- end }}
 {{- end -}}
 
