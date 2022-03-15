@@ -42,7 +42,7 @@ spec:
     {{- end }}
     containers:
     - name: kserve-predictor-{{ .wiki }}wiki-{{ $model}}
-      image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.image_version | default $generic_predictor.version }}
+      image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.version | default $generic_predictor.version }}
       imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
       env:
       # To have a more DRY config, we add INFERENCE_NAME and WIKI_HOST
