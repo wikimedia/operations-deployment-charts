@@ -25,10 +25,10 @@ inference:
     sidecar.istio.io/inject: "false"
   predictor:
     image: "machinelearning-liftwing-inference-services-articlequality"
-    version: "2021-12-09-053243-production"
+    version: "2022-03-08-115616-publish"
   transformer:
     image: "machinelearning-liftwing-inference-services-articlequality-transformer"
-    version: "2021-12-17-183428-production"
+    version: "2022-03-08-163304-publish"
     # The articlequality models are needed on the transformer pods
     # due to how feature extraction is implemented.
     # We need to set the config value below to allow the transformers to be able

@@ -23,44 +23,18 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "false"
+  s3_storage_base_uri: "s3://wmf-ml-models"
+  model: "draftquality"
   predictor:
     image: "machinelearning-liftwing-inference-services-draftquality"
-    version: "2021-12-10-062751-production"
-    base_env:
-      - name: WIKI_URL
-        value: "https://istio-egressgateway.istio-system.svc.cluster.local"
-      - name: REQUESTS_CA_BUNDLE
-        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
-  transformer:
-    image: "machinelearning-liftwing-inference-services-draftquality-transformer"
-    version: "2022-01-31-171224-publish"
-    # The draftquality models are needed on the transformer pods
-    # due to how feature extraction is implemented.
-    # We need to set this value to allow the transformers to be able
-    # to fetch the Secret containing the S3/Swift credentials.
-    # See also the STORAGE_URI vars that we set for each inference_services
-    # transformer entry.
-    config:
-      serviceAccountName: "kserve"
+    version: "2022-03-08-115622-publish"
     base_env:
       - name: WIKI_URL
         value: "https://istio-egressgateway.istio-system.svc.cluster.local"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
-inference_services:
-  - name: "enwiki-draftquality"
-    predictor:
-      custom_env:
-        - name: INFERENCE_NAME
-          value: "enwiki-draftquality"
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/draftquality/enwiki/202107141649/"
-    transformer:
-      custom_env:
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/draftquality/enwiki/202107141649/"
+revscoring_inference_services:
+  - wiki: "en"
+    version: "202107141649"
+
