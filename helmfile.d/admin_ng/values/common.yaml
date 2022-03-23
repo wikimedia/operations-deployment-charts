@@ -37,10 +37,11 @@
 #   labels: hash<string,string>
 #     Default: {}
 #     Provide a list of labels and their values to be added to the namespace.
-#   tlsHostname: string
-#     Default <namespace-name>
+#   tlsHostnames: list
+#     Default [<namespace-name>]
 #     Each namespace will have TLS certificate issued that can be used with Istio-Ingressgateway.
-#     That certificate will be issued for the subject alt names:
+#     That certificate will be issued with CN <first tlsHostname>.discovery.wmnet and the following
+#     subject alt names for all tlsHostnames:
 #     - {{ $tlsHostname }}.discovery.wmnet
 #     - {{ $tlsHostname }}.svc.codfw.wmnet
 #     - {{ $tlsHostname }}.svc.eqiad.wmnet
@@ -51,8 +52,7 @@
 #   deployTLSCertificate:
 #     Default: false when the systemNamespace flag or the isBuiltinNamespace one
 #     is true, and true in all the other cases.
-#     Whether or not to deploy the TLS certificate <tlsHostname>
-#     to the istio-system namespace.
+#     Whether or not to deploy the default TLS certificate to the istio-system namespace.
 namespaces: {}
 GlobalNetworkPolicies: {}
 

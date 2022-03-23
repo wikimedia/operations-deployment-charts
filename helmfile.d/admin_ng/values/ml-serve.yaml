@@ -82,7 +82,8 @@ namespaces:
     # with hostname == namespace for every non-system namespace.
     # In our case, we have only one istio TLS config that is deployed
     # via knative-serving.
-    tlsHostname: inference
+    tlsHostnames:
+      - inference
   kserve:
     systemNamespace: true
     allowCriticalPods: true

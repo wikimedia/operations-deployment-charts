@@ -24,8 +24,9 @@ releases:
         {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
         {{ $deployTLSCertificate := $values | get "deployTLSCertificate" (ne $isSystemNamespace true) }}
         {{- if eq $deployTLSCertificate true }}
-          {{- $tlsHostname := $values | get "tlsHostname" $namespace }}
+          {{- $tlsHostnames := $values | get "tlsHostnames" (list $namespace) }}
           {{- $tlsExtraSANs := $values | get "tlsExtraSANs" nil }}
+          {{- $domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" }}
           - |
             # Create a default certificate object in istio-system namespace
             apiVersion: cert-manager.io/v1
@@ -35,20 +36,21 @@ releases:
               namespace: istio-system
             spec:
               {{ if hasPrefix "staging-" $.Environment.Name }}
-              commonName: {{ $tlsHostname }}.staging.discovery.wmnet
+              commonName: {{ first $tlsHostnames }}.staging.discovery.wmnet
               {{- else }}
-              commonName: {{ $tlsHostname }}.discovery.wmnet
+              commonName: {{ first $tlsHostnames }}.discovery.wmnet
               {{ end }}
               secretName: {{ $namespace }}-tls-certificate
               dnsNames:
-              {{ if hasPrefix "staging-" $.Environment.Name }}
-                - {{ $tlsHostname }}.staging.discovery.wmnet
-                - {{ $tlsHostname }}.staging.svc.codfw.wmnet
-                - {{ $tlsHostname }}.staging.svc.eqiad.wmnet
-              {{- else }}
-                - {{ $tlsHostname }}.discovery.wmnet
-                - {{ $tlsHostname }}.svc.codfw.wmnet
-                - {{ $tlsHostname }}.svc.eqiad.wmnet
+              {{ range $tlsHostnames }}
+                {{- $tlsHostname := . -}}
+                {{ range $domains }}
+                  {{- if hasPrefix "staging-" $.Environment.Name }}
+                - {{ $tlsHostname }}.staging.{{ . }}
+                  {{- else }}
+                - {{ $tlsHostname }}.{{ . }}
+                  {{- end }}
+                {{- end }}
               {{- end }}
               {{- if $tlsExtraSANs -}}
                 {{ $tlsExtraSANs | toYaml | nindent 16 }}
