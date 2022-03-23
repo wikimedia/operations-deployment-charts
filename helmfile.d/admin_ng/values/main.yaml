@@ -26,7 +26,12 @@ namespaces:
   changeprop-jobqueue: {}
   citoid: {}
   cxserver: {}
-  datahub: {}
+  datahub:
+    tlsHostnames:
+      - datahub-frontend
+      - datahub-gms
+    tlsExtraSANs:
+      - datahub.wikimedia.org
   echostore: {}
   eventgate-analytics: {}
   eventgate-analytics-external: {}
