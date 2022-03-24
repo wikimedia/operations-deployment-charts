@@ -1,0 +1,77 @@
+# Setup network policies and users for the setup of Istio proxy/sidecars.
+#
+# We are currently adding Istio sidecar proxies using the CNI plugin,
+# deployed separately via Puppet. More specifically, we add:
+# - the istio-cni and istio-iptables binaries to the k8s nodes
+# - we create the istio-cni kubernetes user (infrastructure user)
+# All the configurations above are handled by the install-cni Istio Docker
+# image, that upstream maintains, but that we cannot use for security reasons
+# (it needs high privileges to copy binaries to the underlying k8s node for
+# example). Due to this reason, we have to provide ClusterRole and
+# ClusterRoleBinding for the istio-cni user, together with an extra
+# NetworkPolicy to allow traffic from the Istio sidecars to istiod.
+#
+# Requirements:
+# This requires:
+# - the istio-system namespace to be created via helmfile_namspaces.yaml.
+# - istio needs to be deployed using custom_deploy.d.
+# - the istio-cni binaries and the related config needs to be deployed
+#   as well via Puppet.
+#
+templates:
+  istio-sidecar-proxy-config: &istio-sidecar-proxy-config
+    name: istio-proxy-networkpolicies
+    chart: wmf-stable/raw
+    namespace: istio-system
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_sidecar_proxy\" }}{{ .Environment.Values.istio_sidecar_proxy }}{{ else }}{{ false }}{{end}}`}}"
+    values:
+      - resources:
+          - apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: istiod-sidecar-proxy
+              namespace: istio-system
+            spec:
+              podSelector:
+                matchLabels:
+                  istio: pilot
+              ingress:
+                # Allow Istio sidecar proxies to talk to istiod
+                - from:
+                    - podSelector:
+                        matchLabels:
+                          security.istio.io/tlsMode: "istio"
+                  ports:
+                    - port: 15012
+                      protocol: TCP
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: istio-cni
+              labels:
+                app: istio-cni
+                operator.istio.io/component: "Cni"
+            rules:
+            - apiGroups: [""]
+              resources:
+              - pods
+              - nodes
+              verbs:
+              - get
+          - apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: istio-cni
+              labels:
+                app: istio-cni
+                operator.istio.io/component: "Cni"
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: istio-cni
+            subjects:
+            - kind: User
+              name: istio-cni
+
+releases:
+  - <<: *istio-sidecar-proxy-config

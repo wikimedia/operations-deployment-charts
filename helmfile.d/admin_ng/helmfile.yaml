@@ -55,6 +55,8 @@ environments:
       - namespace_certificates: true
       # Deploy network policies for a Istio setup
       - istio_gateways: true
+      # Experiments currently ongoing in T297612
+      - istio_sidecar_proxy: true
   ml-serve-codfw:
     values:
       - "values/common.yaml"
@@ -66,6 +68,8 @@ environments:
       - namespace_certificates: true
       # Deploy network policies for a Istio setup
       - istio_gateways: true
+      # Experiments currently ongoing in T297612
+      - istio_sidecar_proxy: true
 
 ---
 bases:
@@ -77,6 +81,7 @@ bases:
   - cert-manager/helmfile.yaml
   - helmfile_namespace_certs.yaml
   - helmfile_istio-gateways.yaml
+  - helmfile_istio-proxy.yaml
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
   - kserve/helmfile.yaml
