@@ -25,17 +25,29 @@ Default HTTPRoute destination to be added if none given via .Values
 {{- end -}}
 
 {{/*
-List of hosts (FQDN) the Gateway should be configured for
+List of hosts (FQDN) the Gateway should be configured for.
+By default, this will be a list like:
+- {{ gatewayHosts.default }}.discovery.wmnet
+- {{ gatewayHosts.default }}.svc.codfw.wmnet
+- {{ gatewayHosts.default }}.svc.eqiad.wmnet
+".staging" is prepended to the domains in case .Values.ingress.staging is true.
+If disableDefaultHosts is true, the above is skipped and only the list of
+extraFQDNs is returned (if not empty).
 */}}
 {{- define "ingress.gatewayHosts" -}}
-{{- if .Values.ingress.gatewayHosts -}}
-{{- .Values.ingress.gatewayHosts | toYaml }}
-{{- else -}}
-{{- if .Values.ingress.staging -}}
-- {{ .Release.Namespace }}.staging.discovery.wmnet
-{{- else -}}
-- {{ .Release.Namespace }}.discovery.wmnet
+{{- if not .Values.ingress.gatewayHosts.disableDefaultHosts -}}
+{{- $host := .Values.ingress.gatewayHosts.default | default .Release.Namespace -}}
+{{- $domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" -}}
+{{- range $domains -}}
+{{ if $.Values.ingress.staging -}}
+- {{ $host }}.staging.{{ . }}
+{{ else -}}
+- {{ $host }}.{{ . }}
+{{ end -}}
+{{- end -}} {{/* end range */}}
 {{- end -}}
+{{ if .Values.ingress.gatewayHosts.extraFQDNs -}}
+{{ .Values.ingress.gatewayHosts.extraFQDNs | toYaml }}
 {{- end -}}
 {{- end -}}
 
@@ -184,13 +196,18 @@ spec:
       */}}
       subjectAltNames:
       {{- if .Values.ingress.staging }}
+      # Default staging certificates (cergen)
       - staging.svc.eqiad.wmnet
       - staging.svc.codfw.wmnet
       {{- else }}
+      # Discovery certificate (cergen)
       - {{ .Release.Namespace }}.discovery.wmnet
       {{- end }}
+      # Default tls-service certificates (tls.servicefqdn)
       - {{ template "tls.servicefqdn" . }}
+      # Gateway hosts
       {{- include "ingress.gatewayHosts" . | nindent 6 }}
+      # Route hosts (in case existing Gateway is used)
       {{- include "ingress.routeHosts" . | nindent 6 }}
 {{- end -}}{{/* Values.ingress.enabled */}}
 {{- end -}}{{/* define */}}

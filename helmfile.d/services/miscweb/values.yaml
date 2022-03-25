@@ -23,7 +23,7 @@ ingress:
   enabled: true
   keepNodePort: true
   gatewayHosts:
-    - miscweb.discovery.wmnet
+    extraFQDNs:
     - static-bugzilla.wikimedia.org
 
 # Only deploy to nodes without spinning disks

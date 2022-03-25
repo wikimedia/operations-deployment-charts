@@ -19,8 +19,10 @@ tls:
 ingress:
   enabled: true
   gatewayHosts:
-  - somehost.somedomain.sometld
-  - chart.discovery.wmnet
+    disableDefaultHosts: true
+    extraFQDNs:
+    - somehost.somedomain.sometld
+    - another.somedomain.sometld
   httproutes:
   - match:
     - uri:

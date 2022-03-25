@@ -20,3 +20,8 @@ ingress:
   enabled: true
   staging: true
   keepNodePort: true
+  gatewayHosts:
+    default: chart
+    extraFQDNs:
+    - some.domain.name
+    - some2.domain.name
