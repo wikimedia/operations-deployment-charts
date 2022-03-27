@@ -1,0 +1,1 @@
+../../../common_templates/0.4/_ingress_helpers.tpl
