@@ -691,7 +691,7 @@ spec: &spec
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.on_transclusion_update }}
               on_transclusion_update:
-                concurrency: {{ mul .Values.main_app.concurrency 4 }}
+                concurrency: {{ mul .Values.main_app.concurrency 2 }}
                 topic: change-prop.transcludes.resource-change
                 limiters:
                   blacklist: 'html:{message.meta.uri}'
