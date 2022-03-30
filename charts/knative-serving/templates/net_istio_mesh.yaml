@@ -1,0 +1,45 @@
+{{- with .Values.net_istio.mesh }}
+# This file is not shipped by the Knative serving upstream code,
+# it is specific to the WMF set up that the ML team is trying to use.
+# Since we don't have a specific chart for Istio Gateway/VS/etc.. configs,
+# and since Knative ships with Istio-specific configurations, this chart
+# seems the best place to add extra Egress gateway configurations.
+# In the future the code/configs below may be moved elsewhere.
+#
+# For every service that we want to proxy via the proxy sidecar, we need to
+# define:
+# 1) A ServiceEntry resource that establish what endpoints can be reached from
+#     within the mesh.
+# 2) A VirtualService resource that implements basic L7 routing rules.
+# 3) A DestinationRule resource that establish how/if traffic is split
+#    between multiple backends following a certain versioning.
+#    For example, we could have two different versions of the same endpoint
+#    and route part of the traffic to one and part to the other one, based
+#    on some logic. For egress we don't really need it but we have to specify
+#    a basic entry to make everything working.
+#
+{{- range .service_entries }}
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ .name }}
+spec: {{ .spec | toYaml | nindent 2 }}
+---
+{{- end }}
+{{- range .virtual_services }}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .name }}
+spec: {{ .spec | toYaml | nindent 2 }}
+---
+{{- end }}
+{{- range .destination_rules }}
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ .name }}
+spec: {{ .spec | toYaml | nindent 2 }}
+---
+{{- end }}
+{{- end }}
