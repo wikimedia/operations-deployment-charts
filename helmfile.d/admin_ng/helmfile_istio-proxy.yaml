@@ -20,7 +20,7 @@
 #
 templates:
   istio-sidecar-proxy-config: &istio-sidecar-proxy-config
-    name: istio-proxy-networkpolicies
+    name: istio-proxy-settings
     chart: wmf-stable/raw
     namespace: istio-system
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_sidecar_proxy\" }}{{ .Environment.Values.istio_sidecar_proxy }}{{ else }}{{ false }}{{end}}`}}"
@@ -47,7 +47,9 @@ templates:
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRole
             metadata:
-              name: istio-cni
+              # Istioctl creates the same ClusterRole named "istio-cni",
+              # so to avoid race conditions we use the -wmf suffix.
+              name: istio-cni-wmf
               labels:
                 app: istio-cni
                 operator.istio.io/component: "Cni"
@@ -61,7 +63,9 @@ templates:
           - apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
-              name: istio-cni
+              # Istioctl creates the same ClusterRole named "istio-cni",
+              # so to avoid race conditions we use the -wmf suffix.
+              name: istio-cni-wmf
               labels:
                 app: istio-cni
                 operator.istio.io/component: "Cni"
