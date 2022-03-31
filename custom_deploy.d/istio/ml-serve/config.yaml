@@ -12,6 +12,8 @@ spec:
     # https://istio.io/latest/docs/tasks/observability/logs/
     accessLogFile: /dev/stdout
     accessLogEncoding: JSON
+    outboundTrafficPolicy:
+      mode: 'REGISTRY_ONLY'
   values:
     # CNI-CONFIG:
     # This config is deployed via puppet, the following settings are not really
@@ -30,7 +32,6 @@ spec:
         - cert-manager
     global:
       imagePullPolicy: IfNotPresent
-      useMCP: false
       logAsJson: true
       jwtPolicy: first-party-jwt
       proxy:
