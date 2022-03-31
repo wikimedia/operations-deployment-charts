@@ -95,7 +95,7 @@ http://{{ template "wmf.releasename" . }}:{{ .Values.main_app.port }}
 {{- $clusters := .Values.kafka_brokers -}}
 {{- if .Values.kafka }}{{ if .Values.kafka.allowed_clusters }}
 {{- range $c := .Values.kafka.allowed_clusters }}
-{{- $cidrs := index $clusters $c -}}
+{{- $cidrs := index $clusters $c }}
 # Brokers in the kafka cluster {{ $c }}
 {{- range $cidrs }}
 - to:

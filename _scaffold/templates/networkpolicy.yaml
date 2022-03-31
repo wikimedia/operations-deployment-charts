@@ -19,8 +19,10 @@ spec:
     - Ingress
   ingress:
     - ports:
+      {{- if or (not .Values.tls.enabled) (ne .Values.main_app.port .Values.tls.public_port)}}
       - port: {{ .Values.main_app.port }}
         protocol: TCP
+      {{- end }}
       {{- if .Values.debug.enabled }}
       {{- range .Values.debug.ports }}
       - port: {{ . }}
