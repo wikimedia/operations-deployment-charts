@@ -70,11 +70,13 @@ namespaces:
     systemNamespace: true
     allowCriticalPods: true
     pspClusterRole: allow-privileged-psp
-    istio-injection: disabled
+    labels:
+      istio-injection: disabled
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
-    istio-injection: disabled
+    labels:
+      istio-injection: disabled
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
@@ -86,7 +88,8 @@ namespaces:
     # via knative-serving.
     tlsHostnames:
       - inference
-    istio-injection: disabled
+    labels:
+      istio-injection: disabled
   kserve:
     systemNamespace: true
     allowCriticalPods: true
@@ -97,27 +100,33 @@ namespaces:
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
-    istio-injection: disabled
+    labels:
+      istio-injection: disabled
   revscoring-editquality-goodfaith:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
-    istio-injection: enabled
+    labels:
+      istio-injection: disabled
   revscoring-editquality-damaging:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
-    istio-injection: enabled
+    labels:
+      istio-injection: disabled
   revscoring-editquality-reverted:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
-    istio-injection: enabled
+    labels:
+      istio-injection: disabled
   revscoring-draftquality:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
-    istio-injection: enabled
+    labels:
+      istio-injection: disabled
   revscoring-articlequality:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
-    istio-injection: enabled
+    labels:
+      istio-injection: disabled
 
 net_istio:
   ingressgateway:
