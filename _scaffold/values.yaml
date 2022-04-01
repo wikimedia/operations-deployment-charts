@@ -147,7 +147,7 @@ ingress:
   # of existing ones from dedicated LVS to Ingress.
   # By setting keepNodePort to true, the services will stay of type NodePort.
   keepNodePort: false
-  # Setting staging to true will use the staging domain names to generate the default gateway
+  # Setting staging to true will use the staging domain to generate the default gateway
   # hosts. It will also ensure that default staging cergen certificates are be trusted.
   staging: false
   # gatewayHosts settings configure the hostnames this service will be reachable on.
@@ -155,7 +155,9 @@ ingress:
   # - {{ gatewayHosts.default }}.discovery.wmnet
   # - {{ gatewayHosts.default }}.svc.codfw.wmnet
   # - {{ gatewayHosts.default }}.svc.eqiad.wmnet
-  # ".staging" is prepended to the domains in case .Values.ingress.staging is true.
+  #
+  # And in case .Values.ingress.staging is true:
+  # - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
   gatewayHosts:
     # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
     default: ""

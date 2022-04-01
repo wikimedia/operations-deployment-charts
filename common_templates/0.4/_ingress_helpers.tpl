@@ -30,7 +30,10 @@ By default, this will be a list like:
 - {{ gatewayHosts.default }}.discovery.wmnet
 - {{ gatewayHosts.default }}.svc.codfw.wmnet
 - {{ gatewayHosts.default }}.svc.eqiad.wmnet
-".staging" is prepended to the domains in case .Values.ingress.staging is true.
+
+And in case .Values.ingress.staging is true:
+- {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
+
 If disableDefaultHosts is true, the above is skipped and only the list of
 extraFQDNs is returned (if not empty).
 */}}
@@ -38,13 +41,13 @@ extraFQDNs is returned (if not empty).
 {{- if not .Values.ingress.gatewayHosts.disableDefaultHosts -}}
 {{- $host := .Values.ingress.gatewayHosts.default | default .Release.Namespace -}}
 {{- $domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" -}}
-{{- range $domains -}}
 {{ if $.Values.ingress.staging -}}
-- {{ $host }}.staging.{{ . }}
+- {{ $host }}.k8s-staging.discovery.wmnet
 {{ else -}}
+{{- range $domains -}}
 - {{ $host }}.{{ . }}
-{{ end -}}
-{{- end -}} {{/* end range */}}
+{{ end -}} {{/* end range */}}
+{{- end -}} {{/* end if $.Values.ingress.staging*/}}
 {{- end -}}
 {{ if .Values.ingress.gatewayHosts.extraFQDNs -}}
 {{ .Values.ingress.gatewayHosts.extraFQDNs | toYaml }}
