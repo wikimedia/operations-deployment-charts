@@ -20,12 +20,10 @@ logging:
       named_levels: true
 
 {{- if .Values.monitoring.enabled }}
-# Statsd metrics reporter
+# Prometheus metrics reporter
 metrics:
-  name: citoid
-  host: localhost
-  port: 9125
-  type: statsd
+  port: 9102
+  type: prometheus
 {{- end }}
 
 services:
