@@ -36,7 +36,7 @@ releases:
               namespace: istio-system
             spec:
               {{ if hasPrefix "staging-" $.Environment.Name }}
-              commonName: {{ first $tlsHostnames }}.staging.discovery.wmnet
+              commonName: {{ first $tlsHostnames }}.k8s-staging.discovery.wmnet
               {{- else }}
               commonName: {{ first $tlsHostnames }}.discovery.wmnet
               {{ end }}
@@ -44,12 +44,12 @@ releases:
               dnsNames:
               {{ range $tlsHostnames }}
                 {{- $tlsHostname := . -}}
+                {{- if hasPrefix "staging-" $.Environment.Name }}
+                - {{ $tlsHostname }}.k8s-staging.discovery.wmnet
+                {{- else }}
                 {{ range $domains }}
-                  {{- if hasPrefix "staging-" $.Environment.Name }}
-                - {{ $tlsHostname }}.staging.{{ . }}
-                  {{- else }}
                 - {{ $tlsHostname }}.{{ . }}
-                  {{- end }}
+                {{- end }}
                 {{- end }}
               {{- end }}
               {{- if $tlsExtraSANs -}}
