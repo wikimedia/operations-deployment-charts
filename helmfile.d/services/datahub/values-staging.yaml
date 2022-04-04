@@ -16,6 +16,7 @@ kafka: &kafka
     - test-eqiad
 
 datahub-frontend:
+  kafka: *kafka
   ingress:
     staging: true
   networkpolicy:
@@ -26,6 +27,7 @@ datahub-frontend:
         - cidr: 2620:0:861:3:208:80:154:79/64   # ldap-eqiad (seaborgium)
 
 datahub-gms:
+  kafka: *kafka
   ingress:
     staging: true
   networkpolicy:
@@ -37,7 +39,11 @@ datahub-gms:
         - cidr: 10.64.0.24/32                   # karapace1001
         - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
 
+datahub-mce-consumer:
+  kafka: *kafka
+
 datahub-mae-consumer:
+  kafka: *kafka
   networkpolicy:
     egress:
       dst_nets:
