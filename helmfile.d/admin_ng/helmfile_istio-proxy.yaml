@@ -38,6 +38,7 @@ templates:
               ingress:
                 # Allow Istio sidecar proxies to talk to istiod
                 - from:
+                    - namespaceSelector: {}
                     - podSelector:
                         matchLabels:
                           security.istio.io/tlsMode: "istio"
