@@ -3,10 +3,10 @@ installCRDs: true
 startupapicheck:
   # We don't build the cmctl docker image currently, so don't deploy this check hook
   enabled: false
-image:
+image: &image
   registry: docker-registry.discovery.wmnet
   repository: cert-manager/controller
-  tag: "1.5.4-2"
+  tag: "1.5.4-3"
 
 # Config for cert-manager itself
 replicaCount: 2
@@ -20,9 +20,8 @@ resources:
 
 webhook:
   image:
-    registry: docker-registry.discovery.wmnet
+    <<: *image
     repository: cert-manager/webhook
-    tag: "1.5.4-2"
   replicaCount: 2
   resources:
     requests:
@@ -33,9 +32,8 @@ webhook:
       memory: 150Mi
 cainjector:
   image:
-    registry: docker-registry.discovery.wmnet
+    <<: *image
     repository: cert-manager/cainjector
-    tag: "1.5.4-2"
   replicaCount: 2
   resources:
     requests:
