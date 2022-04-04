@@ -65,11 +65,6 @@ resources:
       value: {{ template "wmf.gms-service.frontend" $ }}
     - name: DATAHUB_GMS_PORT
       value: "{{ required "GMS port must be specified" .Values.global.datahub.gms.port }}"
-    - name: DATAHUB_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
-          key: mysql_password
     - name: DATAHUB_APP_VERSION
       value: "{{ .Chart.AppVersion }}"
     - name: DATAHUB_PLAY_MEM_BUFFER_SIZE

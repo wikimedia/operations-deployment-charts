@@ -59,10 +59,6 @@ datahub-frontend:
   networkpolicy:
     egress:
       dst_nets:
-        - cidr: 10.64.21.104/32                 # an-coord1001
-        - cidr: 2620:0:861:105:10:64:21:104/128 # an-coord1001
-        - cidr: 10.64.36.107/32                 # an-coord1002
-        - cidr: 2620:0:861:106:10:64:36:107/128 # an-coord1002
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
         - cidr: 208.80.154.79/32                # ldap-eqiad (seaborgium)
         - cidr: 2620:0:861:3:208:80:154:79/64   # ldap-eqiad (seaborgium)
