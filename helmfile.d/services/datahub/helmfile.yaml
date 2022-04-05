@@ -30,6 +30,17 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/datahub/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      {{/*
+      The following is a hack to copy all environment values (so basically /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml,
+      see environments at the end of this file) into all of the subcharts .Values scopes.
+      It is needed so that the common_templates helpers in those subcharts have access to the defaults and can function like they would normally.
+      */}}
+      {{- range $subchart := (list "datahub-frontend" "datahub-gms" "datahub-mae-consumer" "datahub-mce-consumer") }}
+      - {{ $subchart }}:
+      {{- range $k, $v := $.Environment.Values }}
+        {{- $k | nindent 10 }}: {{ $v | toYaml | nindent 12 }}
+      {{- end }}
+      {{- end }}
     hooks:
       - events: ["prepare"]
         command: "helmfile_log_sal"
