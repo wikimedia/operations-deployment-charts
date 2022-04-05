@@ -61,7 +61,7 @@ resources:
     - name: EBEAN_DATASOURCE_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: mysql_password
     - name: EBEAN_DATASOURCE_HOST
       value: "{{ required "Database host must be specified" .Values.global.sql.datasource.host }}"
@@ -91,7 +91,7 @@ resources:
     - name: ELASTICSEARCH_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: elasticsearch_password
     {{- end }}
     {{- with .Values.global.elasticsearch.indexPrefix }}
@@ -106,14 +106,14 @@ resources:
     - name: DATAHUB_TOKEN_SERVICE_SIGNING_KEY
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: token_service_signing_key
     - name: DATAHUB_SYSTEM_CLIENT_ID
       value: {{ .Values.global.datahub.metadata_service_authentication.systemClientId }}
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.enabled }}
@@ -122,7 +122,7 @@ resources:
     - name: SECRET_SERVICE_ENCRYPTION_KEY
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.defaultCliVersion }}

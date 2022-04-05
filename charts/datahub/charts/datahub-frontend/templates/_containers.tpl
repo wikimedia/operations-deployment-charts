@@ -68,7 +68,7 @@ resources:
     - name: DATAHUB_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: datahub_encryption_key
     - name: DATAHUB_APP_VERSION
       value: "{{ .Chart.AppVersion }}"
@@ -93,7 +93,7 @@ resources:
     - name: ELASTIC_CLIENT_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: elasticsearch_password
     {{- end }}
     {{- with .Values.global.elasticsearch.indexPrefix }}
@@ -116,7 +116,7 @@ resources:
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
 {{ include "limits.frontend" . | indent 2}}

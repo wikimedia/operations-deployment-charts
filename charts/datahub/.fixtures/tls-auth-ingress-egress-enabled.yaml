@@ -1,87 +1,126 @@
-elasticsearchSetupJob:
-  enabled: true
+# The git commit SHA is used for this service
+# The reason being that we build several containers from the same commit
+# and they were generated with different timestamps using the default method
+version: &version "dummyversion-test"
 
-kafkaSetupJob:
-  enabled: true
+docker: &docker
+  registry: "docker-registry.discovery.wmnet"
 
-mysqlSetupJob:
+setupjobs: &setupjobs
   enabled: true
+  docker: *docker
+  image:
+    tag: *version
+
+elasticsearchSetupJob: *setupjobs
+
+kafkaSetupJob: *setupjobs
+
+mysqlSetupJob: *setupjobs
 
 networkpolicy:
   egress:
     enabled: true
+    dst_nets:
+      - cidr: 8.8.8.8/32               # dns.google
+      - cidr: 2001:4860:4860::8888/128 # dns.google
 
+# Kafka brokers also enable additional networkpolicy templates
 kafka: &kafka
-  allowed_clusters: []
-
-kafka_brokers: &kafka_brokers
-  {}
+  allowed_clusters:
+    - test-eqiad
 
 config: &config
   public: {}
-  private:
-    datahub_encryption_key: encryption_key_secret
-    elasticsearch_password: elasticsearch_secret
-    mysql_password: datahub
-    token_service_signing_key: token_service_signing_key_secret
+
 
 datahub-frontend:
+  main_app:
+    version: *version
+  docker: *docker
   kafka: *kafka
-  kafka_brokers: *kafka_brokers
   config:
     <<: *config
   tls:
-    enabled
+    enabled: true
   ingress:
-    enabled:
-    gatewayHost:
+    enabled: true
+    gatewayHosts:
       default: "datahub-frontend"
-      disableDefaultHosts: false
       extraFQDNs:
         - datahub.wikimedia.org
-    extraGatewayHosts:
-       - datahub.wikimedia.org
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 8.8.8.8/32               # dns.google
+        - cidr: 2001:4860:4860::8888/128 # dns.google
 
 datahub-gms:
+  main_app:
+    version: *version
+  docker: *docker
   kafka: *kafka
-  kafka_brokers: *kafka_brokers
   config:
     <<: *config
   tls:
-    enabled
+    enabled: true
   ingress:
-    enabled:
-    gatewayHost:
+    enabled: true
+    gatewayHosts:
       default: "datahub-gms"
-      disableDefaultHosts: false
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 8.8.8.8/32               # dns.google
+        - cidr: 2001:4860:4860::8888/128 # dns.google
 
 datahub-mce-consumer:
+  main_app:
+    version: *version
+  docker: *docker
   kafka: *kafka
-  kafka_brokers: *kafka_brokers
   config:
     <<: *config
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 8.8.8.8/32               # dns.google
+        - cidr: 2001:4860:4860::8888/128 # dns.google
 
 datahub-mae-consumer:
+  main_app:
+    version: *version
+  docker: *docker
   kafka: *kafka
-  kafka_brokers: *kafka_brokers
   config:
     <<: *config
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 8.8.8.8/32               # dns.google
+        - cidr: 2001:4860:4860::8888/128 # dns.google
 
 global:
-  datahub_analytics_enabled: true
-
   elasticsearch:
-    auth: enabled
-    useSSL: true
-
-  datahub:
-    metadata_service_authentication:
-      enabled: true
-
+    host: "dummy-elasticsearch"
+    port: "9200"
   kafka:
-  bootstrap:
-    server: "dummy"
-
+    bootstrap:
+      server: "dummy-kafka:9092"
+    zookeeper:
+      server: "dummy-zookeeper:2181"
+    schemaregistry:
+      url: "http://dummy-karapace:8081"
   sql:
     datasource:
-      hostForMysqlClient: dummy
+      host: "dummy-mysql:3306"
+      hostForMysqlClient: "dummy-mysql"
+      port: "3306"
+      url: "jdbc:mysql://dummy-mysql:3306/datahub?verifyServerCertificate=true&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2"
+      driver: "com.mysql.cj.jdbc.Driver"
+      username: "datahub"
+
+  datahub:
+    gms:
+      metadata_service_authentication:
+      enabled: true

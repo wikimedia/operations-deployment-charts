@@ -51,7 +51,7 @@ spec:
             - name: ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
+                  name: {{ template "wmf.releasename" $ }}-secret-config
                   key: elasticsearch_password
             {{- end }}
             {{- with .Values.global.elasticsearch.indexPrefix }}

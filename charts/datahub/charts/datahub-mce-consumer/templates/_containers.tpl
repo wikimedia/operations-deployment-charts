@@ -69,7 +69,7 @@ resources:
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" . }}-secret-config
+          name: {{ template "wmf.releasename" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
 {{ include "limits.mce-consumer" . | indent 2}}
