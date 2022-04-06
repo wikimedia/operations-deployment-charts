@@ -115,6 +115,9 @@ datahub-mae-consumer:
         - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
 
 global:
+  datahub:
+    gms:
+      port: 8051
   elasticsearch:
     host: "datahubsearch.svc.eqiad.wmnet"
     port: "9200"
