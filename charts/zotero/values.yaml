@@ -20,7 +20,10 @@ main_app:
   liveness_probe:
     tcpSocket:
       port: 1969
-# No readiness probe, zotero translation-server has not GET endpoints yet
+  readiness_probe:
+    httpGet:
+      path: /?spec
+      port: 1969
 
 monitoring:
   enabled: false
