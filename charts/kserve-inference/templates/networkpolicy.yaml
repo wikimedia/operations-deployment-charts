@@ -33,6 +33,9 @@ spec:
       # handled (HTTP return codes etc..)
       - port: {{ $.Values.main_app.queue_proxy.revision_metrics_port }}
         protocol: TCP
+      # The Istio sidecar exposes metrics about traffic on a certain port.
+      - port: {{ $.Values.main_app.istio_sidecar.metrics_port }}
+        protocol: TCP
 {{- if $.Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "wmf.networkpolicy.egress" $.Values }}
