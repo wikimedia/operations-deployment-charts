@@ -108,6 +108,10 @@ resources:
     - name: DATAHUB_TRACKING_TOPIC
       value: "DataHubUsageEvent_v1"
     {{- end }}
+    {{- if .Values.global.datahub.gms.useSSL }}
+    - name: DATAHUB_GMS_USE_SSL
+      value: "true"
+    {{- end }}
     {{- if .Values.global.datahub.metadata_service_authentication.enabled }}
     - name: METADATA_SERVICE_AUTH_ENABLED
       value: "true"
