@@ -229,6 +229,18 @@ limitranges:
 typha:
   replicaCount: 2
 
+# Override from default config (see ./common.yaml) to allow deployments of
+# big namespaces with a lot of pods.
+resourcequota:
+  pods: {}
+  compute:
+    requests:
+      cpu: "150"
+      memory: "150Gi"
+    limits:
+      cpu: "150"
+      memory: "150Gi"
+
 # Istio Gateway config for the ML cluster.
 # The list of ports need to be kept in sync with what stated
 # in the related custom_deploy.d's istioctl config.
