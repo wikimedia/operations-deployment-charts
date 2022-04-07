@@ -1,1 +1,16 @@
 {{ include "tls.config" . }}
+{{- if .Values.auth.ldap.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "wmf.releasename" . }}-jaas-ldap
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  jaas-ldap.conf: |-
+{{ .Files.Get "jaas-ldap.conf" | indent 4 }}
+{{- end }}

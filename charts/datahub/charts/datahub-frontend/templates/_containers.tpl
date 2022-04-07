@@ -50,6 +50,16 @@ resources:
   env:
     - name: SERVICE_IDENTIFIER
       value: {{ template "wmf.releasename" . }}
+    - name: JAVA_OPTS
+      value: >
+        -Xms512m
+        -Xmx512m
+        -Dhttp.port=9002
+        -Dconfig.file=/datahub/datahub-frontend/conf/application.conf
+        -Djava.security.auth.login.config=/datahub/datahub-frontend/conf/{{ if .Values.auth.ldap.enabled }}auth/jaas-ldap.conf{{ else }}jaas.conf{{ end }}
+        -Dlogback.configurationFile=/datahub/datahub-frontend/conf/logback.xml
+        -Dlogback.debug=false
+        -Dpidfile.path=/dev/null
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
@@ -124,9 +134,16 @@ resources:
           key: token_service_signing_key
     {{- end }}
 {{ include "limits.frontend" . | indent 2}}
-{{- with .Values.main_app.volumeMounts }}
+{{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:
-{{ toYaml . | indent 4 }}
+  {{- with .Values.main_app.volumeMounts }}
+    {{ toYaml . | indent 4 }}
+  {{- end }}
+  {{- with .Values.auth.ldap.enabled }}
+    - name: {{ template "wmf.releasename" $ }}-jaas-ldap
+      mountPath: /datahub/datahub-frontend/conf/auth/
+      readOnly: true
+  {{- end }}
 {{- end }}
 
 {{- end }}

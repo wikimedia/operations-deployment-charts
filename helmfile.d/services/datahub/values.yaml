@@ -46,6 +46,9 @@ datahub-frontend:
     version: *version
   docker: *docker
   kafka: *kafka
+  auth:
+    ldap:
+      enabled: true
   config:
     <<: *config
   tls:

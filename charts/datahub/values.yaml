@@ -54,6 +54,9 @@ config: &config
     token_service_signing_key: "" # This is used for GMS server authentication
 
 datahub-frontend:
+  auth:
+    ldap:
+      enabled: false
   kafka: *kafka
   kafka_brokers: *kafka_brokers
   config:

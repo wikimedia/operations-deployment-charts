@@ -40,10 +40,14 @@ service:
     port: 9002
     nodePort: null
 config:
-  public:
-    JAVA_OPTS: "-Xms512m -Xmx512m -Dhttp.port=9002 -Dconfig.file=/datahub/datahub-frontend/conf/application.conf -Djava.security.auth.login.config=/datahub/datahub-frontend/conf/jaas.conf -Dlogback.configurationFile=/datahub/datahub-frontend/conf/logback.xml -Dlogback.debug=false -Dpidfile.path=/dev/null"
-
+  public: {}
   private: {} # Add here all the keys that should be private but still available as env variables
+
+# The following key is used to enabled a ConfigMap containing an alternative JaaS configuration file
+# that enables LDAP authentication.
+auth:
+  ldap:
+    enabled: false
 
 tls:
   enabled: false # Switch to true in production
