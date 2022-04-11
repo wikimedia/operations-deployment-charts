@@ -34,4 +34,12 @@ spec:
       {{- include "default.containers.frontend" . | indent 8}}
       {{- include "tls.container" . | indent 8}}
       volumes:
+      {{- with .Values.auth.ldap.enabled }}
+        - name: {{ template "wmf.releasename" $ }}-jaas-ldap
+          configMap:
+            name: {{ template "wmf.releasename" $ }}-jaas-ldap
+            items:
+              - key: jaas-ldap.conf
+                path: jaas-ldap.conf
+      {{- end }}
       {{- include "wmf.volumes" . | indent 8}}
