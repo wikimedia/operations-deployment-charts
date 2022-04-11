@@ -19,12 +19,6 @@ datahub-frontend:
   kafka: *kafka
   ingress:
     staging: true
-  networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 208.80.154.79/32                # ldap-eqiad (seaborgium)
-        - cidr: 2620:0:861:3:208:80:154:79/64   # ldap-eqiad (seaborgium)
 
 datahub-gms:
   kafka: *kafka
