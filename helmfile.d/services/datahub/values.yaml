@@ -64,7 +64,9 @@ datahub-frontend:
       dst_nets:
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
         - cidr: 208.80.154.79/32                # ldap-eqiad (seaborgium)
-        - cidr: 2620:0:861:3:208:80:154:79/64   # ldap-eqiad (seaborgium)
+        - cidr: 2620:0:861:3:208:80:154:79/128  # ldap-eqiad (seaborgium)
+        - cidr: 208.80.153.49/32                # ldap-codfw (serpens)
+        - cidr: 2620:0:860:2:208:80:153:49/128  # ldap-codfw (serpens)
 
 datahub-gms:
   main_app:
