@@ -27,7 +27,8 @@ tcp_services_proxy:
 tileCaching:
   enabled: false
   config:
-    basepath: "eqiad-v0.0.1"
+    bucket: tegola-swift-fallback
+    basepath: "shared-cache"
 
 # avoid concurrency with codfw when pushing data to Swift
 tilePregeneration:
