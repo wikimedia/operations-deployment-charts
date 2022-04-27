@@ -1,0 +1,28 @@
+# This is before coredns works, we can't rely on internal DNS, so use the external one
+kubernetesApi:
+  host: ml-staging-ctrl.svc.codfw.wmnet
+  port: 6443
+
+BGPConfiguration:
+  asNumber: 64608
+  nodeToNodeMeshEnabled: false
+
+BGPPeers:
+  cr1-codfw-ipv4:
+    asNumber: 14907
+    peerIP: "208.80.153.192"
+  cr2-codfw-ipv4:
+    asNumber: 14907
+    peerIP: "208.80.153.193"
+  cr1-codfw-ipv6:
+    asNumber: 14907
+    peerIP: "2620:0:860:ffff::1"
+  cr2-codfw-ipv6:
+    asNumber: 14907
+    peerIP: "2620:0:860:ffff::2"
+
+IPPools:
+  ipv4:
+    cidr: "10.194.61.0/24"
+  ipv6:
+    cidr: "2620:0:860:302::/64"

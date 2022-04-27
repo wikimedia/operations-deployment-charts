@@ -70,6 +70,19 @@ environments:
       - istio_gateways: true
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
+  ml-staging-codfw:
+    values:
+      - "values/common.yaml"
+      - "values/ml-serve.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+      - install_knative: true
+      - install_kserve: true
+      - install_cert_manager: true
+      - namespace_certificates: true
+      # Deploy network policies for a Istio setup
+      - istio_gateways: true
+      # Experiments currently ongoing in T297612
+      - istio_sidecar_proxy: true
 
 ---
 bases:

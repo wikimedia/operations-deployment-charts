@@ -1,0 +1,21 @@
+kubernetesMasters:
+  cidrs:
+    - '10.192.16.93/32'
+    - '2620:0:860:102:10:192:16:93/128'
+    - '10.192.48.64/32'
+    - '2620:0:860:104:10:192:48:64/128'
+# Override policies from ../ml-serve.yaml
+GlobalNetworkPolicies:
+  allow-pod-to-pod:
+    egress:
+      - action: Allow
+        destination:
+          nets:
+            # codfw
+            - "10.194.61.0/24"
+      - action: Allow
+        destination:
+          nets:
+            # codfw
+            - "2620:0:860:302::/64"
+
