@@ -16,6 +16,7 @@ module Tester
     ERROR_CONTEXT_LINES = 4
     INIT_RESULT = { lint: nil, validate: {}, diff: {} }.freeze
     attr_reader :name, :path, :result, :fixtures
+
     def initialize(path, to_run = nil)
       @path = File.dirname(path)
       @name = File.basename(@path)
@@ -45,6 +46,12 @@ module Tester
 
     # Check if an asset should run or not.
     def should_run?
+      @should_run
+    end
+
+    # check if an asset should execute the tests or if it
+    # was not selected or is marked as bad
+    def should_test?
       (@should_run && !@bad)
     end
 
@@ -86,7 +93,7 @@ module Tester
     # then running it through kubeyaml.
     def validate(options)
       # Avoid running if the asset is marked as bad
-      return unless should_run?
+      return unless should_test?
 
       r = @result[:validate]
       cached_templates.each do |label, outcome|
@@ -120,7 +127,7 @@ module Tester
     #    present in the change but was present before
     def diff(orig_dir)
       # Avoid running if the asset is marked bad
-      return unless should_run?
+      return unless should_test?
 
       diffs = @result[:diff]
       # Get the templates for the head of origin/master
@@ -210,12 +217,12 @@ module Tester
       # In that case, no new Source line is emitted for following objects
       # and we need to reuse the last one.
       docsrc = docs.map do |doc|
-        if (source_match = doc.match(%r{^# Source: ([a-zA-Z0-9\/\.-]*)$}))
+        if (source_match = doc.match(%r{^# Source: ([a-zA-Z0-9/.-]*)$}))
           source = source_match.captures[0]
         end
         # Remove the # Source: line. It can be helpful if the template ends up
         # fully empty as kubeyaml won't then emit a useless warning
-        doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9\/\.-]*$}, '').strip
+        doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9/.-]*$}, '').strip
         [source, doc]
       end
 
@@ -280,7 +287,8 @@ module Tester
     # Returns a hash of fixture_name => fixture_path
     def collect_fixtures(chdir = nil)
       real_path = chdir.nil? ? @path : File.join(chdir, @path)
-      return [] unless File.exists? real_path
+      return [] unless File.exist? real_path
+
       fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f| f.include?(ChartAsset::PRIVATE_STUB) }
       all = fixtures.map do |f|
         fl = File.basename(f, '.yaml')
@@ -325,7 +333,10 @@ module Tester
 
     # Set the asset to have failed.
     def bad(msg, cmd)
-      @result[:lint] = {'all': TestOutcome.new('', msg, 1, cmd)}
+      # If we already have a lint result, we don't want to replace it.
+      # This can happen during diffing, if the previous version of the
+      # helmfile asset was broken for some reason.
+      @result[:lint] = { 'all': TestOutcome.new('', msg, 1, cmd) } if @result[:lint] == self.class::INIT_RESULT[:lint]
       @bad = true
     end
 
@@ -334,7 +345,7 @@ module Tester
     end
 
     def lint
-      return unless should_run?
+      return unless should_test?
 
       @fixtures.each do |label, env|
         result[:lint][label] = _helmfile(command: 'lint', environment: env)
@@ -358,7 +369,8 @@ module Tester
     def collect_fixtures(chdir = nil)
       res = nil
       real_path = chdir.nil? ? path : File.join(chdir, path)
-      return [] unless File.exists? real_path
+      return [] unless File.exist? real_path
+
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
         res = _exec("helmfile -e #{env} build", nil, real_path)
@@ -393,7 +405,14 @@ module Tester
       src = alt_source.nil? ? @origin : alt_source
       outcomes = {}
       # we need to collect fixtures again if we're in an alternative source
-      fix = alt_source.nil? ? fixtures : collect_fixtures(alt_source)
+      fix = fixtures
+      unless alt_source.nil?
+        fix = collect_fixtures(alt_source)
+        # If the previous commit was broken, we need to just return empty outcomes.
+        # See T307043.
+        return outcomes unless should_test?
+      end
+
       fix.each do |label, environment|
         outcomes[label] = _helmfile(command: 'template', environment: environment, source: src)
         # If we got a yaml parse error, we will let the validation
@@ -444,7 +463,7 @@ module Tester
         # to also catch changes to charts that are not released yet.
         content.gsub!(%r{^(\s*chart:\s+["']{0,1})wmf-stable/}, "\\1#{charts_dir.chomp('/').concat('/')}")
         # Prepend --debug to the list of args, so we get the yaml output even in case of error.
-        content.gsub!(/^(\s*\- )\-\-kubeconfig$/m, "\\1--debug\n\\0")
+        content.gsub!(/^(\s*- )--kubeconfig$/m, "\\1--debug\n\\0")
         # Add fixtures.
         # For services, we patch helmfile unconditionally
         content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures_file)

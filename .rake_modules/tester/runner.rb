@@ -13,6 +13,7 @@ module Tester
   #   hash of Result objects
   class TestRunner
     attr_reader :assets
+
     ASSET = ChartAsset
     KUBERNETES_VERSIONS = '1.19,1.16'
     DEFAULT_TESTS = %w[lint validate diff].freeze
