@@ -50,7 +50,7 @@ def main():
     yaml.Dumper.ignore_aliases = lambda *args : True
 
     helm_p = subprocess.Popen(["helm", "template", "-f", CONFIGS[args.service_name],
-                               "-x", "templates/configmap.yaml", args.helm_chart_path],
+                               "--show-only", "templates/configmap.yaml", args.helm_chart_path],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = helm_p.communicate()
 
