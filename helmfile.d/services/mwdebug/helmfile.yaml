@@ -35,7 +35,7 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/mwdebug/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - "/etc/helmfile-defaults/mediawiki/releases.yaml" # Special file controlled by other processes on the deployment host
+      - "/etc/helmfile-defaults/mediawiki/release/mwdebug-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
 
 hooks:
   - events: ["prepare"]
@@ -68,4 +68,3 @@ environments:
   codfw:
     values:
       - releases: [pinkunicorn]
-
