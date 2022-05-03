@@ -30,37 +30,17 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
+  s3_storage_base_uri: "s3://wmf-ml-models"
+  model: "articlequality"
   predictor:
     image: "machinelearning-liftwing-inference-services-articlequality"
-    version: "2022-03-08-115616-publish"
-  transformer:
-    image: "machinelearning-liftwing-inference-services-articlequality-transformer"
-    version: "2022-03-08-163304-publish"
-    # The articlequality models are needed on the transformer pods
-    # due to how feature extraction is implemented.
-    # We need to set the config value below to allow the transformers to be able
-    # to fetch the Secret containing the S3/Swift credentials.
-    # See also the STORAGE_URI vars that we set for each inference_services
-    # transformer entry.
-    config:
-      serviceAccountName: "kserve"
+    version: "2022-05-03-135024-publish"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
-inference_services:
-  - name: "enwiki-articlequality"
-    predictor:
-      custom_env:
-        - name: INFERENCE_NAME
-          value: "enwiki-articlequality"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/"
-    transformer:
-      custom_env:
-        - name: WIKI_HOST
-          value: "en.wikipedia.org"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/articlequality/enwiki/20211022183902/"
+revscoring_inference_services:
+  - wiki: "en"
+    version: "20211022183902"
