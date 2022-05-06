@@ -1,0 +1,23 @@
+{{- define "config.app" }}
+service_name: {{ .Values.main_app.service_name }}
+
+listen_address: 0.0.0.0
+listen_port: 8080
+
+# Log level, one of (in increasing severity): debug, info, warning, error and fatal
+log_level: {{ .Values.main_app.log_level }}
+
+cassandra:
+  port: 9042
+  consistency: {{ .Values.main_app.consistency }}
+  hosts:
+{{- range $cassandra_host := .Values.main_app.cassandra_hosts }}
+    - {{ $cassandra_host }}
+{{- end }}
+  local_dc: {{ .Values.main_app.datacentre }}
+  authentication:
+    username: {{ .Values.main_app.cassandra_user }}
+    password: {{ .Values.config.private.cassandra_pass }}
+  tls:
+    ca: /etc/ssl/certs/wmf-ca-certificates.crt
+{{- end }}
