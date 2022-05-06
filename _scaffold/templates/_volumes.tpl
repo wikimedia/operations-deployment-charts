@@ -27,10 +27,10 @@
 # TLS configurations
 {{- include "tls.volume" . }}
 # Additional app-specific volumes.
-  {{- with .Values.main_app.volumes }}
+{{ with .Values.main_app.volumes }}
     {{- toYaml . }}
-  {{- end }}
+{{- end }}
 {{ else }}
 []
 {{- end }}
-{{end}}
+{{ end }}
