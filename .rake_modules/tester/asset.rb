@@ -15,6 +15,12 @@ module Tester
   class BaseTestAsset
     ERROR_CONTEXT_LINES = 4
     INIT_RESULT = { lint: nil, validate: {}, diff: {} }.freeze
+    KUBECONFORM_SCHEMA_LOCATIONS = [
+      '/var/cache/kubeconform/{{ .NormalizedKubernetesVersion }}-standalone{{ .StrictSuffix }}/{{ .ResourceKind }}{{ .KindSuffix }}.json',
+      '/var/cache/kubeconform/{{ .NormalizedKubernetesVersion }}/{{ .ResourceKind }}{{ .KindSuffix }}.json',
+      './jsonschema/istio/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json',
+      './jsonschema/charts/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json',
+    ].map { |path| "-schema-location '#{path}'" }.join(' ').freeze
     attr_reader :name, :path, :result, :fixtures
 
     def initialize(path, to_run = nil)
@@ -90,7 +96,7 @@ module Tester
     def lint; end
 
     # Validate the manifest, by first verifying it's valid yaml,
-    # then running it through kubeyaml.
+    # then running it through kubeconform or kubeyaml.
     def validate(options)
       # Avoid running if the asset is marked as bad
       return unless should_test?
@@ -110,7 +116,11 @@ module Tester
         r[label] = validate_yaml outcome
         next unless r[label].ok?
 
-        r[label] = validate_kubeyaml(outcome, options[:kube_versions]) if options[:kubeyaml]
+        if options[:kubeconform]
+          r[label] = validate_kubeconform(outcome, options[:kube_versions])
+        elsif options[:kubeyaml]
+          r[label] = validate_kubeyaml(outcome, options[:kube_versions])
+        end
       end
     end
 
@@ -206,6 +216,16 @@ module Tester
 
     # Validates the provided manifest collection running every element through kubeyaml
     def validate_kubeyaml(outcome, versions)
+      # kubeyaml does not support versions > 1.19 and requires
+      # the patchlevel to not be present.
+      filtered_versions = versions.map { | version |
+        v = version.split('.').map { |v| v.to_i }
+        next if v[1] > 19
+        "#{v[0]}.#{v[1]}"
+      }.compact
+      # kubeyaml expects the versions as a comma separated string
+      versions = filtered_versions.join(',')
+
       # Kubeyaml does only validate the first object in a yaml stream.
       # See https://github.com/chuckha/kubeyaml/issues/7
       # So we split the manifest in single yaml documents.
@@ -243,6 +263,24 @@ module Tester
       results
     end
 
+    # Validates the provided manifest collection running every element through kubeconform
+    def validate_kubeconform(outcome, versions)
+      results = KubeconformTestOutcome.new()
+
+      tp = ThreadPool.new(nthreads: [versions.length, Etc.nprocessors].min)
+      mutex = Mutex.new
+      versions.each do | version |
+        tp.run do
+          # Run kubeconform
+          testoutcome = _exec("kubeconform -kubernetes-version #{version} #{KUBECONFORM_SCHEMA_LOCATIONS} -strict -summary", outcome.out)
+          mutex.synchronize do
+            results.add(version, testoutcome)
+          end
+        end
+      end
+      tp.join
+      results
+    end
     private
 
     # Produces templates for all manifests. Needs to be implemented in the subclasses.

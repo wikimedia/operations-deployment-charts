@@ -17,8 +17,12 @@ require_relative '.rake_modules/tester/tester'
 
 HELMFILE_GLOB = 'helmfile.d/*services/**/helmfile.yaml'.freeze
 CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
-KUBERNETES_VERSIONS = '1.19,1.16'.freeze
+# Charts that contain CRDs need to provide a well known fixture (crds.yaml)
+# that guaranteed proper rendering of the CRDs and will be used to create
+# JSON schema (used by kubeconform to validate custom resources).
+CDRS_GLOB = 'charts/**/.fixtures/crds.yaml'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
+JSON_SCHEMA = 'jsonschema/'.freeze
 
 # This returns a base64-encoded value.
 LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'.freeze
@@ -66,6 +70,30 @@ task repo_update: :check_dep do
     system("helm repo add --force-update #{repo_hash} #{repo_url}")
   end
   system('helm repo update')
+end
+
+desc 'Create CRDs JSON schema (for kubeconform validation)'
+task :json_schema do
+  output_dir = File.join(JSON_SCHEMA, 'charts')
+  if File.exists?(output_dir)
+    Dir.glob(File.join(output_dir, '*.json')).each { |file| File.delete(file) }
+  else
+    Dir.mkdir(output_dir)
+  end
+  FileList.new(CDRS_GLOB).each do |fixture|
+    chart_path = File.expand_path('..', File.dirname(fixture))
+    chart_name = File.basename(chart_path)
+    res, helm_out = _exec("helm template -f #{fixture} #{chart_path}")
+    if !res
+      puts helm_out.red
+      raise("Error templating chart #{chart_name} for JSON schema")
+    end
+    res, convert_out = _exec("./openapi2jsonschema.py -o #{output_dir} -", helm_out)
+    if !res
+      puts convert_out.red
+      raise("Error running openapi2jsonschema.py for chart #{chart_name}")
+    end
+  end
 end
 
 desc 'Runs helm lint on all charts'
@@ -324,6 +352,10 @@ task :check, [:kind, :tests, :assets] do |_, args|
             when 'admin'
               'admin'
             end
+  # Update JSON schema if validate (e.g. kubeconform) will be called
+  if options[:tests].nil? || options[:tests].include?('validate')
+    Rake::Task[:json_schema].invoke
+  end
   tr = Tester.runner pattern, options
   tr.run
   puts view.render(tr)

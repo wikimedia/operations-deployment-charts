@@ -31,7 +31,7 @@
   Report for test case <%= lbl.red %>
   -------------------------------
 
-  <% if error.is_a?(KubeyamlTestOutcome) -%>
+  <% if error.is_a?(KubeyamlTestOutcome) || error.is_a?(KubeconformTestOutcome)-%>
   <% error.err.each do  |l, e| %>
   <%= l.red %>: <%= e.split("\n").shift %>
   <% end # closes kubeyaml error loop-%>

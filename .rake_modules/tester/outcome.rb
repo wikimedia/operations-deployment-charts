@@ -65,4 +65,31 @@ module Tester
       err
     end
   end
+
+  class KubeconformTestOutcome < TestOutcome
+    attr_reader :outcomes
+    def initialize()
+      @out = ''
+      @err = ''
+      @exit_status = 0
+      @outcomes = {}
+    end
+
+    def add(kubernetes_version, outcome)
+      @outcomes[kubernetes_version] = outcome
+    end
+
+    def ok?
+      @outcomes.values.reject { |outcome| outcome.ok? }.flatten.empty?
+    end
+
+    def err
+      err = {}
+      @outcomes.each do |version, outcome|
+        next if outcome.out.nil?
+        err["k8s v#{version}"] = outcome.out
+      end
+      err
+    end
+  end
 end

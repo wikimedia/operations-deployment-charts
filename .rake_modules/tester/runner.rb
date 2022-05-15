@@ -15,7 +15,7 @@ module Tester
     attr_reader :assets
 
     ASSET = ChartAsset
-    KUBERNETES_VERSIONS = '1.19,1.16'
+    KUBERNETES_VERSIONS = ['1.16.15' , '1.23.6'].freeze
     DEFAULT_TESTS = %w[lint validate diff].freeze
     EXCLUDE = [].freeze
 
@@ -23,7 +23,8 @@ module Tester
     # @param pattern [String] A glob pattern used to find assets.
     # @param options [Hash<Symbol, Array<String>>] can enumerate tests to run and assets names as an array
     def initialize(pattern, options)
-      @validate_options = { kubeyaml: which('kubeyaml'), kube_versions: KUBERNETES_VERSIONS }
+      # If available, kubeconform will take precedence over kubeyaml
+      @validate_options = { kubeyaml: which('kubeyaml'), kubeconform: which('kubeconform'), kube_versions: KUBERNETES_VERSIONS }
       @assets = find_assets(pattern, options.fetch(:assets, nil))
       # If you're unfamiliar with ruby: using self.class here
       # ensures we can properly override default tests in the children classes.
