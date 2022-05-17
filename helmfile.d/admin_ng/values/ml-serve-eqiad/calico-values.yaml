@@ -11,19 +11,19 @@ BGPPeers:
   cr1-eqiad-ipv4:
     asNumber: 14907
     peerIP: "208.80.154.196"
-    nodeSelector: failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
   cr2-eqiad-ipv4:
     asNumber: 14907
     peerIP: "208.80.154.197"
-    nodeSelector: failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
   cr1-eqiad-ipv6:
     asNumber: 14907
     peerIP: "2620:0:861:ffff::1"
-    nodeSelector: failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
   cr2-eqiad-ipv6:
     asNumber: 14907
     peerIP: "2620:0:861:ffff::2"
-    nodeSelector: failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
   lsw1-e2-eqiad-ipv4:
     node: ml-serve1005.eqiad.wmnet
     asNumber: 14907
