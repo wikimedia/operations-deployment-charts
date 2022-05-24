@@ -59,12 +59,15 @@ releases:
   - name: pinkunicorn
     <<: *default
 
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
 environments:
   eqiad:
     values:
       - releases: [pinkunicorn]
   codfw:
+    values:
+      - releases: [pinkunicorn]
+  # This is a non-production development environment used for testing
+  # scap and related deployment tooling.
+  traindev:
     values:
       - releases: [pinkunicorn]
