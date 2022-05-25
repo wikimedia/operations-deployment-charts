@@ -34,7 +34,7 @@ inference:
   model: "goodfaith"
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
-    version: "2022-02-17-100432-publish"
+    version: "2022-05-25-101633-publish"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
@@ -44,8 +44,6 @@ inference:
 revscoring_inference_services:
   - wiki: "ar"
     version: "20220214192125"
-    predictor:
-      version: "2022-05-03-135021-publish"
   - wiki: "bs"
     version: "20220214192131"
   - wiki: "ca"
@@ -56,8 +54,6 @@ revscoring_inference_services:
     version: "20220214192139"
   - wiki: "en"
     version: "202105140814"
-    predictor:
-      version: '2022-05-25-101633-publish'
   - wiki: "eswikibooks"
     host: es.wikibooks.org
     version: "20220214192150"
