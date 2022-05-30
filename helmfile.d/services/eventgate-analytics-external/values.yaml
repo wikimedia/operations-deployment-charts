@@ -8,11 +8,11 @@ tls:
   public_port: 4692 # the port where TLS will be exposed
 
 resources:
-  replicas: 35
+  replicas: 24
 
 main_app:
   name: eventgate-analytics-external
-  version: 2022-05-10-150602-production
+  version: 2022-05-30-145633-production
   requests:
     memory: 300Mi
   limits:
