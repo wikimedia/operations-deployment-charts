@@ -95,8 +95,12 @@ main_app:
   #   tls: true
   #   port: 12345
   #   path: myservicename
+  #   ratelimit_config:
+  #     anon_limit: 1234
+  #     default_limit: 12345
   # This will map api.wikimedia.org/service/myservicename to
   # myservice.discovery.wmnet:12345 internally.
+  # ratelimit_config is optional and is used to override the global rate limits
   discovery_endpoints: {}
 
   # This dictionary behaves the exact same but only for the staging
