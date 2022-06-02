@@ -19,7 +19,7 @@ module Tester
       '/var/cache/kubeconform/{{ .NormalizedKubernetesVersion }}-standalone{{ .StrictSuffix }}/{{ .ResourceKind }}{{ .KindSuffix }}.json',
       '/var/cache/kubeconform/{{ .NormalizedKubernetesVersion }}/{{ .ResourceKind }}{{ .KindSuffix }}.json',
       './jsonschema/istio/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json',
-      './jsonschema/charts/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json',
+      './jsonschema/charts/{{ .ResourceKind }}_{{ .ResourceAPIVersion }}.json'
     ].map { |path| "-schema-location '#{path}'" }.join(' ').freeze
     attr_reader :name, :path, :result, :fixtures
 
@@ -106,12 +106,15 @@ module Tester
         r[label] = outcome
         # Given we run both helm and helmfile with --debug,
         # we move on to the next stages of validation even
-        # if the rendered template is invalid,
-        # as our validate_yaml has a better diagnostic output
-        # than what helm gives us. So here we proceed even if outcome.ok? is false.
-        # yaml validation.
-        # So if we had any output at all to stdout, proceed to yaml validation
-        next if !outcome.ok? && outcome.out.nil?
+        # if the rendered template is invalid, as our
+        # validate_yaml has a better diagnostic output
+        # than what helm gives us.
+        #
+        # So here we proceed to YAML validation even if
+        # outcome.ok? is false as long as there was any
+        # output to stdout (e.g. there is something to
+        # validate).
+        next if outcome.out.nil?
 
         r[label] = validate_yaml outcome
         next unless r[label].ok?
@@ -143,19 +146,15 @@ module Tester
       # Get the templates for the head of origin/master
       head = templates(orig_dir)
       cached_templates.each do |label, outcome|
-        if outcome.ok?
-          manifest = outcome.out
-          if head.include?(label)
-            head_outcome = head[label]
-            head_manifest = head_outcome.ok? ? head_outcome.out : 'Template did not render correcly.'
-          else
-            # New asset!
-            head_manifest = ''
-          end
-          diffs[label] = _diff(head_manifest, manifest)
+        manifest = outcome.ok? ? outcome.out : 'Template did not render correctly (HEAD of local branch).'
+        if head.include?(label)
+          head_outcome = head[label]
+          head_manifest = head_outcome.ok? ? head_outcome.out : 'Template did not render correctly (HEAD of origin/master).'
         else
-          diffs[label] = outcome
+          # New asset!
+          head_manifest = nil
         end
+        diffs[label] = _diff(head_manifest, manifest)
       end
       new_labels = cached_templates.keys
       head.keys.reject { |k| new_labels.include? k }.each do |k|
@@ -218,11 +217,12 @@ module Tester
     def validate_kubeyaml(outcome, versions)
       # kubeyaml does not support versions > 1.19 and requires
       # the patchlevel to not be present.
-      filtered_versions = versions.map { | version |
+      filtered_versions = versions.map do |version|
         v = version.split('.').map { |v| v.to_i }
         next if v[1] > 19
+
         "#{v[0]}.#{v[1]}"
-      }.compact
+      end.compact
       # kubeyaml expects the versions as a comma separated string
       versions = filtered_versions.join(',')
 
@@ -265,14 +265,16 @@ module Tester
 
     # Validates the provided manifest collection running every element through kubeconform
     def validate_kubeconform(outcome, versions)
-      results = KubeconformTestOutcome.new()
+      results = KubeconformTestOutcome.new
 
       tp = ThreadPool.new(nthreads: [versions.length, Etc.nprocessors].min)
       mutex = Mutex.new
-      versions.each do | version |
+      versions.each do |version|
         tp.run do
           # Run kubeconform
-          testoutcome = _exec("kubeconform -kubernetes-version #{version} #{KUBECONFORM_SCHEMA_LOCATIONS} -strict -summary", outcome.out)
+          testoutcome = _exec(
+            "kubeconform -kubernetes-version #{version} #{KUBECONFORM_SCHEMA_LOCATIONS} -strict -summary", outcome.out
+          )
           mutex.synchronize do
             results.add(version, testoutcome)
           end
@@ -281,6 +283,7 @@ module Tester
       tp.join
       results
     end
+
     private
 
     # Produces templates for all manifests. Needs to be implemented in the subclasses.

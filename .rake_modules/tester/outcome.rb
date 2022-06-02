@@ -5,8 +5,9 @@ module Tester
   class TestOutcome
     attr_reader :out, :err, :exit_status, :command
     def initialize(stdout, stderr, exitstatus, cmd)
-      @out = stdout
-      @err = stderr
+      # Ensure stdout and stderr are nil if they consist of whitespaces only
+      @out = stdout.strip.empty? ? nil : stdout unless stdout.nil?
+      @err = stderr.strip.empty? ? nil : stderr unless stderr.nil?
       @exit_status = exitstatus
       @command = cmd
     end
