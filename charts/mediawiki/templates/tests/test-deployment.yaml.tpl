@@ -9,6 +9,8 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        runAsUser: 1000
       containers:
       - name: test-{{ template "wmf.releasename" . }}
         image: {{ .Values.docker.registry }}/{{ .Values.common_images.wmfdebug }}
