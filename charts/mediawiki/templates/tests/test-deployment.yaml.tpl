@@ -5,7 +5,7 @@ metadata:
   {{- include "mw.labels" . | indent 2 }}
   annotations:
     "helm.sh/hook": test
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   template:
     spec:
