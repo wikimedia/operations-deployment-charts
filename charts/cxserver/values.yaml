@@ -54,6 +54,14 @@ main_app:
     #  appSecret: "dummyappsecret"
     #  languages: config/Youdao.yaml
     defaults: config/mt-defaults.wikimedia.yaml
+  sectionmapping:
+    # Default sectionmapping database, an sqlite file. MySQL is also supported
+    database: config/cx-section-titles-aligned.db
+    # host: localhost
+    # type: mysql
+    # database: cxserverdb
+    # user: cxserver
+    # password: dummypass
   requests:
     cpu: 100m # The average case
     memory: 90Mi # The average cause usage

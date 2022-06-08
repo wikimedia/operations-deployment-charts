@@ -78,9 +78,9 @@ services:
       templatemapping:
         database: config/templatemapping.db
       sectionmapping:
-        database: config/cx-section-titles-aligned.db
+      {{- toYaml .Values.main_app.sectionmapping | nindent 8 }}
       mt:
-{{ toYaml .Values.main_app.mt | indent 8 }}
+      {{- toYaml .Values.main_app.mt | nindent 8 }}
       dictionary:
         JsonDict:
           languages: config/JsonDict.yaml
