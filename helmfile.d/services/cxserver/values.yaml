@@ -49,23 +49,21 @@ main_app:
   templatemapping:
     database: config/templatemapping.db
   sectionmapping:
-    database: cxserverdb
-    user: cxserver
-    #password:
-    type: mysql
+    database: config/cx-section-titles-aligned.db
   mwapi_uri: http://localhost:6500/w/api.php
   no_proxy_list:
     - eqiad.wmnet
     - codfw.wmnet
     - discovery.wmnet
     - localhost
+  proxy: http://url-downloader.codfw.wikimedia.org:8080
   ratelimiter_key: x-client-ip
   ratelimiter_rate: 10
   requests:
     cpu: 100m
     memory: 100Mi
   restbase_host: localhost:6503
-  version: 2022-05-31-123738-production
+  version: 2022-05-26-052433-production
 monitoring:
   enabled: true
 resources:
@@ -94,15 +92,3 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 4737
-      - cidr: 10.64.48.43/32  # {dbproxy1017,m5-master}.eqiad.wmnet
-        ports:
-          - protocol: TCP
-            port: 3306
-      - cidr: 10.64.32.180/32  # {dbproxy1021,m5-master}.eqiad.wmnet
-        ports:
-          - protocol: TCP
-            port: 3306
-      - cidr: 10.192.48.47/32  # {dbproxy2004,m5-master}.codfw.wmnet
-        ports:
-          - protocol: TCP
-            port: 3306

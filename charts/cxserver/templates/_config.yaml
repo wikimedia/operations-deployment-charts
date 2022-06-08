@@ -78,8 +78,7 @@ services:
       templatemapping:
         database: config/templatemapping.db
       sectionmapping:
-        database: cxserverdb
-        type: mysql
+        database: config/cx-section-titles-aligned.db
       mt:
 {{ toYaml .Values.main_app.mt | indent 8 }}
       dictionary:
