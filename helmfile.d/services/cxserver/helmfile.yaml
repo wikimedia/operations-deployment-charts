@@ -17,6 +17,7 @@ templates:
   default: &default
     namespace: cxserver
     chart: wmf-stable/cxserver
+    version: 0.1.1
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     # This template gets applied for every release, all of which are applied in every environment
