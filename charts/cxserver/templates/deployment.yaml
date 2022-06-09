@@ -32,7 +32,7 @@ spec:
         # The main application container
         - name: {{ template "wmf.releasename" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
-          command: ["nodejs"]
+          command: ["node"]
           args: ["/srv/service/server.js", "-c", "/etc/cxserver/config.yaml"]
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
