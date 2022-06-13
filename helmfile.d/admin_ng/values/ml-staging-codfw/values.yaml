@@ -19,3 +19,8 @@ GlobalNetworkPolicies:
             # codfw
             - "2620:0:860:302::/64"
 
+# Override DNS name on certs to refer to staging endpoint
+namespaces:
+  knative-serving:
+    tlsHostnames:
+      - inference-staging
