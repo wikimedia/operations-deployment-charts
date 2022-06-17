@@ -67,6 +67,8 @@ datahub-gms:
   kafka_brokers: *kafka_brokers
   config:
     <<: *config
+    public:
+      DATAHUB_TELEMETRY_ENABLED: false
 
 datahub-mce-consumer:
   kafka: *kafka
