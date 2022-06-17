@@ -61,6 +61,8 @@ datahub-frontend:
   kafka_brokers: *kafka_brokers
   config:
     <<: *config
+    public:
+      AUTH_NATIVE_ENABLED: false
 
 datahub-gms:
   kafka: *kafka
