@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels: {{ include "helm-state-metrics.labels" . | indent 4 }}
+  name: {{ template "helm-state-metrics.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "helm-state-metrics.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "helm-state-metrics.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        prometheus.io/port: {{ .Values.port | quote }}
+        prometheus.io/scrape: "true"
+    {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+    {{- end }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
+        env:
+          {{- include "kubernetesApiEnv" . | nindent 10 }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.port }}
+          protocol: tcp
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+    {{- if .Values.securityContext }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "helm-state-metrics.serviceAccountName" . }}

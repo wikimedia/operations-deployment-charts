@@ -1,0 +1,14 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels: {{ include "helm-state-metrics.labels" . | indent 4 }}
+  name: {{ template "helm-state-metrics.fullname" . }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - list
+{{- end -}}

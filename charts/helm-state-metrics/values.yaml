@@ -1,0 +1,44 @@
+# Default values for eventrouter.
+
+image:
+  repository: docker-registry.wikimedia.org/helm-state-metrics
+  tag: 0.1.0-1
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+port: 9104
+
+resources: {}
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+tolerations: []
+
+nodeSelector: {}
+
+podAnnotations: {}
+
+securityContext: {}
+  # runAsUser: 1000
+
+# Overwrite the default KUBERNETES_ environment variables for the container
+# to work around the IP SAN limitation of puppet CA
+kubernetesApi:
+  host: ""
+  port: ""
