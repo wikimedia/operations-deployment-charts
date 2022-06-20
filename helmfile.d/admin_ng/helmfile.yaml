@@ -43,6 +43,8 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      # Install helm-state-metrics
+      - install_helm_state_metrics: true
   # Machine Learning clusters
   ml-serve-eqiad:
     values:
@@ -98,6 +100,7 @@ bases:
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
   - kserve/helmfile.yaml
+  - helm-state-metrics/helmfile.yaml
 
 hooks:
   - events: ["prepare"]
