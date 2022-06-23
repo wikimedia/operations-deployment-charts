@@ -32,7 +32,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ .Values.port }}
-          protocol: tcp
+          protocol: TCP
         resources:
 {{ toYaml .Values.resources | indent 10 }}
     {{- if .Values.nodeSelector }}
