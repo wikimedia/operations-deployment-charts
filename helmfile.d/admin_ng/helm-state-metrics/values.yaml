@@ -2,9 +2,9 @@ image:
   repository: docker-registry.discovery.wmnet/helm-state-metrics
 
 resources:
-  # limits:
-  #   cpu: 100m
-  #   memory: 100Mi
+  limits:
+    cpu: 150m
+    memory: 300Mi
   requests:
-    cpu: 100m
-    memory: 100Mi
+    cpu: 150m
+    memory: 200Mi

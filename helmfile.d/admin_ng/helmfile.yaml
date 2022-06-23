@@ -10,6 +10,8 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      # Install helm-state-metrics
+      - install_helm_state_metrics: true
   codfw:
     values:
       - "values/common.yaml"
@@ -21,6 +23,8 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      # Install helm-state-metrics
+      - install_helm_state_metrics: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -32,6 +36,8 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      # Install helm-state-metrics
+      - install_helm_state_metrics: true
   staging-codfw:
     values:
       - "values/common.yaml"
