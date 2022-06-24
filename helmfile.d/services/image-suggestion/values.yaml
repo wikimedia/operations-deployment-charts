@@ -1,6 +1,6 @@
 main_app:
   image: wikimedia/generated-data-platform-datasets-image-suggestions
-  version: 2022-05-20-111622-production
+  version: 2022-06-23-162601-production
   command: ["./image-suggestions"]
   args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
   service_name: image-suggestions
