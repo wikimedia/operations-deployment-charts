@@ -181,6 +181,17 @@ services_proxy:
     service: shellbox-timeline
     keepalive: 4s
     upstream: *1
+  linkrecommendation:
+    port: 6029
+    service: linkrecommendation
+    timeout: 10s
+    upstream: *1
+  image-suggestion:
+    port: 6030
+    service: image-suggestion
+    timeout: 10s
+    uses_ingress: true
+    upstream: *1
   swift-eqiad:
     port: 6101
     service: swift-https
