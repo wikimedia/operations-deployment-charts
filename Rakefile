@@ -326,7 +326,12 @@ task :refresh_fixtures do
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
     # We don't really need an upstream to be accurate here.
-    upstream_mock = { 'address' => 'mock.discovery.wmnet', 'port' => 443, 'encryption' => true }
+    upstream_mock = {
+      'ips' => ['127.0.0.1/32', '169.254.0.1/32'],
+      'address' => 'mock.discovery.wmnet',
+      'port' => 443,
+      'encryption' => true
+    }
     data = hiera['profile::services_proxy::envoy::listeners'].map { |x| x['upstream'] = upstream_mock; [x.delete('name'), x] }.to_h
 
     File.open(LISTENERS_FIXTURE, 'w') do |out|

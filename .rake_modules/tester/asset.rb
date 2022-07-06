@@ -315,6 +315,7 @@ module Tester
   # Assets for helm charts
   class ChartAsset < BaseTestAsset
     PRIVATE_STUB = '.fixtures/private_stub.yaml'
+    LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
 
     def lint
       outcome = _exec("helm lint #{@path}")
@@ -350,7 +351,9 @@ module Tester
       fix.each do |label, fixture|
         quoted = fixture.nil? ? '' : "-f '#{fixture}'"
         # --debug will output yaml even if it's invalid
-        command = "helm template --debug #{quoted} '#{@path}'"
+        # Always prepend the LISTENERS_FIXTURE file so charts don't have to define "services_proxy"
+        # but can override that structure at will.
+        command = "helm template --debug -f '#{LISTENERS_FIXTURE}' #{quoted} '#{@path}'"
         outcomes[label] = _exec command, nil, chdir
         outcomes[label].grep_v(/found symbolic link in path/)
         # If we got a yaml parse error, we will let the validation

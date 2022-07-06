@@ -95,15 +95,3 @@ php:
   timeout: 60
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
-
-services_proxy:
-  mwapi:
-    keepalive: 4s
-    port: 6500
-    timeout: 120s
-    xfp: https
-    upstream:
-      address: api-ro.discovery.wmnet
-      port: 443
-      encryption: true
-
