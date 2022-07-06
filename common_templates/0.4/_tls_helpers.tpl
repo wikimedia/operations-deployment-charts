@@ -332,6 +332,9 @@ under 'tcp_services_proxy'.
       name: envoy.transport_sockets.tls
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        {{- if $listener.uses_ingress }}
+        sni: {{ $listener.upstream.address }}
+        {{- end }}
         common_tls_context:
           tls_params:
             tls_minimum_protocol_version: TLSv1_2
@@ -513,7 +516,10 @@ TCP proxies
                   prefix: "/"
                 route:
                   {{- if $listener.http_host }}
-                  host_rewrite: {{ $listener.http_host }}
+                  host_rewrite_literal: {{ $listener.http_host }}
+                  {{- end }}
+                  {{- if and $listener.uses_ingress (not $listener.http_host) }}
+                  auto_host_rewrite: true
                   {{- end }}
                   cluster: {{ $name }}
                   timeout: {{ $listener.timeout }}
