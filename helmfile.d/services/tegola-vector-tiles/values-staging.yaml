@@ -3,6 +3,27 @@ resources:
   postgres:
     max_connections: 5
 
+# Temporarily we will use envoy as a L4 tcp proxy until envoy's
+# Postgres proxy filter is production ready
+# https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/network_filters/postgres_proxy_filter#config-network-filters-postgres-proxy
+tcp_services_proxy:
+  maps_postgres:
+    upstreams:
+      # master node
+      # - address: maps1009.eqiad.wmnet
+      #   port: 5432
+      # read replicas
+      - address: maps1005.eqiad.wmnet
+        port: 5432
+      - address: maps1006.eqiad.wmnet
+        port: 5432
+      - address: maps1007.eqiad.wmnet
+        port: 5432
+      - address: maps1008.eqiad.wmnet
+        port: 5432
+      - address: maps1010.eqiad.wmnet
+        port: 5432
+
 tileCaching:
   enabled: true
   config:
