@@ -164,11 +164,27 @@ net_istio:
         - name: https-apiro
           number: 443
           protocol: HTTPS
+    - name: eventgate-main-se
+      spec:
+        hosts:
+        - eventgate-main.discovery.wmnet
+        location: MESH_EXTERNAL
+        ports:
+        - name: https-eventgate-main
+          number: 443
+          protocol: HTTPS
     resolution: DNS
     destination_rules:
     - name: https-api-ro
       spec:
         host: api-ro.discovery.wmnet
+        trafficPolicy:
+          connectionPool:
+            tcp:
+              maxConnections: 10
+    - name: https-eventgate-dr
+      spec:
+        host: eventgate-main.discovery.wmnet
         trafficPolicy:
           connectionPool:
             tcp:
@@ -190,6 +206,22 @@ net_istio:
           route:
           - destination:
               host: api-ro.discovery.wmnet
+              port:
+                number: 443
+    - name: eventgate-main-vs
+      spec:
+        gateways:
+        - mesh
+        hosts:
+        - eventgate-main.discovery.wmnet
+        tls:
+        - match:
+          - port: 443
+            sniHosts:
+            - eventgate-main.discovery.wmnet
+          route:
+          - destination:
+              host: eventgate-main.discovery.wmnet
               port:
                 number: 443
   controller:
