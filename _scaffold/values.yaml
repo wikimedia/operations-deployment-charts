@@ -10,8 +10,8 @@ resources:
 main_app:
   # Application type.
   # Currently supported values are:
-  # - "default", for an application running from a single container, and emitting
-  #   metrics via statsd or prometheus. Most service-runner based services fall into this category.
+  # - "default", for an application running from a single container.
+  #    Most service-runner based services fall into this category.
   # - "php" for php-based applications. The base images expect the code to live in
   #   /srv/app and to have an index.php file as entrypoint.
   type: "default"
@@ -51,10 +51,6 @@ main_app:
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
-  # If the application emits its metrics using statsd, we need to use the prometheus-statsd exporter
-  # For service-runner based apps using service-runner < 2.8, this should be set to true
-  uses_statsd: true
-  # image_version: latest # image_version is defined globally by SRE. May be overridden here, though.
 
 service:
   deployment: minikube # valid values are "production" and "minikube"

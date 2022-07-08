@@ -57,18 +57,6 @@ resources:
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
-
-{{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
-- name: {{ .Release.Name }}-metrics-exporter
-  image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version | default "latest" }}
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
-  ports:
-  - name: statsd-metrics
-    containerPort: 9102
-  volumeMounts:
-    - name: {{ .Release.Name }}-metrics-exporter
-      mountPath: /etc/monitoring
-{{- end }}
 {{- end }}
 
 
