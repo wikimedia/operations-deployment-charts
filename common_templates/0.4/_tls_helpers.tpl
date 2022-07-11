@@ -425,7 +425,7 @@ TCP proxies
                 comparison:
                   op: "GE"
                   value:
-                    default_value: 500
+                    default_value: {{ .Values.tls.local_access_log_min_code | default 500 }}
                     runtime_key: tls_terminator_min_log_code
             # TODO: use a stream logger once we upgrade from 1.15
             typed_config:
