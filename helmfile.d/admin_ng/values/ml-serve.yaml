@@ -171,7 +171,7 @@ net_istio:
         location: MESH_EXTERNAL
         ports:
         - name: https-eventgate-main
-          number: 443
+          number: 4492
           protocol: HTTPS
     resolution: DNS
     destination_rules:
@@ -216,14 +216,14 @@ net_istio:
         - eventgate-main.discovery.wmnet
         tls:
         - match:
-          - port: 443
+          - port: 4492
             sniHosts:
             - eventgate-main.discovery.wmnet
           route:
           - destination:
               host: eventgate-main.discovery.wmnet
               port:
-                number: 443
+                number: 4492
   controller:
     image: knative-net-istio-controller
     version: 0.18.1-3
