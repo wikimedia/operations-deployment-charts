@@ -4,7 +4,7 @@
   {{- $has_volumes = 1 -}}
 {{ else if .Values.main_app.volumes }}
   {{- $has_volumes = 1 -}}
-{{ else if (and (eq .Values.main_app.type "php") (eq .Values.php.fcgi_mode "FCGI_UNIX") )}}
+{{ else if and (eq .Values.main_app.type "php") (eq (dig "php" "fcgi_mode" "" (.Values | merge (dict))) "FCGI_UNIX")}}
   {{- $has_volumes = 1 -}}
 {{ else }}
   {{/*Yes this is redundant but it's more readable*/}}
@@ -14,7 +14,7 @@
   {{- if eq .Values.main_app.type "php" }}
 # Shared unix socket for php apps
 - name: shared-socket
-  emptydir: {}
+  emptyDir: {}
   {{- end -}}
 # TLS configurations
 {{- include "tls.volume" . }}

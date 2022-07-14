@@ -68,11 +68,11 @@ resources:
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: FCGI_MODE
-      value: {{ .Values.php.fcgi_mode }}
+      value: "{{ .Values.php.fcgi_mode }}"
     - name: SERVERGROUP
-      value: {{ .Values.php.servergroup }}
+      value: "{{ .Values.php.servergroup }}"
     - name: APACHE_RUN_PORT
-      value: {{ .Values.php.httpd.port }}
+      value: "{{ .Values.php.httpd.port }}"
   ports:
     - name: httpd
       containerPort: {{ .Values.php.httpd.port }}
@@ -88,37 +88,37 @@ resources:
       port: {{ .Values.php.httpd.port }}
   resources:
     requests:
-      {{- toYaml .Values.php.httpd.requests | indent 6 }}
+      {{- toYaml .Values.php.httpd.requests | nindent 6 }}
     limits:
-      {{- toYaml .Values.php.httpd.limits | indent 6 }}
-  {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
+      {{- toYaml .Values.php.httpd.limits | nindent 6 }}
+  {{ if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   # Mount the shared socket volume
   volumeMounts:
   - name: shared-socket
     mountPath: /run/shared
-  {{- end -}}
+  {{- end }}
 - name: {{ template "wmf.releasename" . }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
   - name: SERVERGROUP
-    value: {{ .Values.php.servergroup }}
+    value: "{{ .Values.php.servergroup }}"
   - name: FCGI_MODE
-    value: {{ .Values.php.fcgi_mode }}
+    value: "{{ .Values.php.fcgi_mode }}"
   - name: PHP__auto_prepend_file
     value: "{{ .Values.php.auto_prepend_file }}"
   - name: PHP__opcache__memory_consumption
-    value: {{ .Values.php.opcache.size }}
+    value: "{{ .Values.php.opcache.size }}"
   - name: PHP__opcache__max_accelerated_files
-    value: {{ .Values.php.opcache.nofiles }}
+    value: "{{ .Values.php.opcache.nofiles }}"
   - name: PHP__opcache__interned_strings_buffer
     value: "{{ .Values.php.opcache.interned_strings_buffer}}"
   - name: FPM__request_terminate_timeout
-    value: {{ .Values.php.timeout }}
+    value: "{{ .Values.php.timeout }}"
   - name: PHP__apc__shm_size
-    value: {{ .Values.php.apc.size }}
+    value: "{{ .Values.php.apc.size }}"
   - name: FPM__pm__max_children
-    value: {{ .Values.php.workers }}
+    value: "{{ .Values.php.workers }}"
   {{- range $k, $v := .Values.config.public }}
   - name: {{ $k | upper }}
     value: {{ $v | quote }}

@@ -218,7 +218,7 @@ task test_scaffold: :check_dep do
     sc.run
     # Add a fixture for php apps
     File.open('charts/test-scaffold/.fixtures/php.yaml', 'w') do |fh|
-      data = { main_app: { type: 'php' } }
+      data = { 'main_app' => { 'type' => 'php' } }
       fh.write(data.to_yaml)
     end
     Rake::Task[:check_charts].invoke('lint/validate', chart)
