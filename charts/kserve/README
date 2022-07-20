@@ -145,3 +145,10 @@ release: {{ .Release.Name }}
 We use the `app-wmf` label in our charts since the `app` label is already used
 by kserve. The `app-wmf` value is useful to deploy network policies
 safely and consistently.
+
+From release 0.8+ we removed occurrences of `creationTimestamp: null` since our
+CI yaml validators complain about them.
+
+From release 0.8+ there is a new yaml offered by upstream, called `kserve-runtimes.yaml`,
+that should not be needed since we currently build our own images/runtimes, so
+it wasn't imported.
