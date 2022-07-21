@@ -127,6 +127,11 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+  revscoring-articletopic:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
 
 net_istio:
   ingressgateway:

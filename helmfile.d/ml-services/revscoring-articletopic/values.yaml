@@ -1,0 +1,28 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # These endpoints should be reachable by Istio proxy sidecars.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.22/32 # api-ro.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.22/32 # api-ro.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+
+monitoring:
+  enabled: true
