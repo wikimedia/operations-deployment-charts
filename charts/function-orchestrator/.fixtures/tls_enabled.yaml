@@ -1,0 +1,17 @@
+tls:
+  enabled: true
+  image_version: 1.13.1-2
+  public_port: 4666 # the port where TLS will be exposed
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
