@@ -15067,6 +15067,7 @@ spec:
         chart: {{ template "wmf.chartid" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: kserve-controller-manager
       containers:
       - args:
         - --metrics-addr=0.0.0.0:{{ $.Values.kserve.controller.metrics.port }}
