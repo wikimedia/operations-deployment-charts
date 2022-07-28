@@ -29,8 +29,8 @@ networkpolicy:
       - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
       - cidr: 10.64.0.24/32                   # karapace1001
       - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
-      - cidr: 10.64.0.23/32                   # conf1004
-      - cidr: 2620:0:861:101:10:64:0:23/128   # conf1004
+      - cidr: 10.64.0.207/32                  # conf1007
+      - cidr: 2620:0:861:101:10:64:0:207/128  # conf1007
 
 # Kafka brokers also enable additional networkpolicy templates
 kafka: &kafka
@@ -130,7 +130,7 @@ global:
     bootstrap:
       server: "kafka-jumbo1001.eqiad.wmnet:9092"
     zookeeper:
-      server: "conf1004.eqiad.wmnet:2181"
+      server: "conf1007.eqiad.wmnet:2181"
     schemaregistry:
       url: "http://karapace1001.eqiad.wmnet:8081"
   sql:
