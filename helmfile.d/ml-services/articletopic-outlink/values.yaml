@@ -38,7 +38,11 @@ inference:
         value: "s3://wmf-ml-models/articletopic/outlink/20220727080723/"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2022-07-27-061938-publish"
+    version: "2022-07-28-100205-publish"
     base_env:
       - name: CUSTOM_UA
         value: "WMF ML Team outlink topic model isvc"
+      - name: WIKI_URL
+        value: "https://api-ro.discovery.wmnet"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
