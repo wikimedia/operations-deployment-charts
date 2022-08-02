@@ -1,0 +1,239 @@
+helm_scaffold_version: 0.4
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+resources:
+  replicas: 1
+
+haproxy:
+  requests:
+    cpu: 0.2
+    memory: 512Mi
+  limits:
+    cpu: 0.5
+    memory: 1024Mi
+  image: haproxy
+  version: latest
+  port: 4112
+  stats_port: 4113
+  liveness_probe:
+    tcpSocket:
+      port: 4112
+  readiness_probe:
+    httpGet:
+      path: /healthcheck
+      port: 4112
+
+main_app:
+  requests:
+    cpu: 1 # ~1 per instance?
+    memory: 1024Mi # This maxes out around 1GB per instance
+  limits:
+    cpu: 1
+    memory: 2048Mi
+  image: wikimedia/operations-software-thumbor-plugins
+  version: latest
+
+  # to be changed if/when we use prometheus within thumbor
+  # This is currently the statsd exporter
+  prometheus_port: 9102
+
+  # Much of this can be moved to helmfile.d when it exists for
+  # thumbor, but much of this will be unchanged
+  swift:
+    # A URL for the swift host used for storage
+    host: "http://localhost"
+    account: "mw"
+    user: "thumbor"
+    private_account: "mw"
+    private_user: "thumbor-private"
+
+    # TODO move to helmfile.d when we create that
+    private_containers: [
+    'wikimedia-ec-local-public',
+    'wikimedia-id-internal-local-public',
+    'wikimedia-il-local-public',
+    'wikimedia-noboard-chapters-local-public',
+    'wikipedia-arbcom-cs-local-public',
+    'wikipedia-arbcom-de-local-public',
+    'wikipedia-arbcom-en-local-public',
+    'wikipedia-arbcom-fi-local-public',
+    'wikipedia-arbcom-nl-local-public',
+    'wikipedia-auditcom-local-public',
+    'wikipedia-board-local-public',
+    'wikipedia-boardgovcom-local-public',
+    'wikipedia-chair-local-public',
+    'wikipedia-chapcom-local-public',
+    'wikipedia-checkuser-local-public',
+    'wikipedia-collab-local-public',
+    'wikipedia-electcom-local-public',
+    'wikipedia-exec-local-public',
+    'wikipedia-fdc-local-public',
+    'wikipedia-grants-local-public',
+    'wikipedia-iegcom-local-public',
+    'wikipedia-internal-local-public',
+    'wikipedia-legalteam-local-public',
+    'wikipedia-movementroles-local-public',
+    'wikipedia-office-local-public',
+    'wikipedia-ombudsmen-local-public',
+    'wikipedia-otrs-wiki-local-public',
+    'wikipedia-projectcom-local-public',
+    'wikipedia-searchcom-local-public',
+    'wikipedia-spcom-local-public',
+    'wikipedia-steward-local-public',
+    'wikipedia-techconduct-local-public',
+    'wikipedia-transitionteam-local-public',
+    'wikipedia-wg-en-local-public',
+    'wikipedia-wikimaniateam-local-public',
+    'wikipedia-zero-local-public'
+    ]
+
+    sharded_containers: [
+    'global-data-math-render',
+
+    'wikipedia-commons-local-public', 'wikipedia-commons-local-temp',
+    'wikipedia-commons-local-thumb', 'wikipedia-commons-local-transcoded',
+
+    'wikipedia-de-local-public', 'wikipedia-de-local-temp',
+    'wikipedia-de-local-thumb', 'wikipedia-de-local-transcoded',
+
+    'wikipedia-en-local-public', 'wikipedia-en-local-temp',
+    'wikipedia-en-local-thumb', 'wikipedia-en-local-transcoded',
+
+    'wikipedia-fi-local-public', 'wikipedia-fi-local-temp',
+    'wikipedia-fi-local-thumb', 'wikipedia-fi-local-transcoded',
+
+    'wikipedia-fr-local-public', 'wikipedia-fr-local-temp',
+    'wikipedia-fr-local-thumb', 'wikipedia-fr-local-transcoded',
+
+    'wikipedia-he-local-public', 'wikipedia-he-local-temp',
+    'wikipedia-he-local-thumb', 'wikipedia-he-local-transcoded',
+
+    'wikipedia-hu-local-public', 'wikipedia-hu-local-temp',
+    'wikipedia-hu-local-thumb', 'wikipedia-hu-local-transcoded',
+
+    'wikipedia-id-local-public', 'wikipedia-id-local-temp',
+    'wikipedia-id-local-thumb', 'wikipedia-id-local-transcoded',
+
+    'wikipedia-it-local-public', 'wikipedia-it-local-temp',
+    'wikipedia-it-local-thumb', 'wikipedia-it-local-transcoded',
+
+    'wikipedia-ja-local-public', 'wikipedia-ja-local-temp',
+    'wikipedia-ja-local-thumb', 'wikipedia-ja-local-transcoded',
+
+    'wikipedia-ro-local-public', 'wikipedia-ro-local-temp',
+    'wikipedia-ro-local-thumb', 'wikipedia-ro-local-transcoded',
+
+    'wikipedia-ru-local-public', 'wikipedia-ru-local-temp',
+    'wikipedia-ru-local-thumb', 'wikipedia-ru-local-transcoded',
+
+    'wikipedia-th-local-public', 'wikipedia-th-local-temp',
+    'wikipedia-th-local-thumb', 'wikipedia-th-local-transcoded',
+
+    'wikipedia-tr-local-public', 'wikipedia-tr-local-temp',
+    'wikipedia-tr-local-thumb', 'wikipedia-tr-local-transcoded',
+
+    'wikipedia-uk-local-public', 'wikipedia-uk-local-temp',
+    'wikipedia-uk-local-thumb', 'wikipedia-uk-local-transcoded',
+
+    'wikipedia-zh-local-public', 'wikipedia-zh-local-temp',
+    'wikipedia-zh-local-thumb', 'wikipedia-zh-local-transcoded'
+    ]
+
+  thumbor_workers: 2
+
+  stl_support: true
+
+  log_404: true
+
+  # secret, provided by puppet
+  thumbor_key: "foobar"
+
+  poolcounter:
+    enabled: true
+    server: "localhost" # poolcounter1004.eqiad.wmnet / poolcounter2003.codfw.wmnet in prod
+
+
+# TODO use prometheus if possible in future
+statsd:
+  image: "prometheus-statsd-exporter"
+  version: "latest"
+  requests:
+    cpu: 200m
+    memory: 50Mi
+  limits:
+    cpu: 400m
+    memory: 100Mi
+
+  name: thumbor
+  host: localhost
+  port: 9125
+
+
+monitoring:
+  enabled: false
+
+service:
+  deployment: minikube
+  port:
+    name: haproxy
+    targetPort: 4112
+    port: 4112
+    nodePort: null
+
+config:
+  public:
+    # Set this path to include the override module that we define to
+    # include our own plugins
+    PYTHONPATH: "/srv/service:/opt/lib/python/site-packages"
+  # all values injected by puppet
+  private:
+    swift_key: "foobar"
+    swift_private_key: "foobar"
+    # mediawiki shared secret
+    swift_private_secret: "foobar"
+
+tls:
+  enabled: false
+  public_port: 4112
+  upstream_timeout: "180.0s"
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 9361
+
+nutcracker:
+  version: "nutcracker:latest"
+  exporter: "prometheus-nutcracker-exporter:latest"
+  requests:
+    cpu: 200m
+    memory: 50Mi
+  limits:
+    cpu: 400m
+    memory: 100Mi
+  servers:
+    - ip: 127.0.0.1
+      port: 1234
+      db: mydb
+      weight: 1
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value

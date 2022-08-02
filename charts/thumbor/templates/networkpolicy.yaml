@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
+    - Ingress
+  ingress:
+    - ports:
+      {{- if or (not .Values.tls.enabled) (ne .Values.haproxy.port .Values.tls.public_port)}}
+      - port: {{ .Values.haproxy.port }}
+        protocol: TCP
+      {{- if .Values.monitoring.enabled }}
+      - port: {{ .Values.haproxy.stats_port }}
+        protocol: TCP
+      {{- end }}
+      {{- end }}
+      {{- if .Values.monitoring.enabled }}
+      - port: {{ .Values.main_app.prometheus_port }}
+        protocol: TCP
+      {{- end }}
+      {{- if .Values.monitoring.enabled }}
+      # nutcracker
+      - port: 9191
+        protocol: TCP
+      {{- end }}
+      {{- include "tls.networkpolicy" . | indent 6}}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "wmf.networkpolicy.egress" .Values }}
+    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
+    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
+{{- end }}

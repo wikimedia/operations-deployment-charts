@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wmf.releasename" . }}
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "wmf.chartname" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wmf.chartname" . }}
+        release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/thumbor: {{ include "thumbor_server.config" . | sha256sum }}
+        checksum/haproxy: {{ include "haproxy.config" . | sha256sum }}
+        checksum/swift: {{ include "swift.config" . | sha256sum }}
+        checksum/nutcracker: {{ include "nutcracker.config" . | sha256sum }}
+        {{- if .Values.monitoring.enabled }}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        prometheus.io/scrape: "true"
+        {{- end }}
+        {{- include "tls.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+      {{- include "default.containers" . | indent 8}}
+      {{- include "thumbor.containers" . | indent 8}}
+      {{- include "tls.container" . | indent 8}}
+      volumes:
+      {{- include "tls.volume" . | nindent 8 }}
+        - name: thumbor-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-thumbor-config
+        - name: haproxy-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-haproxy-config
+        - name: nutcracker-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-nutcracker-config
+        - name: statsd-config
+          configMap:
+            name: {{ template "wmf.releasename" . }}-statsd-config
+        - name: thumbor-key
+          secret:
+            secretName: {{ include "wmf.releasename" . }}-thumbor-key
+            items:
+              - key: thumbor.key
+                path: thumbor.key
+                mode: 0555
