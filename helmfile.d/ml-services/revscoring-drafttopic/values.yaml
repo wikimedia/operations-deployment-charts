@@ -27,16 +27,16 @@ networkpolicy:
 monitoring:
   enabled: true
 
-# inference:
-#   annotations:
-#     sidecar.istio.io/inject: "true"
-#   s3_storage_base_uri: "s3://wmf-ml-models"
-#   model: "drafttopic"
-#   predictor:
-#     image: "machinelearning-liftwing-inference-services-topic"
-#     version: "2022-07-25-090119-publish"
-#     base_env:
-#       - name: WIKI_URL
-#         value: "https://api-ro.discovery.wmnet"
-#       - name: REQUESTS_CA_BUNDLE
-#         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+inference:
+  annotations:
+    sidecar.istio.io/inject: "true"
+  s3_storage_base_uri: "s3://wmf-ml-models"
+  model: "drafttopic"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-topic"
+    version: "2022-07-25-090119-publish"
+    base_env:
+      - name: WIKI_URL
+        value: "https://api-ro.discovery.wmnet"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
