@@ -4,6 +4,13 @@ monitoring:
 revscoring_inference_services:
   - wiki: "en"
     version: "20211022183902"
+    predictor:
+      version: "2022-08-08-100921-publish"
+      custom_env:
+        - name: EVENTGATE_URL
+          value: "https://eventgate-main.discovery.wmnet:4492/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.revision-score-test"
   - wiki: "ru"
     version: "20220509073816"
   - wiki: "wikidata"
