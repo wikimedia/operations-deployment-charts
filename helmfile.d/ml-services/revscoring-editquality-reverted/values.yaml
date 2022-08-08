@@ -23,6 +23,14 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
 
 monitoring:
   enabled: true
@@ -34,7 +42,7 @@ inference:
   model: "reverted"
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
-    version: "2022-07-25-090117-publish"
+    version: "2022-08-08-100925-publish"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
