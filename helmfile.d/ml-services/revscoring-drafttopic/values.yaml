@@ -23,6 +23,14 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
 
 monitoring:
   enabled: true
@@ -34,12 +42,17 @@ inference:
   model: "drafttopic"
   predictor:
     image: "machinelearning-liftwing-inference-services-topic"
-    version: "2022-07-25-090119-publish"
+    version: "2022-08-09-102737-publish"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+      - name: EVENTGATE_URL
+        value: "https://eventgate-main.discovery.wmnet:4492/v1/events"
+      - name: EVENTGATE_STREAM
+        value: "mediawiki.revision-score-test"
+
 
 revscoring_inference_services:
   - wiki: "ar"
