@@ -42,12 +42,16 @@ inference:
   model: "articlequality"
   predictor:
     image: "machinelearning-liftwing-inference-services-articlequality"
-    version: "2022-07-25-090117-publish"
+    version: "2022-08-08-100921-publish"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+      - name: EVENTGATE_URL
+        value: "https://eventgate-main.discovery.wmnet:4492/v1/events"
+      - name: EVENTGATE_STREAM
+        value: "mediawiki.revision-score-test"
 
 revscoring_inference_services:
   - wiki: "en"
