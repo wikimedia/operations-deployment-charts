@@ -1,0 +1,49 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # These endpoints should be reachable by Istio proxy sidecars.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.22/32 # api-ro.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.22/32 # api-ro.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+
+monitoring:
+  enabled: true
+
+inference:
+  annotations:
+    sidecar.istio.io/inject: "true"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-nsfw"
+    version: "2022-08-11-085124-publish"
+    base_env:
+      - name: STORAGE_URI
+        value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
+
+inference_services:
+  - name: "nsfw-model"
