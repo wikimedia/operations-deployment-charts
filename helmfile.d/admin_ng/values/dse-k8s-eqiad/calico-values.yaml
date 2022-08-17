@@ -1,0 +1,63 @@
+# This is before coredns works, we can't rely on internal DNS, so use the external one
+kubernetesApi:
+  host: dse-k8s-ctrl.svc.eqiad.wmnet
+  port: 6443
+
+BGPConfiguration:
+  asNumber: 64609
+  nodeToNodeMeshEnabled: false
+
+BGPPeers:
+  cr1-eqiad-ipv4:
+    asNumber: 14907
+    peerIP: 208.80.154.196
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
+  cr2-eqiad-ipv4:
+    asNumber: 14907
+    peerIP: 208.80.154.197
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
+  cr1-eqiad-ipv6:
+    asNumber: 14907
+    peerIP: 2620:0:861:ffff::1
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
+  cr2-eqiad-ipv6:
+    asNumber: 14907
+    peerIP: 2620:0:861:ffff::2
+    nodeSelector: (failure-domain.beta.kubernetes.io/region == 'eqiad' && failure-domain.beta.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d' }) || has(node-role.kubernetes.io/master)
+  lsw1-e1-eqiad-ipv4:
+    node: dse-k8s-worker1005.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 10.64.130.1
+  lsw1-e1-eqiad-ipv6:
+    node: dse-k8s-worker1005.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 2620:0:861:109::1
+  lsw1-e3-eqiad-ipv4:
+    node: dse-k8s-worker1006.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 10.64.132.1
+  lsw1-e3-eqiad-ipv6:
+    node: dse-k8s-worker1006.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 2620:0:861:10b::1
+  lsw1-f1-eqiad-ipv4:
+    node: dse-k8s-worker1007.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 10.64.134.1
+  lsw1-f1-eqiad-ipv6:
+    node: dse-k8s-worker1007.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 2620:0:861:10d::1
+  lsw1-f3-eqiad-ipv4:
+    node: dse-k8s-worker1008.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 10.64.136.1
+  lsw1-f3-eqiad-ipv6:
+    node: dse-k8s-worker1008.eqiad.wmnet
+    asNumber: 14907
+    peerIP: 2620:0:861:10f::1
+IPPools:
+  ipv4:
+    cidr: "10.67.24.0/21"
+  ipv6:
+    cidr: "2620:0:861:302::/64"
