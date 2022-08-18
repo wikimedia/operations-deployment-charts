@@ -1,0 +1,25 @@
+main_app:
+  swift:
+    # swift-codfw service proxy
+    host: 'http://localhost:6201'
+  poolcounter:
+    enabled: true
+    server: "poolcounter2003.codfw.wmnet"
+  nutcracker:
+    servers:
+    - ip: 10.192.16.58 # thumbor2003
+      port: 11211
+      weight: 1
+      db: "shard03"
+    - ip: 10.192.16.59 # thumbor2004
+      port: 11211
+      weight: 1
+      db: "shard04"
+    - ip: 10.192.0.97 # thumbor2005
+      port: 11211
+      weight: 1
+      db: "shard05"
+    - ip: 10.192.48.62 # thumbor2006
+      port: 11211
+      weight: 1
+      db: "shard06"

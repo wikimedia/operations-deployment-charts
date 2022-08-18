@@ -1,0 +1,22 @@
+---
+services_proxy:
+  swift-eqiad:
+    port: 6101
+    timeout: 50s
+    upstream:
+      ips:
+        - 10.2.1.27/32
+        - 10.2.2.27/32
+      address: ms-fe.svc.eqiad.wmnet
+      port: 443
+      encryption: true
+  swift-codfw:
+    port: 6201
+    timeout: 50s
+    upstream:
+      ips:
+        - 10.2.1.27/32
+        - 10.2.2.27/32
+      address: ms-fe.svc.codfw.wmnet
+      port: 443
+      encryption: true
