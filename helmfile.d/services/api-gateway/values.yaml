@@ -18,9 +18,10 @@ main_app:
 
   strip_api_cookies: true
 
-  access_log:
-    type: eventgate
-    image_version: 1.5.3-3
+  # Disable until we can get reliable logging to stdout *and* to eventgate.
+  #access_log:
+  #  type: eventgate
+  #  image_version: 1.5.3-3
 
   endpoints:
     appserver_cluster:
