@@ -1,3 +1,4 @@
+# Source: crds/calico/crd.projectcalico.org_kubecontrollersconfigurations.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -57,6 +58,11 @@ spec:
                               host endpoints for every node. [Default: Disabled]'
                             type: string
                         type: object
+                      leakGracePeriod:
+                        description: 'LeakGracePeriod is the period used by the controller
+                          to determine if an IP address has been leaked. Set to 0
+                          to disable IP garbage collection. [Default: 15m]'
+                        type: string
                       reconcilerPeriod:
                         description: 'ReconcilerPeriod is the period to perform reconciliation
                           with the Calico datastore. [Default: 5m]'
@@ -94,6 +100,11 @@ spec:
                         type: string
                     type: object
                 type: object
+              debugProfilePort:
+                description: DebugProfilePort configures the port to serve memory
+                  and cpu profiles on. If not specified, profiling is disabled.
+                format: int32
+                type: integer
               etcdV3CompactionPeriod:
                 description: 'EtcdV3CompactionPeriod is the period between etcdv3
                   compaction requests. Set to 0 to disable. [Default: 10m]'
@@ -106,6 +117,10 @@ spec:
                 description: 'LogSeverityScreen is the log severity above which logs
                   are sent to the stdout. [Default: Info]'
                 type: string
+              prometheusMetricsPort:
+                description: 'PrometheusMetricsPort is the TCP port that the Prometheus
+                  metrics server should bind to. Set to 0 to disable. [Default: 9094]'
+                type: integer
             required:
             - controllers
             type: object
@@ -153,6 +168,12 @@ spec:
                                   of host endpoints for every node. [Default: Disabled]'
                                 type: string
                             type: object
+                          leakGracePeriod:
+                            description: 'LeakGracePeriod is the period used by the
+                              controller to determine if an IP address has been leaked.
+                              Set to 0 to disable IP garbage collection. [Default:
+                              15m]'
+                            type: string
                           reconcilerPeriod:
                             description: 'ReconcilerPeriod is the period to perform
                               reconciliation with the Calico datastore. [Default:
@@ -194,6 +215,11 @@ spec:
                             type: string
                         type: object
                     type: object
+                  debugProfilePort:
+                    description: DebugProfilePort configures the port to serve memory
+                      and cpu profiles on. If not specified, profiling is disabled.
+                    format: int32
+                    type: integer
                   etcdV3CompactionPeriod:
                     description: 'EtcdV3CompactionPeriod is the period between etcdv3
                       compaction requests. Set to 0 to disable. [Default: 10m]'
@@ -206,6 +232,11 @@ spec:
                     description: 'LogSeverityScreen is the log severity above which
                       logs are sent to the stdout. [Default: Info]'
                     type: string
+                  prometheusMetricsPort:
+                    description: 'PrometheusMetricsPort is the TCP port that the Prometheus
+                      metrics server should bind to. Set to 0 to disable. [Default:
+                      9094]'
+                    type: integer
                 required:
                 - controllers
                 type: object

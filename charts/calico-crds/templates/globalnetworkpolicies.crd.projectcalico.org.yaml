@@ -1,3 +1,4 @@
+# Source: crds/calico/crd.projectcalico.org_globalnetworkpolicies.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -48,7 +49,7 @@ spec:
                     action.  Both selector-based security Policy and security Profiles
                     reference rules - separated out as a list of rules for both ingress
                     and egress packet matching. \n Each positive match criteria has
-                    a negated version, prefixed with ”Not”. All the match criteria
+                    a negated version, prefixed with \"Not\". All the match criteria
                     within a rule must be satisfied for a packet to match. A single
                     rule can contain the positive and negative version of a match
                     and both must be satisfied for the rule to match."
@@ -64,16 +65,17 @@ spec:
                             contains a selector expression. Only traffic that originates
                             from (or terminates at) endpoints within the selected
                             namespaces will be matched. When both NamespaceSelector
-                            and Selector are defined on the same rule, then only workload
-                            endpoints that are matched by both selectors will be selected
-                            by the rule. \n For NetworkPolicy, an empty NamespaceSelector
-                            implies that the Selector is limited to selecting only
-                            workload endpoints in the same namespace as the NetworkPolicy.
-                            \n For NetworkPolicy, `global()` NamespaceSelector implies
-                            that the Selector is limited to selecting only GlobalNetworkSet
-                            or HostEndpoint. \n For GlobalNetworkPolicy, an empty
-                            NamespaceSelector implies the Selector applies to workload
-                            endpoints across all namespaces."
+                            and another selector are defined on the same rule, then
+                            only workload endpoints that are matched by both selectors
+                            will be selected by the rule. \n For NetworkPolicy, an
+                            empty NamespaceSelector implies that the Selector is limited
+                            to selecting only workload endpoints in the same namespace
+                            as the NetworkPolicy. \n For NetworkPolicy, `global()`
+                            NamespaceSelector implies that the Selector is limited
+                            to selecting only GlobalNetworkSet or HostEndpoint. \n
+                            For GlobalNetworkPolicy, an empty NamespaceSelector implies
+                            the Selector applies to workload endpoints across all
+                            namespaces."
                           type: string
                         nets:
                           description: Nets is an optional field that restricts the
@@ -131,9 +133,9 @@ spec:
                             One negates the set of matched endpoints, the other negates
                             the whole match: \n \tSelector = \"!has(my_label)\" matches
                             packets that are from other Calico-controlled \tendpoints
-                            that do not have the label “my_label”. \n \tNotSelector
+                            that do not have the label \"my_label\". \n \tNotSelector
                             = \"has(my_label)\" matches packets that are not from
-                            Calico-controlled \tendpoints that do have the label “my_label”.
+                            Calico-controlled \tendpoints that do have the label \"my_label\".
                             \n The effect is that the latter will accept packets from
                             non-Calico sources whereas the former is limited to packets
                             from Calico-controlled endpoints."
@@ -159,6 +161,26 @@ spec:
                                 account that matches the given label selector. If
                                 both Names and Selector are specified then they are
                                 AND'ed.
+                              type: string
+                          type: object
+                        services:
+                          description: "Services is an optional field that contains
+                            options for matching Kubernetes Services. If specified,
+                            only traffic that originates from or terminates at endpoints
+                            within the selected service(s) will be matched, and only
+                            to/from each endpoint's port. \n Services cannot be specified
+                            on the same rule as Selector, NotSelector, NamespaceSelector,
+                            Nets, NotNets or ServiceAccounts. \n Ports and NotPorts
+                            can only be specified with Services on ingress rules."
+                          properties:
+                            name:
+                              description: Name specifies the name of a Kubernetes
+                                Service to match.
+                              type: string
+                            namespace:
+                              description: Namespace specifies the namespace of the
+                                given Service. If left empty, the rule will match
+                                within this policy's namespace.
                               type: string
                           type: object
                       type: object
@@ -269,16 +291,17 @@ spec:
                             contains a selector expression. Only traffic that originates
                             from (or terminates at) endpoints within the selected
                             namespaces will be matched. When both NamespaceSelector
-                            and Selector are defined on the same rule, then only workload
-                            endpoints that are matched by both selectors will be selected
-                            by the rule. \n For NetworkPolicy, an empty NamespaceSelector
-                            implies that the Selector is limited to selecting only
-                            workload endpoints in the same namespace as the NetworkPolicy.
-                            \n For NetworkPolicy, `global()` NamespaceSelector implies
-                            that the Selector is limited to selecting only GlobalNetworkSet
-                            or HostEndpoint. \n For GlobalNetworkPolicy, an empty
-                            NamespaceSelector implies the Selector applies to workload
-                            endpoints across all namespaces."
+                            and another selector are defined on the same rule, then
+                            only workload endpoints that are matched by both selectors
+                            will be selected by the rule. \n For NetworkPolicy, an
+                            empty NamespaceSelector implies that the Selector is limited
+                            to selecting only workload endpoints in the same namespace
+                            as the NetworkPolicy. \n For NetworkPolicy, `global()`
+                            NamespaceSelector implies that the Selector is limited
+                            to selecting only GlobalNetworkSet or HostEndpoint. \n
+                            For GlobalNetworkPolicy, an empty NamespaceSelector implies
+                            the Selector applies to workload endpoints across all
+                            namespaces."
                           type: string
                         nets:
                           description: Nets is an optional field that restricts the
@@ -336,9 +359,9 @@ spec:
                             One negates the set of matched endpoints, the other negates
                             the whole match: \n \tSelector = \"!has(my_label)\" matches
                             packets that are from other Calico-controlled \tendpoints
-                            that do not have the label “my_label”. \n \tNotSelector
+                            that do not have the label \"my_label\". \n \tNotSelector
                             = \"has(my_label)\" matches packets that are not from
-                            Calico-controlled \tendpoints that do have the label “my_label”.
+                            Calico-controlled \tendpoints that do have the label \"my_label\".
                             \n The effect is that the latter will accept packets from
                             non-Calico sources whereas the former is limited to packets
                             from Calico-controlled endpoints."
@@ -364,6 +387,26 @@ spec:
                                 account that matches the given label selector. If
                                 both Names and Selector are specified then they are
                                 AND'ed.
+                              type: string
+                          type: object
+                        services:
+                          description: "Services is an optional field that contains
+                            options for matching Kubernetes Services. If specified,
+                            only traffic that originates from or terminates at endpoints
+                            within the selected service(s) will be matched, and only
+                            to/from each endpoint's port. \n Services cannot be specified
+                            on the same rule as Selector, NotSelector, NamespaceSelector,
+                            Nets, NotNets or ServiceAccounts. \n Ports and NotPorts
+                            can only be specified with Services on ingress rules."
+                          properties:
+                            name:
+                              description: Name specifies the name of a Kubernetes
+                                Service to match.
+                              type: string
+                            namespace:
+                              description: Namespace specifies the namespace of the
+                                given Service. If left empty, the rule will match
+                                within this policy's namespace.
                               type: string
                           type: object
                       type: object
@@ -379,7 +422,7 @@ spec:
                     action.  Both selector-based security Policy and security Profiles
                     reference rules - separated out as a list of rules for both ingress
                     and egress packet matching. \n Each positive match criteria has
-                    a negated version, prefixed with ”Not”. All the match criteria
+                    a negated version, prefixed with \"Not\". All the match criteria
                     within a rule must be satisfied for a packet to match. A single
                     rule can contain the positive and negative version of a match
                     and both must be satisfied for the rule to match."
@@ -395,16 +438,17 @@ spec:
                             contains a selector expression. Only traffic that originates
                             from (or terminates at) endpoints within the selected
                             namespaces will be matched. When both NamespaceSelector
-                            and Selector are defined on the same rule, then only workload
-                            endpoints that are matched by both selectors will be selected
-                            by the rule. \n For NetworkPolicy, an empty NamespaceSelector
-                            implies that the Selector is limited to selecting only
-                            workload endpoints in the same namespace as the NetworkPolicy.
-                            \n For NetworkPolicy, `global()` NamespaceSelector implies
-                            that the Selector is limited to selecting only GlobalNetworkSet
-                            or HostEndpoint. \n For GlobalNetworkPolicy, an empty
-                            NamespaceSelector implies the Selector applies to workload
-                            endpoints across all namespaces."
+                            and another selector are defined on the same rule, then
+                            only workload endpoints that are matched by both selectors
+                            will be selected by the rule. \n For NetworkPolicy, an
+                            empty NamespaceSelector implies that the Selector is limited
+                            to selecting only workload endpoints in the same namespace
+                            as the NetworkPolicy. \n For NetworkPolicy, `global()`
+                            NamespaceSelector implies that the Selector is limited
+                            to selecting only GlobalNetworkSet or HostEndpoint. \n
+                            For GlobalNetworkPolicy, an empty NamespaceSelector implies
+                            the Selector applies to workload endpoints across all
+                            namespaces."
                           type: string
                         nets:
                           description: Nets is an optional field that restricts the
@@ -462,9 +506,9 @@ spec:
                             One negates the set of matched endpoints, the other negates
                             the whole match: \n \tSelector = \"!has(my_label)\" matches
                             packets that are from other Calico-controlled \tendpoints
-                            that do not have the label “my_label”. \n \tNotSelector
+                            that do not have the label \"my_label\". \n \tNotSelector
                             = \"has(my_label)\" matches packets that are not from
-                            Calico-controlled \tendpoints that do have the label “my_label”.
+                            Calico-controlled \tendpoints that do have the label \"my_label\".
                             \n The effect is that the latter will accept packets from
                             non-Calico sources whereas the former is limited to packets
                             from Calico-controlled endpoints."
@@ -490,6 +534,26 @@ spec:
                                 account that matches the given label selector. If
                                 both Names and Selector are specified then they are
                                 AND'ed.
+                              type: string
+                          type: object
+                        services:
+                          description: "Services is an optional field that contains
+                            options for matching Kubernetes Services. If specified,
+                            only traffic that originates from or terminates at endpoints
+                            within the selected service(s) will be matched, and only
+                            to/from each endpoint's port. \n Services cannot be specified
+                            on the same rule as Selector, NotSelector, NamespaceSelector,
+                            Nets, NotNets or ServiceAccounts. \n Ports and NotPorts
+                            can only be specified with Services on ingress rules."
+                          properties:
+                            name:
+                              description: Name specifies the name of a Kubernetes
+                                Service to match.
+                              type: string
+                            namespace:
+                              description: Namespace specifies the namespace of the
+                                given Service. If left empty, the rule will match
+                                within this policy's namespace.
                               type: string
                           type: object
                       type: object
@@ -600,16 +664,17 @@ spec:
                             contains a selector expression. Only traffic that originates
                             from (or terminates at) endpoints within the selected
                             namespaces will be matched. When both NamespaceSelector
-                            and Selector are defined on the same rule, then only workload
-                            endpoints that are matched by both selectors will be selected
-                            by the rule. \n For NetworkPolicy, an empty NamespaceSelector
-                            implies that the Selector is limited to selecting only
-                            workload endpoints in the same namespace as the NetworkPolicy.
-                            \n For NetworkPolicy, `global()` NamespaceSelector implies
-                            that the Selector is limited to selecting only GlobalNetworkSet
-                            or HostEndpoint. \n For GlobalNetworkPolicy, an empty
-                            NamespaceSelector implies the Selector applies to workload
-                            endpoints across all namespaces."
+                            and another selector are defined on the same rule, then
+                            only workload endpoints that are matched by both selectors
+                            will be selected by the rule. \n For NetworkPolicy, an
+                            empty NamespaceSelector implies that the Selector is limited
+                            to selecting only workload endpoints in the same namespace
+                            as the NetworkPolicy. \n For NetworkPolicy, `global()`
+                            NamespaceSelector implies that the Selector is limited
+                            to selecting only GlobalNetworkSet or HostEndpoint. \n
+                            For GlobalNetworkPolicy, an empty NamespaceSelector implies
+                            the Selector applies to workload endpoints across all
+                            namespaces."
                           type: string
                         nets:
                           description: Nets is an optional field that restricts the
@@ -667,9 +732,9 @@ spec:
                             One negates the set of matched endpoints, the other negates
                             the whole match: \n \tSelector = \"!has(my_label)\" matches
                             packets that are from other Calico-controlled \tendpoints
-                            that do not have the label “my_label”. \n \tNotSelector
+                            that do not have the label \"my_label\". \n \tNotSelector
                             = \"has(my_label)\" matches packets that are not from
-                            Calico-controlled \tendpoints that do have the label “my_label”.
+                            Calico-controlled \tendpoints that do have the label \"my_label\".
                             \n The effect is that the latter will accept packets from
                             non-Calico sources whereas the former is limited to packets
                             from Calico-controlled endpoints."
@@ -695,6 +760,26 @@ spec:
                                 account that matches the given label selector. If
                                 both Names and Selector are specified then they are
                                 AND'ed.
+                              type: string
+                          type: object
+                        services:
+                          description: "Services is an optional field that contains
+                            options for matching Kubernetes Services. If specified,
+                            only traffic that originates from or terminates at endpoints
+                            within the selected service(s) will be matched, and only
+                            to/from each endpoint's port. \n Services cannot be specified
+                            on the same rule as Selector, NotSelector, NamespaceSelector,
+                            Nets, NotNets or ServiceAccounts. \n Ports and NotPorts
+                            can only be specified with Services on ingress rules."
+                          properties:
+                            name:
+                              description: Name specifies the name of a Kubernetes
+                                Service to match.
+                              type: string
+                            namespace:
+                              description: Namespace specifies the namespace of the
+                                given Service. If left empty, the rule will match
+                                within this policy's namespace.
                               type: string
                           type: object
                       type: object
