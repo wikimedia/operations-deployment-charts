@@ -125,3 +125,9 @@ istio:
         - 8443
         - 15443
         - 8080
+
+# Chart versions to install
+# If no chart version is defined or value is empty (~), latest will be used.
+chartVersions:
+  wmf-stable/calico-crds: 0.1.0
+  wmf-stable/calico: 0.1.18

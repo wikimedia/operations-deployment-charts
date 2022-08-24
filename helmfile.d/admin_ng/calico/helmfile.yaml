@@ -2,10 +2,18 @@ releases:
   - name: calico-crds
     namespace: kube-system
     chart: wmf-stable/calico-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/calico-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     missingFileHandler: Warn
   - name: calico
     namespace: kube-system
     chart: wmf-stable/calico
+    {{- $version := .Values.chartVersions | get "wmf-stable/calico" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     missingFileHandler: Warn
     needs:
       - kube-system/calico-crds
