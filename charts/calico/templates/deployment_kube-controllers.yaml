@@ -18,6 +18,9 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9094"
       labels:
         k8s-app: calico-kube-controllers
         {{- include "calico.labels" . | nindent 8 }}
@@ -44,11 +47,21 @@ spec:
               value: node
             - name: DATASTORE_TYPE
               value: kubernetes
+          livenessProbe:
+            exec:
+              command:
+              - /usr/bin/check-status
+              - -l
+            periodSeconds: 10
+            initialDelaySeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 10
           readinessProbe:
             exec:
               command:
               - /usr/bin/check-status
               - -r
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.kubeControllers.resources | nindent 12 }}
       nodeSelector:

@@ -84,6 +84,7 @@ spec:
             - name: IP6
               value: "autodetect"
             # Prevent Calico from creating a default pool if one does not exist.
+            # This means we don't need all the CALICO_IPV(4|6)_ variables the upstream chart uses
             - name: NO_DEFAULT_POOLS
               value: "true"
             # Disable file logging so `kubectl logs` works.
@@ -94,9 +95,6 @@ spec:
               value: "ACCEPT"
             - name: FELIX_IPV6SUPPORT
               value: "true"
-            # Set Felix logging to "info"
-            - name: FELIX_LOGSEVERITYSCREEN
-              value: "info"
             - name: FELIX_HEALTHENABLED
               value: "true"
             # Since calico-node/Felix is host-networked, this opens a port on the host.
@@ -117,6 +115,12 @@ spec:
             # Location of the client certificate key for connecting to Typha; volume mount
             #- name: FELIX_TYPHAKEYFILE
             #  value: /calico-node-certs/calico-node.key
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/calico-node
+                - -shutdown
           livenessProbe:
             exec:
               command:
@@ -126,6 +130,7 @@ spec:
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
+            timeoutSeconds: 10
           readinessProbe:
             exec:
               command:
@@ -133,6 +138,7 @@ spec:
               - -felix-ready
               - -bird-ready
             periodSeconds: 10
+            timeoutSeconds: 10
           securityContext:
             privileged: true
           resources:
@@ -159,6 +165,11 @@ spec:
             #  # Bidirectional means that, if we mount the BPF filesystem at /sys/fs/bpf it will propagate to the host.
             #  # If the host is known to mount that filesystem already then Bidirectional can be omitted.
             #  mountPropagation: Bidirectional
+            # calico-node logs to /var/log/calico in addition to stdout
+            # as we collect stdout anyways, avoid the extra writes to overlayfs by sending logs to emptyDir
+            - mountPath: /var/log/calico
+              name: var-log-calico
+              readOnly: false
       volumes:
         # Used by calico-node.
         - name: lib-modules
@@ -183,3 +194,5 @@ spec:
           hostPath:
             type: DirectoryOrCreate
             path: /var/run/nodeagent
+        - name: var-log-calico
+          emptyDir: {}
