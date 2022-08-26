@@ -91,6 +91,19 @@ environments:
       - istio_gateways: true
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
+  dse-k8s-eqiad:
+    values:
+      - "values/common.yaml"
+      - "values/dse-k8s.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # We are not installing knative and kserve yet, but may do so in the near future.
+      # - install_knative: true
+      # - install_kserve: true
+      - install_cert_manager: true
+      - namespace_certificates: true
+      # Deploy network policies for a Istio setup
+      - istio_gateways: true
+      - istio_sidecar_proxy: true
 
 ---
 bases:

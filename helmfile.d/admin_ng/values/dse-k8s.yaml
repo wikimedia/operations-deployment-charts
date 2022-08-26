@@ -1,0 +1,177 @@
+# cluster_group is used to identify a group of similar clusters (like for one in eqiad and one in codfw)
+# that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
+cluster_group: dse-k8s
+
+# Defaults applied to all dse-k8s clusters
+GlobalNetworkPolicies:
+  # Allow icmp for all pods and all directions. Useful in debugging
+  allow-all-icmp:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    ingress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+    egress:
+      - action: Allow
+        protocol: ICMP
+      - action: Allow
+        protocol: ICMPv6
+  default-deny:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Ingress
+      - Egress
+    egress:
+      # Allow all namespaces to communicate to DNS pods
+      - action: Allow
+        protocol: UDP
+        destination:
+          selector: 'k8s-app == "kube-dns"'
+          ports:
+            - 53
+  # This allows egress from all pods to all pods. Ingress still needs to be allowed by the destination, though.
+  allow-pod-to-pod:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "10.67.24.0/21"
+      - action: Allow
+        destination:
+          nets:
+            # eqiad
+            - "2620:0:861:302::/64"
+
+# Context: https://knative.dev/docs/serving/tag-resolution/
+docker:
+  registry_cidrs:
+      - '10.2.2.44/32'
+      - '10.2.1.44/32'
+
+# deployExtraClusterRoles:
+#   - "kserve"
+
+# List all namespaces that should be created in every DSE-K8S cluster.
+# For info about what overrides are available, please check ./common.yaml.
+namespaces:
+  kube-system:
+    systemNamespace: true
+    allowCriticalPods: true
+    pspClusterRole: allow-privileged-psp
+    labels:
+      istio-injection: disabled
+  istio-system:
+    systemNamespace: true
+    allowCriticalPods: true
+    labels:
+      istio-injection: disabled
+  # knative-serving:
+  #   systemNamespace: true
+  #   allowCriticalPods: true
+  #   deployTLSCertificate: true
+  #   # See helmfile_namespace_certs.yaml for more info
+  #   # The helmfile config deploys, by default, a TLS cert
+  #   # with hostname == namespace for every non-system namespace.
+  #   # In our case, we have only one istio TLS config that is deployed
+  #   # via knative-serving.
+  #   tlsHostnames:
+  #     - inference
+  #   labels:
+  #     istio-injection: disabled
+  # kserve:
+  #   systemNamespace: true
+  #   allowCriticalPods: true
+  #   labels:
+  #     control-plane: kserve-controller-manager
+  #     controller-tools.k8s.io: "1.0"
+  #     istio-injection: disabled
+  cert-manager:
+    systemNamespace: true
+    allowCriticalPods: true
+    labels:
+      istio-injection: disabled
+net_istio:
+  ingressgateway:
+    servers:
+    # The 'hosts' field correspond to the list of backend routes that
+    # Knative/Istio will allow/configure on the Gateway. For example,
+    # if the FQDN for a Kfserving backend is something-test.example.com,
+    # we can allow it in multiple ways:
+    # 1) More specific: 'something-test.example.com'
+    # 2) Less specific: '*.example.com'
+    # 3) All traffic allowed: '*'
+    # For the moment option 3) is fine, but we'll need to review the choice.
+    - hosts:
+        - '*'
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        minProtocolVersion: 'TLSV1_2'
+        # Please note:
+        # This corresponds to the name of a TLS Secret deployed
+        # to the istio-system namespace. We deploy it via
+        # helmfile_namespace_certs.yaml.
+        credentialName: knative-serving-tls-certificate
+
+# core:
+#   queue_proxy:
+#     image: knative-serving-queue
+#     version: 0.18.1-4
+#   activator:
+#     image: knative-serving-activator
+#     version: 0.18.1-3
+#   autoscaler:
+#     image: knative-serving-autoscaler
+#     version: 0.18.1-3
+#   controller:
+#     image: knative-serving-controller
+#     version: 0.18.1-4
+#   webhook:
+#     image: knative-serving-webhook
+#     version: 0.18.1-3
+
+# Override from default config (see ./common.yaml) to lower the min cpu limit
+# from 100m to 25m (kserve sidecar default settings).
+limitranges:
+  container:
+    min:
+      cpu: "25m"
+
+# See T292077
+typha:
+  replicaCount: 2
+
+# Override from default config (see ./common.yaml) to allow deployments of
+# big namespaces with a lot of pods.
+resourcequota:
+  pods: {}
+  compute:
+    requests:
+      cpu: "150"
+      memory: "150Gi"
+    limits:
+      cpu: "150"
+      memory: "150Gi"
+
+# Istio Gateway config for the DSE cluster.
+# The list of ports need to be kept in sync with what stated
+# in the related custom_deploy.d's istioctl config.
+istio:
+  gateways:
+    ingressgateway:
+      ports:
+        - 8443
+    cluster-local-gateway:
+      ports:
+        - 8080
