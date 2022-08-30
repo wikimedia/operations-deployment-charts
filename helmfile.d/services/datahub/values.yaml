@@ -1,7 +1,7 @@
 # The git commit SHA is used for this service
 # The reason being that we build several containers from the same commit
 # and they were generated with different timestamps using the default method
-version: &version "15d85d81846006b03826b30ec3d67484ba5756fe-production"
+version: &version "74e3f000b30329f549413bb1501b3d1a9246eade-production"
 
 docker: &docker
   registry: "docker-registry.discovery.wmnet"
@@ -73,6 +73,8 @@ datahub-gms:
   kafka: *kafka
   config:
     <<: *config
+    public:
+      AUTH_RESOURCES_DIR: "/datahub/datahub-gms/plugins/auth/resources"
   tls:
     enabled: true
   ingress:
