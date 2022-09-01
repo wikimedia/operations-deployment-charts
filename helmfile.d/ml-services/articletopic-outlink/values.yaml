@@ -32,13 +32,13 @@ inference:
     sidecar.istio.io/inject: "true"
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2022-07-27-061940-publish"
+    version: "2022-09-01-134944-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20220727080723/"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2022-07-28-100205-publish"
+    version: "2022-09-01-134946-publish"
     base_env:
       - name: CUSTOM_UA
         value: "WMF ML Team outlink topic model isvc"
