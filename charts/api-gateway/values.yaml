@@ -91,7 +91,7 @@ main_app:
   # Hosts with $service.discovery.wmnet records
   # Note that discovery_hosts behaves differently to the hosts dictionaries above.
   # the format of each entry is:
-  # myservice.discovery.wmnet:
+  # myservice:
   #   tls: true
   #   port: 12345
   #   path: myservicename
@@ -99,8 +99,10 @@ main_app:
   #     anon_limit: 1234
   #     default_limit: 12345
   #   host: myrewrittenhostname.wikimedia.org # optional
+  #   internal_host: myserviceinternalname.discovery.wmnet # optional
   # This will map api.wikimedia.org/service/myservicename to
-  # myservice.discovery.wmnet:12345 internally.
+  # myserviceinternalname.discovery.wmnet:12345 internally.
+  # If internal_host is not specified, myservice.discovery.wmnet will be used as a default
   # ratelimit_config is optional and is used to override the global rate limits
 
   # "host" is an optional parameter to rewrite the Host header from
