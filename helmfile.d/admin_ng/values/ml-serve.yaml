@@ -201,7 +201,7 @@ net_istio:
         trafficPolicy:
           connectionPool:
             tcp:
-              maxConnections: 10
+              maxConnections: 100
     - name: https-eventgate-dr
       spec:
         host: eventgate-main.discovery.wmnet
