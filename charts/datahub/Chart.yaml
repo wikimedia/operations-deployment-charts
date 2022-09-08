@@ -4,7 +4,7 @@ description: A Helm chart for DataHub at the Wikimedia Foundation
 type: application
 # This is the chart version. This version should be incremented each time changes are
 # made to the chart and its templates, including the app version.
-version: 0.0.16
+version: 0.0.17
 appVersion: "0.8.43"
 # This is the version number of the app being deployed. This version number should be
 # incremented each time you make changes to the application.
@@ -17,10 +17,10 @@ dependencies:
     condition: datahub-frontend.enabled
   - name: datahub-mae-consumer
     version: ">=0.0.1"
-    condition: datahub_standalone_consumers_enabled
+    condition: global.datahub_standalone_consumers_enabled
   - name: datahub-mce-consumer
     version: ">=0.0.1"
-    condition: datahub_standalone_consumers_enabled
+    condition: global.datahub_standalone_consumers_enabled
 maintainers:
   - name: Wikimedia Data Engineering team
     email: analytics@wikimedia.org

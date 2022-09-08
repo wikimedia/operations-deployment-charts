@@ -129,6 +129,12 @@ resources:
     - name: UI_INGESTION_DEFAULT_CLI_VERSION
       value: "{{ .Values.global.datahub.managed_ingestion.defaultCliVersion }}"
     {{- end }}
+    {{- if not .Values.global.datahub_standalone_consumers_enabled }}
+    - name: MCE_CONSUMER_ENABLED
+      value: "true"
+    - name: MAE_CONSUMER_ENABLED
+      value: "true"
+    {{- end }}
 {{ include "limits.gms" . | indent 2}}
 {{- with .Values.main_app.volumeMounts }}
   volumeMounts:
