@@ -5,6 +5,7 @@ helmDefaults:
   atomic: true
   timeout: 600
   force: false
+  recreatePods: false
   args:
     - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-deploy-{{ .Environment.Name }}.config"
 

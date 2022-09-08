@@ -5,6 +5,7 @@ helmDefaults:
   atomic: true
   timeout: 600
   force: false
+  recreatePods: false
   args:
     - "--kubeconfig=/etc/kubernetes/articletopic-outlink-deploy-{{ .Environment.Name }}.config"
 
