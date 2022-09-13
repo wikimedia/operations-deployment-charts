@@ -3,15 +3,15 @@ kind: NetworkPolicy
 metadata:
   name: {{ template "wmf.releasename" . }}
   labels:
-    chart: {{ template "wmf.chartname" . }}
-    app: {{ .Values.main_app.name }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      chart: {{ template "wmf.chartname" . }}
-      app: {{ .Values.main_app.name }}
+      app: {{ template "wmf.chartname" . }}
+      chart: {{ template "wmf.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

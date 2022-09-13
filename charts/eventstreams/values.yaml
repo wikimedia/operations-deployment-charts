@@ -15,11 +15,11 @@ service:
   port:
     # targetPort and port are main_app.port (8092)
     nodePort: 30892
-  # Set routing_tag to the same (arbitrary) value for all releases that you want
+  # Set routed_via to the same (arbitrary) value for all releases that you want
   # this k8s Service to route to.
   # If you don't to deploy a service with a specific release (e.g. a canary), set service.deployment: none
-  # routing_tag defaults to .Release.Name, so by default a Service will only route to the release it is part of.
-  # routing_tag:
+  # routed_via defaults to .Release.Name, so by default a Service will only route to the release it is part of.
+  # routed_via:
 
 tls:
   enabled: false
