@@ -181,6 +181,9 @@ net_istio:
         - api-ro.discovery.wmnet
         location: MESH_EXTERNAL
         ports:
+        - name: http-apiro
+          number: 80
+          protocol: HTTP
         - name: https-apiro
           number: 443
           protocol: HTTPS
@@ -199,6 +202,11 @@ net_istio:
       spec:
         host: api-ro.discovery.wmnet
         trafficPolicy:
+          portLevelSettings:
+          - port:
+              number: 443
+            tls:
+              mode: SIMPLE
           connectionPool:
             tcp:
               maxConnections: 100
@@ -227,12 +235,9 @@ net_istio:
         hosts:
         - '*.wikipedia.org'
         - api-ro.discovery.wmnet
-        tls:
+        http:
         - match:
-          - port: 443
-            sniHosts:
-            - '*.wikipedia.org'
-            - api-ro.discovery.wmnet
+          - port: 80
           route:
           - destination:
               host: api-ro.discovery.wmnet
