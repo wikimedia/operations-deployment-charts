@@ -713,7 +713,7 @@ metadata:
   labels:
     serving.knative.dev/release: "{{ .Chart.AppVersion }}"
   annotations:
-    knative.dev/example-checksum: "6a69cdef"
+    knative.dev/example-checksum: "33b28a20"
 data:
   _example: |
     ################################
@@ -761,6 +761,18 @@ data:
     # WARNING: Cannot safely be disabled once enabled.
     kubernetes.podspec-runtimeclassname: "disabled"
 
+    # Indicates whether Kubernetes DNSPolicy support is enabled
+    #
+    # WARNING: Cannot safely be disabled once enabled.
+    # See: https://knative.dev/docs/serving/feature-flags/#kubernetes-dnspolicy
+    kubernetes.podspec-dnspolicy: "disabled"
+
+    # Indicates whether Kubernetes DNSConfig support is enabled
+    #
+    # WARNING: Cannot safely be disabled once enabled.
+    # See: https://knative.dev/docs/serving/feature-flags/#kubernetes-dnsconfig
+    kubernetes.podspec-dnsconfig: "disabled"
+
     # This feature allows end-users to set a subset of fields on the Pod's SecurityContext
     # in addition to expanding the allowable fields within a Container's SecurityContext.
     #
@@ -804,6 +816,9 @@ data:
     # 1. Enabled: enabling tag header based routing
     # 2. Disabled: disabling tag header based routing
     tag-header-based-routing: "disabled"
+  {{- range $k, $v := .Values.core.config_features }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2018 The Knative Authors
