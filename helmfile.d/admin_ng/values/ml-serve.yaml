@@ -268,6 +268,10 @@ net_istio:
     version: 0.18.1-4
 
 core:
+  config_features:
+    # This is needed to be able to configure the Pod's dnsConfig
+    # from Kserve's InferenceService resources.
+    kubernetes.podspec-dnsconfig: "enabled"
   queue_proxy:
     image: knative-serving-queue
     version: 0.18.1-5
