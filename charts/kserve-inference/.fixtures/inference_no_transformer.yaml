@@ -30,6 +30,11 @@ inference_services:
           value: "en.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
+      config:
+        dnsConfig:
+          options:
+          - name: ndots
+            value: "2"
   - name: itwiki-goodfaith
     predictor:
       config:

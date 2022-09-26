@@ -32,6 +32,10 @@ revscoring_inference_services:
         serviceAccountName: "kserve-override"
         minReplicas: 2
         canaryTrafficPercent: 10
+        dnsConfig:
+          options:
+          - name: ndots
+            value: "2"
   - wiki: "es"
     version: "202106140815"
     predictor:

@@ -23,6 +23,11 @@ inference:
   transformer:
     image: "machinelearning-liftwing-inference-services-editquality-transformer"
     version: "2021-09-22-11111-production"
+    config:
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "2"
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"

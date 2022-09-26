@@ -37,8 +37,8 @@ spec:
     # en => en + "wiki"
     # enwikibooks => enwikibooks
     {{- $s3_storage_wiki_name := ternary .wiki (list .wiki "wiki" | join "") (regexMatch ".+(wiki|wiktionary).*" .wiki) }}
-    {{- range $k, $v := $final_predictor_config }}
-    {{ $k }}: {{ $v }}
+    {{- if $final_predictor_config }}
+    {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
     containers:
     - name: kserve-predictor-{{ .wiki }}wiki-{{ $model}}

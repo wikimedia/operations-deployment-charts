@@ -47,6 +47,10 @@ inference_services:
         serviceAccountName: "kserve-transformer-override"
         minReplicas: 2
         canaryTrafficPercent: 10
+        dnsConfig:
+          options:
+          - name: ndots
+            value: "2"
       custom_env:
         - name: WIKI_HOST
           value: "es.wikipedia.org"

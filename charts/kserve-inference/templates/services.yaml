@@ -25,8 +25,8 @@ spec:
     {{- $generic_predictor := $.Values.inference.predictor | default dict }}
     {{- $custom_predictor := .predictor | default dict }}
     {{- $final_predictor_config := merge ($custom_predictor.config | default dict) ($generic_predictor.config | default dict) }}
-    {{- range $k, $v := $final_predictor_config }}
-    {{ $k }}: {{ $v }}
+    {{- if $final_predictor_config }}
+    {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
     containers:
     - name: kserve-predictor-{{ .name }}
@@ -37,6 +37,7 @@ spec:
       - name: {{ .name }}
         value: {{ .value }}
       {{- end }}
+
   {{- if or $.Values.inference.transformer .transformer }}
   # If there is a generic transformer set in the inference config
   # we render it, giving the possibility to the admins to override
@@ -45,8 +46,8 @@ spec:
     {{- $generic_transformer := $.Values.inference.transformer | default dict }}
     {{- $custom_transformer := .transformer | default dict }}
     {{- $final_transformer_config := merge ($custom_transformer.config | default dict) ($generic_transformer.config | default dict) }}
-    {{- range $k, $v := $final_transformer_config }}
-    {{ $k }}: {{ $v }}
+    {{- if $final_transformer_config }}
+    {{- toYaml $final_transformer_config | nindent 4 }}
     {{- end }}
     containers:
     - name: kserve-transformer-{{ .name }}

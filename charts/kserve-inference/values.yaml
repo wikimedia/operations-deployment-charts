@@ -5,6 +5,10 @@ inference:
   predictor:
     config:
       serviceAccountName: "kserve"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "3"
 
 networkpolicy:
   egress:
