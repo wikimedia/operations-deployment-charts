@@ -178,7 +178,7 @@ net_istio:
     - name: mediawiki-api-ro
       spec:
         hosts:
-        - api-ro.discovery.wmnet
+        - api-ro.discovery.wmnet.
         location: MESH_EXTERNAL
         ports:
         - name: http-apiro
@@ -191,7 +191,7 @@ net_istio:
     - name: eventgate-main-se
       spec:
         hosts:
-        - eventgate-main.discovery.wmnet
+        - eventgate-main.discovery.wmnet.
         location: MESH_EXTERNAL
         ports:
         - name: https-eventgate-main
@@ -218,7 +218,7 @@ net_istio:
               maxRetries: 1
     - name: https-eventgate-dr
       spec:
-        host: eventgate-main.discovery.wmnet
+        host: eventgate-main.discovery.wmnet.
         trafficPolicy:
           connectionPool:
             tcp:
@@ -241,7 +241,7 @@ net_istio:
           - port: 80
           route:
           - destination:
-              host: api-ro.discovery.wmnet
+              host: api-ro.discovery.wmnet.
               port:
                 number: 443
     - name: eventgate-main-vs
@@ -257,7 +257,7 @@ net_istio:
             - eventgate-main.discovery.wmnet
           route:
           - destination:
-              host: eventgate-main.discovery.wmnet
+              host: eventgate-main.discovery.wmnet.
               port:
                 number: 4492
   controller:
