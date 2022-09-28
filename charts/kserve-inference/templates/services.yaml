@@ -38,14 +38,17 @@ spec:
         value: {{ .value }}
       {{- end }}
 
-  {{- if or $.Values.inference.transformer .transformer }}
+  {{- $generic_transformer := $.Values.inference.transformer | default dict }}
+  {{- $custom_transformer := .transformer | default dict }}
+  {{- $final_transformer_config := merge ($custom_transformer.config | default dict) ($generic_transformer.config | default dict) }}
+  {{- if or (hasKey $custom_transformer "image") (hasKey $generic_transformer "image") }}
   # If there is a generic transformer set in the inference config
   # we render it, giving the possibility to the admins to override
-  # values in each model's config.
+  # values in each model's config. We use the Docker image name (mandatory)
+  # to allow the following: predictor-only configs and generic transformer settings
+  # (like dnsConfig etc..) in the main chart's values.yaml (without causing transformer
+  # settings to be rendered when not needed).
   transformer:
-    {{- $generic_transformer := $.Values.inference.transformer | default dict }}
-    {{- $custom_transformer := .transformer | default dict }}
-    {{- $final_transformer_config := merge ($custom_transformer.config | default dict) ($generic_transformer.config | default dict) }}
     {{- if $final_transformer_config }}
     {{- toYaml $final_transformer_config | nindent 4 }}
     {{- end }}

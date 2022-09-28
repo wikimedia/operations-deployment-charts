@@ -8,7 +8,13 @@ inference:
       dnsConfig:
         options:
           - name: ndots
-            value: "3"
+            value: "2"
+  transformer:
+    config:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
 
 networkpolicy:
   egress:
