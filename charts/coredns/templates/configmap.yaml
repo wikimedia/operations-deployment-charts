@@ -13,6 +13,15 @@ data:
           pods insecure
           fallthrough in-addr.arpa ip6.arpa
         }
+        {{- if hasKey ( .Values.coredns | default dict ) "rewrite_actions" }}
+        {{- range $action, $configs := .Values.coredns.rewrite_actions }}
+        {{- range $configs }}
+        rewrite {{ $action }} {
+            {{ . }}
+        }
+        {{- end }}
+        {{- end }}
+        {{- end }}
         prometheus :9153
         forward . /etc/resolv.conf
         cache 30

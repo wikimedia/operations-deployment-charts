@@ -1,0 +1,7 @@
+coredns:
+  rewrite_actions:
+    continue:
+    - 'ttl exact test.example.com. 30'
+    - 'ttl exact test1.example.com. 30'
+    stop:
+    - 'ttl regex (.*)\.coredns\.rocks 15'
