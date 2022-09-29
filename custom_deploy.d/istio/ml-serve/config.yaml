@@ -53,6 +53,10 @@ spec:
         excludeIPRanges: "10.2.2.54/32,10.2.1.54/32"
         componentLogLevel: "misc:info"
         logLevel: info
+        # See https://github.com/istio/istio/issues/33968#issuecomment-881910850
+        # We need this setting to fully disable any tracing and
+        # stop DNS queries for zipkin when the service is disabled.
+        tracer: openCensusAgent
   addonComponents:
     pilot:
       enabled: true
