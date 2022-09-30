@@ -324,3 +324,14 @@ istio:
     cluster-local-gateway:
       ports:
         - 8080
+
+# Measure to deal with https://phabricator.wikimedia.org/T318814
+# By default Kubernetes DNS records have 5s TTL, and in a Service Mesh
+# like Istio this means causing a lot of DNS queries from Envoy to refresh
+# every TTL seconds all the Clusters with STRICT_DNS settings.
+coredns:
+  rewrite_actions:
+    continue:
+    - 'ttl exact cluster-local-gateway.istio-system.svc.cluster.local. 30'
+    - 'ttl regex (.*).discovery.wmnet 30'
+    - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
