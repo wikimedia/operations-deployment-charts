@@ -1615,6 +1615,9 @@ spec:
                 topologyKey: kubernetes.io/hostname
               weight: 100
       serviceAccountName: controller
+      {{- if hasKey .Values.core.autoscaler "extra_deployment_config" }}
+      {{- toYaml .Values.core.autoscaler.extra_deployment_config | nindent 6 }}
+      {{- end }}
       containers:
         - name: autoscaler
           # This is the Go import path for the binary that is containerized

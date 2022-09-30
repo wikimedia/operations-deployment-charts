@@ -2,3 +2,9 @@ core:
   config_features:
     kubernetes.podspec-dnspolicy: "disabled"
     kubernetes.podspec-dnsconfig: "enabled"
+  autoscaler:
+    extra_deployment_config:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "4"

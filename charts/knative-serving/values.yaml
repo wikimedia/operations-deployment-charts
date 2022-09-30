@@ -87,6 +87,11 @@ core:
       limits:
         cpu: 300m
         memory: 400Mi
+    extra_deployment_config:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "2"
   controller:
     image: knative-serving-controller
     version: 0.18.1-3
