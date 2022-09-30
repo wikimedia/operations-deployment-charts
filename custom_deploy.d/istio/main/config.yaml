@@ -70,6 +70,10 @@ spec:
         autoscaleEnabled: false # overwritten
         type: NodePort # overwritten
         externalTrafficPolicy: Local
+        env:
+          # Enable additional envoy native metrics (https://github.com/istio/istio/wiki/Envoy-native-telemetry)
+          # Since ingress gateway does not use the sidecar injector, this needs to be configured using environment variable.
+          ISTIO_METAJSON_STATS: '"{\"sidecar.istio.io/statsInclusionSuffixes\": \"upstream_rq_1xx,upstream_rq_2xx,upstream_rq_3xx,upstream_rq_4xx,upstream_rq_5xx,upstream_rq_time,upstream_cx_tx_bytes_total,upstream_cx_rx_bytes_total,upstream_cx_total,downstream_rq_1xx,downstream_rq_2xx,downstream_rq_3xx,downstream_rq_4xx,downstream_rq_5xx,downstream_rq_time,downstream_cx_tx_bytes_total,downstream_cx_rx_bytes_total,downstream_cx_total\"}"'
         # Need to list all ports here to be able to provide static nodePorts
         ports:
           - port: 80
