@@ -1,51 +1,10 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
 
-{{ include "tls.service" . }}
-{{ if not .Values.tls.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "wmf.releasename" . }}
-  labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: {{ template "wmf.serviceType" . }}
-  selector:
-    app: {{ template "wmf.chartname" . }}
-    routed_via: {{ .Release.Name }}
-  ports:
-    - name: {{ .Values.service.port.name }}
-      targetPort: {{ .Values.service.port.targetPort }}
-      port: {{ .Values.service.port.port }}
-      {{- if and (eq (include "wmf.serviceType" .) "NodePort") .Values.service.port.nodePort }}
-      nodePort: {{ .Values.service.port.nodePort }}
-      {{- end }}
+{{ include "mesh.service" . }}
+{{ if not .Values.mesh.enabled }}
+  {{- template "app.generic.service" . }}
 {{- end }}
-{{ if .Values.debug.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "wmf.releasename" . }}-debug
-  labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: NodePort
-  selector:
-    app: {{ template "wmf.chartname" . }}
-    release: {{ .Release.Name }}
-  ports:
-    {{- range $port := .Values.debug.ports }}
-    - name: {{ template "wmf.releasename" $ }}-debug-{{ $port }}
-      targetPort: {{ $port }}
-      port: {{ $port }}
-    {{- end }}
+{{- if .Values.debug.enabled }}
+  {{- template "app.generic.debug_service" . }}
 {{- end }}
 {{- end }}

@@ -1,0 +1,28 @@
+{
+    "namespace": "base",
+    "modules": [
+        {
+            "name": "name",
+            "version": "1.0",
+            "depends": []
+        },
+        {
+            "name": "helper",
+            "version": "1.0",
+            "depends": []
+        },
+        {
+            "name": "networkpolicy",
+            "version": "1.0",
+            "depends": []
+        },
+        {
+            "name": "meta",
+            "version": "1.0",
+            "depends": [
+                "base.name:1.0",
+                "mesh.name:1.0"
+            ]
+        }
+    ]
+}

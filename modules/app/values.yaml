@@ -1,0 +1,56 @@
+app:
+  image: $IMAGE_NAME
+  version: latest # we use latest everywhere in the defaults.
+  port: $PORT # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: []
+  args: []
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: $PORT
+  readiness_probe:
+    httpGet:
+      path: /
+      port: $PORT
+  # add here any volumes to mount onto the pod. Example:
+  # volumes:
+  #   - name: myvolumename
+  #      hostPath:
+  #        path: /myvolumepath # where on the host machine
+  # add here any mounted volumes to make accessible to the container. Example:
+  # volumeMounts:
+  #   - name: myvolumename # the name from your volume above
+  #     mountPath: /path/ # where it should live in your container
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: $PORT # the number or name of the exposed port on the container
+    port: $PORT # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []

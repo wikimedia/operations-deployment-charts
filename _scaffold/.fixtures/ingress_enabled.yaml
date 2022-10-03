@@ -1,4 +1,4 @@
-tls:
+mesh:
   enabled: true
   image_version: 1.13.1-2
   public_port: 4666 # the port where TLS will be exposed
@@ -21,17 +21,17 @@ ingress:
   gatewayHosts:
     disableDefaultHosts: true
     extraFQDNs:
-    - somehost.somedomain.sometld
-    - another.somedomain.sometld
+      - somehost.somedomain.sometld
+      - another.somedomain.sometld
   httproutes:
-  - match:
-    - uri:
-        prefix: /blaaa
-  - match:
-    - uri:
-        prefix: /dsjsldfblaaa
-    route:
-    - destination:
-        host: blablabla
-        port:
-          number: 555
+    - match:
+        - uri:
+            prefix: /blaaa
+    - match:
+        - uri:
+            prefix: /dsjsldfblaaa
+      route:
+        - destination:
+            host: blablabla
+            port:
+              number: 555

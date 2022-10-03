@@ -1,0 +1,42 @@
+{
+    "namespace": "mesh",
+    "description": "Manifests to bring up the WMF service mesh.",
+    "modules": [
+        {
+            "name": "configuration",
+            "version": "1.0",
+            "depends": [
+                "base.meta:1.0"
+            ]
+        },
+        {
+            "name": "deployment",
+            "version": "1.0",
+            "depends": [
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "name",
+            "version": "1.0",
+            "depends": [
+                "base.name:1.0",
+                "mesh.configuration:1.0"
+            ]
+        },
+        {
+            "name": "networkpolicy",
+            "version": "1.0",
+            "depends": []
+        },
+        {
+            "name": "service",
+            "version": "1.0",
+            "depends": [
+                "base.helper:1.0",
+                "base.meta:1.0",
+                "base.name:1.0"
+            ]
+        }
+    ]
+}

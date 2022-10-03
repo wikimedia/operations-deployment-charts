@@ -1,0 +1,34 @@
+{
+    "namespace": "lamp",
+    "modules": [
+        {
+            "name": "common",
+            "version": "1.0",
+            "depends": [
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "httpd",
+            "version": "1.0",
+            "depends": [
+                "base.meta:1.0",
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "phpfpm",
+            "version": "1.0",
+            "depends": [
+                "base.helper:1.0",
+                "base.meta:1.0",
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "networkpolicy",
+            "version": "1.0",
+            "depends": []
+        }
+    ]
+}

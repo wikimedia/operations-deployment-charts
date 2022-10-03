@@ -26,13 +26,9 @@ class Scaffold
 
   def link_common_templates
     version = YAML.safe_load(@values)['helm_scaffold_version']
-    templates = FileList.new("common_templates/#{version}/*.tpl").map(&:strip)
     Dir.chdir(service_for('')) do
       File.symlink("../../common_templates/#{version}/default-network-policy-conf.yaml",
                    'default-network-policy-conf.yaml')
-    end
-    Dir.chdir(service_for('templates')) do
-      templates.each { |tpl| File.symlink("../../../#{tpl}", File.basename(tpl)) }
     end
   end
 

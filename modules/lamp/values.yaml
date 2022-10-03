@@ -1,0 +1,63 @@
+# basic structure for values strictly associated with this module
+app:
+  port: 8080
+
+lamp:
+  # wether to use unix sockets or tcp to communicate with php-fpm
+  fcgi_mode: FCGI_UNIX
+  # Allows to distinguish between installations
+  servergroup: default
+  ### HTTPD section ###
+  httpd:
+    # The version of the httpd-fcgi image
+    version: latest
+    # The port apache will be listening on
+    port: 8080
+    # Requests and limits for httpd
+    requests:
+      cpu: 500m
+      memory: 200M
+    limits:
+      cpu: 500m
+      memory: 200M
+    # custom apache configuration to inject
+    custom_config: ""
+    # The version of the prometheus-httpd-exporter image
+    exporter_version: latest
+  phpfpm:
+    # data about the image
+    image:
+      # The docker image for the main app
+      name: ~
+      # the version of said image
+      version: latest
+      # WMF pipeline specific: we can have multiple "flavours" of the same release.
+      # Leave blank to omit.
+      flavour: ~
+    # php-fpm configuration
+    # Opcache tunables
+    opcache:
+      # Opcache size
+      size: "100M"
+      # maximum number of accelerated files.
+      nofiles: 1024
+    # time in seconds after which a slow request will be logged.
+    slowlog_timeout: 1
+    # timeout for a request
+    timeout: 60
+    # number of workers. Typically 2x the CPU cores.
+    workers: 8
+    # APCu configuration
+    apc:
+      size: 200M
+    requests:
+      cpu: 1
+      memory: 500M
+    limits:
+      cpu: 2
+      memory: 1G
+
+## Other stuff that might also come from other modules
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent

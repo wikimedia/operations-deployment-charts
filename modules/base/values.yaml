@@ -1,0 +1,28 @@
+# Ingress-related helpers
+ingress:
+  enabled: false
+  keepNodePort: false
+
+# Canary usage. In most cases, this doesn't need to be
+# defined
+routed_via: production
+
+# Monitoring
+monitoring:
+  enabled: false
+
+# Values to override .Chart.Name
+chartName: ""
+
+app:
+  port: 8088
+
+# Kafka related
+# List of kafka brokers, usually provided by
+# configuration management
+kafka_brokers: {}
+
+# kafka-related configuration
+# allowed_clusters is a list of cluster names
+kafka:
+  allowed_clusters: ~

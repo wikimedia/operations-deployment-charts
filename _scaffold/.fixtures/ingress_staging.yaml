@@ -1,4 +1,4 @@
-tls:
+mesh:
   enabled: true
   image_version: 1.13.1-2
   public_port: 4666 # the port where TLS will be exposed
@@ -23,5 +23,5 @@ ingress:
   gatewayHosts:
     default: chart
     extraFQDNs:
-    - some.domain.name
-    - some2.domain.name
+      - some.domain.name
+      - some2.domain.name

@@ -1,0 +1,57 @@
+# Basic mesh-related data.
+mesh:
+  enabled: false
+  image_version: latest
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 8080
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners
+  listeners: []
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+app:
+  port: 8088
+
+# Deprecated: inject the puppet CA into the mesh container
+# Should be superseded by adding the certs directly into
+# the container, typically with the deb package
+# wmf-certificates
+puppet_ca_crt: "snakeoil"
+
+docker:
+  registry: "docker-registry.wikimedia.org"
+  pull_policy: IfNotPresent
