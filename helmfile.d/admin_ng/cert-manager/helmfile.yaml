@@ -13,6 +13,10 @@ templates:
 releases:
   - name: cert-manager
     chart: wmf-stable/cert-manager
+    {{- $version := .Values.chartVersions | get "wmf-stable/cert-manager" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     <<: *default
     needs:
       - kube-system/coredns
@@ -27,11 +31,19 @@ releases:
       - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
   - name: cfssl-issuer-crds
     chart: wmf-stable/cfssl-issuer-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/cfssl-issuer-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     <<: *default
     needs:
       - kube-system/namespaces
   - name: cfssl-issuer
     chart: wmf-stable/cfssl-issuer
+    {{- $version := .Values.chartVersions | get "wmf-stable/cfssl-issuer" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     <<: *default
     needs:
       - cert-manager/cert-manager
