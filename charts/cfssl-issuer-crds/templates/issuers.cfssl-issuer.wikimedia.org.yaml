@@ -1,0 +1,125 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.6.2
+  name: issuers.cfssl-issuer.wikimedia.org
+spec:
+  group: cfssl-issuer.wikimedia.org
+  names:
+    kind: Issuer
+    listKind: IssuerList
+    plural: issuers
+    singular: issuer
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Issuer is the Schema for the issuers API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: IssuerSpec defines the desired state of Issuer
+            properties:
+              authSecretName:
+                description: A reference to a Secret in the same namespace as the
+                  referent. If the referent is a ClusterIssuer, the reference instead
+                  refers to the resource with the given name in the configured 'cluster
+                  resource namespace', which is set as a flag on the controller component
+                  (and defaults to the namespace that the controller runs in). The
+                  secret needs to contain a field "key" containing the hex string
+                  used to authenticate against cfssl API as well as an optional "additional_data"
+                  field.
+                type: string
+              bundle:
+                description: A boolean specifying whether to include an "optimal"
+                  certificate bundle instead of the certificate.
+                type: boolean
+              label:
+                description: A string specifying which CFSSL signer to be appointed
+                  to sign the CSR. Label is mandatory as the info endpoint of the
+                  CFSSL API (which is used for health checking the API) requires it
+                  to be set.
+                type: string
+              profile:
+                description: A string specifying the signing profile for the CFSSL
+                  signer (a signer may have multiple different profiles configured).
+                  If omitted, the "default" profile is used.
+                type: string
+              url:
+                description: 'URL is one or more base URLs for the CFSSL API, for
+                  example: "https://sample-signer.example.com/api,https//cfssl.example.com".
+                  If multiple comma seperated URLs are given and the first server
+                  cannot be reached, the next is used. The client will proceed in
+                  this manner until the list of servers is exhausted, and then an
+                  error is returned.'
+                type: string
+            required:
+            - authSecretName
+            - label
+            - url
+            type: object
+          status:
+            description: IssuerStatus defines the observed state of Issuer
+            properties:
+              conditions:
+                description: List of status conditions to indicate the status of a
+                  CertificateRequest. Known condition types are `Ready`.
+                items:
+                  description: IssuerCondition contains condition information for
+                    an Issuer.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the timestamp corresponding
+                        to the last status change of this condition.
+                      format: date-time
+                      type: string
+                    message:
+                      description: Message is a human readable description of the
+                        details of the last transition, complementing reason.
+                      type: string
+                    reason:
+                      description: Reason is a brief machine readable explanation
+                        for the condition's last transition.
+                      type: string
+                    status:
+                      description: Status of the condition, one of ('True', 'False',
+                        'Unknown').
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: Type of the condition, known values are ('Ready').
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
