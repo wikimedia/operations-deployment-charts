@@ -179,12 +179,13 @@ net_istio:
       spec:
         hosts:
         - api-ro.discovery.wmnet
-        location: MESH_EXTERNAL
         ports:
-        - name: http-apiro
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
           number: 80
           protocol: HTTP
-        - name: https-apiro
+          targetPort: 443
+        - name: https-port
           number: 443
           protocol: HTTPS
         resolution: DNS
@@ -192,9 +193,13 @@ net_istio:
       spec:
         hosts:
         - eventgate-main.discovery.wmnet
-        location: MESH_EXTERNAL
         ports:
-        - name: https-eventgate-main
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 4480
+          protocol: HTTPS
+          targetPort: 4492
+        - name: https-port
           number: 4492
           protocol: HTTPS
     resolution: DNS
@@ -203,9 +208,13 @@ net_istio:
       spec:
         host: api-ro.discovery.wmnet
         trafficPolicy:
+          # The configuration is related to TLS egress origination.
+          # See https://istio.io/v1.9/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic
+          # The TLS settings will force istio-proxy to pick up the HTTPS port
+          # set in the related ServiceEntry.
           portLevelSettings:
           - port:
-              number: 443
+              number: 80
             tls:
               mode: SIMPLE
           connectionPool:
@@ -220,6 +229,15 @@ net_istio:
       spec:
         host: eventgate-main.discovery.wmnet
         trafficPolicy:
+          # The configuration is related to TLS egress origination.
+          # See https://istio.io/v1.9/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic
+          # The TLS settings will force istio-proxy to pick up the HTTPS port
+          # set in the related ServiceEntry.
+          portLevelSettings:
+          - port:
+              number: 4480
+            tls:
+              mode: SIMPLE
           connectionPool:
             tcp:
               maxConnections: 10
@@ -235,31 +253,12 @@ net_istio:
         - mesh
         hosts:
         - '*.wikipedia.org'
-        - api-ro.discovery.wmnet
         http:
         - match:
           - port: 80
           route:
           - destination:
               host: api-ro.discovery.wmnet
-              port:
-                number: 443
-    - name: eventgate-main-vs
-      spec:
-        gateways:
-        - mesh
-        hosts:
-        - eventgate-main.discovery.wmnet
-        tls:
-        - match:
-          - port: 4492
-            sniHosts:
-            - eventgate-main.discovery.wmnet
-          route:
-          - destination:
-              host: eventgate-main.discovery.wmnet
-              port:
-                number: 4492
   controller:
     image: knative-net-istio-controller
     version: 0.18.1-4
