@@ -197,12 +197,12 @@ net_istio:
         - name: http-port
           # This port is used by the Destination Rule for TLS egress origination
           number: 4480
-          protocol: HTTPS
+          protocol: HTTP
           targetPort: 4492
         - name: https-port
           number: 4492
           protocol: HTTPS
-    resolution: DNS
+        resolution: DNS
     destination_rules:
     - name: https-api-ro
       spec:
