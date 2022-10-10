@@ -259,6 +259,15 @@ net_istio:
           route:
           - destination:
               host: api-ro.discovery.wmnet
+          headers:
+            request:
+              set:
+                # The TLS egress origination settings (see the related destination
+                # rule's comment) have the side effect of presenting
+                # a 'x-forwarded-proto: http' header to the MW API, that in turn
+                # returns a warning in every response. To circumvent this problem,
+                # let's explicitly set the header.
+                x-forwarded-proto: https
   controller:
     image: knative-net-istio-controller
     version: 0.18.1-4
