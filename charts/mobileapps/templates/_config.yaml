@@ -103,4 +103,7 @@ services:
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
       mobile_html_local_rest_api_base_uri_template: //{{ `{{domain}}` }}/api/rest_v1/
       mobile_html_csp: {{ .Values.main_app.mobile_html_csp }}
+      mobile_view_languages:
+        - zh
+        - kk
 {{- end -}}
