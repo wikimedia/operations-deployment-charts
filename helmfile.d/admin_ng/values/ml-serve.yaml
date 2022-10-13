@@ -240,7 +240,7 @@ net_istio:
               mode: SIMPLE
           connectionPool:
             tcp:
-              maxConnections: 10
+              maxConnections: 50
               connectTimeout: 5s
             http:
               http1MaxPendingRequests: 100
