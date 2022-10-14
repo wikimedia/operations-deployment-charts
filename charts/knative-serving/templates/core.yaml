@@ -1072,6 +1072,9 @@ data:
     loglevel.certcontroller: "info"
     loglevel.istiocontroller: "info"
     loglevel.nscontroller: "info"
+  {{- range $k, $v := .Values.core.config_logging }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2018 The Knative Authors
