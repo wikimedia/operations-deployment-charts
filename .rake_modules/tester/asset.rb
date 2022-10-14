@@ -96,7 +96,7 @@ module Tester
     def lint; end
 
     # Validate the manifest, by first verifying it's valid yaml,
-    # then running it through kubeconform or kubeyaml.
+    # then running it through kubeconform
     def validate(options)
       # Avoid running if the asset is marked as bad
       return unless should_test?
@@ -121,8 +121,6 @@ module Tester
 
         if options[:kubeconform]
           r[label] = validate_kubeconform(outcome, options[:kube_versions])
-        elsif options[:kubeyaml]
-          r[label] = validate_kubeyaml(outcome, options[:kube_versions])
         end
       end
     end
@@ -211,56 +209,6 @@ module Tester
       rescue StandardError => e
         TestOutcome.new('', 'Error parsing the helm template output'.red + "\n#{e}", 2, cmd)
       end
-    end
-
-    # Validates the provided manifest collection running every element through kubeyaml
-    def validate_kubeyaml(outcome, versions)
-      # kubeyaml does not support versions > 1.19 and requires
-      # the patchlevel to not be present.
-      filtered_versions = versions.map do |version|
-        v = version.split('.').map { |v| v.to_i }
-        next if v[1] > 19
-
-        "#{v[0]}.#{v[1]}"
-      end.compact
-      # kubeyaml expects the versions as a comma separated string
-      versions = filtered_versions.join(',')
-
-      # Kubeyaml does only validate the first object in a yaml stream.
-      # See https://github.com/chuckha/kubeyaml/issues/7
-      # So we split the manifest in single yaml documents.
-      docs = outcome.out.split(/^---/)
-      results = KubeyamlTestOutcome.new("kubeyaml -versions #{versions} -- #{label}")
-      source = 'root'
-
-      # There may be multiple objects (doc) in one source file (document).
-      # In that case, no new Source line is emitted for following objects
-      # and we need to reuse the last one.
-      docsrc = docs.map do |doc|
-        if (source_match = doc.match(%r{^# Source: ([a-zA-Z0-9/.-]*)$}))
-          source = source_match.captures[0]
-        end
-        # Remove the # Source: line. It can be helpful if the template ends up
-        # fully empty as kubeyaml won't then emit a useless warning
-        doc = doc.strip.gsub(%r{^# Source: [a-zA-Z0-9/.-]*$}, '').strip
-        [source, doc]
-      end
-
-      tp = ThreadPool.new(nthreads: [10, Etc.nprocessors].max)
-      mutex = Mutex.new
-      docsrc.each do |src, doc|
-        next if doc.empty?
-
-        tp.run do
-          # Run kubeyaml
-          outcome = _exec("kubeyaml -versions #{versions}", doc)
-          mutex.synchronize do
-            results.add(src, outcome)
-          end
-        end
-      end
-      tp.join
-      results
     end
 
     # Validates the provided manifest collection running every element through kubeconform

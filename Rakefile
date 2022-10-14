@@ -103,7 +103,7 @@ task :lint do |_t, args|
   Rake::Task[:check_charts].reenable
 end
 
-desc 'Runs helm template on all charts and validate the output with kubeyaml'
+desc 'Runs helm template on all charts and validate the output with kubeconform'
 task :validate_template do |_t, args|
   charts = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check_charts].invoke('validate', charts)
@@ -250,7 +250,7 @@ task admin_lint: %i[check_dep repo_update] do
   Rake::Task[:check].reenable
 end
 
-desc 'Runs helmfile template on admin_ng for all environments and validate the output with kubeyaml'
+desc 'Runs helmfile template on admin_ng for all environments and validate the output with kubeconform'
 task admin_validate: %i[check_dep repo_update] do |_t, args|
   envs = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check].invoke('admin', 'validate', envs)

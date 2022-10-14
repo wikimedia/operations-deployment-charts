@@ -32,41 +32,7 @@ module Tester
     end
   end
 
-  # Specialized outcome for kubeyaml tests.
-  class KubeyamlTestOutcome < TestOutcome
-    attr_reader :outcomes
-    def initialize(command)
-      @out = ''
-      @err = ''
-      @exit_status = 0
-      @outcomes = {}
-      @command = command
-    end
-
-    def add(src, outcome)
-      @outcomes[src] ||= []
-      @outcomes[src] << outcome
-    end
-
-    def ok?
-      @outcomes.values.map { |outcomes| outcomes.reject(&:ok?) }.flatten.empty?
-    end
-
-    def err
-      err = {}
-      @outcomes.each do |source, outcomes|
-        counter = 0
-        outcomes.each do |outcome|
-          next if outcome.out.nil?
-
-          err["#{source}[#{counter}]"] = outcome.out
-          counter += 1
-        end
-      end
-      err
-    end
-  end
-
+  # Specialized outcome for kubeconform tests.
   class KubeconformTestOutcome < TestOutcome
     attr_reader :outcomes
     def initialize()
@@ -87,8 +53,8 @@ module Tester
     def err
       err = {}
       @outcomes.each do |version, outcome|
-        next if outcome.out.nil?
-        err["k8s v#{version}"] = outcome.out
+        next if outcome.out.include?('Errors: 0') and outcome.out.include?('Invalid: 0')
+        err["k8s v#{version}"] = outcome.out.gsub(/stdin - /, '')
       end
       err
     end

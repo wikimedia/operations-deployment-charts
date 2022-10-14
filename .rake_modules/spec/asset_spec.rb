@@ -4,7 +4,8 @@ require_relative '../tester/asset'
 require_relative '../utils'
 require 'rake'
 
-kubeyaml = which('kubeyaml').nil?
+KUBERNETES_VERSIONS = ['1.16.15' , '1.23.6'].freeze
+kubeconform = which('kubeconform').nil?
 
 def factory(to_run = nil)
   Tester::BaseTestAsset.new 'charts/foobar/Chart.yaml', to_run
@@ -50,16 +51,33 @@ describe Tester::BaseTestAsset do
         expect(asset.should_run?).to be true
         expect(asset.ok?).to be true
       end
-      it 'should not run when marked bad, and be not ok' do
-        asset.bad('msg', 'cmd')
-        expect(asset.should_run?).to be false
-        expect(asset.ok?).to be false
-      end
     end
     context 'when void' do
       let(:asset) { factory nil }
       it 'should run' do
         expect(asset.should_run?).to be true
+      end
+    end
+  end
+
+  describe '.should_test?' do
+    context 'when excluded' do
+      let(:asset) { factory %w[baz bar] }
+      it 'should not test' do
+        expect(asset.should_test?).to be false
+        expect(asset.ok?).to be true
+      end
+    end
+    context 'when included' do
+      let(:asset) { factory %w[baz foobar] }
+      it 'should test' do
+        expect(asset.should_test?).to be true
+        expect(asset.ok?).to be true
+      end
+      it 'should not test when marked bad, and be not ok' do
+        asset.bad('msg', 'cmd')
+        expect(asset.should_test?).to be false
+        expect(asset.ok?).to be false
       end
     end
   end
@@ -99,11 +117,11 @@ describe Tester::BaseTestAsset do
       end
 
       it 'should have no output' do
-        expect(outcome.out).to be_empty
+        expect(outcome.out).to be_nil
       end
 
       it 'should have no error' do
-        expect(outcome.err).to be_empty
+        expect(outcome.err).to be_nil
       end
 
       it 'should have exit status 0' do
@@ -119,7 +137,7 @@ describe Tester::BaseTestAsset do
         asset.validate_yaml(Tester::TestOutcome.new("a: test: [1, 2]\n - 1", '', 0, 'lol'))
       end
       it 'should have no output' do
-        expect(outcome.out).to be_empty
+        expect(outcome.out).to be_nil
       end
 
       it 'should have proper error reporting' do
@@ -132,11 +150,11 @@ describe Tester::BaseTestAsset do
       end
     end
   end
-  describe 'validate_kubeyaml', unless: kubeyaml do
+  describe 'validate_kubeconform', unless: kubeconform do
     context 'when the output contains multiple valid documents' do
       let(:results) do
         input = Tester::TestOutcome.new(valid_manifest, '', 0, 'foobar')
-        asset.validate_kubeyaml(input, '1.19')
+        asset.validate_kubeconform(input, KUBERNETES_VERSIONS)
       end
 
       it 'should be ok' do
@@ -146,30 +164,25 @@ describe Tester::BaseTestAsset do
         expect(results.err).to be_empty
       end
       it 'should have scanned the whole document' do
-        # The fixture contains 7 docs, one of which empty
-        # But we only have 5 valid sources
-        expect(results.outcomes.values.count).to eq(5)
-        # OTOH, we have 6 total validations that happened:
-        expect(results.outcomes.values.flatten.count).to eq(6)
+        KUBERNETES_VERSIONS.each do |kubernetes_version|
+          # The fixture contains 7 docs, one of which empty
+          expect(results.outcomes[kubernetes_version].out.include?('Valid: 6')).to be_truthy
+        end
       end
     end
     context 'when the output has invalid documents' do
       let(:results) do
         input = Tester::TestOutcome.new(invalid_manifest, '', 0, 'foobar')
-        asset.validate_kubeyaml(input, '1.19')
+        asset.validate_kubeconform(input, KUBERNETES_VERSIONS)
       end
 
       it 'should not be ok' do
         expect(results.ok?).to eq(false)
       end
-      it 'should contain 3 errors' do
-        expect(results.err.keys).to(
-          contain_exactly(
-            'foobar/templates/deployment.yaml[0]',
-            'foobar/templates/configmap.yaml[0]',
-            'foobar/templates/configmap.yaml[1]'
-          )
-        )
+      it 'should contain 2 invalid ressources and 1 error' do
+        KUBERNETES_VERSIONS.each do |kubernetes_version|
+          expect(results.err["k8s v#{kubernetes_version}"].include?('Invalid: 2, Errors: 1')).to be_truthy
+        end
       end
     end
   end
@@ -187,7 +200,7 @@ describe Tester::BaseTestAsset do
         allow(asset).to receive(:collect_fixtures).and_return({ 'foobar': nil })
         asset
       end
-      context 'without kubeyaml' do
+      context 'without kubeconform' do
         let(:result) do
           asset.validate({})
           asset.result[:validate]
@@ -195,20 +208,20 @@ describe Tester::BaseTestAsset do
         it 'should pass validation' do
           expect(asset.ok?).to be true
         end
-        it 'should not run kubeyaml' do
-          expect(result[:foobar]).not_to be_a(Tester::KubeyamlTestOutcome)
+        it 'should not run kubeconform' do
+          expect(result[:foobar]).not_to be_a(Tester::KubeconformTestOutcome)
         end
       end
-      context 'with kubeyaml' do
+      context 'with kubeconform' do
         let(:result) do
-          asset.validate({ kubeyaml: true, kube_versions: '1.19' })
+          asset.validate({ kubeconform: true, kube_versions: KUBERNETES_VERSIONS })
           asset.result[:validate]
         end
         it 'should pass validation' do
           expect(asset.ok?).to be true
         end
-        it 'should have run kubeyaml' do
-          expect(result[:foobar]).to be_a(Tester::KubeyamlTestOutcome)
+        it 'should have run kubeconform' do
+          expect(result[:foobar]).to be_a(Tester::KubeconformTestOutcome)
         end
       end
     end
@@ -218,7 +231,7 @@ describe Tester::BaseTestAsset do
         asset = factory
         allow(asset).to receive(:templates).and_return({ 'foobar': tpl })
         allow(asset).to receive(:collect_fixtures).and_return({ 'foobar': nil })
-        asset.validate({ kubeyaml: true, kube_versions: '1.19' })
+        asset.validate({ kubeconform: true, kube_versions: KUBERNETES_VERSIONS })
         asset
       end
       let(:result) do

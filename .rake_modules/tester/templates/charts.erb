@@ -31,10 +31,13 @@
   Report for test case <%= lbl.red %>
   -------------------------------
 
-  <% if error.is_a?(KubeyamlTestOutcome) || error.is_a?(KubeconformTestOutcome)-%>
-  <% error.err.each do  |l, e| %>
-  <%= l.red %>: <%= e.split("\n").shift %>
-  <% end # closes kubeyaml error loop-%>
+  <% if error.is_a?(KubeconformTestOutcome)-%>
+  <%- error.err.each do |kubever, e| -%>
+    <%= kubever.red %>:
+    <%- e.split("\n").each do |err| -%>
+      <%= err %>
+    <%- end %>
+  <% end # closes kubeconform error loop-%>
   <% else -%>
   Yaml validation error:
   <%= error.err.indent(2) %>

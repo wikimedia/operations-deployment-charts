@@ -23,8 +23,7 @@ module Tester
     # @param pattern [String] A glob pattern used to find assets.
     # @param options [Hash<Symbol, Array<String>>] can enumerate tests to run and assets names as an array
     def initialize(pattern, options)
-      # If available, kubeconform will take precedence over kubeyaml
-      @validate_options = { kubeyaml: which('kubeyaml'), kubeconform: which('kubeconform'), kube_versions: KUBERNETES_VERSIONS }
+      @validate_options = { kubeconform: which('kubeconform'), kube_versions: KUBERNETES_VERSIONS }
       @assets = find_assets(pattern, options.fetch(:assets, nil))
       # If you're unfamiliar with ruby: using self.class here
       # ensures we can properly override default tests in the children classes.
