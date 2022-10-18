@@ -27,7 +27,6 @@ templates:
     values:
       - /etc/helmfile-defaults/mediawiki/httpd.yaml # Virtual host data used as input for _site_helpers.yaml
       - /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml # mcrouter pools, puppet generated
-      - /etc/helmfile-defaults/mediawiki/nutcracker_pools.yaml # nutcracker pools, puppet generated
       - /etc/helmfile-defaults/mediawiki/tlsproxy.yaml # discovery listeners
       - /etc/helmfile-defaults/mediawiki/logging.yaml # rsyslog configuration
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
