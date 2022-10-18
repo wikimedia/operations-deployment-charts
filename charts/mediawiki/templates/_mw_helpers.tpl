@@ -37,18 +37,6 @@ Network egress for MediaWiki
     {{- end }}
   {{- end }}
 {{- end }}
-{{- if .nutcracker.enabled }}
-  {{- range .nutcracker.pools }}
-    {{- range .servers }}
-- to:
-  - ipBlock:
-      cidr: {{ .host }}/32
-  ports:
-  - protocol: TCP
-    port: {{ .port }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 {{- with .egress.database_networks }}
 {{/* databases. For now we just ask for a CIDR and open ports 3306 and 3311 through 3320 */}}
 - to:

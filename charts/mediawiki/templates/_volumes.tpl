@@ -38,12 +38,6 @@
   configMap:
     name: {{ $release }}-mcrouter-config
 {{- end }}
-{{- if .Values.mw.nutcracker.enabled }}
-# Nutcracker configuration
-- name: {{ $release }}-nutcracker-config
-  configMap:
-    name: {{ $release }}-nutcracker-config
-{{- end }}
 {{- if .Values.mw.logging.rsyslog }}
 - name: {{ $release }}-rsyslog-config
   configMap:

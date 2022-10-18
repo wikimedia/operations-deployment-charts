@@ -31,10 +31,6 @@ spec:
       - port: 9151
         protocol: TCP
       {{- end }}
-      {{- if .Values.mw.nutcracker.enabled }}
-      - port: 9191
-        protocol: TCP
-      {{- end }}
       {{- end }}
       {{- include "tls.networkpolicy" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}

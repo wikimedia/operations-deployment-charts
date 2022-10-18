@@ -141,9 +141,9 @@ mw:
   localmemcached:
     # Enable to start memcache daemons in the pod, one for each of the
     # ports listed.  These can serve as placeholders for
-    # mcrouter/nutcracker to allow for image testing in non-production
-    # environments.  If this section is enabled then the mcrouter and
-    # nutcracker sections must be disabled.
+    # mcrouter to allow for image testing in non-production
+    # environments.  If this section is enabled then the mcrouter
+    # sections must be disabled.
     enabled: false
     ports: [ 11212, 11213 ]
     resources:
@@ -196,28 +196,6 @@ mw:
         remote:
           route: /remote/mw-wan
           pool: remote-pool
-
-  nutcracker:
-    enabled: false
-    resources:
-      requests:
-        cpu: 200m
-        memory: 50Mi
-      limits:
-        cpu: 400m
-        memory: 100Mi
-    # To be defined in the private files
-    redis_password: "1234"
-    pools:
-      - name: pool-A
-        port: 12000
-        servers:
-          - shard: "1"
-            host: 10.10.10.100
-            port: 6379
-          - shard: "2"
-            host: 10.10.10.100
-            port: 6380
   sites:
     - name: wikipedia.local
       priority: 1
@@ -283,8 +261,5 @@ common_images:
   mcrouter:
     mcrouter: mcrouter:latest
     exporter: prometheus-mcrouter-exporter:latest
-  nutcracker:
-    nutcracker: nutcracker:latest
-    exporter: prometheus-nutcracker-exporter:latest
   memcached: memcached:latest
   wmfdebug: wmfdebug:latest
