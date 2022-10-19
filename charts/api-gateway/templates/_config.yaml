@@ -394,6 +394,12 @@ BEGIN descriptions/mobileapps_cluster route definition
                   cluster: {{ $discovery_route}}_cluster
 {{- if $discovery_opts.host }}
                   host_rewrite_literal: '{{ $discovery_opts.host }}'
+{{- else if $discovery_opts.host_rewrite_path }}
+                  host_rewrite_path_regex:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                    substitution: '{{ $discovery_opts.host_rewrite_path }}'
 {{- end }}
 {{- if $discovery_opts.ratelimit_config }}
                 metadata:

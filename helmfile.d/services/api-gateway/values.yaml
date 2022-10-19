@@ -52,17 +52,27 @@ main_app:
       port: 4006
       timeout: 30s
       path: linkrecommendation
+
     # Models/endpoints on Lift Wing (run by ML Team)
     # The `lw/` prefix is just convention, and does not have any
     # more technical relevance than e.g. using lw-inference would.
     # Inference models, e.g.
     # https://api.wikimedia.org/services/lw/inference/v1/models/enwiki-articlequality:predict
-    inference:
+    lw_inference_articlequality:
       tls: true
       port: 30443
       timeout: 30s
-      path: lw/inference
-      host: enwiki-articlequality.revscoring-articlequality.wikimedia.org
+      path: 'lw/inference/v1/models/(\w+)wiki-articlequality:predict'
+      host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
+      internalhost: inference.discovery.wmnet
+
+    lw_inference_goodfaith:
+      tls: true
+      port: 30443
+      timeout: 30s
+      path: 'lw/inference/v1/models/(\w+)wiki-goodfaith:predict'
+      host: '\1wiki-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
+      internalhost: inference.discovery.wmnet
 
   #TODO regex on v1
   pathing_map:
