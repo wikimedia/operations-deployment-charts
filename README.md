@@ -9,9 +9,21 @@ in developing software and deploying it to production.
 Creating a new chart
 --------------------
 
-If you want to create a new chart use the `create_new_service.sh` script, test
-it and upload a change to [Gerrit](https://gerrit.wikimedia.org). Then wait
-for a review.
+If you want to create a new chart:
+
+### Pre-requisites ###
+
+* Ruby 3.0 or higher
+* the [ruby git gem](https://rubygems.org/gems/git/versions/1.12.0) (either
+  installed through `gem install git` or through your system's package manager)
+
+### Steps ###
+
+1. run `./create_new_service.sh`
+1. follow the prompts
+1. test the new chart
+1. commit and upload the change to [Gerrit](https://gerrit.wikimedia.org)
+1. wait for a review
 
 ### Template names are global ###
 
@@ -68,7 +80,7 @@ data.
 **NOTE**: During the integration testing of `helmfile.d/services` charts are
 pulled from the *merged and deployed* charts in the chart repository. For this
 reason, changes to a chart and related changes to its helmfile configuration
-must be uploaded to gerrit and tested separately. Hemlfile changes for a new
+must be uploaded to gerrit and tested separately. Helmfile changes for a new
 chart version must be tested after the chart changes have been merged and
 updated in the chart repository.
 
