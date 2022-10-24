@@ -20,6 +20,15 @@ resources:
       value: {{ .Values.php.servergroup }}
     - name: APACHE_RUN_PORT
       value: "{{ .Values.php.httpd.port }}"
+    {{- with .Values.php.httpd.log }}
+    # If set to "ecs", the pod will log in ecs format
+    - name: LOGFORMAT
+      value: "{{ .format | default "wmfjson" }}"
+    # If set to 1, it will skip logging metrics/alerting/k8s requests
+    # that we don't really care about.
+    - name: LOG_SKIP_SYSTEM
+      value: "{{ .skip_system | default "0" }}"
+    {{- end }}
   ports:
     - name: httpd
       containerPort: {{ .Values.php.httpd.port }}
