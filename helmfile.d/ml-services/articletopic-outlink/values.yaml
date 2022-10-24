@@ -44,6 +44,8 @@ inference:
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20220727080723/"
+      - name: MODEL_VERSION
+        value: "alloutlinks_202012"
       - name: EVENTGATE_URL
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
