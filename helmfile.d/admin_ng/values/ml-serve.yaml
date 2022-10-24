@@ -220,11 +220,14 @@ net_istio:
           connectionPool:
             tcp:
               maxConnections: 100
-              connectTimeout: 5s
+              connectTimeout: 30s
             http:
-              http1MaxPendingRequests: 100
-              http2MaxRequests: 1000
-              maxRetries: 1
+              # Rationale (may need to be revisited after upgrading Istio):
+              # https://phabricator.wikimedia.org/T320374#8338627
+              idleTimeout: 5s
+              maxRequestsPerConnection: 1000
+              # See retries implemented in the Virtual Service settings
+              maxRetries: 0
     - name: https-eventgate-dr
       spec:
         host: eventgate-main.discovery.wmnet
@@ -241,11 +244,13 @@ net_istio:
           connectionPool:
             tcp:
               maxConnections: 50
-              connectTimeout: 5s
+              connectTimeout: 30s
             http:
-              http1MaxPendingRequests: 100
-              http2MaxRequests: 1000
-              maxRetries: 1
+              # Rationale (may need to be revisited after upgrading Istio):
+              # https://phabricator.wikimedia.org/T320374#8338627
+              idleTimeout: 5s
+              maxRequestsPerConnection: 1000
+              maxRetries: 3
     virtual_services:
     - name: mediawiki-api-vs
       spec:
@@ -259,6 +264,11 @@ net_istio:
           route:
           - destination:
               host: api-ro.discovery.wmnet
+          retries:
+            # Rationale (may need to be revisited after upgrading Istio):
+            # https://phabricator.wikimedia.org/T320374#8338627
+            attempts: 3
+            retryOn: connect-failure,refused-stream,reset
           headers:
             request:
               set:
