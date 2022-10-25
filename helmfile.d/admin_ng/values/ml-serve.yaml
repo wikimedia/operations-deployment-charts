@@ -250,7 +250,8 @@ net_istio:
               # https://phabricator.wikimedia.org/T320374#8338627
               idleTimeout: 5s
               maxRequestsPerConnection: 1000
-              maxRetries: 3
+              # See retries implemented in the Virtual Service settings
+              maxRetries: 0
     virtual_services:
     - name: mediawiki-api-vs
       spec:
@@ -274,8 +275,34 @@ net_istio:
               set:
                 # The TLS egress origination settings (see the related destination
                 # rule's comment) have the side effect of presenting
-                # a 'x-forwarded-proto: http' header to the MW API, that in turn
-                # returns a warning in every response. To circumvent this problem,
+                # a 'x-forwarded-proto: http' header to the target API, that in turn
+                # may return a warning in every response. To circumvent this problem,
+                # let's explicitly set the header.
+                x-forwarded-proto: https
+    - name: eventgate-main-vs
+      spec:
+        gateways:
+        - mesh
+        hosts:
+        - 'eventgate-main.discovery.wmnet'
+        http:
+        - match:
+          - port: 4480
+          route:
+          - destination:
+              host: eventgate-main.discovery.wmnet
+          retries:
+            # Rationale (may need to be revisited after upgrading Istio):
+            # https://phabricator.wikimedia.org/T320374#8338627
+            attempts: 3
+            retryOn: connect-failure,refused-stream,reset
+          headers:
+            request:
+              set:
+                # The TLS egress origination settings (see the related destination
+                # rule's comment) have the side effect of presenting
+                # a 'x-forwarded-proto: http' header to the target API, that in turn
+                # may return a warning in every response. To circumvent this problem,
                 # let's explicitly set the header.
                 x-forwarded-proto: https
   controller:
