@@ -5,7 +5,7 @@ monitoring:
   enabled: true
 
 tls:
-  enabled: true
+  enabled: false
 
 discovery:
   listeners:
@@ -13,6 +13,8 @@ discovery:
   - swift-codfw
 
 main_app:
+
+  version: 2022-10-11-135003-production
 
   # 4 workers per pod in production
   thumbor_ports: [8801, 8802, 8803, 8804]
