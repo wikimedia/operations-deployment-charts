@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: coredns
   namespace: kube-system
+  labels:
+    {{- include "coredns.labels" . | nindent 4 }}
 data:
   Corefile: |
     .:53 {

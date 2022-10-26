@@ -5,7 +5,8 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: kube-dns
-    app.kubernetes.io/name: "CoreDNS"
+    app: "coredns"
+    {{- include "coredns.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:

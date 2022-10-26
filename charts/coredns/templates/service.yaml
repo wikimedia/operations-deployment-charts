@@ -8,7 +8,7 @@ metadata:
     # TODO: Deprecated label, should be removed at some point.
     # https://github.com/kubernetes/kubernetes/issues/72757
     kubernetes.io/cluster-service: "true"
-    app.kubernetes.io/name: "CoreDNS"
+    {{- include "coredns.labels" . | nindent 4 }}
 spec:
   selector:
     k8s-app: kube-dns
