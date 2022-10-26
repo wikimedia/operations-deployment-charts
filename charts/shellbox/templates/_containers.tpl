@@ -22,7 +22,7 @@ resources:
       value: "{{ .Values.php.httpd.port }}"
     {{- with .Values.php.httpd.log }}
     # If set to "ecs", the pod will log in ecs format
-    - name: LOGFORMAT
+    - name: LOG_FORMAT
       value: "{{ .format | default "wmfjson" }}"
     # If set to 1, it will skip logging metrics/alerting/k8s requests
     # that we don't really care about.
