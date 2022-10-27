@@ -53,6 +53,18 @@ namespaces:
     pspClusterRole: allow-mediawiki-psp
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
+  mw-api-int:
+    pspClusterRole: allow-mediawiki-psp
+  mw-api-ext:
+    pspClusterRole: allow-mediawiki-psp
+  mw-jobrunner:
+    pspClusterRole: allow-mediawiki-psp
+# Commented out until discussion of videoscaler on kubernetes is done
+# https://phabricator.wikimedia.org/T321899 
+#  mw-videoscaler:
+#    pspClusterRole: allow-mediawiki-psp
+  mw-web:
+    pspClusterRole: allow-mediawiki-psp
   proton: {}
   push-notifications: {}
   rdf-streaming-updater:
