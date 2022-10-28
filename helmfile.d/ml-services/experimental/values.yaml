@@ -50,7 +50,11 @@ inference_services:
   - name: "revert-risk-model"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2022-10-26-142952-publish"
+      image_version: "2022-10-28-090910-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/experimental/revertrisk/20221026144108/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+        - name: REQUESTS_CA_BUNDLE
+          value: "/etc/ssl/certs/wmf-ca-certificates.crt"
