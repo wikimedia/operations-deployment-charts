@@ -98,6 +98,8 @@ namespaces:
     allowCriticalPods: true
     labels:
       istio-injection: disabled
+  stream-enrichment-poc:
+    deployTLSCertificate: false
 net_istio:
   ingressgateway:
     servers:
