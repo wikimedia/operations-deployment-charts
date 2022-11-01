@@ -52,10 +52,3 @@ spec:
         - name: statsd-config
           configMap:
             name: {{ template "wmf.releasename" . }}-statsd-config
-        - name: thumbor-key
-          secret:
-            secretName: {{ include "wmf.releasename" . }}-thumbor-key
-            items:
-              - key: thumbor.key
-                path: thumbor.key
-                mode: 0555

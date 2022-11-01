@@ -69,13 +69,8 @@ resources:
   image: "{{ $.Values.docker.registry }}/{{ $.Values.main_app.image }}:{{ $.Values.main_app.version }}"
   imagePullPolicy: {{ $.Values.docker.pull_policy }}
   command:
-    - "/opt/lib/python/site-packages/bin/thumbor"
-    - "--port"
+    - "/srv/service/entrypoint-prod.sh"
     - "{{ $thumbor_port }}"
-    - "--keyfile"
-    - "/etc/thumbor.key"
-    - "--conf"
-    - "/etc/thumbor.d/"
   {{- if $.Values.main_app.args }}
   args:
     {{- range $.Values.main_app.args }}
@@ -101,9 +96,6 @@ resources:
   volumeMounts:
     - name: thumbor-config
       mountPath: /etc/thumbor.d
-    - name: thumbor-key
-      mountPath: /etc/thumbor.key
-      subPath: thumbor.key
 {{- end }}
 
 {{- if .Values.monitoring.enabled }}
