@@ -158,10 +158,10 @@ statsd:
   version: "latest"
   requests:
     cpu: 200m
-    memory: 50Mi
+    memory: 150Mi
   limits:
     cpu: 400m
-    memory: 100Mi
+    memory: 250Mi
 
   name: thumbor
   host: localhost
@@ -207,10 +207,10 @@ nutcracker:
   exporter: "prometheus-nutcracker-exporter:latest"
   requests:
     cpu: 200m
-    memory: 50Mi
+    memory: 150Mi
   limits:
     cpu: 400m
-    memory: 100Mi
+    memory: 250Mi
   servers:
     - ip: 127.0.0.1
       port: 1234
