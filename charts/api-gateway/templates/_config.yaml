@@ -304,6 +304,9 @@ static_resources:
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
+{{- /*
+BEGIN restbase route definition
+*/}}
                 match:
                   prefix: "/feed/"
                 route:
@@ -317,6 +320,14 @@ static_resources:
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: restbase_cluster
+
+                match:
+                  prefix: "/api/"
+                route:
+                  cluster: restbase_cluster
+{{- /*
+END restbase route definition
+*/}}
 {{- /*
 BEGIN descriptions/mobileapps_cluster route definition
 */}}
