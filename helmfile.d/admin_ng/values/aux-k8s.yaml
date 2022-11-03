@@ -57,52 +57,9 @@ namespaces:
     systemNamespace: true
     allowCriticalPods: true
     pspClusterRole: 'allow-privileged-psp'
-    labels:
-      istio-injection: 'disabled'
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
-    labels:
-      istio-injection: 'disabled'
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
-    labels:
-      istio-injection: 'disabled'
-
-net_istio:
-  ingressgateway:
-    servers:
-    # The 'hosts' field correspond to the list of backend routes that
-    # Knative/Istio will allow/configure on the Gateway. For example,
-    # if the FQDN for a Kfserving backend is something-test.example.com,
-    # we can allow it in multiple ways:
-    # 1) More specific: 'something-test.example.com'
-    # 2) Less specific: '*.example.com'
-    # 3) All traffic allowed: '*'
-    # For the moment option (3) is fine, but we'll need to review the choice.
-    - hosts:
-        - '*'
-      port:
-        name: 'https'
-        number: 443
-        protocol: 'HTTPS'
-      tls:
-        mode: SIMPLE
-        minProtocolVersion: 'TLSV1_2'
-        # Please note:
-        # This corresponds to the name of a TLS Secret deployed
-        # to the istio-system namespace. We deploy it via
-        # helmfile_namespace_certs.yaml.
-        credentialName: 'knative-serving-tls-certificate'
-
-# Istio Gateway config: The list of ports need to be kept in sync with what
-# stated in the related custom_deploy.d's istioctl config.
-istio:
-  gateways:
-    ingressgateway:
-      ports:
-        - 8443
-    cluster-local-gateway:
-      ports:
-        - 8080
