@@ -14,11 +14,17 @@ discovery:
 
 main_app:
 
-  version: 2022-11-02-110112-production
+  version: 2022-11-03-154007-production
 
   # 4 workers per pod in production
   thumbor_ports: [8801, 8802, 8803, 8804]
 
+service:
+  deployment: production
+  port:
+    # We will need to change this to 8800 for use alongside existing
+    # thumbor nodes.
+    nodePort: 4112
 
 networkpolicy:
   egress:
