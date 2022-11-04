@@ -269,7 +269,7 @@ net_istio:
             # Rationale (may need to be revisited after upgrading Istio):
             # https://phabricator.wikimedia.org/T320374#8338627
             attempts: 3
-            retryOn: connect-failure,refused-stream,reset
+            retryOn: connect-failure,refused-stream,reset,503
           headers:
             request:
               set:
@@ -295,7 +295,7 @@ net_istio:
             # Rationale (may need to be revisited after upgrading Istio):
             # https://phabricator.wikimedia.org/T320374#8338627
             attempts: 3
-            retryOn: connect-failure,refused-stream,reset
+            retryOn: connect-failure,refused-stream,reset,503
           headers:
             request:
               set:
