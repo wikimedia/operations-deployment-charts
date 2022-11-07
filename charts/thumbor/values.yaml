@@ -35,6 +35,8 @@ main_app:
   image: wikimedia/operations-software-thumbor-plugins
   version: latest
 
+  log_level: "info"
+
   # to be changed if/when we use prometheus within thumbor
   # This is currently the statsd exporter
   prometheus_port: 9102

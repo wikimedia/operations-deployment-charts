@@ -14,10 +14,10 @@ discovery:
 
 main_app:
 
-  version: 2022-11-04-115936-production
+  version: 2022-11-08-102757-production
 
   # 4 workers per pod in production
-  thumbor_ports: [8801, 8802, 8803, 8804]
+  thumbor_workers: 4
 
 service:
   deployment: production

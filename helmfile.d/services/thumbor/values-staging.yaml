@@ -8,7 +8,9 @@ main_app:
   poolcounter:
     enabled: true
     server: "poolcounter1004.eqiad.wmnet"
-  thumbor_ports: [8801, 8802]
+  thumbor_ports: 2
+
+  log_level: "debug"
 
 nutcracker:
   servers:
