@@ -21,5 +21,5 @@ SWIFT_PRIVATE_CONTAINERS = [
   {{- end }}
 ]
 SWIFT_CONNECTION_TIMEOUT = 20
-{{- end }}
 SWIFT_RETRIES = 1
+{{- end }}
