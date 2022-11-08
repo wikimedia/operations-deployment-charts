@@ -1,0 +1,11 @@
+kubeControllers:
+  dnsConfig:
+    nameservers:
+      - 1.2.3.4
+      - 5.4.6.7
+    searches:
+      - foo.bar
+    options:
+      - name: ndots
+        value: "9999"
+      - name: edns0

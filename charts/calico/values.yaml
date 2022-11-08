@@ -40,7 +40,7 @@ IPPools: {}
 #  my-ipv6-pool:
 #    cidr: "2620:0:861:babe::/64"
 
-# Configuration for the calico IPAM module, unfortunately I cant find decicated docs.
+# Configuration for the calico IPAM module, unfortunately I cant find dedicated docs.
 # An introduction to IPAM can be found at:
 # https://projectcalico.docs.tigera.io/networking/get-started-ip-addresses
 # The defaults I pulled from https://github.com/projectcalico/libcalico-go
@@ -58,6 +58,9 @@ IPAMConfig:
 # Array of global network policies
 # See: https://docs.projectcalico.org/reference/resources/globalnetworkpolicy
 GlobalNetworkPolicies: {}
+
+# Toggle IPv6 support in calico components
+IPv6Support: true
 
 # Typha
 typha:
@@ -106,4 +109,7 @@ kubeControllers:
   tolerations: {}
   nodeSelector: {}
   affinity: {}
+  # "dnsPolicy: Default" may be overridden by specifying dnsConfig
+  # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config
+  dnsConfig: {}
 

@@ -82,7 +82,11 @@ spec:
               value: "autodetect"
             # Auto-detect the BGP IPv6 address.
             - name: IP6
+              {{- if .Values.IPv6Support }}
               value: "autodetect"
+              {{- else }}
+              value: "none"
+              {{- end }}
             # Prevent Calico from creating a default pool if one does not exist.
             # This means we don't need all the CALICO_IPV(4|6)_ variables the upstream chart uses
             - name: NO_DEFAULT_POOLS
@@ -94,7 +98,7 @@ spec:
             - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
               value: "ACCEPT"
             - name: FELIX_IPV6SUPPORT
-              value: "true"
+              value: "{{ .Values.IPv6Support }}"
             - name: FELIX_HEALTHENABLED
               value: "true"
             # Since calico-node/Felix is host-networked, this opens a port on the host.
