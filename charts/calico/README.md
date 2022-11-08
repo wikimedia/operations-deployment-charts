@@ -1,6 +1,6 @@
 The API objects in this chart are a combination of what can be found in the
 calico release tarball ./k8s-manifests/calico-typha.yaml or
-https://github.com/projectcalico/calico/tree/v3.17.0/_includes/charts/calico/
+https://github.com/projectcalico/calico/tree/v3.23.3/calico/_includes/charts/calico
 as well as in the "calico the hard way" documentation at
 https://docs.projectcalico.org/getting-started/kubernetes/hardway/
 

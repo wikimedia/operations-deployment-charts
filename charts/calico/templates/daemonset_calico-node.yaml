@@ -57,6 +57,9 @@ spec:
               name: calico-kubernetes-services-endpoint
               optional: true
           env:
+            # Don't try to manage the CNI's kubeconfig/token (puppet does that)
+            - name: CALICO_MANAGE_CNI
+              value: "false"
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"

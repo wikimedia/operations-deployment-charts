@@ -6,6 +6,12 @@ metadata:
   labels:
     {{- include "calico.labels" $ | nindent 4 }}
 spec:
+  # The default for these seem to be enforced only by the calico-apiserver so
+  # they end up being != Never for IPPools deployed directly via CRD.
+  # Hardcoding the values here might not be sensible but this way no backwards
+  # compatibility code needs to be written.
+  vxlanMode: Never
+  ipipMode: Never
   {{- toYaml $spec | nindent 2 }}
 ---
 {{- end }}{{/* end range */}}
