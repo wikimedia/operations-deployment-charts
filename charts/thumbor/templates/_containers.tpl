@@ -72,6 +72,8 @@ resources:
     - "/srv/service/entrypoint-prod.sh"
     - "{{ $thumbor_port }}"
     - "-l {{ $.Values.main_app.log_level }}"
+    - "--use-environment"
+    - "1"
   {{- if $.Values.main_app.args }}
   args:
     {{- range $.Values.main_app.args }}
