@@ -44,7 +44,10 @@ end
 # This is to ensure that all repos are available and up to date
 desc 'Add and update all needed helm repositories'
 task repo_update: :check_dep do
-  repo_urls = []
+  # Hash of repository url (ensure no trailing backslash, don't ask) and repository name
+  repositories = {
+    'https://helm-charts.wikimedia.org/stable' => 'wmf-stable'
+  }
   FileList.new(CHARTS_GLOB).each do |path_to_chart|
     chart_yaml = yaml_load_file(path_to_chart)
     dependencies = []
@@ -60,14 +63,18 @@ task repo_update: :check_dep do
         raise("Only http(s) URLs supported for non-local helm dependencies (#{path_to_chart})")
       end
 
-      repo_urls << dep['repository'].chomp('/')
+      url = dep['repository'].chomp('/')
+      unless repositories.key?(url)
+        # Use the md5 hash of the repository URL as name, it does not matter for dependency references
+        repositories[url] = Digest::MD5.hexdigest(url)
+      end
     end
   end
 
-  repo_urls.uniq.each do |repo_url|
-    repo_hash = Digest::MD5.hexdigest(repo_url)
-    puts("Adding helm repo #{repo_url} as #{repo_hash}")
-    system("helm repo add --force-update #{repo_hash} #{repo_url}")
+  repositories.each do |url, name|
+    puts("Adding helm repo #{url} as #{name}")
+    # --force-update does *not* force a repository update but forces the update of the URL if the repository already exists
+    system("helm repo add --force-update #{name} #{url}")
   end
   system('helm repo update')
 end
@@ -377,12 +384,14 @@ end
 desc 'Run checks for all deployments.'
 task :check_deployments, %i[tests deployments] do |_, args|
   args = {} if args.nil?
+  Rake::Task[:repo_update].invoke
   Rake::Task[:check].invoke('deployments', args.fetch(:tests, nil), args.fetch(:deployments, nil))
   Rake::Task[:check].reenable
 end
 
 desc 'Run checks for the admin section'
 task :check_admin do
+  Rake::Task[:repo_update].invoke
   Rake::Task[:check].invoke('admin', nil, nil)
   Rake::Task[:check].reenable
 end
