@@ -246,17 +246,11 @@ THUMBOR_LOG_CONFIG = {
         '404exclude': {
             '()': Http404Filter,
             'flag': 'exclude'
-        },
-        'silentcontext': {
-            '()': ContextFilter,
-        },
-        'error': {
-            '()': ErrorFilter,
         }
     },
     'handlers': {
-        'errorstream': {
-            'level': 'ERROR',
+        'logstream': {
+            'level': '{{ .Values.main_app.log_level | upper }}',
             'class': 'logging.StreamHandler',
             'formatter': 'default',
             {{- if .Values.main_app.log_404 }}
@@ -264,18 +258,12 @@ THUMBOR_LOG_CONFIG = {
             {{- else }}
             'filters': ['context' ]
             {{- end }}
-        },
-        'debugstream': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'default',
-            'filters': ['silentcontext']
         }
     },
     'loggers': {
         '': {
             'level': 'DEBUG',
-            'handlers': ['debugstream', 'errorstream']
+            'handlers': ['logstream']
         }
     }
 }
