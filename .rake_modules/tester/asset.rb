@@ -317,10 +317,13 @@ module Tester
     ENV_EXPLORE = %w[staging eqiad ml-serve-eqiad ml-staging-codfw].freeze
     LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
     INIT_RESULT = { lint: {}, validate: {}, diff: {} }.freeze
+
     def initialize(path, to_run)
       @helmfile = File.basename path
       @origin = Dir.pwd
+      # This is a per-env list of charts that have versions pinned.
       super(path, to_run)
+      @pinned_chart_versions = pinned_charts
     end
 
     # Set the asset to have failed.
@@ -378,7 +381,7 @@ module Tester
     def _helmfile(command:, environment:, source: @origin, patch: true)
       out = nil
       run_in_tmpdir(source) do |tmpdir|
-        patch_helmfile(tmpdir) if patch
+        patch_helmfile(tmpdir, environment) if patch
         helm_home = File.join(tmpdir, '.helm')
         # Execute helmfile
         # --skip-deps skips updating repositories and helm chart dependencies over and over again.
@@ -439,35 +442,109 @@ module Tester
       end
     end
 
+    def pinned_charts
+      results = {}
+      # If we failed to build a base helmfile state, we bail out on this too.
+      return results if @bad
+
+      @fixtures.each_value do |env|
+        res = _exec("helmfile -e #{env} build", nil, @path)
+        next unless res.ok?
+
+        manifest = YAML.safe_load(res.out)
+        # We want to gather: chart name => version for all releases that have a pinned version.
+        results[env] = manifest['releases'].select { |r| r['version'] }.map { |r| [r['chart'], r['version']] }.to_h
+      end
+      results
+    end
+
     # Patch helmfiles so that .fixtures.yaml is used instead of
     # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
     # * /etc/helmfile-defaults/private/admin/#{env}.yaml for admin_ng helmfiles
     # * For services, also add the service-proxy fixture
     # Also replace references to charts in wmf-stable repo with the local path,
     # and add --debug to the helm args
-    def patch_helmfile(dir)
+    #
+    def patch_helmfile(dir, env)
+      # First run helmfile build to find any chart that has a pinned version
       charts_dir = File.join dir, 'charts'
       helmfile_glob = File.join(dir, '**/helmfile*.yaml')
       fixtures_file = File.join(dir, '.fixtures.yaml')
       FileList.new(helmfile_glob).each do |helmfile_path|
-        content = File.read(helmfile_path)
         # Replace references to charts in the repository with local ones
         # to also catch changes to charts that are not released yet.
-        content.gsub!(%r{^(\s*chart:\s+["']{0,1})wmf-stable/}, "\\1#{charts_dir.chomp('/').concat('/')}")
+        content = patch_charts(helmfile_path, env, charts_dir)
+
         # Prepend --debug to the list of args, so we get the yaml output even in case of error.
         content.gsub!(/^(\s*- )--kubeconfig$/m, "\\1--debug\n\\0")
+
         # Add fixtures.
-        # For services, we patch helmfile unconditionally
+        # For services, we patch helmfile unconditionally, then if the file doesn't exist, we copy
+        # the default listeners file over. For admin, we only patch helmfile if the fixtures file exists.
         content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures_file)
         if File.exist? fixtures_file
           # Patch admin_ng as well, if the fixtures file exists
           content.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures_file)
         else
-          # if the fixtures file doesn't exist, just use the listeners default fixture instead.
           # Please note that this won't affect admin fixtures.
           FileUtils.cp LISTENERS_FIXTURE, fixtures_file
         end
         File.write helmfile_path, content
+      end
+    end
+
+    # Patch the chart names to point to the local filesystem rather than our
+    # repository. This is done so that changes in the chart in the current change
+    # are accounted for when building validation/diffs.
+    # As a complication, some charts now have a pinned version; sadly helmfile ignores the pinned
+    # version if we patch the chart to be sourced locally.
+    # So, scan the whole helmfile for chart: entries and find if they have a related version entry.
+    # Given versions are typically templated, we want to ensure that a version is indeed pinned in this
+    # environment.
+    # There are limits to this approach, because we can't just template out the whole helmfile.
+    # This function returns the content already patched for charts.
+    def patch_charts(filepath, env, charts_dir)
+      content = File.readlines(filepath)
+      chart = nil
+      version = false
+      last_chart_match = 0
+      lines_to_patch = []
+      content.each_index do |i|
+        line = content[i]
+        chart_match = line.match(%r{^\s*chart:\s+["']{0,1}(wmf-stable/.*)["']{0,1}$})
+        if chart_match
+          # If we already had a chart, we are in a new chart stanza. We want to patch out last
+          lines_to_patch << last_chart_match if should_patch?(env, chart, version)
+          last_chart_match = i
+          chart = chart_match[1]
+          version = false
+          next
+        end
+        # Please note: this will only work if version: always comes after chart: or the opposite.
+        # anything more complex would've been an overkill.
+        if line.match(/^\s*version:\s+["']{0,1}(.*)["']{0,1}$/)
+          version = true
+          next
+        end
+      end
+      # Add the remaining chart match if any
+      lines_to_patch << last_chart_match if should_patch?(env, chart, version)
+      # Now patch all the lines to patch
+      lines_to_patch.each do |to_patch|
+        content[to_patch].gsub!(
+          %r{^(\s*chart:\s+["']{0,1})wmf-stable/}, "\\1#{charts_dir.chomp('/').concat('/')}"
+        )
+      end
+      content.join
+    end
+
+    def should_patch?(env, chart, version)
+      if chart.nil?
+        false
+      elsif !version
+        true
+      else
+        @pinned_chart_versions[env][chart].nil?
       end
     end
   end
