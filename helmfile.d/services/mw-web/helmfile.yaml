@@ -32,11 +32,14 @@ templates:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "global.yaml" # common values for all mediawiki deployments
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/main_services/mw-web/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/main_services/{{`{{ .Release.Namespace }}`}}/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - "/etc/helmfile-defaults/mediawiki/release/mw-web-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+      - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+    setTemplate:
+      - name: php.servergroup
+        value: "kube-{{`{{ .Release.Namespace }}`}}"
 
 hooks:
   - events: ["prepare"]
