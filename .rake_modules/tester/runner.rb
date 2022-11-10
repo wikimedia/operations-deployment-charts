@@ -119,6 +119,6 @@ module Tester
   class DeploymentTestRunner < TestRunner
     ASSET = HelmfileAsset
     DEFAULT_TESTS = %w[lint diff].freeze
-    EXCLUDE = ['_example_'].freeze
+    EXCLUDE = %w[_example_ _mediawiki-common_].freeze
   end
 end

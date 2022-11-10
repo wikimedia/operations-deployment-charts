@@ -1,17 +1,1 @@
 # mw site-specific configurations
-mw:
-  datacenter: codfw
-  mcrouter:
-    route_prefix: codfw/mw
-    zone: codfw
-    routes:
-      - route: /codfw/mw
-        type: standalone
-        pool: codfw-servers
-        failover: true
-      - route: /codfw/mw-wan
-        type: replica
-        pool: codfw-servers
-        remote:
-          route: /eqiad/mw-wan
-          pool: eqiad-proxies
