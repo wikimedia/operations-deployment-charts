@@ -6,9 +6,9 @@
     name: {{ $release }}-httpd-sites-config
 {{- if .Values.mw.httpd.additional_config }}
 # Additional httpd debug configuration
-- name: httpd-early
+- name: {{ $release }}-httpd-early
   configMap:
-    name: httpd-early-config
+    name: {{ $release }}-httpd-early-config
 {{- end }}
 # Datacenter
 - name: {{ $release }}-wikimedia-cluster
@@ -28,9 +28,9 @@
 {{- end }}
 {{- if .Values.debug.php.enabled }}
 # php debug volume
-- name: php-debug
+- name: {{ $release }}-php-debug
   configMap:
-    name: php-debug-config
+    name: {{ $release }}-php-debug-config
 {{- end }}
 {{- if .Values.mw.mcrouter.enabled }}
 # Mcrouter configuration

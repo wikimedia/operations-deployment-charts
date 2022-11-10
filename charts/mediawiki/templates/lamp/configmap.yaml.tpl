@@ -28,7 +28,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: php-debug-config
+  name: {{ template "wmf.releasename" . }}-php-debug-config
 data:
 {{- range $k, $v := .Values.debug.php.contents }}
   "{{ $k }}.php": {{ $v | toYaml | indent 4 }}
@@ -39,7 +39,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: httpd-early-config
+  name: {{ template "wmf.releasename" . }}-httpd-early-config
 data:
   00-aaa.conf: {{- .Values.mw.httpd.additional_config | toYaml | indent 4 }}
 {{- end }}
