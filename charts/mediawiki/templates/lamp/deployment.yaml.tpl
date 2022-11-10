@@ -46,7 +46,7 @@
     mountPath: /run/shared
   {{- end }}
   {{- if .Values.debug.php.enabled }}
-  - name: php-debug
+  - name: {{ $release }}-php-debug
     mountPath: /srv/mediawiki/w/debug
   {{- end }}
   # Note: we use subpaths here. Given subpaths are implemented with bind mounts,
@@ -62,7 +62,7 @@
   # To this end we also pick a non-descriptive name that OTOH guarantees
   # the configuration will be loaded soon.
   # See apache.conf in the mediawiki-httpd image to see precisely when this is loaded.
-  - name: httpd-early
+  - name: {{ $release }}-httpd-early
     mountPath: /etc/apache2/conf-enabled/00-aaa.conf
     subPath: 00-aaa.conf
   {{- end }}
@@ -170,7 +170,7 @@
     mountPath: /var/log/php-fpm
   {{- end -}}
   {{- if .Values.debug.php.enabled }}
-  - name: php-debug
+  - name: {{ $release }}-php-debug
     mountPath: /srv/mediawiki/w/debug
   {{- end }}
 {{- if .Values.monitoring.enabled }}
