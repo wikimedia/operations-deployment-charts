@@ -120,6 +120,10 @@ spec:
             patches:
             - path: kind
               value: DaemonSet
+            # Delete spec.strategy
+            # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.update
+              value:
             - path: spec.updateStrategy
               value:
                 rollingUpdate:
@@ -158,6 +162,10 @@ spec:
             patches:
             - path: kind
               value: DaemonSet
+            # Delete spec.strategy
+            # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
             - path: spec.updateStrategy
               value:
                 rollingUpdate:
