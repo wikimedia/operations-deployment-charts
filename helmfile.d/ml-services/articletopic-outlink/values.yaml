@@ -43,16 +43,16 @@ inference:
     version: "2022-11-04-134545-publish"
     base_env:
       - name: STORAGE_URI
-        value: "s3://wmf-ml-models/articletopic/outlink/20220727080723/"
+        value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
       - name: MODEL_VERSION
-        value: "alloutlinks_202012"
+        value: "alloutlinks_202209"
       - name: EVENTGATE_URL
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
         value: "mediawiki.revision-score-test"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2022-11-04-134546-publish"
+    version: "2022-11-11-151758-publish"
     base_env:
       - name: CUSTOM_UA
         value: "WMF ML Team outlink topic model isvc"
