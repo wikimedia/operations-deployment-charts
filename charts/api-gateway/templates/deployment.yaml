@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{- if .Values.tls.enabled }}
-        checksum/tls-certs: {{ printf "%v" (values .Values.tls.certs | sortAlpha) | sha256sum }}
+        {{- if .Values.mesh.enabled }}
+        checksum/tls-certs: {{ printf "%v" (values .Values.mesh.certs | sortAlpha) | sha256sum }}
         {{- end }}
         {{ if .Values.main_app.jwt.enabled }}
         checksum/jwks: {{ include "jwks.config" . | sha256sum }}
@@ -55,7 +55,7 @@ spec:
       {{- end }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}
+        - name: {{ template "base.name.release" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -71,7 +71,7 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-            - containerPort: {{ .Values.main_app.port }}
+            - containerPort: {{ .Values.app.port }}
           {{- if .Values.debug.enabled }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
@@ -86,7 +86,7 @@ spec:
           {{- end }}
           env:
             - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
+              value: {{ template "base.name.release" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -95,7 +95,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -110,7 +110,7 @@ spec:
             - name: {{ .Release.Name }}-jwt-config
               mountPath: /etc/jwks/
 {{- end }}
-{{- if .Values.tls.enabled }}
+{{- if .Values.mesh.enabled }}
             - name: {{ .Release.Name }}-tls-certs-volume
               mountPath: /etc/envoy-ssl
               readOnly: true
@@ -221,26 +221,26 @@ spec:
       volumes:
         - name: {{ .Release.Name }}-base-config
           configMap:
-            name: {{ template "wmf.releasename" . }}-base-config
+            name: {{ template "base.name.release" . }}-base-config
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
+            name: {{ template "base.name.release" . }}-metrics-config
         {{- end }}
         {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker-config
           configMap:
-            name: {{ template "wmf.releasename" . }}-nutcracker-config
+            name: {{ template "base.name.release" . }}-nutcracker-config
         {{- end }}
         {{- if .Values.main_app.ratelimiter }}
         - name: {{ .Release.Name }}-ratelimit-config
           configMap:
-            name: {{ template "wmf.releasename" . }}-ratelimit-config
+            name: {{ template "base.name.release" . }}-ratelimit-config
         {{- end }}
         {{- if .Values.main_app.jwt.enabled }}
         - name: {{ .Release.Name }}-jwt-config
           configMap:
-            name: {{ template "wmf.releasename" . }}-jwt-config
+            name: {{ template "base.name.release" . }}-jwt-config
         {{- end }}
         {{- if .Values.main_app.access_log }}
         {{- if eq .Values.main_app.access_log.type "eventgate" }}
@@ -248,13 +248,13 @@ spec:
           emptyDir: {}
         - name: {{ .Release.Name }}-fluent-bit-config
           configMap:
-            name: {{ template "wmf.releasename" . }}-fluent-bit-config
+            name: {{ template "base.name.release" . }}-fluent-bit-config
         {{- end }}
         {{- end }}
-        {{- if .Values.tls.enabled }}
+        {{- if .Values.mesh.enabled }}
         - name: {{ .Release.Name }}-tls-certs-volume
           configMap:
-            name: {{ template "wmf.releasename" . }}-tls-proxy-certs
+            name: {{ template "base.name.release" . }}-tls-proxy-certs
         {{- end }}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}

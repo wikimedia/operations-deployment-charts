@@ -164,7 +164,7 @@ config:
   public: {}
   private: {}
 
-tls:
+mesh:
   enabled: false
   certs:
     cert: "snakeoil"
@@ -182,3 +182,6 @@ networkpolicy:
 common_images:
   nutcracker:
     nutcracker: "nutcracker:latest"
+
+app:
+  port: 8087

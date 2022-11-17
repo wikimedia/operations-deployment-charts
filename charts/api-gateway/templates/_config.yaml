@@ -58,7 +58,7 @@ static_resources:
       socket_address:
         protocol: TCP
         address: 0.0.0.0
-        port_value: {{ .Values.main_app.port }}
+        port_value: {{ .Values.app.port }}
     filter_chains:
     - filters:
       - name: envoy.filters.network.http_connection_manager
@@ -532,7 +532,7 @@ BEGIN descriptions/mobileapps_cluster route definition
                     value: none
                     type: STRING
           - name: envoy.filters.http.router
-{{- if .Values.tls.enabled }}
+{{- if .Values.mesh.enabled }}
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
