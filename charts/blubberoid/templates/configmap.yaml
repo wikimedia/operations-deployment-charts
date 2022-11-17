@@ -5,8 +5,8 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-policy
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -14,4 +14,4 @@ data:
 {{ include "policy.app" . | indent 4 }}
 ...
 {{- end -}}
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
