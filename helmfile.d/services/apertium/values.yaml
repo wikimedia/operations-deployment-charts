@@ -27,10 +27,13 @@ resources:
 service:
   deployment: production
   port: 4737
-tls:
+mesh:
   enabled: true
   telemetry:
     enabled: true
 networkpolicy:
   egress:
     enabled: true
+
+app:
+  port: 2737
