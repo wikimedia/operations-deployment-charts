@@ -408,7 +408,7 @@ CONVERSION_TABLE = {
   /wmf\.networkpolicy\.egress\.kafka/ => { sub: 'base.networkpolicy.egress.kafka' },
   /wmf\.networkpolicy\.egress"/ => { sub: 'base.networkpolicy.egress-basic"' },
   /wmf\.serviceType/ => { sub: 'base.helper.serviceType' },
-  /wmf\.networkpolycy\.egress\.discovery/ => { sub: 'mesh.networkpolicy.egress' },
+  /wmf\.networkpolicy\.egress\.discovery/ => { sub: 'mesh.networkpolicy.egress' },
   /tls\.servicename/ => { sub: 'mesh.name.service' },
   /tls\.servicefqdn/ => { sub: 'mesh.name.fqdn' },
   /tls\.annotations/ => { sub: 'mesh.name.annotations', convert: { 'tls' => 'mesh' } },
@@ -423,7 +423,7 @@ CONVERSION_TABLE = {
 def patch_values_file(filename)
   puts "patching values file #{filename}"
   content = File.read(filename)
-  values = YAML.safe_load(content)
+  values = YAML.safe_load(content, aliases: true)
   port = values.fetch('main_app', {})['port']
   content += "\napp:\n  port: #{port}\n" unless port.nil?
   content.gsub!(/^tls:$/, 'mesh:') unless values['tls'].nil?
