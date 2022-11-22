@@ -110,6 +110,16 @@ spec:
               value: "true"
             - name: FELIX_PROMETHEUSMETRICSPORT
               value: "9091"
+            # Have felix set the src parameter in routes it creates to so that
+            # source address selection is forced. That way liveness/readiness
+            # probes will originate from the node's IP
+            - name: FELIX_DEVICEROUTESOURCEADDRESS
+              valueFrom:
+                fieldRef:
+                  # Note that we can use status.podIP or status.hostIP here
+                  # interchangeable. Since calico-node is a Daemonset it
+                  # doesn't matter, but we use hostIP to be explicit
+                  fieldPath: status.hostIP
             # Location of the CA bundle Felix uses to authenticate Typha; volume mount
             #- name: FELIX_TYPHACAFILE
             #  value: /calico-typha-ca/typhaca.crt
