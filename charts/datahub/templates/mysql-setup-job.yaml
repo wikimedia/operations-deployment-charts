@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "wmf.releasename" . }}-mysql-setup-job
+  name: {{ template "base.name.release" . }}-mysql-setup-job
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
@@ -42,7 +42,7 @@ spec:
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
+                  name: {{ template "base.name.release" . }}-secret-config
                   key: mysql_password
             - name: MYSQL_HOST
               value: {{ .Values.global.sql.datasource.hostForMysqlClient | quote }}

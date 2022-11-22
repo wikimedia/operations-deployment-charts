@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "wmf.releasename" . }}-kafka-setup-job
+  name: {{ template "base.name.release" . }}-kafka-setup-job
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
