@@ -58,7 +58,7 @@ config:
   private:
     cassandra_pass: "bar"
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   public_port: 30443 # the port where TLS will be exposed
   upstream_timeout: "180.0s"
@@ -119,3 +119,12 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
+
+app:
+  port: 8080
+
+app:
+  port: 8080
+
+app:
+  port: 8080

@@ -9,7 +9,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}
 # The main application container
-- name: {{ template "wmf.releasename" . }}
+- name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.main_app.command }}
@@ -25,7 +25,7 @@ resources:
     {{- end }}
   {{- end }}
   ports:
-    - containerPort: {{ .Values.main_app.port }}
+    - containerPort: {{ .Values.app.port }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
@@ -40,7 +40,7 @@ resources:
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
-      value: {{ template "wmf.releasename" . }}
+      value: {{ template "base.name.release" . }}
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
@@ -49,7 +49,7 @@ resources:
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
 {{ include "limits" . | indent 2}}

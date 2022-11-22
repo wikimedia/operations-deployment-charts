@@ -4,10 +4,10 @@ kind: ConfigMap
 metadata:
   name: cassandra-http-gateway-base-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
