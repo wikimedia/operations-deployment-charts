@@ -81,7 +81,7 @@ monitoring:
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port: null # you need to define this if "production" is used. In minikube environments let it autoallocate
-tls:
+mesh:
   enabled: false
   image_version: 1.13.1-2
   public_port: 4002
@@ -98,3 +98,6 @@ tls:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 8080

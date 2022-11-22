@@ -29,7 +29,7 @@ metrics:
 {{- if eq .Values.service.deployment "minikube" }}
 ratelimiter:
   type: kademlia
-  seeds: [{{ template "wmf.releasename" . }}-kademlia.default.svc.cluster.local]
+  seeds: [{{ template "base.name.release" . }}-kademlia.default.svc.cluster.local]
   listen:
     port: {{ .Values.main_app.kademlia_port }}
 {{- end }}
@@ -39,7 +39,7 @@ services:
     module: app.js
     conf:
       cors: "*"
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
       user_agent: CXServer/WMF
       # the template used for contacting mediawiki
       mwapi_req:

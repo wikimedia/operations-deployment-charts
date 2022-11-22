@@ -1,25 +1,25 @@
-{{ include "tls.service" . }}
-{{ if not .Values.tls.enabled }}
+{{ include "mesh.service" . }}
+{{ if not .Values.mesh.enabled }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     release: {{ .Release.Name }}
     routed_via: {{ .Release.Name }}
   ports:
   - name: http
     protocol: TCP
-    port: {{ .Values.main_app.port }}
+    port: {{ .Values.app.port }}
     {{/* If the port is passed as a value use it, otherwise autoallocate */}}
     {{- if .Values.service.port }}
     nodePort:  {{ .Values.service.port }}
@@ -29,17 +29,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}-kademlia
+  name: {{ template "base.name.release" . }}-kademlia
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: ClusterIP
   clusterIP: None
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     release: {{ .Release.Name }}
   ports:
   - name: kademlia
