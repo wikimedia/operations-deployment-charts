@@ -54,6 +54,6 @@ listen stats
    mode http
    http-request use-service prometheus-exporter if { path /metrics }
    stats enable
-   stats uri /stats
+   stats uri /metrics
    stats refresh 10s
 {{ end }}
