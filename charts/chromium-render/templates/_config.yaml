@@ -40,7 +40,7 @@ services:
     module: ./app.js
     # per-service config
     conf:
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
       # interface: localhost # uncomment to only listen on localhost
       # more per-service config settings
       # the location of the spec, defaults to spec.yaml if not specified
