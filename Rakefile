@@ -417,7 +417,8 @@ CONVERSION_TABLE = {
   /tls\.service/ => { sub: 'mesh.service', convert: { 'tls' => 'mesh' } },
   /tls\.config/ => { sub: 'mesh.configuration.configmap', convert: { 'tls' => 'mesh' } },
   /tls\.networkpolicy/ => { sub: 'mesh.networkpolicy.ingress', convert: { 'tls' => 'mesh' } },
-  /tls\.envoy_template/ => { sub: 'mesh.configuration.full', convert: { 'tls' => 'mesh' } }
+  /tls\.envoy_template/ => { sub: 'mesh.configuration.full', convert: { 'tls' => 'mesh' } },
+  /ingress\.default/ => { sub: 'ingress.istio.default'}
 }.freeze
 
 def patch_values_file(filename)
@@ -449,7 +450,7 @@ task :chart_to_modules, %i[chart] do |_, args|
   g = Git.open('.')
   # Check the chart is using the last version of common_templates.
   # Older versions WILL cause changes to happen.
-  %w[_tls_helpers.tpl _helpers.tpl].each do |tpl|
+  %w[_tls_helpers.tpl _helpers.tpl _ingress_helpers.tpl].each do |tpl|
     ptr = "charts/#{chart}/templates/#{tpl}"
     next unless File.exist? ptr
 
