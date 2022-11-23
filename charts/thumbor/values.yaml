@@ -9,10 +9,10 @@ resources:
 haproxy:
   requests:
     cpu: 0.2
-    memory: 512Mi
+    memory: 256Mi
   limits:
     cpu: 0.5
-    memory: 1024Mi
+    memory: 512Mi
   image: haproxy
   version: latest
   port: 4112
@@ -27,11 +27,11 @@ haproxy:
 
 main_app:
   requests:
-    cpu: 1 # ~1 per instance?
-    memory: 1024Mi # This maxes out around 1GB per instance
+    cpu: 1
+    memory: 512Mi
   limits:
     cpu: 1
-    memory: 1024Mi
+    memory: 900Mi # Original firejail limit
   image: wikimedia/operations-software-thumbor-plugins
   version: latest
 
