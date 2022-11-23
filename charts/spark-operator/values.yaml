@@ -1,0 +1,125 @@
+# Default values for spark-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+### Beginning of scaffold values
+helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+main_app:
+  type: "default"
+  image: spark-operator
+  version: 1.3.7-3.3.0-2 # we use latest everywhere in the defaults.
+  command: []
+  args: []
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 400Mi
+  volumes: []
+  volumeMounts: []
+livenessProbe:
+  exec:
+    command:
+    - /opt/spark/bin/spark-submit
+    - --version
+  periodSeconds: 10
+  initialDelaySeconds: 10
+  failureThreshold: 6
+  timeoutSeconds: 10
+
+monitoring:
+  enabled: false
+  port: 10254
+  portName: metrics
+  endpoint: /metrics
+  prefix: ""
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+
+# This is the namespace where users will be permitted to create SparkApplication and
+# ScheduledSparkApplication objects. The spark-operator will watch this namespace.
+# In time we may wish to expand this to be a list of namespaces (as the flink-operator does)
+# but for now it only watches a single namespace.
+watchNamespace: spark
+
+# We create a serviceaccount with this name for spark-driver pods to use
+driverServiceAccount: spark-driver
+
+# We create a serviceaccount with this name for the spark-operator to use
+operatorServiceAccount: spark-operator
+
+### End of scaffold values
+
+### Beginning of upstream values
+
+# -- Operator concurrency, higher values might increase memory usage
+controllerThreads: 10
+
+# -- Operator resync interval. Note that the operator will respond to events (e.g. create, update)
+# unrelated to this setting
+resyncInterval: 30
+
+# -- Set higher levels for more verbose logging
+logLevel: 2
+
+# podSecurityContext -- Pod security context
+podSecurityContext: {}
+
+# securityContext -- Operator container security context
+securityContext: {}
+
+# nodeSelector -- Node labels for pod assignment
+nodeSelector: {}
+
+# tolerations -- List of node taints to tolerate
+tolerations: []
+
+# podAnnotations -- Additional annotations to add to the pod
+podAnnotations: {}
+
+batchScheduler:
+  # -- Enable batch scheduler for spark jobs scheduling. If enabled, users can specify batch scheduler name in spark application
+  enable: false
+
+leaderElection:
+  # -- Leader election lock name.
+  # Ref: https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/blob/master/docs/user-guide.md#enabling-leader-election-for-high-availability.
+  lockName: "spark-operator-lock"
+  # -- Optionally store the lock in another namespace. Defaults to operator's namespace
+  lockNamespace: ""
+
+# labelSelectorFilter -- A comma-separated list of key=value, or key labels to filter resources during watch and list based on the specified labels.
+labelSelectorFilter: ""
+
+### End of upstream values

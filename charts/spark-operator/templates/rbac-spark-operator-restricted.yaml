@@ -1,0 +1,45 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: spark-operator-restricted
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-delete-policy": hook-failed, before-hook-creation
+    "helm.sh/hook-weight": "-10"
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get","list","watch"]
+- apiGroups: ["sparkoperator.k8s.io"]
+  resources: ["sparkapplications", "scheduledsparkapplications"]
+  verbs: ["get","list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: spark-operator-restricted
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-delete-policy": hook-failed, before-hook-creation
+    "helm.sh/hook-weight": "-10"
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.operatorServiceAccount }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: spark-operator-restricted
+  apiGroup: rbac.authorization.k8s.io

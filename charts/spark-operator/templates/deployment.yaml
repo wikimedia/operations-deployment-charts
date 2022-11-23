@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "base.name.release" . }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "base.name.chart" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ template "base.name.chart" . }}
+        release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
+        prometheus.io/path: "{{ .Values.monitoring.endpoint }}"
+        {{- end }}
+        {{- if .Values.podAnnotations }}
+          {{- toYaml .Values.podAnnotations | trim | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.operatorServiceAccount }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+      {{- include "default.containers" . | indent 8}}
+      volumes:
+      {{- include "wmf.volumes" . | indent 8}}

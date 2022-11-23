@@ -56,8 +56,8 @@ docker:
       - '10.2.2.44/32'
       - '10.2.1.44/32'
 
-# deployExtraClusterRoles:
-#   - "kserve"
+deployExtraClusterRoles:
+  - "sparkapplications"
 
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
@@ -99,10 +99,12 @@ namespaces:
     labels:
       istio-injection: disabled
   spark:
+    deployClusterRole: deploy-sparkapplications
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
   spark-operator:
+    systemNamespace: true
     deployTLSCertificate: false
     labels:
       istio-injection: disabled

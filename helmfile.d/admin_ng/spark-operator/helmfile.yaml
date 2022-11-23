@@ -1,0 +1,31 @@
+# You can include multiple releases in your helmfile, but you can't specify environments
+# as they are defined in the parent helmfile.
+#
+# Each defined release will be installed into every environment.
+#
+# Be sure to include your new helmfile into the "bases:" array in the parent helmfile.
+templates:
+  default: &default
+    namespace: spark-operator
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_spark_operator\" }}{{ .Environment.Values.install_spark_operator }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: spark-operator
+    chart: wmf-stable/spark-operator
+    {{- $version := .Values.chartVersions | get "wmf-stable/spark-operator" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/coredns
+      - kube-system/namespaces
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"

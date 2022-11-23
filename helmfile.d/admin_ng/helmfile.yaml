@@ -105,6 +105,7 @@ environments:
       - istio_gateways: true
       - istio_sidecar_proxy: true
       - install_flink_operator: true
+      - install_spark_operator: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -133,6 +134,7 @@ bases:
   - kserve/helmfile.yaml
   - helm-state-metrics/helmfile.yaml
   - flink-operator/helmfile.yaml
+  - spark-operator/helmfile.yaml
 
 hooks:
   - events: ["prepare"]

@@ -113,6 +113,22 @@ releases:
               resources: ["inferenceservices"]
               verbs: ["*"]
       {{- end }}
+      {{- if eq . "sparkapplications" }}
+        ## Used by deploy users
+        ## Spark deploy users need to be able to create SparkApplication and
+        ## ScheduledSparkApplication objects in the spark namespace.
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-sparkapplications
+          rules:
+            - apiGroups: ["sparkoperator.k8s.io"]
+              resources: ["sparkapplications", "scheduledsparkapplications"]
+              verbs: ["*"]
+            - apiGroups: ["sparkoperator.k8s.io"]
+              resources: ["sparkapplications/status", "scheduledsparkapplications/status"]
+              verbs: ["get"]
+      {{- end }}
       {{- end }}
       {{- if semverCompare .Values.kubernetesVersion "1.16" }}
         # ClusterRoleBindings
