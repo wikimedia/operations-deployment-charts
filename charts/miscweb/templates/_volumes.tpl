@@ -1,6 +1,6 @@
 {{ define "wmf.volumes" }}
 {{- $has_volumes := 0 -}}
-{{ if (.Values.tls.enabled) }}
+{{ if (.Values.mesh.enabled) }}
   {{- $has_volumes = 1 -}}
 {{ else if .Values.main_app.volumes }}
   {{- $has_volumes = 1 -}}
@@ -20,10 +20,10 @@
 # Prometheus statsd exporter configuration
 - name: {{ .Release.Name }}-metrics-exporter
   configMap:
-      name: {{ template "wmf.releasename" . }}-metrics-config
+      name: {{ template "base.name.release" . }}-metrics-config
   {{- end }}
 # TLS configurations
-{{- include "tls.volume" . }}
+{{- include "mesh.deployment.volume" . }}
 # Additional app-specific volumes.
   {{- with .Values.main_app.volumes }}
     {{- toYaml . }}
