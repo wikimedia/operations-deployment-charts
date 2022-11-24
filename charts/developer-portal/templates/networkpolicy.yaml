@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
@@ -19,7 +19,7 @@ spec:
     - Ingress
   ingress:
     - ports:
-      - port: {{ .Values.main_app.port }}
+      - port: {{ .Values.app.port }}
         protocol: TCP
       {{- if .Values.debug.enabled }}
       {{- range .Values.debug.ports }}
@@ -30,11 +30,11 @@ spec:
       - port: 9102
         protocol: TCP
       {{- end }}
-      {{- include "tls.networkpolicy" . | indent 6}}
+      {{- include "mesh.networkpolicy.ingress" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
-    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
-    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}

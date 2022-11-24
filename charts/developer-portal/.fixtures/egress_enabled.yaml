@@ -4,7 +4,7 @@ networkpolicy:
     dst_nets:
       - cidr: 123.123.123.123/24
 # The discovery stuff adds networkpolicies.
-tls:
+mesh:
   enabled: true
   public_port: 4004 # the port where TLS will be exposed
   certs:

@@ -44,7 +44,7 @@ config:
   public: {}
   private: {}
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: 8000 # the port where TLS will be exposed
@@ -104,3 +104,6 @@ ingress:
 # Not needed for the chart, but apparently _volumes.tpl fails without it.
 php:
   fcgi_mode: unused
+
+app:
+  port: 8000
