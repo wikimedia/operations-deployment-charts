@@ -2,10 +2,10 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ template "wmf.releasename" . }}-load-datasets
+  name: {{ template "base.name.release" . }}-load-datasets
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -14,8 +14,8 @@ spec:
   jobTemplate:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
@@ -23,12 +23,12 @@ spec:
       template:
         metadata:
           labels:
-            app: {{ template "wmf.chartname" . }}
+            app: {{ template "base.name.chart" . }}
             release: {{ .Release.Name }}
         spec:
           restartPolicy: Never
           containers:
-          - name: {{ template "wmf.releasename" . }}-load-datasets
+          - name: {{ template "base.name.release" . }}-load-datasets
             image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
             env:
             {{- range $k, $v := .Values.config.public }}
@@ -40,7 +40,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" . }}-secret-config
+                  name: {{ template "base.name.release" . }}-secret-config
                   key: DB_ADMIN_PASSWORD
             imagePullPolicy: {{ .Values.docker.pull_policy }}
             command: [ "/usr/bin/python3", "load-datasets.py", "--download", "--path=/tmp/datasets", "--output-format=json" ]
