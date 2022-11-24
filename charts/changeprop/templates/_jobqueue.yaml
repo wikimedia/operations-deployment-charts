@@ -282,7 +282,7 @@ services:
     # per-service config
     conf:
       cors: "*"
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
       # interface: localhost # uncomment to only listen on localhost
       # URL of the outbound proxy to use (complete with protocol)
       proxy: {{ .Values.main_app.proxy | default "" }}

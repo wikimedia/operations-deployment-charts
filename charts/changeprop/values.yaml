@@ -141,7 +141,7 @@ config:
   # Add here all the keys that should be private but still available as env variables
   private: {}
 
-tls:
+mesh:
   enabled: false
   image_version: 1.13.1-2
   # the port where TLS will be exposed
@@ -168,3 +168,6 @@ networkpolicy:
 common_images:
   nutcracker:
     nutcracker: "nutcracker:latest"
+
+app:
+  port: 7272
