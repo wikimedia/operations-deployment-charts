@@ -33,7 +33,7 @@ services:
     module: ./app.js
     conf:
       cors: "*"
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
       mwapi_req:
         method: post
         uri: http://{{ .Values.main_app.mw_host }}/w/api.php
