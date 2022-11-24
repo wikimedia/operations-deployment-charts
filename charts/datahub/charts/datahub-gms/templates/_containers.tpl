@@ -9,7 +9,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers.gms" }}
 # The main application container
-- name: {{ template "wmf.releasename" . }}
+- name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.main_app.command }}
@@ -25,7 +25,7 @@ resources:
     {{- end }}
   {{- end }}
   ports:
-    - containerPort: {{ .Values.main_app.port }}
+    - containerPort: {{ .Values.app.port }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
@@ -40,7 +40,7 @@ resources:
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
-      value: {{ template "wmf.releasename" . }}
+      value: {{ template "base.name.release" . }}
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
@@ -49,7 +49,7 @@ resources:
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
     - name: ENTITY_REGISTRY_CONFIG_PATH
@@ -61,7 +61,7 @@ resources:
     - name: EBEAN_DATASOURCE_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: mysql_password
     - name: EBEAN_DATASOURCE_HOST
       value: "{{ required "Database host must be specified" .Values.global.sql.datasource.host }}"
@@ -91,7 +91,7 @@ resources:
     - name: ELASTICSEARCH_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: elasticsearch_password
     {{- end }}
     {{- with .Values.global.elasticsearch.indexPrefix }}
@@ -106,14 +106,14 @@ resources:
     - name: DATAHUB_TOKEN_SERVICE_SIGNING_KEY
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     - name: DATAHUB_SYSTEM_CLIENT_ID
       value: {{ .Values.global.datahub.metadata_service_authentication.systemClientId }}
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.enabled }}
@@ -122,7 +122,7 @@ resources:
     - name: SECRET_SERVICE_ENCRYPTION_KEY
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.defaultCliVersion }}

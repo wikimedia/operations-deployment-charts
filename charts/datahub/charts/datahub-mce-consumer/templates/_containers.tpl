@@ -18,7 +18,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers.mce-consumer" }}
 # The main application container
-- name: {{ template "wmf.releasename" . }}
+- name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.main_app.command }}
@@ -35,7 +35,7 @@ resources:
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
-      value: {{ template "wmf.releasename" . }}
+      value: {{ template "base.name.release" . }}
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
@@ -44,7 +44,7 @@ resources:
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
     - name: MCE_CONSUMER_ENABLED
@@ -69,7 +69,7 @@ resources:
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
 {{ include "limits.mce-consumer" . | indent 2}}

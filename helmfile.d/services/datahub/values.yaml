@@ -51,7 +51,7 @@ datahub-frontend:
       enabled: true
   config:
     <<: *config
-  tls:
+  mesh:
     enabled: true
   ingress:
     enabled: true
@@ -75,7 +75,7 @@ datahub-gms:
     <<: *config
     public:
       AUTH_RESOURCES_DIR: "/datahub/datahub-gms/plugins/auth/resources"
-  tls:
+  mesh:
     enabled: true
   ingress:
     enabled: true

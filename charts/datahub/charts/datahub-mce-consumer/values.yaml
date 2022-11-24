@@ -29,7 +29,7 @@ config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
 
-tls:
+mesh:
   enabled: false # Switch to true in production
 
 # Additional resources if we want to add a port for a debugger to connect to.

@@ -49,7 +49,7 @@ auth:
   ldap:
     enabled: false
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: 8501 # the port where TLS will be exposed
@@ -114,3 +114,6 @@ global:
       systemClientId: "__datahub_system"
 #
 # End of global values
+
+app:
+  port: 9002

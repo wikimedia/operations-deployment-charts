@@ -44,7 +44,7 @@ datahub-frontend:
   kafka: *kafka
   config:
     <<: *config
-  tls:
+  mesh:
     enabled: true
   ingress:
     enabled: true
@@ -65,7 +65,7 @@ datahub-gms:
   kafka: *kafka
   config:
     <<: *config
-  tls:
+  mesh:
     enabled: true
   ingress:
     enabled: true

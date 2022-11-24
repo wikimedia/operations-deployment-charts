@@ -8,7 +8,7 @@ resources:
 
 {{/* Generate a service name for the GMS service, depending on whether or not it uses TLS */}}
 {{- define "wmf.gms-service.frontend" -}}
-  {{- if .Values.tls.enabled }}
+  {{- if .Values.mesh.enabled }}
     {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
   {{- else -}}
     {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
@@ -18,7 +18,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers.frontend" }}
 # The main application container
-- name: {{ template "wmf.releasename" . }}
+- name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.main_app.command }}
@@ -34,7 +34,7 @@ resources:
     {{- end }}
   {{- end }}
   ports:
-    - containerPort: {{ .Values.main_app.port }}
+    - containerPort: {{ .Values.app.port }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
@@ -49,7 +49,7 @@ resources:
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
-      value: {{ template "wmf.releasename" . }}
+      value: {{ template "base.name.release" . }}
     - name: JAVA_OPTS
       value: >
         -Xms512m
@@ -68,7 +68,7 @@ resources:
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
     - name: DATAHUB_GMS_HOST
@@ -78,7 +78,7 @@ resources:
     - name: DATAHUB_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: datahub_encryption_key
     - name: DATAHUB_APP_VERSION
       value: "{{ .Chart.AppVersion }}"
@@ -103,7 +103,7 @@ resources:
     - name: ELASTIC_CLIENT_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: elasticsearch_password
     {{- end }}
     {{- with .Values.global.elasticsearch.indexPrefix }}
@@ -130,7 +130,7 @@ resources:
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
 {{ include "limits.frontend" . | indent 2}}
@@ -140,7 +140,7 @@ resources:
     {{ toYaml . | indent 4 }}
   {{- end }}
   {{- with .Values.auth.ldap.enabled }}
-    - name: {{ template "wmf.releasename" $ }}-jaas-ldap
+    - name: {{ template "base.name.release" $ }}-jaas-ldap
       mountPath: /datahub/datahub-frontend/conf/auth/
       readOnly: true
   {{- end }}

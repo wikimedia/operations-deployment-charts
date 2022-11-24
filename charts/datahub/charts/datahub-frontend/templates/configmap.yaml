@@ -1,13 +1,13 @@
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
 {{- if .Values.auth.ldap.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-jaas-ldap
+  name: {{ template "base.name.release" . }}-jaas-ldap
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
