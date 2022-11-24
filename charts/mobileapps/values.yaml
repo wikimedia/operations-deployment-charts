@@ -61,7 +61,7 @@ config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   image_version: 1.13.1-2
   public_port: 4888 # the port where TLS will be exposed
@@ -87,3 +87,6 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 8888
