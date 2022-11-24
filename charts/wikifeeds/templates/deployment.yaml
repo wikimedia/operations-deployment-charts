@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
@@ -27,14 +27,14 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" . | nindent 8 }}
+        {{- include "mesh.name.annotations" . | nindent 8 }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}
+        - name: {{ template "base.name.release" . }}
           image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -50,7 +50,7 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-            - containerPort: {{ .Values.main_app.port }}
+            - containerPort: {{ .Values.app.port }}
           {{- if .Values.debug.enabled }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
@@ -66,7 +66,7 @@ spec:
           {{- end }}
           env:
             - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
+              value: {{ template "base.name.release" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -75,7 +75,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           {{- if .Values.puppet_ca_crt }}
@@ -98,15 +98,15 @@ spec:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
 {{- end }}
-        {{- include "tls.container" . | nindent 8 }}
+        {{- include "mesh.deployment.container" . | nindent 8 }}
       volumes:
         {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
+            name: {{ template "base.name.release" . }}-metrics-config
         {{- end }}
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
-        {{- include "tls.volume" . | nindent 8 }}
+        {{- include "mesh.deployment.volume" . | nindent 8 }}

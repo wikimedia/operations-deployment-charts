@@ -48,7 +48,7 @@ config:
 debug:
   enabled: false
   ports: []
-tls:
+mesh:
   enabled: false
   image_version: 1.13.1-2
   public_port: 4101 # the port where TLS will be exposed
@@ -63,3 +63,6 @@ tls:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 8889
