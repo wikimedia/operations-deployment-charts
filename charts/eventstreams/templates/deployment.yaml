@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
+      app: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
@@ -26,7 +26,7 @@ spec:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         prometheus.io/port: "{{ .Values.monitoring.port.port }}"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.debug.enabled | default false }}
       shareProcessNamespace: true
@@ -61,7 +61,7 @@ spec:
             - {{ . }}
             {{- end }}
           ports:
-            - containerPort: {{ .Values.main_app.port }}
+            - containerPort: {{ .Values.app.port }}
           {{- if .Values.debug.enabled | default false }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
@@ -89,7 +89,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -100,7 +100,7 @@ spec:
           volumeMounts:
             - name: {{ .Values.main_app.name }}-config-volume
               mountPath: /etc/eventstreams
-        {{- include "tls.container" . | indent 8 }}
+        {{- include "mesh.deployment.container" . | indent 8 }}
         {{- if .Values.debug.enabled | default false }}
         - name: {{ .Values.main_app.name }}-wmfdebug
           image: {{ .Values.docker.registry }}/wmfdebug:latest
@@ -117,5 +117,5 @@ spec:
       volumes:
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:
-            name: {{ template "wmf.releasename" . }}-config
-        {{- include "tls.volume" . | indent 8 }}
+            name: {{ template "base.name.release" . }}-config
+        {{- include "mesh.deployment.volume" . | indent 8 }}

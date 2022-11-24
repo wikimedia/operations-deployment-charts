@@ -1,35 +1,35 @@
 {{- if ne .Values.service.deployment "none" }}
 {{/*
-# Deploy a k8s Service for {{ template "wmf.releasename" . }}
+# Deploy a k8s Service for {{ template "base.name.release" . }}
 # routing to all pods that are labeled with:
-#   app: {{ template "wmf.chartname" . }}
-#   chart: {{ template "wmf.chartid" . }}
+#   app: {{ template "base.name.chart" . }}
+#   chart: {{ template "base.name.chartid" . }}
 #   routed_via: {{ .Release.Name }}
 */}}
 
-{{ if .Values.tls.enabled }}
-{{ include "tls.service" . }}
+{{ if .Values.mesh.enabled }}
+{{ include "mesh.service" . }}
 {{- else }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     routed_via: {{ .Release.Name }}
   ports:
     - name: {{ .Values.main_app.name }}-http
-      targetPort: {{ .Values.service.port.targetPort | default .Values.main_app.port }}
-      port: {{ .Values.service.port.port | default .Values.main_app.port }}
+      targetPort: {{ .Values.service.port.targetPort | default .Values.app.port }}
+      port: {{ .Values.service.port.port | default .Values.app.port }}
       {{- if .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
@@ -58,7 +58,7 @@ spec:
 {{- else }}
 {{/*
 #
-# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# Skipping deployment of k8s Service for {{ template "base.name.release" . }}
 # as service.deployment is set to "{{ .Values.service.deployment }}"
 #
 */}}

@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
+      app: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress
@@ -20,7 +20,7 @@ spec:
       {{- end }}
   ingress:
     - ports:
-        - port: {{ .Values.main_app.port }}
+        - port: {{ .Values.app.port }}
           protocol: TCP
         {{- if .Values.debug.enabled }}
         {{- range .Values.debug.ports }}
@@ -31,9 +31,9 @@ spec:
         - port: {{ .Values.monitoring.port.port }}
           protocol: TCP
         {{- end }}
-        {{- include "tls.networkpolicy" . | indent 8 }}
+        {{- include "mesh.networkpolicy.ingress" . | indent 8 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
 {{- end }}

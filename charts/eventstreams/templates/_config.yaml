@@ -32,11 +32,11 @@ services:
   - name: {{ .Values.main_app.name }}
     module: app.js
     conf:
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
       cors: '*'
       csp: "default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src *; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'"
       spec: ./spec.yaml
-      user_agent: {{ template "wmf.releasename" . }}
+      user_agent: {{ template "base.name.release" . }}
 
       # eventstreams app settings
 {{ toYaml .Values.main_app.conf | indent 6 }}
