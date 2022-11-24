@@ -10,6 +10,6 @@ spec:
     - name: '{{ .Values.main_app.name }}-service-checker'
       image: "{{ .Values.docker.registry }}/service-checker"
       imagePullPolicy: {{ .Values.docker.pull_policy }}
-      args: ["-t", "5", '$({{ include "wmf.releasename" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "wmf.appbaseurl" . }}']
+      args: ["-t", "5", '$({{ include "base.name.release" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "base.name.baseurl" . }}']
   dnsPolicy: ClusterFirst
   restartPolicy: Never

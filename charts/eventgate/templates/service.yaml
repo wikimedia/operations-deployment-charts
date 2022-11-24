@@ -1,14 +1,14 @@
 {{- if ne .Values.service.deployment "none" }}
 {{/*
 #
-# Deploy a k8s Service for {{ template "wmf.releasename" . }}
+# Deploy a k8s Service for {{ template "base.name.release" . }}
 # routing to all pods that are labeled with:
-#   app: {{ template "wmf.chartname" . }}
+#   app: {{ template "base.name.chart" . }}
 #   routed_via: {{ .Release.Name }}
 #
 */}}
-{{ if .Values.tls.enabled }}
-{{ include "tls.service" . }}
+{{ if .Values.mesh.enabled }}
+{{ include "mesh.service" . }}
 {{- else }}
 {{/*
 # Only enable the main app http port if we are not using TLS.
@@ -17,10 +17,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}-http-service
+  name: {{ template "base.name.release" . }}-http-service
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -31,7 +31,7 @@ spec:
   ports:
   - name: {{ .Values.main_app.name }}-http
     protocol: TCP
-    port: {{ .Values.main_app.port }}
+    port: {{ .Values.app.port }}
     {{/* If the port is passed as a value use it, otherwise autoallocate */}}
     {{- if .Values.service.port -}}
     nodePort: {{ .Values.service.port }}
@@ -44,16 +44,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}-debug-service
+  name: {{ template "base.name.release" . }}-debug-service
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     release: {{ .Release.Name }}
   - name: node-inspector-master
     protocol: TCP
@@ -68,7 +68,7 @@ spec:
 {{- else }}
 {{/*
 #
-# Skipping deployment of k8s Service for {{ template "wmf.releasename" . }}
+# Skipping deployment of k8s Service for {{ template "base.name.release" . }}
 # as service.deployment is set to "{{ .Values.service.deployment }}"
 #
 */}}

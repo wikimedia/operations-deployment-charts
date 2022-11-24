@@ -41,12 +41,12 @@ services:
     module: eventgate
     entrypoint: app
     conf:
-      port: {{ .Values.main_app.port }}
+      port: {{ .Values.app.port }}
 {{- if empty .Values.main_app.conf.cors }}
       # Default cors to false.
       cors: false
 {{- end }}
-      user_agent: {{ template "wmf.releasename" . }}
+      user_agent: {{ template "base.name.release" . }}
 
       eventgate_factory_module: '/srv/service/eventgate-wikimedia.js'
 

@@ -1,6 +1,6 @@
-Thank you for installing {{ template "wmf.chartname" . }}.
+Thank you for installing {{ template "base.name.chart" . }}.
 
-Your deployment is named {{ template "wmf.releasename" . }}.
+Your deployment is named {{ template "base.name.release" . }}.
 
 To learn more about the release, try:
 
@@ -9,7 +9,7 @@ To learn more about the release, try:
 {{- if eq .Values.service.deployment "minikube" }}
 You are using minikube, which means it's really easy to access your service. Run the following
 MINIKUBE_HOST=$(minikube ip)
-SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "wmf.releasename" . }} -o jsonpath='{.spec.ports[0].nodePort}')
+SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "base.name.release" . }} -o jsonpath='{.spec.ports[0].nodePort}')
 
 To get the API spec:
 curl http://${MINIKUBE_HOST}:${SERVICE_PORT}/?spec

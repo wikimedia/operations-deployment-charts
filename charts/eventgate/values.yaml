@@ -20,7 +20,7 @@ service:
   # routed_via defaults to template "wmf.chartname", so by default a Service will only route to the release it is part of.
   # routed_via:
 
-tls:
+mesh:
   enabled: false
   image_version: 1.13.1-2
   public_port: 4192 # the port where TLS will be exposed
@@ -223,3 +223,6 @@ main_app:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 8192

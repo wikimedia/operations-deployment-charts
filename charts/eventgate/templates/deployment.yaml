@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
@@ -26,7 +26,7 @@ spec:
         {{ end -}}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.debug_mode_enabled | default false }}
       shareProcessNamespace: true
@@ -48,10 +48,10 @@ spec:
 {{- end }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
-            - containerPort: {{ .Values.main_app.port }}
+            - containerPort: {{ .Values.app.port }}
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.main_app.port }}
+              port: {{ .Values.app.port }}
 {{- if .Values.main_app.conf.test_events | default false }}
           readinessProbe:
             # EventGate should process a test event if it is ready.
@@ -59,7 +59,7 @@ spec:
             # test_events as if they were POSTed to /v1/events.
             httpGet:
               path: /v1/_test/events
-              port: {{ .Values.main_app.port }}
+              port: {{ .Values.app.port }}
             initialDelaySeconds: 2
 {{- end }}
           env:
@@ -90,15 +90,15 @@ spec:
           stdin: true
           tty: true
 {{- end }}
-        {{- include "tls.container" . | indent 8 }}
+        {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         - name: {{ .Values.main_app.name }}-config-volume
           configMap:
-            name: {{ template "wmf.releasename" . }}-config
+            name: {{ template "base.name.release" . }}-config
         {{- if .Values.monitoring.enabled }}
         - name: metrics-exporter-config-volume
           configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-exporter-config
+            name: {{ template "base.name.release" . }}-metrics-exporter-config
         {{- end }}
-        {{- include "tls.volume" . | indent 8 }}
+        {{- include "mesh.deployment.volume" . | indent 8 }}
 
