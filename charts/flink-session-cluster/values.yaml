@@ -79,7 +79,7 @@ config:
   private:
     swift_api_key: some_secret_key
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: 8081 # the port where TLS will be exposed
@@ -109,3 +109,6 @@ networkpolicy:
 kubernetesApi:
   host: kubernetes.default.svc.cluster.local
   port: 443
+
+app:
+  port: 8081

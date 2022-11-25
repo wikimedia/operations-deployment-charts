@@ -1,13 +1,13 @@
-{{ include "tls.service" . }}
-{{ if not .Values.tls.enabled }}
+{{ include "mesh.service" . }}
+{{ if not .Values.mesh.enabled }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}-ui
+  name: {{ template "base.name.release" . }}-ui
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: jobmanager-ui
@@ -20,7 +20,7 @@ spec:
     nodePort: {{ .Values.service.port.nodePort }}
     {{- end }}
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     release: {{ .Release.Name }}
     component: jobmanager
     routed_via: {{ .Release.Name }}

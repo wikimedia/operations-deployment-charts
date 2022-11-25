@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}-taskmanager
+  name: {{ template "base.name.release" . }}-taskmanager
   labels:
-    app: {{ template "wmf.chartname" . }}-taskmanager
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}-taskmanager
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: taskmanager
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}-taskmanager
+      app: {{ template "base.name.chart" . }}-taskmanager
       release: {{ .Release.Name }}
       component: taskmanager
   replicas: {{ .Values.task_manager.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}-taskmanager
+        app: {{ template "base.name.chart" . }}-taskmanager
         component: taskmanager
         release: {{ .Release.Name }}
       annotations:
@@ -27,15 +27,15 @@ spec:
         checksum/flink-conf: {{ include "flink-conf" . | sha256sum }}
         prometheus.io/port: "{{ .Values.main_app.config.prometheus_reporter_port }}"
         prometheus.io/scrape: "true"
-        {{- include "tls.annotations" . | indent 8}}
+        {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
-      serviceAccountName: {{ template "wmf.releasename" . }}
+      serviceAccountName: {{ template "base.name.release" . }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}-taskmanager
+        - name: {{ template "base.name.release" . }}-taskmanager
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           command: ["/opt/flink/bin/taskmanager.sh", "start-foreground"]
@@ -56,10 +56,10 @@ spec:
           {{- end }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
             - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
+              value: {{ template "base.name.release" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -68,7 +68,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -79,12 +79,12 @@ spec:
           volumeMounts:
           - name: flink-config-volume
             mountPath: /opt/flink/conf
-        {{- include "tls.container" . | indent 8}}
+        {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
-        {{- include "tls.volume" . | indent 8}}
+        {{- include "mesh.deployment.volume" . | indent 8}}
         - name: flink-config-volume
           configMap:
-            name: {{ template "wmf.releasename" . }}-flink-config
+            name: {{ template "base.name.release" . }}-flink-config
             items:
             - key: flink-conf.yaml
               path: flink-conf.yaml

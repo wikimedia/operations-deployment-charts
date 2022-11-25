@@ -1,16 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-taskmanager
+  name: {{ template "base.name.release" . }}-taskmanager
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}-taskmanager
+      app: {{ template "base.name.chart" . }}-taskmanager
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
@@ -21,7 +21,7 @@ spec:
     - from:
       - podSelector:
           matchLabels:
-            app: {{ template "wmf.chartname" . }}
+            app: {{ template "base.name.chart" . }}
             release: {{ .Release.Name }}
       ports:
         - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
@@ -33,7 +33,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: {{ template "wmf.chartname" . }}-taskmanager
+              app: {{ template "base.name.chart" . }}-taskmanager
               release: {{ .Release.Name }}
       ports:
         - port: {{ .Values.main_app.config.taskmanager_rpc_port }}
@@ -46,13 +46,13 @@ spec:
       # flink's native prometheus endpoint
       - port: {{ .Values.main_app.config.prometheus_reporter_port }}
         protocol: TCP
-      {{- include "tls.networkpolicy" . | indent 6 }}
+      {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
-    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
-    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
 
 ---
@@ -60,16 +60,16 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
@@ -80,7 +80,7 @@ spec:
     - from:
       - podSelector:
           matchLabels:
-            app: {{ template "wmf.chartname" . }}-taskmanager
+            app: {{ template "base.name.chart" . }}-taskmanager
             release: {{ .Release.Name }}
       ports:
         - port: {{ .Values.main_app.config.jobmanager_rpc_port }}
@@ -97,11 +97,11 @@ spec:
       - port: {{ . }}
         protocol: TCP
       {{- end }}{{- end }}
-      {{- include "tls.networkpolicy" . | indent 6 }}
+      {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
-    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
-    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
