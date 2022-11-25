@@ -70,7 +70,7 @@ services:
     conf:
       WIKIBASE_REPO: '{env(WIKIBASE_REPO, https://www.wikidata.org/w)}' #use env var with fallback
       WIKIBASE_REPO_HOSTNAME_ALIAS: '{env(WIKIBASE_REPO_HOSTNAME_ALIAS, wikidata.org)}'
-      SSR_PORT: {{ .Values.main_app.port }}
+      SSR_PORT: {{ .Values.app.port }}
       MEDIAWIKI_REQUEST_TIMEOUT: '{env(MEDIAWIKI_REQUEST_TIMEOUT)}'
       MESSAGES_CACHE_MAX_AGE: '{env(MESSAGES_CACHE_MAX_AGE)}'
       LANGUAGES_CACHE_MAX_AGE: '{env(LANGUAGES_CACHE_MAX_AGE)}'

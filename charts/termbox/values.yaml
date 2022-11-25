@@ -42,7 +42,7 @@ config:
     LANGUAGES_CACHE_MAX_AGE: 300000
     HEALTHCHECK_QUERY: 'language=de&entity=Q1&revision=3&editLink=/edit/Q1347&preferredLanguages=de|en'
   private: {} # Add here all the keys that should be private but still available as env variables
-tls:
+mesh:
   enabled: false
   image_version: 1.13.1-2
   public_port: 4004
@@ -58,3 +58,6 @@ tls:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 3030
