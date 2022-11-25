@@ -15,8 +15,8 @@ metadata:
     {{ $k }}: {{ $v | quote }}
   {{- end }}
   labels:
-    app-wmf: {{ template "wmf.chartname" $ }}
-    chart: {{ template "wmf.chartid" $ }}
+    app-wmf: {{ template "base.name.chart" $ }}
+    chart: {{ template "base.name.chartid" $ }}
     release: {{ $.Release.Name }}
   {{- range $k, $v := $.Values.inference.labels }}
     {{ $k }}: {{ $v | quote }}

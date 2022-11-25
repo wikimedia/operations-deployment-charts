@@ -2,16 +2,16 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" $ }}-{{ . }}
+  name: {{ template "base.name.release" $ }}-{{ . }}
   labels:
-    app: {{ template "wmf.chartname" $ }}
-    chart: {{ template "wmf.chartid" $ }}
+    app: {{ template "base.name.chart" $ }}
+    chart: {{ template "base.name.chartid" $ }}
     release: {{ $.Release.Name }}
 spec:
   podSelector:
     matchLabels:
-      app-wmf: {{ template "wmf.chartname" $ }}
-      chart: {{ template "wmf.chartid" $ }}
+      app-wmf: {{ template "base.name.chart" $ }}
+      chart: {{ template "base.name.chartid" $ }}
       release: {{ $.Release.Name }}
       component: {{ . }}
   policyTypes:
@@ -21,7 +21,7 @@ spec:
       {{- end }}
   ingress:
     - ports:
-      - port: {{ $.Values.main_app.port }}
+      - port: {{ $.Values.app.port }}
         protocol: TCP
       - port: {{ $.Values.main_app.queue_proxy.port }}
         protocol: TCP
@@ -38,7 +38,7 @@ spec:
         protocol: TCP
 {{- if $.Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" $.Values }}
+    {{- include "base.networkpolicy.egress-basic" $.Values }}
 {{- end }}
 ---
 {{- end }}
