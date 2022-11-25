@@ -5,7 +5,7 @@ Templates for common sections of container specs
 {{- define "mediawiki-env" -}}
 env:
   - name: SERVICE_IDENTIFIER
-    value: {{ template "wmf.releasename" . }}
+    value: {{ template "base.name.release" . }}
 {{- if .Values.main_app.usel10nCache }}
   - name: L10N_CACHE
     value: /tmp/l10n-cache
@@ -18,7 +18,7 @@ env:
   - name: {{ $k | upper }}
     valueFrom:
       secretKeyRef:
-        name: {{ template "wmf.releasename" $ }}-secret-config
+        name: {{ template "base.name.release" $ }}-secret-config
         key: {{ $k }}
 {{- end }}
 {{- end -}}
@@ -43,7 +43,7 @@ volumeMounts:
 volumes:
   - name: secret-volume
     secret:
-      secretName: {{ include "wmf.releasename" . }}-secret-files
+      secretName: {{ include "base.name.release" . }}-secret-files
       items:
       - key: LocalSettings.php
         path: LocalSettings.php

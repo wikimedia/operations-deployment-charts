@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
@@ -51,7 +51,7 @@ spec:
 {{- end }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}
+        - name: {{ template "base.name.release" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -59,7 +59,7 @@ spec:
           {{- end }}
           args: [" {{ .Values.main_app.args }} "]
           ports:
-          {{- range $k, $v := .Values.main_app.ports }}
+          {{- range $k, $v := .Values.app.ports }}
             - containerPort: {{ $v }}
           {{- end }}
           {{- if .Values.main_app.liveness_probe }}
@@ -109,15 +109,15 @@ spec:
         {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           configMap:
-            name: {{ template "wmf.releasename" . }}-metrics-config
+            name: {{ template "base.name.release" . }}-metrics-config
         {{- end }}
         {{- if .Values.main_app.xdebug.enabled }}
         - name: {{ .Release.Name }}-xdebug
           configMap:
-            name: {{ template "wmf.releasename" . }}-xdebug-ini
+            name: {{ template "base.name.release" . }}-xdebug-ini
         {{- end }}
         {{- if .Values.main_app.xhprof.enabled }}
         - name: {{ .Release.Name }}-xhprof
           configMap:
-            name: {{ template "wmf.releasename" . }}-xhprof-ini
+            name: {{ template "base.name.release" . }}-xhprof-ini
         {{- end }}

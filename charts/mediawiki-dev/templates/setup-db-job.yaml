@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: setup-db-{{ template "wmf.releasename" . }}-{{ .Release.Revision }}
+  name: setup-db-{{ template "base.name.release" . }}-{{ .Release.Revision }}
 spec:
   template:
     spec:
