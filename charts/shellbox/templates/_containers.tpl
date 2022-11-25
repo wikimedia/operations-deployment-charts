@@ -10,7 +10,7 @@ resources:
 {{- define "php.containers" }}
 # The apache httpd container
 # TODO: set up logging. See T265876
-- name: {{ template "wmf.releasename" . }}-httpd
+- name: {{ template "base.name.release" . }}-httpd
   image: {{.Values.docker.registry }}/httpd-fcgi:{{ .Values.php.httpd.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
@@ -57,7 +57,7 @@ resources:
   - name: shared-socket
     mountPath: /run/shared
   {{- end }}
-- name: {{ template "wmf.releasename" . }}-app
+- name: {{ template "base.name.release" . }}-app
   image: {{ .Values.docker.registry }}/wikimedia/mediawiki-libs-shellbox:{{ if .Values.shellbox.version }}{{ .Values.shellbox.version }}-{{ end }}{{ .Values.shellbox.flavour }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
@@ -117,7 +117,7 @@ resources:
 # Add the following exporters:
 # php-fpm exporter
 # apache exporter on port 9117
-- name: {{ template "wmf.releasename" . }}-httpd-exporter
+- name: {{ template "base.name.release" . }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["-scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
@@ -127,7 +127,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9117
-- name: {{ template "wmf.releasename" . }}-php-fpm-exporter
+- name: {{ template "base.name.release" . }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", "--addr=0.0.0.0:9118"]
   ports:

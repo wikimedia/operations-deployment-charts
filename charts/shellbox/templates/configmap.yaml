@@ -3,10 +3,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-metrics-config
+  name: {{ template "base.name.release" . }}-metrics-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -17,10 +17,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-shellbox-config
+  name: {{ template "base.name.release" . }}-shellbox-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -28,4 +28,4 @@ data:
 {{ .Files.Get "config/shellbox-config.json" | indent 4 }}
 
 {{ include "shellbox.secret" . }}
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
