@@ -33,7 +33,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}
 # The exposed haproxy container
-- name: {{ template "wmf.releasename" . }}-haproxy
+- name: {{ template "base.name.release" . }}-haproxy
   image: "{{ .Values.docker.registry }}/{{ .Values.haproxy.image }}:{{ .Values.haproxy.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   command:
@@ -90,7 +90,7 @@ resources:
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
   {{- include "thumbor.limits" $ | indent 2 }}

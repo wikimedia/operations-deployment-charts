@@ -1,27 +1,27 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
 
-{{ include "tls.service" . }}
-{{ if not .Values.tls.enabled }}
+{{ include "mesh.service" . }}
+{{ if not .Values.mesh.enabled }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ template "wmf.serviceType" . }}
+  type: {{ template "base.helper.serviceType" . }}
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     routed_via: {{ .Release.Name }}
   ports:
     - name: {{ .Values.service.port.name }}
       targetPort: {{ .Values.service.port.targetPort }}
       port: {{ .Values.service.port.port }}
-      {{- if and (eq (include "wmf.serviceType" .) "NodePort") .Values.service.port.nodePort }}
+      {{- if and (eq (include "base.helper.serviceType" .) "NodePort") .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
 {{- end }}

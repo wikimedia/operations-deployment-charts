@@ -25,6 +25,10 @@ haproxy:
       path: /healthcheck
       port: 4112
 
+# application port. Needed by the mesh module, unused otherwise.
+app:
+  port: 4112
+
 main_app:
   requests:
     cpu: 1
@@ -193,7 +197,7 @@ config:
     # mediawiki shared secret
     swift_private_secret: "foobar"
 
-tls:
+mesh:
   enabled: false
   public_port: 4112
   upstream_timeout: "180.0s"

@@ -1,12 +1,12 @@
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-haproxy-config
+  name: {{ template "base.name.release" . }}-haproxy-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 # Note: Do NOT use - here to strip whitespace, this will cause the config to be invalid to haproxy
@@ -16,10 +16,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-thumbor-config
+  name: {{ template "base.name.release" . }}-thumbor-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -30,10 +30,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-statsd-config
+  name: {{ template "base.name.release" . }}-statsd-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -44,10 +44,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-nutcracker-config
+  name: {{ template "base.name.release" . }}-nutcracker-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
