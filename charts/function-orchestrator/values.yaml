@@ -65,7 +65,7 @@ config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private: {} # Add here all the keys that should be private but still available as env variables
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   public_port: 4971 # the port where TLS will be exposed
   upstream_timeout: "180.0s"
@@ -151,3 +151,6 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
+
+app:
+  port: 6254
