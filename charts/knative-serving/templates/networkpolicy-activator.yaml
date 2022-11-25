@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-activator
+  name: {{ template "base.name.release" . }}-activator
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
 spec:
   podSelector:
     matchLabels:
       app: activator
-      app-wmf: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
+      app-wmf: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

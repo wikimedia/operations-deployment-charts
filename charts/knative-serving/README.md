@@ -46,7 +46,7 @@ when creating the knative-serving chart.
 Please also add the following snippet to the `env` specs of all containers:
 ```
 {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-{{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+{{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
 {{- end }}
 ```
 This is needed to avoid TLS certificate validation errors due to the absence of IP SANs.

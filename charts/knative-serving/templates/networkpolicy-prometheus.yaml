@@ -2,17 +2,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-prometheus
+  name: {{ template "base.name.release" . }}-prometheus
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
 spec:
   podSelector:
     matchLabels:
       serving.knative.dev/release: {{ .Chart.AppVersion }}
-      app-wmf: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
+      app-wmf: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

@@ -1458,8 +1458,8 @@ spec:
         app: activator
         role: activator
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: controller
@@ -1479,7 +1479,7 @@ spec:
               memory: {{ .Values.core.activator.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
             # Run Activator with GC collection when newly generated memory is 500%.
             - name: GOGC
@@ -1603,8 +1603,8 @@ spec:
       labels:
         app: autoscaler
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       # To avoid node becoming SPOF, spread our replicas to different nodes.
@@ -1635,7 +1635,7 @@ spec:
               memory: {{ .Values.core.autoscaler.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
               value: '443'
             - name: POD_NAME
@@ -1737,8 +1737,8 @@ spec:
       labels:
         app: controller
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       # To avoid node becoming SPOF, spread our replicas to different nodes.
@@ -1770,7 +1770,7 @@ spec:
             - name: SSL_CERT_DIR
               value: /usr/share/ca-certificates
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
               value: '443'
             - name: POD_NAME
@@ -1856,8 +1856,8 @@ spec:
         app: webhook
         role: webhook
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       # To avoid node becoming SPOF, spread our replicas to different nodes.
@@ -1885,7 +1885,7 @@ spec:
               memory: {{ .Values.core.webhook.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
               value: '443'
             - name: POD_NAME

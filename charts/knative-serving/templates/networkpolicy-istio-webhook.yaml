@@ -2,17 +2,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}-istio-webhook
+  name: {{ template "base.name.release" . }}-istio-webhook
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
 spec:
   podSelector:
     matchLabels:
       app: istio-webhook
-      app-wmf: {{ template "wmf.chartname" . }}
-      chart: {{ template "wmf.chartid" . }}
+      app-wmf: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   policyTypes:
     - Ingress

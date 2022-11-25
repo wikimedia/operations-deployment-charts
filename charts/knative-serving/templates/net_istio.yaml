@@ -360,8 +360,8 @@ spec:
       labels:
         app: networking-istio
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: controller
@@ -379,7 +379,7 @@ spec:
               memory: {{ .Values.net_istio.controller.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
               value: '443'
             - name: SYSTEM_NAMESPACE
@@ -441,8 +441,8 @@ spec:
         app: istio-webhook
         role: istio-webhook
         serving.knative.dev/release: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: controller
@@ -460,7 +460,7 @@ spec:
               memory: {{ .Values.net_istio.webhook.resources.limits.memory }}
           env:
             {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "wmf.kubernetes.ApiEnv" . | nindent 12 }}
+            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
             {{- end }}
             - name: SYSTEM_NAMESPACE
               valueFrom:
