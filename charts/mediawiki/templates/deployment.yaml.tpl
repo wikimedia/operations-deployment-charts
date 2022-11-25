@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   {{- include "mw.labels" . | indent 2 }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         deployment: {{ .Release.Namespace }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
@@ -23,7 +23,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        {{- include "tls.annotations" . | indent 8}}
+        {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       # TODO: add affinity rules to ensure even distribution across rows
       {{- if .Values.affinity }}
@@ -37,7 +37,7 @@ spec:
       {{- if .Values.mw.localmemcached.enabled }}
         {{- include "localmemcached.deployment" . | indent 8 }}
       {{- end }}
-      {{- include "tls.container" . | indent 8}}
+      {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "rsyslog.deployment" . | indent 8 }}
       volumes:
       {{- include "mw.volumes" . | indent 8}}

@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   {{- include "mw.labels" . | indent 2 }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
@@ -32,13 +32,13 @@ spec:
         protocol: TCP
       {{- end }}
       {{- end }}
-      {{- include "tls.networkpolicy" . | indent 6}}
+      {{- include "mesh.networkpolicy.ingress" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
-    {{- include "wmf.networkpolicy.egress" .Values }}
-    {{- include "wmf.networkpolicy.egress" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "mediawiki.networkpolicy.egress" .Values.mw | indent 4 }}
     {{/* add egress rules for envoy upstream clusters. */}}
-    {{- include "wmf.networkpolicy.egress.discovery" . | indent 4 }}
-    {{- include "wmf.networkpolicy.egress.kafka" . | indent 4 }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}

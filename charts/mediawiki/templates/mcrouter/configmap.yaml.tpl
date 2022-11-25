@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-mcrouter-config
+  name: {{ template "base.name.release" . }}-mcrouter-config
   {{- include "mw.labels" . | indent 2 }}
 data:
   config.json: |-

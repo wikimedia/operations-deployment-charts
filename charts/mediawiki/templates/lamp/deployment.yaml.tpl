@@ -1,5 +1,5 @@
 {{ define "lamp.deployment" }}
-{{ $release := include "wmf.releasename" . }}
+{{ $release := include "base.name.release" . }}
 ### The apache httpd container
 # TODO: set up logging. See T265876
 # TODO: fix virtualhosts in puppet so that the port is set to APACHE_RUN_PORT

@@ -94,7 +94,7 @@ checksum/rsyslog: {{ include "mw.rsyslog.application" . | printf "%s%s" $tpl | s
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-rsyslog-config
+  name: {{ template "base.name.release" . }}-rsyslog-config
   {{- include "mw.labels" . | indent 2}}
 data:
   10-templates.conf: |-

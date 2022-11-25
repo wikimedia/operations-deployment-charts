@@ -1,5 +1,5 @@
 {{- define "mw.volumes" }}
-{{ $release := include "wmf.releasename" . }}
+{{ $release := include "base.name.release" . }}
 # Apache sites
 - name: {{ $release }}-httpd-sites
   configMap:
@@ -15,7 +15,7 @@
   configMap:
     name: {{ $release }}-wikimedia-cluster-config
 # TLS configurations
-{{- include "tls.volume" . }}
+{{- include "mesh.deployment.volume" . }}
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
 # Shared unix socket for php apps
 - name: shared-socket

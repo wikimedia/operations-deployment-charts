@@ -1,5 +1,5 @@
 {{ define "localmemcached.deployment" }}
-{{ $release := include "wmf.releasename" . }}
+{{ $release := include "base.name.release" . }}
 
 {{- range .Values.mw.localmemcached.ports -}}
 - name: {{ $release }}-memcached-{{ . }}

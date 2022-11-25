@@ -1,7 +1,7 @@
 {{- define "mcrouter.deployment" -}}
 # TODO: understand how to make mcrouter use the
 # application CA when connecting to memcached via TLS
-- name: {{ template "wmf.releasename" . }}-mcrouter
+- name: {{ template "base.name.release" . }}-mcrouter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.mcrouter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- with .Values.mw.mcrouter }}
@@ -39,7 +39,7 @@
       command:
         - /bin/healthz
   volumeMounts:
-    - name: {{ template "wmf.releasename" . }}-mcrouter-config
+    - name: {{ template "base.name.release" . }}-mcrouter-config
       mountPath: /etc/mcrouter
   {{- with .Values.mw.mcrouter.resources }}
   resources:
@@ -49,7 +49,7 @@
 {{ toYaml .limits | indent 6 }}
   {{- end }}
 {{- if .Values.monitoring.enabled }}
-- name: {{ template "wmf.releasename" . }}-mcrouter-exporter
+- name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["--mcrouter.address", "127.0.0.1:11213", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]

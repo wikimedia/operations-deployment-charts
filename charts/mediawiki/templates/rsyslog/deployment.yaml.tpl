@@ -1,5 +1,5 @@
 {{ define "rsyslog.deployment" }}
-{{ $release := include "wmf.releasename" . }}
+{{ $release := include "base.name.release" . }}
 {{- if .Values.mw.logging.rsyslog -}}
 - name: {{ $release }}-rsyslog
   image: {{.Values.docker.registry }}/{{ .Values.common_images.rsyslogd }}

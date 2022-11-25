@@ -1,17 +1,17 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
-{{ include "tls.service" . }}
-{{ if or .Values.service.expose_http (not .Values.tls.enabled) }}
+{{ include "mesh.service" . }}
+{{ if or .Values.service.expose_http (not .Values.mesh.enabled) }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
   {{- include "mw.labels" . | indent 2 }}
 spec:
   type: NodePort
   selector:
-    app: {{ template "wmf.chartname" . }}
+    app: {{ template "base.name.chart" . }}
     routed_via: {{ .Release.Name }}
   ports:
     - name: {{ .Values.service.port.name }}

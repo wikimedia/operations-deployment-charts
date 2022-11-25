@@ -10,8 +10,8 @@
 */}}
 {{ define "mw.labels" }}
 labels:
-  app: {{ template "wmf.chartname" . }}
-  chart: {{ template "wmf.chartid" . }}
+  app: {{ template "base.name.chart" . }}
+  chart: {{ template "base.name.chartid" . }}
   release: {{ .Release.Name }}
   heritage: {{ .Release.Service }}
 {{ end }}
