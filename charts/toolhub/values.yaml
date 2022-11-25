@@ -146,7 +146,7 @@ config:
     WIKIMEDIA_OAUTH2_SECRET: 67e66d1131ed22dc1c79304cae27d04880b16293
 
 # -- TLS terminating ingress configuration
-tls:
+mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: 4011 # the port where TLS will be exposed
@@ -247,3 +247,6 @@ common_images:
 # -- Cruft needed for generated templates/deployment.yaml
 php:
   fcgi_mode: unused
+
+app:
+  port: 8000

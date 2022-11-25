@@ -2,10 +2,10 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ template "wmf.releasename" . }}-crawler
+  name: {{ template "base.name.release" . }}-crawler
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -14,8 +14,8 @@ spec:
   jobTemplate:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
@@ -23,7 +23,7 @@ spec:
       template:
         metadata:
           labels:
-            app: {{ template "wmf.chartname" . }}
+            app: {{ template "base.name.chart" . }}
             release: {{ .Release.Name }}
           annotations:
             checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
@@ -31,14 +31,14 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: {{ template "wmf.releasename" . }}-crawler
+            - name: {{ template "base.name.release" . }}-crawler
               image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
               imagePullPolicy: {{ .Values.docker.pull_policy }}
               command:
                 - /srv/app/contrib/cronjob/crawler.sh
               env:
                 - name: SERVICE_IDENTIFIER
-                  value: {{ template "wmf.releasename" . }}
+                  value: {{ template "base.name.release" . }}
                 {{- range $k, $v := .Values.config.public }}
                 - name: {{ $k }}
                   value: {{ $v | quote }}
@@ -47,10 +47,10 @@ spec:
                 - name: {{ $k }}
                   valueFrom:
                     secretKeyRef:
-                      name: {{ template "wmf.releasename" $ }}-secret-config
+                      name: {{ template "base.name.release" $ }}-secret-config
                       key: {{ $k }}
                 {{- end }}
-            {{- include "tls.container" . | indent 12}}
+            {{- include "mesh.deployment.container" . | indent 12}}
             # T292861: mcrouter.container deliberately excluded
           volumes:
             {{- include "wmf.volumes" . | indent 12}}

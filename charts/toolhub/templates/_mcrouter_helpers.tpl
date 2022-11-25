@@ -179,7 +179,7 @@ All these routes can either include a failover pool or not.
 
 {{- define "mcrouter.container" -}}
 {{- if .Values.mcrouter.enabled }}
-- name: {{ template "wmf.releasename" . }}-mcrouter
+- name: {{ template "base.name.release" . }}-mcrouter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.mcrouter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- with .Values.mcrouter }}
@@ -215,7 +215,7 @@ All these routes can either include a failover pool or not.
       command:
         - /bin/healthz
   volumeMounts:
-    - name: {{ template "wmf.releasename" . }}-mcrouter-config-volume
+    - name: {{ template "base.name.release" . }}-mcrouter-config-volume
       mountPath: /etc/mcrouter
   resources:
     requests:
@@ -223,7 +223,7 @@ All these routes can either include a failover pool or not.
     limits:
 {{ toYaml .Values.mcrouter.resources.limits | indent 6 }}
 {{- if .Values.monitoring.enabled }}
-- name: {{ template "wmf.releasename" . }}-mcrouter-exporter
+- name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["--mcrouter.address", "127.0.0.1:11213", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]
@@ -245,10 +245,10 @@ All these routes can either include a failover pool or not.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-mcrouter-config
+  name: {{ template "base.name.release" . }}-mcrouter-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
@@ -259,8 +259,8 @@ data:
 
 {{- define "mcrouter.volume" -}}
 {{- if .Values.mcrouter.enabled }}
-- name: {{ template "wmf.releasename" . }}-mcrouter-config-volume
+- name: {{ template "base.name.release" . }}-mcrouter-config-volume
   configMap:
-      name: {{ template "wmf.releasename" . }}-mcrouter-config
+      name: {{ template "base.name.release" . }}-mcrouter-config
 {{- end }}
 {{- end -}}{{/* "mcrouter.volume" */}}

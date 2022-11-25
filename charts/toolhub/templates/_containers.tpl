@@ -9,7 +9,7 @@ resources:
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}
 # The main application container
-- name: {{ template "wmf.releasename" . }}
+- name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.main_app.command }}
@@ -25,7 +25,7 @@ resources:
     {{- end }}
   {{- end }}
   ports:
-    - containerPort: {{ .Values.main_app.port }}
+    - containerPort: {{ .Values.app.port }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
@@ -40,7 +40,7 @@ resources:
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
-      value: {{ template "wmf.releasename" . }}
+      value: {{ template "base.name.release" . }}
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k }}
       value: {{ $v | quote }}
@@ -49,7 +49,7 @@ resources:
     - name: {{ $k }}
       valueFrom:
         secretKeyRef:
-          name: {{ template "wmf.releasename" $ }}-secret-config
+          name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
 {{ include "limits" . | indent 2}}
@@ -75,7 +75,7 @@ resources:
 {{- define "php.containers" }}
 # The apache httpd container
 # TODO: set up logging. See T265876
-- name: {{ template "wmf.releasename" . }}-httpd
+- name: {{ template "base.name.release" . }}-httpd
   image: {{.Values.docker.registry }}/httpd-fcgi:{{ .Values.php.httpd.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
@@ -109,7 +109,7 @@ resources:
   - name: shared-socket
     mountPath: /run/shared
   {{- end -}}
-- name: {{ template "wmf.releasename" . }}-app
+- name: {{ template "base.name.release" . }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
@@ -158,7 +158,7 @@ resources:
 # Add the following exporters:
 # php-fpm exporter
 # apache exporter on port 9117
-- name: {{ template "wmf.releasename" . }}-httpd-exporter
+- name: {{ template "base.name.release" . }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["-scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
@@ -168,7 +168,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9117
-- name: {{ template "wmf.releasename" . }}-php-fpm-exporter
+- name: {{ template "base.name.release" . }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", --addr="0.0.0.0:9118"]
   ports:

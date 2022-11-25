@@ -3,26 +3,26 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-metrics-config
+  name: {{ template "base.name.release" . }}-metrics-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
 {{ include "mcrouter.config" . }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "wmf.releasename" . }}-job-config
+  name: {{ template "base.name.release" . }}-job-config
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 binaryData:
