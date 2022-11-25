@@ -58,7 +58,7 @@ config:
     TEGOLA_POSTGRES_PASSWORD: "secret"
     AWS_ACCESS_KEY_ID: "s3_compatible_swift_key_id"
     AWS_SECRET_ACCESS_KEY: "s3_compatible_swift_secret_access_key"
-tls:
+mesh:
   enabled: false
   public_port: 4105
   upstream_timeout: "180.0s"
@@ -96,3 +96,6 @@ tilePregeneration:
   concurrencyPolicy: Forbid
   command:
     - "/srv/service/scripts/pregenerate-maps-tiles.sh"
+
+app:
+  port: 8080

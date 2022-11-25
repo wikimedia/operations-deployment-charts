@@ -1,4 +1,4 @@
-{{ include "tls.config" . }}
+{{ include "mesh.configuration.configmap" . }}
 
 ---
 apiVersion: v1
@@ -6,8 +6,8 @@ kind: ConfigMap
 metadata:
   name: config-{{ .Release.Name }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:

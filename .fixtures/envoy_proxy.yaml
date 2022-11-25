@@ -1,5 +1,5 @@
 ---
-tls:
+mesh:
   enabled: true
   public_port: 4004 # the port where TLS will be exposed
   certs:
@@ -33,11 +33,11 @@ tcp_proxy:
   listeners:
     - maps_postgres
 tcp_services_proxy:
-   maps_postgres:
-     port: 10000
-     timeout: "60s"
-     upstreams:
-       - address: 10.0.0.88
-         port: 5432
-       - address: 10.0.0.89
-         port: 5432
+  maps_postgres:
+    port: 10000
+    timeout: "60s"
+    upstreams:
+      - address: 10.0.0.88
+        port: 5432
+      - address: 10.0.0.89
+        port: 5432

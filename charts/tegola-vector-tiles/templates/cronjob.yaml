@@ -2,10 +2,10 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ template "wmf.releasename" . }}-pregeneration
+  name: {{ template "base.name.release" . }}-pregeneration
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -13,10 +13,10 @@ spec:
   concurrencyPolicy: "{{ .Values.tilePregeneration.concurrencyPolicy }}"
   jobTemplate:
     metadata:
-      name: {{ template "wmf.releasename" . }}-pregeneration
+      name: {{ template "base.name.release" . }}-pregeneration
       labels:
-        app: {{ template "wmf.chartname" . }}
-        chart: {{ template "wmf.chartid" . }}
+        app: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
@@ -25,14 +25,14 @@ spec:
       template:
         metadata:
           labels:
-            app: {{ template "wmf.chartname" . }}
+            app: {{ template "base.name.chart" . }}
             release: {{ .Release.Name }}
           annotations:
-            {{- include "tls.annotations" . | indent 12}}
+            {{- include "mesh.name.annotations" . | indent 12}}
         spec:
           restartPolicy: "{{ .Values.tilePregeneration.restartPolicy }}"
           containers:
-          - name: {{ template "wmf.releasename" . }}-pregeneration
+          - name: {{ template "base.name.release" . }}-pregeneration
             image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
             env:
             {{- range $k, $v := .Values.config.public }}
@@ -43,7 +43,7 @@ spec:
               - name: {{ $k | upper }}
                 valueFrom:
                   secretKeyRef:
-                    name: {{ template "wmf.releasename" $ }}-secret-config
+                    name: {{ template "base.name.release" $ }}-secret-config
                     key: {{ $k }}
             {{- end }}
             imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -61,9 +61,9 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 16 }}
               limits:
 {{ toYaml .Values.main_app.limits | indent 16 }}
-          {{- include "tls.container" . | indent 10}}
+          {{- include "mesh.deployment.container" . | indent 10}}
           volumes:
-            {{- include "tls.volume" . | indent 12}}
+            {{- include "mesh.deployment.volume" . | indent 12}}
             - name: config-volume
               configMap:
                 name: config-{{ .Release.Name }}
