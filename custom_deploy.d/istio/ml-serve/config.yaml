@@ -19,6 +19,9 @@ spec:
     enableTracing: false
     defaultConfig:
       tracing: {}
+      proxyStatsMatcher:
+        inclusionRegexps:
+          - ".*http_local_rate_limit.*"
   values:
     # CNI-CONFIG:
     # This config is deployed via puppet, the following settings are not really
