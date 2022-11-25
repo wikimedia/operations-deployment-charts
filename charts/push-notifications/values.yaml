@@ -113,7 +113,7 @@ config:
     GOOGLE_APPLICATION_CREDENTIALS: /etc/push-notifications/google-service.json
   private: {} # Add here all the keys that should be private but still available as env variables
 
-tls:
+mesh:
   enabled: false # Switch to true in production
   image_version: 1.14.4-1
   public_port: 4104
@@ -139,3 +139,6 @@ debug:
 networkpolicy:
   egress:
     enabled: false
+
+app:
+  port: 8900

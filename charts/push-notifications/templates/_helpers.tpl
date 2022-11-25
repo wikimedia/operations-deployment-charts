@@ -1,1 +1,0 @@
-../../../common_templates/0.4/_helpers.tpl
