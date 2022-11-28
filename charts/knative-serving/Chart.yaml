@@ -2,9 +2,15 @@ apiVersion: v2
 name: knative-serving
 description: WMF Knative Serving setup
 type: application
-version: 0.1.29
+version: 0.1.30
 appVersion: v0.18.1
-dependecies:
-  - name: knative-serving-crds
-    version: 0.1.0
-    repository: "file://../knative-serving-crds"
+# We keep the dependencies list as comment to have a trace about them.
+# The way in which Helm tracks dependencies is a little convoluted
+# for our use case: we deploy crds separately from the charts that depends on
+# them (via helmfile). Having dependencies explicitly stated is nice
+# for documentation purposes, but we should strive for a compromise
+# between precision and simplicity in day-to-day ops.
+#dependencies:
+#  - name: knative-serving-crds
+#    version: 0.1.0
+#    repository: https://helm-charts.wikimedia.org/stable
