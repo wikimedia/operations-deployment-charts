@@ -8,3 +8,17 @@ revscoring_inference_services:
     version: "20220804074124"
   - wiki: "en"
     version: "20220804074416"
+    predictor:
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 5
+      config:
+        resources:
+          limits:
+            cpu: "5"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi

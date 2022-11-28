@@ -4,6 +4,20 @@ monitoring:
 revscoring_inference_services:
   - wiki: "en"
     version: "20211022183902"
+    predictor:
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 5
+      config:
+        resources:
+          limits:
+            cpu: "5"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
   - wiki: "ru"
     version: "20220509073816"
   - wiki: "wikidata"
