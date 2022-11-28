@@ -1,24 +1,6 @@
 # In this example the pods can call the egress gateway k8s svc endpoint
 # via HTTPS/TLS, and the gateway will in turn call the other endpoints using HTTPS.
 net_istio:
-  egressgateway:
-    gateway:
-      servers:
-      - port:
-          number: 443
-          name: https
-          protocol: HTTPS
-        tls:
-          mode: SIMPLE
-          minProtocolVersion: 'TLSV1_2'
-          credentialName: inference-egress-tls-cert
-        hosts:
-          - "thanos-swift.discovery.wmnet"
-          - "*.wikipedia.org"
-          # This is needed since the Egress gateway will terminate
-          # TLS traffic for this endpoint (but different HTTP Host header
-          # or TLS SNI).
-          - "istio-egressgateway.istio-system.svc.cluster.local"
     service_entries:
     - name: mediawiki-api-ro
       spec:
