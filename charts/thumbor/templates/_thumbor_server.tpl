@@ -108,7 +108,7 @@ FILTERS = [
 ################################### Wikimedia ##################################
 
 EXIF_FIELDS_TO_KEEP = [ 'Artist', 'Copyright', 'ImageDescription' ]
-EXIF_TINYRGB_PATH = '/usr/local/lib/thumbor/tinyrgb.icc'
+EXIF_TINYRGB_PATH = '/srv/service/tinyrgb.icc'
 EXIF_TINYRGB_ICC_REPLACE = 'sRGB IEC61966-2.1'
 
 PROXY_ENGINE_ENGINES = [
@@ -203,7 +203,7 @@ FAILURE_THROTTLING_DURATION = 3600
 FAILURE_THROTTLING_PREFIX = 'thumbor-failure-'
 
 {{ if .Values.main_app.stl_support -}}
-THREED2PNG_PATH = '/srv/deployment/3d2png/deploy/src/3d2png.js'
+THREED2PNG_PATH = '/opt/lib/python/site-packages/bin/3d2png'
 {{- end -}}
 
 # Animated GIFs greater than 100MP render as the first frame only
