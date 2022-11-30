@@ -40,24 +40,15 @@ templates:
     setTemplate:
       - name: php.servergroup
         value: "kube-{{`{{ .Release.Namespace }}`}}"
-
-hooks:
-  - events: ["prepare"]
-    command: "helmfile_log_sal"
-    args:
-      [
-        "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/mw-jobrunner: {{`{{.HelmfileCommand}}`}}",
-      ]
-  - events: ["cleanup"]
-    command: "helmfile_log_sal"
-    args:
-      [
-        "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/mw-jobrunner: {{`{{.HelmfileCommand}}`}}",
-
-      ]
-
+    hooks:
+      - events: ["presync", "postsync"]
+        command: "helmfile_log_sal"
+        args:
+          - "{{`{{ .HelmfileCommand }}`}}"
+          - "[{{`{{ .Environment.Name }}`}}]"
+          - "[{{`{{ .Release.Name }}`}}]"
+          - "{{`{{ if eq .Event.Name 'presync' }}START{{ else if .Event.Error }}FAIL{{ else }}DONE{{ end }}`}}"
+          - "helmfile.d/services/{{`{{ .Release.Namespace }}`}} : {{`{{ .HelmfileCommand }}`}}"
 
 releases:
   - name: main
