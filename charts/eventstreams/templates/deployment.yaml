@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       app: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
