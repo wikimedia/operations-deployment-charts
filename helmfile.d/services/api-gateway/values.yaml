@@ -100,7 +100,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)-draftquality:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-draftquality:predict'
       host_rewrite_path: '\1wiki-draftquality.revscoring-draftquality.wikimedia.org'
       internalhost: inference.discovery.wmnet
 
@@ -116,7 +116,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)-goodfaith:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-goodfaith:predict'
       host_rewrite_path: '\1wiki-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
       internalhost: inference.discovery.wmnet
 
@@ -124,7 +124,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)-reverted:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-reverted:predict'
       host_rewrite_path: '\1wiki-reverted.revscoring-editquality-reverted.wikimedia.org'
       internalhost: inference.discovery.wmnet
 
