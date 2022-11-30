@@ -47,7 +47,7 @@ templates:
           - "{{`{{ .HelmfileCommand }}`}}"
           - "[{{`{{ .Environment.Name }}`}}]"
           - "[{{`{{ .Release.Name }}`}}]"
-          - "{{`{{ if eq .Event.Name 'presync' }}START{{ else if .Event.Error }}FAIL{{ else }}DONE{{ end }}`}}"
+          - '{{`{{ if eq .Event.Name "presync" }}START{{ else if .Event.Error }}FAIL{{ else }}DONE{{ end }}`}}'
           - "helmfile.d/services/{{`{{ .Release.Namespace }}`}} : {{`{{ .HelmfileCommand }}`}}"
 
 releases:
