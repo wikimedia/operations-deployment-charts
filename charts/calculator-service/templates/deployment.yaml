@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wmf.releasename" . }}
+  name: {{ template "base.name.release" . }}
   labels:
-    app: {{ template "wmf.chartname" . }}
-    chart: {{ template "wmf.chartid" . }}
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "wmf.chartname" . }}
+      app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:
       labels:
-        app: {{ template "wmf.chartname" . }}
+        app: {{ template "base.name.chart" . }}
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         prometheus.io/port: "9102"
         prometheus.io/scrape: "false"
-        {{- include "tls.annotations" . | indent 8}}
+        {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
         # The main application container
-        - name: {{ template "wmf.releasename" . }}
+        - name: {{ template "base.name.release" . }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
@@ -46,7 +46,7 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-            - containerPort: {{ .Values.main_app.port }}
+            - containerPort: {{ .Values.app.port }}
           {{- if .Values.debug.enabled }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
@@ -61,7 +61,7 @@ spec:
           {{- end }}
           env:
             - name: SERVICE_IDENTIFIER
-              value: {{ template "wmf.releasename" . }}
+              value: {{ template "base.name.release" . }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
@@ -70,7 +70,7 @@ spec:
             - name: {{ $k | upper }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "wmf.releasename" $ }}-secret-config
+                  name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
           resources:
@@ -82,10 +82,10 @@ spec:
           volumeMounts:
 {{ toYaml . | indent 12 }}
 {{- end }}
-        {{- include "tls.container" . | indent 8}}
-{{- if or .Values.main_app.volumes .Values.tls.enabled }}
+        {{- include "mesh.deployment.container" . | indent 8}}
+{{- if or .Values.main_app.volumes .Values.mesh.enabled }}
       volumes:
-        {{- include "tls.volume" . | indent 8}}
+        {{- include "mesh.deployment.volume" . | indent 8}}
 {{- with .Values.main_app.volumes }}
 {{ toYaml . | indent 8 }}
 {{- end }}
