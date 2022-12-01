@@ -400,12 +400,16 @@ BEGIN descriptions/mobileapps_cluster route definition
                   regex_rewrite:
                     pattern:
                       google_re2: {}
+{{- if $discovery_opts.full_path_trim }}
+                      regex: '^{{ $discovery_opts.full_path_trim }}(.*)$'
+{{- else }}
                       regex: '^/service/{{ $discovery_opts.path }}(.*)$'
-{{- if $discovery_opts.host_rewrite_path }}
+{{- end }}
+{{- if or (not $discovery_opts.host_rewrite_path) $discovery_opts.full_path_trim }}
+                    substitution: '/\1'
+{{- else if $discovery_opts.host_rewrite_path }}
 {{- /* if we have a regex in our match already, the rest-of-path regex moves */}}
                     substitution: '/\2'
-{{- else }}
-                    substitution: '/\1'
 {{- end }}
                   cluster: {{ $discovery_route}}_cluster
 {{- if $discovery_opts.host }}

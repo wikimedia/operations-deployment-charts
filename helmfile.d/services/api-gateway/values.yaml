@@ -68,6 +68,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-articletopic:predict'
       host_rewrite_path: '\1wiki-articletopic.revscoring-articletopic.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     # This model does not have submodels for specific wikis, so we don't
@@ -78,6 +79,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/outlink-topic-model:predict'
       host: 'outlink-topic-model.articletopic-outlink.wikimedia.org"'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_articlequality:
@@ -86,6 +88,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-articlequality:predict'
       host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_drafttopic:
@@ -94,6 +97,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-drafttopic:predict'
       host_rewrite_path: '\1wiki-drafttopic.revscoring-drafttopic.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_draftquality:
@@ -102,6 +106,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-draftquality:predict'
       host_rewrite_path: '\1wiki-draftquality.revscoring-draftquality.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_editquality_damaging:
@@ -110,6 +115,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-damaging:predict'
       host_rewrite_path: '\1wiki-damaging.revscoring-editquality-damaging.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_editquality_goodfaith:
@@ -118,6 +124,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-goodfaith:predict'
       host_rewrite_path: '\1wiki-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
     lw_inference_editquality_reverted:
@@ -126,6 +133,7 @@ main_app:
       timeout: 30s
       path: 'lw/inference/v1/models/(\w+)wiki-reverted:predict'
       host_rewrite_path: '\1wiki-reverted.revscoring-editquality-reverted.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
 
   #TODO regex on v1

@@ -120,6 +120,7 @@ main_app:
       path: 'lw/inference/v1/models/(\w+)wiki-articlequality:predict'
       host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
       internal_host: localhost
+      full_path_trim: "/service/lw/inference/"
     mydummyservice:
       tls: false
       port: 8888

@@ -122,6 +122,25 @@ main_app:
   # of servicename-a.wikimedia.org. The internal service request will
   # have a path of /1234 as normal.
 
+  # "full_path_trim" is a special option for services (such as
+  # liftwing) that will maintain the full query string (as opposed to
+  # using everything after the matching url path) when querying the
+  # backend service while trimming the specified value.
+  #
+  # This would mean that
+  # * a "full_path_trim" of "/service/mygroup"
+  # * a service path of "/service/mygroup/mything"
+  # * a query string of "/service/mygroup/mything/12345
+  # would cause the backend service to be queried for /mything/12345.
+  #
+  # To contrast, not specifying a full_path_trim will cause this query
+  # and service path combination resulting in the backend query being
+  # /12345.
+  #
+  # full_path_trim will override host_rewrite_path parsing of paths,
+  # but host_rewrite_path will still function for rewriteing of Host
+  # headers.
+
   discovery_endpoints: {}
 
   # This dictionary behaves the exact same but only for the staging
