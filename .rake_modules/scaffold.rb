@@ -24,10 +24,10 @@ class Scaffold
     save_to @chart, service_for('Chart.yaml')
   end
 
-  def link_common_templates
+  def link_common
     version = YAML.safe_load(@values)['helm_scaffold_version']
     Dir.chdir(service_for('')) do
-      File.symlink("../../common_templates/#{version}/default-network-policy-conf.yaml",
+      File.symlink("../../common/#{version}/default-network-policy-conf.yaml",
                    'default-network-policy-conf.yaml')
     end
   end
@@ -35,8 +35,8 @@ class Scaffold
   def run
     puts "Copying files to #{service_for ''}"
     copytree
-    puts 'Linking common templates'
-    link_common_templates
+    puts 'Linking common files'
+    link_common
     puts "You can edit your chart (if needed!) at #{Dir.pwd}/#{service_for ''}"
   end
 
@@ -59,10 +59,6 @@ class Scaffold
     File.open(path, 'w') do |fh|
       fh.write(data)
     end
-  end
-
-  def common_tpl_for(version, filename)
-    "common_templates/#{version}/#{filename}"
   end
 
   def apply_variables(tpl)

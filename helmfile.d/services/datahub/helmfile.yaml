@@ -32,7 +32,7 @@ templates:
       {{/*
       The following is a hack to copy all environment values (so basically /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml,
       see environments at the end of this file) into all of the subcharts .Values scopes.
-      It is needed so that the common_templates helpers in those subcharts have access to the defaults and can function like they would normally.
+      It is needed so that the module helpers in those subcharts have access to the defaults and can function like they would normally.
       */}}
       {{- range $subchart := (list "datahub-frontend" "datahub-gms" "datahub-mae-consumer" "datahub-mce-consumer") }}
       - {{ $subchart }}:

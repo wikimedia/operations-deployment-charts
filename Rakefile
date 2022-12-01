@@ -397,42 +397,6 @@ task :check_admin do
   Rake::Task[:check].reenable
 end
 
-CONVERSION_TABLE = {
-  /wmf\.chartname/ => { sub: 'base.name.chart' },
-  /wmf\.releasename/ => { sub: 'base.name.release' },
-  /wmf\.chartid/ => { sub: 'base.name.chartid' },
-  /wmf\.appbaseurl/ => {
-    sub: 'base.name.baseurl',
-    convert: { 'main_app.port' => 'app.port' }
-  },
-  /wmf\.networkpolicy\.egress\.kafka/ => { sub: 'base.networkpolicy.egress.kafka' },
-  /wmf\.networkpolicy\.egress"/ => { sub: 'base.networkpolicy.egress-basic"' },
-  /wmf\.serviceType/ => { sub: 'base.helper.serviceType' },
-  /wmf\.networkpolicy\.egress\.discovery/ => { sub: 'mesh.networkpolicy.egress' },
-  /tls\.servicename/ => { sub: 'mesh.name.service' },
-  /tls\.servicefqdn/ => { sub: 'mesh.name.fqdn' },
-  /tls\.annotations/ => { sub: 'mesh.name.annotations', convert: { 'tls' => 'mesh' } },
-  /tls\.container/ => { sub: 'mesh.deployment.container', convert: { 'tls' => 'mesh' } },
-  /tls\.volume/ => { sub: 'mesh.deployment.volume', convert: { 'tls' => 'mesh' } },
-  /tls\.service/ => { sub: 'mesh.service', convert: { 'tls' => 'mesh' } },
-  /tls\.config/ => { sub: 'mesh.configuration.configmap', convert: { 'tls' => 'mesh' } },
-  /tls\.networkpolicy/ => { sub: 'mesh.networkpolicy.ingress', convert: { 'tls' => 'mesh' } },
-  /tls\.envoy_template/ => { sub: 'mesh.configuration.full', convert: { 'tls' => 'mesh' } },
-  /ingress\.default/ => { sub: 'ingress.istio.default'}
-}.freeze
-
-def patch_values_file(filename)
-  puts "patching values file #{filename}"
-  content = File.read(filename)
-  values = YAML.safe_load(content, aliases: true)
-  port = values.fetch('main_app', {})['port']
-  content += "\napp:\n  port: #{port}\n" unless port.nil?
-  content.gsub!(/^tls:$/, 'mesh:') unless values['tls'].nil?
-  File.write filename, content
-rescue Psych::SyntaxError
-  puts "File #{filename} is not parsable as yaml".red
-end
-
 def bump_chart_version(filename)
   content = File.read(filename)
   match = content.match(/^version: \d+\.\d+\.(\d+)$/)
@@ -441,93 +405,6 @@ def bump_chart_version(filename)
   new_patch_version = (match[1].to_i + 1).to_s
   content.gsub!(/^(version: \d+\.\d+\.)\d+$/, "\\1#{new_patch_version}")
   File.write filename, content
-end
-
-desc 'Converts a chart to use modules'
-task :chart_to_modules, %i[chart] do |_, args|
-  abort('you need to provide a chart') if args.nil?
-  chart = args[:chart]
-  g = Git.open('.')
-  # Check the chart is using the last version of common_templates.
-  # Older versions WILL cause changes to happen.
-  %w[_tls_helpers.tpl _helpers.tpl _ingress_helpers.tpl].each do |tpl|
-    ptr = "charts/#{chart}/templates/#{tpl}"
-    next unless File.exist? ptr
-
-    unless File.realpath(ptr).include?('common_templates/0.4')
-      abort('The conversion only works if you\'re using version 0.4 of common_templates')
-    end
-    g.remove(ptr)
-  end
-  # values.yaml contents
-  values_file = "charts/#{chart}/values.yaml"
-  # package.json contents
-  packages = []
-  # values.yaml conversions
-  conversions = {}
-  FileList.new(
-    "charts/#{chart}/templates/**/*.tpl",
-    "charts/#{chart}/templates/**/*.yaml",
-    "charts/#{chart}/templates/**/NOTES.txt"
-  ).each do |template_file|
-    next if File.symlink? template_file
-
-    content = File.read(template_file)
-    mod = 0
-    CONVERSION_TABLE.each do |regex, substitution|
-      if content.match(regex)
-        sub = substitution[:sub]
-        packages << "#{sub.split('.')[0, 2].join('.')}:1.0"
-        mod += 1
-        content.gsub!(regex, substitution[:sub])
-      end
-      next unless substitution.include? :convert
-
-      conversions.merge!(substitution[:convert])
-      # Check the file for references to values we're converting.
-      substitution[:convert].each do |orig, new|
-        next unless content.match(orig)
-
-        content.gsub!(/\.Values\.#{orig}/, ".Values.#{new}")
-        mod += 1
-      end
-    end
-    if mod.positive?
-      puts "Patching #{template_file} (#{mod} changes)"
-      File.write(template_file, content)
-    end
-  end
-
-  patch_values_file(values_file)
-
-  # we're ok losing comments in fixtures tbh.
-  FileList.new("charts/#{chart}/.fixtures/*.yaml").each do |fixture_file|
-    patch_values_file(fixture_file)
-  end
-  puts 'Patching the package.json file'
-  pkgfile = "charts/#{chart}/package.json"
-  packages.concat JSON.parse(File.read(pkgfile)) if File.exist? pkgfile
-  File.write(pkgfile, packages.uniq.to_json)
-  if which('sextant')
-    _exec("sextant vendor charts/#{chart}")
-  else
-    puts("Please install sextant, then run 'sextant vendor charts/#{chart}' before committing.".red)
-  end
-  bump_chart_version "charts/#{chart}/Chart.yaml"
-  puts('Before committing: also run deployment_to_modules')
-end
-
-desc 'convert a deployment to use modules'
-task :deployment_to_modules, %i[deployment] do |_, args|
-  deployment = args.fetch(:deployment, nil)
-  abort('You need to provide a cluster and a deployment') if deployment.nil?
-  # Check the existence of a values file, patch it if needed
-  FileList.new("helmfile.d/#{deployment}/values*.yaml").each do |values_file|
-    # Don't convert symlinks
-    next if File.symlink? values_file
-
-    patch_values_file(values_file)
-  end
 end
 
 task default: %i[repo_update test_scaffold check_charts check_deployments check_admin validate_envoy_config validate_istio_config]

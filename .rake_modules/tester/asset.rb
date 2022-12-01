@@ -431,11 +431,9 @@ module Tester
         end
         # Copy the original dir files to the tmpdir
         FileUtils.cp_Lr "#{dir_to_copy}/.", dir
-        # Also copy over all charts (and common templates) here because concurrent "helm dep build"
-        # would fail otherwise.
-        # Copy all charts (and common templates) here because concurrent
+        # Copy all charts (and common files) here because concurrent
         # "helm dep build" will fail otherwise.
-        ['common_templates', 'charts', self.class::LISTENERS_FIXTURE].each do |what|
+        ['common', 'charts', self.class::LISTENERS_FIXTURE].each do |what|
           FileUtils.cp_r File.join(source, what), dir
         end
         block.call dir
