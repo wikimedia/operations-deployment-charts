@@ -320,7 +320,7 @@ BEGIN restbase route definition
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: restbase_cluster
-
+              - name: restbase
                 match:
                   prefix: "/api/"
                 route:
