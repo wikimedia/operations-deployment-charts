@@ -113,7 +113,9 @@ main_app:
 
   # "host_rewrite_path" can be specified instead of "host" in order to
   # do a regex replacement between the path and the internal host
-  # header.
+  # header using a SINGLE group. More than one group is not supported
+  # at this time, and using more than one will break routing.
+  #
   # For example, for a path of "abc(a|b)" and a host_rewrite_path of
   # "servicename-\1.wikimedia.org", requests to the path
   # /service/abca/1234 will be requested internally with a host header

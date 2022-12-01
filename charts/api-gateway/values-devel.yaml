@@ -114,6 +114,12 @@ main_app:
   # Ratelimit overrides/individual ratelimit buckets
   # Per-service configuration override
   discovery_endpoints:
+    lw_inference_articlequality:
+      port: 8888
+      timeout: 30s
+      path: 'lw/inference/v1/models/(\w+)wiki-articlequality:predict'
+      host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
+      internal_host: localhost
     mydummyservice:
       tls: false
       port: 8888

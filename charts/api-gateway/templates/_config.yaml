@@ -393,15 +393,20 @@ BEGIN descriptions/mobileapps_cluster route definition
                 match:
                   safe_regex:
                     google_re2: {}
-                    regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                    regex: '^/service/{{ $discovery_opts.path }}(.*)$'
                 route:
                   timeout: {{ $discovery_opts.timeout | default "15s" }}
                   cors: *api_cors
                   regex_rewrite:
                     pattern:
                       google_re2: {}
-                      regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                      regex: '^/service/{{ $discovery_opts.path }}(.*)$'
+{{- if $discovery_opts.host_rewrite_path }}
+{{- /* if we have a regex in our match already, the rest-of-path regex moves */}}
+                    substitution: '/\2'
+{{- else }}
                     substitution: '/\1'
+{{- end }}
                   cluster: {{ $discovery_route}}_cluster
 {{- if $discovery_opts.host }}
                   host_rewrite_literal: '{{ $discovery_opts.host }}'
@@ -409,7 +414,7 @@ BEGIN descriptions/mobileapps_cluster route definition
                   host_rewrite_path_regex:
                     pattern:
                       google_re2: {}
-                      regex: '^/service/{{ $discovery_opts.path }}/(.*)$'
+                      regex: '^/service/{{ $discovery_opts.path }}(.*)$'
                     substitution: '{{ $discovery_opts.host_rewrite_path }}'
 {{- end }}
 {{- if $discovery_opts.ratelimit_config }}
