@@ -55,7 +55,7 @@ spec:
         value: {{ $s3_storage_base_uri }}/{{ $model }}/{{ $s3_storage_wiki_name }}/{{ .version }}/
       {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
       - name: {{ .name }}
-        value: {{ .value }}
+        value: {{ .value | quote }}
       {{- end }}
       {{- $resources_config := merge ($custom_predictor.resources | default dict) ($generic_predictor.resources | default dict) }}
       {{- if $resources_config }}

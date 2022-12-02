@@ -35,7 +35,7 @@ spec:
       env:
       {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
       - name: {{ .name }}
-        value: {{ .value }}
+        value: {{ .value | quote }}
       {{- end }}
       {{- $resources_config := merge ($custom_predictor.resources | default dict) ($generic_predictor.resources | default dict) }}
       {{- if $resources_config }}
@@ -64,7 +64,7 @@ spec:
       env:
       {{- range concat ($generic_transformer.base_env | default list) ($custom_transformer.custom_env | default list) }}
       - name: {{ .name }}
-        value: {{ .value }}
+        value: {{ .value | quote }}
       {{- end }}
   {{- end }}
 ---
