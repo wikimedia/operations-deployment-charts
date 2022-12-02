@@ -57,5 +57,10 @@ spec:
       - name: {{ .name }}
         value: {{ .value }}
       {{- end }}
+      {{- $resources_config := merge ($custom_predictor.resources | default dict) ($generic_predictor.resources | default dict) }}
+      {{- if $resources_config }}
+      resources:
+        {{- toYaml $resources_config | nindent 8 }}
+      {{- end }}
 ---
 {{- end }}
