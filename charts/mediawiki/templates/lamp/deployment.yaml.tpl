@@ -18,6 +18,12 @@
     valueFrom:
       fieldRef:
         fieldPath: metadata.name
+  # Log in ecs format
+  - name: LOG_FORMAT
+    value: ecs_rsyslog
+  # Do not log monitoring requests
+  - name: LOG_SKIP_SYSTEM
+    value: "1"
   ports:
   - name: httpd
     containerPort: {{ .Values.php.httpd.port }}
