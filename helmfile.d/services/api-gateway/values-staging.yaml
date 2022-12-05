@@ -4,6 +4,8 @@ main_app:
   # enable debug logging in staging
   args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
 
+  restbase_dev: true
+
   domains:
     - api.wikimedia.org
     - api.wikimedia.org:*

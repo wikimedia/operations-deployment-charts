@@ -21,6 +21,8 @@ main_app:
       requests_per_unit: 5000
       unit: HOUR
 
+  restbase_dev: true
+
   access_log:
     type: stdout
 
@@ -94,8 +96,7 @@ main_app:
     restbase_cluster:
       type: STRICT_DNS
       hosts:
-        localhost: 7231
-        badhost: 7231
+        localhost: 8888
     mobileapps_cluster:
       type: STRICT_DNS
       hosts:

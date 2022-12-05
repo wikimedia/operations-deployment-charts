@@ -299,14 +299,14 @@ static_resources:
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
+{{- /*
+BEGIN restbase route definition
+*/}}
               - name: feed
 {{- if $strip_cookies }}
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
-{{- /*
-BEGIN restbase route definition
-*/}}
                 match:
                   prefix: "/feed/"
                 route:
@@ -320,11 +320,18 @@ BEGIN restbase route definition
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: restbase_cluster
+{{- if .Values.main_app.restbase_dev }}
               - name: restbase
                 match:
-                  prefix: "/api/"
+                  prefix: "/restbase/"
                 route:
                   cluster: restbase_cluster
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/restbase/(.*)'
+                    substitution: '/\1'
+{{- end }}
 {{- /*
 END restbase route definition
 */}}
