@@ -1,6 +1,3 @@
-resources:
-  replicas: 2
-
 monitoring:
   enabled: true
 
@@ -18,6 +15,10 @@ main_app:
 
   # 4 workers per pod in production
   thumbor_workers: 4
+
+  limits:
+    cpu: 1
+    memory: 2Gi
 
 service:
   deployment: production
