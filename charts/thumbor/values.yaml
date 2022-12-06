@@ -182,7 +182,7 @@ service:
   port:
     name: haproxy
     targetPort: 4112
-    port: 4112
+    port: 8800
     nodePort: null
 
 config:
@@ -199,7 +199,7 @@ config:
 
 mesh:
   enabled: false
-  public_port: 4112
+  public_port: 8800
   upstream_timeout: "180.0s"
   certs:
     cert: "snakeoil"
