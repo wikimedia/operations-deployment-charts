@@ -259,6 +259,11 @@ net_istio:
         - mesh
         hosts:
         - '*.wikipedia.org'
+        - '*.wiktionary.org'
+        - '*.wikidata.org'
+        - '*.wikiquote.org'
+        - '*.wikibooks.org'
+        - '*.wikisource.org'
         http:
         - match:
           - port: 80
