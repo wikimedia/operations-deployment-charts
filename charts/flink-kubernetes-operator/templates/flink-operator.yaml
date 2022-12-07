@@ -1,3 +1,4 @@
+{{/*
 ################################################################################
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -15,6 +16,7 @@
 #  See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+*/}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -90,15 +92,9 @@ spec:
           securityContext:
             {{- toYaml .Values.operatorSecurityContext | nindent 12 }}
           volumeMounts:
+            # Change from upstream. See: https://github.com/apache/flink-kubernetes-operator/pull/478
             - name: flink-operator-config-volume
-              mountPath: /opt/flink/conf/flink-conf.yaml
-              subPath: flink-conf.yaml
-            - name: flink-operator-config-volume
-              mountPath: /opt/flink/conf/log4j-operator.properties
-              subPath: log4j-operator.properties
-            - name: flink-operator-config-volume
-              mountPath: /opt/flink/conf/log4j-console.properties
-              subPath: log4j-console.properties
+              mountPath: /opt/flink/conf
             {{- if .Values.operatorVolumeMounts.create }}
                 {{- toYaml .Values.operatorVolumeMounts.data | nindent 12 }}
             {{- end }}
@@ -155,15 +151,9 @@ spec:
           - name: keystore
             mountPath: "/certs"
             readOnly: true
+          # Change from upstream. See: https://github.com/apache/flink-kubernetes-operator/pull/478
           - name: flink-operator-config-volume
-            mountPath: /opt/flink/conf/flink-conf.yaml
-            subPath: flink-conf.yaml
-          - name: flink-operator-config-volume
-            mountPath: /opt/flink/conf/log4j-operator.properties
-            subPath: log4j-operator.properties
-          - name: flink-operator-config-volume
-            mountPath: /opt/flink/conf/log4j-console.properties
-            subPath: log4j-console.properties
+            mountPath: /opt/flink/conf
         {{- end }}
       {{- if index (.Values.operatorPod) "dnsPolicy" }}
       dnsPolicy: {{ .Values.operatorPod.dnsPolicy | quote }}
