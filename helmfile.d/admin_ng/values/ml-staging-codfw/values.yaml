@@ -24,3 +24,11 @@ namespaces:
   knative-serving:
     tlsHostnames:
       - inference-staging
+
+limitranges:
+  container:
+    max:
+      memory: "4Gi"
+  pod:
+    max:
+      memory: "6Gi"
