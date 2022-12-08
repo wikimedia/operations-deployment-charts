@@ -1,0 +1,80 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+
+spec:
+  image: {{ .Values.app.image }}:{{ .Values.app.version }}
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  flinkVersion: {{ .Values.app.flinkVersion }}
+  mode: native
+  {{- /*
+  NOTE: serviceAccount must match the ServiceAccount created by
+  flink-kubernetes-operator from .Values.jobServiceAccount.name.
+  */}}
+  serviceAccount: flink
+  restartNonce: {{ .Values.app.restartNonce | default 1 }}
+
+  job:
+    {{- with .Values.app.job | default dict }}
+    {{- /*
+    app.job.pythonEntryPoint is sugar to abstract JobSpec params for launching Flink Python jobs.
+    If app.job.pythonEntryPoint is set, entryClass and args will be set appropriately.
+    */}}
+    {{- if .pythonEntryPoint }}
+    entryClass: org.apache.flink.client.python.PythonDriver
+    {{- $args := concat (list "-py" .pythonEntryPoint ) .args }}
+    {{- $jobSpec := merge (dict "args" $args) . }}
+    {{- $_ := unset $jobSpec "pythonEntryPoint" }}
+    {{- (toYaml $jobSpec ) | nindent 4 }}
+    {{- else }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- end }}
+
+  flinkConfiguration:
+    ### Default configuration
+    rest.port: "{{ .Values.app.port }}"
+    taskmanager.numberOfTaskSlots: "1"
+    {{- if ne .Values.service.deployment "none" }}
+    # Expose a ClusterIP Service for the  Flink REST UI.
+    # This can be accessed by kubectl port-forward.
+    # See https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/native_kubernetes/#accessing-flinks-web-ui
+    # and also this chart's NOTES.txt.
+    kubernetes.rest-service.exposed.type: ClusterIP
+    {{- end }}
+    {{- if .Values.monitoring.enabled }}
+    metrics.reporters: prometheus
+    metrics.reporter.prometheus.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    metrics.reporter.prometheus.port: "9999"
+    {{- end }}
+
+    {{- if .Values.app.flinkConfiguration }}
+    ### User provided configuration
+    {{ toYaml .Values.app.flinkConfiguration | nindent 4 }}
+    {{- end }}
+
+  # Use podTemplate to add WMF labels and annotations to all pods.
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/pod-template/
+  podTemplate:
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/port: "9999"
+        {{- end }}
+    {{- if .Values.mesh.enabled }}
+    spec:
+      containers:
+        {{- include "mesh.deployment.container" . | indent 8 }}
+    {{- end }}
+
+  jobManager:
+    {{- toYaml .Values.app.jobManager | nindent 4 }}
+
+  taskManager:
+    {{- toYaml .Values.app.taskManager | nindent 4 }}

@@ -1,0 +1,17 @@
+app:
+  image: flink_app0
+  version: 0.0.1
+
+  job:
+    jarURI: /srv/flink_app0/MyFlinkApp.jar
+    entryClass: org.wikimedia.MyMainFlinkClass
+    args: [ --arg1, val1 ]
+
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets:
+    - cidr: 123.123.123.123/24
+monitoring:
+  enabled: true
+

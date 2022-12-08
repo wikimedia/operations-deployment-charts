@@ -1,0 +1,167 @@
+# Default values for flink-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.4 # This is still only valid for the "default network policy" file
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+service:
+  # valid values are "production" and "minikube" and "none".
+  # If "none", no k8s Service will be deployed for the Flink JobManager REST UI.
+  deployment: minikube
+  # NOTE: we do not need to specify port info; Flink k8s Native Integration creates the Service.
+  # https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/resource-providers/native_kubernetes/#accessing-flinks-web-ui
+
+# If true, prometheus will be configured to export Flink metrics on port 9999.
+# https://nightlies.apache.org/flink/flink-docs-master/docs/ops/metrics/
+# https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/metric_reporters/#prometheus
+monitoring:
+  enabled: true
+
+app:
+  # The name of the image to use.  This should be built on top WMF's flink production image.
+  #image: <YOUR DEPLOYMENT PIPELINE BUILT IMAGE HERE>
+  version: latest # we use latest everywhere in the defaults.
+
+  # FlinkDeployment spec configuration below.
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.2/docs/custom-resource/reference/
+  flinkVersion: v1_16
+
+  # Nonce used to manually trigger restart for the cluster/session job.
+  # In order to trigger restart, change the number to anything other than the current value.
+  #restartNonce: 1
+
+  # Port for the JobManager UI.
+  port: 8081
+
+  job:
+    # Optional URI of the job jar within the Flink docker container.
+    # For example: local:///opt/flink/examples/streaming/StateMachineExample.jar.
+    #jarURI:
+
+    # Fully qualified main class name of the Flink job.
+    #entryClass:
+
+    # Arguments for the Flink job main class.
+    args: []
+
+    # Parallelism of the Flink job.
+    #parallelism: 1
+
+    # Desired state for the job., either 'running'' or 'suspended'
+    #state: running
+
+    # Nonce used to manually trigger savepoint for the running job.
+    #savepointTriggerNonce: 1
+
+    # Savepoint path used by the job the first time it is deployed.
+    #initialSavepointPath:
+
+    # Upgrade mode of the Flink job.
+    # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/job-management/#stateful-and-stateless-application-upgrades
+    #upgradeMode:
+
+    # Allow checkpoint state that cannot be mapped to any job vertex in tasks.
+    #allowNonRestoredState: false
+
+  # key/value pairs of flink-conf.yaml configuration.
+  # NOTE: all values must be strings.
+  flinkConfiguration: {}
+
+  # JobManagerSpec
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#jobmanagerspec
+  jobManager:
+    replicas: 1
+    resource:
+      memory: 2048m
+      cpu: 1
+
+  # TaskManagerSpec
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#taskmanagerspec
+  taskManager:
+    replicas: 1
+    resource:
+      memory: 2048m
+      cpu: 1
+
+  # TODO: log level configuration?
+
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+
+
+
+# The mesh module is only used for egress, as Flink apps don't (generally) have 'service ports'.
+mesh:
+  enabled: false
+  image_version: latest
+  # Disable envoy tls-proxy service public port.
+  # Flnk apps (generally) do not listen for requests.
+  public_port: 0
+  ## Dummy certs. certs will not be used because we disable public_port.
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners. These should match service mesh endpoint names
+  # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
+  listeners: []
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Allow external traffic to reach this service via a (cluster provided) ingress controller.
+# https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
+#
+# TODO: In the future, we'd like to configure ingress to JobManager UI on the JobManager pods only.
+#       See ideas for doing this here:
+#       https://phabricator.wikimedia.org/T324576#8498319
+#       For now, ingress is disabled.
+#
+# ingress:
+#   enabled: false
+
+debug:
+  enabled: false # Not supported

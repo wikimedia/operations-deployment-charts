@@ -1,0 +1,8 @@
+app:
+  image: pyflink_app0
+  version: 0.0.1
+
+  job:
+    pythonEntryPoint: /srv/pyflink_app0/python_entry_point.py
+    args: [ --arg1, val1 ]
+    upgradeMode: stateless

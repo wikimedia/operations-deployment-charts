@@ -1,0 +1,8 @@
+app:
+  image: flink_app0
+  version: 0.0.1
+
+  job:
+    jarURI: /srv/flink_app0/MyFlinkApp.jar
+    entryClass: org.wikimedia.MyMainFlinkClass
+    args: [ --arg1, val1 ]

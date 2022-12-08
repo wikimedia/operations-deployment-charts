@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "base.name.chart" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
+    - Ingress
+  ingress:
+    - ports:
+      {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
+{{- if .Values.monitoring.enabled }}
+      # Prometheus port. Must match value of metrics.reporter.prometheus.port in flink-conf.yaml.
+      - port: 9999
+        protocol: TCP
+{{- end }}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
+{{- end }}

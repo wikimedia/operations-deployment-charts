@@ -1,0 +1,21 @@
+Thank you for installing {{ template "base.name.chart" . }}.
+
+Your release is named {{ template "base.name.release" . }}.
+
+To learn more about the release, try:
+
+  helm status {{ template "base.name.release" . }}
+  helm get {{ template "base.name.release" . }}
+
+{{- if and (eq .Values.service.deployment "minikube") }}
+
+You are using minikube, which means it's really easy to access the Flink JobManager UI.
+Run the following to port forward requests from localhost to the Flink UI.
+
+  kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ template "base.name.release" . }}-rest {{ .Values.app.port }}
+
+Then in your browser, navigate to:
+
+  http://localhost:{{ .Values.app.port }}
+
+{{- end }}
