@@ -1,9 +1,15 @@
 apiVersion: v2
 name: kserve-inference
 description: WMF KServe Inference serv
-version: 0.3.12
+version: 0.3.13
 appVersion: 0.0.1
-dependecies:
-  - name: kserve
-    version: 0.1.7
-    repository: "file://../kserve"
+# We keep the dependencies list as comment to have a trace about them.
+# The way in which Helm tracks dependencies is a little convoluted
+# for our use case: we deploy crds separately from the charts that depends on
+# them (via helmfile). Having dependencies explicitly stated is nice
+# for documentation purposes, but we should strive for a compromise
+# between precision and simplicity in day-to-day ops.
+#dependencies:
+#  - name: kserve
+#    version: 0.1.10
+#    repository: https://helm-charts.wikimedia.org/stable
