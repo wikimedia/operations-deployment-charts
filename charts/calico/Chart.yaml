@@ -2,8 +2,16 @@ apiVersion: v2
 name: calico
 description: WMF Calico setup
 type: application
-version: 0.2.4
+version: 0.2.5
 appVersion: 3.23.3
-dependencies:
-  - name: calico-crds
-    version: 0.2.0
+# We keep the dependencies list as comment to have a trace about them.
+# The way in which Helm tracks dependencies is a little convoluted
+# for our use case: we deploy crds separately from the charts that depends on
+# them (via helmfile). Having dependencies explicitly stated is nice
+# for documentation purposes, but we should strive for a compromise
+# between precision and simplicity in day-to-day ops.
+#
+# dependencies:
+#   - name: calico-crds
+#     version: 0.2.0
+#     repository: https://helm-charts.wikimedia.org/stable
