@@ -17,11 +17,11 @@ main_app:
 
   version: 2022-11-24-213721-production
 
-  # 4 workers per pod in production
-  thumbor_workers: 4
+  # 3 workers per pod in production
+  thumbor_workers: 3
 
   limits:
-    cpu: 1.5
+    cpu: 2.5
     memory: 2Gi
 
 service:
