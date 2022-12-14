@@ -7,9 +7,12 @@ main_app:
     memory: 100Mi
   cassandra:
     hosts:
-      - restbase-dev1004-a.eqiad.wmnet
-      - restbase-dev1005-a.eqiad.wmnet
-      - restbase-dev1006-a.eqiad.wmnet
+      - cassandra-dev2001-a.codfw.wmnet
+      - cassandra-dev2001-b.codfw.wmnet
+      - cassandra-dev2002-a.codfw.wmnet
+      - cassandra-dev2002-b.codfw.wmnet
+      - cassandra-dev2003-a.codfw.wmnet
+      - cassandra-dev2003-b.codfw.wmnet
 resources:
   replicas: 1
 tolerations: {}
