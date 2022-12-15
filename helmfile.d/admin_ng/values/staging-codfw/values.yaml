@@ -1,3 +1,13 @@
+kubernetesVersion: "1.23"
+
+# Install latest version of these charts
+chartVersions:
+  wmf-stable/calico-crds: ~
+  wmf-stable/calico: ~
+  wmf-stable/cert-manager: ~
+  wmf-stable/cfssl-issuer-crds: ~
+  wmf-stable/cfssl-issuer: ~
+
 # check out documentation to understand this well
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 # Allow only up to 3 replicas to safeguard the staging cluster
