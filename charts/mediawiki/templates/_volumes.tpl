@@ -14,6 +14,12 @@
 - name: {{ $release }}-wikimedia-cluster
   configMap:
     name: {{ $release }}-wikimedia-cluster-config
+{{- if .Values.mw.mail_host }}
+# sendmail configuration
+- name: {{ $release }}-mail
+  configMap:
+    name: {{ $release }}-mail-config
+{{- end }}
 # TLS configurations
 {{- include "mesh.deployment.volume" . }}
 {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}

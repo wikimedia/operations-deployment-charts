@@ -155,6 +155,13 @@
   - name: {{ $release }}-wikimedia-cluster
     mountPath: /etc/wikimedia-cluster
     subPath: wikimedia-cluster
+  {{- if .Values.mw.mail_host }}
+  # mount the volume as the www-data home. This allows us to change
+  # the configuration of this configmap without causing a mediawiki
+  # redeployment as well, which we'd need if we were using a subpath.
+  - name: {{ $release }}-mail
+    mountPath: /var/www
+  {{ end -}}
   {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
   # Mount the shared socket volume
   - name: shared-socket

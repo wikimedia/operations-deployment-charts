@@ -43,3 +43,15 @@ metadata:
 data:
   00-aaa.conf: {{- .Values.mw.httpd.additional_config | toYaml | indent 4 }}
 {{- end }}
+{{- if .Values.mw.mail_host }}
+---
+apiVersion: v1
+kind: ConfigMap
+metdata:
+  name: {{ template "base.name.release" . }}-mail-config
+data:
+  .msmtprc: |-
+    account default
+    host {{ .Values.mw.mail_host }}
+    from wiki@wikimedia.org
+{{- end }}
