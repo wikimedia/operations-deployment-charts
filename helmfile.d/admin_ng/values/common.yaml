@@ -126,6 +126,13 @@ istio:
         - 15443
         - 8080
 
+# The Kubernetes version this cluster is running on
+# FIXME: There is kubeVersion (--kube-version) in up-to-date helmfile >=0.143
+#        which we currently don't have - so this can probably be refactored later
+#        to auto-detect the kubeVersion of a cluster (if we don't remove it after
+#        k8s 1.23 migration).
+kubernetesVersion: "1.16"
+
 # Chart versions to install
 # If no chart version is defined or value is empty (~), latest will be used.
 chartVersions:

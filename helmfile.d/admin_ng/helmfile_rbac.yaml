@@ -17,7 +17,8 @@ releases:
             - apiGroups: [""]
               resources: ["pods/portforward"]
               verbs: ["create"]
-        ## Use by prometheus
+      {{- if semverCompare .Values.kubernetesVersion "1.16" }}
+        ## Used by prometheus in k8s 1.16, with 1.23 we use the default system:monitoring
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
@@ -26,6 +27,7 @@ releases:
             - nonResourceURLs:
                 - /metrics
               verbs: ["get"]
+      {{- end }}
         ## Used by imagecatalog
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -88,11 +90,15 @@ releases:
               verbs: ["*"]
       {{- end }}
       {{- end }}
+      {{- if semverCompare .Values.kubernetesVersion "1.16" }}
         # ClusterRoleBindings
         ## wmf-node-authorization adds the kubelet users group ("system:nodes")
         ## to the system:node ClusterRole so that the kubelet's can register nodes
         ## with the API. See:
         ## https://kubernetes.io/docs/reference/access-authn-authz/node/#migration-considerations
+        ##
+        ## This is only required for clusters running k8s 1.16. Starting with 1.23 we have
+        ## the node authorizer enabled.
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
@@ -105,7 +111,8 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: system:nodes
-        ## Used by rsyslog
+      {{- end }}
+        ## Used by prometheus and rsyslog
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
@@ -118,7 +125,8 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: view
-        ## Used by prometheus
+      {{- if semverCompare .Values.kubernetesVersion "1.16" }}
+        ## Used by prometheus in k8s 1.16, with 1.23 we use the default system:monitoring
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
@@ -131,7 +139,7 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: api-metrics
-        ## Used by prometheus
+        ## Used by prometheus in k8s 1.16, with 1.23 we use the default system:monitoring
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
           metadata:
@@ -144,6 +152,7 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: Group
               name: api-metrics
+      {{- end }}
         ## Used by imagecatalog
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
