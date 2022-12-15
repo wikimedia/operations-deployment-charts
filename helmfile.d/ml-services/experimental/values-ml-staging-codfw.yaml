@@ -1,2 +1,27 @@
 monitoring:
   enabled: false
+
+inference_services:
+  - name: "nsfw-model"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-nsfw"
+      image_version: "2022-08-11-085124-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
+  - name: "revert-risk-model"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revertrisk"
+      image_version: "2022-12-16-143448-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/revertrisk/20221214175551/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+      resources:
+        limits:
+          cpu: "4"
+          memory: 6Gi
+        requests:
+          cpu: "4"
+          memory: 6Gi
