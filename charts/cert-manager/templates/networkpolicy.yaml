@@ -4,6 +4,7 @@ kind: NetworkPolicy
 metadata:
   name: {{ template "cert-manager.fullname" . }}-prometheus
   labels:
+    app: {{ template "cert-manager.name" . }}
     app.kubernetes.io/name: {{ template "cert-manager.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: "controller"
