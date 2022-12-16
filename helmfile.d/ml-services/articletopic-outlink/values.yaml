@@ -40,7 +40,7 @@ inference:
     sidecar.istio.io/inject: "true"
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2022-11-04-134545-publish"
+    version: "2022-12-16-150223-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -52,14 +52,10 @@ inference:
         value: "mediawiki.revision-score-test"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2022-11-11-151758-publish"
+    version: "2022-12-16-150223-publish"
     base_env:
-      - name: CUSTOM_UA
-        value: "WMF ML Team outlink topic model isvc"
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
-      - name: REQUESTS_CA_BUNDLE
-        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 inference_services:
   - name: "outlink-topic-model"
