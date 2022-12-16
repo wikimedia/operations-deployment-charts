@@ -131,8 +131,9 @@ resources: {}
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
 securityContext:
   runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
+  # FIXME: Disable seccomProfile for k8s 1.16 compatibility, uncomment after 1.23 migration is completed
+  # seccompProfile:
+  #  type: RuntimeDefault
 
 # Container Security Context to be set on the controller component container
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -265,8 +266,9 @@ webhook:
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   securityContext:
     runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
+    # FIXME: Disable seccomProfile for k8s 1.16 compatibility, uncomment after 1.23 migration is completed
+    # seccompProfile:
+    #  type: RuntimeDefault
 
   # Container Security Context to be set on the webhook component container
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -430,8 +432,9 @@ cainjector:
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   securityContext:
     runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
+    # FIXME: Disable seccomProfile for k8s 1.16 compatibility, uncomment after 1.23 migration is completed
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # Container Security Context to be set on the cainjector component container
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -518,8 +521,9 @@ startupapicheck:
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   securityContext:
     runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
+    # FIXME: Disable seccomProfile for k8s 1.16 compatibility, uncomment after 1.23 migration is completed
+    # seccompProfile:
+    #   type: RuntimeDefault
 
   # Container Security Context to be set on the controller component container
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
