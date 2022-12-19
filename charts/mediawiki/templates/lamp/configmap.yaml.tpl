@@ -47,7 +47,7 @@ data:
 ---
 apiVersion: v1
 kind: ConfigMap
-metdata:
+metadata:
   name: {{ template "base.name.release" . }}-mail-config
 data:
   .msmtprc: |-
