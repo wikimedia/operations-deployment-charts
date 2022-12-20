@@ -187,7 +187,10 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 25
-
+      - cidr: 2620:0:861:3:208:80:154:91/128
+        ports:
+          - protocol: TCP
+            port: 25
       ## Codfw
       # Poolcounter
       # poolcounter2003
@@ -213,6 +216,10 @@ networkpolicy:
       - cidr: 10.192.32.8/32
       # wiki-mail-codfw
       - cidr: 208.80.153.46/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:860:2:208:80:153:46/128
         ports:
           - protocol: TCP
             port: 25
