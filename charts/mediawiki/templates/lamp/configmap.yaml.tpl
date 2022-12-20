@@ -54,4 +54,5 @@ data:
     account default
     host {{ .Values.mw.mail_host }}
     from wiki@wikimedia.org
+    timeout 1
 {{- end }}
