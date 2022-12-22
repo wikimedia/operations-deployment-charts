@@ -12,7 +12,7 @@ inference_services:
   - name: "revert-risk-model"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2022-12-16-143448-publish"
+      image_version: "2022-12-22-150637-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/experimental/revertrisk/20221214175551/"
