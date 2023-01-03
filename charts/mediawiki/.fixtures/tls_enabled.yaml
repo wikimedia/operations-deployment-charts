@@ -17,8 +17,6 @@ mesh:
     port: 9361
 # A couple configurations
 mw:
-  mcrouter:
-    enabled: true
   wmerrors:
     file1.php: |-
       <?php
@@ -28,3 +26,6 @@ mw:
       die("test");
 monitoring:
   enabled: true
+cache:
+  mcrouter:
+    enabled: true

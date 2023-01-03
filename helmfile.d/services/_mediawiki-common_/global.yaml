@@ -93,10 +93,15 @@ mw:
       RemoteIPHeader X-Client-IP
       RemoteIPInternalProxy 10.0.0.0/8
       RemoteIPInternalProxy 127.0.0.1/32
+  logging:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200m
+
+cache:
   mcrouter:
     enabled: true
-    image_tag: mcrouter:0.41.0-4-20210718
-    exporter_version: 0.0.1-2
     resources:
       requests:
         cpu: 200m
@@ -104,11 +109,7 @@ mw:
       limits:
         cpu: 700m
         memory: 200Mi
-  logging:
-    resources:
-      requests:
-        cpu: 100m
-        memory: 200m
+
 # network egress for various services
 networkpolicy:
   egress:

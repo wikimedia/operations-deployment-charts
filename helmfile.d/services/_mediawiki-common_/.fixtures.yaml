@@ -527,3 +527,22 @@ kafka_brokers:
     - 2620::861:102:10:64:16:164/128
     - 10.64.16.165/32
     - 2620::861:102:10:64:16:165/128
+cache:
+  mcrouter:
+    pools:
+      - name: eqiad-servers
+        zone: eqiad
+        servers: [10.0.0.1, 10.0.0.2]
+        failover: [10.0.0.3, 10.0.0.4]
+      - name: codfw-servers
+        zone: codfw
+        servers: [10.1.0.1, 10.1.0.2]
+        failover: [10.1.0.3, 10.1.0.4]
+      - name: eqiad-proxies
+        zone: eqiad
+        servers: [10.2.0.1, 10.2.0.2]
+        failover: [10.2.0.3, 10.2.0.4]
+      - name: codfw-proxies
+        zone: codfw
+        servers: [10.3.0.1, 10.3.0.2]
+        failover: [10.3.0.3, 10.3.0.4]

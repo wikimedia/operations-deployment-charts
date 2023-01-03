@@ -2,17 +2,17 @@
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org
+cache:
   mcrouter:
     route_prefix: codfw/mw
     zone: codfw
     routes:
       - route: /codfw/mw
-        type: standalone
         pool: codfw-servers
-        failover: true
+        failover_time: 600
       - route: /codfw/mw-wan
-        type: replica
         pool: codfw-servers
-        remote:
+        failover_time: 600
+        replica:
           route: /eqiad/mw-wan
           pool: eqiad-servers

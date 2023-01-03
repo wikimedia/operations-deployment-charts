@@ -31,9 +31,7 @@ spec:
       {{- end }}
       containers:
       {{- include "lamp.deployment" . | indent 8 }}
-      {{- if .Values.mw.mcrouter.enabled }}
-        {{- include "mcrouter.deployment" . | indent 8 }}
-      {{- end }}
+      {{- include "cache.mcrouter.deployment" . | indent 8 }}
       {{- if .Values.mw.localmemcached.enabled }}
         {{- include "localmemcached.deployment" . | indent 8 }}
       {{- end }}

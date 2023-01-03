@@ -1,17 +1,17 @@
 mw:
   datacenter: eqiad
   mail_host: wiki-mail-eqiad.wikimedia.org
+cache:
   mcrouter:
     route_prefix: eqiad/mw
     zone: eqiad
     routes:
       - route: /eqiad/mw
-        type: standalone
         pool: eqiad-servers
-        failover: true
+        failover_time: 600
       - route: /eqiad/mw-wan
-        type: replica
+        failover_time: 600
         pool: eqiad-servers
-        remote:
+        replica:
           route: /codfw/mw-wan
           pool: codfw-servers

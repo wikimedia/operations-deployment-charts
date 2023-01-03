@@ -27,7 +27,7 @@ spec:
       {{/* php other stats */}}
       - port: 9181
         protocol: TCP
-      {{- if .Values.mw.mcrouter.enabled }}
+      {{- if .Values.cache.mcrouter.enabled }}
       - port: 9151
         protocol: TCP
       {{- end }}
@@ -37,7 +37,7 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
     {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
-    {{- include "mediawiki.networkpolicy.egress" .Values.mw | indent 4 }}
+    {{- include "mediawiki.networkpolicy.egress" . | indent 4 }}
     {{/* add egress rules for envoy upstream clusters. */}}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}

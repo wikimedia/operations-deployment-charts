@@ -145,7 +145,7 @@ mw:
     # environments.  If this section is enabled then the mcrouter
     # sections must be disabled.
     enabled: false
-    ports: [ 11212, 11213 ]
+    ports: [11212, 11213]
     resources:
       requests:
         cpu: 200m
@@ -153,49 +153,6 @@ mw:
       limits:
         cpu: 200m
         memory: 80Mi
-  mcrouter:
-    enabled: false
-    resources:
-      requests:
-        cpu: 200m
-        memory: 100Mi
-      limits:
-        cpu: 1
-        memory: 200Mi
-    route_prefix: local/mw # change this in production based on datacenter
-    cross_region_timeout: 250
-    cross_cluster_timeout: 100
-    probe_timeout: 60000
-    timeouts_until_tko: 3
-    num_proxies: 5
-    zone: local
-    pools:
-      - name: test-pool
-        zone: local
-        servers:
-          - 10.10.10.10
-          - 10.10.10.11
-        failover:
-          - 10.10.10.12
-      - name: remote-pool
-        zone: remote
-        servers:
-          - 10.100.1.2
-          - 10.100.1.3
-        failover:
-          - 10.100.1.4
-    routes:
-      # Remember - at least one of your zones must match the route_prefix above
-      - route: /local/mw
-        type: standalone
-        failover: true
-        pool: test-pool
-      - route: /local/mw-wan
-        type: replica
-        pool: test-pool
-        remote:
-          route: /remote/mw-wan
-          pool: remote-pool
   sites:
     - name: wikipedia.local
       priority: 1
@@ -267,3 +224,47 @@ common_images:
 
 app:
   port: 8080
+
+cache:
+  mcrouter:
+    enabled: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 1
+        memory: 200Mi
+    route_prefix: local/mw # change this in production based on datacenter
+    cross_region_timeout: 250
+    cross_cluster_timeout: 100
+    probe_timeout: 60000
+    timeouts_until_tko: 3
+    num_proxies: 5
+    zone: local
+    pools:
+      - name: test-pool
+        zone: local
+        servers:
+          - 10.10.10.10
+          - 10.10.10.11
+        failover:
+          - 10.10.10.12
+      - name: remote-pool
+        zone: remote
+        servers:
+          - 10.100.1.2
+          - 10.100.1.3
+        failover:
+          - 10.100.1.4
+    routes:
+      # Remember - at least one of your zones must match the route_prefix above
+      - route: /local/mw
+        failover_time: 600
+        pool: test-pool
+      - route: /local/mw-wan
+        pool: test-pool
+        failover_time: 600
+        replica:
+          route: /remote/mw-wan
+          pool: remote-pool

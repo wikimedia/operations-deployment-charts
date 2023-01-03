@@ -23,21 +23,8 @@ Network egress for MediaWiki
 */}}
 {{- define "mediawiki.networkpolicy.egress" -}}
 {{/* memcached */}}
-{{- if .mcrouter.enabled }}
-  {{- $mcrouter_zone := .mcrouter.zone -}}
-  {{- range .mcrouter.pools -}}
-    {{- $is_local := eq $mcrouter_zone .zone }}
-    {{- range .servers }}
-- to:
-  - ipBlock:
-      cidr: {{ . }}/32
-  ports:
-  - protocol: TCP
-    port: {{if $is_local }}11211{{- else -}}11214{{- end -}}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- with .egress.database_networks }}
+{{- include "cache.mcrouter.egress" . -}}
+{{- with .Values.mw.egress.database_networks }}
 {{/* databases. For now we just ask for a CIDR and open ports 3306 and 3311 through 3320 */}}
 - to:
   - ipBlock:
@@ -49,7 +36,7 @@ Network egress for MediaWiki
     port: {{.}}
   {{- end }}
 {{- end }}
-{{- range .egress.etcd_servers }}
+{{- range .Values.mw.egress.etcd_servers }}
 - to:
   - ipBlock:
       cidr: {{ .ip }}/32

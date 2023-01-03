@@ -38,11 +38,9 @@
   configMap:
     name: {{ $release }}-php-debug-config
 {{- end }}
-{{- if .Values.mw.mcrouter.enabled }}
-# Mcrouter configuration
-- name: {{ $release }}-mcrouter-config
-  configMap:
-    name: {{ $release }}-mcrouter-config
+{{- if .Values.cache.mcrouter.enabled }}
+# Mcrouter configuration if any
+{{ template "cache.mcrouter.volume" . }}
 {{- end }}
 {{- if .Values.mw.logging.rsyslog }}
 - name: {{ $release }}-rsyslog-config
