@@ -21,7 +21,7 @@
             "version": "1.0",
             "depends": [
                 "base.name:1.0",
-                "mesh.configuration:1.0"
+                "mesh.configuration:1.1"
             ]
         },
         {
@@ -32,6 +32,34 @@
         {
             "name": "service",
             "version": "1.0",
+            "depends": [
+                "base.helper:1.0",
+                "base.meta:1.0",
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "configuration",
+            "version": "1.1",
+            "depends": [
+                "base.meta:1.0"
+            ]
+        },
+        {
+            "name": "deployment",
+            "version": "1.1",
+            "depends": [
+                "base.name:1.0"
+            ]
+        },
+        {
+            "name": "networkpolicy",
+            "version": "1.1",
+            "depends": []
+        },
+        {
+            "name": "service",
+            "version": "1.1",
             "depends": [
                 "base.helper:1.0",
                 "base.meta:1.0",

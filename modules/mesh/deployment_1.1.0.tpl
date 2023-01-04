@@ -8,8 +8,10 @@
       value: {{ .Release.Name }}
     - name: SERVICE_ZONE
       value: "default"
+  {{- if .Values.mesh.public_port }}
   ports:
     - containerPort: {{ .Values.mesh.public_port }}
+  {{- end }}
   readinessProbe:
     httpGet:
       path: /healthz
@@ -18,9 +20,11 @@
     - name: envoy-config-volume
       mountPath: /etc/envoy/
       readOnly: true
+{{- if .Values.mesh.public_port }}
     - name: tls-certs-volume
       mountPath: /etc/envoy/ssl
       readOnly: true
+{{- end }}
   resources:
 {{- if .Values.mesh.resources }}
 {{ toYaml .Values.mesh.resources | indent 4 }}
@@ -41,8 +45,10 @@
 - name: envoy-config-volume
   configMap:
     name: {{ $release }}-envoy-config-volume
+{{- if .Values.mesh.public_port }}
 - name: tls-certs-volume
   configMap:
     name: {{ $release }}-tls-proxy-certs
+{{- end }}
 {{- end }}
 {{- end -}}
