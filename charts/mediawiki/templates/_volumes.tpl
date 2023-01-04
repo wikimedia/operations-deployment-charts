@@ -51,13 +51,4 @@
 - name: php-logging
   emptyDir: {}
 {{- end }}
-{{- if .Values.mw.geoip }}
-# GeoIP data
-- name: {{ $release }}-geoip
-  hostPath:
-    path: /usr/share/GeoIP
-- name: {{ $release }}-geoipinfo
-  hostPath:
-    path: /usr/share/GeoIPInfo
-{{- end }}
 {{ end }}

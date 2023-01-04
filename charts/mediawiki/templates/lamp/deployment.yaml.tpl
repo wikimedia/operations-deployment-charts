@@ -180,16 +180,6 @@
   - name: {{ $release }}-php-debug
     mountPath: /srv/mediawiki/w/debug
   {{- end }}
-  {{- if .Values.mw.geoip }}
-  # GeoIP data
-  - name: {{ $release }}-geoip
-    mountPath: /usr/share/GeoIP/
-    readOnly: true
-  - name: {{ $release }}-geoipinfo
-    mountPath: /usr/share/GeoIPInfo/
-    readOnly: true
-  {{- end -}}
-
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter
