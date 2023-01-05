@@ -27,7 +27,7 @@ module(load="mmnormalize")
 # These logs are received via udp
 template(name="access-log-topic" type="string" string="mediawiki.httpd.accesslog")
 ruleset(name="accesslog_to_kafka") {
-  action(type="mmjsonparse" name="mmjsonparse_accesslog", cookie="")
+  action(type="mmjsonparse" name="mmjsonparse_accesslog" cookie="")
   {{- dict "Values" .Values "name" "accesslog" "topic" "access-log-topic" "template" "ecs_170_k8s" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 }
 input(type="imudp" port="10200" address="{{ .Values.mw.logging.allowed_address }}" ruleset="accesslog_to_kafka")
