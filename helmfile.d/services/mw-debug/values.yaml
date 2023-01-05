@@ -34,6 +34,10 @@ debug:
   ports: []
   php:
     enabled: true
+    contents:
+      geoip: |-
+        <?php
+        var_dump(geoip_country_code_by_name('50.28.52.163'));
 
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
@@ -115,6 +119,7 @@ mw:
       requests:
         cpu: 100m
         memory: 200m
+  geoip: true
 # network egress for various services
 networkpolicy:
   egress:

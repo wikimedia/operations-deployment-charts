@@ -97,7 +97,12 @@ releases:
             # but we can provide it for defense in depth.
             requiredDropCapabilities:
               - ALL
-            # Allow core volume types.
+            # Allow core volume types and specific hostPaths
+            allowedHostPaths:
+              - pathPrefix: /usr/share/GeoIP
+                readOnly: true
+              - pathPrefix: /usr/share/GeoIPInfo
+                readOnly: true
             volumes:
               - 'configMap'
               - 'emptyDir'
@@ -106,6 +111,7 @@ releases:
               - 'downwardAPI'
               # Assume that persistentVolumes set up by the cluster admin are safe to use.
               - 'persistentVolumeClaim'
+              - 'hostPath'
             hostNetwork: false
             hostIPC: false
             hostPID: false
