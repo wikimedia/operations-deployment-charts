@@ -279,7 +279,12 @@ module Tester
       real_path = chdir.nil? ? @path : File.join(chdir, @path)
       return [] unless File.exist? real_path
 
-      fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f| f.include?(ChartAsset::PRIVATE_STUB) }
+      # There might be empty fixture files (crds.yaml for example) that
+      # do have a meaning in a different context but won't actually change
+      # rendered output of the chart. Skip those.
+      fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f|
+        f.include?(ChartAsset::PRIVATE_STUB) || File.size(f).zero?
+      }
       all = fixtures.map do |f|
         fl = File.basename(f, '.yaml')
         name = "#{@path} => #{fl}"
