@@ -1,0 +1,108 @@
+
+image:
+  repository: docker-registry.discovery.wmnet/flink-kubernetes-operator
+  tag: 1.3.0-wmf1
+
+# List of kubernetes namespaces to watch for FlinkDeployment changes.
+# 'flink' ServiceAccounts will be created in each of these namespaces,
+# and the 'flink-operator' ServiceAccount will be given permissions
+# to create resources in these namespaces.
+# Each 'release' (AKA helmfile service) namespace that uses the
+# FlinkDeployment CRD MUST be listed here.
+watchNamespaces: []
+
+metrics:
+  # PrometheusReporter is configured to expose metrics on this port.
+  # NOTE: If you change this, it must also be changed for
+  # prometheus.io/port and for
+  # kubernetes.operator.metrics.reporter.prometheus.port
+  # below.
+  port: 9999
+
+operatorPod:
+  annotations:
+    # Adding these annotations to the pods will cause our production
+    # k8s Prometheus setup to scrape metrics from them.
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9999"
+  env:
+    # These env vars need to be overridden so the
+    # operator knows which kubernetes API to use.
+    - name: KUBERNETES_SERVICE_HOST
+      value: kubernetes.default.svc.cluster.local
+    - name: KUBERNETES_SERVICE_PORT
+      value: 443
+
+defaultConfiguration:
+  # Set append to false to replace configuration files
+  append: false
+  flink-conf.yaml: |+
+    # Enable dynamic reloading of watchNamespaces.
+    kubernetes.operator.dynamic.namespaces.enabled: true
+    kubernetes.operator.dynamic.config.enabled: true
+
+    # Enable Prometheus Metrics Reporter (named 'prometheus').
+    # See: https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/metric_reporters/
+    kubernetes.operator.metrics.reporter.prometheus.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+    kubernetes.operator.metrics.reporter.prometheus.port: 9999
+
+  # Make loggers only log to console in ECS format.
+  log4j-operator.properties: |+
+    # log4j config for the flink-kubernetes-operator.
+    # Logs only to Console in ECS JSON format.
+    rootLogger.level = INFO
+    rootLogger.appenderRef.console.ref = ConsoleAppender
+
+    # Log all infos to the console
+    appender.console.name = ConsoleAppender
+    appender.console.type = CONSOLE
+    appender.console.layout.type = EcsLayout
+
+  log4j-console.properties: |+
+    # log4j config for Flink applications.
+    # This will be used by JobManager and TaskManagers.
+    # Logs only to Console in ECS JSON format.
+
+    # Allow reloading logging config at runtime
+    monitorInterval=300
+
+    # This affects logging for both user code and Flink
+    rootLogger.level = INFO
+    rootLogger.appenderRef.console.ref = ConsoleAppender
+
+    # Uncomment this if you want to _only_ change Flink's logging
+    #logger.flink.name = org.apache.flink
+    #logger.flink.level = INFO
+
+    # The following lines keep the log level of common libraries/connectors on
+    # log level INFO. The root logger does not override this. You have to manually
+    # change the log levels here.
+    logger.akka.name = akka
+    logger.akka.level = INFO
+    logger.kafka.name= org.apache.kafka
+    logger.kafka.level = INFO
+    logger.hadoop.name = org.apache.hadoop
+    logger.hadoop.level = INFO
+    logger.zookeeper.name = org.apache.zookeeper
+    logger.zookeeper.level = INFO
+
+    # Log all infos to the console in ECS format
+    appender.console.name = ConsoleAppender
+    appender.console.type = CONSOLE
+    appender.console.layout.type = EcsLayout
+    #appender.console.layout.serviceName = {{ .Release.Name }} # TODO?
+
+    # Suppress the irrelevant (wrong) warnings from the Netty channel handler
+    logger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline
+    logger.netty.level = OFF
+
+podSecurityContext:
+  # These should match the uid/gid values in WMF's Flink image.
+  # https://gerrit.wikimedia.org/r/c/operations/docker-images/production-images/+/858356/9/config.yaml#13
+  runAsUser: 186
+  runAsGroup: 186
+
+# WMF does not use the Flink Kubernetes Webhook.
+# https://phabricator.wikimedia.org/T324576#8456935
+webhook:
+  create: false

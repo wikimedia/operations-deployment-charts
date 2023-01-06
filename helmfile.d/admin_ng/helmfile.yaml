@@ -104,6 +104,7 @@ environments:
       # Deploy network policies for a Istio setup
       - istio_gateways: true
       - istio_sidecar_proxy: true
+      - install_flink_operator: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -131,6 +132,7 @@ bases:
   - knative-serving/helmfile.yaml
   - kserve/helmfile.yaml
   - helm-state-metrics/helmfile.yaml
+  - flink-operator/helmfile.yaml
 
 hooks:
   - events: ["prepare"]
