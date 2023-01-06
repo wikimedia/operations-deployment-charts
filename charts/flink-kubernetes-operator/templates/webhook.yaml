@@ -87,7 +87,7 @@ metadata:
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/flink-operator-serving-cert
   name: flink-operator-{{ .Release.Namespace }}-webhook-configuration
 webhooks:
-- name: flinkoperator.flink.apache.org
+- name: validationwebhook.flink.apache.org
   admissionReviewVersions: ["v1"]
   clientConfig:
     service:
@@ -96,7 +96,7 @@ webhooks:
       path: /validate
   failurePolicy: Fail
   rules:
-  - apiGroups: ["*"]
+  - apiGroups: ["flink.apache.org"]
     apiVersions: ["*"]
     scope: "Namespaced"
     operations:
@@ -123,7 +123,7 @@ metadata:
     cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/flink-operator-serving-cert
   name: flink-operator-{{ .Release.Namespace }}-webhook-configuration
 webhooks:
-  - name: flinkoperator.flink.apache.org
+  - name: mutationwebhook.flink.apache.org
     admissionReviewVersions: ["v1"]
     clientConfig:
       service:
@@ -132,7 +132,7 @@ webhooks:
         path: /mutate
     failurePolicy: Fail
     rules:
-      - apiGroups: ["*"]
+      - apiGroups: ["flink.apache.org"]
         apiVersions: ["*"]
         scope: "Namespaced"
         operations:

@@ -23,11 +23,20 @@
 # watchNamespaces: ["flink"]
 
 image:
-  repository: flink-kubernetes-operator
+  repository: ghcr.io/apache/flink-kubernetes-operator
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: "b7e40da"
+  # If image digest is set then it takes precedence and the image tag will be ignored
+  # digest: ""
 
 imagePullSecrets: []
+
+# Replicas must be 1 unless operator leader election is configured
+replicas: 1
+
+# Strategy type must be Recreate unless leader election is configured
+strategy:
+  type: Recreate
 
 rbac:
   create: true
@@ -57,6 +66,12 @@ operatorPod:
   #   value: ""
   # dnsPolicy: ""
   # dnsConfig: {}
+  # Node labels for operator pod assignment
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  nodeSelector: {}
+  # Node tolerations for operator pod assignment
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+  tolerations: []
 
 
 operatorServiceAccount:
@@ -109,8 +124,14 @@ webhook:
   #   key: password-key
 
 defaultConfiguration:
+  # If set to true, creates ConfigMaps/VolumeMounts. If set to false, no configuration will be created.
+  # All below fields will be ignored if create is set to false.
   create: true
-  # Set append to false to replace configuration files
+  # If set to true,
+  #      (1) loads the built-in default configuration
+  #      (2) appends the below flink-conf and logging configuration overrides
+  # If set to false, loads just the overrides as in (2).
+  # This option has not effect, if create is equal to false.
   append: true
   flink-conf.yaml: |+
     # Flink Config Overrides

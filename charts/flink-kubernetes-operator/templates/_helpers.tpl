@@ -1,4 +1,3 @@
-{{/*
 ################################################################################
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -16,7 +15,6 @@
 #  See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-*/}}
 
 {{/*
 Expand the name of the chart.
@@ -67,6 +65,17 @@ Selector labels
 */}}
 {{- define "flink-operator.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "flink-operator.name" . }}
+{{- end }}
+
+{{/*
+Create the path of the operator image to use
+*/}}
+{{- define "flink-operator.imagePath" -}}
+{{- if .Values.image.digest }}
+{{- .Values.image.repository }}@{{ .Values.image.digest }}
+{{- else }}
+{{- .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}
+{{- end }}
 {{- end }}
 
 {{/*

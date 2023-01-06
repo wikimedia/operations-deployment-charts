@@ -26,9 +26,9 @@ metadata:
   labels:
     {{- include "flink-operator.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   strategy:
-    type: Recreate
+    {{- toYaml .Values.strategy | nindent 4 }}
   selector:
     matchLabels:
       {{- include "flink-operator.selectorLabels" . | nindent 6 }}
@@ -51,6 +51,13 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.operatorPod.nodeSelector }}
+      nodeSelector: {{ toYaml .Values.operatorPod.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operatorPod.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -58,7 +65,7 @@ spec:
       serviceAccountName: {{ include "flink-operator.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "flink-operator.imagePath" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/docker-entrypoint.sh", "operator"]
           ports:
@@ -74,7 +81,9 @@ spec:
           {{- end }}
           env:
             - name: OPERATOR_NAMESPACE
-              value: {{ .Release.Namespace }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: OPERATOR_NAME
               value: {{ include "flink-operator.name" . }}
             - name: FLINK_CONF_DIR
@@ -92,9 +101,15 @@ spec:
           securityContext:
             {{- toYaml .Values.operatorSecurityContext | nindent 12 }}
           volumeMounts:
-            # Change from upstream. See: https://github.com/apache/flink-kubernetes-operator/pull/478
             - name: flink-operator-config-volume
-              mountPath: /opt/flink/conf
+              mountPath: /opt/flink/conf/flink-conf.yaml
+              subPath: flink-conf.yaml
+            - name: flink-operator-config-volume
+              mountPath: /opt/flink/conf/log4j-operator.properties
+              subPath: log4j-operator.properties
+            - name: flink-operator-config-volume
+              mountPath: /opt/flink/conf/log4j-console.properties
+              subPath: log4j-console.properties
             {{- if .Values.operatorVolumeMounts.create }}
                 {{- toYaml .Values.operatorVolumeMounts.data | nindent 12 }}
             {{- end }}
@@ -114,7 +129,7 @@ spec:
           {{- end }}
         {{- if eq (include "flink-operator.webhook-enabled" .) "true" }}
         - name: flink-webhook
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "flink-operator.imagePath" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/docker-entrypoint.sh", "webhook"]
           env:
@@ -144,16 +159,24 @@ spec:
             - name: FLINK_PLUGINS_DIR
               value: /opt/flink/plugins
             - name: OPERATOR_NAMESPACE
-              value: {{ .Release.Namespace }}
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           securityContext:
             {{- toYaml .Values.webhookSecurityContext | nindent 12 }}
           volumeMounts:
           - name: keystore
             mountPath: "/certs"
             readOnly: true
-          # Change from upstream. See: https://github.com/apache/flink-kubernetes-operator/pull/478
           - name: flink-operator-config-volume
-            mountPath: /opt/flink/conf
+            mountPath: /opt/flink/conf/flink-conf.yaml
+            subPath: flink-conf.yaml
+          - name: flink-operator-config-volume
+            mountPath: /opt/flink/conf/log4j-operator.properties
+            subPath: log4j-operator.properties
+          - name: flink-operator-config-volume
+            mountPath: /opt/flink/conf/log4j-console.properties
+            subPath: log4j-console.properties
         {{- end }}
       {{- if index (.Values.operatorPod) "dnsPolicy" }}
       dnsPolicy: {{ .Values.operatorPod.dnsPolicy | quote }}
