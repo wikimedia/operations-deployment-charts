@@ -18,7 +18,10 @@ for more information.
 https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kubernetes-operator
 
 - crds are moved to a separate chart: flink-kubernetes-operator-crds
-- templates/networkpolicy.yaml is added to allow access to metrics port.
+- templates/networkpolicy.yaml is added to allow:
+-- access to metrics port
+-- egress to kubernetes API at .Values.kubernetesMasters.cidrs
+-- ingress to webhook from kubernetes API at .Values.kubernetesMasters.cidrs if .Values.webhook.create is true.
  
 
 ## Summary of ServiceAccounts and RBAC

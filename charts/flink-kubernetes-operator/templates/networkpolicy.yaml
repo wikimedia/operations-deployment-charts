@@ -17,3 +17,57 @@ spec:
       - port: {{ .Values.metrics.port }}
         protocol: TCP
 {{- end }}
+
+{{- if .Values.kubernetesMasters }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "flink-operator.name" . }}-k8s-api
+  labels:
+    {{- include "flink-operator.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "flink-operator.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
+
+{{- if and .Values.webhook.create .Values.kubernetesMasters }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "flink-operator.name" . }}-webhook
+  labels:
+    {{- include "flink-operator.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "flink-operator.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    # The webhook port needs to be reachable by Kubernetes Master IPs
+    - from:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 9443 # webhook port
+          protocol: TCP
+{{- end }}
