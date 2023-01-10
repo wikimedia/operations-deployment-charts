@@ -1,0 +1,24 @@
+app:
+  # This example app uses the base flink image.
+  # You'll want to create a new image based on this one
+  # via deployment-pipeline for a custom application.
+  image: docker-registry.discovery.wmnet/flink
+  version: 1.16.0-wmf2
+
+  job:
+    pythonEntryPoint: /opt/flink/examples/wikimedia/python/table_datagen.py
+
+  jobManager:
+    resource:
+      memory: 1000m
+
+  taskManager:
+    resource:
+      memory: 1000m
+
+mesh:
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false

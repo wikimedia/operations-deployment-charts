@@ -319,7 +319,7 @@ module Tester
 
   # Assets for managing helmfile resources.
   class HelmfileAsset < BaseTestAsset
-    ENV_EXPLORE = %w[staging eqiad ml-serve-eqiad ml-staging-codfw].freeze
+    ENV_EXPLORE = %w[staging eqiad ml-serve-eqiad ml-staging-codfw dse-k8s-eqiad].freeze
     LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
     INIT_RESULT = { lint: {}, validate: {}, diff: {} }.freeze
 

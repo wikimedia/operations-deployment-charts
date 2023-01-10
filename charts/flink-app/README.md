@@ -27,7 +27,7 @@ app:
   version: 1.0.0-1
 
   job:
-    jarURI: /srv/my_flink_job/MyFlinkJob.jar # Baked into your image
+    jarURI: local:///srv/my_flink_job/MyFlinkJob.jar # Baked into your image
     entryClass: "org.wikimedia.my.FlinkJob"
     args: [ "--arg1", "val1" ]
 ```
