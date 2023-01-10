@@ -11,6 +11,7 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_flink_operator\" }}{{ .Environment.Values.install_flink_operator }}{{ else }}{{ false }}{{ end }}`}}"
 
 releases:
+
   # Install first the CRDs, then the operator.
   - name: flink-operator-crds
     chart: wmf-stable/flink-kubernetes-operator-crds
@@ -19,6 +20,8 @@ releases:
     version: {{ $version }}
     {{- end }}
     <<: *default
+    needs:
+      - kube-system/namespaces
 
   - name: flink-operator
     chart: wmf-stable/flink-kubernetes-operator
