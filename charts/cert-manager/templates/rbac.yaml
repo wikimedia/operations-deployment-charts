@@ -11,6 +11,13 @@ metadata:
     app.kubernetes.io/component: "controller"
     {{- include "labels" . | nindent 4 }}
 rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["cert-manager-controller"]
+    verbs: ["get", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     resourceNames: ["cert-manager-controller"]

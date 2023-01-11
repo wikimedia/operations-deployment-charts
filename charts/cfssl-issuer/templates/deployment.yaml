@@ -25,11 +25,6 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - --enable-leader-election
-          envFrom:
-          - configMapRef:
-              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden.
-              name: {{ include "cfssl-issuer.fullname" . }}-k8s-api-env
-              optional: true
           ports:
             - name: metrics
               containerPort: 8080

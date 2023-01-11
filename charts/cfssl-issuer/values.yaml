@@ -17,12 +17,6 @@ cert_manager:
   namespace: cert-manager
   serviceAccount: cert-manager
 
-# Overwrite the default KUBERNETES_ environment variables for the container
-# to work around the IP SAN limitation of puppet CA
-# kubernetesApi:
-#   host: ""
-#   port: ""
-
 # Configure one or more cfssl Issuers here
 issuers: {}
 #  foo-issuer:
