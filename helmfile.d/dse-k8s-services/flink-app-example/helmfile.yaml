@@ -10,7 +10,7 @@ helmDefaults:
     # Use the following example as a reference:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     - --kubeconfig
-    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/flink-app-example-deploy-%s.config" .Environment.Name) }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/stream-enrichment-poc-deploy-%s.config" .Environment.Name) }}
 
 templates:
   default: &default
