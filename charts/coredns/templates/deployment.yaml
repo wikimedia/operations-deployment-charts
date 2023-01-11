@@ -29,15 +29,8 @@ spec:
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
-      nodeSelector:
-        beta.kubernetes.io/os: linux
       containers:
-      - env:
-        - name: KUBERNETES_SERVICE_HOST
-          value: {{ required "Coredns needs a kubernetes api host" .Values.kubernetesApi.host }}
-        - name: KUBERNETES_SERVICE_PORT
-          value: {{ required "Coredns needs a kubernetes api port" .Values.kubernetesApi.port | quote }}
-        name: coredns
+      - name: coredns
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:

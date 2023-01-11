@@ -6,15 +6,11 @@ replicaCount: 2
 
 image:
   repository: docker-registry.wikimedia.org/coredns
-  tag: 1.5.2-1
+  tag: 1.8.7-1
   pullPolicy: IfNotPresent
 
 service:
   clusterIP:
-
-kubernetesApi:
-  host: kubernetes.default.svc.cluster.local
-  port: 443
 
 resources:
   limits:
