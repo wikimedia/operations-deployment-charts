@@ -26,10 +26,6 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-        env:
-          {{- include "kubernetesApiEnv" . | nindent 10 }}
-        {{- end }}
         ports:
         - containerPort: {{ .Values.port }}
           protocol: TCP

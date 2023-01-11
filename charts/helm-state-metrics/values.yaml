@@ -36,9 +36,3 @@ podAnnotations: {}
 
 securityContext: {}
   # runAsUser: 1000
-
-# Overwrite the default KUBERNETES_ environment variables for the container
-# to work around the IP SAN limitation of puppet CA
-kubernetesApi:
-  host: ""
-  port: ""

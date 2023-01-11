@@ -40,9 +40,3 @@ securityContext: {}
   # runAsUser: 1000
 
 enablePrometheus: true
-
-# Overwrite the default KUBERNETES_ environment variables for the container
-# to work around the IP SAN limitation of puppet CA
-kubernetesApi:
-  host: ""
-  port: ""
