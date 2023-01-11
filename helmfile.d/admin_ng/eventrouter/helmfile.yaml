@@ -2,6 +2,10 @@ releases:
   - name: eventrouter
     namespace: kube-system
     chart: wmf-stable/eventrouter
+    {{- $version := .Values.chartVersions | get "wmf-stable/eventrouter" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     missingFileHandler: Warn
     needs:
       - kube-system/coredns

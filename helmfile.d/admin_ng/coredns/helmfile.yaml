@@ -2,6 +2,10 @@ releases:
   - name: coredns
     namespace: kube-system
     chart: wmf-stable/coredns
+    {{- $version := .Values.chartVersions | get "wmf-stable/coredns" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     missingFileHandler: Warn
     needs:
       - kube-system/calico
