@@ -6,6 +6,12 @@ docker:
 resources:
   replicas: 1
 
+strategy:
+  # 25% is our default - use integers rather than percentages for
+  # maxSurge in prod to prevent resource starvation on rollouts.
+  maxSurge: "25%"
+  maxUnavailable: "25%"
+
 haproxy:
   requests:
     cpu: 0.2

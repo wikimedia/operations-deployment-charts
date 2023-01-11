@@ -8,6 +8,9 @@ monitoring:
 mesh:
   enabled: false
 
+strategy:
+  maxSurge: 1
+
 discovery:
   listeners:
   - swift-eqiad
@@ -15,7 +18,7 @@ discovery:
 
 main_app:
 
-  version: 2022-11-24-213721-production
+  version: 2023-01-09-143427-production
 
   # 3 workers per pod in production
   thumbor_workers: 3
