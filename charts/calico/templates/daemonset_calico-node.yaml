@@ -51,11 +51,6 @@ spec:
         - name: calico-node
           image: "{{ .Values.image.repository }}/{{ .Values.calicoNode.imageName }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-          - configMapRef:
-              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden.
-              name: calico-kubernetes-services-endpoint
-              optional: true
           env:
             # Don't try to manage the CNI's kubeconfig/token (puppet does that)
             - name: CALICO_MANAGE_CNI

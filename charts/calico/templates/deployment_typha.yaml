@@ -37,11 +37,6 @@ spec:
         - name: calico-typha
           image: "{{ .Values.image.repository }}/{{ .Values.typha.imageName }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden.
-                name: calico-kubernetes-services-endpoint
-                optional: true
           env:
             # Enable "info" logging by default. Can be set to "debug" to increase verbosity.
             - name: TYPHA_LOGSEVERITYSCREEN

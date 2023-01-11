@@ -4,12 +4,6 @@
 
 # Globals (not deployment/application specific)
 
-# Overwrite the default KUBERNETES_ environment variables for the container
-# to work around the IP SAN limitation of puppet CA
-kubernetesApi:
-  host: ""
-  port: ""
-
 image:
   # Just the repository name. Image name will be per application (see below)
   repository: docker-registry.wikimedia.org
