@@ -14,6 +14,10 @@ revscoring_inference_services:
           value: "True"
         - name: ASYNCIO_AUX_WORKERS
           value: "5"
+        - name: PREPROCESS_MP
+          value: "False"
+        - name: INFERENCE_MP
+          value: "True"
       resources:
         limits:
           cpu: "5"
