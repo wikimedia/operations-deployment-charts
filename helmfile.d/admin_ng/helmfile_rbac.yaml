@@ -9,7 +9,7 @@ releases:
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
-            name: view-and-portforward
+            name: view-additions
             labels:
               # Add these permissions to the "view" default role.
               rbac.authorization.k8s.io/aggregate-to-view: "true"
@@ -17,6 +17,17 @@ releases:
             - apiGroups: [""]
               resources: ["pods/portforward"]
               verbs: ["create"]
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["get", "list", "watch"]
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
+              verbs: ["get", "list", "watch"]
+            {{- if hasKey .Environment.Values "install_flink_operator" }}
+            - apiGroups: ["flink.apache.org"]
+              resources: ["flinkdeployments"]
+              verbs: ["get", "list", "watch"]
+            {{- end }}
       {{- if semverCompare .Values.kubernetesVersion "1.16" }}
         ## Used by prometheus in k8s 1.16, with 1.23 we use the default system:monitoring
         - apiVersion: rbac.authorization.k8s.io/v1
@@ -52,6 +63,11 @@ releases:
             - apiGroups: ["cert-manager.io"]
               resources: ["certificates"]
               verbs: ["*"]
+            {{- if hasKey .Environment.Values "install_flink_operator" }}
+            - apiGroups: ["flink.apache.org"]
+              resources: ["flinkdeployments"]
+              verbs: ["*"]
+            {{- end }}
       {{- range .Environment.Values.deployExtraClusterRoles }}
       {{- if eq . "flink" }}
         ## Used by deploy users
