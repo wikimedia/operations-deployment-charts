@@ -7,6 +7,8 @@ metadata:
     chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/{{ template "base.name.release" . }}: localhost/wikifunctions-orchestrator
 spec:
   selector:
     matchLabels:
