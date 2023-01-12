@@ -57,6 +57,17 @@ The changes should include incrementing the chart's version in the respective
 The resulting files and changes should then be uploaded to
 [Gerrit](https://gerrit.wikimedia.org) for code review.
 
+How to use modules in a chart
+-----------------------------
+
+Every chart created by our scaffolding will have:
+* A `package.json` file, where the modules we're using in that chart are indicated. In this file only major.minor versions should be specified
+* A `package.lock` file where the aforementioned dependencies are
+  frozen to a specific version
+* A `templates/vendor` directory where the modules at the correct version are copied.
+To manage these dependencies, we use a tool called `sextant`. Please see its [README](https://gitlab.wikimedia.org/repos/sre/sextant/-/blob/main/README.md) for details on its usage.
+
+
 Linters and tests
 -----------------
 
@@ -76,13 +87,6 @@ during a deployment are *not* present in the testing environment. You can
 provide necessary values for testing by creating
 a `helmfile.d/services/$SERVICE/.fixtures.yaml` file to simulate production
 data.
-
-**NOTE**: During the integration testing of `helmfile.d/services` charts are
-pulled from the *merged and deployed* charts in the chart repository. For this
-reason, changes to a chart and related changes to its helmfile configuration
-must be uploaded to gerrit and tested separately. Helmfile changes for a new
-chart version must be tested after the chart changes have been merged and
-updated in the chart repository.
 
 License
 -------
