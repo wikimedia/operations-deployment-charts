@@ -28,7 +28,7 @@ haproxy:
       port: 4112
   readiness_probe:
     httpGet:
-      path: /healthcheck
+      path: /healthz
       port: 4112
 
 # application port. Needed by the mesh module, unused otherwise.

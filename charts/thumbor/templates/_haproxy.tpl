@@ -49,6 +49,11 @@ listen thumbor
     server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 1 check
     {{ end -}}
 
+    # Add a healthz for haproxy itself - checking /healthcheck will
+    # actually hit thumbor which will give us an erroneous fail where we
+    # could be queuing requests in haproxy.
+    monitor-uri /healthz
+
 listen stats
    bind *:{{ .Values.haproxy.stats_port }}
    mode http
