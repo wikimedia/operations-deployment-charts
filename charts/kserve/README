@@ -49,10 +49,10 @@ usually with something like:
 ```
 We don't really need it, so it can be safely removed. All the occurrences of port
 8443 in the yaml file provided by upstream should be replaced with
-{{ $.Values.controller.metrics.port }} (defaults to 8080 in values.yaml).
+{{ $.Values.kserve.controller.metrics.port }} (defaults to 8080 in values.yaml).
 Remember also to set the following for the args of the controller:
 ```
---metrics-addr=0.0.0.0:{{ $.Values.controller.metrics.port }}
+--metrics-addr=0.0.0.0:{{ $.Values.kserve.controller.metrics.port }}
 ```
 
 We also move the prometheus annotations from the Service definition to
