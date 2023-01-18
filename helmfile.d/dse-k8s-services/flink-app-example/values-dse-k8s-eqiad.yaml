@@ -1,0 +1,10 @@
+# WMF kubernetes cluster specific values.
+# These are kept out of the main values.yaml just so that it is easier to use
+# with local development.
+
+mesh:
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: true
