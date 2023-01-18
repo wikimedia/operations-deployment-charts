@@ -17391,7 +17391,7 @@ data:
         "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local",
         "localGateway" : "knative-serving/knative-local-gateway",
         "localGatewayService" : "{{ $.Values.kserve.ingress.local_gateway_service }}",
-        "ingressDomain"  : "{{ $.Values.kserve.ingress.domain }}"
+        "ingressDomain"  : "{{ $.Values.kserve.ingress.domain }}",
         "ingressClassName" : "istio",
         "domainTemplate": "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}",
         "urlScheme": "http"
