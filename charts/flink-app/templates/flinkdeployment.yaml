@@ -75,18 +75,18 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/port: "9999"
         {{- end }}
+
+    {{- if or (.Values.app.env | default false)  .Values.mesh.enabled }}
     spec:
       containers:
+      {{- if .Values.app.env | default false }}
         - name: flink-main-container
           env:
-            # These env vars need to be overridden so
-            # flink knows which kubernetes API to use.
-            - name: KUBERNETES_SERVICE_HOST
-              value: kubernetes.default.svc.cluster.local
-            - name: KUBERNETES_SERVICE_PORT
-              value: "443"
-    {{- if .Values.mesh.enabled }}
+            {{- toYaml .Values.app.env | nindent 12 }}
+      {{- end }}
+      {{- if .Values.mesh.enabled }}
         {{- include "mesh.deployment.container" . | indent 8 }}
+      {{- end }}
     {{- end }}
 
   jobManager:

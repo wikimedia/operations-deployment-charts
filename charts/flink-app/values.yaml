@@ -69,6 +69,12 @@ app:
   # NOTE: all values must be strings.
   flinkConfiguration: {}
 
+  # List of environment variable to set in the flink containers.
+  # These will be set for both Job and TaskManager containers.
+  # env:
+  #   - name: ENV_VAR_NAME
+  #     value: env_var_value
+
   # JobManagerSpec
   # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#jobmanagerspec
   jobManager:
