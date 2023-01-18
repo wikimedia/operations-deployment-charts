@@ -37,7 +37,7 @@ input(type="imudp" port="10200" address="{{ .Values.mw.logging.allowed_address }
 template(name="php-slowlog-topic" type="string" string="mediawiki.php-fpm.slowlog")
 ruleset(name="slowlog_to_kafka") {
   action(type="mmnormalize" rulebase="/etc/rsyslog.d/php-slowlog.rb")
-  {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "syslog_cee_slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+  {{- dict "Values" .Values "name" "slowlog" "topic" "php-slowlog-topic" "template" "slowlog" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 {{- if .Values.mw.logging.debug }}
   action(type="omfile" file="/var/log/php-fpm/slowlog-debug.log" template="unparsed")
 {{- end }}
