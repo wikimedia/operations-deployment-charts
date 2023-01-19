@@ -17,6 +17,18 @@ main_app:
     # This is the endpoint for the staging instance of eventgate
     event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
 
+    # Test for T327302
+    features:
+      liftwing_models: true
+    liftwing:
+      uri: 'https://inference-staging.svc.codfw.wmnet:30443'
+      models:
+        goodfaith:
+          concurrency: 2
+          database_regex: '/(en|zh)wiki/'
+          namespace: revscoring-editquality-goodfaith
+          kafka_topic: 'mediawiki.revision-create'
+
 nutcracker:
   enabled: true
   servers:

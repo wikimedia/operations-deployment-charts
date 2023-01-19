@@ -212,3 +212,15 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+    - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.1.58/32 # inference-staging.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
