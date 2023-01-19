@@ -56,6 +56,10 @@ main_app:
     # Replace the Restbase URI with the correct K8s URI
     restbase_uri: http://localhost:7231
 
+    liftwing:
+      # Replace the Restbase URI with the correct K8s URI
+      uri: http://localhost:30443
+
     # Ores pre-caching URIs
     ores:
       uris:
@@ -80,6 +84,7 @@ main_app:
       page_images_summary: true
       page_images_mobile: true
       rerendered_pcs_endpoints: true
+      liftwing_models: false
 
   # if jobqueue is true, then we'll configure our pod as a
   # changeprop-jobqueue instance. If it's false, we'll assume that
