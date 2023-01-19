@@ -1,3 +1,6 @@
+resources:
+  replicas: 12
+
 config:
   public:
     TEGOLA_BROKER_URL: "kafka://kafka-main2001.codfw.wmnet:9092"
@@ -35,4 +38,4 @@ kafka:
     - main-codfw
 
 tilePregeneration:
-  cronJobEnabled: false
+  cronJobEnabled: true
