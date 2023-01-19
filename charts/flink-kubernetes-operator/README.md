@@ -22,7 +22,7 @@ https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kuberne
 -- access to metrics port
 -- egress to kubernetes API at .Values.kubernetesMasters.cidrs
 -- ingress to webhook from kubernetes API at .Values.kubernetesMasters.cidrs if .Values.webhook.create is true.
- 
+- Added .fixtures for CI.
 
 ## Summary of ServiceAccounts and RBAC
 

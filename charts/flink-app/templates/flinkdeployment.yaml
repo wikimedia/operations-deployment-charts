@@ -62,31 +62,40 @@ spec:
     metadata:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
-        # IMPORTANT: the flink-kubernetes-operator chart has a custom added WMF networkpolicy.yaml
-        # template that will create a NetworkPolicy in this namespace that allows these
-        # pods to talk to the k8s API.
-        # It selects theses pods by matching the app: flink-app label.  The app
-        # label is added by the base.meta.pod_labels template, and is set
-        # to the chart name.  If you change this label (e.g. by renaming this chart),
-        # you must also make the change in
-        # charts/flink-kubernetes-operator/templates/networkpolicy.yaml.
+        # IMPORTANT: the flink-kubernetes-operator chart has a custom added
+        # WMF networkpolicy.yaml template that will create a NetworkPolicy
+        # in this namespace that allows these pods to talk to the k8s API.
+        # It selects theses pods by matching this k8s_api_allowed=true label.
+        # All flink pods that need to talk to the k8s API must have this label.
+        k8s_api_allowed: "true"
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/port: "9999"
         {{- end }}
 
-    {{- if or (.Values.app.env | default false)  .Values.mesh.enabled }}
+    {{- if or (or .Values.mesh.enabled .Values.app.env) (and .Values.kubernetesApi .Values.kubernetesApi.host) }}
     spec:
       containers:
-      {{- if .Values.app.env | default false }}
+        {{- if or .Values.app.env (and .Values.kubernetesApi .Values.kubernetesApi.host) }}
         - name: flink-main-container
           env:
+            {{- if .Values.kubernetesApi.host }}
+            {{- /*
+            In WMF production, make sure you set this in a
+            helmfile environment values files,
+            likely to 'kubernetes.default.svc.cluster.local'.
+            */}}
+            - name: KUBERNETES_SERVICE_HOST
+              value: {{ .Values.kubernetesApi.host }}
+            {{- end }}
+            {{- if .Values.app.env | default false }}
             {{- toYaml .Values.app.env | nindent 12 }}
-      {{- end }}
-      {{- if .Values.mesh.enabled }}
+            {{- end }}
+        {{- end }}
+        {{- if .Values.mesh.enabled }}
         {{- include "mesh.deployment.container" . | indent 8 }}
-      {{- end }}
+        {{- end }}
     {{- end }}
 
   jobManager:

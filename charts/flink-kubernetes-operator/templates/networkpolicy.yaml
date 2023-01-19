@@ -96,14 +96,17 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      # IMPORTANT: This label MUST be added on all Flink pods.
-      # WMF's flink-app chart does this via the usual
-      # labels added via templates/vendor/meta .tpl.
+      # IMPORTANT: This k8s_api_allowed: true label MUST be added on all
+      # Flink pods. WMF's flink-app chart does this via a podTemplate.
       # Thus, this will ONLY work for Flink pods created
       # by the WMF flink-app helm chart.
-      # If you change the name of the flink-app chart,
-      # you must change this here too.
-      app: flink-app
+      # NOTE: We would prefer to match on app=flink-app, where flink-app
+      # is the value of .Chart.Name there, but the flink-kubernetes-operator
+      # sets the app label to chartName-release instead.  Because we can't
+      # 100% pick what the release is, we use this custom 'engine' label instead.
+      # See this thread:
+      # https://lists.apache.org/thread/dont796lp84vfqnovolryw0y0470mqsv
+      k8s_api_allowed: "true"
   policyTypes:
     - Egress
   egress:
