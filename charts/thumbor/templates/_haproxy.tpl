@@ -52,7 +52,9 @@ listen thumbor
     # Add a healthz for haproxy itself - checking /healthcheck will
     # actually hit thumbor which will give us an erroneous fail where we
     # could be queuing requests in haproxy.
+    acl queue_too_big avg_queue() gt {{ .Values.haproxy.max_avg_queue }}
     monitor-uri /healthz
+    monitor fail if queue_too_big
 
 listen stats
    bind *:{{ .Values.haproxy.stats_port }}

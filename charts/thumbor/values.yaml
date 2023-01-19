@@ -31,6 +31,11 @@ haproxy:
       path: /healthz
       port: 4112
 
+  # Max avg queued requests per backend. Exceeding this average will
+  # cause us to fail our healthcheck and be seen as unhealthy
+  max_avg_queue: 20
+
+
 # application port. Needed by the mesh module, unused otherwise.
 app:
   port: 4112
