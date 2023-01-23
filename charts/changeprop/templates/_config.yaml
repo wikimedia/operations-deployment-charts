@@ -823,7 +823,7 @@ spec: &spec
                       database: '{{ $model_settings.database_regex }}'
                     exec:
                       method: post
-                      uri: 'https://{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'
+                      uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'
                       headers:
                         host: '{{ `{{message.database}}` }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
                       body: '{ revision_create_event: {{ `{{globals.message}}` }} }'
