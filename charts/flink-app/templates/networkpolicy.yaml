@@ -5,7 +5,12 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "base.name.chart" . }}
+      # NOTE: flink-kubernetes-operator overrides the app label and will
+      # always set it to the <chart>-<release>.  We need select based on this,
+      # instead of WMF's usual convention of app==<chart>.
+      # See: https://lists.apache.org/thread/dont796lp84vfqnovolryw0y0470mqsv
+      # for more context.
+      app: {{ template "base.name.chart" . }}-{{ .Release.Name }}
       release: {{ .Release.Name }}
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
