@@ -67,7 +67,17 @@ app:
 
   # key/value pairs of flink-conf.yaml configuration.
   # NOTE: all values must be strings.
-  flinkConfiguration: {}
+  flinkConfiguration:
+    # Set the default values for Flink  ports.
+    # These are needed to configure pod ingress networkpolicy.
+    # NOTE: In HA, jobmanager.rpc.port is ignored.
+    # TODO: figure out ingress for HA.
+    "jobmanager.rpc.port": "6123"
+    # We don't use a port range for taskmanager.rpc.port,
+    # as we can be sure that only one TaskManager will run per pod.
+    "taskmanager.rpc.port": "6122"
+    "taskmanager.data.port": "6121"
+    "blob.server.port": "6130"
 
   # List of environment variable to set in the flink containers.
   # These will be set for both Job and TaskManager containers.

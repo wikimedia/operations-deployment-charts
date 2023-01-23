@@ -20,6 +20,31 @@ spec:
       - port: 9999
         protocol: TCP
 {{- end }}
+
+    # Allow ingress to Jobmanager and TaskManager on these Flink Ports
+    - from:
+        - podSelector:
+            matchExpressions:
+              # component label is added by Flink Kubernetes Operator
+              - key: component
+                operator: In
+                values: [jobmanager, taskmanager]
+      ports:
+        {{- if index .Values.app.flinkConfiguration "jobmanager.rpc.port" }}
+        # Flink jobmanager.rpc.port
+        - port: {{ index .Values.app.flinkConfiguration "jobmanager.rpc.port" }}
+          protocol: TCP
+        {{- end }}
+        # Flink blob.server.port
+        - port: {{ index .Values.app.flinkConfiguration "blob.server.port" }}
+          protocol: TCP
+        # Flink taskmanager.rpc.port
+        - port: {{ index .Values.app.flinkConfiguration "taskmanager.rpc.port" }}
+          protocol: TCP
+        # Flink taskmanager.data.port
+        - port: {{ index .Values.app.flinkConfiguration "taskmanager.data.port" }}
+          protocol: TCP
+
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
