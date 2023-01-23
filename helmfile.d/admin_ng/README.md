@@ -3,7 +3,9 @@
 * There is a value "cluster_group" to group a number of environments (clusters) together
 ** The cluster_group (if any) is defined in the clusters values.yaml at `values/< .Environment.Name >/values.yaml`
 * There is one helmfile to rule them all (helmfile.yaml)
-* You can deploy a cluster using only `helmfile -e staging-codfw sync`
+* You can deploy a cluster using only `helmfile -e staging-codfw -i apply`
+* If you want to limit the releases you are deploying, you may use a label selector on the release:
+  `helmfile -e staging-codfw -l name=flink-operator diff`
 
 # Basic releases
 Global defaults for basic releases are defined in `values/common.yaml`.
