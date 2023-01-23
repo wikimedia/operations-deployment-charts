@@ -826,7 +826,9 @@ spec: &spec
                       uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'
                       headers:
                         host: '{{ `{{message.database}}` }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
-                      body: '{ revision_create_event: {{ `{{globals.message}}` }} }'
+                        content-type: application/json
+                      body:
+                        revision_create_event: '{{ `{{globals.message}}` }}'
 {{ end -}}
 {{ end -}}
 # Number of worker processes to spawn.
