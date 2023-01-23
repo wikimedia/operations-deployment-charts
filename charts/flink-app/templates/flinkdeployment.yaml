@@ -62,12 +62,6 @@ spec:
     metadata:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
-        # IMPORTANT: the flink-kubernetes-operator chart has a custom added
-        # WMF networkpolicy.yaml template that will create a NetworkPolicy
-        # in this namespace that allows these pods to talk to the k8s API.
-        # It selects theses pods by matching this k8s_api_allowed=true label.
-        # All flink pods that need to talk to the k8s API must have this label.
-        k8s_api_allowed: "true"
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
