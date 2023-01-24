@@ -13,7 +13,7 @@ Note: the reused data from MediaWiki is publiished as
 looks something like:
 
     ---
-    mw:
+    cache:
       mcrouter:
         pools:
           - name: eqiad-servers
@@ -34,8 +34,8 @@ looks something like:
             failover: [...]
 */}}
 {{ define "mcrouter.config_template" }}
-{{- $pools := .Values.mw.mcrouter.pools -}}
-{{- $last_pool := last .Values.mw.mcrouter.pools }}
+{{- $pools := .Values.cache.mcrouter.pools -}}
+{{- $last_pool := last .Values.cache.mcrouter.pools }}
 {{- with .Values.mcrouter -}}
   {{- $mcrouter_zone := .zone -}}
 {
