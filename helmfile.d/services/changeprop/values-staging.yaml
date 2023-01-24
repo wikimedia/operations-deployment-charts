@@ -25,9 +25,9 @@ main_app:
       models:
         goodfaith:
           concurrency: 2
-          database_regex: '/(en|zh)wiki/'
+          database_regex: 'enwiki'
           namespace: revscoring-editquality-goodfaith
-          kafka_topic: 'mediawiki.revision-create'
+          kafka_topic: 'liftwing.test-events'
 
 nutcracker:
   enabled: true
