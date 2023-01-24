@@ -814,21 +814,20 @@ spec: &spec
               liftwing_{{ $model_name }}:
                 topic: {{ $model_settings.kafka_topic }}
                 concurrency: {{ $model_settings.concurrency }}
-                ignore:
+                retry_on:
                   status:
                     - 503
-                cases:
-                  - match:
-                      # Supported wikis in Lift Wing
-                      database: '{{ $model_settings.database_regex }}'
-                    exec:
-                      method: post
-                      uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'
-                      headers:
-                        host: '{{ `{{message.database}}` }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
-                        content-type: application/json
-                      body:
-                        revision_create_event: '{{ `{{globals.message}}` }}'
+                match:
+                  # Supported wikis in Lift Wing
+                  database: '{{ $model_settings.database_regex }}'
+                exec:
+                  method: post
+                  uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'
+                  headers:
+                    host: '{{ `{{message.database}}` }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
+                    content-type: application/json
+                  body:
+                    revision_create_event: '{{ `{{globals.message}}` }}'
 {{ end -}}
 {{ end -}}
 # Number of worker processes to spawn.
