@@ -78,7 +78,7 @@ spec: &spec
 {{- if .Values.main_app.kafka.ssl }}
               # Set these to enable Kafka producer TLS (no authentication, just encryption).
               security.protocol: ssl
-              ssl.ca.location: /etc/changeprop/puppetca.crt.pem
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
             producer:
               compression.codec: {{ .Values.main_app.kafka.compression_codec }}
@@ -89,7 +89,7 @@ spec: &spec
 {{- if .Values.main_app.kafka.ssl }}
               # Set these to enable Kafka producer TLS (no authentication, just encryption).
               security.protocol: ssl
-              ssl.ca.location: /etc/changeprop/puppetca.crt.pem
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
             concurrency: {{ .Values.main_app.concurrency }}
             startup_delay: 60000

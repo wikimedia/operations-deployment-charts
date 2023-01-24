@@ -86,10 +86,8 @@ spec:
                   name: {{ template "base.name.release" $ }}-secret-config
                   key: {{ $k }}
           {{- end }}
-{{ if .Values.puppet_ca_crt }}
             - name: NODE_EXTRA_CA_CERTS
-              value: /etc/changeprop/puppetca.crt.pem
-{{- end }}
+              value: /etc/ssl/certs/wmf-ca-certificates.crt
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}

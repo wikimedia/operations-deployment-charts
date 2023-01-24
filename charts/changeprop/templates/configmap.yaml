@@ -14,10 +14,6 @@ data:
 {{- else }}
   config.yaml: |- {{ include "config.app" . | indent 4 }}
 {{- end }}
-{{- if .Values.puppet_ca_crt }}
-  puppetca.crt.pem: |-
-{{ .Values.puppet_ca_crt | indent 4 }}
-{{ end -}}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
