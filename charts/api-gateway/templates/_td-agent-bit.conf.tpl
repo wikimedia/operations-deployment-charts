@@ -25,12 +25,8 @@
     URI {{ .Values.main_app.access_log.event_service.path }}
 {{- if .Values.main_app.access_log.tls }}
     tls On
-{{- if .Values.puppet_ca_crt }}
     tls.verify On
-    tls.ca_file /etc/td-agent-bit/puppetca.crt.pem
-{{- else }}
-    tls.verify Off
-{{- end }}
+    tls.ca_file /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
 
 {{ end }}

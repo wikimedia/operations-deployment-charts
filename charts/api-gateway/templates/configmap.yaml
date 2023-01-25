@@ -10,10 +10,6 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   config.yaml: |- {{ include "config.app" . | indent 4 }}
-{{- if .Values.puppet_ca_crt }}
-  puppetca.crt.pem: |-
-{{ .Values.puppet_ca_crt | indent 4 }}
-{{ end -}}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
@@ -103,9 +99,5 @@ metadata:
 data:
   td-agent-bit.conf: |- {{ include "fluent-bit.config" . | indent 4 }}
   td-agent-parsers.conf: |- {{ include "fluent-bit-parsers.config" . | indent 4 }}
-{{- if .Values.puppet_ca_crt }}
-  puppetca.crt.pem: |-
-{{ .Values.puppet_ca_crt | indent 4 }}
-{{ end -}}
 {{ end -}}
 {{ end -}}
