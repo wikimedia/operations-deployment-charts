@@ -133,6 +133,12 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
+    {{- if .Values.auth.ldap.enabled }}
+    - name: AUTH_OIDC_JIT_PROVISIONING_ENABLED
+      value: "true"
+    - name: AUTH_OIDC_EXTRACT_GROUPS_ENABLED
+      value: "true"
+    {{- end }}
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:
