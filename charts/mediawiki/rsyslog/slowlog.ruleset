@@ -10,19 +10,11 @@ rule=:%[
     {"type": "literal", "text": "script_filename = "},
     {"name": "script_filename", "type": "string-to", "extradata": "\\n"},
     {"type": "literal", "text": "\\n"},
-    {
-        "name": "stacktrace",
-        "type": "repeat",
-        "while": {"type":"literal", "text":"\\n"},
-        "parser": [
-            {"type": "literal", "text": "["},
-            {"name": "address", "type": "char-to", "extradata": "]"},
-            {"type": "literal", "text": "] "},
-            {"name": "function", "type": "word"},
-            {"type": "literal", "text": " "},
-            {"name": "file", "type": "char-to", "extradata": ":"},
-            {"type": "literal", "text": ":"},
-            {"name": "line", "type": "number"}
-        ]
-    }
+    {"type": "literal", "text": "["},
+    {"name": "stack_head_addr", "type": "char-to", "extradata": "]"},
+    {"type": "literal", "text": "] "},
+    {"name": "stack_head_function", "type": "word"},
+    {"type": "literal", "text": " "},
+    {"name": "stack_head_file", "type": "string-to", "extradata": "\\n"},
+    {"name": "stack_tail", "type": "rest"}
     ]%
