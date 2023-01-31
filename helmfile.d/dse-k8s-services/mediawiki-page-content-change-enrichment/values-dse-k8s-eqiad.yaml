@@ -3,6 +3,14 @@
 # with local development.
 
 app:
+  jobManager:
+    resource:
+      memory: 4096m
+
+  taskManager:
+    resource:
+      memory: 4096m
+
   env:
     - name: SCHEMA_URIS
       # This app only needs the primary schema repo
