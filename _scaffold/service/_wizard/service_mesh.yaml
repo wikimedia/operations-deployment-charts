@@ -1,0 +1,69 @@
+name: service-mesh
+description: Sets up the service mesh and the TLS termination (if needed)
+modules:
+  - "mesh.configuration:1.2"
+  - "mesh.deployment:1.1"
+  - "mesh.name:1.0"
+  - "mesh.networkpolicy:1.1"
+  - "mesh.service:1.1"
+priority: 10
+templates:
+  containers: |
+    {{- include "mesh.deployment.container" . }}
+  volumes: |
+    {{- include "mesh.deployment.volume" . }}
+  configmap: |
+    {{ include "mesh.configuration.configmap" . }}
+  service: |
+    {{ include "mesh.service" . }}
+  networpolicy.ingress: |
+    {{- include "mesh.networkpolicy.ingress" . }}
+  networkpolicy.egress: |
+    {{- include "mesh.networkpolicy.egress" . }}
+values: |
+  # Basic mesh-related data.
+  mesh:
+    enabled: false
+    image_version: latest
+    certs:
+      cert: "snakeoil"
+      key: "snakeoil"
+    # http keepalive timeout for incoming requests
+    idle_timeout: "4.5s"
+    # Port to listen to
+    public_port: __port__
+    local_access_log_min_code: "200"
+    # Headers to add to a local request,
+    # in dictionary form.
+    request_headers_to_add: []
+    # Timeout of a request to the local service
+    upstream_timeout: "60s"
+    # Enabling telemetry, telemetry port.
+    telemetry:
+      enabled: true
+      port: 1667
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 500m
+        memory: 500Mi
+
+  # Mesh-related discovery
+  # TODO: move under mesh.* once we can
+  discovery:
+    # List of listeners
+    listeners: []
+
+  # Mesh related pure TCP proxies
+  tcp_proxy:
+    listeners: []
+
+  # Should be provided by configuration management.
+  # See details of the structures in the comments
+  # In the configuration module.
+  services_proxy: ~
+  tcp_services_proxy: ~
+questions:
+  - port

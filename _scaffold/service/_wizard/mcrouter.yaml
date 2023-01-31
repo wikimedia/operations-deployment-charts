@@ -1,0 +1,80 @@
+name: mcrouter
+description: sets up mcrouter
+modules:
+  - "cache.mcrouter:1.0"
+priority: 99
+templates:
+  deployment: |
+    {{- include "cache.mcrouter.deployment" . }}
+  volume: |
+    {{- include "cache.mcrouter.volume" . }}
+  configmap: |
+    {{- include "cache.mcrouter.configmap" . }}
+  networkpolicy.egress: |
+    {{- include "cache.mcrouter.egress" . }}
+values: |
+  common_images:
+    mcrouter:
+      mcrouter: latest
+      exporter: latest
+  cache:
+    mcrouter:
+      # This is the route prefix that will be added by default
+      # to all requests whose key doesn't begin with /
+      route_prefix: /default
+      cross_region_timeout: 250
+      cross_cluster_timeout: 100
+      num_proxies: 3
+      probe_timeout: 6000
+      timeouts_until_tko: 3
+      zone: foo
+      resources:
+        requests:
+          cpu: 250m
+          memory: 200M
+        limits:
+          cpu: 250m
+          memory: 200M
+      pools:
+        - name: foo-pool
+          servers:
+            - 192.168.1.1
+            - 192.168.1.2
+          failover:
+            - 192.168.1.54
+            - 192.168.1.53
+          zone: foo
+        - name: bar-pool
+          servers:
+            - 192.168.2.1
+            - 192.168.2.2
+          failover:
+            - 192.168.2.54
+            - 192.168.2.53
+          routes:
+            # Route 1: simple standalone
+            - route: /default
+              pool: foo-pool
+              failover_time: 0
+            # Route 2: "replica"
+            # Actually generates two routes,
+            # * /replica/foo that reads and writes to the foo pools
+            # * /replica/bar that reads from foo and writes to bar
+            # Applications can write to both using /replica/*/ as a
+            # prefix.
+            - route: /replica/foo
+              pool: foo-pool
+              failover_time: 10
+              replica:
+                route: /replica/bar
+                pool: bar-pool
+            # Route 3: "warmup"
+            # This route will try reading a key from the local pool, and
+            # if it doesn't find it, it will contact the bar pool and store
+            # the resulting key for the ttl time
+            - route: /multilayer
+              pool: bar-pool
+              failover_time: 10
+              warmup:
+                pool: foo-pool
+                ttl: 60

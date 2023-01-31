@@ -1,0 +1,3 @@
+{{ if not (hasSuffix "canary" .Release.Name) }}
+# replace: service
+{{- end }}

@@ -203,39 +203,39 @@ end
 
 # Scaffolding
 desc 'Create a new chart'
-task :scaffold, [:image, :service, :port] do |_task, args|
-  def get_data(arg, msg)
-    if arg.nil?
-      puts msg
-      Readline.readline('> ', true)
-    else
-      arg
-    end
+task :scaffold do
+  sextant = which("sextant")
+  if sextant.nil?
+    puts("Please install sextant: pip3 install sextant")
+    return 1
   end
-  port = get_data(args[:port], 'Please input the PORT on which the service will run')
-  service = get_data(args[:service], 'Please input the NAME of the service')
-  image = get_data(args[:image], 'Please input the IMAGE full label for the service')
-
-  sc = Scaffold.new(image, service, port)
-  sc.run
+  puts("Please use sextant to create a chart: ")
+  puts("#{sextant} create-chart -s _scaffold/<model> charts/<chart-name>")
 end
 
-desc 'Validate a sample chart generated from scaffolding'
-task test_scaffold: :check_dep do
-  chart = 'test-scaffold'
-  begin
-    # run scaffolding first
-    sc = Scaffold.new('example', chart, '9090')
-    sc.run
-    # Add a fixture for php apps
-    File.open('charts/test-scaffold/.fixtures/php.yaml', 'w') do |fh|
-      data = { 'main_app' => { 'type' => 'php' } }
-      fh.write(data.to_yaml)
+desc 'Validate all scaffolding models'
+task :test_scaffold do
+  sextant = which("sextant")
+  if sextant.nil?
+    puts("Please install sextant: pip3 install sextant")
+    return 1
+  end
+  FileList.new('_scaffold/*').exclude{|e| !File.directory? e}.map{|e| e.gsub(/_scaffold\//, '')}.each do |model|
+    puts("Now testing model #{model}")
+    FileList.new("_scaffold/#{model}/.presets/*.yaml").each do |presets|
+      preset_name = File.basename presets, '.yaml'
+      puts("Testing preset #{model}/#{preset_name}")
+      chart = "test-scaffold-#{model}-#{preset_name}"
+      begin
+        # run scaffolding first
+        sc = Scaffold.new(model, chart, presets)
+        sc.run
+        Rake::Task[:check_charts].invoke('lint/validate', chart)
+        Rake::Task[:check_charts].reenable
+      ensure
+        FileUtils.rm_rf("charts/#{chart}")
+      end
     end
-    Rake::Task[:check_charts].invoke('lint/validate', chart)
-    Rake::Task[:check_charts].reenable
-  ensure
-    FileUtils.rm_rf("charts/#{chart}")
   end
 end
 

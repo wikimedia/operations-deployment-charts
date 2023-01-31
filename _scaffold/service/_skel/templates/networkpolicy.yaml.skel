@@ -14,17 +14,12 @@ spec:
     - Ingress
   ingress:
     - ports:
-      {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
+# replace: networkpolicy.ingress; indent: 6
       {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
-      {{- if eq .Values.app_type "php" }}
-      {{- include "lamp.networkpolicy.ingress" . | indent 6 -}}
-      {{-  end }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
-    {{- if eq .Values.app_type "php" }}
-      {{- include "lamp.networkpolicy.egress"}}
-    {{- end }}
+# replace: networkpolicy.egress; indent: 4
 {{- end }}

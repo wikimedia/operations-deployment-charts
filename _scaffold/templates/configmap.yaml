@@ -1,7 +1,0 @@
-{{ include "mesh.configuration.configmap" . }}
-{{- if eq .Values.app_type "php" }}
-{{ include "lamp.phpfpm.configmap" . }}
-{{ include "lamp.httpd.configmap" . }}
-{{- else -}}
-{{/* TODO: add a generic configmap? */}}
-{{- end }}
