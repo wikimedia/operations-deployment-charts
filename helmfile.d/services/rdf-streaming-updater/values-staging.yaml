@@ -3,7 +3,7 @@ main_app:
     cluster_id: rdf-streaming-updater-staging-flink-cluster
 # thanos is replicated between clusters so we want a separate bucket for
 # the flink HA storage
-    ha_storage_dir: s3://rdf-streaming-updater-staging.thanos-swift/flink_ha_storage
+    ha_storage_dir: s3://rdf-streaming-updater-staging/flink_ha_storage
 
 task_manager:
   replicas: 2
