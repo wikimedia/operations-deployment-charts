@@ -35,7 +35,6 @@ spec:
   flinkConfiguration:
     ### Default configuration
     rest.port: "{{ .Values.app.port }}"
-    taskmanager.numberOfTaskSlots: "1"
     {{- if ne .Values.service.deployment "none" }}
     # Expose a ClusterIP Service for the  Flink REST UI.
     # This can be accessed by kubectl port-forward.
