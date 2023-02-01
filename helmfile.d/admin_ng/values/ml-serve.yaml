@@ -86,8 +86,23 @@ namespaces:
     # with hostname == namespace for every non-system namespace.
     # In our case, we have only one istio TLS config that is deployed
     # via knative-serving.
+    # Note: We rely on ChangeProp to call LiftWing upon certain
+    # Kafka events are emitted. Due to how nodejs works
+    # (see https://github.com/nodejs/node/issues/37104) it is
+    # not possible to call our inference endpoints with
+    # custom HTTP Host headers, unless there are some special
+    # SANs in the TLS certificate to support them.
     tlsHostnames:
       - inference
+    tlsExtraSANs:
+      - '*.revscoring-editquality-goodfaith.wikimedia.org'
+      - '*.revscoring-editquality-damaging.wikimedia.org'
+      - '*.revscoring-editquality-reverted.wikimedia.org'
+      - '*.revscoring-draftquality.wikimedia.org'
+      - '*.revscoring-drafttopic.wikimedia.org'
+      - '*.revscoring-articlequality.wikimedia.org'
+      - '*.experimental.wikimedia.org'
+      - '*.articletopic-outlink.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
