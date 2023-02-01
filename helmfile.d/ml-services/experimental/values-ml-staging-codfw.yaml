@@ -5,17 +5,17 @@ inference_services:
   - name: "nsfw-model"
     predictor:
       image: "machinelearning-liftwing-inference-services-nsfw"
-      image_version: "2022-08-11-085124-publish"
+      image_version: "2023-02-01-115841-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
   - name: "revert-risk-model"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2022-12-22-150637-publish"
+      image_version: "2023-02-01-141147-multilingual"
       custom_env:
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/experimental/revertrisk/20221214175551/"
+          value: "s3://wmf-ml-models/experimental/revertrisk/20230201095010/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
       resources:
