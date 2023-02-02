@@ -1,0 +1,78 @@
+app:
+  image: docker-registry.discovery.wmnet/repo/search-platform/flink-rdf-streaming-updater
+  version: flink-1.16-rc1
+
+  job:
+    jobClass: org.wikidata.query.rdf.updater.UpdaterJob
+    parallelism: 12
+    upgradeMode: savepoint
+    args: [ "/srv/app/config/rdf-streaming-updater-config.properties" ]
+
+  jobManager:
+    resource:
+      memory: 1600m
+
+  taskManager:
+    resource:
+      memory: 2500m # back-filling required 5G in yarn,it's likely to fail with k8s as well at 2.5G
+
+  flinkConfiguration:
+    "taskmanager.numberOfTaskSlots": 4
+    "high-availability": KUBERNETES
+    "s3.access-key": wdqs:flink
+    "s3.secret-key": secret
+    "s3.endpoint": thanos-swift.discovery.wmnet
+    "s3.path.style.access": true
+    "kubernetes.operator.savepoint.format.type": NATIVE
+    "kubernetes.operator.savepoint.history.max.count": 5
+    "kubernetes.operator.savepoint.trigger.grace-period": 20sec
+    "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
+  config_files:
+    rdf-streaming-updater-config.properties:
+      parallelism: 12
+      acceptable_mediawiki_lag: 10
+      use_versioned_serializers: true
+      topic_prefixes: eqiad.,codfw.
+      rev_create_topic: mediawiki.revision-create
+      page_delete_topic: mediawiki.page-delete
+      suppressed_delete_topic: mediawiki.page-suppress
+      page_undelete_topic: mediawiki.page-undelete
+      http_routes: www.wikidata.org=localhost:6500,meta.wikimedia.org=localhost:6500,schema.wikimedia.org=localhost:6023
+      schema_repositories: https://schema.wikimedia.org/repositories/primary/jsonschema,https://schema.wikimedia.org/repositories/secondary/jsonschema
+      event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
+      job_name: WDQS Streaming Updater
+      hostname: www.wikidata.org
+      uris_scheme: wikidata
+      entity_namespaces: 0,120,146
+      generate_diff_timeout: -1
+      wikibase_repo_thread_pool_size: 30
+      input_idleness: 60000
+      checkpoint_interval: 30000
+      checkpoint_timeout: 900000
+      restart_failures_rate_interval: 180000
+      restart_failures_rate_max_per_interval: 10
+      restart_failures_rate_delay: 60000
+
+discovery:
+  listeners:
+    - mwapi-async
+    # TODO: consider packaging the schemas in the image directly instead of relying on the service at runtime
+    - schema
+
+kubernetesApi:
+  host: kubernetes.default.svc.cluster.local
+  port: 443
+
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 10.2.1.54/32   # thanos-swift.svc.codfw.wmnet
+        ports:
+          - port: 443
+            protocol: tcp

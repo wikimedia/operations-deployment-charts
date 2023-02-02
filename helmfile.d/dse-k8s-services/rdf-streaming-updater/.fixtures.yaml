@@ -1,0 +1,29 @@
+services_proxy:
+  mwapi-async:
+    keepalive: 4s
+    port: 6500
+    timeout: 120s
+    xfp: https
+    upstream:
+      address: api-rw.discovery.wmnet
+      port: 443
+      encryption: true
+  schema:
+    port: 6023
+    service: schema
+    timeout: 120s
+    upstream:
+      address: mock.discovery.wmnet
+      port: 443
+      encryption: true
+
+kafka_brokers:
+  jumbo:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  main-eqiad:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  main-codfw:
+    - 2.2.3.4/32
+    - 2620::8:102:2:2:3:4/128
