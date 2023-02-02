@@ -94,6 +94,33 @@ spec: &spec
             concurrency: {{ .Values.main_app.concurrency }}
             startup_delay: 60000
             blacklist:
+              # Wikipedia
+              en.wikipedia.org:
+                - 'User:B-bot/Event_log'
+                - 'User:DeltaQuad/UAA/Wait'
+                - 'User:JamesR/AdminStats'
+                - 'User:Kudpung/Dashboard'
+                # Various dashboards
+                - 'User:Breawycker/Wikipedia'
+                - 'User:Sonia/dashboard'
+                - 'User:Ocaasi/dashboard'
+                - 'User:Nolelover'
+                - 'User:Calmer_Waters'
+                - '/User%3ARedwolf24\//'
+                - 'User:Technical_13/dashboard'
+                - 'Template:Cratstats'
+                # Cyberbot is creating 90% of null edits
+                - '/User:Cyberbot_I\//'
+                - '/User:Cyberbot_II\//'
+                - '/User:Cyberpower678\//'
+                - '/User:Darts170Darts170\//'
+                - 'صارف:Cyberbot_I/Run/Adminstats'
+                - 'Defnyddiwr:Cyberbot_I/Run/Adminstats'
+                - 'User:Pentjuuu!.!/sandbox'
+                - 'User:AllyD/CSDlog'
+                - 'User:Peter_I._Vardy/sandbox-13'
+                - 'User:I_dream_of_horses/CSD_log'
+                - 'User:MJ180MJ180/sandbox'
               test.wikipedia.org:
                 - 'T274359'
             templates:
