@@ -7,37 +7,45 @@ main_app:
       models:
         goodfaith:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            database: '/.*/'
           namespace: 'revscoring-editquality-goodfaith'
           kafka_topic: 'mediawiki.revision-create'
         damaging:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            meta:
+              domain: '/^(en|zh)wiki$/'
           namespace: 'revscoring-editquality-damaging'
-          kafka_topic: 'mediawiki.revision-create'
+          kafka_topic: 'mediawiki.page.change'
         reverted:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            database: '/.*/'
           namespace: 'revscoring-editquality-damaging'
           kafka_topic: 'mediawiki.revision-create'
         articletopic:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            database: '/.*/'
           namespace: 'revscoring-articletopic'
           kafka_topic: 'mediawiki.revision-create'
         articlequality:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            database: '/.*/'
           namespace: 'revscoring-articlequality'
           kafka_topic: 'mediawiki.revision-create'
         drafttopic:
-          concurrency: 2
-          database_regex: '/.*/'
+          concurrency: 12
+          match_config:
+            database: "/.*/"
           namespace: 'revscoring-drafttopic'
           kafka_topic: 'mediawiki.revision-create'
         draftquality:
           concurrency: 2
-          database_regex: '/.*/'
+          match_config:
+            database: '/.*/'
           namespace: 'revscoring-draftquality'
           kafka_topic: 'mediawiki.revision-create'
 

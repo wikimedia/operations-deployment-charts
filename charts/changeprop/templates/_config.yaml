@@ -817,9 +817,19 @@ spec: &spec
                 retry_on:
                   status:
                     - 503
+                {{- if hasKey $model_settings "match_config" }}
                 match:
-                  # Supported wikis in Lift Wing
-                  database: '{{ $model_settings.database_regex }}'
+                {{- if hasKey $model_settings.match_config "meta" }}
+                  meta:
+                    {{- range $k, $v := $model_settings.match_config.meta }}
+                    {{ $k }}: {{ $v | quote }}
+                    {{- end }}
+                {{- else }}
+                  {{- range $k, $v := $model_settings.match_config }}
+                  {{ $k }}: {{ $v | quote }}
+                  {{- end }}
+                {{- end }}
+                {{- end }}
                 exec:
                   method: post
                   uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ `{{message.database}}` }}-{{ $model_name }}:predict'

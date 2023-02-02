@@ -27,7 +27,8 @@ main_app:
       models:
         goodfaith:
           concurrency: 2
-          database_regex: '/^(en|zh)wiki$/'
+          match_config:
+            database: '/^(en|zh)wiki$/'
           namespace: revscoring-editquality-goodfaith
           kafka_topic: 'liftwing.test-events'
 
