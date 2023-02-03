@@ -6,3 +6,12 @@ metadata:
     {{- include "calico.labels" $ | nindent 4 }}
 spec:
   {{- toYaml .Values.BGPConfiguration | nindent 2 }}
+  {{- if and (.Values.BGPConfiguration) (not (hasKey .Values.BGPConfiguration "prefixAdvertisements")) }}
+  # Add Generic BGP community to all k8s BGP advertisements
+  prefixAdvertisements:
+  {{- range $_, $spec := .Values.IPPools }}
+  - cidr: {{ $spec.cidr }}
+    communities:
+    - {{ $.Values.GenericBGPCommunity }}
+  {{- end }}{{/* end range */}}
+  {{- end }}{{/* end if */}}

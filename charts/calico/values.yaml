@@ -18,6 +18,11 @@ imagePullSecrets: []
 BGPConfiguration: {}
 #  asNumber: 64603
 #  nodeToNodeMeshEnabled: false
+#  prefixAdvertisements: {} is automatically generated from "IPPools"
+#    if defined manually, it will overide the automated one.
+
+# BGP community to attach to all k8s prefixes
+GenericBGPCommunity: "14907:14"
 
 # Array of BGPPeers to create.
 # See: https://docs.projectcalico.org/reference/resources/bgppeer
@@ -28,6 +33,7 @@ BGPPeers: {}
 
 # Array of IPPools to create.
 # See: https://docs.projectcalico.org/reference/resources/ippool
+# Also used to generate "prefixAdvertisements" in BGPConfiguration
 IPPools: {}
 #  my-ipv4-pool:
 #    cidr: "10.64.75.0/24"
