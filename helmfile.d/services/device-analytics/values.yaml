@@ -1,0 +1,103 @@
+main_app:
+  image: wikimedia/generated-data-platform-aqs-device-analytics
+  version: 2023-03-07-105735-production
+  command: ["./device-analytics"]
+  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  service_name: device-analytics
+  consistency: localQuorum
+  # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+  cassandra_hosts:
+    - aqs1010-a.eqiad.wmnet
+    - aqs1010-b.eqiad.wmnet
+    - aqs1011-a.eqiad.wmnet
+    - aqs1011-b.eqiad.wmnet
+    - aqs1012-a.eqiad.wmnet
+    - aqs1012-b.eqiad.wmnet
+    - aqs1013-a.eqiad.wmnet
+    - aqs1013-b.eqiad.wmnet
+    - aqs1014-a.eqiad.wmnet
+    - aqs1014-b.eqiad.wmnet
+    - aqs1015-a.eqiad.wmnet
+    - aqs1015-b.eqiad.wmnet
+
+  # note the "_"
+  cassandra_user: "device_analytics"
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+  log_level: debug
+
+resources:
+  replicas: 2
+
+mesh:
+  enabled: true
+
+ingress:
+  enabled: false
+
+service:
+  deployment: production
+  port:
+    nodePort: 4972
+
+monitoring:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.64.0.88/32 # aqs1010-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.0.120/32 # aqs1010-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.16.204/32 # aqs1011-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.16.206/32 # aqs1011-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.128/32 # aqs1012-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.145/32 # aqs1012-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.146/32 # aqs1013-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.32.147/32 # aqs1013-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.65/32 # aqs1014-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.67/32 # aqs1014-b
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.68/32 # aqs1015-a
+      ports:
+      - protocol: tcp
+        port: 9042
+    - cidr: 10.64.48.69/32 # aqs1015-b
+      ports:
+      - protocol: tcp
+        port: 9042
