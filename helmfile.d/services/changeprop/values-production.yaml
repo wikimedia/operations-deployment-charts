@@ -6,5 +6,19 @@ main_app:
   changeprop:
     event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
 
+    # See T328576 for more info
+    features:
+      liftwing_models: true
+    liftwing:
+      uri: 'https://inference.discovery.wmnet:30443'
+      models:
+        drafttopic:
+          concurrency: 5
+          match_config:
+            wiki_id: 'enwiki'
+            page_change_kind: "/^(edit|create)$/"
+          namespace: revscoring-drafttopic
+          kafka_topic: 'rc1.mediawiki.page_change'
+
 resources:
   replicas: 12
