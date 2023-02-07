@@ -181,7 +181,7 @@ spec: &spec
                 match:
                   meta:
                     uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^/]+)$/'
-                    domain: '/\.(wikipedia|wikivoyage)\.{{ $.Values.main_app.changeprop.domain_zone }}$/'
+                    domain: '/\.(wikipedia|wikivoyage|wiktionary)\.{{ $.Values.main_app.changeprop.domain_zone }}$/'
                   tags:
                     - restbase
                 exec:
