@@ -1,12 +1,17 @@
 
-{{- range $name, $spec := .Values.BGPPeers }}
+{{- range $router, $spec := .Values.BGPPeers }}
+{{- range $ipfamily := list "ipv4" "ipv6" }}
 apiVersion: crd.projectcalico.org/v1
 kind: BGPPeer
 metadata:
-  name: {{ $name }}
+  name: {{ $router }}-{{ $ipfamily }}
   labels:
     {{- include "calico.labels" $ | nindent 4 }}
 spec:
-  {{- toYaml $spec | nindent 2 }}
+  nodeSelector: {{ $spec.nodeSelector }}
+  asNumber: {{ $.Values.PeerAS }}
+  peerIP: {{index $spec $ipfamily}}
+  numAllowedLocalASNumbers: {{ $.Values.ASLoop }}
 ---
-{{- end }}{{/* end range */}}
+{{- end }}{{/* end range ipfamily */}}
+{{- end }}{{/* end range BGPPeers */}}

@@ -5,23 +5,22 @@ IPPools:
   my-ipv6-pool:
     cidr: "2620:0:861:babe::/64"
 
-BGPPeers:
-  cr1-eqiad-ipv4:
-    asNumber: 14907
-    peerIP: "208.80.154.196"
-  cr2-eqiad-ipv4:
-    asNumber: 14907
-    peerIP: "208.80.154.197"
-  cr1-eqiad-ipv6:
-    asNumber: 14907
-    peerIP: "2620:0:861:ffff::1"
-  cr2-eqiad-ipv6:
-    asNumber: 14907
-    peerIP: "2620:0:861:ffff::2"
-
 BGPConfiguration:
   asNumber: 64603
   nodeToNodeMeshEnabled: false
+
+PeerAS: 14907
+ASLoop: 1
+
+BGPPeers:
+  cr1-codfw:
+    ipv4: "208.80.153.192"
+    ipv6: "2620:0:860:ffff::1"
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'ganeti-codfw-a', 'ganeti-codfw-b', 'ganeti-codfw-c', 'ganeti-codfw-d' })
+  lsw1-f3-eqiad:
+    ipv4: 10.64.136.1
+    ipv6: 2620:0:861:10f::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-f3')
 
 GlobalNetworkPolicies:
   important-web:
