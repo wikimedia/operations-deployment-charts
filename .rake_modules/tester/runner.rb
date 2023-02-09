@@ -30,6 +30,18 @@ module Tester
       @tests = options.fetch(:tests, self.class::DEFAULT_TESTS)
     end
 
+    # Test if an asset is a chart library
+    # @param asset [BaseTestAsset] asset to test
+    def chart_library?(asset)
+      if asset.instance_of? ChartAsset
+        chart_yaml = yaml_load_file("#{asset.path}/Chart.yaml")
+        if chart_yaml['type'] == 'library'
+          return true
+        end
+      end
+      return false
+    end
+
     # Run the tests that were selected.
     def run
       assets = @assets.values
@@ -48,6 +60,10 @@ module Tester
         back_to_origin do |origin|
           tp = ThreadPool.new(nthreads: Etc.nprocessors)
           assets.each do |asset|
+            # Skip chart libraries, since they cannot be templated
+            if chart_library?(asset)
+              next
+            end
             tp.run do
               asset.diff origin
             end
@@ -58,7 +74,15 @@ module Tester
           tp.join
         end
       end
-      assets.each { |a| a.validate @validate_options } if @tests.include? 'validate'
+      if @tests.include? 'validate'
+        assets.each do |asset|
+          # Skip chart libraries, since we did not render any yaml to validate
+          if chart_library?(asset)
+            next
+          end
+          asset.validate @validate_options
+        end
+      end
     end
 
     # Create a copy that is a checkout of the original repo, for diffing
