@@ -78,6 +78,37 @@ kafka:
   allowed_clusters: [jumbo-eqiad]
 ```
 
+### Application config and overrides
+
+Some jobs may require many config values to be passed to its args. Job args being an array it is impossible to define a
+common set of options in your `values.yaml` file and override a couple of them for environment specific setup (
+e.g. `values-eqiad.yaml`).
+If your application is able to load its configuration from a yaml or a java properties file you might be able to
+the `config_files` entry in `values.yaml`:
+```yaml
+app:
+  config_files:
+    - my-custom-config.properties:
+      config_entry_one: value one
+      config_entry_two: value two
+```
+
+and then overrides some in `values-eqiad.yaml`:
+```yaml
+app:
+  config_files:
+    - my-custom-config.properties:
+      config_entry_three: eqiad specific config
+```
+
+The jobmanager and taskmanager containers will have a file `/srv/app/config/my-custom-config.properties` with the
+following content:
+```yaml
+config_entry_one: value one
+config_entry_two: value two
+config_entry_three: eqiad specific config
+```
+
 ## Minikube Usage
 First, make sure you have the flink-kubernetes-operator helm chart installed.
 

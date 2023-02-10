@@ -1,0 +1,16 @@
+{{- if .Values.app.config_files }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-flink-app-config
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  {{- range $k, $v := .Values.app.config_files }}
+  {{ $k }}: |- {{ toYaml $v | nindent 4 }}
+  {{- end }}
+{{- end }}

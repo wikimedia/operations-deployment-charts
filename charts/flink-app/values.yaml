@@ -103,6 +103,13 @@ app:
 
   # TODO: log level configuration?
 
+  # Set of config_files to deploy to jobmanager & taskmanager PODS
+  # config_files:
+  #   app_config:
+  #     file_name: "app_config_config.yaml"
+  #     content:
+  #       entry1: value1
+  config_files: {}
 
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
