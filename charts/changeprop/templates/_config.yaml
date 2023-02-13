@@ -864,7 +864,7 @@ spec: &spec
                     host: '{{ `{{message.database}}` }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
                     content-type: application/json
                   body:
-                    revision_create_event: '{{ `{{globals.message}}` }}'
+                    event: '{{ `{{globals.message}}` }}'
 {{ end -}}
 {{ end -}}
 # Number of worker processes to spawn.
