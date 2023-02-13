@@ -1,0 +1,37 @@
+---
+# jaeger ca-bundle secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jaeger-jks-passwd
+type: Opaque
+data:
+  # Java keystore password, does not contain any sensitive information, just
+  # our public CA certificate
+  # passwd: butter
+  passwd: YnV0dGVy
+---
+# jaeger ca-bundle
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jaeger-ca-bundle
+  namespace: default
+spec:
+  secretName: crt-mgr-jaeger-ca-bundle
+  dnsNames:
+    - 'jaeger-ca-bundle'
+  issuerRef:
+    name: {{ required "A valid .Values.issuerRef.name entry required!" .Values.issuerRef.name }}
+    {{- if .Values.issuerRef.group }}
+    group: {{ .Values.issuerRef.group }}
+    {{- end }}
+    {{- if .Values.issuerRef.kind }}
+    kind: {{ .Values.issuerRef.kind }}
+    {{- end }}
+  keystores:
+    jks:
+      create: true
+      passwordSecretRef:
+        key: passwd
+        name: jaeger-jks-passwd
