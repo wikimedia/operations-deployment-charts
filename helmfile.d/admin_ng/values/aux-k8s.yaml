@@ -64,3 +64,16 @@ namespaces:
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
+
+
+# Upgrade to k8s 1.23 - T329633
+kubernetesVersion: "1.23"
+# Install latest version of these charts
+chartVersions:
+  wmf-stable/calico-crds: ~
+  wmf-stable/calico: ~
+  wmf-stable/cert-manager: ~
+  wmf-stable/cfssl-issuer-crds: ~
+  wmf-stable/cfssl-issuer: ~
+  wmf-stable/eventrouter: ~
+  wmf-stable/coredns: ~
