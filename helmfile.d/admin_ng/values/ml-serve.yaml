@@ -338,21 +338,6 @@ core:
     # This is needed to be able to configure the Pod's dnsConfig
     # from Kserve's InferenceService resources.
     kubernetes.podspec-dnsconfig: "enabled"
-  queue_proxy:
-    image: knative-serving-queue
-    version: 0.18.1-5
-  activator:
-    image: knative-serving-activator
-    version: 0.18.1-4
-  autoscaler:
-    image: knative-serving-autoscaler
-    version: 0.18.1-4
-  controller:
-    image: knative-serving-controller
-    version: 0.18.1-5
-  webhook:
-    image: knative-serving-webhook
-    version: 0.18.1-4
 
 helmVersion: "helm3"
 

@@ -3,10 +3,21 @@ kubernetesApi:
   host: ml-staging-ctrl.svc.codfw.wmnet
   port: 6443
 
-replicaCount: 4
+replicaCount: 2
 
 service:
   clusterIP: 10.194.62.3
 
 image:
   tag: 1.8.7-1
+
+# Measure to deal with https://phabricator.wikimedia.org/T318814
+# By default Kubernetes DNS records have 5s TTL, and in a Service Mesh
+# like Istio this means causing a lot of DNS queries from Envoy to refresh
+# every TTL seconds all the Clusters with STRICT_DNS settings.
+coredns:
+  rewrite_actions:
+    continue:
+    - 'ttl exact knative-local-gateway.istio-system.svc.cluster.local. 30'
+    - 'ttl regex (.*).discovery.wmnet 30'
+    - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
