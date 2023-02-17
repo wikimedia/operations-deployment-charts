@@ -70,6 +70,9 @@ main_app:
 
   # Enable /restbase/ route for testing features as part of restbase sunset
   restbase_dev: false
+  # If this dictionary is populated, we will not configure the gateway
+  # as an API gateway, but as a REST gateway
+  restbase_routes: {}
 
   endpoints:
     # for /core/ URLs

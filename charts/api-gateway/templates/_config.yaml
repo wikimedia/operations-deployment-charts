@@ -1,5 +1,4 @@
 {{- define "config.app" }}
-
 # api gateway envoy config
 {{ if .Values.main_app.telemetry_port -}}
 admin:
@@ -119,7 +118,11 @@ static_resources:
                 httpCode: "%RESPONSE_CODE%"
                 httpReason: "%LOCAL_REPLY_BODY%"
           route_config:
+{{- if .Values.main_app.restbase_routes }}
+{{ include "restgateway.routes" . }}
+{{- else }}
 {{ include "apigateway.routes" . }}
+{{- end }}
           http_filters:
           - name: envoy.health_check
             typed_config:
@@ -146,7 +149,7 @@ static_resources:
               rules:
 {{ include "apigateway.ratelimit_rules" . }}
 {{- end }}
-{{- if .Values.main_app.ratelimiter }}
+{{- if .Values.main_app.ratelimiter.enabled }}
           - name: envoy.filters.http.ratelimit
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
@@ -192,15 +195,15 @@ static_resources:
                 filename: "/etc/envoy-ssl/service.key"
 {{- end }}
   clusters:
-{{- $idle_timeout := .Values.main_app.idle_timeout -}}
 {{- /* BEGIN endpoints cluster definition */}}
 {{- range $cluster_name, $cluster_opts := .Values.main_app.endpoints }}
-{{ if $cluster_opts }}
+{{- if $cluster_opts }}
+{{- if $cluster_opts.hosts }}
   - name: {{ $cluster_name }}
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
     common_http_protocol_options:
-      idle_timeout: {{ $idle_timeout }}
+      idle_timeout: {{ $.Values.main_app.idle_timeout }}
     type: {{ $cluster_opts.type }}
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
@@ -253,6 +256,7 @@ static_resources:
 {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
 {{- /* END endpoints cluster definition */}}
 {{- /* BEGIN staging cluster definition */}}
 {{- if eq .Release.Name "staging" }}
@@ -262,7 +266,7 @@ static_resources:
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
     common_http_protocol_options:
-      idle_timeout: {{ $idle_timeout }}
+      idle_timeout: {{ $.Values.main_app.idle_timeout }}
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
@@ -299,7 +303,7 @@ static_resources:
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
     common_http_protocol_options:
-      idle_timeout: {{ $idle_timeout }}
+      idle_timeout: {{ $.Values.main_app.idle_timeout }}
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
@@ -328,7 +332,7 @@ static_resources:
                 port_value: {{ $cluster_opts.port }}
 {{- end }}
 {{- /* END discovery cluster definition */}}
-{{- if .Values.main_app.ratelimiter }}
+{{- if .Values.main_app.ratelimiter.enabled }}
   - name: rate_limit_cluster
     type: static
     connect_timeout: 0.25s
