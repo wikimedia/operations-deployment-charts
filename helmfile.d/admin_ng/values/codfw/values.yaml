@@ -1,3 +1,16 @@
+kubernetesVersion: "1.23"
+
+# Install latest version of these charts
+chartVersions:
+  wmf-stable/calico-crds: ~
+  wmf-stable/calico: ~
+  wmf-stable/cert-manager: ~
+  wmf-stable/cfssl-issuer-crds: ~
+  wmf-stable/cfssl-issuer: ~
+  wmf-stable/eventrouter: ~
+  wmf-stable/helm-state-metrics: ~
+  wmf-stable/coredns: ~
+
 namespaces:
   mobileapps:
     resourcequota:

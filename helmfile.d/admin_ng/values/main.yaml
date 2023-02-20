@@ -164,10 +164,14 @@ GlobalNetworkPolicies:
       - action: Allow
         destination:
           nets:
-            # eqiad
+            # eqiad (old range)
             - "10.64.64.0/21"
-            # codfw
+            # wikikube eqiad (new range)
+            - "10.67.128.0/18"
+            # codfw (old range)
             - "10.192.64.0/21"
+            # wikikube codfw (new range)
+            - "10.194.128.0/18"
             # staging-eqiad
             - "10.64.75.0/24"
             # staging-codfw

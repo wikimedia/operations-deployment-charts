@@ -1,8 +1,3 @@
-# This is before coredns works, we can't rely on internal DNS, so use the external one
-kubernetesApi:
-  host: kubemaster.svc.codfw.wmnet
-  port: 6443
-
 BGPConfiguration:
   asNumber: 64602
   nodeToNodeMeshEnabled: false
@@ -23,7 +18,7 @@ BGPPeers:
 
 IPPools:
   ipv4:
-    cidr: "10.192.64.0/21"
+    cidr: "10.194.128.0/18"
   ipv6:
     cidr: "2620:0:860:cabe::/64"
 
