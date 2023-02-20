@@ -309,9 +309,6 @@ spec:
               cpu: {{ .Values.net_istio.controller.resources.limits.cpu }}
               memory: {{ .Values.net_istio.controller.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -400,9 +397,6 @@ spec:
               cpu: {{ .Values.net_istio.webhook.resources.limits.cpu }}
               memory: {{ .Values.net_istio.webhook.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:

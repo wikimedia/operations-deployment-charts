@@ -50,14 +50,6 @@ in `serving-crds.yaml` as well. Please remove any
 `kind: CustomResourceDefinition` occurrent in `core.yaml` (please verify first
 that they are already listed in the crds yaml file).
 
-Please also add the following snippet to the `env` specs of all containers:
-```
-{{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-{{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-{{- end }}
-```
-This is needed to avoid TLS certificate validation errors due to the absence of IP SANs.
-
 We also need to add the following bit to the controller deployment's specs:
 ```
 +            # Needed to be able to trust the docker-registry's CA certificate

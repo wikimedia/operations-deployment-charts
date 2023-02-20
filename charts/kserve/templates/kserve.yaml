@@ -17635,9 +17635,6 @@ spec:
         command:
         - /usr/bin/manager
         env:
-        {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-        {{- include "wmf.kubernetes.ApiEnv" . | nindent 8 }}
-        {{- end }}
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:

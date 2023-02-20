@@ -1795,9 +1795,6 @@ spec:
               cpu: {{ .Values.core.activator.resources.limits.cpu }}
               memory: {{ .Values.core.activator.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             # Run Activator with GC collection when newly generated memory is 500%.
             - name: GOGC
               value: "500"
@@ -1968,9 +1965,6 @@ spec:
               cpu: {{ .Values.core.autoscaler.resources.limits.cpu }}
               memory: {{ .Values.core.autoscaler.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -2116,9 +2110,6 @@ spec:
             # provided in the Docker image by the {wmf,ca}-certificates debs.
             - name: SSL_CERT_DIR
               value: /usr/share/ca-certificates
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -2239,9 +2230,6 @@ spec:
               cpu: {{ .Values.core.domain_mapping.resources.limits.cpu }}
               memory: {{ .Values.core.domain_mapping.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -2337,9 +2325,6 @@ spec:
               cpu: {{ .Values.core.domain_mapping_webhook.resources.limits.cpu }}
               memory: {{ .Values.core.domain_mapping_webhook.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -2544,9 +2529,6 @@ spec:
               cpu: {{ .Values.core.webhook.resources.limits.cpu }}
               memory: {{ .Values.core.webhook.resources.limits.memory }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
