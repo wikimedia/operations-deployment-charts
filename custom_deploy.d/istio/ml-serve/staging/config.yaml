@@ -1,6 +1,3 @@
-# The baseline for this config was gathered in:
-# https://github.com/knative/docs/blob/release-0.18/docs/install/installing-istio.md
-
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
@@ -59,6 +56,9 @@ spec:
         # We need this setting to fully disable any tracing and
         # stop DNS queries for zipkin when the service is disabled.
         tracer: openCensusAgent
+    pilot:
+      autoscaleEnabled: false # overwritten
+      replicaCount: 2
   addonComponents:
     pilot:
       enabled: true
@@ -89,9 +89,6 @@ spec:
             value:
               type: Recreate
           - path: spec.updateStrategy
-    pilot:
-      k8s:
-        replicaCount: 2
     ingressGateways:
       # This is the default Ingress Gateway installed via istioctl, the one
       # that should be exposed to LVS.
@@ -119,6 +116,8 @@ spec:
               value: DaemonSet
             # Delete spec.strategy
             # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
             - path: spec.update
               value:
             - path: spec.updateStrategy
