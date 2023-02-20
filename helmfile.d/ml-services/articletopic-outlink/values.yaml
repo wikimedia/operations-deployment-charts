@@ -40,7 +40,7 @@ inference:
     sidecar.istio.io/inject: "true"
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2023-02-16-104918-publish"
+    version: "2023-02-20-152333-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -52,7 +52,7 @@ inference:
         value: "mediawiki.revision-score-test"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2023-02-16-104916-publish"
+    version: "2023-02-20-152333-publish"
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
