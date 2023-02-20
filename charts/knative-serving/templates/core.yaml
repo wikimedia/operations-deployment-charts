@@ -1937,6 +1937,9 @@ spec:
         app.kubernetes.io/component: autoscaler
         app.kubernetes.io/name: knative-serving
         app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+        app-wmf: {{ template "base.name.chart" . }}
+        chart: {{ template "base.name.chartid" . }}
+        release: {{ .Release.Name }}
     spec:
       # To avoid node becoming SPOF, spread our replicas to different nodes.
       affinity:
