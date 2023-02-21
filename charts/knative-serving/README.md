@@ -86,3 +86,11 @@ k8s versions).
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 ```
+
+We had to add the following change to the Webhook's Deployment resource:
+```
+-            initialDelaySeconds: 20
++            initialDelaySeconds: 120
+```
+The problem seems to be https://github.com/knative/serving/pull/9661, but
+the upstream values are not enough for our use case.

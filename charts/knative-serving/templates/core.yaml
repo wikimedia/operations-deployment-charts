@@ -2303,6 +2303,7 @@ spec:
         app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
         app-wmf: {{ template "base.name.chart" . }}
         chart: {{ template "base.name.chartid" . }}
+        release: {{ .Release.Name }}
     spec:
       # To avoid node becoming SPOF, spread our replicas to different nodes.
       affinity:
@@ -2582,7 +2583,7 @@ spec:
                 - name: k-kubelet-probe
                   value: "webhook"
             failureThreshold: 6
-            initialDelaySeconds: 20
+            initialDelaySeconds: 120
       # Our webhook should gracefully terminate by lame ducking first, set this to a sufficiently
       # high value that we respect whatever value it has configured for the lame duck grace period.
       terminationGracePeriodSeconds: 300

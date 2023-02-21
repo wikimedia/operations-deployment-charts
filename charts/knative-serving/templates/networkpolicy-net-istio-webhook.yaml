@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-istio-webhook
+  name: {{ template "base.name.release" . }}-net-istio-webhook
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}
@@ -10,7 +10,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: istio-webhook
+      app: net-istio-webhook
       app-wmf: {{ template "base.name.chart" . }}
       chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}

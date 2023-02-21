@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-networking-istio
+  name: {{ template "base.name.release" . }}-net-istio-controller
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}
@@ -10,7 +10,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: networking-istio
+      app: net-istio-controller
       app-wmf: {{ template "base.name.chart" . }}
       chart: {{ template "base.name.chartid" . }}
       release: {{ .Release.Name }}
