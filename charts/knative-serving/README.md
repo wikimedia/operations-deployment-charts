@@ -87,7 +87,8 @@ apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 ```
 
-We had to add the following change to the Webhook's Deployment resource:
+We had to add the following change to the Webhook's and Domain Mapping Webhook's
+Deployment resource:
 ```
 -            initialDelaySeconds: 20
 +            initialDelaySeconds: 120
