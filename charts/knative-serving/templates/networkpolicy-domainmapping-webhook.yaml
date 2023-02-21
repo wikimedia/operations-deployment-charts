@@ -1,0 +1,44 @@
+{{- if .Values.kubernetesMasters }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-domainmapping-webhook
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: domainmapping-webhook
+      app-wmf: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+{{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  egress:
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
+  ingress:
+    # The webhook port needs to be reachable by Kubernetes Master IPs
+    - from:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 8443
+          protocol: TCP
+{{- end }}

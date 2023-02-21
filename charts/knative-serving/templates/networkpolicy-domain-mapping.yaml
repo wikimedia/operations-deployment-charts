@@ -1,0 +1,45 @@
+{{- if and (.Values.networkpolicy.egress.enabled) (or (.Values.docker.registry_cidrs) (.Values.kubernetesMasters))}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-domain-mapping
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: domain-mapping
+      app-wmf: {{ template "base.name.chart" . }}
+      chart: {{ template "base.name.chartid" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Egress
+  egress:
+{{- if (.Values.docker.registry_cidrs)}}
+      # Allow the knative controller to resolve docker image tag-to-digest
+      # conversions using the docker registry.
+    - to:
+      {{- range $cidr := .Values.docker.registry_cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+{{- end }}
+{{- if (.Values.kubernetesMasters)}}
+    # Allow to query the K8s API.
+    - to:
+      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
+      - ipBlock:
+          cidr: {{ $cidr }}
+      {{- end }}
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
+{{- end }}
+{{- end }}
