@@ -326,12 +326,6 @@ net_istio:
                 # may return a warning in every response. To circumvent this problem,
                 # let's explicitly set the header.
                 x-forwarded-proto: https
-  controller:
-    image: knative-net-istio-controller
-    version: 0.18.1-4
-  webhook:
-    image: knative-net-istio-webhook
-    version: 0.18.1-4
 
 core:
   config_features:
