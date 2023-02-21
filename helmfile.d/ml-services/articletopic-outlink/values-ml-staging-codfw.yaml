@@ -1,5 +1,17 @@
 monitoring:
   enabled: false
 
+inference:
+  predictor:
+    base_env:
+      - name: STORAGE_URI
+        value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
+      - name: MODEL_VERSION
+        value: "alloutlinks_202209"
+      - name: EVENTGATE_URL
+        value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+      - name: EVENTGATE_STREAM
+        value: "mediawiki.revision-score-test"
+
 inference_services:
   - name: "outlink-topic-model"

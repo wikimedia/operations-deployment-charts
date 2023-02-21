@@ -1,6 +1,18 @@
 monitoring:
   enabled: false
 
+inference:
+  predictor:
+    base_env:
+      - name: WIKI_URL
+        value: "http://api-ro.discovery.wmnet"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+      - name: EVENTGATE_URL
+        value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+      - name: EVENTGATE_STREAM
+        value: "mediawiki.revision-score-test"
+
 revscoring_inference_services:
   - wiki: "en"
     version: "20220804074416"
