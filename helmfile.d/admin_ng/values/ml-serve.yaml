@@ -364,17 +364,7 @@ resourcequota:
       cpu: "180"
       memory: "180Gi"
 
-# Istio Gateway config for the ML cluster.
-# The list of ports need to be kept in sync with what stated
-# in the related custom_deploy.d's istioctl config.
 istio:
-  gateways:
-    ingressgateway:
-      ports:
-        - 8443
-    cluster-local-gateway:
-      ports:
-        - 8080
   sidecar:
     rate_limit_configs:
       - name: "filter-local-ratelimit-svc"
