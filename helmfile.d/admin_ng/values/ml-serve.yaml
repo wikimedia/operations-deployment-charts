@@ -414,3 +414,11 @@ coredns:
     - 'ttl exact cluster-local-gateway.istio-system.svc.cluster.local. 30'
     - 'ttl regex (.*).discovery.wmnet 30'
     - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
+
+limitranges:
+  container:
+    max:
+      memory: "6Gi"
+  pod:
+    max:
+      memory: "8Gi"
