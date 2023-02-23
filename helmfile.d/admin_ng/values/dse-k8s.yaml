@@ -108,6 +108,31 @@ namespaces:
 
   stream-enrichment-poc:
     deployTLSCertificate: false
+
+  rdf-streaming-updater:
+    deployTLSCertificate: false
+    # Bump max container memory limit to 4.5Gi, otherwise use the defaults
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "4.5Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "9"
 net_istio:
   ingressgateway:
     servers:
