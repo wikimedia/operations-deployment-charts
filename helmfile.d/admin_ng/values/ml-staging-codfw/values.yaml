@@ -58,3 +58,6 @@ istio:
     ingressgateway:
       ports:
         - 8443
+        # knative-local-gateway (not exposed via NodePort),
+        # only for internal traffic.
+        - 8081
