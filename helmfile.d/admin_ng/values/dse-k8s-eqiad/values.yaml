@@ -17,3 +17,12 @@ chartVersions:
   wmf-stable/coredns: ~
   wmf-stable/knative-serving-crds: ~
   wmf-stable/knative-serving: ~
+
+istio:
+  gateways:
+    ingressgateway:
+      ports:
+        - 8443
+        # knative-local-gateway (not exposed via NodePort),
+        # only for internal traffic.
+        - 8081
