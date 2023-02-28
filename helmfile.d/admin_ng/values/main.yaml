@@ -183,3 +183,72 @@ GlobalNetworkPolicies:
             - "2620:0:861:babe::/64"
             # staging-codfw
             - "2620:0:860:babe::/64"
+  # FIXE: This is probably no longer needed, everything should use CoreDNS now
+  allow-dns:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: UDP
+        destination:
+          ports:
+            - 53
+          nets:
+            - 10.3.0.1/32
+  # Allow all pods access to url-downloaders
+  allow-urldownloaders:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 8080
+          nets:
+            - 208.80.154.29/32 # urldownloader1001
+            - 208.80.154.81/32 # urldownloader1002
+            - 208.80.153.24/32 # urldownloader2001
+            - 208.80.153.61/32 # urldownloader2002
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 8080
+          nets:
+            - 2620:0:861:1:208:80:154:29/128 # urldownloader1001
+            - 2620:0:861:3:208:80:154:81/128 # urldownloader1002
+            - 2620:0:860:1:208:80:153:24/128 # urldownloader2001
+            - 2620:0:860:2:208:80:153:61/128 # urldownloader2002
+  # Allow all pods access to restbase
+  allow-restbase:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 7231
+            - 7443
+          nets:
+            - 10.2.2.17/32
+            - 10.2.1.17/32
+  # Allow all pods access to uncached api
+  allow-uncached-api:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 80
+            - 443
+          nets:
+            - 10.2.2.22/32
+            - 10.2.1.22/32
