@@ -100,17 +100,24 @@ namespaces:
       istio-injection: disabled
   spark:
     deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
   spark-operator:
     deployTLSCertificate: false
-
+    labels:
+      istio-injection: disabled
   flink-operator:
     systemNamespace: true
-
+    labels:
+      istio-injection: disabled
   stream-enrichment-poc:
     deployTLSCertificate: false
-
+    labels:
+      istio-injection: disabled
   rdf-streaming-updater:
     deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
     # Bump max container memory limit to 4.5Gi, otherwise use the defaults
     limitranges:
       container:
@@ -133,6 +140,28 @@ namespaces:
         max:
           memory: "5Gi"
           cpu: "9"
+
+kubernetesVersion: "1.23"
+# Install latest version of these charts
+chartVersions:
+  wmf-stable/calico-crds: ~
+  wmf-stable/calico: ~
+  wmf-stable/cert-manager: ~
+  wmf-stable/cfssl-issuer-crds: ~
+  wmf-stable/cfssl-issuer: ~
+  wmf-stable/eventrouter: ~
+  wmf-stable/coredns: ~
+  wmf-stable/knative-serving-crds: ~
+  wmf-stable/knative-serving: ~
+
+istio:
+  gateways:
+    ingressgateway:
+      ports:
+        - 8443
+        # knative-local-gateway (not exposed via NodePort),
+        # only for internal traffic.
+        - 8081
 net_istio:
   ingressgateway:
     servers:
@@ -159,23 +188,6 @@ net_istio:
         # helmfile_namespace_certs.yaml.
         credentialName: knative-serving-tls-certificate
 
-# core:
-#   queue_proxy:
-#     image: knative-serving-queue
-#     version: 0.18.1-4
-#   activator:
-#     image: knative-serving-activator
-#     version: 0.18.1-3
-#   autoscaler:
-#     image: knative-serving-autoscaler
-#     version: 0.18.1-3
-#   controller:
-#     image: knative-serving-controller
-#     version: 0.18.1-4
-#   webhook:
-#     image: knative-serving-webhook
-#     version: 0.18.1-3
-
 # Override from default config (see ./common.yaml) to lower the min cpu limit
 # from 100m to 25m (kserve sidecar default settings).
 limitranges:
@@ -198,15 +210,3 @@ resourcequota:
     limits:
       cpu: "150"
       memory: "150Gi"
-
-# Istio Gateway config for the DSE cluster.
-# The list of ports need to be kept in sync with what stated
-# in the related custom_deploy.d's istioctl config.
-istio:
-  gateways:
-    ingressgateway:
-      ports:
-        - 8443
-    cluster-local-gateway:
-      ports:
-        - 8080
