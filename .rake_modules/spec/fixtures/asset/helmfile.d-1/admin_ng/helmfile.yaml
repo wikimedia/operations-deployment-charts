@@ -1,0 +1,9 @@
+environments:
+  moon:
+    values:
+      - "values/common.yaml"
+      - "values/moon.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+---
+bases:
+  - helmfile_rbac.yaml

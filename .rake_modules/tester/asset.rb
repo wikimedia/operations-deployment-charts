@@ -91,6 +91,12 @@ module Tester
       diffs.any?
     end
 
+    # Returns a mapping of asset fixture to supported Kubernetes version, if
+    # any.
+    def kube_version
+      @kube_version
+    end
+
     # The public interfaces.
     # Run linting on the asset. Will need to be implemented in the subclasses
     def lint; end
@@ -120,7 +126,7 @@ module Tester
         next unless r[label].ok?
 
         if options[:kubeconform]
-          r[label] = validate_kubeconform(outcome, options[:kube_versions])
+          r[label] = validate_kubeconform(label, outcome, options[:kube_versions])
         end
       end
     end
@@ -212,12 +218,13 @@ module Tester
     end
 
     # Validates the provided manifest collection running every element through kubeconform
-    def validate_kubeconform(outcome, versions)
+    def validate_kubeconform(label, outcome, versions)
       results = KubeconformTestOutcome.new
 
       tp = ThreadPool.new(nthreads: [versions.length, Etc.nprocessors].min)
       mutex = Mutex.new
-      versions.each do |version|
+      satisfied_versions = select_satisfied_versions(label, versions)
+      satisfied_versions.each do |version|
         tp.run do
           # Run kubeconform
           testoutcome = _exec(
@@ -230,6 +237,20 @@ module Tester
       end
       tp.join
       results
+    end
+
+    # Selects Kubernetes versions which satisfy the version constraint for a
+    # specific fixture as returned by self.kube_version. If the fixture is not
+    # present, all versions are returned. Version comparison relies on the
+    # logic provided by github.com/Masterminds/semver
+    def select_satisfied_versions(label, versions)
+      if ! (self.kube_version and self.kube_version.has_key?(label))
+        return versions
+      end
+      versions.select do |version|
+        _, s = Open3.capture2e('semver-cli', 'satisfies', version, self.kube_version[label])
+        s.exitstatus == 0
+      end
     end
 
     private
@@ -265,6 +286,19 @@ module Tester
     PRIVATE_STUB = '.fixtures/private_stub.yaml'
     LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
 
+    def initialize(path, to_run = nil)
+      super
+      if should_run?
+        chart_yaml = yaml_load_file(path)
+        @library = chart_yaml['type'] == 'library'
+        @kube_version = collect_kube_version(chart_yaml)
+      end
+    end
+
+    def library?
+      @library
+    end
+
     def lint
       outcome = _exec("helm lint #{@path}")
       # surpress warnings about symlinks, see https://github.com/helm/helm/issues/7019
@@ -273,6 +307,18 @@ module Tester
     end
 
     private
+
+    # Returns a mapping of fixture to supported kubeVersion of the chart. At
+    # present the version is the same for all fixtures.
+    def collect_kube_version(chart_yaml)
+      if !chart_yaml.has_key?('kubeVersion')
+        return nil
+      end
+      @kube_version = fixtures.reduce({}) do |memo, (fixture, _)|
+        memo[fixture] = chart_yaml['kubeVersion']
+        memo
+      end
+    end
 
     # Returns a hash of fixture_name => fixture_path
     def collect_fixtures(chdir = nil)
@@ -554,10 +600,40 @@ module Tester
 
   # Class for testing admin assets.
   class AdminAsset < HelmfileAsset
+
+    def initialize(path, to_run = nil)
+      super
+      if should_run?
+        @kube_version = collect_kube_version(path)
+      end
+    end
+
     # Given we have only one admin asset with multiple "fixtures",
     # We allow to actually select the fixtures
     def filter_fixtures(to_run)
       @fixtures.filter! { |_, v| to_run.include?(v) } unless to_run.nil?
     end
+
+    private
+
+    # Returns a mapping of fixture(environment) to the configured
+    # kubernetesVersion of the environment.
+    def collect_kube_version(path)
+      fixtures.reduce({}) do |memo, (fixture, env)|
+        env_vals_path = "#{File.dirname(path)}/values/#{env}/values.yaml"
+        if File.exist?(env_vals_path)
+          env_vals = yaml_load_file(env_vals_path)
+          if env_vals and env_vals.has_key?('kubernetesVersion')
+            memo[fixture] = env_vals['kubernetesVersion']
+          else
+            raise "Required key 'kubernetesVersion' not found in: '#{env_vals_path}'"
+          end
+        else
+          raise "Required values file, '#{env_vals_path}', for env, '#{env}', not found"
+        end
+        memo
+      end
+    end
+
   end
 end

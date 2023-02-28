@@ -154,7 +154,7 @@ describe Tester::BaseTestAsset do
     context 'when the output contains multiple valid documents' do
       let(:results) do
         input = Tester::TestOutcome.new(valid_manifest, '', 0, 'foobar')
-        asset.validate_kubeconform(input, KUBERNETES_VERSIONS)
+        asset.validate_kubeconform('dummy-label', input, KUBERNETES_VERSIONS)
       end
 
       it 'should be ok' do
@@ -173,7 +173,7 @@ describe Tester::BaseTestAsset do
     context 'when the output has invalid documents' do
       let(:results) do
         input = Tester::TestOutcome.new(invalid_manifest, '', 0, 'foobar')
-        asset.validate_kubeconform(input, KUBERNETES_VERSIONS)
+        asset.validate_kubeconform('dummy-label', input, KUBERNETES_VERSIONS)
       end
 
       it 'should not be ok' do
@@ -281,11 +281,32 @@ describe Tester::BaseTestAsset do
       end
     end
   end
+
+  describe 'select_satisfied_versions' do
+    it 'should return all versions if kube_version is nil' do
+      allow(asset).to receive(:kube_version).and_return(nil)
+      expect(asset.select_satisfied_versions('dummy-label', ['1.0.1' , '2.0.1'])).to eql(
+        ['1.0.1' , '2.0.1']
+      )
+    end
+
+    it 'should return only versions which satisfy kube_version' do
+      allow(asset).to receive(:kube_version).and_return({ 'dummy-label' => '>=1.0.2'})
+      expect(asset.select_satisfied_versions('dummy-label', ['1.0.1' , '2.0.1'])).to eql(
+        ['2.0.1']
+      )
+    end
+  end
 end
 
 describe Tester::ChartAsset do
+  before(:all) do
+    @oldpwd = Dir.pwd
+    Dir.chdir(File.join(__dir__, 'fixtures/asset'))
+  end
+
   let(:asset) do
-    Tester::ChartAsset.new 'charts/mediawiki/Charts.yaml'
+    Tester::ChartAsset.new 'charts/test-chart1/Chart.yaml'
   end
 
   describe '.new' do
@@ -296,7 +317,7 @@ describe Tester::ChartAsset do
 
   describe 'lint' do
     it 'a valid chart results in success' do
-      cmd = 'helm lint charts/mediawiki'
+      cmd = 'helm lint charts/test-chart1'
       resp = Tester::TestOutcome.new('Linting charts', '', 0, cmd)
       allow(asset).to receive(:_exec).with(cmd).and_return(resp)
       asset.lint
@@ -305,11 +326,84 @@ describe Tester::ChartAsset do
     end
 
     it 'a non-valid chart results in failure' do
-      cmd = 'helm lint charts/mediawiki'
+      cmd = 'helm lint charts/test-chart1'
       resp = Tester::TestOutcome.new('Linting charts', 'pinkunicorn missing!', 1, cmd)
       allow(asset).to receive(:_exec).with(cmd).and_return(resp)
       asset.lint
       expect(asset.ok?).to be false
     end
+  end
+
+  describe 'kube_version' do
+    context 'chart without kubeVersion' do
+      let(:asset) do
+        Tester::ChartAsset.new 'charts/test-chart1/Chart.yaml'
+      end
+      it 'should not return a version' do
+        expect(asset.kube_version).to be nil
+      end
+    end
+    context 'chart with kubeVersion' do
+      let(:asset) do
+        Tester::ChartAsset.new 'charts/test-chart2/Chart.yaml'
+      end
+      it 'should return a version' do
+        expect(asset.kube_version).to eql(
+          {
+            "charts/test-chart2" => ">= 1.21"
+          }
+        )
+      end
+    end
+    context 'chart with kubeVersion and fixtures' do
+      let(:asset) do
+        Tester::ChartAsset.new 'charts/test-chart3/Chart.yaml'
+      end
+      it 'should return a version for each fixture' do
+        expect(asset.kube_version).to eql(
+          {
+            "charts/test-chart3" => ">= 1.21",
+            "charts/test-chart3 => fixture1" => ">= 1.21",
+            "charts/test-chart3 => fixture2" => ">= 1.21",
+          }
+        )
+      end
+    end
+  end
+
+  after(:all) do
+    Dir.chdir(@oldpwd)
+  end
+end
+
+describe Tester::AdminAsset do
+  before(:all) do
+    @oldpwd = Dir.pwd
+    Dir.chdir(File.join(__dir__, 'fixtures/asset'))
+  end
+
+  describe 'kube_version' do
+    it 'should raise an error if kubernetesVersion is not defined' do
+      stub_const("Tester::HelmfileAsset::ENV_EXPLORE", ['moon'])
+      expect {
+        Tester::AdminAsset.new 'helmfile.d-1/admin_ng/helmfile.yaml'
+      }.to raise_error(RuntimeError, /^Required key/)
+    end
+  end
+
+  describe 'kube_version' do
+    it 'should return a mapping of env to Kubernetes version' do
+      stub_const("Tester::HelmfileAsset::ENV_EXPLORE", ['sun'])
+      asset = Tester::AdminAsset.new 'helmfile.d-2/admin_ng/helmfile.yaml'
+      expect(asset.kube_version).to eql(
+        {
+          "helmfile.d-2/admin_ng/sun" => "1.16",
+        }
+      )
+    end
+  end
+
+  after(:all) do
+    Dir.chdir(@oldpwd)
   end
 end

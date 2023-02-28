@@ -35,6 +35,7 @@ desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
   check_binary('helmfile')
+  check_binary('semver-cli')
 
   res, output = _exec('helm version --client --short')
   helm_version = output.split('.').first

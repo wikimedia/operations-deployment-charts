@@ -1,0 +1,9 @@
+environments:
+  sun:
+    values:
+      - "values/common.yaml"
+      - "values/sun.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+---
+bases:
+  - helmfile_rbac.yaml

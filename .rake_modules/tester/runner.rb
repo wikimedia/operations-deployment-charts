@@ -33,13 +33,7 @@ module Tester
     # Test if an asset is a chart library
     # @param asset [BaseTestAsset] asset to test
     def chart_library?(asset)
-      if asset.instance_of? ChartAsset
-        chart_yaml = yaml_load_file("#{asset.path}/Chart.yaml")
-        if chart_yaml['type'] == 'library'
-          return true
-        end
-      end
-      return false
+      asset.instance_of?(ChartAsset) && asset.library?
     end
 
     # Run the tests that were selected.

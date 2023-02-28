@@ -1,0 +1,15 @@
+releases:
+  - name: rbac-rules
+    chart: wmf-stable/raw
+    namespace: kube-system
+    values:
+      - resources:
+        # ClusterRoles
+        ## Aggregates additional permission to view ClusterRole, not used directly
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: view-additions
+            labels:
+              # Add these permissions to the "view" default role.
+              rbac.authorization.k8s.io/aggregate-to-view: "true"
