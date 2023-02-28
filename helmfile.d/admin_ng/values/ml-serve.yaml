@@ -164,6 +164,20 @@ namespaces:
     labels:
       istio-injection: enabled
 
+kubernetesVersion: "1.23"
+
+# Install latest version of these charts
+chartVersions:
+  wmf-stable/calico-crds: ~
+  wmf-stable/calico: ~
+  wmf-stable/cert-manager: ~
+  wmf-stable/cfssl-issuer-crds: ~
+  wmf-stable/cfssl-issuer: ~
+  wmf-stable/eventrouter: ~
+  wmf-stable/coredns: ~
+  wmf-stable/knative-serving-crds: ~
+  wmf-stable/knative-serving: ~
+
 net_istio:
   ingressgateway:
     servers:
@@ -359,6 +373,13 @@ resourcequota:
       memory: "180Gi"
 
 istio:
+  gateways:
+    ingressgateway:
+      ports:
+        - 8443
+        # knative-local-gateway (not exposed via NodePort),
+        # only for internal traffic.
+        - 8081
   sidecar:
     rate_limit_configs:
       - name: "filter-local-ratelimit-svc"
@@ -411,7 +432,7 @@ istio:
 coredns:
   rewrite_actions:
     continue:
-    - 'ttl exact cluster-local-gateway.istio-system.svc.cluster.local. 30'
+    - 'ttl exact knative-local-gateway.istio-system.svc.cluster.local. 30'
     - 'ttl regex (.*).discovery.wmnet 30'
     - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
 
