@@ -28,7 +28,6 @@ spec:
     - Egress
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
 # The following two NetworkPolicy objects are only required in production.

@@ -31,7 +31,6 @@ spec:
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}

@@ -36,7 +36,6 @@ spec:
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "mediawiki.networkpolicy.egress" . | indent 4 }}
     {{/* add egress rules for envoy upstream clusters. */}}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}

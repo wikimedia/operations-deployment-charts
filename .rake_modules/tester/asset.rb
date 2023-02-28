@@ -484,7 +484,7 @@ module Tester
         FileUtils.cp_Lr "#{dir_to_copy}/.", dir
         # Copy all charts (and common files) here because concurrent
         # "helm dep build" will fail otherwise.
-        ['common', 'charts', self.class::LISTENERS_FIXTURE].each do |what|
+        ['charts', self.class::LISTENERS_FIXTURE].each do |what|
           FileUtils.cp_r File.join(source, what), dir
         end
         block.call dir

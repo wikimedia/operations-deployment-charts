@@ -25,5 +25,4 @@ spec:
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
 {{- end }}
