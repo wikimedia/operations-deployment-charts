@@ -1,0 +1,40 @@
+tag: '1.41-2'
+provisionDataStore:
+  cassandra: false
+  elasticsearch: false
+agent:
+  enabled: false
+query:
+  image: docker-registry.wikimedia.org/jaeger-query
+  cmdlineParams:
+    es.tls.enabled: true
+    es.tls.skip-host-verify: true
+  ingress:
+    enabled: true
+  agentSidecar:
+    enabled: false
+collector:
+  image: docker-registry.wikimedia.org/jaeger-collector
+  cmdlineParams:
+    es.tls.enabled: true
+    es.tls.skip-host-verify: true
+  service:
+    grpc: {}
+    http: {}
+    zipkin: {}
+    otlp:
+      grpc:
+        port: 4317
+      http:
+        port: 4318
+spark:
+  enabled: false
+esIndexCleaner:
+  enabled: true
+  image: docker-registry.wikimedia.org/jaeger-es-index-cleaner
+  # Number of days to keep trace data, before deleting
+  numberOfDays: 30
+  # When to schedule the Kubernetes cron job
+  schedule: "0 * * * *"
+  cmdlineParams:
+    es.tls.enabled: true
