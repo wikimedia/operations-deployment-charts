@@ -77,6 +77,8 @@ main_app:
   #   to send access logs to an eventgate instance.
   access_log:
     type: stdout
+    # if set, sample access log results
+    #sample_percentage: 2
 
   # Explicitly strip cookies from API route requests and responses -
   # don't strip cookies from /wiki/ and other endpoints.
