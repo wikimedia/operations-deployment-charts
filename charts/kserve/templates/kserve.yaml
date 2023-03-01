@@ -17608,6 +17608,7 @@ metadata:
   name: kserve-controller-manager
   namespace: kserve
 spec:
+  replicas: {{ .Values.kserve.controller.replicas }}
   selector:
     matchLabels:
       control-plane: kserve-controller-manager
