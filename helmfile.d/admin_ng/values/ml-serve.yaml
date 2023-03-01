@@ -436,6 +436,11 @@ coredns:
     - 'ttl regex (.*).discovery.wmnet 30'
     - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
 
+kserve:
+  ingress:
+    local_gateway_service: knative-local-gateway.istio-system.svc.cluster.local
+    domain: 'wikimedia.org'
+
 limitranges:
   container:
     max:
