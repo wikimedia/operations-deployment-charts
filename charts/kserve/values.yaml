@@ -15,14 +15,14 @@ networkpolicy:
 kserve:
   agent:
     image: kserve-agent
-    version: 0.9.0-1
+    version: 0.10.0-1
 
   controller:
     replicas: 2
     metrics:
       port: 8080
     image: kserve-controller
-    version: 0.9.0-1
+    version: 0.10.0-1
     resources:
       requests:
         cpu: 100m
@@ -33,7 +33,7 @@ kserve:
 
   storage_initializer:
     image: kserve-storage-initializer
-    version: 0.9.0-1
+    version: 0.10.0-1
     resources:
       requests:
         cpu: 100m
