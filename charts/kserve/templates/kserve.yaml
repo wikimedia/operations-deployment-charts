@@ -19753,7 +19753,7 @@ data:
         "ingressDomain"  : "{{ $.Values.kserve.ingress.domain }}",
         "ingressClassName" : "istio",
         "domainTemplate": "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}",
-        "urlScheme": "http"
+        "urlScheme": "http",
         "disableIstioVirtualHost": false
     }
   logger: |-
