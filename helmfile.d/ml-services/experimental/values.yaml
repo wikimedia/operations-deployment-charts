@@ -43,14 +43,14 @@ inference_services:
   - name: "nsfw-model"
     predictor:
       image: "machinelearning-liftwing-inference-services-nsfw"
-      image_version: "2023-02-23-092107-publish"
+      image_version: "2023-03-07-072826-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
   - name: "revertrisk"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2023-02-20-162510-publish"
+      image_version: "2023-03-07-072826-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk"
@@ -61,7 +61,7 @@ inference_services:
   - name: "revertrisk-multilingual"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2023-02-22-101250-publish"
+      image_version: "2023-03-07-072826-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
