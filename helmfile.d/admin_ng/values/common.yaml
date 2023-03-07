@@ -26,9 +26,6 @@
 #     system namespaces for safety reasons.
 #   allowCriticalPods: bool
 #     Default: false
-#     WARNING: Although documented for Kubernetes >=1.16 this does not work
-#              for namespaces other than "kube-system" in K8s v1.16, see:
-#              https://github.com/kubernetes/kubernetes/issues/60596
 #     Critical pods in this context are pods with priorityClassName
 #     set to system-cluster-critical or system-node-critical.
 #     See:
