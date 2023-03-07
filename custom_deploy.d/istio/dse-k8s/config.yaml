@@ -38,6 +38,7 @@ spec:
     global:
       imagePullPolicy: IfNotPresent
       logAsJson: true
+      priorityClassName: "system-cluster-critical"
       proxy:
         # CNI-CONFIG:
         # The Istio sidecar is meant to support the containers that run

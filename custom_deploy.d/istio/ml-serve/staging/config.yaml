@@ -37,6 +37,7 @@ spec:
         - cert-manager
     global:
       imagePullPolicy: IfNotPresent
+      priorityClassName: "system-cluster-critical"
       logAsJson: true
       proxy:
         # CNI-CONFIG:
