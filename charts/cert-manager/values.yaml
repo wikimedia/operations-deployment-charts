@@ -18,7 +18,7 @@ global:
   # team_name: dev
 
   # Optional priority class to be used for the cert-manager pods
-  priorityClassName: ""
+  priorityClassName: "system-cluster-critical"
   rbac:
     create: true
     # Aggregate ClusterRoles to Kubernetes default user-facing roles. Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles
