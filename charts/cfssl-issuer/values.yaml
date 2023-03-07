@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+priorityClassName: "system-cluster-critical"
+
 image:
   repository: docker-registry.wikimedia.org
   name: cfssl-issuer
