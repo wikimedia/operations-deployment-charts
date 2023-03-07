@@ -1,0 +1,45 @@
+resources:
+  replicas: 4
+
+main_app:
+  image: envoy-future
+  version: 1.18.3-2
+  telemetry_port: 1667
+
+  domains:
+    - rest-gateway.discovery.wmnet
+
+  restbase_routes:
+    mobileapps:
+      urls:
+        #TODO tighten capture group criteria
+        ma_mobile_no_revision:
+          in: '(.+)/v1/page/mobile-html/(.+)'
+          out: '\1/v1/page/mobile-html/\2'
+        ma_mobile_revision:
+          in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
+          out: '\1/v1/page/mobile-html/\2/\3'
+        ma_summary_no_revision:
+          in: '(.+)/v1/page/summary/(.+)'
+          out: '\1/v1/page/summary/\2'
+        ma_summary_revision:
+          in: '(.+)/v1/page/summary/(.+)/(.+)'
+          out: '\1/v1/page/summary/\2/\3'
+
+  discovery_endpoints:
+    mobileapps:
+      internal_host: localhost
+      port: 4102
+      timeout: 120s
+
+service:
+  deployment: production
+  port:
+    nodePort: 4113
+
+mesh:
+  enabled: true
+
+discovery:
+  listeners:
+  - mobileapps

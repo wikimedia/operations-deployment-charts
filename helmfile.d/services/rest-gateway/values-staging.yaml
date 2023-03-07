@@ -1,0 +1,14 @@
+resources:
+  replicas: 1
+
+main_app:
+  # enable debug logging in staging
+  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
+  domains:
+    - staging.svc.eqiad.wmnet:*
+    - staging.svc.eqiad.wmnet
+    - rest-gateway.discovery.wmnet:*
+    - rest-gateway.discovery.wmnet
+
+  access_log:
+    debug: true
