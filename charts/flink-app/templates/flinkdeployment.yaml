@@ -69,22 +69,13 @@ spec:
         {{- if .Values.app.config_files }}
         checksum/config_files:  {{ toYaml .Values.app.config_files | sha256sum }}
         {{- end }}
-    {{- if or (or .Values.mesh.enabled .Values.app.env) (and .Values.kubernetesApi .Values.kubernetesApi.host) .Values.app.config_files }}
+    {{- if or (or .Values.mesh.enabled .Values.app.env) .Values.app.config_files }}
     spec:
       containers:
-        {{- if or .Values.app.env (and .Values.kubernetesApi .Values.kubernetesApi.host) .Values.app.config_files}}
+        {{- if or .Values.app.env .Values.app.config_files}}
         - name: flink-main-container
-          {{- if or .Values.app.env (and .Values.kubernetesApi .Values.kubernetesApi.host) }}
+          {{- if or .Values.app.env }}
           env:
-            {{- if .Values.kubernetesApi.host }}
-            {{- /*
-            In WMF production, make sure you set this in a
-            helmfile environment values files,
-            likely to 'kubernetes.default.svc.cluster.local'.
-            */}}
-            - name: KUBERNETES_SERVICE_HOST
-              value: {{ .Values.kubernetesApi.host }}
-            {{- end }}
             {{- if .Values.app.env | default false }}
             {{- toYaml .Values.app.env | nindent 12 }}
             {{- end }}

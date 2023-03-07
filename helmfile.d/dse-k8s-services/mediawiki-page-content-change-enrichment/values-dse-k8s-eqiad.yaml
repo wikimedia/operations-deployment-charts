@@ -25,14 +25,6 @@ app:
     - name: HTTP_CLIENT_ROUTE
       value: https://api-ro.discovery.wmnet
 
-# KUBERNETES_SERVICE_HOST is defaulted by k8s to the ClusterIP
-# of the kubernetes apiserver Service.  We need to set it
-# to a name that is in the apiserver's TLS cert.
-# kubernetes.default.svc.cluster.local should always resolve to
-# the right one within the k8s cluster.
-kubernetesApi:
-  host: kubernetes.default.svc.cluster.local
-
 mesh:
   enabled: false
 

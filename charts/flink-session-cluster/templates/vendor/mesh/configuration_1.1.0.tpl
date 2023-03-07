@@ -7,7 +7,9 @@
 */}}
 
 {{- define "mesh.configuration.configmap" }}
-{{- if .Values.mesh.enabled }}
+{{- if and (.Values.mesh.enabled) }}
+{{/* Only render the certs configmap if public_port is configured. */}}
+{{- if .Values.mesh.public_port }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -22,6 +24,8 @@ data:
   ca.crt: |-
 {{ .Values.puppet_ca_crt | indent 4 }}
 {{- end }}
+
+{{- end -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -33,7 +37,6 @@ data:
 {{ end -}}
 {{- end -}}
 
-
 {{- define "mesh.configuration.full" -}}
 admin:
   access_log_path: /var/log/envoy/admin-access.log
@@ -41,7 +44,9 @@ admin:
     socket_address: {address: 127.0.0.1, port_value: 1666}
 static_resources:
   clusters:
+  {{- if .Values.mesh.public_port -}}
   {{- include "mesh.configuration._local_cluster" . | indent 2 }}
+  {{- end -}}
   {{- include "mesh.configuration._admin_cluster" . | indent 2 }}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
@@ -57,7 +62,9 @@ static_resources:
   {{- end }}
   listeners:
   {{- include "mesh.configuration._admin_listener" . | indent 2}}
+  {{- if .Values.mesh.public_port -}}
   {{- include "mesh.configuration._local_listener" . | indent 2}}
+  {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
       {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) -}}
@@ -95,9 +102,11 @@ static_resources:
 {{- /*
   TLS termination for the downstream service.
 
-  It listens on tls.public_port, and forwards traffic to app.port on localhost.
+  It listens on mesh.public_port, and forwards traffic to app.port on localhost.
   If an application needs to add headers (maybe to inject the connecting IP address)
   it can declare tls.request_headers_to_add, an array of maps with "header" / "value" / "append"
+
+  If mesh.public_port is not defined, no _local_listener will be deployed.
 */}}
 {{- define "mesh.configuration._local_listener" }}
 - address:

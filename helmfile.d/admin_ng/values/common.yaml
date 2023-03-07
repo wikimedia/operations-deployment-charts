@@ -70,13 +70,6 @@ deployExtraClusterRoles: []
 # all namespaces defined via helmfile.
 NamespaceDefaultLabelName: true
 
-# For cluster components like calico/coredns, override this in the specific
-# environment files as it differs per cluster. You need to set it to avoid the
-# chicken/egg problem
-kubernetesApi:
-  host: kubernetes.default.svc.cluster.local
-  port: 443
-
 limitranges:
   # check out documentation to understand this well
   # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/

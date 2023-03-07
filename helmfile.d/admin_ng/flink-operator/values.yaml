@@ -25,13 +25,6 @@ operatorPod:
     # k8s Prometheus setup to scrape metrics from them.
     prometheus.io/scrape: "true"
     prometheus.io/port: "9999"
-  env:
-    # These env vars need to be overridden so the
-    # operator knows which kubernetes API to use.
-    - name: KUBERNETES_SERVICE_HOST
-      value: kubernetes.default.svc.cluster.local
-    - name: KUBERNETES_SERVICE_PORT
-      value: 443
 
 defaultConfiguration:
   # Set append to false to replace configuration files
