@@ -11,7 +11,6 @@ networkpolicy:
 
 app:
   config_files:
-    # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
     app.config.yaml:
 
       # Configs for eventutilities python stream_manager.
@@ -32,3 +31,20 @@ app:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # For now, set replicas to 2, as the input mediawiki.page_change stream has only 2
+    # Kafka topic-partitions (eqiad and codfw).  We'll need to adjust
+    # this accordingly when?
+    # - we deploy to wikikube and figure out what
+    #   our multi-DC stream processing layout will be.
+    # - if/when we we increase the number of Kafka partitions per topic.
+    # NOTE: When we deploy to wikikube, we can run with a single replica
+    # in each DC, as we will be deployingin active/active single
+    # compute mode, and each deployment will consume only a single topic.
+    replicas: 2
+    resource:
+      cpu: 2
+      # When backfilling, a single TM maxed out at around 2.7GB.
+      # Reserve 3G.
+      memory: 3000m

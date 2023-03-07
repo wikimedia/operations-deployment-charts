@@ -1,0 +1,16 @@
+---
+kafka_brokers:
+  fixture-eqiad:
+    - 10.10.10.10/32    # fake kafka broker ip
+
+services_proxy:
+  mwapi-async:
+    port: 6500
+    service: api-https
+    upstream:
+      address: mock.discovery.wmnet
+      port: 443
+      encryption: true
+    keepalive: 4s
+    timeout: 120s
+    xfp: https

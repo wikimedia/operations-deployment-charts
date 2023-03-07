@@ -14,3 +14,10 @@ NOTE: This is deployed in dse-k8s for now, as we experiment with
 the new flink-kubernetes-operator and flink-app chart, and learn
 about state management, HA, and streaming service restarts.
 The intention is to eventually deploy this service to wikikube k8s.
+
+While we transiation to wikikube, values.yaml
+and values-main.yaml are symlinked from
+helmfile.d/services/mediawiki-page-content-change-enrichment, as the
+values for these files should be the same.
+
+Cluster overrides can be provided in env specific values files.
