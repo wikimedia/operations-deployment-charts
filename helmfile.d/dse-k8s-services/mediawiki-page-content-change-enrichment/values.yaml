@@ -1,13 +1,19 @@
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
-  version: v1.0.5
+  version: v1.1.0
 
   job:
     # Desired state for the job., either 'running' or 'suspended'.
     # Alter this property to trigger a restart.
     state: running
-    # TODO: add job args, like kafka brokers and stream names, once supported.
+
+    # TODO: add more job args, like kafka brokers once supported.
     pythonEntryPoint: /srv/app/pipeline.py
+    args: [
+      --source, 'rc1.mediawiki.page_change:1.0.0',
+      --destination, 'rc1.mediawiki.page_content_change:1.0.0',
+    ]
+
     # job.parallelism controls the number of TaskManagers (if taskManager.replicas is not set).
     # For now, set this to 2, as the input mediawiki.page_change stream has only 2
     # Kafka topic-partitions (eqiad and codfw).  We'll need to adjust
@@ -16,6 +22,7 @@ app:
     #   our multi-DC stream processing layout will be.
     # - if/when we we increase the number of Kafka partitions per topic.
     parallelism: 2
+
     # TODO: figure out what upgradeMode should be.
     upgradeMode: stateless
 
@@ -26,4 +33,3 @@ app:
   taskManager:
     resource:
       memory: 1600m
-

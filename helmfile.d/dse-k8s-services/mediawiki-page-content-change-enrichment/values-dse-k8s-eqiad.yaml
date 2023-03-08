@@ -1,54 +1,31 @@
-# WMF kubernetes cluster specific values.
-# These are kept out of the main values.yaml just so that it is easier to use
-# with local development.
+# DSE k8s cluster specific configuratrion.
+# In DSE (development), use Kafka jumbo-eqiad cluster.
+# When we move to wikikube, we will use Kafka main clusters.
+
+kafka:
+  allowed_clusters: [jumbo-eqiad]
 
 app:
-  jobManager:
-    resource:
-      memory: 2048m
-
-  taskManager:
-    resource:
-      memory: 3072m
-
   env:
+    - name: KAFKA_BOOTSTRAP_SERVERS
+      value: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
+
+    # TODO: It would be better to put these config values in values-main.yaml,
+    # so they can be shared across all k8s clusters where this might be deployed.
+    # However, since env is an list, helm will not merge the entries like it would
+    # with dicts. For now, include all env vars in the same values file.
+
     - name: SCHEMA_URIS
       # This app only needs the primary schema repo
       # In a future improvement, we should bake a checkout of this repo into the
       # app image and load schemas from the local filesystem.
       value: https://schema.discovery.wmnet/repositories/primary/jsonschema/
+
     - name: STREAM_CONFIG_URI
       value: https://meta.wikimedia.org/w/api.php
+
       # HTTP_CLIENT_ROUTE will be used to
       # route STREAM_CONFIG_URI to a different endpoint, but using the same
       # HTTP Host header.
     - name: HTTP_CLIENT_ROUTE
       value: https://api-ro.discovery.wmnet
-
-mesh:
-  enabled: false
-
-networkpolicy:
-  egress:
-    enabled: true
-    dst_nets:
-      # Allow schema.svc.{eqiad,codfw}.
-      # TODO: When we deploy this to production wikikube, we should
-      # bake the schema repo into the app image just like we do for eventgate-main.
-      - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
-        ports:
-        - protocol: tcp
-          port: 8190
-        - protocol: tcp
-          port: 443
-      - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
-        ports:
-        - protocol: tcp
-          port: 8190
-        - protocol: tcp
-          port: 443
-
-# We are consuming and producing to jumbo-eqiad in dse-k8s.
-# When we move to wikikube, we will use main kafka clusters.
-kafka:
-  allowed_clusters: [jumbo-eqiad]
