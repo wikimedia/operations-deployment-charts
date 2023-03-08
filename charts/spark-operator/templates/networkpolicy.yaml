@@ -57,7 +57,6 @@ apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
   name: spark-operator-k8s-api
-  namespace: {{ .Values.jobNamespace }}
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}
