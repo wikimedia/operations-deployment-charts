@@ -8,7 +8,7 @@ kafka:
 app:
   env:
     - name: KAFKA_BOOTSTRAP_SERVERS
-      value: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
+      value: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
 
     # TODO: It would be better to put these config values in values-main.yaml,
     # so they can be shared across all k8s clusters where this might be deployed.
