@@ -41,6 +41,16 @@ spec:
                 rollingUpdate:
                   maxUnavailable: 50%
                 type: RollingUpdate
+            - path: spec.template.spec.tolerations
+              value:
+                # Make sure ingressgateway gets scheduled on all nodes.
+                - effect: NoSchedule
+                  operator: Exists
+                # Tolerate CriticalAddonsOnly taint
+                - key: CriticalAddonsOnly
+                  operator: Exists
+                - effect: NoExecute
+                  operator: Exists
     istiodRemote:
       enabled: false
   values:
