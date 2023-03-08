@@ -9,10 +9,10 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 1
-main_app:
-  type: "default"
+app:
   image: spark-operator
-  version: 1.3.7-3.3.0-2 # we use latest everywhere in the defaults.
+  version: latest # we use latest everywhere in the defaults.
+  type: "default"
   command: []
   args: []
   requests:

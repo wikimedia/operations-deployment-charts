@@ -1,20 +1,20 @@
 {{- define "limits" }}
 resources:
   requests:
-{{ toYaml .Values.main_app.requests | indent 4 }}
+{{ toYaml .Values.app.requests | indent 4 }}
   limits:
-{{ toYaml .Values.main_app.limits | indent 4 }}
+{{ toYaml .Values.app.limits | indent 4 }}
 {{ end -}}
 
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}
 # The main application container
 - name: {{ template "base.name.release" . }}
-  image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+  image: "{{ .Values.docker.registry }}/{{ .Values.app.image }}:{{ .Values.app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- if .Values.main_app.command }}
+  {{- if .Values.app.command }}
   command:
-    {{- range .Values.main_app.command }}
+    {{- range .Values.app.command }}
     - {{ . }}
     {{- end }}
   {{- end }}
@@ -45,13 +45,13 @@ resources:
     - name: {{ .Values.monitoring.portName | quote }}
       containerPort: {{ .Values.monitoring.port }}
   {{- end }}
-  {{- if .Values.main_app.liveness_probe }}
+  {{- if .Values.app.liveness_probe }}
   livenessProbe:
-  {{- toYaml .Values.main_app.liveness_probe | nindent 4 }}
+  {{- toYaml .Values.app.liveness_probe | nindent 4 }}
   {{- end }}
-  {{- if .Values.main_app.readiness_probe }}
+  {{- if .Values.app.readiness_probe }}
   readinessProbe:
-  {{- toYaml .Values.main_app.readiness_probe | nindent 4 }}
+  {{- toYaml .Values.app.readiness_probe | nindent 4 }}
   {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
