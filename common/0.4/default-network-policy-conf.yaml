@@ -1,10 +1,8 @@
 networkpolicy:
   egress:
     dst_nets:
-    - cidr: 10.64.64.0/21 # wikikube eqiad (old range)
-    - cidr: 10.67.128.0/18 # wikikube eqiad (new range)
-    - cidr: 10.192.64.0/21 # wikikube codfw (old range)
-    - cidr: 10.194.128.0/18 # wikikube codfw (new range)
+    - cidr: 10.67.128.0/18 # wikikube eqiad. In the past is was 10.64.64.0/21
+    - cidr: 10.194.128.0/18 # wikikube codfw. In the past it was 10.192.64.0/21
     - cidr: 10.64.75.0/24 # staging-eqiad k8s
     - cidr: 10.192.75.0/24 # staging-codfw k8s
       # Allow DNS
