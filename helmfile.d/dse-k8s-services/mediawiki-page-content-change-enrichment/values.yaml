@@ -10,8 +10,10 @@ app:
     # TODO: add more job args, like kafka brokers once supported.
     pythonEntryPoint: /srv/app/pipeline.py
     args: [
+      # NOTE: These streams must all be declared in EventStreamConfig wgEventStreams.
       --source, 'rc1.mediawiki.page_change:1.0.0',
       --destination, 'rc1.mediawiki.page_content_change:1.0.0',
+      --error-destination, 'rc1.enrichment.mediawiki_page_content_change.error:2.0.0'
     ]
 
     # job.parallelism controls the number of TaskManagers (if taskManager.replicas is not set).
