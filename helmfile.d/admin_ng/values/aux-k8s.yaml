@@ -58,15 +58,23 @@ namespaces:
     systemNamespace: true
     allowCriticalPods: true
     pspClusterRole: 'allow-privileged-psp'
+    labels:
+      istio-injection: disabled
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
+    labels:
+      istio-injection: disabled
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
+    labels:
+      istio-injection: disabled
   jaeger:
     systemNamespace: true
     allowCriticalPods: true
+    labels:
+      istio-injection: disabled
 
 # Install latest version of these charts
 chartVersions:
