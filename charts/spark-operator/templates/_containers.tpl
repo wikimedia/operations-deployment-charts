@@ -21,7 +21,6 @@ resources:
   args:
   - -v={{ .Values.logLevel }}
   - -logtostderr
-  - -install-crds=false
   - -namespace={{ .Values.watchNamespace }}
   - -enable-ui-service=false
   - -controller-threads={{ .Values.controllerThreads }}
