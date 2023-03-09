@@ -55,6 +55,18 @@ main_app:
         # All the jobs of this kind are delayed exactly 48 hours, so we don't want
         # the reenqueue feature to kick in.
         reenqueue_delay: 259200
+      notificationGetStartedJob:
+        enabled: true
+        concurrency: 10
+        # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
+        # by setting the reenqueue delay to 72 hours
+        reenqueue_delay: 259200
+      notificationKeepGoingJob:
+        enabled: true
+        concurrency: 10
+        # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
+        # by setting the reenqueue delay to 72 hours
+        reenqueue_delay: 259200
       newcomerTasksCacheRefreshJob:
         enabled: true
         concurrency: 10
