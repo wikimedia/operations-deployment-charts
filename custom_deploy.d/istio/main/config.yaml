@@ -2,7 +2,7 @@ apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   hub: docker-registry.discovery.wmnet/istio
-  tag: 1.9.5-5
+  tag: 1.15.3-2
   meshConfig:
     # This enables access logging in istio-proxy, which means all sidecars
     # as well as all ingress and egress gateways.
@@ -32,6 +32,8 @@ spec:
               value: DaemonSet
             # Delete spec.strategy
             # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
             - path: spec.update
               value:
             - path: spec.updateStrategy
@@ -39,13 +41,22 @@ spec:
                 rollingUpdate:
                   maxUnavailable: 50%
                 type: RollingUpdate
+            - path: spec.template.spec.tolerations
+              value:
+                # Make sure ingressgateway gets scheduled on all nodes.
+                - effect: NoSchedule
+                  operator: Exists
+                # Tolerate CriticalAddonsOnly taint
+                - key: CriticalAddonsOnly
+                  operator: Exists
+                - effect: NoExecute
+                  operator: Exists
     istiodRemote:
       enabled: false
   values:
     global:
       istioNamespace: istio-system
-      # Kubernetes v1.16 does not support third-party-jwt
-      jwtPolicy: first-party-jwt
+      jwtPolicy: third-party-jwt
       # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires galley (--set galley.enabled=true).
       useMCP: false
       logAsJson: true
@@ -54,8 +65,7 @@ spec:
         level: default:info
       # TODO: Figure this out
       pilotCertProvider: istiod
-      # priorityClass quote in namespaces other than kube-system do not work with k8s 1.16
-      priorityClassName: ""
+      priorityClassName: "system-cluster-critical"
       proxy:
         autoInject: disabled
         # Log level for proxy, applies to gateways and sidecars.
@@ -65,9 +75,6 @@ spec:
     pilot:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
-      env:
-        KUBERNETES_SERVICE_HOST: "kubernetes.default.svc.cluster.local"
-        KUBERNETES_SERVICE_PORT: "443"
     gateways:
       istio-ingressgateway:
         name: istio-ingressgateway
@@ -77,9 +84,8 @@ spec:
         env:
           # Enable additional envoy native metrics (https://github.com/istio/istio/wiki/Envoy-native-telemetry)
           # Since ingress gateway does not use the sidecar injector, this needs to be configured using environment variable.
-          # TODO: when upgrading Istio to 1.15.3 remove the "" quotes around {} to avoid parsing/syntax errors.
           ISTIO_METAJSON_STATS: |
-            "{\"sidecar.istio.io/statsInclusionSuffixes\": \"upstream_rq_1xx,upstream_rq_2xx,upstream_rq_3xx,upstream_rq_4xx,upstream_rq_5xx,upstream_rq_time,upstream_cx_tx_bytes_total,upstream_cx_rx_bytes_total,upstream_cx_total,downstream_rq_1xx,downstream_rq_2xx,downstream_rq_3xx,downstream_rq_4xx,downstream_rq_5xx,downstream_rq_time,downstream_cx_tx_bytes_total,downstream_cx_rx_bytes_total,downstream_cx_total\"}"
+            {\"sidecar.istio.io/statsInclusionSuffixes\": \"upstream_rq_1xx,upstream_rq_2xx,upstream_rq_3xx,upstream_rq_4xx,upstream_rq_5xx,upstream_rq_time,upstream_cx_tx_bytes_total,upstream_cx_rx_bytes_total,upstream_cx_total,downstream_rq_1xx,downstream_rq_2xx,downstream_rq_3xx,downstream_rq_4xx,downstream_rq_5xx,downstream_rq_time,downstream_cx_tx_bytes_total,downstream_cx_rx_bytes_total,downstream_cx_total\"}
         # Need to list all ports here to be able to provide static nodePorts
         ports:
           - port: 80
