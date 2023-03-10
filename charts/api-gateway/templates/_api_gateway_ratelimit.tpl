@@ -1,26 +1,18 @@
 {{ define "apigateway.ratelimit_rules" }}
+                {{- if hasKey .Values.main_app.ratelimiter "prefixes_without_required_jwt" }}
                 # For docs wiki, allow no JWT, but if JWT is supplied, verify it.
+                {{- range .Values.main_app.ratelimiter.prefixes_without_required_jwt }}
+                {{- range $k, $v := . }}
                 - match:
-                    prefix: /wiki/
+                    {{ $k }}: {{ $v }}
                   requires:
                     requires_any:
                       requirements:
                         - provider_name: wikimedia
                         - allow_missing: {}
-                - match:
-                    prefix: /w/
-                  requires:
-                    requires_any:
-                      requirements:
-                        - provider_name: wikimedia
-                        - allow_missing: {}
-                - match:
-                    path: /
-                  requires:
-                    requires_any:
-                      requirements:
-                        - provider_name: wikimedia
-                        - allow_missing: {}
+                {{- end }}
+                {{- end }}
+                {{- end }}
                 # For everything else, block non-idempotent requests without JWT
                 - match:
                     headers:

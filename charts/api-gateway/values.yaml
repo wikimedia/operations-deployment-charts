@@ -46,6 +46,11 @@ main_app:
     default_limit:
       requests_per_unit: 5000
       unit: HOUR
+    prefixes_without_required_jwt:
+      - prefix: "/wiki/"
+      - prefix: "/w/"
+      - path: "/"
+
   # Type of access logging
   # - false to turn off access logging
   # - { type: stdout } for access logging to stdout
