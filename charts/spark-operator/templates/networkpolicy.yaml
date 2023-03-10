@@ -68,4 +68,27 @@ spec:
     - Egress
   egress:
     {{- include "spark-operator.k8s-api-rule" $ | nindent 4 }}
+# Allow communication between driver and executor pods.
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-executor-to-driver
+  namespace: {{ .Values.watchNamespace }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector: 'spark-role == "driver"'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: 'spark-role == "executor"'
+      destination:
+        ports:
+          - 12000 # spark.driver.port
+          - 13000 # spark.driver.blockManager.port
 {{- end }}
