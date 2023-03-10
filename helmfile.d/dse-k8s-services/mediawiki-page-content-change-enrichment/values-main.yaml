@@ -3,13 +3,27 @@
 # with local development.
 
 app:
+  flinkConfiguration:
+    # The total memory available to the jobmanager and
+    # taskmanager processes. This is the sum of on / off JVM heap memory,
+    # JVM metaspace and JVM overhead.
+    #
+    # On containerized setups this should match the memory allocated to the
+    # container.
+    # See https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/config/#taskmanager-memory-process-size
+    "jobmanager.memory.process.size": "1500m"
+    "taskmanager.memory.process.size": "1500m"
+
+  # TODO: might require tuning.
+  # 1500m is the basline memory allocation used with the
+  # YARN deployment of this job.
   jobManager:
     resource:
-      memory: 2048m
+      memory: 1500m
 
   taskManager:
     resource:
-      memory: 3072m
+      memory: 1500m
 
 mesh:
   enabled: false
