@@ -1,0 +1,62 @@
+# Default values for machinetranslation.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+helm_scaffold_version: 0.4 # This is still only valid for the "default network policy" file
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+app_type: "default"
+
+main_app:
+  image: wikimedia/mediawiki-services-machinetranslation
+  version: 2023-04-11-140816-production # replace this with latest later.
+  command: []
+  args: ["--workers", "\"4\""]
+
+  requests:
+    cpu: 100m
+    memory: 32Gi
+  limits:
+    cpu: 4
+    memory: 32Gi
+  liveness_probe:
+    initialDelaySeconds: 300
+    tcpSocket:
+      port: 8989
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8989
+
+monitoring:
+  enabled: false
+  image_version: latest
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port: null
+
+debug:
+  enabled: false
+  ports: []
+
+mesh:
+  enabled: false
+  image_version: latest
+  public_port: 4017
+  upstream_timeout: "180s"
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 1667
+
+networkpolicy:
+  egress:
+    enabled: false
+
+app:
+  port: 8989

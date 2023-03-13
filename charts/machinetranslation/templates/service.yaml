@@ -1,0 +1,50 @@
+{{ include "mesh.service" . }}
+{{ if not .Values.mesh.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "base.name.release" . }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "base.name.chart" . }}
+    release: {{ .Release.Name }}
+    routed_via: {{ .Release.Name }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.app.port }}
+    {{/* If the port is passed as a value use it, otherwise autoallocate */}}
+    {{- if .Values.service.port }}
+    nodePort:  {{ .Values.service.port }}
+    {{- end }}
+{{- end }}
+{{ if .Values.debug.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "base.name.release" . }}-debug
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ template "base.name.chart" . }}
+    release: {{ .Release.Name }}
+  ports:
+    {{- range $port := .Values.debug.ports }}
+    - name: {{ template "base.name.release" $ }}-debug-{{ $port }}
+      targetPort: {{ $port }}
+      port: {{ $port }}
+    {{- end }}
+{{- end }}

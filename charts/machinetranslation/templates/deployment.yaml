@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "base.name.release" . }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "base.name.chart" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "base.name.chart" . }}
+        release: {{ .Release.Name }}
+        routed_via: {{ .Values.routed_via | default .Release.Name }}
+      annotations:
+        {{ if .Values.monitoring.enabled -}}
+        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        prometheus.io/scrape: "true"
+        {{ end -}}
+        prometheus.io/port: "9102"
+        {{- include "mesh.name.annotations" . | indent 8}}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        # The main application container
+        - name: {{ template "base.name.release" . }}
+          image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- if .Values.main_app.command }}
+          command:
+            {{- range .Values.main_app.command }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.main_app.args }}
+          args:
+            {{- range .Values.main_app.args }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.app.port }}
+          {{- if .Values.main_app.liveness_probe }}
+          livenessProbe:
+          {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.main_app.readiness_probe }}
+          readinessProbe:
+          {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_IDENTIFIER
+              value: {{ template "base.name.release" . }}
+          resources:
+            requests:
+{{ toYaml .Values.main_app.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.limits | indent 14 }}
+{{- with .Values.main_app.volumeMounts }}
+          volumeMounts:
+{{ toYaml . | indent 12 }}
+{{- end }}
+{{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-metrics-exporter
+              mountPath: /etc/monitoring
+{{- end }}
+        {{- include "mesh.deployment.container" . | indent 8}}
+{{- if or .Values.monitoring.enabled .Values.main_app.volumes .Values.mesh.enabled }}
+      volumes:
+        {{- if .Values.monitoring.enabled }}
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+            name: {{ template "base.name.release" . }}-metrics-config
+        {{- end }}
+        {{- include "mesh.deployment.volume" . | indent 8}}
+{{- with .Values.main_app.volumes }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- end }}

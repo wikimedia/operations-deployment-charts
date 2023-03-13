@@ -1,0 +1,31 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+main_app:
+  limits:
+    cpu: 100m
+    memory: 32Gi
+  liveness_probe:
+    tcpSocket:
+      port: 8989
+  requests:
+    cpu: 4
+    memory: 32Gi
+  version: 2023-04-11-140816-production
+monitoring:
+  enabled: false
+  image_version: latest
+resources:
+  replicas: 2
+service:
+  deployment: production
+  port: 4017
+mesh:
+  enabled: true
+  telemetry:
+    enabled: true
+networkpolicy:
+  egress:
+    enabled: true
+
+app:
+  port: 8989

@@ -1,0 +1,16 @@
+{{- if .Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-metrics-config
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  prometheus-statsd.conf: |-
+{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
+{{ end }}
+{{ include "mesh.configuration.configmap" . }}
