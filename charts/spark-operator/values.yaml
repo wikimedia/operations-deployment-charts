@@ -21,8 +21,11 @@ app:
   limits:
     cpu: 1
     memory: 400Mi
-  volumes: []
-  volumeMounts: []
+
+volumes: []
+
+volumeMounts: []
+
 livenessProbe:
   exec:
     command:
@@ -32,6 +35,14 @@ livenessProbe:
   initialDelaySeconds: 10
   failureThreshold: 6
   timeoutSeconds: 10
+
+webhook:
+  # -- Enable webhook server
+  enable: false
+  # -- Webhook service port
+  port: 8080
+  # -- Webhook Timeout in seconds
+  timeout: 30
 
 monitoring:
   enabled: false

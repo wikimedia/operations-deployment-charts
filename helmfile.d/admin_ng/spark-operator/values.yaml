@@ -7,6 +7,12 @@ app:
 service:
   deployment: production
 
+webhook:
+  enable: true
+
+certificates:
+  - name: webhook
+
 tls:
   enabled: false
 

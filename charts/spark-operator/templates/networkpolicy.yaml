@@ -50,7 +50,6 @@ spec:
     - Egress
   egress:
     {{- include "spark-operator.k8s-api-rule" $ | nindent 4 }}
-# Allow all in-scope resources in the operator namespace to query the K8s API.
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -67,6 +66,33 @@ spec:
     - Egress
   egress:
     {{- include "spark-operator.k8s-api-rule" $ | nindent 4 }}
+{{- if .Values.webhook.enable }}
+# Allow K8S API to call the spark operator mutating webhook
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-operator-mutating-webhook-k8s-api
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector: 'app == "spark-operator"'
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - 443
+{{- end }}
 # Allow communication between driver and executor pods.
 ---
 apiVersion: crd.projectcalico.org/v1

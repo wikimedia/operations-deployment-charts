@@ -39,10 +39,29 @@ resources:
   - -leader-election-lock-namespace={{ default .Release.Namespace .Values.leaderElection.lockNamespace }}
   - -leader-election-lock-name={{ .Values.leaderElection.lockName }}
   {{- end }}
-  {{- if .Values.monitoring.enabled }}
+  {{- if .Values.webhook.enable }}
+  - -enable-webhook=true
+  - -webhook-svc-namespace={{ .Release.Namespace }}
+  - -webhook-port={{ .Values.webhook.port }}
+  - -webhook-timeout={{ .Values.webhook.timeout }}
+  - -webhook-fail-on-error=true
+  - -webhook-svc-name={{ template "base.name.release" . }}-webhook
+  - -webhook-config-name={{ template "base.name.release" . }}-webhook-config
+  - -webhook-namespace-selector=kubernetes.io/metadata.name={{ .Values.watchNamespace }}
+  - -webhook-server-cert=/etc/webhook-certs/tls.crt
+  - -webhook-server-cert-key=/etc/webhook-certs/tls.key
+  - -webhook-ca-cert=/etc/webhook-certs/ca.crt
+  {{- end }}
+  {{- if or .Values.monitoring.enabled .Values.webhook.enable }}
   ports:
+  {{- if or .Values.monitoring.enabled }}
     - name: {{ .Values.monitoring.portName | quote }}
       containerPort: {{ .Values.monitoring.port }}
+  {{- end }}
+  {{- if or .Values.webhook.enable }}
+    - name: webhook
+      containerPort: {{ .Values.webhook.port }}
+  {{- end }}
   {{- end }}
   {{- if .Values.app.liveness_probe }}
   livenessProbe:
@@ -66,9 +85,15 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
-{{ include "limits" . | indent 2}}
-  {{- with .Values.volumeMounts }}
+{{- include "limits" . | indent 2}}
+  {{- if or .Values.webhook.enable (ne (len .Values.volumeMounts) 0 ) }}
   volumeMounts:
-    {{- toYaml . | nindent 10 }}
+  {{- end }}
+    {{- if .Values.webhook.enable }}
+    - name: webhook-certs
+      mountPath: /etc/webhook-certs
+    {{- end }}
+  {{- with .Values.volumeMounts }}
+  {{- toYaml . | nindent 10 }}
   {{- end }}
 {{- end }}

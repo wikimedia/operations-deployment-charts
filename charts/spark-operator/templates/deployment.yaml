@@ -40,5 +40,14 @@ spec:
       {{- end }}
       containers:
       {{- include "default.containers" . | indent 8}}
+      {{- if or .Values.webhook.enable (ne (len .Values.volumes) 0 ) }}
       volumes:
-      {{- include "wmf.volumes" . | indent 8}}
+      {{- end }}
+        {{- if .Values.webhook.enable }}
+        - name: webhook-certs
+          secret:
+            secretName: {{ template "base.name.release" . }}-webhook-certs
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 10 }}
+        {{- end }}

@@ -1,0 +1,18 @@
+{{ if .Values.webhook.enable }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "base.name.release" . }}-webhook
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 443
+    targetPort: {{ .Values.webhook.port }}
+    name: webhook
+  selector:
+    app: {{ template "base.name.chart" . }}
+{{- end }}
