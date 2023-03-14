@@ -75,6 +75,11 @@ main_app:
       host_rewrite_path: '\1wiki-articletopic.revscoring-articletopic.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     # This model does not have submodels for specific wikis, so we don't
     # need a regex, and can just use the `host` attribute
@@ -86,6 +91,11 @@ main_app:
       host: 'outlink-topic-model.articletopic-outlink.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_articlequality:
       tls: true
@@ -95,6 +105,11 @@ main_app:
       host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_drafttopic:
       tls: true
@@ -104,6 +119,11 @@ main_app:
       host_rewrite_path: '\1wiki-drafttopic.revscoring-drafttopic.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_draftquality:
       tls: true
@@ -113,6 +133,11 @@ main_app:
       host_rewrite_path: '\1wiki-draftquality.revscoring-draftquality.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_editquality_damaging:
       tls: true
@@ -122,6 +147,11 @@ main_app:
       host_rewrite_path: '\1wiki-damaging.revscoring-editquality-damaging.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_editquality_goodfaith:
       tls: true
@@ -131,6 +161,11 @@ main_app:
       host_rewrite_path: '\1wiki-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
     lw_inference_editquality_reverted:
       tls: true
@@ -140,6 +175,11 @@ main_app:
       host_rewrite_path: '\1wiki-reverted.revscoring-editquality-reverted.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
 
   #TODO regex on v1
   pathing_map:
