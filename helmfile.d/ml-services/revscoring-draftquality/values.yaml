@@ -56,5 +56,9 @@ inference:
 revscoring_inference_services:
   - wiki: "en"
     version: "202107141649"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 2
   - wiki: "pt"
     version: "20220616101517"

@@ -64,13 +64,25 @@ revscoring_inference_services:
     version: "20220214192135"
   - wiki: "de"
     version: "20220214192138"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 2
   - wiki: "en"
     version: "202105260914"
+    predictor:
+      config:
+        minReplicas: 2
+        maxReplicas: 4
   - wiki: "eswikibooks"
     host: es.wikibooks.org
     version: "20220214192149"
   - wiki: "es"
     version: "20220214192151"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 2
   - wiki: "eswikiquote"
     host: es.wikiquote.org
     version: "20220214192153"
@@ -83,6 +95,10 @@ revscoring_inference_services:
     version: "20220214192203"
   - wiki: "fr"
     version: "20220214192208"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 2
   - wiki: "he"
     version: "20220214192211"
   - wiki: "hi"
@@ -119,5 +135,9 @@ revscoring_inference_services:
     version: "20220214192312"
   - wiki: "wikidata"
     version: "20220214192318"
+    predictor:
+      config:
+        minReplicas: 2
+        maxReplicas: 4
   - wiki: "zh"
     version: "20220214192323"
