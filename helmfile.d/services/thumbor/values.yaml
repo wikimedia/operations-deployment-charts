@@ -1,5 +1,5 @@
 resources:
-  replicas: 8
+  replicas: 12
 
 monitoring:
   enabled: true
@@ -21,11 +21,15 @@ main_app:
   version: 2023-02-27-151612-production
 
   # 3 workers per pod in production
-  thumbor_workers: 3
+  thumbor_workers: 4
 
+  # These limits are per-worker, so multiply these by thumbor_workers
   limits:
-    cpu: 2.4
+    cpu: 1.8
     memory: 2Gi
+
+haproxy:
+  timeout_queue: 20000ms
 
 service:
   deployment: production

@@ -21,7 +21,7 @@ listen thumbor
     # opportunity to run. Given that requests are a mix of short and long ones, it shouldn't be
     # necessary to wait very long to get off the queue. If it does, then Thumbor is truly overloaded
     # and we're better off 503ing.
-    timeout queue 10000ms
+    timeout queue {{ .Values.haproxy.timeout_queue }}
 
     # Use first available Thumbor instance for next request
     balance first

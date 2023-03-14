@@ -35,6 +35,8 @@ haproxy:
   # cause us to fail our healthcheck and be seen as unhealthy
   max_avg_queue: 20
 
+  # How long to keep a request in the timeout queue before 503ing if it's not processed
+  timeout_queue: 10000ms
 
 # application port. Needed by the mesh module, unused otherwise.
 app:

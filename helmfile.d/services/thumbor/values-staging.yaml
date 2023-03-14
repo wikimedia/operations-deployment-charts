@@ -1,6 +1,10 @@
 resources:
   replicas: 1
 
+# We don't mind temporarily having 0 nodes in staging
+strategy:
+  maxUnavailable: "100%"
+
 main_app:
   swift:
     # swift-eqiad service proxy
