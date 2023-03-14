@@ -5,9 +5,11 @@
 # * https://github.com/cert-manager/cert-manager/pull/5487
 featureGates: "StableCertificateRequestName=true"
 
+image: &image
+  tag: ~
 webhook:
   image:
-    tag: ~
+    <<: *image
 cainjector:
   image:
-    tag: ~
+    <<: *image
