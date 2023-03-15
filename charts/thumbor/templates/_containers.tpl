@@ -4,7 +4,7 @@ resources:
 {{ toYaml .Values.main_app.requests | indent 4 }}
   limits:
 {{ toYaml .Values.main_app.limits | indent 4 }}
-{{ end -}}
+{{- end }}
 
 {{- define "haproxy.limits" }}
 resources:
@@ -12,7 +12,7 @@ resources:
 {{ toYaml .Values.haproxy.requests | indent 4 }}
   limits:
 {{ toYaml .Values.haproxy.limits | indent 4 }}
-{{ end -}}
+{{- end }}
 
 {{- define "nutcracker.limits" }}
 resources:
@@ -20,7 +20,7 @@ resources:
 {{ toYaml .Values.nutcracker.requests | indent 4 }}
   limits:
 {{ toYaml .Values.nutcracker.limits | indent 4 }}
-{{ end -}}
+{{- end }}
 
 {{- define "statsd.limits" }}
 resources:
@@ -28,7 +28,7 @@ resources:
 {{ toYaml .Values.statsd.requests | indent 4 }}
   limits:
 {{ toYaml .Values.statsd.limits | indent 4 }}
-{{ end -}}
+{{- end }}
 
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}

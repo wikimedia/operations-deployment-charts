@@ -149,6 +149,15 @@ namespaces:
         max:
           memory: "10Gi"
           cpu: "9"
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "300"
+          memory: "200Gi"
+        limits:
+          cpu: "300"
+          memory: "200Gi"
   toolhub: {}
   wikifeeds: {}
   zotero: {}

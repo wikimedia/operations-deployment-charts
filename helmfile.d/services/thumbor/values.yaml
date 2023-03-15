@@ -1,5 +1,5 @@
 resources:
-  replicas: 12
+  replicas: 32
 
 monitoring:
   enabled: true
@@ -26,7 +26,7 @@ main_app:
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
     cpu: 1
-    memory: 1Gi
+    memory: 750Mi
 
 haproxy:
   timeout_queue: 30000ms
