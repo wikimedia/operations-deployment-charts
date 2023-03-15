@@ -3,10 +3,17 @@ installCRDs: true
 startupapicheck:
   # We don't build the cmctl docker image currently, so don't deploy this check hook
   enabled: false
+
+# Set of comma-separated key=value pairs that describe feature gates on the controller.
+# This enables predictable names for CRs, see:
+# * https://phabricator.wikimedia.org/T304092
+# * https://github.com/cert-manager/cert-manager/issues/4956
+# * https://github.com/cert-manager/cert-manager/pull/5487
+featureGates: "StableCertificateRequestName=true"
+
 image: &image
   registry: docker-registry.discovery.wmnet
   repository: cert-manager/controller
-  tag: "1.5.4-3"
 
 # Config for cert-manager itself
 replicaCount: 2
