@@ -116,4 +116,41 @@ spec:
         ports:
           - 12000 # spark.driver.port
           - 13000 # spark.driver.blockManager.port
+# Allow communication from spark pods to HDFS and Hive.
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-to-hdfs-hive
+  namespace: {{ .Values.watchNamespace }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector: 'spark-role == "driver" || spark-role == "executor"'
+  types:
+    - Egress
+  egress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        nets:
+          # eqiad analytics subnets
+          - "10.64.138.0/24"
+          - "10.64.139.0/24"
+          - "10.64.140.0/24"
+          - "10.64.142.0/24"
+          - "10.64.143.0/24"
+          - "10.64.144.0/24"
+          - "10.64.21.0/24"
+          - "10.64.36.0/24"
+          - "10.64.5.0/24"
+          - "10.64.53.0/24"
+        ports:
+          - 8040 # HDFS Namenode RPC
+          - 50010 # HDFS Datanode RPC
+          - 9083 # Hive metastore thrift
+          - 10000 # Hive server2 thrift
 {{- end }}
