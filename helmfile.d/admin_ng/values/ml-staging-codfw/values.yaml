@@ -39,19 +39,7 @@ limitranges:
     max:
       memory: "8Gi"
 
-# Upgrade to k8s 1.23 - T327767
 kubernetesVersion: "1.23"
-# Install latest version of these charts
-chartVersions:
-  wmf-stable/calico-crds: ~
-  wmf-stable/calico: ~
-  wmf-stable/cert-manager: ~
-  wmf-stable/cfssl-issuer-crds: ~
-  wmf-stable/cfssl-issuer: ~
-  wmf-stable/eventrouter: ~
-  wmf-stable/coredns: ~
-  wmf-stable/knative-serving-crds: ~
-  wmf-stable/knative-serving: ~
 
 istio:
   gateways:

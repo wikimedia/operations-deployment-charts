@@ -117,23 +117,10 @@ istio:
         - 8080
 
 # The Kubernetes version this cluster is running on
-# FIXME: There is kubeVersion (--kube-version) in up-to-date helmfile >=0.143
-#        which we currently don't have - so this can probably be refactored later
-#        to auto-detect the kubeVersion of a cluster (if we don't remove it after
-#        k8s 1.23 migration).
-kubernetesVersion: "1.16"
+kubernetesVersion: "1.23"
 
 # Chart versions to install
 # If no chart version is defined or value is empty (~), latest will be used.
 chartVersions:
-  wmf-stable/calico-crds: 0.1.0
-  wmf-stable/calico: 0.1.18
-  wmf-stable/cert-manager: 1.6.0
-  wmf-stable/cfssl-issuer-crds: 0.2.3
-  wmf-stable/cfssl-issuer: 0.2.4
-  wmf-stable/eventrouter: 0.4.0
-  wmf-stable/helm-state-metrics: 0.2.0
-  wmf-stable/coredns: 0.3.2
-  wmf-stable/knative-serving-crds: 0.1.0
-  wmf-stable/knative-serving: 0.1.30
+  wmf-stable/calico: 0.2.6
   wmf-stable/jaeger: 0.67.3
