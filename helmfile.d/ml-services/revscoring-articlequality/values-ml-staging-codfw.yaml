@@ -18,6 +18,10 @@ revscoring_inference_services:
     version: "20211022183902"
   - wiki: "ru"
     version: "20220509073816"
+    predictor:
+      config:
+        minReplicas: 0
+        maxReplicas: 2
   - wiki: "wikidata"
     version: "20220509074653"
     model: "itemquality"
