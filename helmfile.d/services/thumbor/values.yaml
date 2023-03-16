@@ -9,7 +9,8 @@ mesh:
   enabled: false
 
 strategy:
-  maxSurge: 1
+  maxSurge: 0
+  maxUnavailable: 1
 
 discovery:
   listeners:
@@ -20,16 +21,15 @@ main_app:
 
   version: 2023-03-21-145354-production
 
-  # 3 workers per pod in production
-  thumbor_workers: 4
+  thumbor_workers: 7
 
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
-    cpu: 1.8
-    memory: 2Gi
+    cpu: 1
+    memory: 1Gi
 
 haproxy:
-  timeout_queue: 20000ms
+  timeout_queue: 30000ms
 
 service:
   deployment: production
