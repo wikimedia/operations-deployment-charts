@@ -26,7 +26,7 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/main_services/mediawiki-page-content-change-enrichment/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/dse-k8s_services/rdf-streaming-updater/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
 
@@ -36,14 +36,14 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/mediawiki-page-content-change-enrichment: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/rdf-streaming-updater: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/mediawiki-page-content-change-enrichment: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/rdf-streaming-updater: {{`{{.HelmfileCommand}}`}}",
       ]
 
 
