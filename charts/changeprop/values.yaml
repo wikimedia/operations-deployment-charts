@@ -8,6 +8,11 @@ docker:
 resources:
   replicas: 1
 
+rollingUpdateStrategy:
+  # 25% is our default
+  maxSurge: "25%"
+  maxUnavailable: "25%"
+
 main_app:
   image: wikimedia/mediawiki-services-change-propagation
   # See https://tools.wmflabs.org/dockerregistry/wikimedia/mediawiki-services-change-propagation/tags/ for available versions
