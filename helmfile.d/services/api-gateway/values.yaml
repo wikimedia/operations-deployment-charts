@@ -71,8 +71,8 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-articletopic:predict'
-      host_rewrite_path: '\1wiki-articletopic.revscoring-articletopic.wikimedia.org'
+      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)topic:predict'
+      host_rewrite_path: '\1wiki-\2topic.revscoring-articletopic.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
       # Total requests / hour allowed for a single IP
@@ -101,8 +101,8 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-articlequality:predict'
-      host_rewrite_path: '\1wiki-articlequality.revscoring-articlequality.wikimedia.org'
+      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)quality:predict'
+      host_rewrite_path: '\1wiki-\2quality.revscoring-articlequality.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
       # Total requests / hour allowed for a single IP
