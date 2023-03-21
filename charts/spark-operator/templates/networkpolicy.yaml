@@ -83,15 +83,15 @@ spec:
   types:
     - Ingress
   ingress:
-    - action: Allow
-      protocol: TCP
-      source:
+  - action: Allow
+    destination:
+      services:
+        name: {{ .Release.Namespace }}-{{ template "base.name.release" . }}-webhook
+    protocol: TCP
+    source:
         services:
           name: kubernetes
           namespace: default
-      destination:
-        ports:
-          - 443
 {{- end }}
 # Allow communication between driver and executor pods.
 ---
@@ -149,7 +149,7 @@ spec:
           - "10.64.5.0/24"
           - "10.64.53.0/24"
         ports:
-          - 8040 # HDFS Namenode RPC
+          - 8020 # HDFS Namenode RPC
           - 50010 # HDFS Datanode RPC
           - 9083 # Hive metastore thrift
           - 10000 # Hive server2 thrift
