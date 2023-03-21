@@ -141,10 +141,10 @@ main_app:
       webVideoTranscode:
         enabled: true
         timeout: 86400000
-        concurrency: 15
+        concurrency: 10
       webVideoTranscodePrioritized:
         enabled: true
-        concurrency: 10
+        concurrency: 5
         timeout: 86400000
 
     # Some jobs require partitioning according to MariaDB shards.
@@ -387,8 +387,7 @@ networkpolicy:
 
 logging:
   samples:
-    debug/request: '0.00005'
-
+    debug/request: "0.00005"
 
 metrics:
   name: cpjobqueue
