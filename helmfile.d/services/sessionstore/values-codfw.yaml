@@ -2,12 +2,13 @@ affinity:
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: dedicated
-                operator: In
-                values:
-                  - kask
+      - weight: 1
+        preference:
+          matchExpressions:
+            - key: dedicated
+              operator: In
+              values:
+                - kask
 tolerations:
   - key: "dedicated"
     operator: "Equal"
