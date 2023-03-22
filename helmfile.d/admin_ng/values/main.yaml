@@ -22,7 +22,16 @@ namespaces:
   api-gateway: {}
   blubberoid: {}
   changeprop: {}
-  changeprop-jobqueue: {}
+  changeprop-jobqueue:
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "180"
+          memory: "200Gi"
+        limits:
+          cpu: "180"
+          memory: "200Gi"
   citoid: {}
   cxserver: {}
   datahub:
