@@ -57,9 +57,6 @@ spec:
           {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
           {{- end }}
           env:
-            {{- if and .Values.kubernetesApi.host .Values.kubernetesApi.port }}
-            {{- include "base.kubernetes.ApiEnv" . | nindent 12 }}
-            {{- end }}
             - name: POD_IP
               valueFrom:
                 fieldRef:
