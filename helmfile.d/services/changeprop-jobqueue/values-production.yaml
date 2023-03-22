@@ -1,3 +1,9 @@
+rollingUpdateStrategy:
+  # we can tolerate being under capacity for a while during a
+  # rollout. Don't surge so that we don't hit namespace limits.
+  maxSurge: 0
+  maxUnavailable: 5
+
 main_app:
   requests:
     cpu: 1.5
