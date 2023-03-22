@@ -1,27 +1,5 @@
 kubernetesVersion: "1.23"
 
-namespaces:
-  mobileapps:
-    resourcequota:
-      pods: {}
-      compute:
-        requests:
-          cpu: "600"
-          memory: "250Gi"
-        limits:
-          cpu: "600"
-          memory: "250Gi"
-  mw-web:
-    resourcequota:
-      pods: {}
-      compute:
-        requests:
-          cpu: "125"
-          memory: "125Gi"
-        limits:
-          cpu: "125"
-          memory: "125Gi"
-
 kubernetesMasters:
   cidrs:
     - "10.192.0.56/32"
