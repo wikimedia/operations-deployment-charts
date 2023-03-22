@@ -21,8 +21,10 @@
 
 {{- define "mesh.networkpolicy.ingress" -}}
 {{- if .Values.mesh.enabled }}
+{{- if .Values.mesh.public_port }}
 - port: {{ .Values.mesh.public_port }}
   protocol: TCP
+{{- end }}
 {{- if .Values.mesh.telemetry.enabled }}
 - port: {{ .Values.mesh.telemetry.port }}
   protocol: TCP

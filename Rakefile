@@ -137,6 +137,7 @@ task validate_envoy_config: :check_dep do
     raise('Failure generating the helm manifest')
   end
   # Extract the envoy configuration, write it to a file
+  file_resources = {}
   begin
     error = 'Extracting envoy config from "helm template" output'
     config = ''
@@ -146,8 +147,8 @@ task validate_envoy_config: :check_dep do
         && resource['metadata'] \
         && resource['metadata']['name'] \
         && resource['metadata']['name'].end_with?('envoy-config-volume')
-
-      config = resource['data']['envoy.yaml']
+      file_resources = resource['data']
+      config = file_resources['envoy.yaml']
     end
   rescue StandardError => e
     puts error.red
@@ -175,12 +176,13 @@ task validate_envoy_config: :check_dep do
     FileUtils.mkdir '.tmp', mode: 0o777
     at_exit { FileUtils.remove_entry '.tmp' }
   end
-
-  f = File.open "#{dest}/envoy.yaml", 'w'
-  f.write config
-  f.close
-  # If we're copying the file into the container, it needs to be world-readable
-  File.chmod 0o755, "#{dest}/envoy.yaml" unless has_envoy
+  file_resources.each do |fn, data|
+    f = File.open "#{dest}/#{fn}", 'w'
+    f.write data
+    f.close
+    # If we're copying the file into the container, it needs to be world-readable
+    File.chmod 0o755, "#{dest}/#{fn}" unless has_envoy
+  end
 
   FileUtils.cp_r('.fixtures/ssl/', "#{dest}/")
 

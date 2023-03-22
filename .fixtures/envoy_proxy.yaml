@@ -19,6 +19,13 @@ mesh:
   telemetry:
     enabled: true
     port: 9361
+  # Error page support
+  error_page: |
+    <html>
+      <body>
+        <h1>:scream:</h1>
+      </body>
+    </html>
 discovery:
   listeners:
     - parsoid-php

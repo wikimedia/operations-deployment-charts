@@ -7,7 +7,7 @@
 */}}
 
 {{- define "mesh.configuration.configmap" }}
-{{- if and (.Values.mesh.enabled) }}
+{{- if .Values.mesh.enabled }}
 {{/* Only render the certs configmap if public_port is configured. */}}
 {{- if .Values.mesh.public_port }}
 ---
@@ -24,8 +24,7 @@ data:
   ca.crt: |-
 {{ .Values.puppet_ca_crt | indent 4 }}
 {{- end }}
-
-{{- end -}}
+{{ end -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -34,7 +33,11 @@ metadata:
 data:
   envoy.yaml: |-
     {{- include "mesh.configuration.full" . | nindent 4 }}
+{{- if .Values.mesh.error_page }}
+  error_page.html: |-
+    {{- .Values.mesh.error_page | nindent 4 }}
 {{ end -}}
+{{ end -}}{{/* end mesh enabled */}}
 {{- end -}}
 
 {{- define "mesh.configuration.full" -}}
@@ -150,6 +153,7 @@ static_resources:
               route:
                 cluster: local_service
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
+        {{- include "mesh.configuration._error_page" . | indent 8 }}
         stat_prefix: ingress_https_{{ .Release.Name }}
         server_name: {{ .Release.Name }}-tls
         server_header_transformation: APPEND_IF_ABSENT
@@ -399,4 +403,31 @@ Given we go through a load-balancer, we want to keep the number of requests that
           address:
             socket_address: {address: 127.0.0.1, port_value: 1666 }
   type: strict_dns
+{{- end }}
+
+
+{{/*
+
+Error page handling
+
+*/}}
+{{- define "mesh.configuration._error_page" }}
+{{- if .Values.mesh.error_page }}
+local_reply_config:
+  mappers:
+  - filter:
+      # We only intercept pages with
+      # status code 502 or higher.
+      status_code_filter:
+        comparison:
+          op: "GE"
+          value:
+            default_value: 502
+            runtime_key: errorpage_min_code
+
+    body_format_override:
+      text_format_source:
+        filename: "/etc/envoy/error_page.html"
+      content_type: "text/html; charset=UTF-8"
+{{- end }}
 {{- end }}
