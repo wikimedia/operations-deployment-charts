@@ -8,7 +8,7 @@ main_app:
 
     # See T328576 for more info
     features:
-      liftwing_models: false
+      liftwing_models: true
     liftwing:
       uri: 'https://inference.discovery.wmnet:30443'
       models:
@@ -19,6 +19,7 @@ main_app:
             page_change_kind: "/^(edit|create)$/"
           namespace: revscoring-drafttopic
           kafka_topic: 'rc1.mediawiki.page_change'
+          message_wiki_selector: 'wiki_id'
 
 resources:
   replicas: 12
