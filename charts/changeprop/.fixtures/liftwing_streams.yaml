@@ -9,6 +9,7 @@ main_app:
           concurrency: 2
           match_config:
             database: '/.*/'
+          message_wiki_selector: database
           namespace: 'revscoring-editquality-goodfaith'
           kafka_topic: 'mediawiki.revision-create'
         damaging:
@@ -16,36 +17,43 @@ main_app:
           match_config:
             meta:
               domain: '/^(en|zh)wiki$/'
+          message_wiki_selector: database
           namespace: 'revscoring-editquality-damaging'
           kafka_topic: 'mediawiki.page.change'
         reverted:
           concurrency: 2
           match_config:
             database: '/.*/'
+          message_wiki_selector: database
           namespace: 'revscoring-editquality-damaging'
           kafka_topic: 'mediawiki.revision-create'
         articletopic:
           concurrency: 2
           match_config:
             database: '/.*/'
+          message_wiki_selector: database
           namespace: 'revscoring-articletopic'
           kafka_topic: 'mediawiki.revision-create'
         articlequality:
           concurrency: 2
           match_config:
             database: '/.*/'
+          message_wiki_selector: database
           namespace: 'revscoring-articlequality'
           kafka_topic: 'mediawiki.revision-create'
         drafttopic:
           concurrency: 12
           match_config:
-            database: "/.*/"
-          namespace: 'revscoring-drafttopic'
-          kafka_topic: 'mediawiki.revision-create'
+            wiki_id: 'enwiki'
+            page_change_kind: "/^(edit|create)$/"
+          message_wiki_selector: wiki_id
+          namespace: revscoring-drafttopic
+          kafka_topic: 'rc1.mediawiki.page_change'
         draftquality:
           concurrency: 2
           match_config:
             database: '/.*/'
+          message_wiki_selector: database
           namespace: 'revscoring-draftquality'
           kafka_topic: 'mediawiki.revision-create'
 
