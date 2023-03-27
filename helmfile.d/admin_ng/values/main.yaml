@@ -69,15 +69,6 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
-    resourcequota:
-      pods: {}
-      compute:
-        requests:
-          cpu: "125"
-          memory: "125Gi"
-        limits:
-          cpu: "125"
-          memory: "125Gi"
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
   mw-api-ext:
@@ -90,6 +81,15 @@ namespaces:
 #    pspClusterRole: allow-mediawiki-psp
   mw-web:
     pspClusterRole: allow-mediawiki-psp
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "125"
+          memory: "125Gi"
+        limits:
+          cpu: "125"
+          memory: "125Gi"
   proton: {}
   push-notifications: {}
   rdf-streaming-updater:
