@@ -30,6 +30,38 @@ namespaces:
         limits:
           cpu: "20"
           memory: "20Gi"
+  # Redefine these specifically for staging. Main clusters are increasing
+  # these, but we don't want that for now on the staging ones
+  changeprop-jobqueue:
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "20"
+          memory: "20Gi"
+        limits:
+          cpu: "20"
+          memory: "20Gi"
+  mobileapps:
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "20"
+          memory: "20Gi"
+        limits:
+          cpu: "20"
+          memory: "20Gi"
+  mw-web:
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "20"
+          memory: "20Gi"
+        limits:
+          cpu: "20"
+          memory: "20Gi"
 
 kubernetesMasters:
   cidrs:
