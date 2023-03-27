@@ -32,6 +32,11 @@ releases:
               resources: ["flinkdeployments"]
               verbs: ["get", "list", "watch"]
             {{- end }}
+            {{- if hasKey .Environment.Values "install_kserve" }}
+            - apiGroups: ["serving.kserve.io"]
+              resources: ["*"]
+              verbs: ["get", "list", "watch"]
+            {{- end }}
       {{- if semverCompare .Values.kubernetesVersion "1.16" }}
         ## Used by prometheus in k8s 1.16, with 1.23 we use the default system:monitoring
         - apiVersion: rbac.authorization.k8s.io/v1
