@@ -27,6 +27,12 @@ main_app:
   limits:
     cpu: 1
     memory: 750Mi
+  # TODO: This is a hack to trick the scheduler into starting more pods than we
+  # currently afford. Once we have more kubernetes hosts, we 'll remove
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
 
 haproxy:
   timeout_queue: 30000ms
