@@ -14,3 +14,4 @@ data:
   {{ $k }}: |- {{ toYaml $v | nindent 4 }}
   {{- end }}
 {{- end }}
+{{ include "mesh.configuration.configmap" . }}
