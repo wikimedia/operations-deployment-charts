@@ -337,10 +337,6 @@ limitranges:
     min:
       cpu: "25m"
 
-# See T292077
-typha:
-  replicaCount: 2
-
 # Override from default config (see ./common.yaml) to allow deployments of
 # big namespaces with a lot of pods.
 resourcequota:
