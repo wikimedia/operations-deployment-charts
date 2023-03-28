@@ -86,12 +86,12 @@ spec:
             mountPath: /srv/app/conf
           {{- end }} # end volumeMounts
         {{- end }} # end flink-main-container
-        {{- if .Values.mesh.enabled }}
         {{- include "mesh.deployment.container" . | indent 8 }}
-        {{- end }}
 
-      {{- if .Values.app.config_files }}
+      {{- if or .Values.mesh.enabled .Values.app.config_files }}
       volumes:
+        {{- include "mesh.deployment.volume" . | indent 8 }}
+        {{- if .Values.app.config_files }}
         - name: flink-app-config-volume
           configMap:
             name: {{ template "base.name.release" . }}-flink-app-config
@@ -100,6 +100,7 @@ spec:
               - key: {{ $k }}
                 path: {{ $k }}
               {{- end}}
+        {{- end}}
       {{- end }} # end volumes
     {{- end }} # end spec
 
