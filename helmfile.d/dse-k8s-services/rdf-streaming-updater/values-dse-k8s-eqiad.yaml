@@ -9,7 +9,7 @@ app:
     allowNonRestoredState: false # might need to switch to true for some upgrades
   config_files:
     rdf-streaming-updater-config.properties:
-      brokers: kafka-jumbo1009.eqiad.wmnet:9093
+      brokers: kafka-jumbo1009.eqiad.wmnet:9092
       output_topic_prefix: eqiad.
       consumer_group: wdqs_streaming_updater_dse_k8s_op_test
       side-outputs-domain: dse-k8s-op-test-pipeline.wikidata.org
