@@ -15,7 +15,7 @@ app:
 
   taskManager:
     resource:
-      memory: 2500m # back-filling required 5G in yarn,it's likely to fail with k8s as well at 2.5G
+      memory: 4500m # back-filling required 5G in yarn,it's likely to fail with k8s as well at 2.5G
 
   flinkConfiguration:
     "taskmanager.numberOfTaskSlots": "4"
