@@ -57,3 +57,9 @@ spec:
         - name: statsd-config
           configMap:
             name: {{ template "base.name.release" . }}-statsd-config
+        - name: tmp-dir
+          emptyDir:
+            medium: Memory
+            {{- if .Values.main_app.tmp_size_limit }}
+            sizeLimit: {{ .Values.main_app.tmp_size_limit}}
+            {{- end }}

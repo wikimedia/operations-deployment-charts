@@ -54,6 +54,12 @@ main_app:
 
   log_level: "info"
 
+  # Limit the size of the /tmp/ volume shared by all containers on the
+  # pod - this counts towards the memory limit of a pod. If unset, the
+  # tmpfs limit on the hosting node will be applied (default 0.5 of
+  # available RAM)
+  tmp_size_limit: "1Gi"
+
   # to be changed if/when we use prometheus within thumbor
   # This is currently the statsd exporter
   prometheus_port: 9102

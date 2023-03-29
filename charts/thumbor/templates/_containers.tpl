@@ -97,6 +97,8 @@ resources:
   volumeMounts:
     - name: thumbor-config
       mountPath: /etc/thumbor.d
+    - name: tmp-dir
+      mountPath: /tmp/
 {{- end }}
 
 {{- if .Values.monitoring.enabled }}

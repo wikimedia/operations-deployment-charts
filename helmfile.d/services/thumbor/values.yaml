@@ -33,6 +33,8 @@ main_app:
     cpu: 100m
     memory: 100Mi
 
+  # Disable size limiting on the shared per-pod tmpdir while testing
+  tmp_size_limit: null
 
 haproxy:
   timeout_queue: 30000ms
