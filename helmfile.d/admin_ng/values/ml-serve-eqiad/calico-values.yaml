@@ -8,6 +8,6 @@ IPPools:
   ipv6:
     cidr: "2620:0:861:300::/64"
 
-# See T292077
+# It's recommended to run a minimum of 3 typha replicas as long as the number of nodes is >3
 typha:
-  replicaCount: 2
+  replicaCount: 3
