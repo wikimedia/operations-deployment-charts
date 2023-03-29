@@ -38,6 +38,10 @@ environments:
       - namespace_certificates: true
       # Install helm-state-metrics
       - install_helm_state_metrics: true
+      # Install only in staging-eqiad and staging-eqiad for now.
+      # We'll move this to all 'main' wikikube clusters when we are ready.
+      # https://phabricator.wikimedia.org/T333464
+      - install_flink_operator: true
   staging-codfw:
     values:
       - "values/common.yaml"
@@ -51,6 +55,10 @@ environments:
       - namespace_certificates: true
       # Install helm-state-metrics
       - install_helm_state_metrics: true
+      # Install only in staging-eqiad and staging-eqiad for now.
+      # We'll move this to all 'main' wikikube clusters when we are ready.
+      # https://phabricator.wikimedia.org/T333464
+      - install_flink_operator: true
   # Machine Learning clusters
   ml-serve-eqiad:
     values:

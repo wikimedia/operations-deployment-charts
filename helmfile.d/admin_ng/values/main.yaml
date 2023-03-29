@@ -4,7 +4,17 @@
 cluster_group: main
 
 deployExtraClusterRoles:
+  # NOTE: This extra flink role will not be necessary
+  # once existing flink session deployments (e.g. rdf-streaming-updater)
+  # use flink-operator instead.
+  # https://phabricator.wikimedia.org/T326409
   - "flink"
+
+
+# watchNamespaces is a flink-kubernetes-operator configuration that
+# indicates which namespaces flink-kubernetes-operator should manage.
+# Include all namespaces that need to use the FlinkDeployment CRD.
+watchNamespaces: []
 
 # List all namespaces that should be created in every ServiceOps cluster
 # For info about what overrides are available, please check ./common.yaml.
@@ -19,6 +29,8 @@ namespaces:
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
+  flink-operator:
+    systemNamespace: true
   apertium: {}
   api-gateway: {}
   blubberoid: {}
