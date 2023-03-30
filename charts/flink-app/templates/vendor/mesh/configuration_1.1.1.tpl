@@ -315,7 +315,7 @@ Given we go through a load-balancer, we want to keep the number of requests that
           cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
         validation_context:
           trusted_ca:
-            filename: /etc/envoy/ssl/ca.crt
+            filename: /etc/ssl/certs/wmf-ca-certificates.crt
   {{- end -}}
 {{- end }}
 
