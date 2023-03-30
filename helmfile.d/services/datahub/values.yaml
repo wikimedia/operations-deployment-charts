@@ -1,7 +1,7 @@
 # The git commit SHA is used for this service
 # The reason being that we build several containers from the same commit
 # and they were generated with different timestamps using the default method
-version: &version "d1f814d28d2b838b11ab9d544323b67dedde9a9f-production"
+version: &version "10aa8d44603f61ddfdb0863834a14f5dbc6f534d-production"
 
 docker: &docker
   registry: "docker-registry.discovery.wmnet"
@@ -121,7 +121,7 @@ datahub-mae-consumer:
 
 global:
   datahub_analytics_enabled: false
-  datahub_standalone_consumers_enabled: false
+  datahub_standalone_consumers_enabled: true
 
   datahub:
     gms:
