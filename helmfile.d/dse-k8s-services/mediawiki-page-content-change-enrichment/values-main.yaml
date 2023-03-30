@@ -37,13 +37,22 @@ networkpolicy:
       # bake the schema repo into the app image just like we do for eventgate-main.
       - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
         ports:
-        - protocol: tcp
-          port: 8190
-        - protocol: tcp
-          port: 443
+          - protocol: tcp
+            port: 8190
+          - protocol: tcp
+            port: 443
       - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
         ports:
-        - protocol: tcp
-          port: 8190
-        - protocol: tcp
-          port: 443
+          - protocol: tcp
+            port: 8190
+          - protocol: tcp
+            port: 443
+      # Allow api-ro
+      - cidr: 10.2.2.22/32
+        ports:
+          - protocol: tcp
+            port: 443
+      - cidr: 10.2.1.22/32
+        ports:
+          - protocol: tcp
+            port: 443
