@@ -50,12 +50,6 @@ tcp_services_proxy: ~
 app:
   port: 8088
 
-# Deprecated: inject the puppet CA into the mesh container
-# Should be superseded by adding the certs directly into
-# the container, typically with the deb package
-# wmf-certificates
-puppet_ca_crt: "snakeoil"
-
 docker:
   registry: "docker-registry.wikimedia.org"
   pull_policy: IfNotPresent
