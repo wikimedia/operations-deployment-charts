@@ -92,7 +92,6 @@ resources:
       value: "{{ required "Elasticsearch host must be specified"  .Values.global.elasticsearch.host }}"
     - name: ELASTIC_CLIENT_PORT
       value: "{{ required "Elasticsearch port must be specified" .Values.global.elasticsearch.port }}"
-    {{- if .Values.global.datahub_analytics_enabled }}
     {{- with .Values.global.elasticsearch.useSSL }}
     - name: ELASTIC_CLIENT_USE_SSL
       value: {{ . | quote }}
@@ -107,9 +106,8 @@ resources:
           key: elasticsearch_password
     {{- end }}
     {{- with .Values.global.elasticsearch.indexPrefix }}
-    - name: ELASTIC_INDEX_PREFIX
+    - name: INDEX_PREFIX
       value: {{ . }}
-    {{- end }}
     {{- end }}
     {{- if .Values.global.kafka.topics }}
     - name: DATAHUB_TRACKING_TOPIC
