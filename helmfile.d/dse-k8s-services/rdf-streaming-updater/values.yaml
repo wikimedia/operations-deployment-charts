@@ -1,10 +1,10 @@
 app:
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.16-rc1
+  version: flink-1.16-rc2
 
   job:
     entryClass: org.wikidata.query.rdf.updater.UpdaterJob
-    jarURI: local:///opt/flink/usrlib/streaming-updater-producer.jar
+    jarURI: local:///opt/flink/streaming-updater-producer.jar
     parallelism: 12
     upgradeMode: savepoint
     args: [ "/srv/app/conf/rdf-streaming-updater-config.properties" ]
@@ -62,7 +62,6 @@ discovery:
 
 mesh:
   enabled: true
-  image_version: 1.18.3-2
 
 kubernetesApi:
   host: kubernetes.default.svc.cluster.local
