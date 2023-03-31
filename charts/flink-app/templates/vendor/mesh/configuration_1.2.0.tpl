@@ -20,10 +20,6 @@ data:
 {{ .Values.mesh.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.mesh.certs.key | indent 4 }}
-{{- if .Values.puppet_ca_crt }}
-  ca.crt: |-
-{{ .Values.puppet_ca_crt | indent 4 }}
-{{- end }}
 {{ end -}}
 ---
 apiVersion: v1
