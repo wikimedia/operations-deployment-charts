@@ -36,7 +36,7 @@ defaultConfiguration:
 
     # Enable Prometheus Metrics Reporter (named 'prometheus').
     # See: https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/metric_reporters/
-    kubernetes.operator.metrics.reporter.prometheus.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+    kubernetes.operator.metrics.reporter.prometheus.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
     kubernetes.operator.metrics.reporter.prometheus.port: 9999
 
   # Make loggers only log to console in ECS format.
