@@ -15,7 +15,7 @@ app:
 
   taskManager:
     resource:
-      memory: 4500m # back-filling required 5G in yarn,it's likely to fail with k8s as well at 2.5G
+      memory: 3Gi
 
   flinkConfiguration:
     "taskmanager.numberOfTaskSlots": "4"
@@ -28,6 +28,7 @@ app:
     "kubernetes.operator.savepoint.history.max.count": "5"
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
     "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
+    "taskmanager.memory.jvm-overhead.fraction": 0.33
   config_files:
     rdf-streaming-updater-config.properties:
       parallelism: 12
