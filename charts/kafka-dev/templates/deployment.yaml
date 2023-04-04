@@ -38,43 +38,56 @@ spec:
         app: kafka
     spec:
       containers:
-      - env:
-        # Use wurstmeister/kafka's HOSTNAME_COMMAND to use $KAFKA_SERVICE_HOST
-        - name: HOSTNAME_COMMAND
-          value: echo $$KAFKA_SERVICE_HOST
-        # k8s will create <service_name>_PORT as an env var,
-        # which start-kafka.sh will also use if it is set.
-        # To keep these from conflicting, we manually
-        # set KAFKA_PORT to what we expect (alternatively we could
-        # rename the kafka service name in service.yaml as a workaround).
-        # See: https://github.com/wurstmeister/kafka-docker/issues/122#issuecomment-253184494
-        - name: KAFKA_PORT
-          value: "{{ .Values.kafka_internal_port | default 31092 }}"
-        # Listen on two ports:
-        # - kafka_internal_port (default 31092) for internal cluster traffic
-        # - kafka_external_port (default 30092) for external clients.
-        - name: KAFKA_LISTENERS
-          value: "PLAINTEXT://:{{ .Values.kafka_internal_port | default 31092 }},EXTERNAL://:{{ .Values.kafka_external_port | default 30092 }}"
-        # - Internal cluster clients should connect to $KAFKA_SERVICE_HOST:31092
-        # - External clients should connect to kafka_advertised_host:kafka_external_port
-        - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://_{HOSTNAME_COMMAND}:{{ .Values.kafka_internal_port | default 31092 }},EXTERNAL://{{ .Values.kafka_advertised_host }}:{{ .Values.kafka_external_port | default 30092 }}"
-        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-          value: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-        # Inter-broker traffic should use the interal cluster (ClusterIP:port) advertised listener.
-        - name: KAFKA_INTER_BROKER_LISTENER_NAME
-          value: PLAINTEXT
-        - name: KAFKA_BROKER_ID
-          value: "1"
-        - name: KAFKA_ZOOKEEPER_CONNECT
-          value: zookeeper.{{ .Release.Namespace }}.svc.cluster.local:2181
-        image: wurstmeister/kafka
-        imagePullPolicy: IfNotPresent
-        name: kafka
-        ports:
-        # NOTE: container port needs to be the same as nodePort so 'localhost' as advertised.host
-        # will work from both external and from the container.
-        - containerPort: {{ .Values.kafka_internal_port | default 31092 }}
-          name: kafka-internal
-        - containerPort: {{ .Values.kafka_external_port | default 30092 }}
-          name: kafka-external
+        - image: wurstmeister/kafka
+          imagePullPolicy: IfNotPresent
+          name: kafka
+
+          env:
+            - name: KAFKA_BROKER_ID
+              value: "1"
+
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: zookeeper.{{ .Release.Namespace }}.svc.cluster.local:2181
+
+            - name: HOSTNAME_COMMAND
+              # Use the value of the Pod's IP address as the hostname.
+              # This will be used as the internal 'advertised' hostname.
+              value: /bin/hostname -i
+
+            # k8s will create <service_name>_PORT as an env var,
+            # which start-kafka.sh will also use if it is set.
+            # To keep these from conflicting, we manually
+            # set KAFKA_PORT to what we expect (alternatively we could
+            # rename the kafka service name in service.yaml as a workaround).
+            # See: https://github.com/wurstmeister/kafka-docker/issues/122#issuecomment-253184494
+            - name: KAFKA_PORT
+              value: "{{ .Values.kafka_internal_port | default 9092 }}"
+
+            # Listen on two ports:
+            # - kafka_internal_port (default 9092) for internal cluster traffic
+            # - kafka_external_port (default 30092) for external clients.
+            - name: KAFKA_LISTENERS
+              value: "INTERNAL://:{{ .Values.kafka_internal_port | default 9092 }},EXTERNAL://:{{ .Values.kafka_external_port | default 30092 }}"
+
+            # - Internal cluster clients should connect to Pod's IP:<kafka_internal_port>
+            # - External clients should connect to kafka_advertised_host:<kafka_external_port>
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: "INTERNAL://_{HOSTNAME_COMMAND}:{{ .Values.kafka_internal_port | default 9092 }},EXTERNAL://{{ .Values.kafka_advertised_host }}:{{ .Values.kafka_external_port | default 30092 }}"
+
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+
+            # Inter-broker traffic should use the internal cluster (Pod IP:port) advertised listener.
+            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+              value: INTERNAL
+
+          image: wurstmeister/kafka
+          imagePullPolicy: IfNotPresent
+          name: kafka
+          ports:
+            # NOTE: container port needs to be the same as nodePort so '127.0.0.1' as advertised.host
+            # will work from both external and from the container.
+            - containerPort: {{ .Values.kafka_internal_port | default 9092 }}
+              name: kafka-internal
+            - containerPort: {{ .Values.kafka_external_port | default 30092 }}
+              name: kafka-external

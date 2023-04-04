@@ -1,7 +1,16 @@
-To access Kafka:
 
-In Minikube:
-  KAFKA_ADDRESS=$(minikube ip):30092
 
-In docker-desktop with Kubernetes:
-  KAFKA_ADDRESS=localhost:30092
+
+To access Kafka from other k8s pods:
+  KAFKA_ADDRESS=kafka.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.kafka_internal_port }}
+
+To access Kafka from outside of k8s:
+  KAFKA_ADDRESS={{ .Values.kafka_advertised_host }}:{{ .Values.kafka_external_port }}
+
+
+If you are using minikube on MacOS with Docker Desktop, you will have to
+port forward to access Kafka from your host machine.
+Assuming you installed this helm chart with kafka_advertised_host=127.0.0.1:
+
+  kubectl -n {{ .Release.Namespace }} port-forward svc/kafka-external {{ .Values.kafka_external_port }}
+  KAFKA_ADDRESS=127.0.0.1:{{ .Values.kafka_external_port }}

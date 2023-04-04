@@ -7,14 +7,29 @@ helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
 
 
 # This port should be used for other internal kubernetes clients
-#kafka_internal_port: 31092
+kafka_internal_port: 9092
 
 # This port should be used for external clients.
-#kafka_external_port: 30092
+kafka_external_port: 30092
 
-# This host should be used for external clients.  If using minikube, set this to
-# the value of $(minikube ip).  If using docker-desktop, this should be localhost.
-kafka_advertised_host: localhost
+# This host should be used for external clients.
+#
+# If using minikube:
+#   - set kafka_advertised_host to the value of $(minikube ip).
+#   - Kafka clients can connect to $(minikube ip):<kafka_external_port>
+#
+# If using minikube on MacOS with Docker Desktop, you're going to have port forward.
+#   - set kafka_advertised_host to 127.0.0.1
+#   - kubectl port-forward svc/kafka-external <kafka_external_port>
+#   - Kafka clients can connect to 127.0.0.1:<kafka_external_port>
+#   NOTE: using 127.0.0.1 instead of 'localhost' is probably necessary.  Your
+#   host machine needs to use the exact same IP address for localhost as
+#   as the Kafka container does, and localhost may sometimes resolve to an IPv6 address.
+kafka_advertised_host: 127.0.0.1
 
-# External clients should connect to <kafka_advertised_host>:<kafka_external_port>.
-# Internal clients should connect to kafka.default.svc.cluster.local:<kafka_internal_port>
+# Internal clients should connect to
+#   kafka.{{ .Release.Namespace }}.svc.cluster.local:<kafka_internal_port>
+#
+# External clients should connect to
+#   <kafka_advertised_host>:<kafka_external_port>.
+

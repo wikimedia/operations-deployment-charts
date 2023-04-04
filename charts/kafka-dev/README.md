@@ -1,8 +1,8 @@
 # kafka-single-node
 
 This chart should only be used for local development of charts that require a
-running Kafka cluster.  It will create single node zookeeper and Kafka pods, and
- expose the Kafka cluster via a nodePort.
+running Kafka cluster.  It will create single node Zookeeper and single broker Kafka pods, and
+expose the Kafka cluster via a nodePort.
 
 **Note**: As of Kubernetes v1.16 (July 2019), deployments have been removed from the
 `extensions/v1beta1`, `apps/v1beta1`, and `apps/v1beta2` APIs. See the
@@ -23,14 +23,14 @@ docker-desktop routes nodePorts through 'localhost'.
 Set
 
 ```bash
-kafka_advertised_host: 'localhost'
+kafka_advertised_host: '127.0.0.1'
 ```
 
 in values.yaml.
 
-External Kafka clients will need to connect to localhost:<kafka_external_port>.
+External Kafka clients will need to connect to 127.0.0.1:<kafka_external_port>.
 
-Or helm install this chart with --set kafka.advertised_host_name=localhost
+Or helm install this chart with --set kafka.advertised_host_name=127.0.0.1
 
 ### In minikube
 
@@ -59,3 +59,21 @@ sudo ip link set docker0 promisc on
 
 ---
 This chart uses the wurtmeister zookeeper and kafka docker images.
+
+### In minikube on MacOS with Docker Desktop
+
+On MacOS, minikube runs in a docker container of its own.  We need to port forward to reach this host.
+
+Set
+
+```bash
+kafka_advertised_host: '127.0.0.1'
+```
+
+in values.yaml.
+
+Run
+
+`kubectl port-forward svc/kafka-external <kafka_external_port>`
+
+External Kafka clients will need to connect to 127.0.0.1:<kafka_external_port>.
