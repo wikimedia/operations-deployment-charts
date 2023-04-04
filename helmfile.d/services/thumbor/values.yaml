@@ -26,7 +26,7 @@ main_app:
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
     cpu: 1
-    memory: 750Mi
+    memory: 1Gi
   # TODO: This is a hack to trick the scheduler into starting more pods than we
   # currently afford. Once we have more kubernetes hosts, we 'll remove
   requests:
