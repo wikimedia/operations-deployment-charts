@@ -30,6 +30,9 @@ main_app:
       api: https://api.interpreter.caiyunai.com/v1
       #key:
       languages: config/LingoCloud.yaml
+    MinT:
+      api: http://localhost:6504
+      languages: config/MinT.yaml
     OpusMT:
       api: https://opusmt.wmflabs.org/api/translate
       languages: config/OpusMT.yaml
@@ -65,7 +68,7 @@ main_app:
     cpu: 100m
     memory: 100Mi
   restbase_host: localhost:6503
-  version: 2023-05-08-134152-production
+  version: 2023-05-10-113111-production
 monitoring:
   enabled: true
 resources:
