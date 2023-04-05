@@ -6,8 +6,8 @@ config:
     LANGUAGES_CACHE_MAX_AGE: 300000
     MEDIAWIKI_REQUEST_TIMEOUT: 3000
     MESSAGES_CACHE_MAX_AGE: 60000
-    WIKIBASE_REPO: https://test.wikidata.org/w
-    WIKIBASE_REPO_HOSTNAME_ALIAS: api-ro.discovery.wmnet
+    WIKIBASE_REPO: https://test.wikidata.org:4446/w  # proper URL to reach <scheme>://<hostname>:<port>/<path>
+    WIKIBASE_REPO_HOSTNAME_ALIAS: mw-api-int-ro.discovery.wmnet # overrides the hostname from WIKIBASE_REPO
 main_app:
   liveness_probe:
     tcpSocket:
