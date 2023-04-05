@@ -8,3 +8,12 @@ services_proxy:
       address: api-rw.discovery.wmnet
       port: 443
       encryption: true
+  mw-api-int-async:
+    keepalive: 4s
+    port: 6500
+    timeout: 120s
+    xfp: https
+    upstream:
+      address: mw-api-int.discovery.wmnet
+      port: 4446
+      encryption: true

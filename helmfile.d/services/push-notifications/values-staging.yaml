@@ -2,3 +2,11 @@ resources:
   replicas: 1
 main_app:
   proxy: http://url-downloader.eqiad.wikimedia.org:8080
+  queueing:
+    flush_timeout_ms: random
+    flush_timeout_min: 10000 # 10 seconds
+    flush_timeout_max: 30000 # 30 seconds
+    verbose: true
+discovery:
+  listeners:
+    - mw-api-int-async
