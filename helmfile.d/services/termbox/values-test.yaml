@@ -23,11 +23,10 @@ service:
   deployment: production
   port: 3031
 tolerations: {}
-mesh:
-  enabled: false
-
 app:
   port: 3031
+mesh:
+  enabled: false
 # We need an egress to reach mw-api-int-ro:4446
 networkpolicy:
   egress:

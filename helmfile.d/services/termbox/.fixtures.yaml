@@ -1,4 +1,13 @@
 services_proxy:
+  mw-api-int-async:
+    keepalive: 4s
+    port: 6500
+    timeout: 120s
+    xfp: https
+    upstream:
+      address: mw-api-int.discovery.wmnet
+      port: 4446
+      encryption: true
   mwapi-async:
     keepalive: 4s
     port: 6500
