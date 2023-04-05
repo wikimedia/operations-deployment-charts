@@ -29,6 +29,7 @@ app:
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
     "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
     "taskmanager.memory.jvm-overhead.fraction": "0.45"
+    "taskmanager.memory.jvm-overhead.max": "2Gb"
   config_files:
     rdf-streaming-updater-config.properties:
       parallelism: 12
