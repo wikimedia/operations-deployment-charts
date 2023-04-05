@@ -38,4 +38,13 @@ spec:
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- if .Values.main_app.mw_api }}
+    {{- range .Values.main_app.mw_api.ips }}
+    - to:
+      - ipBlock:
+          cidr: {{ . }}
+      ports:
+        - protocol: TCP
+          port: {{ $.Values.main_app.mw_api.port }}
+    {{- end }}{{- end }}
 {{- end }}

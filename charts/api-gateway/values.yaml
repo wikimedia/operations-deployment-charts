@@ -25,6 +25,14 @@ main_app:
   # idle connection timeout to backend clusters - low to limit issues
   # with connection reuse
   idle_timeout: 5s
+
+  # mw_api definition for reuse in egress and backend definition
+  mw_api:
+    host: mw-api-int.discovery.wmnet
+    port: 4446
+    ips:
+      - 10.2.2.81/32
+      - 10.2.1.81/32
   # If set to true, expose a telemetry port that offers stats and
   # health endpoint. Enables but does not expose the admin port internally
   telemetry_port: null

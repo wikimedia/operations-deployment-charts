@@ -1,4 +1,11 @@
 main_app:
+  mw_api:
+    host: &mw_api_host mw-api-int.discovery.wmnet
+    port: &mw_api_port 4446
+    ips:
+      - 10.2.2.81/32
+      - 10.2.1.81/32
+
   domains:
     - api.wikimedia.org
     - api.wikimedia.org:*
@@ -20,7 +27,7 @@ main_app:
       tls: true
       type: STRICT_DNS
       hosts:
-        api-rw.discovery.wmnet: 443
+        *mw_api_host: *mw_api_port
     appserver_cluster:
       tls: true
       type: STRICT_DNS
@@ -29,3 +36,7 @@ main_app:
 
 resources:
   replicas: 4
+
+networkpolicy:
+  egress:
+    enabled: true
