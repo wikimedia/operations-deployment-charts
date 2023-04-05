@@ -5,7 +5,6 @@ app:
   job:
     entryClass: org.wikidata.query.rdf.updater.UpdaterJob
     jarURI: local:///opt/flink/streaming-updater-producer.jar
-    parallelism: 12
     upgradeMode: savepoint
     args: [ "/srv/app/conf/rdf-streaming-updater-config.properties" ]
 
@@ -14,6 +13,7 @@ app:
       memory: 1600m
 
   taskManager:
+    replicas: 3
     resource:
       memory: 3Gb
 
@@ -28,7 +28,7 @@ app:
     "kubernetes.operator.savepoint.history.max.count": "5"
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
     "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
-    "taskmanager.memory.jvm-overhead.fraction": "0.33"
+    "taskmanager.memory.jvm-overhead.fraction": "0.45"
   config_files:
     rdf-streaming-updater-config.properties:
       parallelism: 12
