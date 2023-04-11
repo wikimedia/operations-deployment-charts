@@ -29,8 +29,14 @@ app:
     "kubernetes.operator.savepoint.history.max.count": "5"
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
     "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
-    "taskmanager.memory.jvm-overhead.fraction": "0.45"
     "taskmanager.memory.jvm-overhead.max": "2Gb"
+    "taskmanager.memory.managed.fraction": "0.6"
+    "taskmanager.memory.managed.consumer-weights": "STATE_BACKEND:100"
+    "state.backend.rocksdb.metrics.estimate-num-keys": "true"
+    "state.backend.rocksdb.metrics.estimate-live-data-size": "true"
+    "state.backend.rocksdb.metrics.cur-size-active-mem-table": "true"
+    "state.backend.rocksdb.metrics.size-all-mem-tables": "true"
+
   config_files:
     rdf-streaming-updater-config.properties:
       parallelism: 12
