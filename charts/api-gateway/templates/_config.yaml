@@ -181,6 +181,13 @@ static_resources:
                     key: x_wikimedia_debug_server
                     value: none
                     type: STRING
+{{- if .Values.main_app.restbase_routes }}
+          - name: envoy.filters.http.lua
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+              inline_code: |
+{{ include "restgateway.lua" . | indent 16 }}
+{{- end }}
           - name: envoy.filters.http.router
 {{- if .Values.mesh.enabled }}
       transport_socket:
@@ -193,13 +200,6 @@ static_resources:
                 filename: "/etc/envoy-ssl/service.crt"
               private_key:
                 filename: "/etc/envoy-ssl/service.key"
-{{- end }}
-{{- if .Values.main_app.restbase_routes }}
-          - name: envoy.filters.http.lua
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-              inline_code: |
-{{ include "restgateway.lua" . | indent 16 }}
 {{- end }}
   clusters:
 {{- /* BEGIN endpoints cluster definition */}}
