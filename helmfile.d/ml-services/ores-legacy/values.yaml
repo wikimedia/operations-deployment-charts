@@ -1,0 +1,23 @@
+# Values common to both ML serve clusters. If you need to add per-cluster
+# specific values, please create ./ml-serve-{eqiad,codfw}.yaml files.
+
+chartName: ores-legacy
+
+monitoring:
+  enabled: true
+
+app:
+  image: machinelearning-liftwing-inference-services-ores-migration
+  version: "2023-03-17-170602-publish"
+  limits:
+    cpu: 1
+    memory: 1G
+  requests:
+    cpu: 1
+    memory: 1G
+
+service:
+  deployment: production
+
+ingress:
+  enabled: true
