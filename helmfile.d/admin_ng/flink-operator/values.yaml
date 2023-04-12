@@ -11,6 +11,14 @@ image:
 # FlinkDeployment CRD MUST be listed here.
 watchNamespaces: []
 
+resources:
+  limits:
+    cpu: "250m"
+    memory: "512Mi"
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
   # NOTE: If you change this, it must also be changed for
