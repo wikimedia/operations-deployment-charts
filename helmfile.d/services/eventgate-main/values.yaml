@@ -14,6 +14,9 @@ main_app:
   limits:
     memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
   conf:
+    kafka:
+      conf:
+        security.protocol: ssl
     schema_base_uris:
     - "file:///srv/service/schemas/event/primary/jsonschema/"
     - "file:///srv/service/schemas/event/secondary/jsonschema/"

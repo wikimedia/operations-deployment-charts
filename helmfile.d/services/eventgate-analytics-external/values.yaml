@@ -19,13 +19,12 @@ main_app:
   conf:
     kafka:
       conf:
-        # NOTE: The kafka brokers list is set in site specific values files.
-        #metadata.broker.list:
+        # eventgate-analytics-external always uses kafka jumbo-eqiad.
+        metadata.broker.list: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
         # Enforce a smaller message size limit for this externally accessible eventgate instance.
         message.max.bytes: 1048576
         # Enable Kafka producer TLS (no authentication, just encryption).
         security.protocol: ssl
-        ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
     schema_precache_uris:
     - /error/1.0.0

@@ -43,7 +43,6 @@ main_app:
         message.max.bytes: 1048576
         # Enable Kafka producer TLS (no authentication, just encryption).
         security.protocol: ssl
-        ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
     # The request body is accepted as an array of events, each of which
     # will be an individual message in Kafka.  Each individual
