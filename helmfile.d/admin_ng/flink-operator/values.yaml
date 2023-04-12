@@ -11,14 +11,6 @@ image:
 # FlinkDeployment CRD MUST be listed here.
 watchNamespaces: []
 
-resources:
-  limits:
-    cpu: "250m"
-    memory: "512Mi"
-  requests:
-    cpu: "250m"
-    memory: "512Mi"
-
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
   # NOTE: If you change this, it must also be changed for
@@ -33,6 +25,13 @@ operatorPod:
     # k8s Prometheus setup to scrape metrics from them.
     prometheus.io/scrape: "true"
     prometheus.io/port: "9999"
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
 
 defaultConfiguration:
   # Set append to false to replace configuration files
