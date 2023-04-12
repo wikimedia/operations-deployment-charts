@@ -16,6 +16,7 @@ app:
     replicas: 3
     resource:
       memory: 3Gb
+      cpu: 4
 
   flinkConfiguration:
     "taskmanager.numberOfTaskSlots": "4"
