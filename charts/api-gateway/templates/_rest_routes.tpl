@@ -38,7 +38,7 @@
                   path: "/"
                 direct_response:
                   status: 200
-                  response: "This is the REST gateway"
+                  body: {inline_string: "This is the REST Gateway."}
 {{- /* BEGIN restbase_routes definition */}}
 {{- range $endpoint, $endpoint_config := .Values.main_app.restbase_routes }}
 {{- range $route_name, $route_paths := $endpoint_config.urls }}
