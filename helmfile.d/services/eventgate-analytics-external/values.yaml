@@ -59,8 +59,6 @@ main_app:
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
     # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
-    # NOTE: we need all_settings, otherwise we will not receive the stream's schema_title, which
-    # is what EventGate needs to verify that an event of a given schema is allowed in a stream.
     stream_config_uri: 'https://api-ro.discovery.wmnet/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics-external&streams=<%= streams %>'
     stream_config_uri_streams_delimiter: '|'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}    # Re-request for yet unknown streams at runtime
