@@ -10,7 +10,9 @@ mesh:
 
 strategy:
   maxSurge: 0
-  maxUnavailable: 1
+  # This needs to be high as scaling up while rolling out will hit our
+  # limits and then fail.
+  maxUnavailable: 16
 
 discovery:
   listeners:

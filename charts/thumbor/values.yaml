@@ -62,8 +62,8 @@ main_app:
     # available RAM)
     size_limit: "1Gi"
     # If true, use memory as the emptyDir's storage medium. Care is
-    # required here - dying workers *will* fill up the disk and
-    # contribute to pods' memory usage.
+    # required here - dying workers *will* fill up the emptyDir's
+    # storage and contribute to pods' memory usage.
     memory: false
 
   # to be changed if/when we use prometheus within thumbor
