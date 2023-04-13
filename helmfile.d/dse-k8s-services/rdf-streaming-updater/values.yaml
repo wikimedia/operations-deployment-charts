@@ -1,6 +1,9 @@
 app:
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
   version: flink-1.16-rc3
+  env:
+    # disable JEMALLOC for testing
+    LD_PRELOAD: ''
 
   job:
     entryClass: org.wikidata.query.rdf.updater.UpdaterJob
