@@ -3,7 +3,8 @@ app:
   version: flink-1.16-rc3
   env:
     # disable JEMALLOC for testing
-    LD_PRELOAD: ''
+    - name: "LD_PRELOAD"
+      value: ""
 
   job:
     entryClass: org.wikidata.query.rdf.updater.UpdaterJob
