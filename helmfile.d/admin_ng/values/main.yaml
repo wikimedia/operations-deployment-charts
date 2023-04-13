@@ -290,3 +290,30 @@ GlobalNetworkPolicies:
           nets:
             - 10.2.2.22/32
             - 10.2.1.22/32
+  # Allow all pods access to mw-on-k8s
+  allow-mw-api-int:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 4446
+          nets:
+            - 10.2.2.81/32
+            - 10.2.1.81/32
+  allow-mw-api-ext:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: TCP
+        destination:
+          ports:
+            - 4447
+          nets:
+            - 10.2.2.76/32
+            - 10.2.1.76/32
