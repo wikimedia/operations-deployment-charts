@@ -25,11 +25,27 @@ main_app:
         ma_summary_revision:
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
+    proton:
+      urls:
+        #TODO tighten capture group criteria
+        proton_title:
+          in: '(.+)/v1/pdf/(.+)'
+          out: '\1/v1/pdf/\2'
+        proton_title_format:
+          in: '(.+)/v1/pdf/(.+)/(.+)'
+          out: '\1/v1/pdf/\2/\3'
+        proton_title_format_type:
+          in: '(.+)/v1/pdf/(.+)/(.+)/(.+)'
+          out: '\1/v1/pdf/\2/\3/\4'
 
   discovery_endpoints:
     mobileapps:
-      internal_host: localhost
+      tls: true
       port: 4102
+      timeout: 120s
+    proton:
+      tls: true
+      port: 4030
       timeout: 120s
 
 service:
@@ -39,7 +55,30 @@ service:
 
 mesh:
   enabled: true
+  telemetry:
+    enabled: true
 
 discovery:
   listeners:
   - mobileapps
+
+networkpolicy:
+  egress:
+    enabled: true
+    dns_nets:
+    - cidr: 10.2.1.14/32 # mobileapps.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4102
+    - cidr: 10.2.2.14/32 # mobileapps.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4102
+    - cidr: 10.2.1.21/32 # proton.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4030
+    - cidr: 10.2.2.21/32 # proton.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4030
