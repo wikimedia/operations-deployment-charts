@@ -193,7 +193,25 @@ services_proxy:
     port: 6030
     service: image-suggestion
     timeout: 10s
+    keepalive: 4s
     uses_ingress: true
+    upstream: *1
+  inference:
+    port: 6031
+    service: inference
+    timeout: 10s
+    upstream: *1
+  device-analytics:
+    port: 6032
+    service: device-analytics
+    timeout: 10s
+    keepalive: 4s
+    upstream: *1
+  rest-gateway:
+    port: 6033
+    service: rest-gateway
+    timeout: 10s
+    keepalive: 4s
     upstream: *1
   swift-eqiad:
     port: 6101
@@ -270,6 +288,20 @@ services_proxy:
   mwapi:
     port: 6501
     service: api-https
+    upstream: *1
+    keepalive: 4s
+    timeout: 60s
+    xfp: https
+  mw-api-int-async:
+    port: 6500
+    service: mw-api-int
+    upstream: *1
+    keepalive: 4s
+    timeout: 120s
+    xfp: https
+  mw-api-int:
+    port: 6501
+    service: mw-api-int
     upstream: *1
     keepalive: 4s
     timeout: 60s
