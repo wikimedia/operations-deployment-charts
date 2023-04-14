@@ -1,10 +1,10 @@
 app:
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.16-rc3
+  version: flink-1.16-rc4
   env:
     # disable JEMALLOC for testing
-    - name: "LD_PRELOAD"
-      value: ""
+    - name: "DISABLE_JEMALLOC"
+      value: "true"
 
   job:
     entryClass: org.wikidata.query.rdf.updater.UpdaterJob
@@ -34,7 +34,7 @@ app:
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
     "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
     "taskmanager.memory.jvm-overhead.max": "2Gb"
-    "taskmanager.memory.managed.fraction": "0.6"
+    "taskmanager.memory.jvm-overhead.fraction": "0.45"
     "taskmanager.memory.managed.consumer-weights": "STATE_BACKEND:100"
     "state.backend.rocksdb.metrics.estimate-num-keys": "true"
     "state.backend.rocksdb.metrics.estimate-live-data-size": "true"
