@@ -311,9 +311,8 @@ module Tester
     # Returns a mapping of fixture to supported kubeVersion of the chart. At
     # present the version is the same for all fixtures.
     def collect_kube_version(chart_yaml)
-      if !chart_yaml.has_key?('kubeVersion')
-        return nil
-      end
+      return nil unless chart_yaml.key?('kubeVersion')
+
       @kube_version = fixtures.reduce({}) do |memo, (fixture, _)|
         memo[fixture] = chart_yaml['kubeVersion']
         memo
