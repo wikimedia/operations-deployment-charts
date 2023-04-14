@@ -55,15 +55,16 @@ main_app:
   log_level: "info"
 
   tmp_empty_dir:
+    # Care is required here - if enabled, dying workers *will* leave behind
+    # files which will fill up the emptyDir's storage and contribute to
+    # pods' memory usage or fill up the node's FS.
     enabled: false
     # Limit the size of the /tmp/ volume shared by all containers on the
     # pod - this counts towards the memory limit of a pod. If unset, the
-    # tmpfs limit on the hosting node will be applied (default 0.5 of
-    # available RAM)
+    # default with cgroupv2 layout is min(<total pod memory limit>, <0.5 node RAM>).
     size_limit: "1Gi"
-    # If true, use memory as the emptyDir's storage medium. Care is
-    # required here - dying workers *will* fill up the emptyDir's
-    # storage and contribute to pods' memory usage.
+    # If true, use memory as the emptyDir's storage medium.
+    # Warning: will count against the pods' memory limit.
     memory: false
 
   # to be changed if/when we use prometheus within thumbor
