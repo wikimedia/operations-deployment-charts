@@ -65,7 +65,7 @@ discovery:
 networkpolicy:
   egress:
     enabled: true
-    dns_nets:
+    dst_nets:
     - cidr: 10.2.1.14/32 # mobileapps.svc.codfw.wmnet
       ports:
         - protocol: tcp
