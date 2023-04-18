@@ -11,6 +11,7 @@ main_app:
 
   restbase_routes:
     mobileapps:
+      timeout: 120s
       urls:
         #TODO tighten capture group criteria
         ma_mobile_no_revision:
@@ -26,6 +27,7 @@ main_app:
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
     proton:
+      timeout: 150s
       urls:
         #TODO tighten capture group criteria
         proton_title:
@@ -42,11 +44,9 @@ main_app:
     mobileapps:
       tls: true
       port: 4102
-      timeout: 120s
     proton:
       tls: true
       port: 4030
-      timeout: 150s
 
 service:
   deployment: production
