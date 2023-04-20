@@ -160,7 +160,7 @@ namespaces:
       istio-injection: enabled
   ores-legacy:
     deployClusterRole: deploy
-    deployTLSCertificate: false
+    deployTLSCertificate: true
     # NOTE: istio-injection is disabled here because we want to keep comparibility
     # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
     labels:
