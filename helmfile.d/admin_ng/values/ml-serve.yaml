@@ -159,10 +159,12 @@ namespaces:
     labels:
       istio-injection: enabled
   ores-legacy:
-    deployClusterRole: deploy-kserve
+    deployClusterRole: deploy
     deployTLSCertificate: false
-    # NOTE: istio-injection is disabled here because we may want to move the
-    # service to wikikube. See change 9099993 for discussion.
+    # NOTE: istio-injection is disabled here because we want to keep comparibility
+    # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
+    labels:
+      istio-injection: disabled
 
 net_istio:
   ingressgateway:
