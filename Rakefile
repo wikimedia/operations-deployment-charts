@@ -22,7 +22,7 @@ CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
 # that guaranteed proper rendering of the CRDs and will be used to create
 # JSON schema (used by kubeconform to validate custom resources).
 CDRS_GLOB = 'charts/**/.fixtures/crds.yaml'.freeze
-ISTIOCTL_VERSION = 'istioctl-1.9.5'.freeze
+ISTIOCTL_VERSION = 'istioctl-1.15.7'.freeze
 JSON_SCHEMA = 'jsonschema/'.freeze
 
 # This returns a base64-encoded value.
