@@ -8,6 +8,10 @@ releases:
   - name: RELEASE_NAME
     namespace: kube-system
     chart: wmf-stable/_EXAMPLE_
+    {{- $version := .Values.chartVersions | get "wmf-stable/_EXAMPLE_" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
     missingFileHandler: Warn
     needs:
       # This is to ensure this helmfile is processed after networking and DNS is set up properly
