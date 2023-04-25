@@ -1,5 +1,6 @@
-# cluster_group is used to identify a group of similar clusters (like for one in eqiad and one in codfw)
-# that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
+# cluster_group is used to identify a group of similar clusters (like for one
+# in eqiad and one in codfw) that share some config (values) in
+# "admin_ng/values/<cluster_group>.yaml"
 cluster_group: main
 
 deployExtraClusterRoles:
@@ -75,10 +76,10 @@ namespaces:
     pspClusterRole: allow-mediawiki-psp
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
-# Commented out until discussion of videoscaler on kubernetes is done
-# https://phabricator.wikimedia.org/T321899
-#  mw-videoscaler:
-#    pspClusterRole: allow-mediawiki-psp
+  # Commented out until discussion of videoscaler on kubernetes is done
+  # https://phabricator.wikimedia.org/T321899
+  #  mw-videoscaler:
+  #    pspClusterRole: allow-mediawiki-psp
   mw-web:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
@@ -193,7 +194,8 @@ GlobalNetworkPolicies:
           selector: 'k8s-app == "kube-dns"'
           ports:
             - 53
-  # This allows egress from all pods to all pods. Ingress still needs to be allowed by the destination, though.
+  # This allows egress from all pods to all pods. Ingress still needs to be
+  # allowed by the destination, though.
   allow-pod-to-pod:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
@@ -246,20 +248,20 @@ GlobalNetworkPolicies:
           ports:
             - 8080
           nets:
-            - 208.80.154.29/32 # urldownloader1001
-            - 208.80.154.81/32 # urldownloader1002
-            - 208.80.153.24/32 # urldownloader2001
-            - 208.80.153.61/32 # urldownloader2002
+            - 208.80.154.29/32  # urldownloader1001
+            - 208.80.154.81/32  # urldownloader1002
+            - 208.80.153.24/32  # urldownloader2001
+            - 208.80.153.61/32  # urldownloader2002
       - action: Allow
         protocol: TCP
         destination:
           ports:
             - 8080
           nets:
-            - 2620:0:861:1:208:80:154:29/128 # urldownloader1001
-            - 2620:0:861:3:208:80:154:81/128 # urldownloader1002
-            - 2620:0:860:1:208:80:153:24/128 # urldownloader2001
-            - 2620:0:860:2:208:80:153:61/128 # urldownloader2002
+            - 2620:0:861:1:208:80:154:29/128  # urldownloader1001
+            - 2620:0:861:3:208:80:154:81/128  # urldownloader1002
+            - 2620:0:860:1:208:80:153:24/128  # urldownloader2001
+            - 2620:0:860:2:208:80:153:61/128  # urldownloader2002
   # Allow all pods access to restbase
   allow-restbase:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
