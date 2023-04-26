@@ -1,13 +1,13 @@
 docker:
   registry: docker-registry.discovery.wmnet
 main_app:
-  limits:
+  requests:
     cpu: 100m
     memory: 32Gi
   liveness_probe:
     tcpSocket:
       port: 8989
-  requests:
+  limits:
     cpu: 4
     memory: 32Gi
   version: 2023-04-11-140816-production
