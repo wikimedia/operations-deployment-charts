@@ -91,8 +91,7 @@ spec:
               type: Recreate
           - path: spec.updateStrategy
     ingressGateways:
-      # This is the default Ingress Gateway installed via istioctl, the one
-      # that should be exposed to LVS.
+      # This is the KServe/Knative Ingress Gateway installed via istioctl.
       # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
       # but we override the list to:
       # 1) Change the default service type from LoadBalancer to NodePort
@@ -140,3 +139,52 @@ spec:
               name: https
               protocol: TCP
               nodePort: 30443
+      # This is another Ingress Gateway installed via istioctl, aimed for ML services
+      # that are not KServe related.
+      # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
+      # but we override the list to:
+      # 1) Change the default service type from LoadBalancer to NodePort
+      # 2) Add fixed nodePort configurations (easier to configure LVS endpoints).
+      # 3) Remove config for port 80 since it is not needed. This option has been
+      #    temporarily re-enabled to ease testing.
+      # 4) Add replicas to istio pods since we don't have autoscaling enabled
+      #    (needs a metrics server etc..).
+      # Please note that Istio needs specific Gateway, VirtualHost, Routes, etc..
+      # configs to implement a L7 reverse proxy, and those needs to be configured
+      # separately. In the Kubeflow use case, Knative-serving takes care of these
+      # configurations (see the related helm chart).
+      - name: istio-ingressgateway-services
+        enabled: true
+        k8s:
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: istio-ingressgateway-services
+            patches:
+            - path: kind
+              value: DaemonSet
+            # Delete spec.strategy
+            # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
+            - path: spec.update
+              value:
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
+          service:
+            type: NodePort
+            externalTrafficPolicy: Local
+            ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+              protocol: TCP
+              nodePort: 15021
+            - port: 443
+              targetPort: 8443
+              name: https
+              protocol: TCP
+              nodePort: 31443

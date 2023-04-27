@@ -21,3 +21,6 @@ service:
 
 ingress:
   enabled: true
+  selectors:
+    app: ingress-gateway-services
+    istio: ingressgateway
