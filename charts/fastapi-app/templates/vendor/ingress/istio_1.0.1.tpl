@@ -1,11 +1,11 @@
 {{/*
 Allow to configure Ingress using istio-ingressgateway
-https://istio.io/v1.9/docs/concepts/traffic-management/
+https://istio.io/v1.15/docs/concepts/traffic-management/
 
 Creates the following objects:
-  - Gateway (https://istio.io/v1.9/docs/reference/config/networking/gateway/)
-  - VirtualService (https://istio.io/v1.9/docs/reference/config/networking/virtual-service/)
-  - DestinationRule (https://istio.io/v1.9/docs/reference/config/networking/destination-rule/)
+  - Gateway (https://istio.io/v1.15/docs/reference/config/networking/gateway/)
+  - VirtualService (https://istio.io/v1.15/docs/reference/config/networking/virtual-service/)
+  - DestinationRule (https://istio.io/v1.15/docs/reference/config/networking/destination-rule/)
 
 In staging clusters, a generic Gateway is to be used instead of a dedicated one.
 
@@ -82,7 +82,7 @@ Ingress default setup
 
 {{/*
 Create a Istio Gateway object
-https://istio.io/v1.9/docs/reference/config/networking/gateway/
+https://istio.io/v1.15/docs/reference/config/networking/gateway/
 */}}
 {{- define "ingress.istio.gateway" -}}
 {{- if and .Values.ingress.enabled (not .Values.ingress.existingGatewayName) -}}
@@ -92,8 +92,12 @@ metadata:
 {{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
 spec:
   selector:
+    {{- if hasKey .Values.ingress "selectors" }}
+    {{- .Values.ingress.selectors | toYaml | nindent 4 }}
+    {{- else }}
     # This is the istio-ingressgateway this gateway will be attached to (provided by SRE)
     istio: ingressgateway
+    {{- end }}
   servers:
   - port:
       number: 443
@@ -113,7 +117,7 @@ spec:
 
 {{/*
 Create a Istio VirtualService object
-https://istio.io/v1.9/docs/reference/config/networking/virtual-service/
+https://istio.io/v1.15/docs/reference/config/networking/virtual-service/
 */}}
 {{- define "ingress.istio.virtualservice" -}}
 {{- if .Values.ingress.enabled -}}
@@ -145,7 +149,7 @@ spec:
 
 {{/*
 Create a Istio DestinationRule object
-https://istio.io/v1.9/docs/reference/config/networking/destination-rule/
+https://istio.io/v1.15/docs/reference/config/networking/destination-rule/
 
 The purpose if this default object is to enable TLS connections to upstream (backend) services
 and configure verification of upstreams CA and SAN. Without the caCertificates and
