@@ -12,8 +12,10 @@ app_type: "default"
 main_app:
   image: wikimedia/mediawiki-services-machinetranslation
   version: 2023-04-11-140816-production # replace this with latest later.
-  command: []
-  args: ["--workers", "\"4\""]
+  args: [
+    "--workers=4",
+    "--statsd-host=localhost:9125"
+  ]
 
   requests:
     cpu: 100m
