@@ -19,8 +19,11 @@ app:
 service:
   deployment: production
 
+mesh:
+  enabled: true
+
 ingress:
   enabled: true
   selectors:
-    app: ingress-gateway-services
+    service.istio.io/canonical-name: istio-ingressgateway-services
     istio: ingressgateway
