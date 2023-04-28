@@ -7,7 +7,7 @@ monitoring:
   enabled: true
 
 app:
-  image: machinelearning-liftwing-inference-services-ores-migration
+  image: wikimedia/machinelearning-liftwing-inference-services-ores-migration
   version: "2023-03-17-170602-publish"
   limits:
     cpu: 1
@@ -21,6 +21,7 @@ service:
 
 mesh:
   enabled: true
+  public_port: 8443
 
 ingress:
   enabled: true
