@@ -32,7 +32,10 @@ app:
 
         # Setting error to a string causes it to be used as the stream name.
         # Other sink settings will be copied from sink.
-        error_sink: rc1.mediawiki_page_content_change_enrich.error
+        # TODO: this stream does not match our adopted error stream name
+        # convention.  Change it.
+        # See: https://phabricator.wikimedia.org/T326536
+        error_sink: rc1.enrichment.mediawiki_page_content_change.error
 
         # Load event schemas from local path baked into the image.
         schema_uris:
