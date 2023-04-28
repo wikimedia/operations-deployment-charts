@@ -54,7 +54,37 @@ namespaces:
   eventstreams-internal: {}
   image-suggestion: {}
   linkrecommendation: {}
-  machinetranslation: {}
+  machinetranslation:
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "33Gi"
+          cpu: "9"
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "90"
+          memory: "150Gi"
+        limits:
+          cpu: "90"
+          memory: "150Gi"
   mathoid: {}
   miscweb:
     tlsExtraSANs:
