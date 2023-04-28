@@ -1,16 +1,9 @@
 # Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-helm_scaffold_version: 0.4 # This is still only valid for the "default network policy" file
-docker:
-  registry: docker-registry.wikimedia.org/wikimedia
-  pull_policy: IfNotPresent
-resources:
-  replicas: 1
-
 app:
   image: machinelearning-liftwing-inference-services-ores-migration
-  version: stable
+  version: latest # we use latest everywhere in the defaults.
   port: 80 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
@@ -19,8 +12,12 @@ app:
   # args: ["bin/server.js", "--param1", "arg1"]
   command: []
   args: []
-  requests: {}
-  limits: {}
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
       port: 80
@@ -28,16 +25,14 @@ app:
     httpGet:
       path: /
       port: 80
-  # add here any volumes to mount onto the pod. Example:
+  # # add here any volumes to mount onto the pod. Example:
   # volumes:
-  #   - name: myvolumename
-  #      hostPath:
-  #        path: /myvolumepath # where on the host machine
-  # add here any mounted volumes to make accessible to the container. Example:
+  # - name: scratchdir
+  #   emptyDir: {}
+  # # add here any mounted volumes to make accessible to the container. Example:
   # volumeMounts:
-  #   - name: myvolumename # the name from your volume above
-  #     mountPath: /path/ # where it should live in your container
-
+  #    - name: scratchdir # the name from your volume above
+  #      mountPath: /scratch/ # where it should live in your container
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
@@ -60,66 +55,6 @@ debug:
   enabled: false
   # Define here any port that you want to expose for debugging purposes
   ports: []
-
-# Basic mesh-related data.
-mesh:
-  enabled: false
-  image_version: latest
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
-  # http keepalive timeout for incoming requests
-  idle_timeout: "4.5s"
-  # Port to listen to
-  public_port: 80
-  local_access_log_min_code: "200"
-  # Headers to add to a local request,
-  # in dictionary form.
-  request_headers_to_add: []
-  # Timeout of a request to the local service
-  upstream_timeout: "60s"
-  # Enabling telemetry, telemetry port.
-  telemetry:
-    enabled: true
-    port: 1667
-
-# Mesh-related discovery
-# TODO: move under mesh.* once we can
-discovery:
-  # List of listeners
-  listeners: []
-
-# Mesh related pure TCP proxies
-tcp_proxy:
-  listeners: []
-
-# Should be provided by configuration management.
-# See details of the structures in the comments
-# In the configuration module.
-services_proxy: ~
-tcp_services_proxy: ~
-
-networkpolicy:
-  egress:
-    enabled: false
-
-# Add here the list of kafka-clusters (by name) that the service will need to reach.
-kafka:
-  allowed_clusters: []
-
-# Optional affinity settings
-affinity: {}
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: some-key
-#                operator: In
-#                values:
-#                  - some-value
-#  nodeSelector:
-#    node.kubernetes.io/some-key: some-value
 
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
@@ -163,3 +98,80 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
+
+# Basic mesh-related data.
+mesh:
+  enabled: false
+  image_version: latest
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 80
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners
+  listeners: []
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value

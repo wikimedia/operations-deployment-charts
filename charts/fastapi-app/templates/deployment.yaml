@@ -18,6 +18,7 @@ spec:
       {{- end }}
       containers:
         {{- include "app.generic.container" . | indent 8 }}
-
-
-
+        {{- include "mesh.deployment.container" . | indent 8 }}
+      volumes:
+        {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "mesh.deployment.volume" . | indent 8 }}
