@@ -57,6 +57,9 @@ app:
     "jobmanager.memory.process.size": "1500m"
     "taskmanager.memory.process.size": "1500m"
 
+    "python.fn-execution.bundle.size": "5000"
+    "taskmanager.memory.process.size: 3072m"
+
   # TODO: might require tuning.
   # 1500m is the basline memory allocation used with the
   # YARN deployment of this job.
@@ -66,7 +69,8 @@ app:
 
   taskManager:
     resource:
-      memory: 1500m
+      cpu: 2
+      memory: 3072m
 
 mesh:
   enabled: false
