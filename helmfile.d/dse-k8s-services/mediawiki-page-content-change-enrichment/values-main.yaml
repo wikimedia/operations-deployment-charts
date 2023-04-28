@@ -55,10 +55,8 @@ app:
     # container.
     # See https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/config/#taskmanager-memory-process-size
     "jobmanager.memory.process.size": "1500m"
-    "taskmanager.memory.process.size": "1500m"
-
-    "python.fn-execution.bundle.size": "5000"
     "taskmanager.memory.process.size": "3072m"
+    "python.fn-execution.bundle.size": "5000"
 
   # TODO: might require tuning.
   # 1500m is the basline memory allocation used with the
