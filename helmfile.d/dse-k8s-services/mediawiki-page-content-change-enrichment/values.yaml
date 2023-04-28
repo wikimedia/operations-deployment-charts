@@ -1,6 +1,33 @@
+# We are trying to keep this base values.yaml files useable in minikube developemnt enviroments.
+# Please put overrides for production in other values files.
+
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
-  version: v1.1.0
+  version: v1.12.0
+
+  config_files:
+    # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
+    app.config.yaml:
+
+      # Configs for the page_content_change enrichment job.
+      enrich:
+        mediawiki_api_endpoint_template: https://api-ro.discovery.wmnet/w/api.php
+        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+
+        schema_uris:
+          # Load schema from local path baked into the image.
+          - file:///srv/app/event-schemas/primary/jsonschema
+
+        # Get stream config from MW EventStreamConfig API.
+        stream_config_uri: https://meta.wikimedia.org/w/api.php
+
+        # Production requests to stream_config_uri should
+        # be routed via app-ro.discovery.wmnet
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "https://api-ro.discovery.wmnet"
 
   job:
     # Desired state for the job., either 'running' or 'suspended'.
@@ -8,12 +35,10 @@ app:
     state: running
 
     # TODO: add more job args, like kafka brokers once supported.
-    pythonEntryPoint: /srv/app/pipeline.py
+    pythonEntryPoint: /srv/app/mediawiki_event_enrichment/page_content_change.py
+
     args: [
-      # NOTE: These streams must all be declared in EventStreamConfig wgEventStreams.
-      --source, 'rc1.mediawiki.page_change:1.0.0',
-      --destination, 'rc1.mediawiki.page_content_change:1.0.0',
-      --error-destination, 'rc1.enrichment.mediawiki_page_content_change.error:2.0.0'
+      --config, /srv/app/confg/app.config.yaml
     ]
 
     # job.parallelism controls the number of TaskManagers (if taskManager.replicas is not set).

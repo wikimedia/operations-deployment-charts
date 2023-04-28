@@ -1,8 +1,51 @@
-# WMF produciton main release cluster specific values.
+# WMF production main release specific values.
+#
 # These are kept out of the primary values.yaml just so that it is easier to use
 # with local development.
+#
+# Settings in this file should apply for all WMF production k8s clusters & enviroments.
+# cluster/environment specific settings belong in env specific values files.
 
 app:
+
+  config_files:
+    # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
+    app.config.yaml:
+
+      # Configs for the page_content_change enrichment job.
+      enrich:
+        mediawiki_api_endpoint_template: https://api-ro.discovery.wmnet/w/api.php
+        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        job_name: mediawiki_page_content_change_enrich
+        # Configure sources and sinks.
+        # NOTE: Make sure to set kafka options in environment specific values files.
+        source:
+          stream: rc1.mediawiki.page_change:1.0.0
+          connector: kafka
+
+        sink:
+          stream: rc1.mediawiki.page_content_change:1.0.0
+          connector: kafka
+
+        # Setting error to a string causes it to be used as the stream name.
+        # Other sink settings will be copied from sink.
+        error_sink: rc1.mediawiki_page_content_change_enrich.error
+
+        # Load event schemas from local path baked into the image.
+        schema_uris:
+          - file:///srv/app/event-schemas/primary/jsonschema
+        # Get stream config from MW EventStreamConfig API.
+        stream_config_uri: https://meta.wikimedia.org/w/api.php
+
+        # Production requests to stream_config_uri should
+        # be routed via app-ro.discovery.wmnet
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "https://api-ro.discovery.wmnet"
+
+
   flinkConfiguration:
     # The total memory available to the jobmanager and
     # taskmanager processes. This is the sum of on / off JVM heap memory,
@@ -32,21 +75,6 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      # Allow schema.svc.{eqiad,codfw}.
-      # TODO: When we deploy this to production wikikube, we should
-      # bake the schema repo into the app image just like we do for eventgate-main.
-      - cidr: 10.2.2.43/32 # schema.svc.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 8190
-          - protocol: tcp
-            port: 443
-      - cidr: 10.2.1.43/32 # schema.svc.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 8190
-          - protocol: tcp
-            port: 443
       # Allow api-ro
       - cidr: 10.2.2.22/32
         ports:

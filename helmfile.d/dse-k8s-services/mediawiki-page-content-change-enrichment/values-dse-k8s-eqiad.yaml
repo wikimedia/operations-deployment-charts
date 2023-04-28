@@ -6,26 +6,20 @@ kafka:
   allowed_clusters: [jumbo-eqiad]
 
 app:
-  env:
-    - name: KAFKA_BOOTSTRAP_SERVERS
-      value: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
+  config_files:
+    # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
+    app.config.yaml:
 
-    # TODO: It would be better to put these config values in values-main.yaml,
-    # so they can be shared across all k8s clusters where this might be deployed.
-    # However, since env is an list, helm will not merge the entries like it would
-    # with dicts. For now, include all env vars in the same values file.
-
-    - name: SCHEMA_URIS
-      # This app only needs the primary schema repo
-      # In a future improvement, we should bake a checkout of this repo into the
-      # app image and load schemas from the local filesystem.
-      value: https://schema.discovery.wmnet/repositories/primary/jsonschema/
-
-    - name: STREAM_CONFIG_URI
-      value: https://meta.wikimedia.org/w/api.php
-
-      # HTTP_CLIENT_ROUTE will be used to
-      # route STREAM_CONFIG_URI to a different endpoint, but using the same
-      # HTTP Host header.
-    - name: HTTP_CLIENT_ROUTE
-      value: https://api-ro.discovery.wmnet
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Configure sources and sinks.
+        source:
+          options:
+            # TODO enable TLS on port 9092
+            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
+        sink:
+          options:
+            # Use same source and sink kafka cluster while in DSE.
+            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
+            # Override this in values.codfw.yaml
+            kafka_topic_prefix: eqiad.
