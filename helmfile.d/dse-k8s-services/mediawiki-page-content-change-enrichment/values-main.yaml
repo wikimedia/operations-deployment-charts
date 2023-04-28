@@ -25,6 +25,8 @@ app:
         source:
           stream: rc1.mediawiki.page_change:1.0.0
           connector: kafka
+          options:
+            consumer_group: mediawiki_page_content_change_enrich-000
 
         sink:
           stream: rc1.mediawiki.page_content_change:1.0.0
