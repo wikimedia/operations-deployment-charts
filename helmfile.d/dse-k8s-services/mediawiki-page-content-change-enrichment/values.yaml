@@ -3,7 +3,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
-  version: v1.12.0
+  version: v1.13.0
 
   config_files:
     # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
@@ -60,3 +60,9 @@ app:
   taskManager:
     resource:
       memory: 1600m
+
+  env:
+    # Disable use of jemalloc, we've mostly seen it just cause more memory use
+    # https://phabricator.wikimedia.org/T332948#8792955
+    - name: DISABLE_JEMALLOC
+      value: true
