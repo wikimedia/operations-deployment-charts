@@ -29,6 +29,11 @@ app:
         http_client_routes:
           "https://meta.wikimedia.org/w/api.php": "https://api-ro.discovery.wmnet"
 
+      # Can be removed after
+      # https://gitlab.wikimedia.org/repos/data-engineering/mediawiki-event-enrichment/-/merge_requests/49
+      http_session:
+        pool_maxsize: 12
+
   job:
     # Desired state for the job., either 'running' or 'suspended'.
     # Alter this property to trigger a restart.
