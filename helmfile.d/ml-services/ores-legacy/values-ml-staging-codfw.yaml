@@ -1,0 +1,8 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.1.16/32 # inference-staging.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
