@@ -10,6 +10,8 @@ ingress:
   # Setting staging to true will use the staging domain to generate the default gateway
   # hosts. It will also ensure that default staging cergen certificates are be trusted.
   staging: false
+  # Similar settings as described above for the ML clusters.
+  mlstaging: false
   # gatewayHosts settings configure the hostnames this service will be reachable on.
   # By default, this will be a list like:
   # - {{ gatewayHosts.default }}.discovery.wmnet
@@ -18,6 +20,8 @@ ingress:
   #
   # And in case .Values.ingress.staging is true:
   # - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
+  # Or in case .Values.ingress.mlstaging is true:
+  # - {{ gatewayHosts.default }}.ml-k8s-staging.discovery.wmnet
   gatewayHosts:
     # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
     default: ""
