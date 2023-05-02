@@ -13,7 +13,8 @@ spec:
       app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   {{- if .Values.strategy }}
-  strategy: {{ .Values.strategy }}
+  strategy:
+  {{- toYaml .Values.strategy | nindent 4 }}
   {{- end }}
   replicas: {{ .Values.resources.replicas }}
   template:

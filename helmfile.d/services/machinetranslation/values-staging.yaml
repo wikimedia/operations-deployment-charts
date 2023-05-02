@@ -1,6 +1,7 @@
 resources:
   replicas: 1
 
-strategy: Recreate
+strategy:
+  type: Recreate
 ingress:
   staging: true
