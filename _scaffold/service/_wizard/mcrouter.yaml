@@ -10,7 +10,7 @@ templates:
     {{- include "cache.mcrouter.volume" . }}
   configmap: |
     {{- include "cache.mcrouter.configmap" . }}
-  networkpolicy.egress: |
+  NetworkpolicyEgress: |
     {{- include "cache.mcrouter.egress" . }}
 values: |
   common_images:

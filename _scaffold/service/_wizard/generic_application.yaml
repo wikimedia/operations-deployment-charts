@@ -17,7 +17,7 @@ templates:
     {{- if .Values.debug.enabled }}
       {{- template "app.generic.debug_service" . }}
     {{- end }}
-  networpolicy.ingress: |
+  NetworkpolicyIngress: |
     {{- include "app.generic.networkpolicy_ingress" . -}}
 values: |
   app:

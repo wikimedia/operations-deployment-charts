@@ -14,12 +14,10 @@ spec:
     - Ingress
   ingress:
     - ports:
-# replace: networkpolicy.ingress; indent: 6
-      {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
+# replace: NetworkpolicyIngress; indent: 6
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-    {{- include "base.networkpolicy.egress-basic" (.Files.Get "default-network-policy-conf.yaml" | fromYaml) }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
-# replace: networkpolicy.egress; indent: 4
+# replace: NetworkpolicyEgress; indent: 4
 {{- end }}

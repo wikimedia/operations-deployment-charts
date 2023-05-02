@@ -16,9 +16,9 @@ templates:
     {{ include "mesh.configuration.configmap" . }}
   service: |
     {{ include "mesh.service" . }}
-  networpolicy.ingress: |
+  NetworkpolicyIngress: |
     {{- include "mesh.networkpolicy.ingress" . }}
-  networkpolicy.egress: |
+  NetworkpolicyEgress: |
     {{- include "mesh.networkpolicy.egress" . }}
 values: |
   # Basic mesh-related data.
