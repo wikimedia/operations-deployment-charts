@@ -12,6 +12,9 @@ spec:
     matchLabels:
       app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
+  {{- if .Values.strategy }}
+  strategy: {{ .Values.strategy }}
+  {{- end }}
   replicas: {{ .Values.resources.replicas }}
   template:
     metadata:

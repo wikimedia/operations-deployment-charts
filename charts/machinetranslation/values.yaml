@@ -11,12 +11,11 @@ app_type: "default"
 
 main_app:
   image: wikimedia/mediawiki-services-machinetranslation
-  version: 2023-04-11-140816-production # replace this with latest later.
+  version: 2023-04-11-140816-production  # replace this with latest later.
   args: [
     "--workers=4",
     "--statsd-host=localhost:9125"
   ]
-
   requests:
     cpu: 100m
     memory: 32Gi
@@ -37,7 +36,7 @@ monitoring:
   image_version: latest
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  deployment: minikube  # valid values are "production" and "minikube"
   port: null
 
 debug:
@@ -62,3 +61,15 @@ networkpolicy:
 
 app:
   port: 8989
+
+ingress:
+  enabled: false
+  keepNodePort: false
+  staging: false
+  gatewayHosts:
+    default: ""
+    disableDefaultHosts: false
+    extraFQDNs: []
+  existingGatewayName: ""
+  routeHosts: []
+  httproutes: []
