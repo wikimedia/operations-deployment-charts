@@ -409,6 +409,22 @@ module Tester
       true
     end
 
+    def collect_charts(chdir = nil)
+      res = nil
+      real_path = chdir.nil? ? path : File.join(chdir, path)
+      return [] unless File.exist? real_path
+
+      # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
+      self.class::ENV_EXPLORE.each do |env|
+        res = _exec("helmfile -e #{env} build", nil, real_path)
+        next unless res.ok?
+
+        releases = YAML.safe_load(res.out)['releases']
+        return releases.map { |release| release['chart'].gsub('wmf-stable/', '') }.uniq
+      end
+      []
+    end
+
     private
 
     def collect_fixtures(chdir = nil)
@@ -425,6 +441,8 @@ module Tester
       # to extract the environments.
       bad(res.err, "helmfile build #{path}")
     end
+
+
 
     # Run an helmfile command.
     # We need to create a dedicated execution env for every source
@@ -494,6 +512,7 @@ module Tester
       results = {}
       # If we failed to build a base helmfile state, we bail out on this too.
       return results if @bad
+      return results if @fixtures.nil?
 
       @fixtures.each_value do |env|
         res = _exec("helmfile -e #{env} build", nil, @path)

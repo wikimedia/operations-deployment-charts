@@ -15,6 +15,7 @@ require_relative '.rake_modules/scaffold'
 require_relative '.rake_modules/monkeypatch'
 require_relative '.rake_modules/utils'
 require_relative '.rake_modules/tester/tester'
+require_relative '.rake_modules/tester/asset'
 
 HELMFILE_GLOB = 'helmfile.d/*services/**/helmfile.yaml'.freeze
 CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
@@ -410,4 +411,93 @@ def bump_chart_version(filename)
   File.write filename, content
 end
 
-task default: %i[repo_update test_scaffold check_charts check_deployments check_admin validate_envoy_config validate_istio_config]
+desc 'Only checks the charts/deployments affected by our change'
+task :check_change do
+  g = Git.open('.')
+  g.add_remote('origin', REPO_URL, fetch: true) unless g.remotes.include?('origin')
+  # First refresh origin, to be sure we're comparing our code to
+  # production's HEAD
+  g.remote('origin').fetch
+  changes = g.changed_files('origin/master')
+  puts tasklist_from_changes(changes)
+end
+
+def tasklist_from_changes(changes)
+  tasks = {scaffold: false, charts: [], deployments: [], admin: false, envoy: true, istio: false}
+  all_changes = changes.values.flatten
+  # Scaffold is easy. Any file under _scaffold changed?
+  all_changes.each do |path|
+    if path.start_with?('_scaffold/')
+      tasks[:scaffold] = true
+      break
+    end
+  end
+  # Now let's check the charts. This is slightly trickier because we have to first extract which charts have changed
+  charts = all_changes.filter { |p| p.start_with?('charts/') }.map{ |p| p.split('/')[1] }.uniq
+  # Now let's find if any chart in our repo depends on the charts we've modified. We will need to test them as well.
+  FileList.new(CHARTS_GLOB).each do |path_to_chart|
+    chart_yaml = yaml_load_file(path_to_chart)
+    chart_name = chart_yaml['name']
+    dependencies = []
+    # Dependencies are to be defined in Chart.yaml
+    dependencies = chart_yaml['dependencies'] if chart_yaml['dependencies']
+
+    next unless dependencies
+
+    dependencies.each do |dep|
+      next unless dep.key?('name')
+
+      charts << chart_name if charts.include? dep['name']
+    end
+  end
+  tasks[:charts] = charts.uniq
+  # Now let's check deployments. First let's find deployments that have been modified directly
+  deps = all_changes.filter { |p| p.start_with?(%r{helmfile.d/.*services/}) && p.split('/').length > 2 }
+  tasks[:deployments] = deps.map{ |p| p.split('/')[2] }.uniq
+  # Which of these deployments depend on a specific chart that changed?
+  FileList.new(HELMFILE_GLOB).each do |path_to_helmfile|
+    # We load an helmfile asset, but do not intend to run it or collect fixtures
+    # this is, unless someone adds a "nonexistent" deployment one day.
+    asset = Tester::HelmfileAsset.new(path_to_helmfile, ['nonexistent'])
+    next if tasks[:deployments].include?(asset.name)
+
+    asset.collect_charts.each do |chart|
+      next unless tasks[:charts].include?(chart)
+
+      tasks[:deployments] << asset.name
+    end
+  end
+  # Now let's check if any file was changed in helmfile.d/admin_ng
+  all_changes.each do |changed_file|
+    if changed_file.start_with?('helmfile.d/admin_ng')
+      tasks[:admin] = true
+      break
+    end
+  end
+  # We also need to see if any chart used there is actually changed.
+  unless tasks[:admin]
+    asset = Tester::AdminAsset.new('helmfile.d/admin_ng/helmfile.yaml', ['nonexistent'])
+    asset.collect_charts.each do |chart|
+      if tasks[:charts].include?(chart)
+        tasks[:admin] = true
+        break
+      end
+    end
+  end
+  # validate_istio_config checks
+  # anything under 'custom_deploy.d/istio/*/config.yaml'
+  intersection = FileList.new('custom_deploy.d/istio/*/config.yaml') & all_changes
+  tasks[:istio] = !intersection.empty?
+
+  # TODO: also check heuristically for envoy
+  Rake::Task[:test_scaffold].invoke if tasks[:scaffold]
+  Rake::Task[:check_charts].invoke(nil, tasks[:charts].join('/')) unless tasks[:charts].empty?
+  Rake::Task[:check_deployments].invoke(nil, tasks[:deployments].join('/')) unless tasks[:deployments].empty?
+  Rake::Task[:check_admin].invoke if tasks[:admin]
+  Rake::Task[:validate_envoy_config].invoke if tasks[:envoy]
+  Rake::Task[:validate_istio_config].invoke if tasks[:istio]
+end
+
+# This is the old default
+task all: %i[repo_update test_scaffold check_charts check_deployments check_admin validate_envoy_config validate_istio_config]
+task default: %i[check_change]

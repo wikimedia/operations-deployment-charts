@@ -59,6 +59,28 @@ class Git::Base
     yield
     checkout('-')
   end
+
+  # Reports files that have been modified in a git repo
+  def changed_files(ref)
+    changed = {deleted_files: [], changed_files: [], new_files: [], rename_new: [], rename_old: []}
+    diffs = diff(ref)
+    diffs.each do |diff|
+      name_status = diffs.name_status[diff.path]
+      case name_status
+      when 'A'
+        changed[:new_files] << diff.path
+      when 'C', 'M'
+        changed[:changed_files] << diff.path
+      when 'D'
+        changed[:deleted_files] << diff.path
+      when /R\d+/
+        changed[:rename_old] << diff.path
+        regex = Regexp.new "^diff --git a/#{Regexp.escape(diff.path)} b/(.+)"
+        changed[:rename_new] << Regexp.last_match[1] if diff.patch =~ regex
+      end
+    end
+    changed
+  end
 end
 
 module FileUtils
