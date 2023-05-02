@@ -7,7 +7,7 @@ config:
     MEDIAWIKI_REQUEST_TIMEOUT: 3000
     MESSAGES_CACHE_MAX_AGE: 60000
     WIKIBASE_REPO: https://test.wikidata.org/w
-    WIKIBASE_REPO_HOSTNAME_ALIAS: mw-api-int-ro.discovery.wmnet
+    WIKIBASE_REPO_HOSTNAME_ALIAS: api-ro.discovery.wmnet
 main_app:
   liveness_probe:
     tcpSocket:
@@ -22,9 +22,8 @@ service:
   deployment: production
   port: 3031
 tolerations: {}
+mesh:
+  enabled: false
+
 app:
   port: 3031
-# Enable services proxy for the MediaWiki API
-discovery:
-  listeners:
-    - mw-api-int-async
