@@ -29,23 +29,23 @@ config:
 networkpolicy:
   egress:
     enabled: true
-  dst_nets:
-    - cidr: 10.64.0.8/32  # people1003
-      ports:
-        - port: 443
-          protocol: tcp
-    - cidr: 2620:0:861:101:10:64:0:8/128  # people1003
-      ports:
-        - port: 443
-          protocol: tcp
-    - cidr: 10.192.0.69/32  # people2002
-      ports:
-        - port: 443
-          protocol: tcp
-    - cidr: 2620:0:860:101:10:192:0:69/128  # people1003
-      ports:
-        - port: 443
-          protocol: tcp
+    dst_nets:
+      - cidr: 10.64.0.8/32  # people1003
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 2620:0:861:101:10:64:0:8/128  # people1003
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 10.192.0.69/32  # people2002
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 2620:0:860:101:10:192:0:69/128  # people1003
+        ports:
+          - port: 443
+            protocol: tcp
 
 app:
   port: 8989
