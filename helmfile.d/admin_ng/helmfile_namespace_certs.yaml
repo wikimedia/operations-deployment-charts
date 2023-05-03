@@ -37,6 +37,8 @@ releases:
             spec:
               {{ if hasPrefix "staging-" $.Environment.Name }}
               commonName: {{ first $tlsHostnames }}.k8s-staging.discovery.wmnet
+              {{ else if hasPrefix "ml-staging-" $.Environment.Name }}
+              commonName: {{ first $tlsHostnames }}.k8s-ml-staging.discovery.wmnet
               {{- else }}
               commonName: {{ first $tlsHostnames }}.discovery.wmnet
               {{ end }}
