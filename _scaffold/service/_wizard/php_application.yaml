@@ -6,6 +6,7 @@ modules:
   - "app.generic:1.0"
   - "lamp.networkpolicy:1.0"
   - "lamp.common:1.0"
+  - "lamp.job:1.0"
   - "base.networkpolicy:1.0"
 priority: 1
 conflicts:
@@ -37,6 +38,8 @@ templates:
     {{- if .Values.debug.enabled }}
       {{- template "app.generic.debug_service" . }}
     {{- end }}
+  cronjob: |
+    {{- include "lamp.job.container" (dict "Root" $root "Job" $cronjob) }}
   NetworkpolicyIngress: |
     {{- include "lamp.networkpolicy.ingress" . -}}
 values: |

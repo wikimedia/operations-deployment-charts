@@ -2,6 +2,7 @@ name: generic-application
 description: Basic component for generic (non-LAMP) applications
 modules:
   - "app.generic:1.0"
+  - "app.job:1.0"
 priority: 1
 conflicts:
   - LAMP
@@ -19,6 +20,8 @@ templates:
     {{- end }}
   NetworkpolicyIngress: |
     {{- include "app.generic.networkpolicy_ingress" . -}}
+  cronjob: |
+    {{- include "app.job.container" (dict "Root" $root "Job" $cronjob) }}
 values: |
   app:
     image: __image_name__

@@ -34,3 +34,16 @@ affinity: {}
 #  nodeSelector:
 #    node.kubernetes.io/some-key: some-value
 
+# Cronjob definitions
+# Here you can define your cronjobs
+cronjobs: []
+# Example of a job:
+# - name: my-cron-hourly
+#   enabled: true
+#   command:
+#      - /bin/cowsay
+#      - "hello"
+#   schedule: "@hourly" (defaults to @daily)
+#   concurrency: Replace (defaults to "Forbid")
+#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
+#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
