@@ -6,3 +6,7 @@ app:
     pythonEntryPoint: /srv/pyflink_app0/python_entry_point.py
     args: [ --arg1, val1 ]
     upgradeMode: stateless
+
+  flinkConfiguration:
+    key1: val
+    key2: 1000 # This int should be converted to a string by the chart for the flinkConfiguration spec

@@ -50,7 +50,11 @@ spec:
 
     {{- if .Values.app.flinkConfiguration }}
     ### User provided configuration
-    {{ toYaml .Values.app.flinkConfiguration | nindent 4 }}
+    # flinkConfiguration must be map of str: str.
+    # Iterate through and quote the values, in case they look like integers.
+    {{- range $key, $val := .Values.app.flinkConfiguration }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
     {{- end }}
 
   # Use podTemplate to add WMF labels and annotations to all pods.
