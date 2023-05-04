@@ -12,10 +12,6 @@ app_type: "default"
 main_app:
   image: wikimedia/mediawiki-services-machinetranslation
   version: 2023-04-11-140816-production  # replace this with latest later.
-  args: [
-    "--workers=4",
-    "--statsd-host=localhost:9125"
-  ]
   requests:
     cpu: 100m
     memory: 32Gi
@@ -32,7 +28,13 @@ main_app:
       port: 8989
 
 config:
-  public: []
+  public:
+    # These are sane defaults chosen internally in the software, expect to alter them for a production env
+    # CT2_INTER_THREADS: 1
+    # CT2_INTRA_THREADS: 1
+    # GUNICORN_WORKERS: 1
+    # STATSD_HOST: localhost
+    # STATSD_PORT: 8125
 monitoring:
   enabled: false
   image_version: latest
