@@ -414,7 +414,7 @@ end
 desc 'Only checks the charts/deployments affected by our change'
 task :check_change do
   g = Git.open('.')
-  g.add_remote('origin', REPO_URL, fetch: true) unless g.remotes.include?('origin')
+  g.add_remote('origin', REPO_URL, fetch: true) unless g.remotes.map(&:name).include?('origin')
   # First refresh origin, to be sure we're comparing our code to
   # production's HEAD
   g.remote('origin').fetch
