@@ -130,68 +130,75 @@ end
 desc 'Validate the envoy configuration'
 task validate_envoy_config: :check_dep do
   puts 'Generating and verifying the envoy configuration...'
-  # run helm template for a specific fixture that generates a service proxy and tls terminator
-  command = "helm template --values .fixtures/envoy_proxy.yaml --values #{LISTENERS_FIXTURE} charts/tegola-vector-tiles"
-  res, out = _exec command
-  unless res
-    puts out.red
-    raise('Failure generating the helm manifest')
-  end
-  # Extract the envoy configuration, write it to a file
-  file_resources = {}
   begin
-    error = 'Extracting envoy config from "helm template" output'
-    config = ''
-    YAML.load_stream(out) do |resource|
-      next unless !resource.nil? \
-        && resource['kind'] == 'ConfigMap' \
-        && resource['metadata'] \
-        && resource['metadata']['name'] \
-        && resource['metadata']['name'].end_with?('envoy-config-volume')
-      file_resources = resource['data']
-      config = file_resources['envoy.yaml']
+    sc = Scaffold.new('service', 'validate-envoy-config', '_scaffold/service/.presets/nodejs.yaml')
+    sc.run
+    # run helm template for a specific fixture that generates a service proxy and tls terminator
+    command = "helm template --values .fixtures/envoy_proxy.yaml --values #{LISTENERS_FIXTURE} charts/validate-envoy-config"
+    res, out = _exec command
+    unless res
+      puts out.red
+      raise('Failure generating the helm manifest')
     end
-  rescue StandardError => e
-    puts error.red
-    puts e
-    raise('Failure reading the helm yaml template')
-  end
-  begin
-    error = 'Parsing envoy.yaml'
-    YAML.safe_load(config)
-  rescue Psych::SyntaxError => e
-    report_yaml_parse_error(command, error, config, e)
-    raise('Failure parsing envoy YAML configuration')
-  rescue StandardError => e
-    puts error.red
-    puts e
-    raise('Generic failure interpreting envoy YAML configuration')
+    # Extract the envoy configuration, write it to a file
+    file_resources = {}
+    begin
+      error = 'Extracting envoy config from "helm template" output'
+      config = ''
+      YAML.load_stream(out) do |resource|
+        next unless !resource.nil? \
+          && resource['kind'] == 'ConfigMap' \
+          && resource['metadata'] \
+          && resource['metadata']['name'] \
+          && resource['metadata']['name'].end_with?('envoy-config-volume')
+
+        file_resources = resource['data']
+        config = file_resources['envoy.yaml']
+      end
+    rescue StandardError => e
+      puts error.red
+      puts e
+      raise('Failure reading the helm yaml template')
+    end
+    begin
+      error = 'Parsing envoy.yaml'
+      YAML.safe_load(config)
+    rescue Psych::SyntaxError => e
+      report_yaml_parse_error(command, error, config, e)
+      raise('Failure parsing envoy YAML configuration')
+    rescue StandardError => e
+      puts error.red
+      puts e
+      raise('Generic failure interpreting envoy YAML configuration')
+    end
+  ensure
+    FileUtils.rm_rf('charts/validate-envoy-config')
   end
 
-  has_envoy = system('which envoy > /dev/null 2>&1')
-  if has_envoy
+  use_local_envoy = system('which envoy > /dev/null 2>&1') && File.writable?('/etc/envoy')
+  if use_local_envoy
     dest = '/etc/envoy'
   else
     dest = '.tmp'
     # Now create a temp directory where we write the yaml file, then run docker to verify it works.
-    FileUtils.mkdir '.tmp', mode: 0o777
-    at_exit { FileUtils.remove_entry '.tmp' }
+    FileUtils.mkdir dest, mode: 0o777
+    at_exit { FileUtils.remove_entry dest }
   end
   file_resources.each do |fn, data|
     f = File.open "#{dest}/#{fn}", 'w'
     f.write data
     f.close
     # If we're copying the file into the container, it needs to be world-readable
-    File.chmod 0o755, "#{dest}/#{fn}" unless has_envoy
+    File.chmod 0o755, "#{dest}/#{fn}" unless use_local_envoy
   end
 
   FileUtils.cp_r('.fixtures/ssl/', "#{dest}/")
 
-  if has_envoy
-    cmd = 'envoy --mode validate -c /etc/envoy/envoy.yaml'
+  if use_local_envoy
+    cmd = "envoy --mode validate -c #{dest}/envoy.yaml"
   else
-    path = File.realpath '.tmp'
-    cmd = "docker run --rm -v #{path}:/etc/envoy docker-registry.wikimedia.org/envoy:latest envoy --mode validate -c /etc/envoy/envoy.yaml"
+    path = File.realpath dest
+    cmd = "docker run --pull always --rm -v #{path}:/etc/envoy docker-registry.wikimedia.org/envoy:latest envoy --mode validate -c /etc/envoy/envoy.yaml"
   end
   res, out = _exec cmd
   if !res
