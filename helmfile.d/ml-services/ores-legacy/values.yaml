@@ -6,6 +6,10 @@ chartName: ores-legacy
 monitoring:
   enabled: true
 
+config:
+  public:
+    LIFTWING_URL: "http://localhost:6031"
+
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-ores-migration
   version: "2023-03-17-170602-publish"
