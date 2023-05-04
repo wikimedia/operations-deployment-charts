@@ -1,0 +1,17 @@
+main_app:
+  image: /repos/sre/miscweb/annualreport
+  version: v1.0.1
+  limits:
+    cpu: 200m
+    memory: 200Mi
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - 15.wikipedia.org
+    - annual.wikimedia.org

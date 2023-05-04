@@ -29,6 +29,7 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/miscweb/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # release and env-specific overrides
 
 hooks:
   - events: ["prepare"]
@@ -48,22 +49,24 @@ hooks:
       ]
 
 releases:
-  - name: main
+  - name: bugzilla
+    <<: *default
+  - name: annualreport
     <<: *default
 
 environments:
   staging:
     values:
-      - releases: [main]
+      - releases: [bugzilla, annualreport]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [main]
+      - releases: [bugzilla]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main]
+      - releases: [bugzilla]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn

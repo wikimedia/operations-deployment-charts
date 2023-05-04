@@ -1,0 +1,17 @@
+main_app:
+  image: wikimedia/operations-container-miscweb
+  version: 2022-01-20-183807-production
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  keepNodePort: true
+  gatewayHosts:
+    extraFQDNs:
+    - static-bugzilla.wikimedia.org
