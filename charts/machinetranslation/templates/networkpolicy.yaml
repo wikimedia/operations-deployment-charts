@@ -15,6 +15,11 @@ spec:
   ingress:
     - ports:
       {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
+      {{- if .Values.monitoring.enabled }}
+      - port: 9102
+        protocol: TCP
+      {{- end }}
+
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
