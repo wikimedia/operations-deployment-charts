@@ -182,9 +182,12 @@ spec:
               targetPort: 15021
               name: status-port
               protocol: TCP
-              nodePort: 15021
+              nodePort: 16021
             - port: 443
               targetPort: 8443
               name: https
               protocol: TCP
               nodePort: 31443
+            selector:
+              service.istio.io/canonical-name: istio-ingressgateway-services
+              istio: ingressgateway
