@@ -38,7 +38,11 @@ data:
 
 {{- define "mesh.configuration.full" -}}
 admin:
-  access_log_path: /var/log/envoy/admin-access.log
+  access_log:
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+      # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
+      path: /var/log/envoy/admin-access.log
   address:
     socket_address: {address: 127.0.0.1, port_value: 1666}
 static_resources:
