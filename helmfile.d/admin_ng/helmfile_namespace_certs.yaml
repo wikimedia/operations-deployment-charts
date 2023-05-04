@@ -48,6 +48,8 @@ releases:
                 {{- $tlsHostname := . -}}
                 {{- if hasPrefix "staging-" $.Environment.Name }}
                 - {{ $tlsHostname }}.k8s-staging.discovery.wmnet
+                {{- else if and (hasPrefix "ml-staging-" $.Environment.Name) (ne $tlsHostname "inference-staging") }}
+                - {{ $tlsHostname }}.k8s-ml-staging.discovery.wmnet
                 {{- else }}
                 {{ range $domains }}
                 - {{ $tlsHostname }}.{{ . }}
