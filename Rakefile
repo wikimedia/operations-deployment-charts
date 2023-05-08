@@ -215,29 +215,16 @@ task :scaffold do
 end
 
 desc 'Validate all scaffolding models'
-task :test_scaffold do
+task :test_scaffold, [:tests] do |_, args|
   sextant = which("sextant")
   if sextant.nil?
     puts("Please install sextant: pip3 install sextant")
     return 1
   end
-  FileList.new('_scaffold/*').exclude{|e| !File.directory? e}.map{|e| e.gsub(/_scaffold\//, '')}.each do |model|
-    puts("Now testing model #{model}")
-    FileList.new("_scaffold/#{model}/.presets/*.yaml").each do |presets|
-      preset_name = File.basename presets, '.yaml'
-      puts("Testing preset #{model}/#{preset_name}")
-      chart = "test-scaffold-#{model}-#{preset_name}"
-      begin
-        # run scaffolding first
-        sc = Scaffold.new(model, chart, presets)
-        sc.run
-        Rake::Task[:check_charts].invoke('lint/validate', chart)
-        Rake::Task[:check_charts].reenable
-      ensure
-        FileUtils.rm_rf("charts/#{chart}")
-      end
-    end
-  end
+  args = {} if args.nil?
+  Rake::Task[:check].invoke('scaffold', args.fetch(:tests, nil), nil)
+  Rake::Task[:check].reenable
+
 end
 
 desc 'Show diff introduced by the patch'
@@ -368,6 +355,8 @@ task :check, [:kind, :tests, :assets] do |_, args|
               HELMFILE_GLOB
             when 'admin'
               'admin'
+            when 'scaffold'
+              'scaffold'
             end
   # Update JSON schema if validate (e.g. kubeconform) will be called
   if options[:tests].nil? || options[:tests].include?('validate')

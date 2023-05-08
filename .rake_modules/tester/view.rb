@@ -9,7 +9,10 @@ module Tester
     def initialize(args)
       @args = args
       tpl_dir = File.join File.dirname(__FILE__), 'templates'
-      template = File.read(File.join(tpl_dir, "#{args[:kind]}.erb"))
+      kind = args[:kind]
+      # Use the chrts template for scaffold
+      kind = 'charts' if kind == 'scaffold'
+      template = File.read(File.join(tpl_dir, "#{kind}.erb"))
       @tpl = ERB.new(template, nil, '-')
     end
 

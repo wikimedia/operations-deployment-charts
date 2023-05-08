@@ -40,44 +40,53 @@ module Tester
     def run
       assets = @assets.values
       # First let's filter our assets if there is such an option defined
-      if @tests.include? 'lint'
-        # We have no issue with overwhelming any charts repo at this point.
+      run_lint assets if @tests.include? 'lint'
+      run_diff assets if @tests.include? 'diff'
+      run_validate assets if @tests.include? 'validate'
+      run_finally assets
+    end
+
+    def run_lint(assets)
+      # We have no issue with overwhelming any charts repo at this point.
+      tp = ThreadPool.new(nthreads: Etc.nprocessors)
+      assets.each do |asset|
+        tp.run do
+          asset.lint
+        end
+      end
+      tp.join
+    end
+
+    def run_diff(assets)
+      back_to_origin do |origin|
         tp = ThreadPool.new(nthreads: Etc.nprocessors)
         assets.each do |asset|
+          # Skip chart libraries, since they cannot be templated
+          next if chart_library?(asset)
+
           tp.run do
-            asset.lint
+            asset.diff origin
           end
         end
+        # Wait for all the work to be done before returning
+        # Please note: this needs to be here or some threads might not find
+        # the directory.
         tp.join
       end
-      if @tests.include? 'diff'
-        back_to_origin do |origin|
-          tp = ThreadPool.new(nthreads: Etc.nprocessors)
-          assets.each do |asset|
-            # Skip chart libraries, since they cannot be templated
-            if chart_library?(asset)
-              next
-            end
-            tp.run do
-              asset.diff origin
-            end
-          end
-          # Wait for all the work to be done before returning
-          # Please note: this needs to be here or some threads might not find
-          # the directory.
-          tp.join
+    end
+
+    def run_validate(assets)
+      assets.each do |asset|
+        # Skip chart libraries, since we did not render any yaml to validate
+        if chart_library?(asset)
+          next
         end
-      end
-      if @tests.include? 'validate'
-        assets.each do |asset|
-          # Skip chart libraries, since we did not render any yaml to validate
-          if chart_library?(asset)
-            next
-          end
-          asset.validate @validate_options
-        end
+        asset.validate @validate_options
       end
     end
+
+    # Run at the end of run, can be used for cleanups
+    def run_finally(assets) end
 
     # Create a copy that is a checkout of the original repo, for diffing
     # returns the name of this checkout to the block given
@@ -138,5 +147,46 @@ module Tester
     ASSET = HelmfileAsset
     DEFAULT_TESTS = %w[lint diff].freeze
     EXCLUDE = %w[_example_ _mediawiki-common_].freeze
+  end
+
+  # Runner for testing the scaffolding
+  class ScaffoldTestRunner < TestRunner
+    def run_diff(assets)
+      back_to_origin do |origin|
+        assets.each do |asset|
+          _, _, model, preset = asset.name.split('-')
+          Dir.chdir(origin) do
+            # The modified test chart was copied by back_to_origin. Remove it.
+            FileUtils.rm_rf("charts/#{asset.name}")
+            sc = Scaffold.new(model, asset.name, "_scaffold/#{model}/.presets/#{preset}.yaml")
+            sc.run
+          end
+          asset.diff origin
+        end
+      end
+    end
+
+    def find_assets(_pattern, to_run)
+      assets = {}
+      FileList.new('_scaffold/*').exclude{|e| !File.directory? e}.map{|e| e.gsub(/_scaffold\//, '')}.each do |model|
+        FileList.new("_scaffold/#{model}/.presets/*.yaml").each do |presets|
+          preset_name = File.basename presets, '.yaml'
+          chart = "test-scaffold-#{model}-#{preset_name}"
+          # run scaffolding first
+          sc = Scaffold.new(model, chart, presets)
+          sc.run
+
+          asset = self.class::ASSET.new("charts/#{chart}/Chart.yaml", to_run)
+          assets[asset.label] = asset
+        end
+      end
+      assets
+    end
+
+    def run_finally(assets)
+      assets.each do |asset|
+        FileUtils.rm_rf asset.path
+      end
+    end
   end
 end

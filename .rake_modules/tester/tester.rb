@@ -12,6 +12,8 @@ module Tester
   def self.runner(pattern, options)
     if pattern == 'admin'
       AdminTestRunner.new pattern, options
+    elsif pattern == 'scaffold'
+      ScaffoldTestRunner.new pattern, options
     elsif pattern.include?('helmfile.d')
       DeploymentTestRunner.new pattern, options
     elsif pattern.include?('charts')
@@ -24,10 +26,10 @@ module Tester
   # Creates a View. Takes as input the kind of test being run.
   def self.view(args)
     case args[:kind]
-    when 'charts', 'deployments', 'admin'
+    when 'charts', 'deployments', 'admin', 'scaffold'
       CLIView.new args
     else
-      abort("We don't have a view of kind '#{kind}'")
+      abort("We don't have a view of kind '#{args[:kind]}'")
     end
   end
 end
