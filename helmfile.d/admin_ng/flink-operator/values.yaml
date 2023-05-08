@@ -11,6 +11,13 @@ image:
 # FlinkDeployment CRD MUST be listed here.
 watchNamespaces: []
 
+rbac:
+  # NOTE: You must set this to true in your cluster specific helmfile values.
+  # Set this to true ONLY IF you have also set values for watchNamespaces,
+  # otherwise you will end up with cluster scoped RBAC resources being created.
+  # See the README.md.
+  create: false
+
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
   # NOTE: If you change this, it must also be changed for

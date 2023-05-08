@@ -5,3 +5,8 @@ watchNamespaces:
   - stream-enrichment-poc
   # https://phabricator.wikimedia.org/T328675
   - rdf-streaming-updater
+
+
+# Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
+rbac:
+  create: true
