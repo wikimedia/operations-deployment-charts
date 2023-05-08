@@ -11,27 +11,35 @@
                 - header:
                     key: "access-control-allow-origin"
                     value: "*"
+                  append: false
                 - header:
                     key: "access-control-allow-methods"
                     value: "GET,HEAD"
+                  append: false
                 - header:
                     key: "access-control-allow-headers"
                     value: "accept, content-type, content-length, cache-control, accept-language, api-user-agent, if-match, if-modified-since, if-none-match, dnt, accept-encoding"
+                  append: false
                 - header:
                     key: "access-control-expose-headers"
                     value: "etag"
+                  append: false
                 - header:
                     key: "x-content-type-options"
                     value: "nosniff"
+                  append: false
                 - header:
                     key: "x-frame-options"
                     value: "SAMEORIGIN"
+                  append: false
                 - header:
                     key: "referrer-policy"
                     value: "origin-when-cross-origin"
+                  append: false
                 - header:
                     key: "x-xss-protection"
                     value: "1; mode=block"
+                  append: false
               routes:
               - name: rest_gateway_root
                 match:
