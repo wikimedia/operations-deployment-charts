@@ -1,3 +1,10 @@
+## flink-kubernetes-operator HA
+https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/operations/configuration/#leader-election-and-high-availability
+
+This helmfile sets `kubernetes.operator.leader-election.enabled: true` and `replicas: 2`,
+enabling HA standby operator replicas.
+
+
 ## Watched Namespaces
 
 At WMF, we require that flink-kubernetes-operator is configured with

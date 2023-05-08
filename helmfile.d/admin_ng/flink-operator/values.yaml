@@ -18,6 +18,10 @@ rbac:
   # See the README.md.
   create: false
 
+# kubernetes.operator.leader-election.enabled is set to true below, so we can
+# increase then number of flink-kubernetes-operator replicas.
+replicas: 2
+
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
   # NOTE: If you change this, it must also be changed for
@@ -52,6 +56,14 @@ defaultConfiguration:
     # See: https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/metric_reporters/
     kubernetes.operator.metrics.reporter.prometheus.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
     kubernetes.operator.metrics.reporter.prometheus.port: 9999
+
+    # Enable flink-kubernetes-operator HA leader election.
+    # This enables us to run standby replicas of the operator.
+    kubernetes.operator.leader-election.enabled: true
+    # This name must be unique per namespace.  As we only deploy
+    # one flink operator per namespace, we can set this to the same
+    # value for all operator deployments
+    kubernetes.operator.leader-election.lease-name: flink-operator-lease
 
   # Make loggers only log to console in ECS format.
   log4j-operator.properties: |+
