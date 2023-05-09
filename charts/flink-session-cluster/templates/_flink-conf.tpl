@@ -34,6 +34,10 @@ high-availability: org.apache.flink.kubernetes.highavailability.KubernetesHaServ
 high-availability.storageDir: {{ .Values.main_app.config.ha_storage_dir}}
 restart-strategy: fixed-delay
 restart-strategy.fixed-delay.attempts: 10
+state.backend.rocksdb.metrics.estimate-num-keys: true
+state.backend.rocksdb.metrics.estimate-live-data-size: true
+state.backend.rocksdb.metrics.cur-size-active-mem-table: true
+state.backend.rocksdb.metrics.size-all-mem-tables: true
 
 env.java.opts: -Dlog4j2.formatMsgNoLookups=true
 {{- end -}}
