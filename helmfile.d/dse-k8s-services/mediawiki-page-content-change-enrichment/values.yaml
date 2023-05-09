@@ -4,18 +4,15 @@
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
   version: v1.15.0-dev4
+  flinkVersion: v1_17
 
   config_files:
     # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
     app.config.yaml:
 
-      # Configs for the page_content_change enrichment job.
-      enrich:
-        mediawiki_api_endpoint_template: https://api-ro.discovery.wmnet/w/api.php
-        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
-
       # Configs for eventutilities python stream_manager.
       stream_manager:
+        job_name: mediawiki_page_content_change_enrichment
 
         schema_uris:
           # Load schema from local path baked into the image.
@@ -23,11 +20,6 @@ app:
 
         # Get stream config from MW EventStreamConfig API.
         stream_config_uri: https://meta.wikimedia.org/w/api.php
-
-        # Production requests to stream_config_uri should
-        # be routed via app-ro.discovery.wmnet
-        http_client_routes:
-          "https://meta.wikimedia.org/w/api.php": "https://api-ro.discovery.wmnet"
 
       # Can be removed after
       # https://gitlab.wikimedia.org/repos/data-engineering/mediawiki-event-enrichment/-/merge_requests/49

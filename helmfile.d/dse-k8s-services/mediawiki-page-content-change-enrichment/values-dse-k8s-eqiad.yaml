@@ -5,6 +5,10 @@
 kafka:
   allowed_clusters: [jumbo-eqiad]
 
+networkpolicy:
+  egress:
+    enabled: true
+
 app:
   config_files:
     # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.

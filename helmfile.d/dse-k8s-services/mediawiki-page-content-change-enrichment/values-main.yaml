@@ -14,12 +14,13 @@ app:
 
       # Configs for the page_content_change enrichment job.
       enrich:
-        mediawiki_api_endpoint_template: https://api-ro.discovery.wmnet/w/api.php
+        # MW API requests should go to local envoy service proxy 'mwapi-async'.
+        # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
+        mediawiki_api_endpoint_template: http://localhost:6500/w/api.php
         ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
 
       # Configs for eventutilities python stream_manager.
       stream_manager:
-        job_name: mediawiki_page_content_change_enrich
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
@@ -35,20 +36,14 @@ app:
         # Setting error to a string causes it to be used as the stream name.
         # Other sink settings will be copied from sink.
         # TODO: this stream does not match our adopted error stream name
-        # convention.  Change it.
+        # convention. Change it.
         # See: https://phabricator.wikimedia.org/T326536
         error_sink: rc1.enrichment.mediawiki_page_content_change.error
 
-        # Load event schemas from local path baked into the image.
-        schema_uris:
-          - file:///srv/app/event-schemas/primary/jsonschema
-        # Get stream config from MW EventStreamConfig API.
-        stream_config_uri: https://meta.wikimedia.org/w/api.php
-
         # Production requests to stream_config_uri should
-        # be routed via app-ro.discovery.wmnet
+        # be routed via local envoy service proxy 'mwapi-async'.
         http_client_routes:
-          "https://meta.wikimedia.org/w/api.php": "https://api-ro.discovery.wmnet"
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
 
 
   flinkConfiguration:
@@ -74,19 +69,15 @@ app:
       cpu: 2
       memory: 3072m
 
-mesh:
-  enabled: false
 
-networkpolicy:
-  egress:
-    enabled: true
-    dst_nets:
-      # Allow api-ro
-      - cidr: 10.2.2.22/32
-        ports:
-          - protocol: tcp
-            port: 443
-      - cidr: 10.2.1.22/32
-        ports:
-          - protocol: tcp
-            port: 443
+# Enable mwapi-async envoy service proxy.
+# This will forward requests to https://localhost:6500 to mwapi-rw.discovery.wmnet.
+discovery:
+  listeners:
+    - mwapi-async
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+
