@@ -313,3 +313,9 @@ services_proxy:
     keepalive: 4s
     upstream: *1
     xfp: https
+  machinetranslation:  # called by cxserver
+    port: 6504
+    service: matchinetranslation
+    timeout: "120s"
+    upstream: *1
+    xfp: https
