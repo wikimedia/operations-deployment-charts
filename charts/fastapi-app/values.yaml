@@ -42,8 +42,8 @@ service:
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 80 # the number or name of the exposed port on the container
-    port: 80 # the number of the port desired to be exposed to the cluster
+    targetPort: 8080 # the number or name of the exposed port on the container
+    port: 8080 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
 config:
@@ -109,7 +109,7 @@ mesh:
   # http keepalive timeout for incoming requests
   idle_timeout: "4.5s"
   # Port to listen to
-  public_port: 80
+  public_port: 8080
   local_access_log_min_code: "200"
   # Headers to add to a local request,
   # in dictionary form.
