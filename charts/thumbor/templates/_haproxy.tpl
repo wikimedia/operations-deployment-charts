@@ -63,20 +63,20 @@ listen thumbor
     {{ range $thumbor_worker := ( int .Values.main_app.thumbor_workers | until) -}}
     {{ $thumbor_port := (add 8080 $thumbor_worker) -}}
     server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 1 check inter 1s raise 1
-    {{ end -}}
+    {{ end }}
 
 listen stats
-   bind *:{{ .Values.haproxy.stats_port }}
-   mode http
+    bind *:{{ .Values.haproxy.stats_port }}
+    mode http
 
-   # These are somewhat arbitrary given how quickly stats backends
-   # respond, required to make haproxy logging happy.
-   timeout server 5000ms
-   timeout connect 2000ms
-   timeout client 5000ms
+    # These are somewhat arbitrary given how quickly stats backends
+    # respond, required to make haproxy logging happy.
+    timeout server 5000ms
+    timeout connect 2000ms
+    timeout client 5000ms
 
-   http-request use-service prometheus-exporter if { path /metrics }
-   stats enable
-   stats uri /metrics
-   stats refresh 10s
+    http-request use-service prometheus-exporter if { path /metrics }
+    stats enable
+    stats uri /metrics
+    stats refresh 10s
 {{ end }}
