@@ -20,11 +20,11 @@ app:
     memory: 400Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
-      port: 80
+      port: 8080
   readiness_probe:
     httpGet:
       path: /
-      port: 80
+      port: 8080
   # # add here any volumes to mount onto the pod. Example:
   # volumes:
   # - name: scratchdir
