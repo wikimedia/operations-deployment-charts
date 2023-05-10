@@ -20,10 +20,6 @@ data:
 {{ .Values.mesh.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.mesh.certs.key | indent 4 }}
-{{- if .Values.puppet_ca_crt }}
-  ca.crt: |-
-{{ .Values.puppet_ca_crt | indent 4 }}
-{{- end }}
 {{ end -}}
 ---
 apiVersion: v1
@@ -315,7 +311,7 @@ Given we go through a load-balancer, we want to keep the number of requests that
           cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
         validation_context:
           trusted_ca:
-            filename: /etc/envoy/ssl/ca.crt
+            filename: /etc/ssl/certs/wmf-ca-certificates.crt
   {{- end -}}
 {{- end }}
 
