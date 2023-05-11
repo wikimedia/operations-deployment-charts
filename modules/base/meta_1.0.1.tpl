@@ -35,7 +35,11 @@ matchLabels:
 {{- define "base.meta.pod_annotations" }}
 checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
 {{- if .Values.monitoring.enabled }}
+{{- if .Values.monitoring.named_ports }}
+prometheus.io/scrape_by_name: "true"
+{{- else }}
 prometheus.io/scrape: "true"
+{{- end }}
 {{- end }}
 {{- include "mesh.name.annotations" . }}
 {{- end }}

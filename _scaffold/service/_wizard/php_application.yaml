@@ -104,6 +104,8 @@ values: |
   monitoring:
     # If enabled is true, monitoring annotations will be added to the deployment.
     enabled: false
+    # The ports to scrape are all labeled -metrics here.
+    named_ports: true
   service:
     deployment: minikube # valid values are "production" and "minikube"
     port:
