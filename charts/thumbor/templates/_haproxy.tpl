@@ -62,7 +62,7 @@ listen thumbor
     # Check thumbor workers every 1 second rather than 2 seconds.
     {{ range $thumbor_worker := ( int .Values.main_app.thumbor_workers | until) -}}
     {{ $thumbor_port := (add 8080 $thumbor_worker) -}}
-    server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 1 check inter 1s raise 1
+    server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 1 check inter 1s rise 1
     {{ end }}
 
 listen stats
