@@ -21,8 +21,7 @@ main_app:
 
 monitoring:
   enabled: true
-  # Will use statsd for metrics eventually
-  uses_statsd: true
+  scrape_by_name: true
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:
