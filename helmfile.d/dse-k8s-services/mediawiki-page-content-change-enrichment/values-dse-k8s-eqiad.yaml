@@ -19,11 +19,16 @@ app:
         # Configure sources and sinks.
         source:
           options:
-            # TODO enable TLS on port 9092
-            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
+            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
+            properties:
+              security.protocol: ssl
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
           options:
-            # Use same source and sink kafka cluster while in DSE.
-            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9092,kafka-jumbo1002.eqiad.wmnet:9092,kafka-jumbo1003.eqiad.wmnet:9092,kafka-jumbo1004.eqiad.wmnet:9092,kafka-jumbo1005.eqiad.wmnet:9092,kafka-jumbo1006.eqiad.wmnet:9092,kafka-jumbo1007.eqiad.wmnet:9092,kafka-jumbo1008.eqiad.wmnet:9092,kafka-jumbo1009.eqiad.wmnet:9092
+            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
             # Override this in values.codfw.yaml
             kafka_topic_prefix: eqiad.
+            properties:
+              security.protocol: ssl
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+
