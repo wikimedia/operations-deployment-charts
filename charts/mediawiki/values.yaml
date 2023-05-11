@@ -29,9 +29,8 @@ main_app:
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
-  # If the application emits its metrics using statsd, we need to use the prometheus-statsd exporter
-  # For service-runner based apps using service-runner < 2.8, this should be set to true
-  uses_statsd: false
+  # MediaWiki's data can be scraped using named ports only
+  named_ports: true
 service:
   deployment: minikube # valid values are "production" and "minikube"
   expose_http: false # set this to true if you want to expose both the https and http endpoint
