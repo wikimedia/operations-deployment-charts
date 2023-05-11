@@ -29,3 +29,23 @@ monitoring:
 cache:
   mcrouter:
     enabled: true
+discovery:
+  listeners:
+    - parsoid-php
+    - mathoid
+    - eventgate-analytics
+    - eventgate-analytics-external
+    - eventgate-main
+    - sessionstore
+    - echostore
+    - termbox
+    - push-notifications
+    - wdqs-internal
+    - ores
+    - restbase
+    - cxserver
+    - shellbox
+    - shellbox-constraints
+    - shellbox-media
+    - shellbox-syntaxhighlight
+    - shellbox-timeline
