@@ -39,6 +39,18 @@ main_app:
         proton_title_format_type:
           in: '(.+)/v1/pdf/(.+)/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
+    citoid:
+      timeout: 120s
+      urls:
+        citoid:
+          # We ignore the sitename (first matching group)
+          # it is assumed the URL will be properly encoded here - ie / replaced by %2F
+          in: '(.+)/v1/data/citation/(.+)/(.+)'
+          out: '/api?format=\2&search=\3'
+          in: '(.+)/v1/data/citation/api?format=(.+)&search=(.+)'
+          out: '/api?format=\2&search=\3'
+          in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
+          out: '/api?format=\2&search=\3'
 
   discovery_endpoints:
     mobileapps:
@@ -47,6 +59,9 @@ main_app:
     proton:
       tls: true
       port: 4030
+    citoid:
+      tls: true
+      port: 4003
 
 service:
   deployment: production
