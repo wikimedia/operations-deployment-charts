@@ -17,7 +17,14 @@ resourcequota:
       cpu: "20"
       memory: "10Gi"
 
+# watchNamespaces is a flink-kubernetes-operator configuration that
+# indicates which namespaces flink-kubernetes-operator should manage.
+# Include all namespaces that need to use the FlinkDeployment CRD.
+watchNamespaces: []
+
 namespaces:
+  flink-operator:
+    systemNamespace: true
   ci:
     deployUser: jenkins
     deployClusterRole: deploy-flink
