@@ -76,3 +76,21 @@ inference_services:
         requests:
           cpu: "4"
           memory: 6Gi
+  - name: "revertrisk-wikidata"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
+      image_version: "2023-05-12-094505-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-wikidata"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/revertrisk-wikidata/20230512162400/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+      resources:
+        limits:
+          cpu: "2"
+          memory: 4Gi
+        requests:
+          cpu: "2"
+          memory: 4Gi
