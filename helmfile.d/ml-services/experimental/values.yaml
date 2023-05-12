@@ -65,3 +65,19 @@ inference_services:
         requests:
           cpu: "2"
           memory: 4Gi
+  - name: "bloom-560m"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-bloom"
+      image_version: "2023-05-19-081111-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "bloom-560m"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/bloom/bloom-560m/20230512141345/"
+      resources:
+        limits:
+          cpu: "4"
+          memory: 6Gi
+        requests:
+          cpu: "4"
+          memory: 6Gi
