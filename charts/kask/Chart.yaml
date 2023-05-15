@@ -4,26 +4,26 @@ name: kask
 version: 0.1.4
 kubeVersion: ">=1.8"
 keywords:
-- session
-- store
+  - session
+  - store
 home: https://www.mediawiki.org/wiki/Kask
 sources:
   - https://github.com/wikimedia/mediawiki-services-kask
 maintainers:
-- name: Eric Evants
-  email: eevans@wikimedia.org
-- name: Clara Andrew-Wani
-  email: candrew@wikimedia.org
-- name: Alexandros Kosiaris
-  email: akosiaris@wikimedia.org
+  - name: Eric Evants
+    email: eevans@wikimedia.org
+  - name: Clara Andrew-Wani
+    email: candrew@wikimedia.org
+  - name: Alexandros Kosiaris
+    email: akosiaris@wikimedia.org
 dependencies:
   # cassandra can be deployed for developement purposes
   # Note we are using an incubator cassandra chart for this
   # Make sure you have ran
   # helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
-- name: cassandra
-  version: ">= 0.11.1"
-  repository: https://charts.helm.sh/incubator
+  - name: cassandra
+    version: ">= 0.11.1"
+    repository: https://charts.helm.sh/incubator
   # Only require cassandra if subcharts.cassandra is set to true in values
   # or --set subcharts.cassandra=true
-  condition: subcharts.cassandra
+    condition: subcharts.cassandra

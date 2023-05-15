@@ -1,17 +1,17 @@
 apiVersion: v2
 description: A Helm chart for changepropagation
 name: changeprop
-version: 0.11.1
+version: 0.11.2
 kubeVersion: ">=1.8"
 keywords:
-- changeprop
-- change-propagation
+  - changeprop
+  - change-propagation
 home: https://www.mediawiki.org/wiki/Change_propagation
 sources:
-- https://gerrit.wikimedia.org/g/mediawiki/services/change-propagation
+  - https://gerrit.wikimedia.org/g/mediawiki/services/change-propagation
 maintainers:
-- name: Holger Knust
-  email: hknust@wikimedia.org
+  - name: Holger Knust
+    email: hknust@wikimedia.org
 dependencies:
     # kafka-dev can be deployed for development purposes
     # ./charts/kafka-dev is symlinked to ../kafka-dev
