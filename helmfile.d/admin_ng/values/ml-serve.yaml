@@ -104,6 +104,7 @@ namespaces:
       - '*.revscoring-articletopic.wikimedia.org'
       - '*.experimental.wikimedia.org'
       - '*.articletopic-outlink.wikimedia.org'
+      - '*.revertrisk.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -154,6 +155,11 @@ namespaces:
     labels:
       istio-injection: enabled
   articletopic-outlink:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
+  revertrisk:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
     labels:
