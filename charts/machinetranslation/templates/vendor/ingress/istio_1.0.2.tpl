@@ -1,11 +1,11 @@
 {{/*
 Allow to configure Ingress using istio-ingressgateway
-https://istio.io/v1.9/docs/concepts/traffic-management/
+https://istio.io/v1.15/docs/concepts/traffic-management/
 
 Creates the following objects:
-  - Gateway (https://istio.io/v1.9/docs/reference/config/networking/gateway/)
-  - VirtualService (https://istio.io/v1.9/docs/reference/config/networking/virtual-service/)
-  - DestinationRule (https://istio.io/v1.9/docs/reference/config/networking/destination-rule/)
+  - Gateway (https://istio.io/v1.15/docs/reference/config/networking/gateway/)
+  - VirtualService (https://istio.io/v1.15/docs/reference/config/networking/virtual-service/)
+  - DestinationRule (https://istio.io/v1.15/docs/reference/config/networking/destination-rule/)
 
 In staging clusters, a generic Gateway is to be used instead of a dedicated one.
 
@@ -34,6 +34,9 @@ By default, this will be a list like:
 And in case .Values.ingress.staging is true:
 - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
 
+Or in case .Values.ingress.mlstaging is true:
+- {{ gatewayHosts.default }}.k8s-ml-staging.discovery.wmnet
+
 If disableDefaultHosts is true, the above is skipped and only the list of
 extraFQDNs is returned (if not empty).
 */}}
@@ -43,6 +46,8 @@ extraFQDNs is returned (if not empty).
 {{- $domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" -}}
 {{ if $.Values.ingress.staging -}}
 - {{ $host }}.k8s-staging.discovery.wmnet
+{{ else if $.Values.ingress.mlstaging -}}
+- {{ $host }}.k8s-ml-staging.discovery.wmnet
 {{ else -}}
 {{- range $domains -}}
 - {{ $host }}.{{ . }}
@@ -82,7 +87,7 @@ Ingress default setup
 
 {{/*
 Create a Istio Gateway object
-https://istio.io/v1.9/docs/reference/config/networking/gateway/
+https://istio.io/v1.15/docs/reference/config/networking/gateway/
 */}}
 {{- define "ingress.istio.gateway" -}}
 {{- if and .Values.ingress.enabled (not .Values.ingress.existingGatewayName) -}}
@@ -92,8 +97,12 @@ metadata:
 {{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
 spec:
   selector:
+    {{- if hasKey .Values.ingress "selectors" }}
+    {{- .Values.ingress.selectors | toYaml | nindent 4 }}
+    {{- else }}
     # This is the istio-ingressgateway this gateway will be attached to (provided by SRE)
     istio: ingressgateway
+    {{- end }}
   servers:
   - port:
       number: 443
@@ -113,7 +122,7 @@ spec:
 
 {{/*
 Create a Istio VirtualService object
-https://istio.io/v1.9/docs/reference/config/networking/virtual-service/
+https://istio.io/v1.15/docs/reference/config/networking/virtual-service/
 */}}
 {{- define "ingress.istio.virtualservice" -}}
 {{- if .Values.ingress.enabled -}}
@@ -145,7 +154,7 @@ spec:
 
 {{/*
 Create a Istio DestinationRule object
-https://istio.io/v1.9/docs/reference/config/networking/destination-rule/
+https://istio.io/v1.15/docs/reference/config/networking/destination-rule/
 
 The purpose if this default object is to enable TLS connections to upstream (backend) services
 and configure verification of upstreams CA and SAN. Without the caCertificates and
@@ -178,6 +187,8 @@ spec:
       by default. Also trust gatewaysHosts and routeHosts provided by the user.
       This might lead to duplicate entries in the subjectAltNames list, but that is not a problem
       for istio/envoy.
+      Note: We use the same approach for ML staging to keep the two clusters as close
+      as possible.
 
       TODO: When cergen certs have been replaced with cert-manager ones, it should be safe to
       only trust {{ template "mesh.name.servicefqdn" . }}.
@@ -187,6 +198,10 @@ spec:
       # Default staging certificates (cergen)
       - staging.svc.eqiad.wmnet
       - staging.svc.codfw.wmnet
+      {{- else if .Values.ingress.mlstaging }}
+      # Default ML staging certificates (cergen)
+      - ml-staging.svc.eqiad.wmnet
+      - ml-staging.svc.codfw.wmnet
       {{- else }}
       # Discovery certificate (cergen)
       - {{ .Release.Namespace }}.discovery.wmnet

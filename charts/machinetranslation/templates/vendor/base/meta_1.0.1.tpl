@@ -9,12 +9,16 @@
 */}}
 {{- define "base.meta.metadata" }}
 name: {{ template "base.name.release" .Root }}{{- if .Name }}-{{ .Name }}{{ end }}
-labels:
-  app: {{ template "base.name.chart" .Root }}
-  chart: {{ template "base.name.chartid" .Root }}
-  release: {{ .Root.Release.Name }}
-  heritage: {{ .Root.Release.Service }}
+{{- include "base.meta.labels" .Root }}
 {{- end -}}
+
+{{- define "base.meta.labels" }}
+labels:
+  app: {{ template "base.name.chart" . }}
+  chart: {{ template "base.name.chartid" . }}
+  release: {{ .Release.Name }}
+  heritage: {{ .Release.Service }}
+{{- end }}
 
 {{- define "base.meta.pod_labels" }}
 app: {{ template "base.name.chart" . }}
@@ -31,7 +35,11 @@ matchLabels:
 {{- define "base.meta.pod_annotations" }}
 checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
 {{- if .Values.monitoring.enabled }}
+{{- if .Values.monitoring.named_ports }}
+prometheus.io/scrape_by_name: "true"
+{{- else }}
 prometheus.io/scrape: "true"
+{{- end }}
 {{- end }}
 {{- include "mesh.name.annotations" . }}
 {{- end }}

@@ -38,7 +38,11 @@ data:
 
 {{- define "mesh.configuration.full" -}}
 admin:
-  access_log_path: /var/log/envoy/admin-access.log
+  access_log:
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+      # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
+      path: /var/log/envoy/admin-access.log
   address:
     socket_address: {address: 127.0.0.1, port_value: 1666}
 static_resources:
@@ -85,8 +89,13 @@ static_resources:
 {{/* TLS termination for the local service */}}
 {{- define "mesh.configuration._local_cluster" }}
 - name: local_service
-  common_http_protocol_options:
-    idle_timeout: {{ .Values.mesh.idle_timeout | default "4.5s" }}
+  typed_extension_protocol_options:
+    envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+      "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+      common_http_protocol_options:
+        idle_timeout: {{ .Values.mesh.idle_timeout | default "4.5s" }}
+      # This allows switching on protocol based on what protocol the downstream connection used.
+      use_downstream_protocol_config: {}
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
@@ -278,8 +287,13 @@ under 'tcp_services_proxy'.
 - name: {{ .Name }}
   connect_timeout: 0.25s
   {{- if .Listener.keepalive }}
-  common_http_protocol_options:
-    idle_timeout: {{ .Listener.keepalive }}
+  typed_extension_protocol_options:
+    envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+      "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+      common_http_protocol_options:
+        idle_timeout: {{ .Listener.keepalive }}
+      # This allows switching on protocol based on what protocol the downstream connection used.
+      use_downstream_protocol_config: {}
   {{- end }}
   type: STRICT_DNS
   dns_lookup_family: V4_ONLY
