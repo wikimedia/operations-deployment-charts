@@ -19,12 +19,12 @@ main_app:
     # This is the endpoint for the staging instance of eventgate
     event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
 
-    # Test for T327302
     features:
       liftwing_models: true
     liftwing:
       uri: 'https://inference-staging.svc.codfw.wmnet:30443'
       models:
+        # Test for T327302
         goodfaith:
           concurrency: 2
           match_config:
@@ -33,6 +33,16 @@ main_app:
           namespace: revscoring-editquality-goodfaith
           message_wiki_selector: 'wiki_id'
           kafka_topic: 'liftwing.test-events'
+        # Test for T328899
+        outlink-topic-model:
+          concurrency: 2
+          match_config:
+            wiki_id: 'enwiki'
+            page_change_kind: "/^(edit|create)$/"
+            page.is_redirect: false
+            page.namespace_id: 0
+          namespace: articletopic-outlink
+          kafka_topic: 'liftwing.test-outlink-events'
 
 nutcracker:
   enabled: true

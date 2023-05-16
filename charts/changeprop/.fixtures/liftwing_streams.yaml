@@ -56,6 +56,15 @@ main_app:
           message_wiki_selector: database
           namespace: 'revscoring-draftquality'
           kafka_topic: 'mediawiki.revision-create'
+        outlink-topic-model:
+          concurrency: 2
+          match_config:
+            wiki_id: 'enwiki'
+            page_change_kind: "/^(edit|create)$/"
+            page.is_redirect: false
+            page.namespace_id: 0
+          namespace: articletopic-outlink
+          kafka_topic: 'liftwing.test-events'
 
     features:
       liftwing_models: true

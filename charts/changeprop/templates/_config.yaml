@@ -859,9 +859,15 @@ spec: &spec
                 {{- end }}
                 exec:
                   method: post
+                  {{- if $model_settings.message_wiki_selector }}
                   uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ "{{message." }}{{ $model_settings.message_wiki_selector }}{{ "}}" }}-{{ $model_name }}:predict'
                   headers:
                     host: '{{ "{{message." }}{{ $model_settings.message_wiki_selector }}{{ "}}" }}-{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
+                  {{- else }}
+                  uri: '{{ $.Values.main_app.changeprop.liftwing.uri }}/v1/models/{{ $model_name }}:predict'
+                  headers:
+                    host: '{{ $model_name }}.{{ $model_settings.namespace }}.wikimedia.org'
+                  {{- end }}
                     content-type: application/json
                   body:
                     event: '{{ `{{globals.message}}` }}'
