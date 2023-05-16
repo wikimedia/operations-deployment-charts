@@ -39,6 +39,11 @@ namespaces:
     # SANs in the TLS certificate to support them.
     tlsHostnames:
       - inference-staging
+  revertrisk:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
 
 limitranges:
   container:
