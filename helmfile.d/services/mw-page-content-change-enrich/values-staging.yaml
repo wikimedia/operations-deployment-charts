@@ -1,8 +1,9 @@
-# staging uses Kafka test-eqioad cluster for both source and sink.
-# Because kafka test-eqiad doesn't have real mediawiki.page_change
-# traffic, it won't really be doing any work.
-kafka:
-  allowed_clusters: [test-eqiad]
+# NOTE: values-staging.yaml is configured to be deployed in staging-eqiad.
+# It uses Kafka test-eqiad, Zookeeper test-eqiad, and thanos swift in eqiad.
+#
+# The Zookeeper HA and checkpoint path naming convention uses 'staging'
+# as the k8s cluster name, as SRE ServiceOps has recommended to us to (for now)
+# assume that staging-codfw does not exist, and not refer to staging-eqiad anywhere.
 
 app:
   config_files:
@@ -13,15 +14,54 @@ app:
         # Configure sources and sinks.
         source:
           options:
-            # TODO enable TLS on port 9092
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw_page_content_change_enrich__wikikube-staging_000
 
         sink:
           options:
-            kafka_topic_prefix: eqiad.
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
+            kafka_topic_prefix: eqiad.
+
+
+  flinkConfiguration:
+    # Use conf ZK cluster in eqiad.
+    "high-availability.zookeeper.quorum": "zookeeper-test1002.eqiad.wmnet"
+    # ZK Path naming follows /flink/<job_name>__<k8s_cluster_name>  convention.
+    # TODO: template this convention in https://phabricator.wikimedia.org/T336901
+    "high-availability.zookeeper.path.root": /flink/mw_page_content_change_enrich__wikikube-staging
+    # Directory naming follows s3://<job_name>__<k8s_cluster_name> convention.
+    "high-availability.storageDir": s3://mw_page_content_change_enrich__wikikube-staging/high_availability
+    "state.checkpoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/savepoints # needed for upgradeMode: savepoint
 
 
 # TODO: when deploying to eqiad + codfw, we'll need to set
 # higher resource limits for taskmanagers.
 # See helmfile.d/dse-k8s-services/values-dse-k8s-eqiad.yaml.
+
+# NOTE: staging uses Kafka test-eqiad cluster for both source and sink.
+# Because kafka test-eqiad doesn't have real mediawiki.page_change
+# traffic, it won't really be doing any work.
+kafka:
+  allowed_clusters: [test-eqiad]
+
+networkpolicy:
+  egress:
+    dst_nets:
+
+      # thanos-swift cluster in eqiad for checkpoints
+      - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
+
+      # Zookeeper test-eqiad
+      - cidr: 10.64.16.145/32 # zookeeper-test1002
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
+        ports:
+          - port: 2181
+            protocol: tcp
