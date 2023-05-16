@@ -22,8 +22,11 @@ resourcequota:
 # watchNamespaces is a flink-kubernetes-operator configuration that
 # indicates which namespaces flink-kubernetes-operator should manage.
 # Include all namespaces that need to use the FlinkDeployment CRD.
-watchNamespaces: []
-  # - mediawiki-page-content-change-enrichment
+watchNamespaces:
+  - mediawiki-page-content-change-enrichment
+# Create flink-operator rbac for the flink-operator watchNamespaces.
+rbac:
+  create: true
 
 namespaces:
   flink-operator:
@@ -54,7 +57,7 @@ namespaces:
           memory: "20Gi"
   # TODO: Move this to main.yaml when we deploy to eqiad/codfw.
   # https://phabricator.wikimedia.org/T325303
-  # mediawiki-page-content-change-enrichment: {}
+  mediawiki-page-content-change-enrichment: {}
   mobileapps:
     resourcequota:
       pods: {}
