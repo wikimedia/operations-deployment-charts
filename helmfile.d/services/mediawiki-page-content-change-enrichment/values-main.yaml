@@ -28,7 +28,7 @@ app:
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
-          stream: rc1.mediawiki.page_change:1.0.0
+          stream: mediawiki.page_change.v1:1.0.0
           connector: kafka
           options:
             consumer_group: mediawiki_page_content_change_enrichment_000
@@ -37,12 +37,10 @@ app:
           stream: rc1.mediawiki.page_content_change:1.0.0
           connector: kafka
 
-        # Setting error to a string causes it to be used as the stream name.
-        # Other sink settings will be copied from sink.
-        # TODO: this stream does not match our adopted error stream name
-        # convention. Change it.
-        # See: https://phabricator.wikimedia.org/T326536
-        error_sink: rc1.enrichment.mediawiki_page_content_change.error
+        # Setting error to true causes the default error stream name of <job_name>.error
+        # to be used.  So:
+        #   mediawiki_page_content_change_enrichment.error
+        error_sink: true
 
 # Enable the service mesh.
 mesh:
