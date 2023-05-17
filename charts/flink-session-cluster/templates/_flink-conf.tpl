@@ -19,7 +19,7 @@ taskmanager.memory.process.size: {{ .Values.main_app.config.task_manager_mem }}
 rest.port: {{ .Values.service.port.targetPort }}
 parallelism.default: {{ .Values.main_app.config.parallelism }}
 metrics.reporters: prom
-metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
 metrics.reporter.prom.port: {{ .Values.main_app.config.prometheus_reporter_port }}
 swift.service.thanos-swift.auth.url: {{ .Values.main_app.config.swift_auth_url }}
 swift.service.thanos-swift.username: {{ .Values.main_app.config.swift_username }}
