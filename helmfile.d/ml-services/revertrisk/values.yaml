@@ -40,7 +40,7 @@ inference:
     sidecar.istio.io/inject: "true"
 
 inference_services:
-  - name: "revertrisk"
+  - name: "revertrisk-language-agnostic"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
       image_version: "2023-03-08-093615-publish"
