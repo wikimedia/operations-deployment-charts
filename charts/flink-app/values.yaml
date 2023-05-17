@@ -114,7 +114,27 @@ app:
   #     file_name: "app_config_config.yaml"
   #     content:
   #       entry1: value1
-  config_files: {}
+  config_files:
+    # Can be used via eventutilities python with the --config arg (--config can be used multiple times)
+    # or manually by loading it as a dict and passing it to logging.config.dictConfig
+    # with the ecs-logging module installed.
+    python.log.config.yaml:
+      log_config:
+        loggers:
+          root:
+            level: INFO
+            handler: consoleHandler
+
+        handlers:
+          consoleHandler:
+            class: logging.StreamHandler
+            formatter: ecsStdLibFormatter
+            stream  : ext://sys.stdout
+
+        formatters:
+          ecsStdLibFormatter:
+            class: ecs_logging.StdlibFormatter
+
 
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap

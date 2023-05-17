@@ -33,7 +33,8 @@ app:
     pythonEntryPoint: /srv/app/mediawiki_event_enrichment/page_content_change.py
 
     args: [
-      --config, /srv/app/conf/app.config.yaml
+      --config, /srv/app/conf/app.config.yaml,
+      --config, /srv/app/conf/python.log.config.yaml
     ]
 
     # TODO: figure out what upgradeMode should be.
