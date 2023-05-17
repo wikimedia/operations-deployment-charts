@@ -30,8 +30,8 @@ main_app:
 config:
   public:
     # These are sane defaults chosen internally in the software, expect to alter them for a production env
-    # CT2_INTER_THREADS: 1
-    # CT2_INTRA_THREADS: 1
+    # CT2_INTER_THREADS: 4  # Match available CPUs
+    # CT2_INTRA_THREADS: 4  # Match available CPUs
     # GUNICORN_WORKERS: 1
     # STATSD_HOST: localhost
     # STATSD_PORT: 8125
