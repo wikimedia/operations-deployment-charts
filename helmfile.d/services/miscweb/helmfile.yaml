@@ -62,11 +62,11 @@ environments:
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [bugzilla]
+      - releases: [bugzilla, annualreport]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [bugzilla]
+      - releases: [bugzilla, annualreport]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
