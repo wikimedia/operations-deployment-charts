@@ -18,10 +18,10 @@ rbac:
   # See the README.md.
   create: false
 
-# TODO: enable HA by increasing replicas after https://issues.apache.org/jira/browse/FLINK-32041
+
 # kubernetes.operator.leader-election.enabled is set to true below, so we can
 # increase then number of flink-kubernetes-operator replicas.
-# replicas: 2
+replicas: 2
 
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
@@ -58,14 +58,13 @@ defaultConfiguration:
     kubernetes.operator.metrics.reporter.prometheus.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
     kubernetes.operator.metrics.reporter.prometheus.port: 9999
 
-    # TODO: enable HA after https://issues.apache.org/jira/browse/FLINK-32041
-    # # Enable flink-kubernetes-operator HA leader election.
-    # # This enables us to run standby replicas of the operator.
-    # kubernetes.operator.leader-election.enabled: true
-    # # This name must be unique per namespace.  As we only deploy
-    # # one flink operator per namespace, we can set this to the same
-    # # value for all operator deployments
-    # kubernetes.operator.leader-election.lease-name: flink-operator-lease
+    # Enable flink-kubernetes-operator HA leader election.
+    # This enables us to run standby replicas of the operator.
+    kubernetes.operator.leader-election.enabled: true
+    # This name must be unique per namespace.  As we only deploy
+    # one flink operator per namespace, we can set this to the same
+    # value for all operator deployments
+    kubernetes.operator.leader-election.lease-name: flink-operator-lease
 
   # Make loggers only log to console in ECS format.
   log4j-operator.properties: |+
