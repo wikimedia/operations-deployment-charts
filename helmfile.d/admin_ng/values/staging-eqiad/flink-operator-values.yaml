@@ -1,11 +1,11 @@
-# # TODO: Move this to main.yaml when we deploy to eqiad/codfw.
-# # https://phabricator.wikimedia.org/T325303
-# # watchNamespaces is a flink-kubernetes-operator configuration that
-# # indicates which namespaces flink-kubernetes-operator should manage.
-# # Include all namespaces that need to use the FlinkDeployment CRD.
-# watchNamespaces:
-#   - mediawiki-page-content-change-enrichment
+# TODO: Move this to main.yaml when we deploy to eqiad/codfw.
+# https://phabricator.wikimedia.org/T325303
+# watchNamespaces is a flink-kubernetes-operator configuration that
+# indicates which namespaces flink-kubernetes-operator should manage.
+# Include all namespaces that need to use the FlinkDeployment CRD.
+watchNamespaces:
+  - mw-page-content-change-enrich
 
-# # Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
-# rbac:
-#   create: true
+# Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
+rbac:
+  create: true
