@@ -2488,6 +2488,7 @@ metadata:
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/name: knative-serving
 spec:
+  replicas: {{ .Values.core.webhook.replicaCount }}
   selector:
     matchLabels:
       app: webhook
