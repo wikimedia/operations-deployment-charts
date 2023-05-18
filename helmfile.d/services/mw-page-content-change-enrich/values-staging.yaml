@@ -16,14 +16,14 @@ app:
             # TODO enable TLS on port 9092
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             properties:
-              security.protocol: ssl
+              security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
           options:
             kafka_topic_prefix: eqiad.
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             properties:
-              security.protocol: ssl
+              security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
 
