@@ -23,6 +23,7 @@ https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kuberne
 -- egress to kubernetes API at .Values.kubernetesMasters.cidrs
 -- ingress to webhook from kubernetes API at .Values.kubernetesMasters.cidrs if .Values.webhook.create is true.
 - Added .fixtures for CI.
+- Fixed [FLINK-32041](https://issues.apache.org/jira/browse/FLINK-32041)
 
 ## Summary of ServiceAccounts and RBAC
 
