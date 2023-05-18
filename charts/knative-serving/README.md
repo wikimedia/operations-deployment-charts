@@ -87,6 +87,21 @@ apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 ```
 
+We also change the PodDisruptionBudget of the webhook as following (to ease roll reboots):
+
+--- a/charts/knative-serving/templates/core.yaml
++++ b/charts/knative-serving/templates/core.yaml
+@@ -2458,7 +2458,7 @@ metadata:
+     app.kubernetes.io/name: knative-serving
+     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+ spec:
+-  minAvailable: 80%
++  minAvailable: 50%
+   selector:
+     matchLabels:
+       app: webhook
+
+
 We had to add the following change to the Webhook's and Domain Mapping Webhook's
 Deployment resource:
 ```
