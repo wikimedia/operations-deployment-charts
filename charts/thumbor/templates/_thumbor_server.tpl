@@ -10,7 +10,6 @@ EXIFTOOL_PATH = '/usr/bin/exiftool'
 SUBPROCESS_TIMEOUT_PATH = '/usr/bin/timeout'
 RSVG_CONVERT_PATH = '/usr/bin/rsvg-convert'
 FFPROBE_PATH = '/usr/bin/ffprobe'
-XCF2PNG_PATH = '/usr/bin/xcf2png'
 DDJVU_PATH = '/usr/bin/ddjvu'
 GHOSTSCRIPT_PATH = '/usr/bin/gs'
 VIPS_PATH = '/usr/bin/vips'
@@ -116,13 +115,12 @@ PROXY_ENGINE_ENGINES = [
 {{- if .Values.main_app.stl_support }}
     ('wikimedia_thumbor.engine.stl', ['stl']),
 {{- end }}
-    ('wikimedia_thumbor.engine.xcf', ['xcf']),
     ('wikimedia_thumbor.engine.djvu', ['djvu']),
     ('wikimedia_thumbor.engine.vips', ['tiff', 'png']),
     ('wikimedia_thumbor.engine.tiff', ['tiff']),
     ('wikimedia_thumbor.engine.ghostscript', ['pdf']),
     ('wikimedia_thumbor.engine.gif', ['gif']),
-    ('wikimedia_thumbor.engine.imagemagick', ['jpg', 'png', 'webp']),
+    ('wikimedia_thumbor.engine.imagemagick', ['jpg', 'png', 'webp', 'xcf']),
 ]
 
 HTTP_LOADER_MAX_BODY_SIZE = 4*1024*1024*1024  # 4GB
