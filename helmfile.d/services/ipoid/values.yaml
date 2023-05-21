@@ -1,0 +1,30 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+main_app:
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    cpu: 2
+    memory: 4Gi
+  version: 1a6b77f5de859ead4b0169e553b156cb465ee6bb
+monitoring:
+  enabled: false
+  image_version: latest
+resources:
+  replicas: 2
+service:
+  deployment: production
+config:
+  public:
+    MYSQL_HOST: m5-master.eqiad.wmnet
+    MYSQL_PORT: 3306
+  private: {}
+# MYSQL_ROOT_USER,
+# MYSQL_ROOT_PASSWORD,
+# MYSQL_DATABASE,
+networkpolicy:
+  egress:
+    enabled: true
+ingress:
+  enabled: true
