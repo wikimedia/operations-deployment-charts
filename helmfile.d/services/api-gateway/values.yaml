@@ -181,6 +181,21 @@ main_app:
         anon_limit: 10000
         default_limit: 100000
 
+    lw_inference_revertrisk:
+      tls: true
+      port: 30443
+      timeout: 30s
+      path: 'lw/inference/v1/models/revertrisk-(\w+):predict'
+      host_rewrite_path: 'revertrisk-\1.revertrisk.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
+      internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 10000
+        default_limit: 100000
+
+
   #TODO regex on v1
   pathing_map:
     mwapi_cluster:
