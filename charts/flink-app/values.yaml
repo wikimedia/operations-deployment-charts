@@ -120,10 +120,9 @@ app:
     # with the ecs-logging module installed.
     python.log.config.yaml:
       log_config:
-        loggers:
-          root:
-            level: INFO
-            handler: consoleHandler
+        root:
+          level: INFO
+          handlers: [consoleHandler]
 
         handlers:
           consoleHandler:
