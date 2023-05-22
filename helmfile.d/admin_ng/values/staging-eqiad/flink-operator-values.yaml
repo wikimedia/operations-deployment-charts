@@ -9,3 +9,17 @@ watchNamespaces:
 # Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
 rbac:
   create: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      # Zookeeper test-eqiad
+      - cidr: 10.64.16.145/32 # zookeeper-test1002
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
+        ports:
+          - port: 2181
+            protocol: tcp

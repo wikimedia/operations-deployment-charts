@@ -36,6 +36,34 @@ spec:
         protocol: TCP
 {{- end }}
 
+{{/* Since we shouldn't modify chart values.yaml, set default networkpolicy.egress.enabled: false */}}
+{{ $networkpolicy := default (dict "egress" (dict "enabled" false)) .Values.networkpolicy }}
+{{- if $networkpolicy.egress.enabled | default false }}
+---
+{{/*
+NOTE: WMF has imported our vendor/base/network_policy_1.0.0.tpl,
+which is not part of upstream flink-kubernetes-operator Helm chart.
+See chart README.md.
+
+If you set networkpolicy.egress.enabled: true, you must also set at least
+one of networkpolicy.egress.dst_ports or networkpolicy.egress.dst_nets.
+*/}}
+# Custom egress rules defined in provided .Values.networkpolicy.egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "flink-operator.name" . }}-egress-basic
+  labels:
+    {{- include "flink-operator.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "flink-operator.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+{{- end }}
 
 {{- if .Values.kubernetesMasters }}
 ---

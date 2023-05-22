@@ -18,12 +18,30 @@ for more information.
 https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kubernetes-operator
 
 - crds are moved to a separate chart: flink-kubernetes-operator-crds
+- package.json and templates/vendor use [sextant](https://gitlab.wikimedia.org/repos/sre/sextant)
+  for networkpolicy_1.0.0.tpl
 - templates/networkpolicy.yaml is added to allow:
--- access to metrics port
+-- ingress access to metrics port
+-- egress-basic using WMF's vendor/base/networkpolicy_1.0.0.tpl.
+   Set `networkpolicy.egress.enabled: true` in your helmfile values to use this.
+   If you enable egress, you must also set at least one of `networkpolicy.egress.dst_nets`
+   or `networkpolicy.egress.dst_ports`.
 -- egress to kubernetes API at .Values.kubernetesMasters.cidrs
 -- ingress to webhook from kubernetes API at .Values.kubernetesMasters.cidrs if .Values.webhook.create is true.
 - Added .fixtures for CI.
 - Fixed [FLINK-32041](https://issues.apache.org/jira/browse/FLINK-32041)
+
+## Upgrading from upstream helm chart.
+
+TODO: add better instructions.
+
+The basic idea is to copy all files from upstream helm chart, and keep any of the
+customizations noted in "Modifications from upstream..."  above.
+
+Ideally we can keep all custom modifications in helm template files that are not
+present in the upstream helm chart, e.g. networkpolicy.yaml.
+In the cases where there are changes to a file used by upstream, we should
+submit a JIRA and PR to get our changes upstreamed.
 
 ## Summary of ServiceAccounts and RBAC
 

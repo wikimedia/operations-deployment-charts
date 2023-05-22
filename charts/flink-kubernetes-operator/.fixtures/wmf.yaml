@@ -19,6 +19,12 @@ kubernetesMasters:
     - '11.11.11.12/32'
     - '2620:0:861:101:11:11:11:12/128'
 
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 123.123.123.123/24
+
 metrics:
   # PrometheusReporter is configured to expose metrics on this port.
   # NOTE: If you change this, it must also be changed for
