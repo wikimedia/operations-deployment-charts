@@ -51,7 +51,7 @@ app:
     # Flink HA config shared across clusters.
     # Swift and Zookeeper specific configs (paths), should be defined
     # in each cluster's  helmfile.
-    "state.backend": filesystem
+    "state.backend.type": filesystem
     "state.checkpoints.num-retained": "10"
     "s3.access-key": mediawiki-event-enrichment
     # We can put this config in values-main.yaml because it uses discovery endpoint,
