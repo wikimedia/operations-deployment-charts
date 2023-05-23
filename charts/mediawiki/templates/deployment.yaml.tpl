@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "base.name.release" . }}
+  name: {{ template "mw.name.namespace.env.release" . }}
   {{- include "mw.labels" . | indent 2 }}
 spec:
   selector:

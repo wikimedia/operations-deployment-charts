@@ -45,3 +45,13 @@ Network egress for MediaWiki
     port: {{ .port }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+
+Special naming convention for mediawiki resources
+
+*/}}
+{{- define "mw.name.namespace.env.release" -}}
+{{- $env := default "local" .Values.mw.datacenter -}}
+{{- printf "%s.%s.%s" .Release.Namespace $env .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
