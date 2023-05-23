@@ -53,7 +53,7 @@ app:
     # in each cluster's  helmfile.
     "state.backend.type": filesystem
     "state.checkpoints.num-retained": "10"
-    "s3.access-key": mediawiki-event-enrichment
+    "s3.access-key": mw-event-enrichment:prod
     # We can put this config in values-main.yaml because it uses discovery endpoint,
     # which will be resolved correctly depending on which DC we are deploying to.
     "s3.endpoint": thanos-swift.discovery.wmnet
