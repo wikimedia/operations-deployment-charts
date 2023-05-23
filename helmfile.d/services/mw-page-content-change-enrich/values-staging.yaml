@@ -25,9 +25,8 @@ app:
 
 
   flinkConfiguration:
-    # Directory naming follows s3://<job_name>__<k8s_cluster_name> convention.
-    "state.checkpoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/checkpoints # needed for upgradeMode: savepoint
-    "state.savepoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/savepoints # needed for upgradeMode: savepoint
+    "state.checkpoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/wikikube-staging/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/wikikube-staging/savepoints # needed for upgradeMode: savepoint
 
 
 # TODO: when deploying to eqiad + codfw, we'll need to set

@@ -21,10 +21,9 @@ app:
             kafka_topic_prefix: eqiad.
 
   flinkConfiguration:
-    # Directory naming follows s3://<job_name>__<k8s_cluster_name> convention.
-    "high-availability.storageDir": s3://mw_page_content_change_enrich__dse-k8s-eqiad/high_availability
-    "state.checkpoints.dir": s3://mw_page_content_change_enrich__dse-k8s-eqiad/checkpoints # needed for upgradeMode: savepoint
-    "state.savepoints.dir": s3://mw_page_content_change_enrich__dse-k8s-eqiad/savepoints # needed for upgradeMode: savepoint
+    "high-availability.storageDir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/high_availability
+    "state.checkpoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/savepoints # needed for upgradeMode: savepoint
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
