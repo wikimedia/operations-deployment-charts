@@ -85,9 +85,9 @@ end
 
 module FileUtils
   # Copy recursively also resolving all symlinks
-  def cp_Lr(src, dst, options = {})
+  def cp_Lr(src, dst)
     # First of all, let's copy over the files
-    FileUtils.cp_r(src, dst, options)
+    FileUtils.cp_r(src, dst)
     # now find symlinks, dereference them, and copy them over
     path = Pathname.new(src)
     path.find do |x|
@@ -102,7 +102,7 @@ module FileUtils
         # remove the symlink
         FileUtils.rm_rf actual_dst
         # copy recursively from the original source.
-        FileUtils.cp_r actual_src, actual_dst, options
+        FileUtils.cp_r actual_src, actual_dst
       rescue Errno::ENOENT
         puts "warning: file #{x} is a broken link"
       end

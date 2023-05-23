@@ -540,10 +540,8 @@ module Tester
       FileList.new(helmfile_glob).each do |helmfile_path|
         # Replace references to charts in the repository with local ones
         # to also catch changes to charts that are not released yet.
-        content = patch_charts(helmfile_path, env, charts_dir)
-
-        # Prepend --debug to the list of args, so we get the yaml output even in case of error.
-        content.gsub!(/^(\s*- )--kubeconfig$/m, "\\1--debug\n\\0")
+        content_lines = patch_charts(helmfile_path, env, charts_dir)
+        content = change_helm_args(content_lines)
 
         # Add fixtures.
         # For services, we patch helmfile unconditionally, then if the file doesn't exist, we copy
@@ -558,6 +556,33 @@ module Tester
         end
         File.write helmfile_path, content
       end
+    end
+
+    # Remove all args we add to helm - typically just the kubeconfig, which interferes with
+    # the release namespace being non-existent; add --debug instead to get output even in case
+    # of recoverable errors
+    def change_helm_args(content)
+      in_helmdefaults = false
+      in_args = false
+      indent = ""
+      new_content = []
+      content.each do |line|
+        if line.match(/^helmDefaults:/)
+          in_helmdefaults = true
+        elsif in_helmdefaults && line.match(/^(\s*)args:\s*$/)
+          indent = Regexp.last_match(1)
+          new_content << line
+          new_content << "#{indent}  - --debug\n"
+          in_args = true
+        # If we're in args:, two things will conclude the stanza - either a same level arg or a top level one.
+        elsif in_args && line.match(/^({indent})?\w/)
+          in_args = false
+          in_helmdefaults = false
+        end
+        # Drop the lines of args
+        new_content << line unless in_args
+      end
+      new_content.join
     end
 
     # Patch the chart names to point to the local filesystem rather than our
@@ -602,7 +627,7 @@ module Tester
           %r{^(\s*chart:\s+["']{0,1})wmf-stable/}, "\\1#{charts_dir.chomp('/').concat('/')}"
         )
       end
-      content.join
+      content
     end
 
     def should_patch?(env, chart, version)
