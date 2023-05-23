@@ -2,7 +2,8 @@ templates:
   default: &default
     namespace: kube-system
     missingFileHandler: Warn
-    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_helm_state_metrics\" }}{{ .Environment.Values.install_helm_state_metrics }}{{ else }}{{ false }}{{end}}`}}"
+    # installedTemplate is true by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_helm_state_metrics\" }}{{ .Environment.Values.install_helm_state_metrics }}{{ else }}{{ true }}{{end}}`}}"
 
 releases:
   - name: helm-state-metrics

@@ -10,8 +10,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install helm-state-metrics
-      - install_helm_state_metrics: true
   codfw:
     values:
       - "values/common.yaml"
@@ -23,8 +21,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install helm-state-metrics
-      - install_helm_state_metrics: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -36,8 +32,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install helm-state-metrics
-      - install_helm_state_metrics: true
       # Install only in staging-eqiad and staging-eqiad for now.
       # We'll move this to all 'main' wikikube clusters when we are ready.
       # https://phabricator.wikimedia.org/T333464
@@ -53,8 +47,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install helm-state-metrics
-      - install_helm_state_metrics: true
       # Install only in staging-eqiad and staging-eqiad for now.
       # We'll move this to all 'main' wikikube clusters when we are ready.
       # https://phabricator.wikimedia.org/T333464
