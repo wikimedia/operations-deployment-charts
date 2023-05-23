@@ -25,13 +25,7 @@ app:
 
 
   flinkConfiguration:
-    # Use conf ZK cluster in eqiad.
-    "high-availability.zookeeper.quorum": "zookeeper-test1002.eqiad.wmnet"
-    # ZK Path naming follows /flink/<job_name>__<k8s_cluster_name>  convention.
-    # TODO: template this convention in https://phabricator.wikimedia.org/T336901
-    "high-availability.zookeeper.path.root": /flink/mw_page_content_change_enrich__wikikube-staging
     # Directory naming follows s3://<job_name>__<k8s_cluster_name> convention.
-    "high-availability.storageDir": s3://mw_page_content_change_enrich__wikikube-staging/high_availability
     "state.checkpoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/checkpoints # needed for upgradeMode: savepoint
     "state.savepoints.dir": s3://mw_page_content_change_enrich__wikikube-staging/savepoints # needed for upgradeMode: savepoint
 
@@ -54,14 +48,4 @@ networkpolicy:
       - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
         ports:
           - port: 443
-            protocol: tcp
-
-      # Zookeeper test-eqiad
-      - cidr: 10.64.16.145/32 # zookeeper-test1002
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
-        ports:
-          - port: 2181
             protocol: tcp

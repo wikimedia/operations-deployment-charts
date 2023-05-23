@@ -21,10 +21,6 @@ app:
             kafka_topic_prefix: eqiad.
 
   flinkConfiguration:
-    # Use conf ZK cluster in eqiad.
-    "high-availability.zookeeper.quorum": "conf1007.eqiad.wmnet:2181,conf1008.eqiad.wmnet:2181,conf1009.eqiad.wmnet:2181"
-    # ZK Path naming follows /flink/<job_name>__<k8s_cluster_name> convention.
-    "high-availability.zookeeper.path.root": /flink/mw_page_content_change_enrich__dse-k8s-eqiad
     # Directory naming follows s3://<job_name>__<k8s_cluster_name> convention.
     "high-availability.storageDir": s3://mw_page_content_change_enrich__dse-k8s-eqiad/high_availability
     "state.checkpoints.dir": s3://mw_page_content_change_enrich__dse-k8s-eqiad/checkpoints # needed for upgradeMode: savepoint
@@ -59,30 +55,4 @@ networkpolicy:
       - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
         ports:
           - port: 443
-            protocol: tcp
-
-      # Zookeeper main-eqiad on conf nodes
-      - cidr: 10.64.0.207/32 # conf1007
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 2620:0:861:101:10:64:0:207/128 # conf1007
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 10.64.16.110/32 # conf1008
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 2620:0:861:102:10:64:16:110/128 # conf1008
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 10.64.48.154/32 # conf1009
-        ports:
-          - port: 2181
-            protocol: tcp
-      - cidr: 2620:0:861:107:10:64:48:154/128 # conf1009
-        ports:
-          - port: 2181
             protocol: tcp

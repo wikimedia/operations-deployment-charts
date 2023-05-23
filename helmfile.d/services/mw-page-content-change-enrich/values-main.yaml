@@ -52,24 +52,21 @@ app:
     # Swift and Zookeeper specific configs (paths), should be defined
     # in each cluster's  helmfile.
     "state.backend": filesystem
+    "state.checkpoints.num-retained": "10"
     "s3.access-key": mediawiki-event-enrichment
     # We can put this config in values-main.yaml because it uses discovery endpoint,
     # which will be resolved correctly depending on which DC we are deploying to.
     "s3.endpoint": thanos-swift.discovery.wmnet
     "s3.path.style.access": "true"
-    # NOTE: Make sure high-availability.zookeeper.quorum is set in the
-    # environment/k8s-cluster specific values file.
-    "high-availability": zookeeper
     # Since we don't have much operational experience yet, fixed-delay seems like a fine default.
     # We might want to re-assess in the future. With this policy, the application will try a number of
     # `attempts` with a `delay` (seconds) between each try.
-    "restart-strategy": fixed-delay
+    "restart-strategy.type": fixed-delay
     # delay * attempts should be higher than the usual downtime we see.
     # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
     # to err on the side of caution.
     "restart-strategy.fixed-delay.attempts": "10"
     "restart-strategy.fixed-delay.delay": "180"
-    "state.checkpoints.num-retained": "10"
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
