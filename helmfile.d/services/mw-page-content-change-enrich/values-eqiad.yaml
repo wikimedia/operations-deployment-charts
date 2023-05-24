@@ -1,0 +1,61 @@
+# NOTE: values-eqiad.yaml is configured to be deployed in wikikube-eqiad k8s.
+#
+# - reads eqiad prefixed topic Kafka main-eqiad,
+# - writes to eqiad prefixed topic Kafka jumbo-eqiad
+# - Stores Flink Checkpoints in thanos swift in eqiad (via discovery endpoint)
+# - TODO: Stores Flink HA state in Zookeeper main-eqiad.
+#   https://phabricator.wikimedia.org/T331283
+
+app:
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # For now, set replicas to 1, as the input eqiad mediawiki.page_change stream has only 1
+    # Kafka topic-partitions (eqiad or codfw)  We'll need to adjust
+    # this accordingly if/when we we increase the number of Kafka partitions per topic.
+    replicas: 1
+    resource:
+      cpu: 2
+      # When backfilling, a single TM maxed out at around 2.7GB. Reserve 3G.
+      memory: 3000m
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Configure sources and sinks.
+        source:
+          options:
+            bootstrap_servers: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093,kafka-main1004.eqiad.wmnet:9093,kafka-main1005.eqiad.wmnet:9093
+            # We run in 'active/active single compute' Multi DC mode, so this
+            # app in eqiad should only process the eqiad prefixed topic of the
+            # mediawiki.page_change.v1 stream.
+            topics: eqiad.mediawiki.page_change.v1
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw-page-content-change-enrich.wikikube-eqiad.000
+
+        sink:
+          options:
+            bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
+            kafka_topic_prefix: eqiad.
+
+  flinkConfiguration:
+    "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-eqiad/flink/savepoints # needed for upgradeMode: savepoint
+
+kafka:
+  allowed_clusters:
+    # Read page change events from main
+    - main-eqiad
+    # Write page content change events to jumbo
+    - jumbo-eqiad
+
+networkpolicy:
+  egress:
+    dst_nets:
+
+      # thanos-swift cluster in eqiad for checkpoints
+      - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
