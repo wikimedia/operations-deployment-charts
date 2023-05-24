@@ -23,6 +23,8 @@ namespaces:
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
+  flink-operator:
+    systemNamespace: true
   apertium: {}
   api-gateway: {}
   blubberoid: {}
@@ -91,6 +93,7 @@ namespaces:
           cpu: "90"
           memory: "150Gi"
   mathoid: {}
+  mw-page-content-change-enrich: {}
   miscweb:
     tlsExtraSANs:
       - static-bugzilla.wikimedia.org

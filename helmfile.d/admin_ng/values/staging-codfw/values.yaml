@@ -18,8 +18,6 @@ resourcequota:
       memory: "10Gi"
 
 namespaces:
-  flink-operator:
-    systemNamespace: true
   ci:
     deployUser: jenkins
     deployClusterRole: deploy-flink
@@ -44,9 +42,6 @@ namespaces:
         limits:
           cpu: "20"
           memory: "20Gi"
-  # TODO: Move this to main.yaml when we deploy to eqiad/codfw.
-  # https://phabricator.wikimedia.org/T325303
-  mw-page-content-change-enrich: {}
   mobileapps:
     resourcequota:
       pods: {}

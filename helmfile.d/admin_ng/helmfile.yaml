@@ -10,6 +10,7 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      - install_flink_operator: true
   codfw:
     values:
       - "values/common.yaml"
@@ -21,6 +22,7 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
+      - install_flink_operator: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -32,9 +34,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install only in staging-eqiad and staging-eqiad for now.
-      # We'll move this to all 'main' wikikube clusters when we are ready.
-      # https://phabricator.wikimedia.org/T333464
       - install_flink_operator: true
   staging-codfw:
     values:
@@ -47,9 +46,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      # Install only in staging-eqiad and staging-eqiad for now.
-      # We'll move this to all 'main' wikikube clusters when we are ready.
-      # https://phabricator.wikimedia.org/T333464
       - install_flink_operator: true
   # Machine Learning clusters
   ml-serve-eqiad:

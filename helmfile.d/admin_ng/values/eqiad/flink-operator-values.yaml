@@ -1,11 +1,15 @@
-# List of namespaces that the flink-operator
-# will watch and be granted permissions to manage.
+# watchNamespaces is a flink-kubernetes-operator configuration that
+# indicates which namespaces flink-kubernetes-operator should manage.
+# Include all namespaces that need to use the FlinkDeployment CRD.
+# NOTE: You should set this to the same values in all environments
+# in the same cluster_group.
 watchNamespaces:
-  # https://phabricator.wikimedia.org/T321682
-  - stream-enrichment-poc
-  # https://phabricator.wikimedia.org/T328675
-  - rdf-streaming-updater
+  - mw-page-content-change-enrich
 
+# NOTE: Ideally, we'd put rbac.create in the cluster group main.yaml values file.
+# But, rbac.create is a very common value, and is used by many charts.
+# We only want to modify that value in this file, which is only used by the
+# flink-operator release.
 
 # Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
 rbac:
@@ -17,7 +21,9 @@ rbac:
 #   egress:
 #     enabled: true
 #     dst_nets:
-#       # Zookeeper main-eqiad on conf nodes
+#       # NOTE: flink-kubernetes-operator needs egress to Zookeeper cluster
+#       # where Flink applications are configured to store HA state.
+#       # Zookeeper main-eqiad:
 #       - cidr: 10.64.0.207/32 # conf1007
 #         ports:
 #           - port: 2181
