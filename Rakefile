@@ -415,12 +415,19 @@ task :check_change do
   # production's HEAD
   g.remote('origin').fetch
   changes = g.changed_files('origin/master')
-  puts tasklist_from_changes(changes)
+  # Before doing anything else, we check if the ruby files are changed. If so, we run everything
+  # as the impacted file is in CI
+  if changes.values.flatten.filter{ |path| (path == 'Rakefile' || path.start_with?(".rake_modules"))}.empty?
+    puts tasklist_from_changes(changes)
+  else
+    Rake::Task[:all].invoke
+  end
 end
 
 def tasklist_from_changes(changes)
   tasks = {scaffold: false, charts: [], deployments: [], admin: false, envoy: true, istio: false}
   all_changes = changes.values.flatten
+
   # Scaffold is easy. Any file under _scaffold changed?
   all_changes.each do |path|
     if path.start_with?('_scaffold/')
