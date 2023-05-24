@@ -15,7 +15,9 @@ module Tester
     attr_reader :assets
 
     ASSET = ChartAsset
-    KUBERNETES_VERSIONS = ['1.16.15' , '1.23.6'].freeze
+    # When adding kubernetes versions here the corresponding schemata
+    # need to be made available in https://gitlab.wikimedia.org/repos/sre/kubernetes-json-schema
+    KUBERNETES_VERSIONS = ['1.23.6', '1.27.2'].freeze
     DEFAULT_TESTS = %w[lint validate diff].freeze
     EXCLUDE = [].freeze
 
