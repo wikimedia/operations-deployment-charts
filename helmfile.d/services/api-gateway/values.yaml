@@ -185,7 +185,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/revertrisk-(\w+):predict'
+      path: 'lw/inference/v1/models/revertrisk-([\w-]+):predict'
       host_rewrite_path: 'revertrisk-\1.revertrisk.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
