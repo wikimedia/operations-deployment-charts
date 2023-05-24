@@ -40,6 +40,7 @@ module Tester
       @should_run = to_run.nil? || to_run.include?(name)
       # After this point, we have expensive operations.
       # Avoid running them unless we need to.
+
       @fixtures = if should_run?
                     # Test cases we'll use when executing commands on the asset.
                     collect_fixtures
@@ -287,12 +288,23 @@ module Tester
     LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
 
     def initialize(path, to_run = nil)
-      super
-      if should_run?
-        chart_yaml = yaml_load_file(path)
-        @library = chart_yaml['type'] == 'library'
-        @kube_version = collect_kube_version(chart_yaml)
+      # We need these defaults before calling super as we
+      # need them to call collect_fixtures.
+      @default_fixtures = [LISTENERS_FIXTURE]
+      @fixtures_dir = '.fixtures'
+      fixturectl = "#{File.dirname(path)}/.fixturectl.yaml"
+      if File.file?(fixturectl)
+        prefs = yaml_load_file(fixturectl)
+        @default_fixtures = prefs['default_fixtures'] if prefs.include? 'default_fixtures'
+        @fixtures_dir = prefs['fixtures_dir'] if prefs.include? 'fixtures_dir'
       end
+
+      super
+      return unless should_run?
+
+      chart_yaml = yaml_load_file(path)
+      @library = chart_yaml['type'] == 'library'
+      @kube_version = collect_kube_version(chart_yaml)
     end
 
     def library?
@@ -327,7 +339,7 @@ module Tester
       # There might be empty fixture files (crds.yaml for example) that
       # do have a meaning in a different context but won't actually change
       # rendered output of the chart. Skip those.
-      fixtures = FileList.new("#{real_path}/.fixtures/*.yaml").reject { |f|
+      fixtures = FileList.new("#{real_path}/#{@fixtures_dir}/*.yaml").reject { |f|
         f.include?(ChartAsset::PRIVATE_STUB) || File.size(f).zero?
       }
       all = fixtures.map do |f|
@@ -349,9 +361,11 @@ module Tester
       fix.each do |label, fixture|
         quoted = fixture.nil? ? '' : "-f '#{fixture}'"
         # --debug will output yaml even if it's invalid
-        # Always prepend the LISTENERS_FIXTURE file so charts don't have to define "services_proxy"
-        # but can override that structure at will.
-        command = "helm template --debug -f '#{LISTENERS_FIXTURE}' #{quoted} '#{@path}'"
+        # Prepend the default fixtures - by default LISTENERS_FIXTURE so charts don't have to define "services_proxy"
+        # but can override that structure at will. If default_fixtures is defined in .fixturectl.yaml, then
+        # we'll use that.
+        default = @default_fixtures.map { |x| "-f '#{x}'" }.join(' ')
+        command = "helm template --debug #{default} #{quoted} '#{@path}'"
         outcomes[label] = _exec command, nil, chdir
         outcomes[label].grep_v(/found symbolic link in path/)
         # If we got a yaml parse error, we will let the validation
@@ -564,7 +578,7 @@ module Tester
     def change_helm_args(content)
       in_helmdefaults = false
       in_args = false
-      indent = ""
+      indent = ''
       new_content = []
       content.each do |line|
         if line.match(/^helmDefaults:/)
