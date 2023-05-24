@@ -12,7 +12,7 @@ app:
         source:
           options:
             bootstrap_servers: kafka-jumbo1001.eqiad.wmnet:9093,kafka-jumbo1002.eqiad.wmnet:9093,kafka-jumbo1003.eqiad.wmnet:9093,kafka-jumbo1004.eqiad.wmnet:9093,kafka-jumbo1005.eqiad.wmnet:9093,kafka-jumbo1006.eqiad.wmnet:9093,kafka-jumbo1007.eqiad.wmnet:9093,kafka-jumbo1008.eqiad.wmnet:9093,kafka-jumbo1009.eqiad.wmnet:9093
-            consumer_group: mw_page_content_change_enrich__dse-k8s-eqiad_000
+            consumer_group: mw-page-content-change-enrich.dse-k8s-eqiad.000
 
         sink:
           options:
@@ -21,9 +21,8 @@ app:
             kafka_topic_prefix: eqiad.
 
   flinkConfiguration:
-    "high-availability.storageDir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/high_availability
-    "state.checkpoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/checkpoints # needed for upgradeMode: savepoint
-    "state.savepoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/dse-k8s-eqiad/savepoints # needed for upgradeMode: savepoint
+    "state.checkpoints.dir": s3://mw-page-content-change-enrich.dse-k8s-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mw-page-content-change-enrich.dse-k8s-eqiad/flink/savepoints # needed for upgradeMode: savepoint
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.

@@ -15,8 +15,8 @@ app:
         source:
           options:
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
-            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
-            consumer_group: mw_page_content_change_enrich__wikikube-staging_000
+            # Kafka consumer group naming follows convention: <job_name>.<k8s_cluster_name>
+            consumer_group: mw-page-content-change-enrich.wikikube-staging-eqiad.000
 
         sink:
           options:
@@ -25,8 +25,8 @@ app:
 
 
   flinkConfiguration:
-    "state.checkpoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/wikikube-staging/checkpoints # needed for upgradeMode: savepoint
-    "state.savepoints.dir": s3://mediawiki-page-content-change-enrichment-eqiad/wikikube-staging/savepoints # needed for upgradeMode: savepoint
+    "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
+    "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/savepoints # needed for upgradeMode: savepoint
 
 
 # TODO: when deploying to eqiad + codfw, we'll need to set

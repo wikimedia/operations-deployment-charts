@@ -42,10 +42,10 @@ app:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
-        # Setting error to true causes the default error stream name of <job_name>.error
-        # to be used.  So:
-        #   mediawiki_page_content_change_enrichment.error
-        error_sink: true
+        # By convention we set job_name equal to k8s namespace.
+        # Since this naming will contain hypens, set the error_sink
+        # stream name explicitly for production deployments.
+        error_sink: mw_page_content_change_enrich.error:2.0.0
 
   flinkConfiguration:
     # Flink HA config shared across clusters.
@@ -67,6 +67,11 @@ app:
     # to err on the side of caution.
     "restart-strategy.fixed-delay.attempts": "10"
     "restart-strategy.fixed-delay.delay": "180"
+    # When HA is disabled we need to set an interval in order to trigger checkpointing.
+    # TODO: after gaining some operational experience, set this value to something 
+    # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
+    # default.
+    "execution.checkpointing.interval": "10000" # 10 seconds.
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
