@@ -78,16 +78,7 @@ We use the `app-wmf` label in our charts since the `app` label is already used
 by knative-serving. The `app-wmf` value is useful to deploy network policies
 safely and consistently.
 
-To please our CI validation checks, the `PodDisruptionBudget`'s `apiVersion` is moved from `policy/v1` to `policy/v1beta1`
-(not real difference in behavior, but v1beta1 is also compatible
-with k8s 1.16 and the CI checks at the moment validate all supported
-k8s versions).
-```
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-```
-
-We also change the PodDisruptionBudget of the webhook as following (to ease roll reboots):
+We change the PodDisruptionBudget of the webhook as following (to ease roll reboots):
 
 --- a/charts/knative-serving/templates/core.yaml
 +++ b/charts/knative-serving/templates/core.yaml

@@ -82,7 +82,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: calico-kube-controllers

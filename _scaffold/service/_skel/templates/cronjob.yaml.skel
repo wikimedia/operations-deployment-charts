@@ -2,7 +2,7 @@
 {{ range $cronjob := .Values.cronjobs }}
 {{- if $cronjob.enabled }}
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
 {{- include "base.meta.metadata" (dict "Root" $root "Name" $cronjob.name ) | indent 2 }}
