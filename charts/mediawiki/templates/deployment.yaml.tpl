@@ -17,11 +17,11 @@ spec:
         deployment: {{ .Release.Namespace }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
-        # TODO: check mcrouter can pick up changes via inotify.
         checksum/sites: {{ include "mw.web-sites" . | sha256sum }}
         {{- include "mw.rsyslog.annotations" . | indent 8 }}
+{{/* please note: we don't use the base.meta module as mediawiki has no secrets whatsoever */}}
         {{- if .Values.monitoring.enabled }}
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape_by_name: "true"
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:

@@ -28,9 +28,9 @@ main_app:
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
+  # MediaWiki's data can be scraped using named ports only so it will by default
+  # assume named_ports is set to true even if not indicated here.
   enabled: false
-  # MediaWiki's data can be scraped using named ports only
-  named_ports: true
 service:
   deployment: minikube # valid values are "production" and "minikube"
   expose_http: false # set this to true if you want to expose both the https and http endpoint
