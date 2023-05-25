@@ -851,11 +851,16 @@ spec: &spec
                     {{- range $k, $v := $model_settings.match_config.meta }}
                     {{ $k }}: {{ $v | quote }}
                     {{- end }}
-                {{- else }}
-                  {{- range $k, $v := $model_settings.match_config }}
+                {{- end }}
+                {{- if hasKey $model_settings.match_config "page" }}
+                  page:
+                    {{- range $k, $v := $model_settings.match_config.page }}
+                    {{ $k }}: {{ $v | quote }}
+                    {{- end }}
+                {{- end }}
+                  {{- range $k, $v := (omit $model_settings.match_config "meta" "page") }}
                   {{ $k }}: {{ $v | quote }}
                   {{- end }}
-                {{- end }}
                 {{- end }}
                 exec:
                   method: post

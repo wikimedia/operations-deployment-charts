@@ -39,8 +39,9 @@ main_app:
           match_config:
             wiki_id: 'enwiki'
             page_change_kind: "/^(edit|create)$/"
-            page.is_redirect: false
-            page.namespace_id: 0
+            page:
+              is_redirect: false
+              namespace_id: 0
           namespace: articletopic-outlink
           kafka_topic: 'liftwing.test-outlink-events'
 
