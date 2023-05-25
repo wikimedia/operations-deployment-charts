@@ -138,7 +138,8 @@ static_resources:
             path: "/dev/stdout"
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         http_protocol_options: {accept_http_10: true}
         route_config:
           {{- if .Values.mesh.request_headers_to_add | default false }}
@@ -172,7 +173,8 @@ static_resources:
               private_key: {filename: /etc/envoy/ssl/service.key}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
-    typed_config: {}
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
 {{- end }}
 
 {{/* Mesh network configuration. */}}
@@ -245,7 +247,8 @@ under 'tcp_services_proxy'.
         stat_prefix: {{ .Name }}_egress
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         route_config:
         {{- if .Listener.xfp }}
           request_headers_to_remove:
@@ -379,7 +382,8 @@ Given we go through a load-balancer, we want to keep the number of requests that
         "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         http_protocol_options: {accept_http_10: true}
         route_config:
           virtual_hosts:
