@@ -7,6 +7,7 @@ main_app:
       models:
         goodfaith:
           concurrency: 2
+          match_config_need_quotes: ["database"]
           match_config:
             database: '/.*/'
           message_wiki_selector: database
@@ -14,6 +15,7 @@ main_app:
           kafka_topic: 'mediawiki.revision-create'
         damaging:
           concurrency: 2
+          match_config_need_quotes: ["domain"]
           match_config:
             meta:
               domain: '/^(en|zh)wiki$/'
@@ -22,6 +24,7 @@ main_app:
           kafka_topic: 'mediawiki.page.change'
         reverted:
           concurrency: 2
+          match_config_need_quotes: ["database"]
           match_config:
             database: '/.*/'
           message_wiki_selector: database
@@ -29,6 +32,7 @@ main_app:
           kafka_topic: 'mediawiki.revision-create'
         articletopic:
           concurrency: 2
+          match_config_need_quotes: ["database"]
           match_config:
             database: '/.*/'
           message_wiki_selector: database
@@ -36,6 +40,7 @@ main_app:
           kafka_topic: 'mediawiki.revision-create'
         articlequality:
           concurrency: 2
+          match_config_need_quotes: ["database"]
           match_config:
             database: '/.*/'
           message_wiki_selector: database
@@ -43,6 +48,7 @@ main_app:
           kafka_topic: 'mediawiki.revision-create'
         drafttopic:
           concurrency: 12
+          match_config_need_quotes: ["page_change_kind", "wiki_id"]
           match_config:
             wiki_id: 'enwiki'
             page_change_kind: "/^(edit|create)$/"
@@ -51,6 +57,7 @@ main_app:
           kafka_topic: 'rc1.mediawiki.page_change'
         draftquality:
           concurrency: 2
+          match_config_need_quotes: ["database"]
           match_config:
             database: '/.*/'
           message_wiki_selector: database
@@ -58,6 +65,7 @@ main_app:
           kafka_topic: 'mediawiki.revision-create'
         outlink-topic-model:
           concurrency: 2
+          match_config_need_quotes: ["page_change_kind", "wiki_id"]
           match_config:
             wiki_id: 'enwiki'
             page_change_kind: "/^(edit|create)$/"

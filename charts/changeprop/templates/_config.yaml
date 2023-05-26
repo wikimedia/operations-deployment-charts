@@ -844,22 +844,35 @@ spec: &spec
                 retry_on:
                   status:
                     - 503
+                {{- $need_quotes := ($model_settings.match_config_need_quotes | default list) }}
                 {{- if hasKey $model_settings "match_config" }}
                 match:
                 {{- if hasKey $model_settings.match_config "meta" }}
                   meta:
                     {{- range $k, $v := $model_settings.match_config.meta }}
+                    {{- if has $k $need_quotes }}
                     {{ $k }}: {{ $v | quote }}
+                    {{- else }}
+                    {{ $k }}: {{ $v }}
+                    {{- end }}
                     {{- end }}
                 {{- end }}
                 {{- if hasKey $model_settings.match_config "page" }}
                   page:
                     {{- range $k, $v := $model_settings.match_config.page }}
+                    {{- if has $k $need_quotes }}
                     {{ $k }}: {{ $v | quote }}
+                    {{- else }}
+                    {{ $k }}: {{ $v }}
+                    {{- end }}
                     {{- end }}
                 {{- end }}
                   {{- range $k, $v := (omit $model_settings.match_config "meta" "page") }}
+                  {{- if has $k $need_quotes }}
                   {{ $k }}: {{ $v | quote }}
+                  {{- else }}
+                  {{ $k }}: {{ $v }}
+                  {{- end }}
                   {{- end }}
                 {{- end }}
                 exec:
