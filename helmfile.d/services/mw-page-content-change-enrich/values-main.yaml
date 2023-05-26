@@ -45,7 +45,7 @@ app:
         # By convention we set job_name equal to k8s namespace.
         # Since this naming will contain hypens, set the error_sink
         # stream name explicitly for production deployments.
-        error_sink: mw_page_content_change_enrich.error:2.0.0
+        error_sink: mw_page_content_change_enrich.error
 
   flinkConfiguration:
     # Flink HA config shared across clusters.
