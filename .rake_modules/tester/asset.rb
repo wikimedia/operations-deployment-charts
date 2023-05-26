@@ -636,7 +636,7 @@ module Tester
       elsif !version
         true
       else
-        @pinned_chart_versions[env][chart].nil?
+        @pinned_chart_versions[env].nil? || @pinned_chart_versions[env][chart].nil?
       end
     end
   end
