@@ -343,13 +343,6 @@ core:
 
 helmVersion: "helm3"
 
-# Override from default config (see ./common.yaml) to lower the min cpu limit
-# from 100m to 25m (kserve sidecar default settings).
-limitranges:
-  container:
-    min:
-      cpu: "25m"
-
 # Override from default config (see ./common.yaml) to allow deployments of
 # big namespaces with a lot of pods.
 resourcequota:
