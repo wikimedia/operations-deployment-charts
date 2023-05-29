@@ -30,20 +30,27 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
-    container:
-      min:
-        memory: "100Mi"
-        cpu: "100m"
-      max:
-        memory: "14Gi"
-        cpu: "8"
-    pod:
-      min:
-        memory: "100Mi"
-        cpu: "100m"
-      max:
-        memory: "8Gi"
-        cpu: "9"
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "14Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "8Gi"
+          cpu: "9"
   knative-serving:
     # Note: We rely on ChangeProp to call LiftWing upon certain
     # Kafka events are emitted. Due to how nodejs works
