@@ -53,11 +53,13 @@ releases:
     <<: *default
   - name: annualreport
     <<: *default
+  - name: bienvenida
+    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [bugzilla, annualreport]
+      - releases: [bugzilla, annualreport, bienvenida]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:

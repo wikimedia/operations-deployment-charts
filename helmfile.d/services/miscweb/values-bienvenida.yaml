@@ -1,0 +1,19 @@
+main_app:
+  image: repos/sre/miscweb/bienvenida
+  version: v1.0.1
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - bienvenida.wikimedia.org
