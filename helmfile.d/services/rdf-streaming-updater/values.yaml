@@ -3,8 +3,8 @@ docker:
   pull_policy: IfNotPresent
 
 main_app:
-  image: wikimedia/wikidata-query-flink-rdf-streaming-updater
-  version: 2023-02-16-151433-production
+  image: repos/search-platform/flink-rdf-streaming-updater
+  version: flink-1.16.1-rdf-0.3.124
   replicas: 1
   requests:
     cpu: 500m
@@ -35,7 +35,8 @@ service:
   port:
     port: 14007 # the port number desired to be exposed to the cluster
 config:
-  public: {}
+  public:
+    DISABLE_JEMALLOC: "true"
   private:
     swift_api_key: some_secret_key
 mesh:

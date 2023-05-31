@@ -1,7 +1,4 @@
 main_app:
-  # override the image for testing in staging first
-  image: repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.16.1-rdf-0.3.124
   config:
     cluster_id: rdf-streaming-updater-staging-flink-cluster
 # thanos is replicated between clusters so we want a separate bucket for
@@ -16,10 +13,6 @@ task_manager:
   limits:
     cpu: 1000m
     memory: 2048M
-
-config:
-  public:
-    DISABLE_JEMALLOC: "true"
 
 kafka:
   # unclear where staging is actually running so allow both kafka-main clusters
