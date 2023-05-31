@@ -30,7 +30,7 @@ app:
             # We run in 'active/active single compute' Multi DC mode, so this
             # app in eqiad should only process the eqiad prefixed topic of the
             # mediawiki.page_change.v1 stream.
-            topics: codfw.mediawiki.page_change.v1
+            topics: [codfw.mediawiki.page_change.v1]
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-content-change-enrich.wikikube-codfw.000
 
