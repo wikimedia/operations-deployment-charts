@@ -44,7 +44,7 @@ admin:
       # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
       path: /var/log/envoy/admin-access.log
   address:
-    socket_address: {address: 127.0.0.1, port_value: 1666}
+    socket_address: {address: 127.0.0.1, port_value: {{ .Values.mesh.admin.port | default 1666 }}}
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}

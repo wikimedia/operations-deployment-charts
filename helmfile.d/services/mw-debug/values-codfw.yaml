@@ -1,4 +1,8 @@
 # mw site-specific configurations
+
+# Only 1 replica for termination testing
+resources:
+  replicas: 1
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org
@@ -16,3 +20,9 @@ cache:
         replica:
           route: /eqiad/mw-wan
           pool: eqiad-servers
+mesh:
+  admin:
+    port: "1666"
+    drain_time_s: "5"
+    drain_strategy: "immediate"
+

@@ -70,6 +70,10 @@ mesh:
     - header: "x-client-ip"
       value: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
       append: true
+  admin:
+    port: "1666"
+    drain_time_s: "600"
+    drain_strategy: "gradual"
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

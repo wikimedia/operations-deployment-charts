@@ -8,6 +8,12 @@
       value: {{ .Release.Name }}
     - name: SERVICE_ZONE
       value: "default"
+    - name: ADMIN_PORT
+      value: "{{ .Values.mesh.admin.port | default 1666 }}"
+    - name: DRAIN_TIME_S
+      value: "{{ .Values.mesh.admin.drain_time_s | default 600 }}"
+    - name: DRAIN_STRATEGY
+      value: {{ .Values.mesh.admin.drain_strategy | default "gradual" }}
   {{- if .Values.mesh.public_port }}
   ports:
     - containerPort: {{ .Values.mesh.public_port }}
@@ -25,6 +31,10 @@
       mountPath: /etc/envoy/ssl
       readOnly: true
 {{- end }}
+  lifecycle:
+    preStop:
+      exec:
+        command: [ "/bin/drain-envoy.sh; sleep {{ .Values.mesh.admin.drain_time_s | default 30 }}" ]
   resources:
 {{- if .Values.mesh.resources }}
 {{ toYaml .Values.mesh.resources | indent 4 }}

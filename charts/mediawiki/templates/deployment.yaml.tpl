@@ -29,6 +29,9 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
       {{- include "lamp.deployment" . | indent 8 }}
       {{- include "cache.mcrouter.deployment" . | indent 8 }}
