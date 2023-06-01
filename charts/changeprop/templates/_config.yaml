@@ -846,10 +846,11 @@ spec: &spec
                     - 503
                 {{- $need_quotes := ($model_settings.match_config_need_quotes | default list) }}
                 {{- if hasKey $model_settings "match_config" }}
-                match:
-                {{- if hasKey $model_settings.match_config "meta" }}
+                {{- range $match_action, $match_settings := $model_settings.match_config }}
+                {{ $match_action }}:
+                {{- if hasKey $match_settings "meta" }}
                   meta:
-                    {{- range $k, $v := $model_settings.match_config.meta }}
+                    {{- range $k, $v := $match_settings.meta }}
                     {{- if has $k $need_quotes }}
                     {{ $k }}: {{ $v | quote }}
                     {{- else }}
@@ -857,9 +858,9 @@ spec: &spec
                     {{- end }}
                     {{- end }}
                 {{- end }}
-                {{- if hasKey $model_settings.match_config "page" }}
+                {{- if hasKey $match_settings "page" }}
                   page:
-                    {{- range $k, $v := $model_settings.match_config.page }}
+                    {{- range $k, $v := $match_settings.page }}
                     {{- if has $k $need_quotes }}
                     {{ $k }}: {{ $v | quote }}
                     {{- else }}
@@ -867,13 +868,14 @@ spec: &spec
                     {{- end }}
                     {{- end }}
                 {{- end }}
-                  {{- range $k, $v := (omit $model_settings.match_config "meta" "page") }}
+                  {{- range $k, $v := (omit $match_settings "meta" "page") }}
                   {{- if has $k $need_quotes }}
                   {{ $k }}: {{ $v | quote }}
                   {{- else }}
                   {{ $k }}: {{ $v }}
                   {{- end }}
                   {{- end }}
+                {{- end }}
                 {{- end }}
                 exec:
                   method: post

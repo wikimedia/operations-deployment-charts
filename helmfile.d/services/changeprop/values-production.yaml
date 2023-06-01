@@ -16,8 +16,9 @@ main_app:
           concurrency: 5
           match_config_need_quotes: ["wiki_id", "page_change_kind"]
           match_config:
-            wiki_id: 'enwiki'
-            page_change_kind: "/^(edit|create)$/"
+            match:
+              wiki_id: 'enwiki'
+              page_change_kind: "/^(edit|create)$/"
           namespace: revscoring-drafttopic
           kafka_topic: 'mediawiki.page_change.v1'
           message_wiki_selector: 'wiki_id'

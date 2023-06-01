@@ -9,7 +9,8 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["database"]
           match_config:
-            database: '/.*/'
+            match:
+              database: '/.*/'
           message_wiki_selector: database
           namespace: 'revscoring-editquality-goodfaith'
           kafka_topic: 'mediawiki.revision-create'
@@ -17,8 +18,9 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["domain"]
           match_config:
-            meta:
-              domain: '/^(en|zh)wiki$/'
+            match:
+              meta:
+                domain: '/^(en|zh)wiki$/'
           message_wiki_selector: database
           namespace: 'revscoring-editquality-damaging'
           kafka_topic: 'mediawiki.page.change'
@@ -26,7 +28,8 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["database"]
           match_config:
-            database: '/.*/'
+            match:
+              database: '/.*/'
           message_wiki_selector: database
           namespace: 'revscoring-editquality-damaging'
           kafka_topic: 'mediawiki.revision-create'
@@ -34,7 +37,8 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["database"]
           match_config:
-            database: '/.*/'
+            match:
+              database: '/.*/'
           message_wiki_selector: database
           namespace: 'revscoring-articletopic'
           kafka_topic: 'mediawiki.revision-create'
@@ -42,7 +46,8 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["database"]
           match_config:
-            database: '/.*/'
+            match:
+              database: '/.*/'
           message_wiki_selector: database
           namespace: 'revscoring-articlequality'
           kafka_topic: 'mediawiki.revision-create'
@@ -50,8 +55,9 @@ main_app:
           concurrency: 12
           match_config_need_quotes: ["page_change_kind", "wiki_id"]
           match_config:
-            wiki_id: 'enwiki'
-            page_change_kind: "/^(edit|create)$/"
+            match:
+              wiki_id: 'enwiki'
+              page_change_kind: "/^(edit|create)$/"
           message_wiki_selector: wiki_id
           namespace: revscoring-drafttopic
           kafka_topic: 'rc1.mediawiki.page_change'
@@ -59,18 +65,24 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ["database"]
           match_config:
-            database: '/.*/'
+            match:
+              database: '/.*/'
           message_wiki_selector: database
           namespace: 'revscoring-draftquality'
           kafka_topic: 'mediawiki.revision-create'
         outlink-topic-model:
           concurrency: 2
-          match_config_need_quotes: ["page_change_kind", "wiki_id"]
+          match_config_need_quotes: ["page_change_kind", "wiki_id", "domain"]
           match_config:
-            wiki_id: 'enwiki'
-            page_change_kind: "/^(edit|create)$/"
-            page.is_redirect: false
-            page.namespace_id: 0
+            match:
+              wiki_id: enwiki
+              page_change_kind: /^(edit|create)$/
+              page:
+                is_redirect: false
+                namespace_id: 0
+            match_not:
+              meta:
+                domain: canary
           namespace: articletopic-outlink
           kafka_topic: 'liftwing.test-events'
 

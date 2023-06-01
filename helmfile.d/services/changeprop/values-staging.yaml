@@ -29,8 +29,9 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ['page_change_kind', 'wiki_id']
           match_config:
-            wiki_id: enwiki
-            page_change_kind: /^(edit|create)$/
+            match:
+              wiki_id: enwiki
+              page_change_kind: /^(edit|create)$/
           namespace: revscoring-editquality-goodfaith
           message_wiki_selector: 'wiki_id'
           kafka_topic: 'liftwing.test-events'
@@ -39,11 +40,15 @@ main_app:
           concurrency: 2
           match_config_need_quotes: ['page_change_kind', 'wiki_id']
           match_config:
-            wiki_id: 'enwiki'
-            page_change_kind: '/^(edit|create)$/'
-            page:
-              is_redirect: false
-              namespace_id: 0
+            match:
+              wiki_id: enwiki
+              page_change_kind: /^(edit|create)$/
+              page:
+                is_redirect: false
+                namespace_id: 0
+            match_not:
+              meta:
+                domain: canary
           namespace: articletopic-outlink
           kafka_topic: 'liftwing.test-outlink-events'
 
