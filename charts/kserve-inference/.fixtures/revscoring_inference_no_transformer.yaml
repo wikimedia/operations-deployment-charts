@@ -1,10 +1,8 @@
 # In this fixture we have several inference services composed only by predictors,
 # without any transformer set.
-
 docker:
   registry: docker-registry.wikimedia.org/wikimedia
   imagePullPolicy: IfNotPresent
-
 inference:
   swift_s3_secret_name: "swift-s3-credentials"
   s3_storage_base_uri: "s3://wmf-ml-models"
@@ -28,7 +26,6 @@ inference:
         value: "https://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
         value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
-
 revscoring_inference_services:
   - wiki: "en"
     version: "202105140814"

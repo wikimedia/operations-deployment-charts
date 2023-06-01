@@ -28,7 +28,7 @@ inference:
         value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
 
 inference_services:
-  - name: "enwiki-goodfaith"
+  enwiki-goodfaith:
     predictor:
       resources:
         limits:
@@ -49,7 +49,7 @@ inference_services:
           options:
           - name: ndots
             value: "2"
-  - name: itwiki-goodfaith
+  itwiki-goodfaith:
     predictor:
       config:
         serviceAccountName: "kserve-override"
@@ -62,7 +62,7 @@ inference_services:
           value: "it.wikipedia.org"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/itwiki/202106140815/"
-  - name: eswiki-goodfaith
+  eswiki-goodfaith:
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
       image_version: '42'

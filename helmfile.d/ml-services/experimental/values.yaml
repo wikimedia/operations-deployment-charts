@@ -40,14 +40,14 @@ inference:
     sidecar.istio.io/inject: "true"
 
 inference_services:
-  - name: "nsfw-model"
+  nsfw-model:
     predictor:
       image: "machinelearning-liftwing-inference-services-nsfw"
       image_version: "2023-03-07-072826-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
-  - name: "revertrisk-wikidata"
+  revertrisk-wikidata:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
       image_version: "2023-05-23-132125-publish"
@@ -65,7 +65,7 @@ inference_services:
         requests:
           cpu: "2"
           memory: 4Gi
-  - name: "bloom-560m"
+  bloom-560m:
     predictor:
       image: "machinelearning-liftwing-inference-services-bloom"
       image_version: "2023-05-19-145022-publish"
@@ -81,7 +81,7 @@ inference_services:
         requests:
           cpu: "4"
           memory: 6Gi
-  - name: "bloom-3b"
+  bloom-3b:
     predictor:
       image: "machinelearning-liftwing-inference-services-bloom"
       image_version: "2023-05-19-145022-publish"

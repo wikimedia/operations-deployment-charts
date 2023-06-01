@@ -22,14 +22,14 @@ inference:
         value: "some-value"
 
 inference_services:
-  - name: "enwiki-goodfaith"
+  enwiki-goodfaith:
     predictor:
       custom_env:
         - name: INFERENCE_NAME
           value: "enwiki-goodfaith"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/goodfaith/enwiki/202105140814/"
-  - name: itwiki-goodfaith
+  itwiki-goodfaith:
     predictor:
       config:
         serviceAccountName: "kserve-override"
@@ -54,7 +54,7 @@ inference_services:
       custom_env:
         - name: WIKI_HOST
           value: "es.wikipedia.org"
-  - name: eswiki-goodfaith
+  eswiki-goodfaith:
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
       image_version: '42'

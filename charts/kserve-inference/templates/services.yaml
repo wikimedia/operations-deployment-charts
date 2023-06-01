@@ -1,8 +1,8 @@
-{{- range .Values.inference_services }}
+{{- range $inference_name, $inference_settings := .Values.inference_services }}
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: {{ .name | quote }}
+  name: {{ $inference_name | quote }}
   annotations:
     {{ if $.Values.monitoring.enabled -}}
     prometheus.io/scrape: "true"
@@ -23,13 +23,13 @@ spec:
   # custom) is supposed to be present.
   predictor:
     {{- $generic_predictor := $.Values.inference.predictor | default dict }}
-    {{- $custom_predictor := .predictor | default dict }}
+    {{- $custom_predictor := get $inference_settings "predictor" | default dict }}
     {{- $final_predictor_config := merge ($custom_predictor.config | default dict) ($generic_predictor.config | default dict) }}
     {{- if $final_predictor_config }}
     {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
     containers:
-    - name: kserve-predictor-{{ .name }}
+    - name: kserve-predictor-{{ $inference_name }}
       image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.image_version | default $generic_predictor.version }}
       imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
       env:
@@ -44,7 +44,7 @@ spec:
       {{- end }}
 
   {{- $generic_transformer := $.Values.inference.transformer | default dict }}
-  {{- $custom_transformer := .transformer | default dict }}
+  {{- $custom_transformer := get $inference_settings "transformer" | default dict }}
   {{- $final_transformer_config := merge ($custom_transformer.config | default dict) ($generic_transformer.config | default dict) }}
   {{- if or (hasKey $custom_transformer "image") (hasKey $generic_transformer "image") }}
   # If there is a generic transformer set in the inference config
@@ -58,7 +58,7 @@ spec:
     {{- toYaml $final_transformer_config | nindent 4 }}
     {{- end }}
     containers:
-    - name: kserve-transformer-{{ .name }}
+    - name: kserve-transformer-{{ $inference_name }}
       image: {{ $.Values.docker.registry }}/{{ $custom_transformer.image | default $generic_transformer.image }}:{{ $custom_transformer.image_version | default $generic_transformer.version }}
       imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
       env:
