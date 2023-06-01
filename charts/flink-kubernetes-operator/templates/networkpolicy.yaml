@@ -16,11 +16,11 @@ egress rule template allowing access to kubernetesMasters.cidrs
 {{- end }}
 {{- end }}
 
-{{- if .Values.metrics.port }}
+{{- if or .Values.metrics.port .Values.operatorHealth }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "flink-operator.name" . }}-metrics
+  name: {{ include "flink-operator.name" . }}-monitoring
   labels:
     {{- include "flink-operator.labels" . | nindent 4 }}
 spec:
@@ -31,9 +31,16 @@ spec:
     - Ingress
   ingress:
     - ports:
+{{- if .Values.metrics.port }}
       # Metrics
       - port: {{ .Values.metrics.port }}
         protocol: TCP
+{{- end }}
+{{- if .Values.operatorHealth }}
+      # liveness/readiness health check port
+      - port: {{ .Values.operatorHealth.port }}
+        protocol: TCP
+{{- end }}
 {{- end }}
 
 {{/* Since we shouldn't modify chart values.yaml, set default networkpolicy.egress.enabled: false */}}
