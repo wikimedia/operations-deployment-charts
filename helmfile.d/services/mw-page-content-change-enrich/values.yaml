@@ -37,9 +37,6 @@ app:
       --config, /srv/app/conf/python.log.config.yaml
     ]
 
-    # TODO: figure out what upgradeMode should be.
-    upgradeMode: stateless
-
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
   # These should be the 'limit' requests.

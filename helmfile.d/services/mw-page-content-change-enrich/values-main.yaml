@@ -47,6 +47,10 @@ app:
         # stream name explicitly for production deployments.
         error_sink: mw_page_content_change_enrich.error
 
+  job:
+    # TODO: When we enable HA, we consider using upgradeMode: last-state
+    upgradeMode: savepoint
+
   flinkConfiguration:
     # Flink HA config shared across clusters.
     # Swift and Zookeeper specific configs (paths), should be defined
@@ -72,6 +76,13 @@ app:
     # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
     # default.
     "execution.checkpointing.interval": "10000" # 10 seconds.
+    # Have flink-operator periodic savepoints for handling job restarts and upgrades.
+    "kubernetes.operator.periodic.savepoint.interval": 5m
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 24h
+
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
