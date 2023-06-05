@@ -1,0 +1,58 @@
+inference_services:
+  nsfw-model:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-nsfw"
+      image_version: "2023-03-07-072826-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
+  revertrisk-wikidata:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
+      image_version: "2023-05-23-132125-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-wikidata"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/revertrisk-wikidata/20230512162400/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+      resources:
+        limits:
+          cpu: "2"
+          memory: 4Gi
+        requests:
+          cpu: "2"
+          memory: 4Gi
+  bloom-560m:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-bloom"
+      image_version: "2023-05-19-145022-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "bloom-560m"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/bloom/bloom-560m/20230512141345/"
+      resources:
+        limits:
+          cpu: "4"
+          memory: 6Gi
+        requests:
+          cpu: "4"
+          memory: 6Gi
+  bloom-3b:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-bloom"
+      image_version: "2023-05-19-145022-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "bloom-3b"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/bloom/bloom-3b/"
+      resources:
+        limits:
+          cpu: "8"
+          memory: 20Gi
+        requests:
+          cpu: "8"
+          memory: 20Gi

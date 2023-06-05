@@ -21,36 +21,6 @@ GlobalNetworkPolicies:
 
 # Override DNS name on certs to refer to staging endpoint
 namespaces:
-  # The experimental namespace allows the deployment of model servers
-  # that are not ready for production yet. After an incubation period,
-  # a model server may be promoted to production in its own dedicated
-  # k8s namespace.
-  experimental:
-    deployClusterRole: deploy-kserve
-    deployTLSCertificate: false
-    labels:
-      istio-injection: enabled
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "14Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "20Gi"
-          cpu: "16"
   knative-serving:
     # Note: We rely on ChangeProp to call LiftWing upon certain
     # Kafka events are emitted. Due to how nodejs works
