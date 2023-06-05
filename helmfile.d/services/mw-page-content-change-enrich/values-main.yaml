@@ -38,6 +38,7 @@ app:
           stream: rc1.mediawiki.page_content_change:1.0.0
           connector: kafka
           options:
+            delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
