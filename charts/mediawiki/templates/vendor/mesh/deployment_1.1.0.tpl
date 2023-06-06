@@ -38,7 +38,7 @@
   lifecycle:
     preStop:
       exec:
-        command: [ "sleep {{ $sleep_time }}; /bin/drain-envoy.sh" ]
+        command: [ "sleep {{ $sleep_time }}; /bin/drain-envoy.sh; sleep {{ .Values.mesh.admin.drain_time_s }}" ]
   resources:
 {{- if .Values.mesh.resources }}
 {{ toYaml .Values.mesh.resources | indent 4 }}
