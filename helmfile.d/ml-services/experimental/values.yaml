@@ -42,24 +42,8 @@ inference:
 inference_services:
   bloom-560m:
     predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-06-08-144706-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "bloom-560m"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/bloom/bloom-560m/20230512141345/"
-      resources:
-        limits:
-          cpu: "4"
-          memory: 6Gi
-        requests:
-          cpu: "4"
-          memory: 6Gi
-  bloom-560m-gpu:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-06-08-144706-publish"
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
       custom_env:
         - name: MODEL_NAME
           value: "bloom-560m"
@@ -74,8 +58,8 @@ inference_services:
           memory: 6Gi
   bloom-3b:
     predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-05-19-145022-publish"
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
       custom_env:
         - name: MODEL_NAME
           value: "bloom-3b"
@@ -90,13 +74,31 @@ inference_services:
           memory: 20Gi
   bloom-3b-gpu:
     predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-06-08-144706-publish"
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
       custom_env:
         - name: MODEL_NAME
           value: "bloom-3b-gpu"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/bloom/bloom-3b/"
+      resources:
+        limits:
+          cpu: "8"
+          memory: 20Gi
+          amd.com/gpu: 1
+        requests:
+          cpu: "8"
+          memory: 20Gi
+          amd.com/gpu: 1
+  falcon-7b-instruct-gpu:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "falcon-7b-instruct-gpu"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
       resources:
         limits:
           cpu: "8"

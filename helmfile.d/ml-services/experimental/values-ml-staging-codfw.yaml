@@ -26,8 +26,8 @@ inference_services:
           memory: 4Gi
   bloom-560m:
     predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-05-19-145022-publish"
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
       custom_env:
         - name: MODEL_NAME
           value: "bloom-560m"
@@ -42,13 +42,29 @@ inference_services:
           memory: 6Gi
   bloom-3b:
     predictor:
-      image: "machinelearning-liftwing-inference-services-bloom"
-      image_version: "2023-05-19-145022-publish"
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
       custom_env:
         - name: MODEL_NAME
           value: "bloom-3b"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/bloom/bloom-3b/"
+      resources:
+        limits:
+          cpu: "8"
+          memory: 20Gi
+        requests:
+          cpu: "8"
+          memory: 20Gi
+  falcon-7b-instruct:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-09-090444-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "falcon-7b-instruct"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
       resources:
         limits:
           cpu: "8"
