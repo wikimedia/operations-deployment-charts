@@ -31,10 +31,14 @@
       mountPath: /etc/envoy/ssl
       readOnly: true
 {{- end }}
+{{- $sleep_time := 15 -}}
+{{- if .Values.terminationGracePeriodSeconds }}
+{{- $sleep_time = floor (div .Values.terminationGracePeriodSeconds 2) -}}
+{{- end }}
   lifecycle:
     preStop:
       exec:
-        command: [ "/bin/drain-envoy.sh; sleep {{ .Values.mesh.admin.drain_time_s | default 30 }}" ]
+        command: [ "sleep {{ $sleep_time }}; /bin/drain-envoy.sh" ]
   resources:
 {{- if .Values.mesh.resources }}
 {{ toYaml .Values.mesh.resources | indent 4 }}

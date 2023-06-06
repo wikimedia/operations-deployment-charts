@@ -2,7 +2,8 @@
 
 # Only 1 replica for termination testing
 resources:
-  replicas: 1
+  replicas: 2
+terminationGracePeriodSeconds: 20
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org
@@ -25,5 +26,14 @@ mesh:
   admin:
     port: "1666"
     drain_time_s: "5"
-    drain_strategy: "immediate"
-
+    drain_strategy: "gradual"
+debug:
+  enabled: true
+  ports: []
+  php:
+    enabled: true
+    contents:
+      sleep: |-
+        <?php
+        var_dump($_SERVER['SERVER_SOFTWARE']);
+        sleep(10);
