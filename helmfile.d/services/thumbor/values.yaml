@@ -37,6 +37,11 @@ main_app:
 
   # Disable size limiting on the shared per-pod tmpdir while testing
   tmp_size_limit: null
+  poolcounter:
+    config:
+      expensive:
+         workers:  24
+         maxqueue: 100
 
 haproxy:
   timeout_queue: 30000
