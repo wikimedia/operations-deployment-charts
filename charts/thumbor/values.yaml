@@ -184,7 +184,11 @@ main_app:
   poolcounter:
     enabled: true
     server: "localhost" # poolcounter1004.eqiad.wmnet / poolcounter2003.codfw.wmnet in prod
-
+    config:
+      expensive:
+         workers: 16
+         maxqueue: 120
+         timeout: 10
 
 # TODO use prometheus if possible in future
 statsd:

@@ -187,9 +187,9 @@ POOLCOUNTER_CONFIG_PER_ORIGINAL = {
 # An absolute maximum of "workers" expensive thumbnails can be processed at the same time,
 # queueing up to "maxqueue" other expensive thumbnails
 POOLCOUNTER_CONFIG_EXPENSIVE = {
-    'workers': 16,
-    'maxqueue': 100,
-    'timeout': 8,
+    'workers': {{ .Values.main_app.poolcounter.config.expensive.workers }},
+    'maxqueue': {{ .Values.main_app.poolcounter.config.expensive.maxqueue }},
+    'timeout': {{ .Values.main_app.poolcounter.config.expensive.timeout }},
     'extensions': ['xcf', 'djvu', 'pdf', 'tiff', 'stl']
 }
 
