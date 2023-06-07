@@ -147,20 +147,6 @@ tcp_proxy:
 services_proxy: ~
 tcp_services_proxy: ~
 
-docker:
-  registry: docker-registry.wikimedia.org
-  pull_policy: IfNotPresent
-resources:
-  replicas: 1
-
-monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
-
-networkpolicy:
-  egress:
-    enabled: false
-
 # Cronjob definitions
 # Here you can define your cronjobs
 cronjobs: []
