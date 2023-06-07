@@ -3,7 +3,7 @@
 # Only 1 replica for termination testing
 resources:
   replicas: 2
-terminationGracePeriodSeconds: 20
+terminationGracePeriodSeconds: 10
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org
@@ -22,11 +22,11 @@ cache:
           route: /eqiad/mw-wan
           pool: eqiad-servers
 mesh:
-  image_version: 1.18.3-2-s1
+  image_version: 1.18.3-2-s2
   admin:
     port: "1666"
     drain_time_s: "5"
-    drain_strategy: "gradual"
+    drain_strategy: "immediate"
 debug:
   enabled: true
   ports: []

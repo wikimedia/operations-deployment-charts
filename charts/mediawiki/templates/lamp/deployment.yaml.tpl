@@ -81,6 +81,17 @@
     capabilities:
       add: ["SYS_PTRACE"] # This is needed to produce a slow log
   {{- end }}
+  {{- $sleep_time := 10 }}
+  {{- if .Values.mesh.admin.drain_time_s }}
+    {{- $sleep_time = .Values.mesh.admin.drain_time_s }}
+  {{- end }}
+  lifecycle:
+    preStop:
+      exec:
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "sleep {{ min (add $sleep_time 2 ) 10 }}"
   env:
   - name: SERVERGROUP
     value: {{ .Values.php.servergroup }}
