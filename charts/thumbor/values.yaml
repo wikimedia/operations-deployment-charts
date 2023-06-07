@@ -184,6 +184,10 @@ main_app:
   poolcounter:
     enabled: true
     server: "localhost" # poolcounter1004.eqiad.wmnet / poolcounter2003.codfw.wmnet in prod
+    # The release timeout is the maximum time a lock on poolcounter will be held
+    # This number should be set in production to the timeout we have in the swift 404 handler, or
+    # thumbor's own subprocess timeout, the smaller of the two.
+    release_timeout: 120
     config:
       expensive:
          workers: 16

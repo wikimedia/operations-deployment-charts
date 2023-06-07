@@ -38,6 +38,9 @@ main_app:
   # Disable size limiting on the shared per-pod tmpdir while testing
   tmp_size_limit: null
   poolcounter:
+    # Same value as subprocess_timeout in the configuration.
+    # I would consider lowering it further.
+    release_timeout: 59
     config:
       expensive:
          workers:  24

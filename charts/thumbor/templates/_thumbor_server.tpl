@@ -164,7 +164,7 @@ APP_CLASS = 'wikimedia_thumbor.app.App'
 {{ if .Values.main_app.poolcounter.enabled }}
 POOLCOUNTER_SERVER = '{{ .Values.main_app.poolcounter.server }}'
 POOLCOUNTER_PORT = 7531
-POOLCOUNTER_RELEASE_TIMEOUT = 120
+POOLCOUNTER_RELEASE_TIMEOUT = {{ .Values.main_app.poolcounter.release_timeout | default 120 }}
 {{ end }}
 
 # Up to "workers" thumbnails can be generated at once for a given IP
