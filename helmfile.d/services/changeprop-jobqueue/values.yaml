@@ -134,6 +134,9 @@ main_app:
       wikibase-InjectRCRecords:
         enabled: true
         concurrency: 7
+      parsoidCachePrewarm:
+        enabled: true
+        concurrency: 32
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
