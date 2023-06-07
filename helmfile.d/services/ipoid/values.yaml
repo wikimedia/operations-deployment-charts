@@ -7,7 +7,8 @@ main_app:
   limits:
     cpu: 2
     memory: 4Gi
-  version: 1a6b77f5de859ead4b0169e553b156cb465ee6bb
+  version: ef28536ffcfc2d6c6d0027df670573ba7183198c
+  image: repos/mediawiki/services/ipoid
 monitoring:
   enabled: false
   image_version: latest
@@ -23,6 +24,7 @@ config:
 # MYSQL_ROOT_USER,
 # MYSQL_ROOT_PASSWORD,
 # MYSQL_DATABASE,
+# API_KEY,
 networkpolicy:
   egress:
     enabled: true
