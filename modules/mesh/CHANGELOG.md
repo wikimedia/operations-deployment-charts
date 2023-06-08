@@ -1,3 +1,6 @@
+## deployment 1.2.0
+- Add draining and prestop_sleep options
+
 ## configuration 1.2.0
 - Use wmf-certificates instead of .Values.puppet_ca_crt; Bug: T333551
 
