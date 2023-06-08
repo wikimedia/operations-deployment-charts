@@ -40,7 +40,9 @@
       # mcrouter, if enabled, should have its own readiness probe probably.
       path: /healthz
       port: php-metrics
-{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
+{{- if .Values.main_app.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
+{{- end }}
   resources:
     requests:
 {{ toYaml .Values.php.httpd.requests | indent 6 }}
@@ -82,7 +84,9 @@
     capabilities:
       add: ["SYS_PTRACE"] # This is needed to produce a slow log
   {{- end }}
-{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
+{{- if .Values.main_app.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
+{{- end }}
   env:
   - name: SERVERGROUP
     value: {{ .Values.php.servergroup }}
@@ -212,7 +216,9 @@
   livenessProbe:
     tcpSocket:
       port: 9117
-{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
+{{- if .Values.main_app.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
+{{- end }}
 - name: {{ $release }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -223,6 +229,8 @@
   livenessProbe:
     tcpSocket:
       port: 9118
-{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
+{{- if .Values.main_app.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
+{{- end }}
 {{- end }}
 {{ end }}

@@ -7,7 +7,7 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 1
-prestop_sleep: 10
+terminationGracePeriodSeconds: 10
 main_app:
   image: placeholder-for-mediawiki-image-name
   version: latest # we use latest everywhere in the defaults.
@@ -26,6 +26,8 @@ main_app:
   limits:
     cpu: 2000m
     memory: 4000Mi
+  # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
+  prestop_sleep: 8
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -47,7 +49,7 @@ config:
 
 mesh:
   enabled: false # Switch to true in production
-  # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
+# image_version: 1.18.3-2-s2 # image_version is defined globally by SRE. May be overridden here, though.
   public_port: 4444 # the port where TLS will be exposed
   upstream_timeout: "180.0s"
   # To be defined in a private space
@@ -75,6 +77,10 @@ mesh:
     port: "1666"
     drain_time_s: "600"
     drain_strategy: "gradual"
+  # Picked by using ~2x biggest p99 spikes for POST to appservers
+  # All other containers in the pod need to finish after, so remember to bump the other
+  # prestop_sleep variables if this is changed.
+  prestop_sleep: 7
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -233,6 +239,8 @@ app:
 cache:
   mcrouter:
     enabled: false
+    # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
+    prestop_sleep: 8
     resources:
       requests:
         cpu: 200m

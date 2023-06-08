@@ -38,9 +38,9 @@
         command:
         - "/bin/sh"
         - "-c"
-        - "sleep 2; /bin/drain-envoy.sh"
-{{- else }}
-{{ include "base.helper.prestop" 7 | indent 2}}
+        - "/bin/drain-envoy.sh"
+{{- else if .Values.mesh.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.mesh.prestop_sleep | nindent 2}}
 {{- end }}
 
   resources:

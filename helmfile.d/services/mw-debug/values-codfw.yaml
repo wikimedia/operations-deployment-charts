@@ -2,7 +2,6 @@
 
 resources:
   replicas: 4
-terminationGracePeriodSeconds: 10
 prestop_sleep: 8
 mw:
   datacenter: codfw
@@ -33,9 +32,4 @@ debug:
   ports: []
   php:
     enabled: true
-    contents:
-      sleep: |-
-        <?php
-        var_dump($_SERVER['SERVER_SOFTWARE']);
-        sleep(4);
   annotation: "change-me-to-redeploy"
