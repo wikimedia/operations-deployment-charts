@@ -13,7 +13,6 @@
 {{ toYaml $.Values.mw.localmemcached.resources.requests | indent 6 }}
     limits:
 {{ toYaml $.Values.mw.localmemcached.resources.limits | indent 6 }}
-
 {{ end }}
 
 {{ end }}

@@ -1,9 +1,9 @@
 # mw site-specific configurations
 
-# Only 1 replica for termination testing
 resources:
-  replicas: 2
+  replicas: 4
 terminationGracePeriodSeconds: 10
+prestop_sleep: 8
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org

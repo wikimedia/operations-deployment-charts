@@ -39,6 +39,7 @@
     exec:
       command:
         - /bin/healthz
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
   volumeMounts:
     - name: {{ template "base.name.release" . }}-mcrouter
       mountPath: /etc/mcrouter
@@ -62,6 +63,7 @@
     tcpSocket:
       port: mcr-metrics
   resources: {}
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
 {{- end -}}
 {{- end -}}
 {{- end -}}

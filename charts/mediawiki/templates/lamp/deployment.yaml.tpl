@@ -40,6 +40,7 @@
       # mcrouter, if enabled, should have its own readiness probe probably.
       path: /healthz
       port: php-metrics
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
   resources:
     requests:
 {{ toYaml .Values.php.httpd.requests | indent 6 }}
@@ -81,17 +82,7 @@
     capabilities:
       add: ["SYS_PTRACE"] # This is needed to produce a slow log
   {{- end }}
-  {{- $sleep_time := 10 }}
-  {{- if .Values.mesh.admin.drain_time_s }}
-    {{- $sleep_time = .Values.mesh.admin.drain_time_s }}
-  {{- end }}
-  lifecycle:
-    preStop:
-      exec:
-        command:
-        - "/bin/sh"
-        - "-c"
-        - "sleep {{ min (add $sleep_time 2 ) 10 }}"
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
   env:
   - name: SERVERGROUP
     value: {{ .Values.php.servergroup }}
@@ -221,6 +212,7 @@
   livenessProbe:
     tcpSocket:
       port: 9117
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
 - name: {{ $release }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -231,5 +223,6 @@
   livenessProbe:
     tcpSocket:
       port: 9118
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
 {{- end }}
 {{ end }}

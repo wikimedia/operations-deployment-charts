@@ -29,6 +29,7 @@
         fieldRef:
           fieldPath: metadata.labels['deployment']
 
+{{ include "base.helper.prestop" .Values.prestop_sleep | indent 2}}
   resources:
     requests:
 {{ toYaml .Values.mw.logging.requests | indent 6 }}
