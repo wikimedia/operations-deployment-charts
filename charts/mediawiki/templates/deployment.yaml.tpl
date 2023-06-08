@@ -24,6 +24,9 @@ spec:
         prometheus.io/scrape_by_name: "true"
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
+        {{- if .Values.debug.enabled }}
+        redeploy/me: {{ .Values.debug.annotation | default "change-me-to-redeploy" }}
+        {{- end }}
     spec:
       # TODO: add affinity rules to ensure even distribution across rows
       {{- if .Values.affinity }}
