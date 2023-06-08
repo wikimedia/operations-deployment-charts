@@ -69,11 +69,9 @@ inference_services:
         limits:
           cpu: "4"
           memory: 6Gi
-          amd.com/gpu: 1
         requests:
           cpu: "4"
           memory: 6Gi
-          amd.com/gpu: 1
   bloom-3b:
     predictor:
       image: "machinelearning-liftwing-inference-services-bloom"
@@ -90,3 +88,21 @@ inference_services:
         requests:
           cpu: "8"
           memory: 20Gi
+  bloom-3b-gpu:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-bloom"
+      image_version: "2023-06-08-144706-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "bloom-3b-gpu"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/bloom/bloom-3b/"
+      resources:
+        limits:
+          cpu: "8"
+          memory: 20Gi
+          amd.com/gpu: 1
+        requests:
+          cpu: "8"
+          memory: 20Gi
+          amd.com/gpu: 1
