@@ -31,6 +31,7 @@
       mountPath: /etc/envoy/ssl
       readOnly: true
 {{- end }}
+{{- if .Values.mesh.drain }}
   lifecycle:
     preStop:
       exec:
@@ -38,6 +39,10 @@
         - "/bin/sh"
         - "-c"
         - "sleep 2; /bin/drain-envoy.sh"
+{{- else }}
+{{ include "base.helper.prestop" 7 | indent 2}}
+{{- end }}
+
   resources:
 {{- if .Values.mesh.resources }}
 {{ toYaml .Values.mesh.resources | indent 4 }}
