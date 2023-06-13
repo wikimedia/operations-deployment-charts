@@ -55,11 +55,13 @@ releases:
     <<: *default
   - name: bienvenida
     <<: *default
+  - name: transparencyreport
+    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [bugzilla, annualreport, bienvenida]
+      - releases: [bugzilla, annualreport, bienvenida, transparencyreport]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:

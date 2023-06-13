@@ -1,0 +1,25 @@
+main_app:
+  image: repos/sre/miscweb/transparencyreport
+  version: v1.0.1
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  # transparencyreport returns 302 on transparency.wm.o, so use another host for probe
+  readiness_probe:
+    httpGet:
+      path: /
+      host: transparency-archive.wikimedia.org
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - transparency-archive.wikimedia.org
+    - transparency.wikimedia.org
