@@ -22,7 +22,7 @@ monitoring:
 service:
   deployment: production
   port:
-   name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+   name: http
    # protocol: TCP # TCP is the default protocol
    targetPort: 9632 # the number or name of the exposed port on the container
    port: 9632 # the number of the port desired to be exposed to the cluster
@@ -39,7 +39,6 @@ mesh:
 discovery:
   listeners:
     - mw-api-int-async
-    - restbase-for-services
 networkpolicy:
   egress:
     enabled: true
