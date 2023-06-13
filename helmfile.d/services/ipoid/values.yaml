@@ -18,13 +18,16 @@ service:
   deployment: production
 config:
   public:
-    MYSQL_HOST: m5-master.eqiad.wmnet
+    MYSQL_HOST: nohost # change to m5-master.eqiad.wmnet when ready for prod
     MYSQL_PORT: 3306
+    MYSQL_DATABASE: ipoid
+    MYSQL_RW_USER: ipoid_rw
+    MYSQL_RO_USER: ipoid_ro
   private: {}
-# MYSQL_ROOT_USER,
-# MYSQL_ROOT_PASSWORD,
-# MYSQL_DATABASE,
-# API_KEY,
+# real data in puppet master
+# MYSQL_RW_PASS
+# MYSQL_DATABASE
+# FEED_API_KEY
 networkpolicy:
   egress:
     enabled: true
