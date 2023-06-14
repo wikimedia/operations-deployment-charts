@@ -4,40 +4,6 @@
 that accepts events on an HTTP endpoint, validates them against
 JSONSchemas, and produces them to Kafka.
 
-
-## App deployments
-This deployment chart is used for all EventGate app deployments in WMF production.
-Each app is differentiated by the value of main_app.name.  E.g. eventgate-main or eventgate-analytics.
-
-NOTE: eventgate-analytics-external is TBD Q3 2019/2020.
-
-### eventgate-analytics
-For (mostly) analytics purposes.  Intended to replace usages of
-[EventLogging](https://wikitech.wikimedia.org/wiki/Analytics/Systems/EventLogging).
-
-### eventgate-main
-For WMF production purposes. It is intended to replace usages of
-[EventBus](https://wikitech.wikimedia.org/wiki/EventBus).
-
-### eventgate-logging-external
-For client side error logging.
-
-### eventgate-analytics-external
-For client side analytics instrumentation, AKA EventLogging.
-
-
-## event-schemas
-EventGate can fetch event schemas for event validation either from
-a cloned schema repository baked into the image; or from remote
-schema URLs.  Only eventgate-analytics-external uses remote schema repositories.
-
-## stream config
-EventGate can use either locally configured or remote stream configuration.
-stream-config.yaml describes which schemas are allowed to be produced to which topics,
-and is used by all services except eventgate-analytics-external.  eventgate-analytics-external
-uses the EventStreamConfig MediaWiki extension to get dynamic configs from the MediaWiki
-action API.
-
 ## Minikube Kafka
 In non-production (minikube) deployment, EventGate expects that Kafka is
 running in a pod. See below on how to use the kafka-dev chart for this.
