@@ -49,7 +49,7 @@ inference:
       - name: EVENTGATE_URL
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
-        value: "mediawiki.page_outlink_topic_prediction_change"
+        value: "mediawiki.page_outlink_topic_prediction_change.v1"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
     version: "2023-06-12-110314-publish"
@@ -58,4 +58,8 @@ inference:
         value: "http://api-ro.discovery.wmnet"
 
 inference_services:
-  outlink-topic-model: {}
+  outlink-topic-model:
+    transformer:
+      config:
+        minReplicas: 1
+        maxReplicas: 3
