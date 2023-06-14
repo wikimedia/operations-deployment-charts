@@ -24,6 +24,24 @@ config:
     MYSQL_RW_USER: ipoid_rw
     MYSQL_RO_USER: ipoid_ro
   private: {}
+
+cronjobs:
+  - name: placeholderCron
+    enabled: false
+    command:
+      - /bin/cowsay
+      - "hello"
+    schedule: "@hourly"
+    concurrency: Forbid
+    image_versioned: my-app:1.1.1
+    resources:
+      requests:
+        cpu: 500m
+        memory: 100M
+      limits:
+        cpu: 500m
+        memory: 100M
+
 # real data in puppet master
 # MYSQL_RW_PASS
 # MYSQL_DATABASE
