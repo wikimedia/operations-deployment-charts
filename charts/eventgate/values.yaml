@@ -20,20 +20,6 @@ service:
   # routed_via defaults to template "wmf.chartname", so by default a Service will only route to the release it is part of.
   # routed_via:
 
-mesh:
-  enabled: false
-  image_version: 1.13.1-2
-  public_port: 4192 # the port where TLS will be exposed
-  upstream_timeout: "180.0s"
-  # To be defined in a private space
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
-  telemetry:
-    enabled: true
-    port: 9361
-
-
 monitoring:
   enabled: true
   image_version: latest
@@ -60,6 +46,7 @@ subcharts:
   # You only need to do this if you don't manually install the kafka-dev chart.
   kafka: false
 
+# TODO: rename 'main_app' to 'app'.
 main_app:
   # This should uniquely identify your chart's main app's name.
   # In the case where a chart is used for multiple deployments, this
@@ -223,6 +210,40 @@ main_app:
 networkpolicy:
   egress:
     enabled: false
+
+mesh:
+  enabled: false
+  image_version: latest
+  public_port: 4192 # the port where TLS will be exposed
+  upstream_timeout: "180.0s"
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: true
+    port: 9361
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners. These should match service mesh endpoint names
+  # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
+  listeners: []
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
 
 app:
   port: 8192
