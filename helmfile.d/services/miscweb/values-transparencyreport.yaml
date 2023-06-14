@@ -7,11 +7,13 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
-  # transparencyreport returns 302 on transparency.wm.o, so use another host for probe
+  # transparencyreport returns 302 on transparency.wm.o, so use another vhost for probe
   readiness_probe:
     httpGet:
       path: /
-      host: transparency-archive.wikimedia.org
+      httpHeaders:
+        - name: Host
+          value: transparency-archive.wikimedia.org
 
 mesh:
   enabled: true
