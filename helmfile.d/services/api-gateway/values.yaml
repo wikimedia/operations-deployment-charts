@@ -58,6 +58,15 @@ main_app:
       timeout: 30s
       path: linkrecommendation
 
+    # AQS services
+    device_analytics:
+      tls: true
+      port: 4972
+      timeout: 15s
+      path: metrics/unique-devices
+      internal_host: device-analytics.discovery.wmnet
+      full_path_trim: /service/
+
     # Models/endpoints on Lift Wing (run by ML Team)
     # The `lw/` prefix is just convention, and does not have any
     # more technical relevance than e.g. using lw-inference would.
