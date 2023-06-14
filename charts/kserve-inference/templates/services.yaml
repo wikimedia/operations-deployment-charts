@@ -37,10 +37,9 @@ spec:
       - name: {{ .name }}
         value: {{ .value | quote }}
       {{- end }}
-      {{- $resources_config := merge ($custom_predictor.resources | default dict) ($generic_predictor.resources | default dict) }}
-      {{- if $resources_config }}
-      resources:
-        {{- toYaml $resources_config | nindent 8 }}
+      {{- $container_config := merge ($custom_predictor.container | default dict) ($generic_predictor.container | default dict) }}
+      {{- if $container_config }}
+      {{- toYaml $container_config | nindent 6 }}
       {{- end }}
 
   {{- $generic_transformer := $.Values.inference.transformer | default dict }}

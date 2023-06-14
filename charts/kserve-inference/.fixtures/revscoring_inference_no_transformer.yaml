@@ -14,13 +14,14 @@ inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-editquality"
     version: "2021-09-01-140944-production"
-    resources:
-      limits:
-        cpu: "1"
-        memory: 2Gi
-      requests:
-        cpu: "1"
-        memory: 2Gi
+    container:
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi
+        requests:
+          cpu: "1"
+          memory: 2Gi
     base_env:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
@@ -32,13 +33,14 @@ revscoring_inference_services:
   - wiki: "it"
     version: "202106140815"
     predictor:
-      resources:
-        limits:
-          cpu: "5"
-          memory: 2Gi
-        requests:
-          cpu: "2"
-          memory: 2Gi
+      container:
+        resources:
+          limits:
+            cpu: "5"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
       config:
         serviceAccountName: "kserve-override"
         minReplicas: 2
