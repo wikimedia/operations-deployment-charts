@@ -1,4 +1,52 @@
-docker:
-  registry: docker-registry.discovery.wmnet
-main_app:
-  proxy: http://url-downloader.eqiad.wikimedia.org:8080
+config:
+  public:
+    HTTP_PROXY: http://url-downloader.eqiad.wikimedia.org:8080
+    HTTPS_PROXY: http://url-downloader.eqiad.wikimedia.org:8080
+
+# url-downloader is covered by default egress rules
+# m5-master.eqiad.wmnet is a CNAME pointing to a dbproxy host
+# dbproxies are not covered by egress rules
+networkpolicy:
+  egress:
+    dst_nets:
+      - cidr: 10.64.0.134/32 #dbproxy1012.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.0.135/32 #dbproxy1013.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.16.18/32 #dbproxy1014.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.16.19/32 #dbproxy1015.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.48.42/32 #dbproxy1016.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.48.43/32 #dbproxy1017.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.37.27/32 #dbproxy1018.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.16.14/32 #dbproxy1019.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.32.179/32 #dbproxy1020.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+      - cidr: 10.64.32.180/32 #dbproxy1021.eqiad.wmnet
+        ports:
+          - protocol: TCP
+            port: 3306
+
