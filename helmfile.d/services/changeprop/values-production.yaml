@@ -6,12 +6,12 @@ main_app:
   changeprop:
     event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
 
-    # See T328576 for more info
     features:
       liftwing_models: true
     liftwing:
       uri: 'https://inference.discovery.wmnet:30443'
       models:
+        # See T328576 for more info
         drafttopic:
           concurrency: 5
           match_config_need_quotes: ["wiki_id", "page_change_kind"]
@@ -22,6 +22,22 @@ main_app:
           namespace: revscoring-drafttopic
           kafka_topic: 'mediawiki.page_change.v1'
           message_wiki_selector: 'wiki_id'
+        # See T328899 for more info
+        outlink-topic-model:
+          concurrency: 5
+          match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
+          match_config:
+            match:
+              wiki_id: enwiki
+              page_change_kind: /^(edit|create)$/
+              page:
+                is_redirect: false
+                namespace_id: 0
+            match_not:
+              meta:
+                domain: canary
+          namespace: articletopic-outlink
+          kafka_topic: 'mediawiki.page_change.v1'
 
 resources:
   replicas: 12
