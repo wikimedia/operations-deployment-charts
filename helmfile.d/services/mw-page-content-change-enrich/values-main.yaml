@@ -49,7 +49,9 @@ app:
         error_sink: mw_page_content_change_enrich.error
 
   job:
-    # TODO: When we enable HA, we consider using upgradeMode: last-state
+    # TODO: When we enable HA globally, we should consider
+    # using upgradeMode: last-state. Currently last-state
+    # is only enabled in staging.
     upgradeMode: savepoint
 
   flinkConfiguration:
