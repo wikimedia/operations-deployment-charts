@@ -25,10 +25,10 @@ main_app:
         # See T328899 for more info
         outlink-topic-model:
           concurrency: 5
-          match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
+          match_config_need_quotes: ['wiki_id', 'page_change_kind', 'domain']
           match_config:
             match:
-              wiki_id: enwiki
+              wiki_id: /^(?!.*(?:commons|species|wikidata)).*wiki$/
               page_change_kind: /^(edit|create)$/
               page:
                 is_redirect: false
