@@ -38,6 +38,7 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
+    proxy.istio.io/config: '{"readiness.status.sidecar.istio.io/periodSeconds": "600" }'
 
 inference_services:
   bloom-560m:
@@ -85,14 +86,14 @@ inference_services:
           value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
       container:
         readinessProbe:
-          initialDelaySeconds: 60
-          periodSeconds: 300
+          initialDelaySeconds: 120
+          periodSeconds: 600
         resources:
           limits:
             cpu: "8"
-            memory: 20Gi
+            memory: 40Gi
             amd.com/gpu: 1
           requests:
             cpu: "8"
-            memory: 20Gi
+            memory: 30Gi
             amd.com/gpu: 1
