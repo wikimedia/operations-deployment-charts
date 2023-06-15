@@ -85,8 +85,8 @@ inference_services:
           value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
       container:
         readinessProbe:
-          initialDelaySeconds: 120
-          timeoutSeconds: 600
+          initialDelaySeconds: 60
+          periodSeconds: 300
         resources:
           limits:
             cpu: "8"
