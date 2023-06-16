@@ -59,7 +59,11 @@ inference:
 
 inference_services:
   outlink-topic-model:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 5
     transformer:
       config:
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 5
