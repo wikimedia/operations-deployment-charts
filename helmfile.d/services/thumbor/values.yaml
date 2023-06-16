@@ -21,13 +21,13 @@ discovery:
 
 main_app:
 
-  version: 2023-06-15-135402-production
+  version: 2023-06-16-102755-production
 
   thumbor_workers: 7
 
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
-    cpu: 1
+    cpu: 2
     memory: 2Gi
   # TODO: This is a hack to trick the scheduler into starting more pods than we
   # currently afford. Once we have more kubernetes hosts, we 'll remove
