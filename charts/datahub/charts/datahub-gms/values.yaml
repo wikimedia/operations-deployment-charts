@@ -89,6 +89,27 @@ global:
   elasticsearch:
     host: "dummy"
     port: "dummy"
+    skipcheck: "false"
+    insecure: "true"
+    index:
+      enableMappingsReindex: true
+      enableSettingsReindex: true
+      upgrade:
+        cloneIndices: true
+        allowDocCountMismatch: false
+    search:
+      maxTermBucketSize: 20
+      exactMatch:
+        exclusive: false
+        withPrefix: true
+        exactFactor: 2.0
+        prefixFactor: 1.6
+        caseSensitivityFactor: 0.7
+        enableStructured: true
+      graph:
+        timeoutSeconds: 50
+        batchSize: 1000
+        maxResult: 10000
 
   kafka:
     bootstrap:
@@ -110,6 +131,25 @@ global:
     metadata_service_authentication:
       enabled: false
       systemClientId: "__datahub_system"
+    systemUpdate:
+      enabled: true
+    enable_retention: true
+    cache:
+      search:
+        enabled: false
+        primary:
+          ttlSeconds: 600
+          maxSize: 10000
+        homepage:
+          entityCounts:
+            ttlSeconds: 600
+        lineage:
+          enabled: false
+          ttlSeconds: 86400
+          lightningThreshold: 300
+    alwaysEmitChangeLog: false
+    enableGraphDiffMode: true
+
 #
 # End of global values
 

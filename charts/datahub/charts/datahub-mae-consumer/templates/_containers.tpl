@@ -110,6 +110,9 @@ resources:
     {{- if .Values.global.datahub.managed_ingestion.enabled }}
     - name: UI_INGESTION_ENABLED
       value: "true"
+    {{- else }}
+    - name: UI_INGESTION_ENABLED
+      value: "false"
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.defaultCliVersion }}
     - name: UI_INGESTION_DEFAULT_CLI_VERSION

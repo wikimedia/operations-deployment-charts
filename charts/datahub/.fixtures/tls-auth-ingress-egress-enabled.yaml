@@ -18,6 +18,9 @@ kafkaSetupJob: *setupjobs
 
 mysqlSetupJob: *setupjobs
 
+datahubUpgrade:
+  enabled: true
+
 networkpolicy:
   egress:
     enabled: true
@@ -129,3 +132,5 @@ global:
       metadata_service_authentication:
       enabled: true
       useSSL: true
+    systemUpdate:
+      enabled: true

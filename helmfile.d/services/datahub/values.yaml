@@ -18,6 +18,18 @@ kafkaSetupJob: *setupjobs
 
 mysqlSetupJob: *setupjobs
 
+datahubUpgrade:
+  enabled: true
+  docker: *docker
+  image:
+    repository: wikimedia/datahub-upgrade
+    tag: *version
+datahubSystemUpdate:
+  docker: *docker
+  image:
+    repository: wikimedia/datahub-upgrade
+    tag: *version
+
 networkpolicy:
   egress:
     enabled: true
@@ -122,11 +134,12 @@ datahub-mae-consumer:
 global:
   datahub_analytics_enabled: false
   datahub_standalone_consumers_enabled: false
-
   datahub:
     gms:
       port: 8501
       useSSL: true
+    systemUpdate:
+      enabled: false
   elasticsearch:
     host: "datahubsearch.svc.eqiad.wmnet"
     port: "9200"
