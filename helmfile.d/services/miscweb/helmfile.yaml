@@ -57,11 +57,13 @@ releases:
     <<: *default
   - name: transparencyreport
     <<: *default
+  - name: statictendril
+    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport]
+      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
