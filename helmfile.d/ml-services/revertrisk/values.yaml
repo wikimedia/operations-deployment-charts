@@ -46,7 +46,7 @@ inference_services:
         minReplicas: 5
         maxReplicas: 15
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2023-03-08-093615-publish"
+      image_version: "2023-06-14-102453-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-language-agnostic"
@@ -57,7 +57,7 @@ inference_services:
   revertrisk-multilingual:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2023-03-20-162345-publish"
+      image_version: "2023-06-14-102454-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
