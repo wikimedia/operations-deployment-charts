@@ -92,8 +92,27 @@ inference_services:
           limits:
             cpu: "8"
             memory: 40Gi
-            amd.com/gpu: 1
           requests:
             cpu: "8"
             memory: 30Gi
+  nllb-200:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-llm"
+      image_version: "2023-06-19-160755-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "nllb-200-distilled-600M"
+        - name: LLM_CLASS
+          value: "nllb.NLLB"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M/"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 6Gi
+            amd.com/gpu: 1
+          requests:
+            cpu: "4"
+            memory: 6Gi
             amd.com/gpu: 1
