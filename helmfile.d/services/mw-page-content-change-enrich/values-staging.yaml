@@ -19,14 +19,7 @@ app:
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             kafka_topic_prefix: eqiad.
 
-  job:
-    # TODO: we should consider setting kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
-    # to fallback on savepoints if checkpoints are too old. This might require changing checkpoint retention
-    # policy.
-    upgradeMode: last-state
-
   flinkConfiguration:
-    "high-availability": org.apache.flink.kubernetes.highavailability.KubernetesHaServicesFactory
     "high-availability.storageDir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/high-availability
     "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
     "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/savepoints # needed for upgradeMode: savepoint

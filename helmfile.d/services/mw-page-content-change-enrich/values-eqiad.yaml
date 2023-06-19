@@ -40,6 +40,7 @@ app:
             kafka_topic_prefix: eqiad.
 
   flinkConfiguration:
+    "high-availability.storageDir": s3://mw-page-content-change-enrich.wikikube-eqiad/flink/high-availability
     "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
     "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-eqiad/flink/savepoints # needed for upgradeMode: savepoint
 

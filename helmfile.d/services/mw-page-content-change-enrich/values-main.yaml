@@ -49,10 +49,12 @@ app:
         error_sink: mw_page_content_change_enrich.error
 
   job:
-    # TODO: When we enable HA globally, we should consider
-    # using upgradeMode: last-state. Currently last-state
-    # is only enabled in staging.
-    upgradeMode: savepoint
+    # TODO: we might consider setting
+    # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
+    # to fallback on savepoints if checkpoints are too old.
+    # This might require changing checkpoint retention policy.
+    upgradeMode: last-state
+
 
   flinkConfiguration:
     # Flink HA config shared across clusters.
@@ -85,7 +87,8 @@ app:
     # only when the job is running, so if the job is offline e.g. over a weekend,
     # we won't going to lose the latest savepoint.
     "kubernetes.operator.savepoint.history.max.age": 24h
-
+    # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
+    "high-availability": KUBERNETES
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
