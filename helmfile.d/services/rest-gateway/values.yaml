@@ -8,6 +8,7 @@ main_app:
 
   domains:
     - rest-gateway.discovery.wmnet
+    - rest-gateway.discovery.wmnet:*
 
   restbase_routes:
     mobileapps:
@@ -42,13 +43,15 @@ main_app:
     citoid:
       timeout: 120s
       urls:
-        citoid:
+        citoid_slash:
           # We ignore the sitename (first matching group)
           # it is assumed the URL will be properly encoded here - ie / replaced by %2F
           in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/api?format=\2&search=\3'
+        citoid_query_api:
           in: '(.+)/v1/data/citation/api?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
+        citoid_query:
           in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
 
