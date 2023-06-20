@@ -395,3 +395,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 30443
+    - cidr: 10.2.2.80/32 # device-analytics.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4972
+    - cidr: 10.2.1.80/32 # device-analytics.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4972
