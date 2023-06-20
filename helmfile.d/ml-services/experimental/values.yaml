@@ -75,13 +75,13 @@ inference_services:
           requests:
             cpu: "8"
             memory: 20Gi
-  falcon-7b-instruct-gpu:
+  falcon-7b-instruct:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
       image_version: "2023-06-16-141128-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "falcon-7b-instruct-gpu"
+          value: "falcon-7b-instruct"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
       container:

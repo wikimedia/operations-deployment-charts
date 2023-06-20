@@ -73,9 +73,11 @@ inference_services:
           limits:
             cpu: "8"
             memory: 20Gi
+            amd.com/gpu: 0
           requests:
             cpu: "8"
             memory: 20Gi
+            amd.com/gpu: 0
   nllb-200:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
@@ -92,6 +94,8 @@ inference_services:
           limits:
             cpu: "4"
             memory: 6Gi
+            amd.com/gpu: 0
           requests:
             cpu: "4"
             memory: 6Gi
+            amd.com/gpu: 0
