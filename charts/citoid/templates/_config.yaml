@@ -85,10 +85,4 @@ services:
       allowPrivateAddresses: false
       # maximum number of redirects allowed
       maxRedirects: 10
-      # the WorldCat Search API key to use
-      {{ if .Values.main_app.wskey -}}
-      wskey: '{{ .Values.main_app.wskey }}'
-      {{ else -}}
-      wskey: false
-      {{ end -}}
 {{- end -}}
