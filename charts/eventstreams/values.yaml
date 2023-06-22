@@ -21,19 +21,6 @@ service:
   # routed_via defaults to .Release.Name, so by default a Service will only route to the release it is part of.
   # routed_via:
 
-mesh:
-  enabled: false
-  image_version: 1.13.1-2
-  public_port: 4892 # the port where TLS will be exposed
-  # To be defined in a private space
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
-  telemetry:
-    enabled: false
-    port: 9361
-  upstream_timeout: "0s" # T238658#5961899. Don't override if you don't want premature connection closings.
-
 # EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
 monitoring:
   enabled: true
@@ -120,6 +107,40 @@ main_app:
 networkpolicy:
   egress:
     enabled: false
+
+mesh:
+  enabled: false
+  image_version: 1.13.1-2
+  public_port: 4892 # the port where TLS will be exposed
+  # To be defined in a private space
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  telemetry:
+    enabled: false
+    port: 9361
+  upstream_timeout: "0s" # T238658#5961899. Don't override if you don't want premature connection closings.
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners. These should match service mesh endpoint names
+  # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
+  listeners: []
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
 
 app:
   port: 8092

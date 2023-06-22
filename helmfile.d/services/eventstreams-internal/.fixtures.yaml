@@ -1,0 +1,17 @@
+services_proxy:
+  mwapi-async:
+    port: 6500
+    service: api-https
+    upstream:
+      address: api-mock.discovery.wmnet
+      port: 443
+      encryption: true
+    keepalive: 4s
+    timeout: 120s
+    xfp: https
+
+# Kafka brokers also enable additional networkpolicy templates
+kafka_brokers:
+  jumbo-eqiad:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
