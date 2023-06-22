@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-nocode-migration-job
+  name: {{ template "base.name.release" . }}-nocode-migration-job
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}

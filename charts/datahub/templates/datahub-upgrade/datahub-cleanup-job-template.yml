@@ -2,11 +2,11 @@
 # Job template for running datahub cleanup
 # Creates a suspended cronJob that you can use to create an adhoc job when ready to run clean up.
 # Run the following command to do so
-# kubectl create job --from=cronjob/<<release-name>>-datahub-cleanup-job-template datahub-cleanup-job
+# kubectl create job --from=cronjob/<<release-name>>-cleanup-job-template datahub-cleanup-job
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-datahub-cleanup-job-template
+  name: {{ template "base.name.release" . }}-cleanup-job-template
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}
