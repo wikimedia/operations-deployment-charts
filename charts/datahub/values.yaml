@@ -75,8 +75,8 @@ datahubSystemUpdate:
       cpu: 300m
       memory: 256Mi
   extraSidecars: []
-# This networkpolicy applies to all three setup jobs (Elasticsearch, Kafka, MySQL)
-# but is not passed down to the subcharts
+# This networkpolicy applies to all three setup jobs (Elasticsearch, Kafka, MySQL) and
+# the other batch jobs that run from this chart, but is not passed down to the subcharts.
 networkpolicy:
   egress:
     enabled: false
