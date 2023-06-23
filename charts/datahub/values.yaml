@@ -146,6 +146,9 @@ global:
   # consumer jobs are deployed as separate pods. If not, they run within the GMS.
   datahub_standalone_consumers_enabled: false
 
+  podLabels:
+    workload: datahub
+
   elasticsearch:
     host: dummy
     port: dummy

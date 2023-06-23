@@ -17,8 +17,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "base.name.chart" . }}
-      release: {{ .Release.Name }}
+      workload: datahub
   policyTypes:
     - Egress
   egress:
