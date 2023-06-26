@@ -136,7 +136,7 @@ main_app:
         concurrency: 7
       parsoidCachePrewarm:
         enabled: true
-        concurrency: 60
+        concurrency: 100
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
