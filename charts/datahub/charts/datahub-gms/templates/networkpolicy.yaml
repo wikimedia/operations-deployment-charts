@@ -12,9 +12,6 @@ spec:
     matchLabels:
       app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
-  podSelector:
-    matchLabels:
-      workload: datahub
   policyTypes:
   {{- if .Values.networkpolicy.egress.enabled }}
     - Egress
