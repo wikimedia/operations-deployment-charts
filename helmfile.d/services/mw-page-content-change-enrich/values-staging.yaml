@@ -19,6 +19,11 @@ app:
             bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             kafka_topic_prefix: eqiad.
 
+        error_sink:
+          options:
+            bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
+            kafka_topic_prefix: eqiad.
+
   flinkConfiguration:
     "high-availability.storageDir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/high-availability
     "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-staging-eqiad/flink/checkpoints # needed for upgradeMode: savepoint
