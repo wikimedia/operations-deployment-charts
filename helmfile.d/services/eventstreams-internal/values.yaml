@@ -17,6 +17,7 @@ discovery:
   # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
   listeners:
     - mwapi-async # used for EventStreamConfig API endpoint.
+    - schema      # schema.discovery.wmnet
 
 kafka:
   allowed_clusters:
