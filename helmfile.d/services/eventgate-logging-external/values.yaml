@@ -64,7 +64,11 @@ main_app:
     max_body_size: 4mb
 
     schema_base_uris:
-    - 'file:///srv/service/schemas/event/primary/jsonschema/'
+    - "file:///srv/service/schemas/event/primary/jsonschema/"
+    - "file:///srv/service/schemas/event/secondary/jsonschema/"
+    - "http://localhost:6023/repositories/primary/jsonschema/"   # schema service mesh port
+    - "http://localhost:6023/repositories/secondary/jsonschema/" # schema service mesh port
+
     schema_precache_uris:
     - /error/1.0.0
     - /test/event/1.0.0
