@@ -11,9 +11,6 @@ mesh:
   public_port: 4992
   telemetry:
     enabled: true
-  # Pinned here to avoid backwards incompatible config changes in the chart's
-  # _tls_helpers .tls.envoy_template config
-  image_version: 1.15.5-1
 
 discovery:
   # List of listeners. These should match service mesh endpoint names
