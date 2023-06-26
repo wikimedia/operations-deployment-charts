@@ -6,6 +6,9 @@ version: &version "95319d09691ebd4026114a5182e3aa16b4c92fad-production"
 docker: &docker
   registry: "docker-registry.discovery.wmnet"
 
+mesh:
+  enabled: true
+
 setupjobs: &setupjobs
   enabled: false
   docker: *docker
