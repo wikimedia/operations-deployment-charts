@@ -202,6 +202,11 @@ spec:
               mountPath: /etc/ratelimit/config.yaml
               subPath: config.yaml
               readOnly: true
+          resources:
+            requests:
+{{ toYaml .Values.main_app.ratelimiter.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.main_app.ratelimiter.limits | indent 14 }}
 {{- end }}
 {{- if .Values.main_app.access_log }}
 {{- if eq .Values.main_app.access_log.type "eventgate" }}

@@ -37,6 +37,12 @@ main_app:
   # if true, enable a debug server that echoes requests - see README.md
   http_https_echo: false
   ratelimiter:
+    requests:
+      cpu: 200m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 1000Mi
     enabled: false
     # image version
     version: latest
