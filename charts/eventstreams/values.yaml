@@ -97,8 +97,8 @@ main_app:
       ssl.sigalgs.list: ECDSA+SHA256
 
     schema_base_uris:
-    - https://schema.discovery.wmnet/repositories/primary/jsonschema
-    - https://schema.discovery.wmnet/repositories/secondary/jsonschema
+    - http://localhost:6023/repositories/primary/jsonschema
+    - http://localhost:6023/repositories/secondary/jsonschema
     schema_latest_version: latest
 
     # This must be set in helmfile values.yaml!
@@ -110,7 +110,7 @@ networkpolicy:
 
 mesh:
   enabled: false
-  image_version: 1.13.1-2
+  image_version: latest
   public_port: 4892 # the port where TLS will be exposed
   # To be defined in a private space
   certs:
@@ -136,7 +136,8 @@ tcp_services_proxy: ~
 discovery:
   # List of listeners. These should match service mesh endpoint names
   # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
-  listeners: []
+  listeners:
+    - schema      # schema.discovery.wmnet
 
 # Add here the list of kafka-clusters (by name) that the service will need to reach.
 kafka:

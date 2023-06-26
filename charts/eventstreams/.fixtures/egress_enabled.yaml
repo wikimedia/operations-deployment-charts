@@ -9,6 +9,15 @@ services_proxy:
     keepalive: 4s
     timeout: 120s
     xfp: https
+  schema:
+    port: 6023
+    timeout: 120s
+    upstream:
+      ips:
+      - 1.2.3.5/32
+      address: schema-mock.discovery.wmnet
+      port: 443
+      encryption: true
 
 
 # Kafka brokers also enable additional networkpolicy templates
