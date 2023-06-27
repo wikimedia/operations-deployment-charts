@@ -18,8 +18,8 @@ Return the env variables for upgrade jobs
 - name: DATAHUB_GMS_PORT
   value: "{{ .Values.global.datahub.gms.port }}"
 {{- if .Values.global.datahub.gms.useSSL }}
-- name: DATAHUB_GMS_USE_SSL
-  value: "true"
+- name: DATAHUB_GMS_PROTOCOL
+  value: "https"
 {{- end }}
 - name: EBEAN_DATASOURCE_USERNAME
   {{- $usernameValue := (.Values.sql).datasource.username | default .Values.global.sql.datasource.username }}
