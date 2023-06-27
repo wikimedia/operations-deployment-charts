@@ -30,6 +30,12 @@ mesh:
     limits:
       cpu: 500m
       memory: 500Mi
+  # Define a different port for the envoy admin interface
+  # and/or drain strategy settings.
+  admin:
+    port: "1666"
+    # drain_time_s: "600"
+    # drain_strategy: "gradual"
 
 # Mesh-related discovery
 # TODO: move under mesh.* once we can
