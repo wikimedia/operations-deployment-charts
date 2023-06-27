@@ -15,8 +15,8 @@ main_app:
   # - "php" for php-based applications. The base images expect the code to live in
   #   /srv/app and to have an index.php file as entrypoint.
   type: "default"
-  image: wikimedia/mediawiki-services-function-orchestrator
-  version: latest # we use latest everywhere in the defaults.
+  image: repos/abstract-wiki/wikifunctions/function-orchestrator
+  version: 2023-06-27-193750
   port: 6254 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
