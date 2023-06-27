@@ -6,6 +6,14 @@ README.md is the upstream readme file. In addition, in the upstream repo but not
 UPGRADING.md and the examples/ directory.
 
 
+When importing chart version x.y.z from upstream, always change `version` in Chart.yaml to
+x.y.z-wmf.0. If subsequent WMF revisions are necessary after merging to the deployment-charts repo,
+bump the last component to x.y.z-wmf.1, etc.
+
+Never merge `version: x.y.z` in the deployment-charts repo without a `-wmf.N` suffix, as the
+precedence ordering would be incorrect. (https://semver.org/#spec-item-11)
+
+
 Changes from upstream:
 
 * .fixturectl.yml and .fixtures.yaml are added, to customize WMF CI.
