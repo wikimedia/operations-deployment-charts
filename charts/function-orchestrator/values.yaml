@@ -26,11 +26,11 @@ main_app:
   command: []
   args: []
   requests:
-    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 200Mi # Just some sample, edit these
+    cpu: 100m
+    memory: 200Mi
   limits:
-    cpu: 1 # Just some sample, edit these
-    memory: 400Mi # Just some sample, edit these
+    cpu: 200m
+    memory: 400Mi
   liveness_probe:
     tcpSocket:
       port: 6254
