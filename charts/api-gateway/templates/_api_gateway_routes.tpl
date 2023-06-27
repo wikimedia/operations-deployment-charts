@@ -5,7 +5,7 @@
             - name: api_wikimedia_org_vhost
               domains:
 {{- range $domain := .Values.main_app.domains }}
-              - {{ $domain }}
+              - "{{ $domain }}"
 {{- end }}
               virtual_clusters:
                 - name: rw

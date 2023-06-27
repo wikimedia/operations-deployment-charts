@@ -1,4 +1,5 @@
 main_app:
+  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
   http_https_echo: true
 
   domains:
@@ -25,9 +26,28 @@ main_app:
         ma_summary_revision:
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
+    proton:
+      timeout: 150s
+      urls:
+        #TODO tighten capture group criteria
+        proton_title:
+          in: '(.+)/v1/page/pdf/(.+)'
+          out: '\1/v1/pdf/\2'
+        proton_title_format:
+          in: '(.+)/v1/page/pdf/(.+)/(.+)'
+          out: '\1/v1/pdf/\2/\3'
+        proton_title_format_type:
+          in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
+          out: '\1/v1/pdf/\2/\3/\4'
 
   discovery_endpoints:
     mobileapps:
+      tls: false
+      port: 8888 #4102
+      internal_host: localhost
+      timeout: 30s
+      host: localhost
+    proton:
       tls: false
       port: 8888 #4102
       internal_host: localhost

@@ -4,7 +4,7 @@
             - name: restgateway_vhost
               domains:
 {{- range $domain := .Values.main_app.domains }}
-              - {{ $domain }}
+              - "{{ $domain }}"
 {{- end }}
 
               response_headers_to_add:
@@ -56,15 +56,13 @@
                     google_re2: {}
                     regex: '^/{{ $route_paths.in }}$'
                 route:
-                  timeout: {{ $endpoint_config.timeout | default "15s" }}
                   regex_rewrite:
                     pattern:
                       google_re2: {}
-                      regex: ^/{{ $route_paths.in }}$'
-                    substitution: '/{{ $route_paths.out }}'
+                      regex: '^{{ $route_paths.in }}$'
+                    substitution: '{{ $route_paths.out }}'
                   timeout: {{ $endpoint_config.timeout | default "15s" }}
                   cluster: {{ $endpoint }}_cluster
-                  host_rewrite_literal: {{ $endpoint }}_cluster
 {{- end }}
 {{- end }}
 {{- /* END restbase_routes definition */}}
