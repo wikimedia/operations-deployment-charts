@@ -17,6 +17,10 @@ Return the env variables for upgrade jobs
   value: {{ template "wmf.gms-service.upgrade" $ }}
 - name: DATAHUB_GMS_PORT
   value: "{{ .Values.global.datahub.gms.port }}"
+{{- if .Values.global.datahub.gms.useSSL }}
+- name: DATAHUB_GMS_USE_SSL
+  value: "true"
+{{- end }}
 - name: EBEAN_DATASOURCE_USERNAME
   {{- $usernameValue := (.Values.sql).datasource.username | default .Values.global.sql.datasource.username }}
   {{- if and (kindIs "string" $usernameValue) $usernameValue }}
