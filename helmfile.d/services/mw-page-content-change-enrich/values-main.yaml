@@ -47,7 +47,7 @@ app:
         # Since this naming will contain hypens, set the error_sink
         # stream name explicitly for production deployments.
         error_sink:
-          stream: mw_page_content_change_enrich.error
+          stream: mw_page_content_change_enrich.error:2.1.0
           connector: kafka
           options:
             delivery_guarantee: AT_LEAST_ONCE
