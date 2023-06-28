@@ -16,6 +16,19 @@ metadata:
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
+    {{- if or .Values.global.podLabels .Values.elasticsearchSetupJob.podAnnotations }}
+    metadata:
+    {{- with .Values.elasticsearchSetupJob.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.global.podLabels }}
+      labels:
+        {{- range $key, $value := . }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    {{- end }}
+    {{- end }}
     spec:
     {{- with .Values.global.hostAliases }}
       hostAliases:
