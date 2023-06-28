@@ -47,6 +47,10 @@ networkpolicy:
 
 ingress:
   enabled: true
+  gatewayHosts:
+    extraFQDNs:
+      - 'ores.wikimedia.org'
+      - 'ores-legacy.wikimedia.org'
   selectors:
     service.istio.io/canonical-name: istio-ingressgateway-services
     istio: ingressgateway
