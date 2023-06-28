@@ -171,6 +171,9 @@ namespaces:
     # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
     labels:
       istio-injection: disabled
+    tlsExtraSANs:
+      - 'ores.wikimedia.org'
+      - 'ores-legacy.wikimedia.org'
   # The experimental namespace allows the deployment of model servers
   # that are not ready for production yet. After an incubation period,
   # a model server may be promoted to production in its own dedicated
