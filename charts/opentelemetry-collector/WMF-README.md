@@ -6,12 +6,19 @@ README.md is the upstream readme file. In addition, in the upstream repo but not
 UPGRADING.md and the examples/ directory.
 
 
-When importing chart version x.y.z from upstream, always change `version` in Chart.yaml to
-x.y.z-wmf.0. If subsequent WMF revisions are necessary after merging to the deployment-charts repo,
-bump the last component to x.y.z-wmf.1, etc.
+When importing a new chart version from upstream, prefer to use the upstream version number for the
+`version` field. If subsequent WMF revisions are necessary after merging to the deployment-charts
+repo, bump the patch version (e.g. 0.1.2 to 0.1.3) and ensure the upstream version number is
+commented correctly.
 
-Never merge `version: x.y.z` in the deployment-charts repo without a `-wmf.N` suffix, as the
-precedence ordering would be incorrect. (https://semver.org/#spec-item-11)
+If the new upstream version number is less than or equal to the current WMF version (according to 
+https://semver.org/#spec-item-11) then you won't be able to use it, since it wouldn't roll out as
+an update. Instead you'll need to increment the patch number again, and in this case be extra-sure
+that the upstream version number is commented correctly.
+
+(For example: Suppose we vendored 0.1.0 from upstream, then amended it locally to 0.1.1 and 0.1.2.
+If upstream 0.1.1 came out next, we would have to vendor it as "0.1.3" -- but if 0.2.0 came out, we
+would be able to call it "0.2.0".)
 
 
 Changes from upstream:
