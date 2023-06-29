@@ -50,6 +50,8 @@ spec:
           image: "{{ .Values.docker.registry }}/{{ .Values.elasticsearchSetupJob.image.repository }}:{{ .Values.elasticsearchSetupJob.image.tag }}"
           imagePullPolicy: {{ .Values.elasticsearchSetupJob.imagePullPolicy | default "IfNotPresent" }}
           env:
+            - name: USE_AWS_ELASTICSEARCH
+              value: "true"
             - name: ELASTICSEARCH_HOST
               value: {{ .Values.global.elasticsearch.host | quote }}
             - name: ELASTICSEARCH_PORT
