@@ -1,1 +1,24 @@
 mode: daemonset
+
+config:
+  # Disable all receivers except OTLP-over-gRPC.
+  receivers:
+    otlp:
+      protocols:
+        http: null
+    jaeger: null
+    prometheus: null
+    zipkin: null
+
+# Disable all ports except OTLP-over-gRPC.
+ports:
+  otlp-http:
+    enabled: false
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
