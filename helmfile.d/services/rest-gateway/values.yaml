@@ -71,15 +71,15 @@ main_app:
     proton:
       timeout: 150s
       urls:
-        #TODO tighten capture group criteria
+        # Proton doesn't actually support not passing a format - restbase usually adds this
         proton_title:
-          in: '(.+)/v1/page/pdf/(.+)'
-          out: '\1/v1/pdf/\2'
+          in: '(.+)/v1/page/pdf/([^/]+)'
+          out: '\1/v1/pdf/\2/a4'
         proton_title_format:
-          in: '(.+)/v1/page/pdf/(.+)/(.+)'
+          in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b'
           out: '\1/v1/pdf/\2/\3'
         proton_title_format_type:
-          in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
+          in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
     citoid:
       timeout: 120s
