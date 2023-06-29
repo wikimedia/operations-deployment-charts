@@ -73,6 +73,10 @@ networkpolicy:
         ports:
         - port: 3306
           protocol: tcp
+      - cidr: 10.64.48.33/32 # dbproxy1025.eqiad.wmnet
+        ports:
+        - port: 3306
+          protocol: tcp
       - cidr: 10.192.0.129/32 # dbproxy2001.codfw.wmnet
         ports:
         - port: 3306
