@@ -1,11 +1,4 @@
 inference_services:
-  nsfw-model:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-nsfw"
-      image_version: "2023-03-07-072826-publish"
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/experimental/nsfw/20220811082819/"
   revertrisk-wikidata:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
