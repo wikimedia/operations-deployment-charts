@@ -1,19 +1,21 @@
 {{- define "mesh.deployment.container" -}}
 {{- if .Values.mesh.enabled }}
 - name: {{ template "base.name.release" . }}-tls-proxy
-  image: {{ .Values.docker.registry }}/envoy:{{ .Values.mesh.image_version | default "latest" }}
+  image: {{ .Values.docker.registry }}/{{ .Values.mesh.image_name | default "envoy" }}:{{ .Values.mesh.image_version | default "latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: SERVICE_NAME
       value: {{ .Release.Name }}
     - name: SERVICE_ZONE
       value: "default"
+    {{- with .Values.mesh.admin }}
     - name: ADMIN_PORT
-      value: "{{ .Values.mesh.admin.port | default 1666 }}"
+      value: "{{ .port | default 1666 }}"
     - name: DRAIN_TIME_S
-      value: "{{ .Values.mesh.admin.drain_time_s | default 600 }}"
+      value: "{{ .drain_time_s | default 600 }}"
     - name: DRAIN_STRATEGY
-      value: {{ .Values.mesh.admin.drain_strategy | default "gradual" }}
+      value: {{ .drain_strategy | default "gradual" }}
+    {{- end }}
   {{- if .Values.mesh.public_port }}
   ports:
     - containerPort: {{ .Values.mesh.public_port }}
