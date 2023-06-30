@@ -38,8 +38,12 @@ service:
     nodePort: null
 
 config:
-  # FIXME: Inject WIKI_API_URL and ORCHESTRATOR_CONFIG
-  public: {}
+  public: {
+    # FIXME: We'll need to go through the web proxy for this I think?
+    WIKI_API_URL: "http://wikifunctions.org/w/api.php",
+    # FIXME: This will need to use a proper value, not 'localhost', for each of the evaluators
+    ORCHESTRATOR_CONFIG: '{"evaluatorConfigs": [{"programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"], "evaluatorUri": "http://localhost:6927/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}, {"programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"], "evaluatorUri": "http://localhost:6928/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}]}'
+  }
   private: {}
 
 mesh:
