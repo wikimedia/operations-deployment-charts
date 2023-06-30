@@ -92,3 +92,18 @@ inference_services:
             cpu: "4"
             memory: 6Gi
             amd.com/gpu: 0
+  langid:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-langid"
+      image_version: "2023-06-30-145246-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "langid"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/langid/"
+      container:
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            memory: 2Gi
