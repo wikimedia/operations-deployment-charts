@@ -1,28 +1,15 @@
 # Default values for function-orchestrator.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-helm_scaffold_version: 0.4 # This can be useful when backporting fixes.
+helm_scaffold_version: 0.4
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 resources:
   replicas: 1
 main_app:
-  # Application type.
-  # Currently supported values are:
-  # - "default", for an application running from a single container.
-  #    Most service-runner based services fall into this category.
-  # - "php" for php-based applications. The base images expect the code to live in
-  #   /srv/app and to have an index.php file as entrypoint.
   type: "default"
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
   version: 2023-06-27-193750
-  port: 6254 # port exposed as a Service, also used by service-checker.
-  # Use command and args below to override the entrypoint. Type is arrays
-  # Not necessary unless you want to change the entrypoint defined in the docker image
-  # Example:
-  # command: ["node"]
-  # args: ["bin/server.js", "--param1", "arg1"]
+  port: 6254
   command: []
   args: []
   requests:
@@ -38,118 +25,52 @@ main_app:
     httpGet:
       path: /_info
       port: 6254
-  # add here any volumes to mount onto the pod. Example:
-  # volumes:
-  #   - name: myvolumename
-  #      hostPath:
-  #        path: /myvolumepath # where on the host machine
-  # add here any mounted volumes to make accessible to the container. Example:
-  # volumeMounts:
-  #   - name: myvolumename # the name from your volume above
-  #     mountPath: /path/ # where it should live in your container
 
 monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: true
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  deployment: minikube
   port:
-    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
-    targetPort: 6254 # the number or name of the exposed port on the container
-    port: 6254 # the number of the port desired to be exposed to the cluster
-    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+    name: http
+    targetPort: 6254
+    port: 6254
+    nodePort: null
 
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
-  private: {} # Add here all the keys that should be private but still available as env variables
+  # FIXME: Inject WIKI_API_URL and ORCHESTRATOR_CONFIG
+  public: {}
+  private: {}
 
 mesh:
-  enabled: false # Switch to true in production
-  public_port: 4971 # the port where TLS will be exposed
+  # FIXME: Set this to true to go live in production
+  enabled: false
+  public_port: 4971
   upstream_timeout: "180.0s"
-  # To be defined in a private space
   certs:
     cert: "snakeoil"
     key: "snakeoil"
-  # Add here, via our "secret" system, the cert/key pairs
-  #   cert: "your cert here"
-  #   key: "your key here"
-  # Enable telemetry
   telemetry:
     enabled: true
     port: 9361
 
-# Additional resources if we want to add a port for a debugger to connect to.
 debug:
   enabled: false
-  # Define here any port that you want to expose for debugging purposes
-  ports: []
 
 networkpolicy:
   egress:
     enabled: false
 
-# Add here the list of kafka-clusters (by name) that the service will need to reach.
-kafka:
-  allowed_clusters: []
-
-# Optional affinity settings
-affinity: {}
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: some-key
-#                operator: In
-#                values:
-#                  - some-value
-#  nodeSelector:
-#    node.kubernetes.io/some-key: some-value
-
-# Allow external traffic to reach this service via a (cluster provided) ingress controller.
-# https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
   enabled: false
-  # By default, enabling ingress will switch the charts services from type NodePort to
-  # ClusterIP. While that is fine for new services it may not be desired during transition
-  # of existing ones from dedicated LVS to Ingress.
-  # By setting keepNodePort to true, the services will stay of type NodePort.
   keepNodePort: false
-  # Setting staging to true will use the staging domain to generate the default gateway
-  # hosts. It will also ensure that default staging cergen certificates are be trusted.
   staging: false
-  # gatewayHosts settings configure the hostnames this service will be reachable on.
-  # By default, this will be a list like:
-  # - {{ gatewayHosts.default }}.discovery.wmnet
-  # - {{ gatewayHosts.default }}.svc.codfw.wmnet
-  # - {{ gatewayHosts.default }}.svc.eqiad.wmnet
-  #
-  # And in case .Values.ingress.staging is true:
-  # - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
   gatewayHosts:
-    # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
     default: ""
-    # disableDefaultHosts may be set to true if the service should not be reachable via
-    # the gateway hosts generated by default (see above).
     disableDefaultHosts: false
-    # extraFQDNs ist a list of extra FQDNs this service should be reachable on.
-    # It can be used to extend the gateway hosts that are generated by default.
     extraFQDNs: []
-  # If you want to attach routes of this release to an existing Gateway, provide the name
-  # of that gateway here in the format: <namespace>/<gateway-name>
-  # This is useful if you wish to make multiple releases available from the same hostname.
   existingGatewayName: ""
-  # routeHosts is a list of FQDNs the httproutes should attach to.
-  # If existingGatewayName not set, this list might be empty and will default to the gateway
-  # host generated according to how .Values.gatewayHosts.* is configured.
-  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
   routeHosts: []
-  # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
-  # the service without modification.
-  # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
 
 app:
