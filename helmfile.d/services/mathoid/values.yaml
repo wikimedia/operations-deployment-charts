@@ -23,6 +23,8 @@ service:
 mesh:
   public_port: 4001
   enabled: true
+  telemetry:
+    enabled: true
 networkpolicy:
   egress:
     enabled: false
