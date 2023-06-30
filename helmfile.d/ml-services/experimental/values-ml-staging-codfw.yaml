@@ -107,3 +107,14 @@ inference_services:
             memory: 2Gi
           requests:
             memory: 2Gi
+  readability:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-readability"
+      image_version: "2023-06-29-140019-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "readability"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/experimental/readability/20230630070900/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
