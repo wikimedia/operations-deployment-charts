@@ -56,6 +56,9 @@ inference_services:
           value: "http://api-ro.discovery.wmnet"
   revertrisk-multilingual:
     predictor:
+      config:
+        minReplicas: 5
+        maxReplicas: 15
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
       image_version: "2023-06-28-092247-publish"
       custom_env:
