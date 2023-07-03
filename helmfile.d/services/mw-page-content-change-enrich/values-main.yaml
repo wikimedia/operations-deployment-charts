@@ -28,14 +28,14 @@ app:
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
-          stream: mediawiki.page_change.v1:1.0.0
+          stream: mediawiki.page_change.v1:1.1.0
           connector: kafka
           options:
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
-          stream: rc1.mediawiki.page_content_change:1.0.0
+          stream: rc1.mediawiki.page_content_change:1.1.0
           connector: kafka
           options:
             delivery_guarantee: AT_LEAST_ONCE
