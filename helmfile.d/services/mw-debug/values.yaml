@@ -19,6 +19,8 @@ service:
 mesh:
   enabled: true
   public_port: 4444
+  image_name: envoy-future
+  image_version: 1.23.10-1-s1
   resources:
     requests:
       cpu: 200m
