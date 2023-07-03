@@ -44,7 +44,7 @@ debug:
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 php:
-  slowlog_timeout: 1
+  slowlog_timeout: 5
   workers: 8
   servergroup: kube-mw-debug
   fcgi_mode: FCGI_UNIX
