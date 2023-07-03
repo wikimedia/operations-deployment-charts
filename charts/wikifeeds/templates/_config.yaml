@@ -50,12 +50,7 @@ services:
       # spec: ./spec.template.yaml
       # allow cross-domain requests to the API (default '*')
       cors: '*'
-      # to disable use:
-      # cors: false
-      # to restrict to a particular domain, use:
-      # cors: restricted.domain.org
-      # content for the CSP headers
-      # csp: false  # uncomment this line to disable sending them
+      csp: false
       # URL of the outbound proxy to use (complete with protocol)
       #      proxy: http://url-downloader.eqiad.wikimedia.org:8080
       # the list of domains for which not to use the proxy defined above
