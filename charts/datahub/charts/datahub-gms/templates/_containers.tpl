@@ -52,12 +52,6 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
-    - name: DATAHUB_GMS_PORT
-      value: "{{ required "GMS port must be specified" .Values.global.datahub.gms.port }}"
-    {{- if .Values.global.datahub.gms.useSSL }}
-    - name: DATAHUB_GMS_USE_SSL
-      value: "true"
-    {{- end }}
     - name: ENTITY_REGISTRY_CONFIG_PATH
       value: /datahub/datahub-gms/resources/entity-registry.yml
     - name: DATAHUB_ANALYTICS_ENABLED
