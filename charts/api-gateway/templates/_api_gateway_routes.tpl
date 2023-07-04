@@ -342,4 +342,24 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- end }}
 {{- end }}
 {{- /* END staging_endpoints route definition */}}
+{{- /* BEGIN aqs route definition */}}
+{{- if .Values.main_app.aqs }}
+              # Routes for AQS services to support them under their native AQS1-style paths
+{{- range $aqs_service, $aqs_opts := .Values.main_app.aqs }}
+              - name: {{ $aqs_service }}_route
+                match:
+                  safe_regex:
+                    google_re2: {}
+                    regex: '^/(.*)/v1/metrics/{{ $aqs_opts.path }}/(.*)$'
+                route:
+                  timeout: {{ $aqs_opts.timeout | default "15s" }}
+                  cluster: {{ $aqs_service }}_cluster
+                  regex_rewrite:
+                    pattern:
+                      google_re2: {}
+                      regex: '^/(.*)/v1/metrics/{{ $aqs_opts.path }}/(.*)$'
+                    substitution: '/metrics/{{ $aqs_opts.path }}/\2'
+{{- end }}
+{{- end }}
+{{- /* END aqs route definition */}}
 {{- end }}
