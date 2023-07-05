@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        checksum/config: {{ include "config.app" . | sha256sum }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: {{ template "base.name.release" . }}
+          image: "{{ .Values.docker.registry }}/benthos:{{ .Values.app.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- include "app.generic._command" . | indent 10 }}
+          ports:
+            - containerPort: {{ .Values.app.port }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.app.port }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.app.port }}
+          env: []
+          {{ include "base.helper.resources" .Values.app | indent 10}}
+          volumeMounts:
+            - name: {{ template "base.name.release" . }}-benthos-config
+              mountPath: /etc/benthos
+              readOnly: true
+      volumes:
+        - name: {{ template "base.name.release" . }}-benthos-config
+          configMap:
+            name: {{ template "base.name.release" . }}-benthos-config

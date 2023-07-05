@@ -1,0 +1,61 @@
+# Default values.
+app:
+  version: latest  # we use latest in the defaults, overridden in helmfile releases
+  port: 4195  # note that this port is not exposed as a Service, as benthos is only a kafka client
+
+  kafka:
+    broker_list:
+      - kafka.default.svc.cluster.local:9092
+    topics_in: [test_topic1, test_topic2]
+    topic_out: test_topic_out
+    compression_codec: snappy
+    ssl: false
+
+  requests:
+    cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 100Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+
+  shutdown:
+    delay: ""
+    timeout: 20s
+
+monitoring:
+  enabled: true
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http
+    targetPort: 4195 # the number or name of the exposed port on the container
+    port: 4195 # the number of the port desired to be exposed to the cluster
+
+# There aren't any useful debug ports in benthos, but we are keeping this stanza to keep the
+# networkpolicy template happy
+debug:
+  enabled: false
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+
+# Cronjob definitions
+cronjobs: []
+
+mesh:
+  enabled: false
