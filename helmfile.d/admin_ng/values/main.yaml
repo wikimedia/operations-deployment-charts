@@ -127,6 +127,15 @@ namespaces:
     pspClusterRole: allow-mediawiki-psp
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "125"
+          memory: "125Gi"
+        limits:
+          cpu: "150"
+          memory: "125Gi"
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
   # Commented out until discussion of videoscaler on kubernetes is done
