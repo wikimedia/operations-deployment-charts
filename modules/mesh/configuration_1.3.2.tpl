@@ -322,7 +322,6 @@ under 'tcp_services_proxy'.
       {{- end }}
       common_tls_context:
         tls_params:
-          tls_minimum_protocol_version: TLSv1_2
           cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
         validation_context:
           trusted_ca:
