@@ -5,6 +5,7 @@ These templates provide the basic networkpolicy functionalities
 in particular for egress.
 
  - base.networkpolicy.egress-basic provides basic networkpolicy support
+ - base.networkpolicy.egress.mariadb - provides access to specifically defined WMF MariaDB sections
 */}}
 
 {{- define "base.networkpolicy.egress-basic" -}}
@@ -24,9 +25,12 @@ in particular for egress.
 {{- range $port := $cidr.ports }}
       - protocol: {{ $port.protocol | upper }}
         port: {{ $port.port }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end }}{{/* end range $port := $cidr.ports */}}
+{{- end }}{{/* end if $cidr.ports */}}
+{{- end }}{{/* end range $cidr := .networkpolicy.egress.dst_nets */}}
+{{- if .networkpolicy.egress.extraRules }}
+{{- toYaml .networkpolicy.egress.extraRules | nindent 4}}
+{{- end }}{{/* end if .networkpolicy.egress.extraRules */}}
 {{- end -}}
 
 {{/* Auto-generate egress networkpolicies for kafka brokers */}}
@@ -49,3 +53,29 @@ in particular for egress.
 {{- end }} {{/* end range allowed_clusters */}}
 {{- end }}{{ end }} {{/* end if's */}}
 {{- end -}}
+
+{{/* Auto-generate egress networkpolicies for MariaDB sections */}}
+{{- define "base.networkpolicy.egress.mariadb" -}}
+{{/* MariaDB egress. Ask for MariaDB section names. We hardcode eqiad/codfw CIDRs they are kinda ossified */}}
+{{- if .Values.mariadb }}
+{{- $section_ports := .Values.mariadb.section_ports }}
+{{- $ports := list 3306 }}
+{{- range .Values.mariadb.egress.sections }}
+  {{- if not (hasKey $section_ports .) }}
+    {{- fail (print "Inexistent section specified: " .) }}
+  {{- end }}
+  {{- $port := get $section_ports . }}
+  {{- $ports = append $ports $port }}
+{{- end }}
+{{- $ports = compact $ports }}
+- to:
+  - ipBlock:
+      cidr: 10.64.0.0/12
+      cidr: 10.192.0.0/12
+  ports:
+  {{- range $ports }}
+  - protocol: TCP
+    port: {{.}}
+  {{- end }}
+{{- end }}
+{{- end }}

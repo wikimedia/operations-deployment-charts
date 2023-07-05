@@ -32,4 +32,5 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.mariadb" . | indent 4 }}
 {{- end }}
