@@ -1,13 +1,12 @@
 docker:
   registry: docker-registry.discovery.wmnet
 app:
-  resources:
-    requests:
-      cpu: 200m
-      memory: 100Mi
-    limits:
-      cpu: 500m
-      memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 400Mi
   version: 2023-06-26-123417-production
   image: repos/mediawiki/services/ipoid
 monitoring:
