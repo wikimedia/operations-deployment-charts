@@ -312,12 +312,8 @@ GlobalNetworkPolicies:
           ports:
             - 8080
           nets:
-            - 208.80.154.29/32  # urldownloader1001
-            - 208.80.154.81/32  # urldownloader1002
             - 208.80.154.75/32  # urldownloader1003
             - 208.80.155.118/32 # urldownloader1004
-            - 208.80.153.24/32  # urldownloader2001
-            - 208.80.153.61/32  # urldownloader2002
             - 208.80.153.72/32  # urldownloader2003
             - 208.80.153.109/32  # urldownloader2004
       - action: Allow
@@ -326,12 +322,8 @@ GlobalNetworkPolicies:
           ports:
             - 8080
           nets:
-            - 2620:0:861:1:208:80:154:29/128  # urldownloader1001
-            - 2620:0:861:3:208:80:154:81/128  # urldownloader1002
             - 2620:0:861:3:208:80:154:75/128  # urldownloader1003
             - 2620:0:861:4:208:80:155:118/128  # urldownloader1004
-            - 2620:0:860:1:208:80:153:24/128  # urldownloader2001
-            - 2620:0:860:2:208:80:153:61/128  # urldownloader2002
             - 2620:0:860:3:208:80:153:72/128  # urldownloader2003
             - 2620:0:860:4:208:80:153:109/128  # urldownloader2004
   # Allow all pods access to restbase
