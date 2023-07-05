@@ -45,6 +45,22 @@ admin:
       path: /var/log/envoy/admin-access.log
   address:
     socket_address: {address: 127.0.0.1, port_value: {{ (.Values.mesh.admin | default dict).port | default 1666 }}}
+  # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
+  ignore_global_conn_limit: true
+layered_runtime:
+  layers:
+    # Limit the total number of allowed active connections per envoy instance.
+    # Envoys configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
+    # which is still essentially unlimited in our use case.
+    - name: static_layer_0
+      static_layer:
+        overload:
+          global_downstream_max_connections: 50000
+    # Include an empty admin_layer *after* the static layer, so we can
+    # continue to make changes via the admin console and they'll overwrite
+    # values from the previous layer.
+    - name: admin_layer_0
+      admin_layer: {}
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}
