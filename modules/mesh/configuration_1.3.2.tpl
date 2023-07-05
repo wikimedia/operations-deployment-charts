@@ -295,6 +295,8 @@ under 'tcp_services_proxy'.
       "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
       common_http_protocol_options:
         idle_timeout: {{ .Listener.keepalive }}
+        # Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
+        max_requests_per_connection: 1000
       # This allows switching on protocol based on what protocol the downstream connection used.
       use_downstream_protocol_config: {}
   {{- end }}
@@ -310,10 +312,6 @@ under 'tcp_services_proxy'.
             socket_address:
               address: {{ .Listener.upstream.address }}
               port_value: {{ .Listener.upstream.port }}
-{{- /*
-Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
-*/}}
-  max_requests_per_connection: 1000
   {{- if .Listener.upstream.encryption }}
   transport_socket:
     name: envoy.transport_sockets.tls
