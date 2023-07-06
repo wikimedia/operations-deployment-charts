@@ -22,7 +22,7 @@ kafkaSetupJob: *setupjobs
 mysqlSetupJob: *setupjobs
 
 datahubUpgrade:
-  enabled: false
+  enabled: true
   docker: *docker
   image:
     repository: wikimedia/datahub-upgrade
