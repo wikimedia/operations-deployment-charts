@@ -1,6 +1,7 @@
 docker:
   registry: docker-registry.discovery.wmnet
 app:
+  port: 6927
   requests:
     cpu: 100m
     memory: 200Mi
@@ -13,7 +14,7 @@ monitoring:
   enabled: false
   image_version: latest
 resources:
-  replicas: 2
+  replicas: 1
 service:
   deployment: production
 config:
