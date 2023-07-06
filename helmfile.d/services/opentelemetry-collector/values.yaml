@@ -12,6 +12,9 @@ config:
 
 # Disable all ports except OTLP-over-gRPC.
 ports:
+  otlp:
+    # Disable the hostPort; we'll use a NodePort service instead.
+    hostPort: null
   otlp-http:
     enabled: false
   jaeger-compact:
@@ -22,3 +25,8 @@ ports:
     enabled: false
   zipkin:
     enabled: false
+
+service:
+  enabled: true
+  type: NodePort
+  internalTrafficPolicy: Local
