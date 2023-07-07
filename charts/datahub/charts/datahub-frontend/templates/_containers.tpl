@@ -71,6 +71,10 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
+    {{- if .Values.global.datahub.monitoring.enablePrometheus }}
+    - name: ENABLE_PROMETHEUS
+      value: "true"
+    {{- end }}
     - name: DATAHUB_GMS_HOST
       value: {{ template "wmf.gms-service.frontend" $ }}
     - name: DATAHUB_GMS_PORT

@@ -44,6 +44,14 @@ datahub-gms:
 
 datahub-mce-consumer:
   kafka: *kafka
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 10.64.53.41/32                  # an-test-coord1001
+        - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
+        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.64.0.24/32                   # karapace1001
+        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
 
 datahub-mae-consumer:
   kafka: *kafka
