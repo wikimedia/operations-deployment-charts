@@ -120,7 +120,7 @@ mesh:
   upstream_timeout: "60s"
   # Enabling telemetry, telemetry port.
   telemetry:
-    enabled: true
+    enabled: false
     port: 1667
   resources:
     requests:
@@ -139,6 +139,7 @@ discovery:
 # Mesh related pure TCP proxies
 tcp_proxy:
   listeners: []
+
 
 # Should be provided by configuration management.
 # See details of the structures in the comments

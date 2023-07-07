@@ -44,7 +44,23 @@ admin:
       # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
       path: /var/log/envoy/admin-access.log
   address:
-    socket_address: {address: 127.0.0.1, port_value: 1666}
+    socket_address: {address: 127.0.0.1, port_value: {{ (.Values.mesh.admin | default dict).port | default 1666 }}}
+  # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
+  ignore_global_conn_limit: true
+layered_runtime:
+  layers:
+    # Limit the total number of allowed active connections per envoy instance.
+    # Envoys configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
+    # which is still essentially unlimited in our use case.
+    - name: static_layer_0
+      static_layer:
+        overload:
+          global_downstream_max_connections: 50000
+    # Include an empty admin_layer *after* the static layer, so we can
+    # continue to make changes via the admin console and they'll overwrite
+    # values from the previous layer.
+    - name: admin_layer_0
+      admin_layer: {}
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}
@@ -138,7 +154,8 @@ static_resources:
             path: "/dev/stdout"
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         http_protocol_options: {accept_http_10: true}
         route_config:
           {{- if .Values.mesh.request_headers_to_add | default false }}
@@ -172,7 +189,8 @@ static_resources:
               private_key: {filename: /etc/envoy/ssl/service.key}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
-    typed_config: {}
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
 {{- end }}
 
 {{/* Mesh network configuration. */}}
@@ -245,7 +263,8 @@ under 'tcp_services_proxy'.
         stat_prefix: {{ .Name }}_egress
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         route_config:
         {{- if .Listener.xfp }}
           request_headers_to_remove:
@@ -292,6 +311,8 @@ under 'tcp_services_proxy'.
       "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
       common_http_protocol_options:
         idle_timeout: {{ .Listener.keepalive }}
+        # Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
+        max_requests_per_connection: 1000
       # This allows switching on protocol based on what protocol the downstream connection used.
       use_downstream_protocol_config: {}
   {{- end }}
@@ -307,10 +328,6 @@ under 'tcp_services_proxy'.
             socket_address:
               address: {{ .Listener.upstream.address }}
               port_value: {{ .Listener.upstream.port }}
-{{- /*
-Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
-*/}}
-  max_requests_per_connection: 1000
   {{- if .Listener.upstream.encryption }}
   transport_socket:
     name: envoy.transport_sockets.tls
@@ -321,7 +338,6 @@ Given we go through a load-balancer, we want to keep the number of requests that
       {{- end }}
       common_tls_context:
         tls_params:
-          tls_minimum_protocol_version: TLSv1_2
           cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
         validation_context:
           trusted_ca:
@@ -379,7 +395,8 @@ Given we go through a load-balancer, we want to keep the number of requests that
         "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
         http_filters:
         - name: envoy.filters.http.router
-          typed_config: {}
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
         http_protocol_options: {accept_http_10: true}
         route_config:
           virtual_hosts:
