@@ -55,9 +55,9 @@ resources:
         -Xms512m
         -Xmx512m
         -Dhttp.port=9002
-        -Dconfig.file=/datahub/datahub-frontend/conf/application.conf
-        -Djava.security.auth.login.config=/datahub/datahub-frontend/conf/{{ if .Values.auth.ldap.enabled }}auth/jaas-ldap.conf{{ else }}jaas.conf{{ end }}
-        -Dlogback.configurationFile=/datahub/datahub-frontend/conf/logback.xml
+        -Dconfig.file=/datahub-frontend/conf/application.conf
+        -Djava.security.auth.login.config=/datahub-frontend/conf/{{ if .Values.auth.ldap.enabled }}auth/jaas-ldap.conf{{ else }}jaas.conf{{ end }}
+        -Dlogback.configurationFile=/datahub-frontend/conf/logback.xml
         -Dlogback.debug=false
         -Dpidfile.path=/dev/null
   {{- range $k, $v := .Values.config.public }}
@@ -149,7 +149,7 @@ resources:
   {{- end }}
   {{- with .Values.auth.ldap.enabled }}
     - name: {{ template "base.name.release" $ }}-jaas-ldap
-      mountPath: /datahub/datahub-frontend/conf/auth/
+      mountPath: /datahub-frontend/conf/auth/
       readOnly: true
   {{- end }}
 {{- end }}
