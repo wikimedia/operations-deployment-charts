@@ -35,11 +35,11 @@ spec:
       {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
       {{- with .Values.auth.ldap.enabled }}
-        - name: {{ template "base.name.release" $ }}-jaas-ldap
+        - name: {{ template "base.name.release" $ }}-jaas
           configMap:
-            name: {{ template "base.name.release" $ }}-jaas-ldap
+            name: {{ template "base.name.release" $ }}-jaas
             items:
-              - key: jaas-ldap.conf
-                path: jaas-ldap.conf
+              - key: jaas.conf
+                path: jaas.conf
       {{- end }}
       {{- include "wmf.volumes" . | indent 8}}
