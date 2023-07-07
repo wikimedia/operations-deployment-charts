@@ -50,16 +50,6 @@ resources:
   env:
     - name: SERVICE_IDENTIFIER
       value: {{ template "base.name.release" . }}
-    - name: JAVA_OPTS
-      value: >
-        -Xms512m
-        -Xmx512m
-        -Dhttp.port=9002
-        -Dconfig.file=/datahub-frontend/conf/application.conf
-        -Djava.security.auth.login.config=/datahub-frontend/conf/{{ if .Values.auth.ldap.enabled }}auth/jaas-ldap.conf{{ else }}jaas.conf{{ end }}
-        -Dlogback.configurationFile=/datahub-frontend/conf/logback.xml
-        -Dlogback.debug=false
-        -Dpidfile.path=/dev/null
   {{- range $k, $v := .Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
@@ -148,8 +138,9 @@ resources:
     {{ toYaml . | indent 4 }}
   {{- end }}
   {{- with .Values.auth.ldap.enabled }}
-    - name: {{ template "base.name.release" $ }}-jaas-ldap
-      mountPath: /datahub-frontend/conf/auth/
+    - name: {{ template "base.name.release" $ }}-jaas
+      mountPath: /datahub-frontend/conf/jaas.conf
+      subPath: jaas.conf
       readOnly: true
   {{- end }}
 {{- end }}
