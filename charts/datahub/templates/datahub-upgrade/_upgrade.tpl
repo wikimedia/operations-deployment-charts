@@ -55,7 +55,7 @@ Return the env variables for upgrade jobs
   value: "{{ .Values.global.kafka.bootstrap.server }}"
 {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
 - name: KAFKA_SCHEMAREGISTRY_URL
-  value: {{ printf "http://%s-%s:%s/schema-registry/api/" .Release.Name "datahub-gms" .Values.global.datahub.gms.port }}
+  value: {{ printf "https://%s:%s/schema-registry/api/" ( include "wmf.gms-service.upgrade" $ ) ( .Values.global.datahub.gms.port | toString ) }}
 {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
 - name: KAFKA_SCHEMAREGISTRY_URL
   value: "{{ .Values.global.kafka.schemaregistry.url }}"

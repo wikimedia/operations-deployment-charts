@@ -71,8 +71,13 @@ resources:
       value: "{{ required "Database driver must be specified" .Values.global.sql.datasource.driver }}"
     - name: KAFKA_BOOTSTRAP_SERVER
       value: "{{ required "Kafka bootstrap server must be specified" .Values.global.kafka.bootstrap.server }}"
+    {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
-      value: "{{ required "Schema registry URL must be specified" .Values.global.kafka.schemaregistry.url }}"
+      value: "{{ printf "https://localhost:%s/schema-registry/api/" ( .Values.global.datahub.gms.port | toString ) }}"
+    {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
+    - name: KAFKA_SCHEMAREGISTRY_URL
+      value: "{{ .Values.global.kafka.schemaregistry.url }}"
+    {{- end }}
     {{- with .Values.global.kafka.schemaregistry.type }}
     - name: SCHEMA_REGISTRY_TYPE
       value: "{{ . }}"
