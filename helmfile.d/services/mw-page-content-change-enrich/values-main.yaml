@@ -46,8 +46,14 @@ app:
         # By convention we set job_name equal to k8s namespace.
         # Since this naming will contain hypens, set the error_sink
         # stream name explicitly for production deployments.
-        error_sink: mw_page_content_change_enrich.error
-
+        error_sink:
+          stream: mw_page_content_change_enrich.error:2.1.0
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
   job:
     # TODO: we might consider setting
     # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
