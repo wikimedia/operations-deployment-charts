@@ -73,7 +73,7 @@ resources:
       value: "{{ required "Kafka bootstrap server must be specified" .Values.global.kafka.bootstrap.server }}"
     {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
-      value: "{{ printf "https://localhost:%s/schema-registry/api/" ( .Values.global.datahub.gms.port | toString ) }}"
+      value: "{{ printf "http://localhost:8080/schema-registry/api/" }}"
     {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
       value: "{{ .Values.global.kafka.schemaregistry.url }}"
