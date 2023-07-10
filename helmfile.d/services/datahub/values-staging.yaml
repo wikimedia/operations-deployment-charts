@@ -14,8 +14,8 @@ networkpolicy:
       - cidr: 10.64.53.41/32                  # an-test-coord1001
       - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
       - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-      - cidr: 10.64.0.24/32                   # karapace1001
-      - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+      - cidr: 10.64.0.5/32                    # karapace1002
+      - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
       - cidr: 10.64.16.145/32                 # zookeeper-test1002
       - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
 
@@ -39,8 +39,8 @@ datahub-gms:
         - cidr: 10.64.53.41/32                  # an-test-coord1001
         - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.24/32                   # karapace1001
-        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+        - cidr: 10.64.0.5/32                    # karapace1002
+        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 datahub-mce-consumer:
   kafka: *kafka
@@ -50,8 +50,8 @@ datahub-mce-consumer:
         - cidr: 10.64.53.41/32                  # an-test-coord1001
         - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.24/32                   # karapace1001
-        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+        - cidr: 10.64.0.5/32                    # karapace1002
+        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 datahub-mae-consumer:
   kafka: *kafka
@@ -69,7 +69,8 @@ global:
     zookeeper:
       server: "zookeeper-test1002.eqiad.wmnet:2181"
     schemaregistry:
-      type: "INTERNAL"
+      type: "KAFKA"
+      url: "http://karapace1002.eqiad.wmnet:8081"
   sql:
     datasource:
       host: "an-test-coord1001.eqiad.wmnet:3306"
