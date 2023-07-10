@@ -68,11 +68,11 @@ environments:
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport]
+      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport]
+      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
