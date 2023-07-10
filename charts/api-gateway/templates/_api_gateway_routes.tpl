@@ -227,6 +227,11 @@ BEGIN descriptions/mobileapps_cluster route definition
                   safe_regex:
                     google_re2: {}
                     regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
+                response_headers_to_add:
+                  - header:
+                      key: "cache-control"
+                      value: "no-cache"
+                    append: false
                 route:
                   cors: *api_cors
                   regex_rewrite:
@@ -245,6 +250,11 @@ BEGIN descriptions/mobileapps_cluster route definition
                 request_headers_to_remove: ["cookie"]
                 response_headers_to_remove: ["set-cookie"]
 {{- end }}
+                response_headers_to_add:
+                  - header:
+                      key: "cache-control"
+                      value: "no-cache"
+                    append: false
                 match:
                   safe_regex:
                     google_re2: {}
@@ -281,6 +291,13 @@ BEGIN descriptions/mobileapps_cluster route definition
                   safe_regex:
                     google_re2: {}
                     regex: '^/service/{{ $discovery_opts.path }}(.*)$'
+{{- if or $discovery_opts.allow_cache (not (hasKey $discovery_opts "allow_cache")) }}
+                response_headers_to_add:
+                  - header:
+                      key: "cache-control"
+                      value: "no-cache"
+                    append: false
+{{- end }}
                 route:
                   timeout: {{ $discovery_opts.timeout | default "15s" }}
                   cors: *api_cors
@@ -316,32 +333,6 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- end }}
 {{- end }}
 {{- /* END discovery_endpoints route definition */}}
-{{- /* BEGIN staging_endpoints route definition */}}
-{{- if eq .Release.Name "staging" }}
-{{- if .Values.main_app.staging_endpoints }}
-{{- range $staging_route, $staging_opts := .Values.main_app.staging_endpoints }}
-              - name: {{ $staging_route }}_route
-{{- if $strip_cookies }}
-                request_headers_to_remove: ["cookie"]
-                response_headers_to_remove: ["set-cookie"]
-{{- end }}
-                match:
-                  safe_regex:
-                    google_re2: {}
-                    regex: '^/staging/{{ $staging_opts.path }}/(.*)$'
-                route:
-                  timeout: {{ $staging_opts.timeout | default "15s" }}
-                  cors: *api_cors
-                  regex_rewrite:
-                    pattern:
-                      google_re2: {}
-                      regex: '^/staging/{{ $staging_opts.path }}/(.*)$'
-                    substitution: '/\1'
-                  cluster: {{ $staging_route}}_cluster
-{{- end }}
-{{- end }}
-{{- end }}
-{{- /* END staging_endpoints route definition */}}
 {{- /* BEGIN aqs route definition */}}
 {{- if .Values.main_app.aqs }}
               # Routes for AQS services to support them under their native AQS1-style paths

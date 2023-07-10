@@ -157,14 +157,16 @@ main_app:
   # full_path_trim will override host_rewrite_path parsing of paths,
   # but host_rewrite_path will still function for rewriteing of Host
   # headers.
+  #
+
+  # allow_cache if set to true will return the cache-control headers
+  # set by the service. If this parameter is *not* set, we will emit a
+  # no-cache header by default. This is to allow us to control the
+  # cache at the gateway level while allowing services that should be
+  # cached to still emit the header as they see fit.
+  #
 
   discovery_endpoints: {}
-
-  # This dictionary behaves the exact same but only for the staging
-  # instance of the gateway and for
-  # https://staging.svc.eqiad.wmnet:8087/staging/myservicename on the internal
-  # wmf network
-  staging_endpoints: {}
 
   # run a local redis container for testing - see README for
   # instructions
