@@ -10,6 +10,17 @@ config:
     prometheus: null
     zipkin: null
 
+# Use the WMF Docker registry, not Docker Hub, and specify our most recent build (overriding the
+# appVersion from Chart.yaml).
+image:
+  repository: docker-registry.discovery.wmnet/otelcol
+  tag: 0.66.0-1-20230709  # Override the appVersion from Chart.yaml
+
+command:
+  # The chart adds a leading slash (because the default is just "otelcol-contrib" with the binary
+  # installed at the root.)
+  name: usr/bin/otelcol-contrib
+
 # Disable all ports except OTLP-over-gRPC.
 ports:
   otlp:
