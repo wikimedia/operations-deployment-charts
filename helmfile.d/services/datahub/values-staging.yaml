@@ -58,7 +58,9 @@ datahub-mae-consumer:
   networkpolicy:
     egress:
       dst_nets:
-        - cidr: 10.2.2.71/32 # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.64.0.5/32                    # karapace1002
+        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 global:
   elasticsearch:
