@@ -10,16 +10,17 @@ mesh:
   enabled: true
 
 setupjobs: &setupjobs
-  enabled: false
+  enabled: true
   docker: *docker
   image:
     tag: *version
 
 elasticsearchSetupJob: *setupjobs
 
-kafkaSetupJob: *setupjobs
-
 mysqlSetupJob: *setupjobs
+
+kafkaSetupJob:
+  enabled: false
 
 datahubUpgrade:
   enabled: true
@@ -148,7 +149,7 @@ global:
       port: 8501
       useSSL: true
     systemUpdate:
-      enabled: false
+      enabled: true
   elasticsearch:
     host: "datahubsearch.svc.eqiad.wmnet"
     port: "9200"
