@@ -68,6 +68,8 @@ spec:
                 - "-u"
                 - "RestoreIndices"
                 - "-a"
+                - "clean"
+                - "-a"
                 - "batchSize={{ .Values.datahubUpgrade.batchSize }}"
                 - "-a"
                 - "batchDelayMs={{ .Values.datahubUpgrade.batchDelayMs }}"
