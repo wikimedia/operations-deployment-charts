@@ -51,7 +51,7 @@ layered_runtime:
   layers:
     # Limit the total number of allowed active connections per envoy instance.
     # Envoys configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
-    # wich is still essentially unlimited in our use case.
+    # which is still essentially unlimited in our use case.
     - name: static_layer_0
       static_layer:
         overload:

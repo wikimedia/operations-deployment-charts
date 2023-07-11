@@ -1,4 +1,10 @@
 helm_scaffold_version: 0.4
+
+common_images:
+  mcrouter:
+    mcrouter: latest
+    exporter: latest
+
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
@@ -258,6 +264,39 @@ nutcracker:
       port: 1234
       db: mydb
       weight: 1
+
+cache:
+  mcrouter:
+    enabled: false
+    # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
+    prestop_sleep: 8
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 1
+        memory: 200Mi
+    route_prefix: local/thumbor
+    cross_region_timeout: 250
+    cross_cluster_timeout: 100
+    probe_timeout: 60000
+    timeouts_until_tko: 3
+    num_proxies: 1
+    zone: local
+    pools:
+      - name: test-pool
+        zone: local
+        servers:
+          - 10.10.10.10
+          - 10.10.10.11
+        failover:
+          - 10.10.10.12
+    routes:
+      - route: /local/thumbor
+        failover_time: 600
+        pool: test-pool
+
 
 networkpolicy:
   egress:

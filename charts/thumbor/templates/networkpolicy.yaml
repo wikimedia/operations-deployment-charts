@@ -35,6 +35,10 @@ spec:
       # nutcracker
       - port: 9191
         protocol: TCP
+      {{- if .Values.cache.mcrouter.enabled }}
+      - port: 9151
+        protocol: TCP
+      {{- end }}
       {{- end }}
       {{- include "mesh.networkpolicy.ingress" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}
@@ -42,4 +46,5 @@ spec:
     {{- include "base.networkpolicy.egress-basic" .Values }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
+    {{- include "cache.mcrouter.egress" . | indent 4 }}
 {{- end }}
