@@ -25,6 +25,7 @@ templates:
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml # mediawiki mcrouter pools, puppet generated. While the location of this file is not ideal, it will do for now.
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/main_services/thumbor/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides

@@ -56,6 +56,18 @@ service:
     # thumbor nodes.
     nodePort: 8800
 
+cache:
+  mcrouter:
+    port: 11215
+    enabled: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 150Mi
+      limits:
+        cpu: 300m
+        memory: 250Mi
+
 networkpolicy:
   egress:
     enabled: true
