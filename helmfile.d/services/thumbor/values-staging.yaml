@@ -41,9 +41,9 @@ nutcracker:
 cache:
   mcrouter:
     enabled: true
-    route_prefix: eqiad
+    route_prefix: eqiad/thumbor
     zone: eqiad
     routes:
-      - route: /eqiad
+      - route: /eqiad/thumbor
         pool: eqiad-servers
         failover_time: 600
