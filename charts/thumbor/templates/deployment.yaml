@@ -43,8 +43,10 @@ spec:
       {{- include "default.containers" . | indent 8}}
       {{- include "thumbor.containers" . | indent 8}}
       {{- include "mesh.deployment.container" . | indent 8}}
+      {{- include "cache.mcrouter.deployment" . | indent 8 }}
       volumes:
       {{- include "mesh.deployment.volume" . | nindent 8 }}
+      {{- include "cache.mcrouter.volume" .  | indent 8 }}
         - name: thumbor-config
           configMap:
             name: {{ template "base.name.release" . }}-thumbor-config
