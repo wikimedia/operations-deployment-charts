@@ -63,7 +63,6 @@ containers:
     lifecycle:
       {{- toYaml .Values.lifecycleHooks | nindent 6 }}
     {{- end }}
-    {{- if .Values.livenessProbe | empty | not }}
     livenessProbe:
       {{- if .Values.livenessProbe.initialDelaySeconds | empty | not }}
       initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
@@ -83,8 +82,6 @@ containers:
       httpGet:
         path: {{ .Values.livenessProbe.httpGet.path }}
         port: {{ .Values.livenessProbe.httpGet.port }}
-    {{ end }}
-    {{ if .Values.readinessProbe | empty | not }}
     readinessProbe:
       {{- if .Values.readinessProbe.initialDelaySeconds | empty | not }}
       initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
@@ -104,7 +101,6 @@ containers:
       httpGet:
         path: {{ .Values.readinessProbe.httpGet.path }}
         port: {{ .Values.readinessProbe.httpGet.port }}
-    {{ end }}
     {{- with .Values.resources }}
     resources:
       {{- toYaml . | nindent 6 }}
