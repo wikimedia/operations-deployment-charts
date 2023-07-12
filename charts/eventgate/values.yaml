@@ -186,10 +186,17 @@ main_app:
           producer.poll.interval.ms: 100
       guaranteed:
         conf:
+          # Before T338357, the value was 0, for the following reason:
           # GuaranteedProducer does block HTTP clients, so we attempt to send
           # the produce request as soon as possible, rather than waiting
           # for larger batches.
-          queue.buffering.max.ms: 0
+          # New value for T338357:
+          # We tested a more lenient value to allow messages to be batched
+          # up to some milliseconds, rather than sending them as they arrive.
+          # This may seem to add a small latency delay in the producer,
+          # but in our tests it decreased RTT to the Kafka brokers
+          # and the overall produce latency.
+          queue.buffering.max.ms: 10
           # Custom kafka config, will call producer.setPollInterval
           # with this value if set.
           producer.poll.interval.ms: 10

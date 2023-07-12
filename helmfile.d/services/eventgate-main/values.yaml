@@ -30,17 +30,6 @@ main_app:
     kafka:
       conf:
         security.protocol: ssl
-      guaranteed:
-        conf:
-          # GuaranteedProducer does block HTTP clients, so we attempt to send
-          # the produce request as soon as possible, rather than waiting
-          # for larger batches.
-          # Override for T338357:
-          # We want to test a more lenient value to allow messages to be batched
-          # up to some milliseconds, rather than sending them as they arrive.
-          # This will add a small latency delay in the producer,
-          # but it should decrease pressure on the Kafka Broker side.
-          queue.buffering.max.ms: 10
     schema_base_uris:
     - "file:///srv/service/schemas/event/primary/jsonschema/"
     - "file:///srv/service/schemas/event/secondary/jsonschema/"
