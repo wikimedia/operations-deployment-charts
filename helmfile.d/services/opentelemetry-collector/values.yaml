@@ -9,6 +9,15 @@ config:
     jaeger: null
     prometheus: null
     zipkin: null
+  service:
+    pipelines:
+      metrics:
+        receivers:
+          - otlp
+      traces:
+        receivers:
+          - otlp
+
 
 # Use the WMF Docker registry, not Docker Hub, and specify our most recent build (overriding the
 # appVersion from Chart.yaml).
