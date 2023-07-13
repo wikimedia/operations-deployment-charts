@@ -24,3 +24,12 @@ nutcracker:
     port: 11211
     weight: 1
     db: "shard06"
+cache:
+  mcrouter:
+    enabled: true
+    route_prefix: codfw/thumbor
+    zone: codfw
+    routes:
+      - route: /codfw/thumbor
+        pool: codfw-servers
+        failover_time: 600

@@ -20,9 +20,8 @@ discovery:
   - swift-codfw
 
 main_app:
-
+  failure_throttling_memcache: "127.0.0.1:11213"
   version: 2023-07-03-102514-production
-
   thumbor_workers: 7
 
   # These limits are per-worker, so multiply these by thumbor_workers
@@ -58,7 +57,13 @@ service:
 
 cache:
   mcrouter:
-    enabled: false
+    enabled: true
+    route_prefix: eqiad/thumbor
+    zone: eqiad
+    routes:
+      - route: /eqiad/thumbor
+        pool: eqiad-servers
+        failover_time: 600
     resources:
       requests:
         cpu: 200m
@@ -91,43 +96,3 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 7531
-      # thumbor1001 - memcached
-      - cidr: 10.64.16.56/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor1002 - memcached
-      - cidr: 10.64.16.57/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor1005 - memcached
-      - cidr: 10.64.0.161/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor1006 - memcached
-      - cidr: 10.64.32.149/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor2003 - memcached
-      - cidr: 10.192.16.58/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor2004 - memcached
-      - cidr: 10.192.16.59/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor2005 - memcached
-      - cidr: 10.192.0.97/32
-        ports:
-          - protocol: TCP
-            port: 11211
-      # thumbor2006 - memcached
-      - cidr: 10.192.48.62/32
-        ports:
-          - protocol: TCP
-            port: 11211
