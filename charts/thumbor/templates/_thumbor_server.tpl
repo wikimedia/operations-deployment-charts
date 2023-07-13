@@ -195,7 +195,7 @@ POOLCOUNTER_CONFIG_EXPENSIVE = {
 
 # Thumbnails that fail for a given xkey more than 4 times per hour aren't
 # worth re-attempting that often
-FAILURE_THROTTLING_MEMCACHE =  {{ .Values.main_app.failure_throttling_memcache  }}
+FAILURE_THROTTLING_MEMCACHE = ['{{ .Values.main_app.failure_throttling_memcache }}']
 FAILURE_THROTTLING_MAX = 4
 FAILURE_THROTTLING_DURATION = 3600
 FAILURE_THROTTLING_PREFIX = 'thumbor-failure-'

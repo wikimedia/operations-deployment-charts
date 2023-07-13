@@ -59,7 +59,7 @@ main_app:
     memory: 900Mi
   image: wikimedia/operations-software-thumbor-plugins
   version: latest
-  failure_throttling_memcache: ['127.0.0.1:11212']
+  failure_throttling_memcache: "127.0.0.1:11212"
 
   log_level: "info"
 
