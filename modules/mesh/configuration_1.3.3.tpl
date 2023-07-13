@@ -8,8 +8,8 @@
 
 {{- define "mesh.configuration.configmap" }}
 {{- if .Values.mesh.enabled }}
-{{/* Only render the certs configmap if public_port is configured. */}}
-{{- if .Values.mesh.public_port }}
+{{/* Only render the certs configmap if public_port is configured but certmanager is disabled. */}}
+{{- if and (.Values.mesh.public_port) (not (.Values.mesh.certmanager | default dict).enabled) }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -20,23 +20,38 @@ data:
 {{ .Values.mesh.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.mesh.certs.key | indent 4 }}
-{{ end -}}
+{{ end -}}{{- /* end if .Values.mesh.public_port */ -}}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   {{- include "base.meta.metadata" (dict "Root" . "Name" "envoy-config-volume") | indent 2 }}
 data:
-  envoy.yaml: |-
-    {{- include "mesh.configuration.full" . | nindent 4 }}
-{{- if .Values.mesh.error_page }}
-  error_page.html: |-
-    {{- .Values.mesh.error_page | nindent 4 }}
-{{ end -}}
+  {{- include "mesh.configuration.full" . | nindent 2 }}
 {{ end -}}{{/* end mesh enabled */}}
 {{- end -}}
 
+{{/*
+
+mesh.configuration.full should output all config parts required by envoy as it's
+output is also used to compute the checksum/tls-config (e.g. restat the pod on
+config changes).
+
+*/}}
 {{- define "mesh.configuration.full" -}}
+envoy.yaml: |-
+  {{- include "mesh.configuration.envoy" . | nindent 2 }}
+{{- if and (.Values.mesh.certmanager | default dict).enabled .Values.mesh.public_port }}
+tls_certificate_sds_secret.yaml: |-
+  {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 2 }}
+{{- end }}
+{{- if .Values.mesh.error_page }}
+error_page.html: |-
+  {{- .Values.mesh.error_page | nindent 2 }}
+{{ end -}}
+{{- end -}}
+
+{{- define "mesh.configuration.envoy" -}}
 admin:
   access_log:
     typed_config:
@@ -184,9 +199,22 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
         common_tls_context:
+          {{- if (.Values.mesh.certmanager | default dict).enabled }}
+          {{- /*
+          Configure envoy to read certificates from static SDS config.
+          This will enable an inotify watcher and hot-reloading on certificate changes.
+          */}}
+          tls_certificate_sds_secret_configs:
+            name: tls_sds
+            sds_config:
+              path_config_source:
+                path: /etc/envoy/tls_certificate_sds_secret.yaml
+              resource_api_version: V3
+          {{- else }}
           tls_certificates:
             - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
               private_key: {filename: /etc/envoy/ssl/service.key}
+          {{- end }}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
     typed_config:
@@ -458,3 +486,21 @@ local_reply_config:
       content_type: "text/html; charset=UTF-8"
 {{- end }}
 {{- end }}
+
+
+{{/*
+
+Create a SDS config for TLS secrets to have the certificate and key files
+watched with inotify and reloaded automatically without restart.
+
+*/}}
+{{- define "mesh.configuration.tls_certificate_sds_secret" -}}
+resources:
+- "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+  name: tls_sds
+  tls_certificate:
+    certificate_chain:
+      filename: /etc/envoy/ssl/tls.crt
+    private_key:
+      filename: /etc/envoy/ssl/tls.key
+{{- end -}}
