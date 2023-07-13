@@ -1,5 +1,9 @@
 mesh:
   enabled: true
+  certmanager:
+    enabled: true
+    domains: [fixture.domain.local]
+    extraFQDNs: [extra.fixture.domain.local]
   image_version: 1.13.1-2
   public_port: 4666 # the port where TLS will be exposed
   certs:
