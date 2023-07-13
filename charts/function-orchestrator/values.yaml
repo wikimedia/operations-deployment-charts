@@ -8,7 +8,7 @@ resources:
 main_app:
   type: "default"
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
-  version: 2023-06-27-193750
+  version: 2023-07-13-150657
   port: 6254
   command: []
   args: []
@@ -39,9 +39,11 @@ service:
 
 config:
   public: {
-    # FIXME: We'll need to go through the web proxy for this I think?
-    WIKI_API_URL: "http://wikifunctions.org/w/api.php",
-    # FIXME: This will need to use a proper value, not 'localhost', for each of the evaluators
+    # NOTE: This is Envoy, and relies on the "Host: wikifunctions.org" header in the orchestrator
+    WIKI_API_URL: https://api-rw.discovery.wmnet/w/api.php,
+    # FIXME: This will need to use a proper value, not 'localhost'
+    # FIXME: These will need to be split for each of the evaluators
+    # TODO: Have this as an inline YAML declaration rather than a JSON blob for easier editing?
     ORCHESTRATOR_CONFIG: '{"evaluatorConfigs": [{"programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"], "evaluatorUri": "http://localhost:6927/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}, {"programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"], "evaluatorUri": "http://localhost:6928/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}]}'
   }
   private: {}
