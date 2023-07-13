@@ -41,15 +41,3 @@ data:
   prometheus-statsd.conf: |-
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{- end }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-nutcracker-config
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  nutcracker.yml: |- {{ include "nutcracker.config" . | indent 4 }}

@@ -32,9 +32,6 @@ spec:
         protocol: TCP
       {{- end }}
       {{- if .Values.monitoring.enabled }}
-      # nutcracker
-      - port: 9191
-        protocol: TCP
       {{- if .Values.cache.mcrouter.enabled }}
       - port: 9151
         protocol: TCP

@@ -251,21 +251,6 @@ mesh:
     enabled: true
     port: 9361
 
-nutcracker:
-  version: "nutcracker:latest"
-  exporter: "prometheus-nutcracker-exporter:latest"
-  requests:
-    cpu: 200m
-    memory: 150Mi
-  limits:
-    cpu: 400m
-    memory: 250Mi
-  servers:
-    - ip: 127.0.0.1
-      port: 1234
-      db: mydb
-      weight: 1
-
 cache:
   mcrouter:
     enabled: false

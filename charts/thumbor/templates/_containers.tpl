@@ -14,14 +14,6 @@ resources:
 {{ toYaml .Values.haproxy.limits | indent 4 }}
 {{- end }}
 
-{{- define "nutcracker.limits" }}
-resources:
-  requests:
-{{ toYaml .Values.nutcracker.requests | indent 4 }}
-  limits:
-{{ toYaml .Values.nutcracker.limits | indent 4 }}
-{{- end }}
-
 {{- define "statsd.limits" }}
 resources:
   requests:
@@ -118,26 +110,5 @@ resources:
   livenessProbe:
     tcpSocket:
       port: statsd-metrics
-- name: nutcracker-exporter
-  image: {{ .Values.docker.registry }}/{{ .Values.nutcracker.exporter }}
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- include "nutcracker.limits" . | indent 2 }}
-  ports:
-  - name: nc-metrics
-    containerPort: 9191
-  livenessProbe:
-    tcpSocket:
-      port: nc-metrics
 {{- end }}
-- name: nutcracker
-  image: {{ .Values.docker.registry }}/{{ .Values.nutcracker.version }}
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- include "nutcracker.limits" . | indent 2 }}
-  args:
-    - "-o"
-    - "/dev/stdout"
-  volumeMounts:
-    - name: nutcracker-config
-      mountPath: /etc/nutcracker
-      readOnly: true
 {{- end }}
