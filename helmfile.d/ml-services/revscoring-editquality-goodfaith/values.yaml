@@ -50,6 +50,9 @@ inference:
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "goodfaith"
   predictor:
+    config:
+      minReplicas: 1
+      maxReplicas: 4
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2023-06-28-092250-publish"
     base_env:
@@ -73,25 +76,17 @@ revscoring_inference_services:
     version: "20220214192137"
   - wiki: "de"
     version: "20220214192139"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 2
   - wiki: "en"
     version: "202105140814"
     predictor:
       config:
-        minReplicas: 2
-        maxReplicas: 4
+        minReplicas: 4
+        maxReplicas: 10
   - wiki: "eswikibooks"
     host: es.wikibooks.org
     version: "20220214192150"
   - wiki: "es"
     version: "20220214192152"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 2
   - wiki: "eswikiquote"
     host: es.wikiquote.org
     version: "20220214192155"
@@ -103,10 +98,6 @@ revscoring_inference_services:
     version: "20220214192206"
   - wiki: "fr"
     version: "20220214192209"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 2
   - wiki: "he"
     version: "20220214192215"
   - wiki: "hi"
@@ -115,10 +106,6 @@ revscoring_inference_services:
     version: "20220214192223"
   - wiki: "it"
     version: "20220214171756"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 2
   - wiki: "ja"
     version: "20220214192231"
   - wiki: "ko"
@@ -153,7 +140,7 @@ revscoring_inference_services:
     version: "20220214192321"
     predictor:
       config:
-        minReplicas: 2
-        maxReplicas: 4
+        minReplicas: 4
+        maxReplicas: 10
   - wiki: "zh"
     version: "20220214192324"
