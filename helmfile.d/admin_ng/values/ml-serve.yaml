@@ -124,11 +124,29 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "300"
+          memory: "240Gi"
+        limits:
+          cpu: "300"
+          memory: "240Gi"
   revscoring-editquality-damaging:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "300"
+          memory: "240Gi"
+        limits:
+          cpu: "300"
+          memory: "240Gi"
   revscoring-editquality-reverted:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
@@ -375,18 +393,6 @@ core:
     kubernetes.podspec-dnsconfig: "enabled"
 
 helmVersion: "helm3"
-
-# Override from default config (see ./common.yaml) to allow deployments of
-# big namespaces with a lot of pods.
-resourcequota:
-  pods: {}
-  compute:
-    requests:
-      cpu: "240"
-      memory: "240Gi"
-    limits:
-      cpu: "240"
-      memory: "240Gi"
 
 istio:
   gateways:
