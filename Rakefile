@@ -9,6 +9,7 @@ require 'digest/md5'
 require 'fileutils'
 require 'open-uri'
 require 'base64'
+require 'pathname'
 
 # Load local modules
 require_relative '.rake_modules/scaffold'
@@ -435,8 +436,19 @@ def tasklist_from_changes(changes)
       break
     end
   end
-  # Now let's check the charts. This is slightly trickier because we have to first extract which charts have changed
-  charts = all_changes.filter { |p| p.start_with?('charts/') }.map{ |p| p.split('/')[1] }.uniq
+
+  # Walk the fs tree up from the change to find all charts this change is part of.
+  # Charts may contain subcharts, if a subchart has changed we want to return that as well as it's parent.
+  # The parent should have the subchart as dependency - but you never know.
+  charts = []
+  all_changes.filter { |p| p.start_with?('charts/') }.each do |p|
+    Pathname.new(p).ascend do |v|
+      pv = File.join(v, 'Chart.yaml')
+      next unless File.exist?(pv)
+      charts |= [v.basename.to_s]
+    end
+  end
+
   # Now let's find if any chart in our repo depends on the charts we've modified. We will need to test them as well.
   FileList.new(CHARTS_GLOB).each do |path_to_chart|
     chart_yaml = yaml_load_file(path_to_chart)
