@@ -1,0 +1,15 @@
+app:
+  version: 4.15.0-1
+
+resources:
+  replicas: 2
+
+monitoring:
+  enabled: true
+
+service:
+  deployment: "production"
+
+networkpolicy:
+  egress:
+    enabled: true

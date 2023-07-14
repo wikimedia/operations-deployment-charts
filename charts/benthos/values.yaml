@@ -11,6 +11,8 @@ app:
     compression_codec: snappy
     ssl: false
 
+  processors: []
+
   requests:
     cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
     memory: 100Mi # Just some sample, edit these
@@ -21,6 +23,8 @@ app:
   shutdown:
     delay: ""
     timeout: 20s
+
+  site: datacenter1
 
 monitoring:
   enabled: true

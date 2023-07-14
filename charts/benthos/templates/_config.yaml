@@ -40,7 +40,8 @@ buffer:
 
 pipeline:
   threads: -1
-  processors: []  # TODO :D
+  processors:
+    {{- toYaml .Values.app.processors | nindent 4 }}
 
 output:
   label: ""

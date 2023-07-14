@@ -1,0 +1,20 @@
+app:
+
+  kafka:
+    topics_in:
+      - eqiad.mediawiki.page-create
+    topic_out: debug.benthos-kafka-smoke-test-deleteme-after-2023-08-05
+
+  processors:
+    # This topic has a much higher rate of messages than we need for this test, so we downsample to
+    # reduce resource usage. 1% was chosen by eyeballing the message queue for a while.
+    - label: downsample_1percent
+      mapping: |
+        root = if random_int() % 100 != 0 { deleted() }
+    # Make a simple change to the message. This is just to make benthos do something beyond a simple
+    # byte copy, to get a rough idea of how resource intensive it might be to do some processing in
+    # our environment.
+    - label: add_signature
+      mapping: |
+        root = this
+        root.benthos_was_here = now()

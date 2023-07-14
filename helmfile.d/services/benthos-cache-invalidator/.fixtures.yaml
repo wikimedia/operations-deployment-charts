@@ -1,0 +1,8 @@
+# Kafka brokers also enable additional networkpolicy templates
+kafka_brokers:
+  main-eqiad:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  main-codfw:
+    - 2.2.3.4/32
+    - 2620::8:102:2:2:3:4/128
