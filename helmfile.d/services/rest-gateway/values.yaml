@@ -99,6 +99,22 @@ main_app:
           in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
 
+    wikifeeds:
+      timeout: 120s
+      urls:
+        announcements:
+          in: '(.+)/v1/feed/announcements'
+          out: '\1/v1/feed/announcements'
+        onthisday:
+          in: '(.+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
+          out: '\1/v1/aggregated/onthisday/\2/\3/\4'
+        featured:
+          in: '(.+)/v1/feed/featured/(.+)/(.+)/(.+)'
+          out: '\1/v1/aggregated/featured/\2/\3/\4'
+        random:
+          in: '(.+)/v1/page/random/(.+)'
+          out: '\1/v1/page/random/redirect/\2'
+
   discovery_endpoints:
     mobileapps:
       tls: true
@@ -109,6 +125,9 @@ main_app:
     citoid:
       tls: true
       port: 4003
+    wikifeeds:
+      tls: true
+      port: 4101
 
 service:
   deployment: production
