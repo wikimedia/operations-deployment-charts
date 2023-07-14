@@ -59,13 +59,66 @@ ingress:
 global:
   kafka:
     bootstrap:
-      server: "dummy"
+      server: dummy
+    zookeeper:
+      server: ~
+    topics:
+      metadata_change_event_name: "MetadataChangeEvent_v4"
+      failed_metadata_change_event_name: "FailedMetadataChangeEvent_v4"
+      metadata_audit_event_name: "MetadataAuditEvent_v4"
+      datahub_usage_event_name: "DataHubUsageEvent_v1"
+      metadata_change_proposal_topic_name: "MetadataChangeProposal_v1"
+      failed_metadata_change_proposal_topic_name: "FailedMetadataChangeProposal_v1"
+      metadata_change_log_versioned_topic_name: "MetadataChangeLog_Versioned_v1"
+      metadata_change_log_timeseries_topic_name: "MetadataChangeLog_Timeseries_v1"
+      platform_event_topic_name: "PlatformEvent_v1"
+      datahub_upgrade_history_topic_name: "DataHubUpgradeHistory_v1"
+    # partitions: 3
+    # replicationFactor: 3
     schemaregistry:
-      url: "dummy"
+      url: ~
+      type: KAFKA
+
+  sql:
+    datasource:
+      host: dummy
+      hostForMysqlClient: ~
+      port: ~
+      url: dummy
+      driver: "com.mysql.cj.jdbc.Driver"
+      username: dummy
 
   datahub:
     gms:
       port: "8080"
+      useSSL: false
+
+    monitoring:
+      enablePrometheus: true
+
+    play:
+      mem:
+        buffer:
+          size: "100m"
+    cache:
+      search:
+        enabled: false
+        primary:
+          ttlSeconds: 600
+          maxSize: 10000
+        homepage:
+          entityCounts:
+            ttlSeconds: 600
+        lineage:
+          enabled: false
+          ttlSeconds: 86400
+          lightningThreshold: 300
+    alwaysEmitChangeLog: false
+    enableGraphDiffMode: true
+    search_and_browse:
+      show_search_v2: true
+      show_browse_v2: true
+      backfill_browse_v2: true
 
     managed_ingestion:
       enabled: false
@@ -73,5 +126,39 @@ global:
     metadata_service_authentication:
       enabled: false
       systemClientId: "__datahub_system"
-#
+    systemUpdate:
+      enabled: true
+    enable_retention: true
+
+  graph_service_impl: elasticsearch
+  datahub_analytics_enabled: true
+  datahub_standalone_consumers_enabled: false
+
+  podLabels:
+    workload: datahub
+
+  elasticsearch:
+    host: dummy
+    port: dummy
+    skipcheck: "false"
+    insecure: "true"
+    index:
+      enableMappingsReindex: true
+      enableSettingsReindex: true
+      upgrade:
+        cloneIndices: true
+        allowDocCountMismatch: false
+    search:
+      maxTermBucketSize: 20
+      exactMatch:
+        exclusive: false
+        withPrefix: true
+        exactFactor: 2.0
+        prefixFactor: 1.6
+        caseSensitivityFactor: 0.7
+        enableStructured: true
+      graph:
+        timeoutSeconds: 50
+        batchSize: 1000
+        maxResult: 10000
 # End of global values
