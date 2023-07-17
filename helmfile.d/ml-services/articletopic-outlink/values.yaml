@@ -43,7 +43,7 @@ inference:
     image: "machinelearning-liftwing-inference-services-outlink"
     version: "2023-06-28-092243-publish"
     config:
-      container_concurrency: "5"
+      containerConcurrency: 5
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
