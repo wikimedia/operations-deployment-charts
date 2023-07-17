@@ -3,6 +3,8 @@ monitoring:
 
 inference:
   predictor:
+    config:
+      maxReplicas: 1
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"

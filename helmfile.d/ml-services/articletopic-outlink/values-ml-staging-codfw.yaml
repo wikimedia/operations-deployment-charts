@@ -3,6 +3,8 @@ monitoring:
 
 inference:
   predictor:
+    config:
+      maxReplicas: 1
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"

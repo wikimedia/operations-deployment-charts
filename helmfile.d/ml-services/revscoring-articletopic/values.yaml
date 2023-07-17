@@ -45,6 +45,8 @@ inference:
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2023-06-28-092250-publish"
     config:
+      minReplicas: 1
+      maxReplicas: 3
       container_concurrency: 5
     base_env:
       - name: WIKI_URL
@@ -63,10 +65,6 @@ revscoring_inference_services:
     version: "20220720071610"
   - wiki: "en"
     version: "20220720071937"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 2
   - wiki: "eu"
     version: "20220720073022"
   - wiki: "hu"
