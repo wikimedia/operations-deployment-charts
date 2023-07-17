@@ -43,10 +43,9 @@ config:
     WIKI_API_URL: https://api-rw.discovery.wmnet/w/api.php,
     # NOTE: This tells the orchestrator to pass Envoy, a "Host: wikifunctions.org" header
     WIKI_VIRTUAL_HOST: wikifunctions.org,
-    # FIXME: This will need to use a proper value, not 'localhost'
     # FIXME: These will need to be split for each of the evaluators
     # TODO: Have this as an inline YAML declaration rather than a JSON blob for easier editing?
-    ORCHESTRATOR_CONFIG: '{"evaluatorConfigs": [{"programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"], "evaluatorUri": "http://localhost:6927/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}, {"programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"], "evaluatorUri": "http://localhost:6928/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}]}'
+    ORCHESTRATOR_CONFIG: '{"evaluatorConfigs": [{"programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"], "evaluatorUri": "https://function-evaluator-main-evaluator.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}, {"programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"], "evaluatorUri": "https://function-evaluator-main-evaluator.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/1/v1/evaluate/", "evaluatorWs": "", "useReentrance": false}]}'
   }
   private: {}
 
