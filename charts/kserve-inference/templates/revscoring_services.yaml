@@ -36,7 +36,7 @@ spec:
     # the suffix "wiki" will be appended.
     # en => en + "wiki"
     # enwikibooks => enwikibooks
-    {{- $s3_storage_wiki_name := ternary .wiki (list .wiki "wiki" | join "") (regexMatch ".+(wiki|wiktionary).*" .wiki) }}
+    {{- $s3_storage_wiki_name := or .use_model_from_wiki (ternary .wiki (list .wiki "wiki" | join "") (regexMatch ".+(wiki|wiktionary).*" .wiki)) }}
     {{- if $final_predictor_config }}
     {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
