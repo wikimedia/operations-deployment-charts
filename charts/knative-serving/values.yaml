@@ -81,8 +81,8 @@ core:
       minAvailable: 1
     resources:
       requests:
-        cpu: 300m
-        memory: 60Mi
+        cpu: 500m
+        memory: 100Mi
       limits:
         cpu: 1000m
         memory: 600Mi
@@ -92,11 +92,11 @@ core:
     replicaCount: 1
     resources:
       requests:
-        cpu: 30m
-        memory: 40Mi
+        cpu: 100m
+        memory: 100Mi
       limits:
-        cpu: 300m
-        memory: 400Mi
+        cpu: 500m
+        memory: 600Mi
     extra_deployment_config:
       dnsConfig:
         options:
@@ -108,7 +108,7 @@ core:
     replicaCount: 1
     resources:
       requests:
-        cpu: 100m
+        cpu: 500m
         memory: 100Mi
       limits:
         cpu: 1000m
