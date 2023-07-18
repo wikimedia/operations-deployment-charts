@@ -28,6 +28,7 @@ ISTIOCTL_VERSION = 'istioctl-1.15.7'.freeze
 JSON_SCHEMA = 'jsonschema/'.freeze
 
 # This returns a base64-encoded value.
+DEPLOYMENT_SERVER_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/role/common/deployment_server/kubernetes.yaml?format=TEXT'.freeze
 LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 
@@ -129,13 +130,13 @@ task validate_deployments: :repo_update do |_, args|
 end
 
 desc 'Validate the envoy configuration'
-task validate_envoy_config: :check_dep do
+task validate_envoy_config: %i[check_dep refresh_fixtures] do
   puts 'Generating and verifying the envoy configuration...'
   begin
     sc = Scaffold.new('service', 'validate-envoy-config', '_scaffold/service/.presets/nodejs.yaml')
     sc.run
     # run helm template for a specific fixture that generates a service proxy and tls terminator
-    command = "helm template --values .fixtures/envoy_proxy.yaml --values #{LISTENERS_FIXTURE} charts/validate-envoy-config"
+    command = "helm template --values .fixtures/validate_envoy_config.yaml --values #{LISTENERS_FIXTURE} charts/validate-envoy-config"
     res, out = _exec command
     unless res
       puts out.red
@@ -226,7 +227,7 @@ task :scaffold do
 end
 
 desc 'Validate all scaffolding models'
-task :test_scaffold, [:tests] do |_, args|
+task :test_scaffold, [:tests] => [:refresh_fixtures] do |_, args|
   sextant = which("sextant")
   if sextant.nil?
     puts("Please install sextant: pip3 install sextant")
@@ -239,14 +240,14 @@ task :test_scaffold, [:tests] do |_, args|
 end
 
 desc 'Show diff introduced by the patch'
-task :helm_diffs do |_t, args|
+task helm_diffs: %i[refresh_fixtures] do |_t, args|
   charts = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check_charts].invoke('diff', charts)
   Rake::Task[:check_charts].reenable
 end
 
 desc 'Show diffs in deployments introduced by the patch'
-task deployment_diffs: %i[check_dep repo_update] do |_, args|
+task deployment_diffs: %i[check_dep repo_update refresh_fixtures] do |_, args|
   charts = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check_deployments].invoke('diff', charts)
   Rake::Task[:check_deployments].reenable
@@ -255,20 +256,20 @@ end
 ## RAKE TASKS admin_ng
 
 desc 'Runs helmfile lint on admin_ng for all environments'
-task admin_lint: %i[check_dep repo_update] do
+task admin_lint: %i[check_dep repo_update refresh_fixtures] do
   Rake::Task[:check].invoke('admin', nil, nil)
   Rake::Task[:check].reenable
 end
 
 desc 'Runs helmfile template on admin_ng for all environments and validate the output with kubeconform'
-task admin_validate: %i[check_dep repo_update] do |_t, args|
+task admin_validate: %i[check_dep repo_update refresh_fixtures] do |_t, args|
   envs = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check].invoke('admin', 'validate', envs)
   Rake::Task[:check].reenable
 end
 
 desc 'Shows admin diff introduced by this patch'
-task admin_diff: %i[check_dep repo_update] do |_t, args|
+task admin_diff: %i[check_dep repo_update refresh_fixtures] do |_t, args|
   envs = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check].invoke('admin', 'diff', envs)
   Rake::Task[:check].reenable
@@ -328,10 +329,10 @@ task :run_locally, [:cmdargs] do |_t, args|
   end
 end
 
-desc 'Update the proxy_listeners fixture'
+desc 'Update global fixture (service-proxy listeners, deployment_server::general ...)'
 task :refresh_fixtures do
-  puts 'Downloading the service proxy definitions'
   # Download the services proxy file from puppet.
+  service_proxy = {}
   URI.open(LISTENERS_DEFINITIONS_URL) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
@@ -345,10 +346,28 @@ task :refresh_fixtures do
     data = hiera['profile::services_proxy::envoy::listeners'].map { |x| x['upstream'] = upstream_mock; [x.delete('name'), x] }.to_h
 
     File.open(LISTENERS_FIXTURE, 'w') do |out|
-      res = { 'services_proxy' => data }
-      YAML.dump(res, out)
+      service_proxy = { 'services_proxy' => data }
+      YAML.dump(service_proxy, out)
     end
-    puts "New version saved at #{LISTENERS_FIXTURE}"
+  end
+
+  # Fetch general settings for all environment, similar to
+  # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+  URI.open(DEPLOYMENT_SERVER_HIERA_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded, aliases: true)
+    data = hiera['profile::kubernetes::deployment_server::general']
+
+    data.each do |cluster_name, cluster_values|
+      next if %w[default staging-codfw].include? cluster_name
+
+      env_name = cluster_name == 'staging-eqiad' ? 'staging' : cluster_name
+      File.open(".fixtures/general-#{env_name}.yaml", 'w') do |out|
+        res = data['default']
+        res = deep_merge(service_proxy, deep_merge(cluster_values, res))
+        YAML.dump(res, out)
+      end
+    end
   end
 end
 
@@ -390,6 +409,7 @@ desc 'Run checks for all deployments.'
 task :check_deployments, %i[tests deployments] do |_, args|
   args = {} if args.nil?
   Rake::Task[:repo_update].invoke
+  Rake::Task[:refresh_fixtures].invoke
   Rake::Task[:check].invoke('deployments', args.fetch(:tests, nil), args.fetch(:deployments, nil))
   Rake::Task[:check].reenable
 end

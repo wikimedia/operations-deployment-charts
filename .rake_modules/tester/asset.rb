@@ -517,7 +517,7 @@ module Tester
         FileUtils.cp_Lr "#{dir_to_copy}/.", dir
         # Copy all charts (and common files) here because concurrent
         # "helm dep build" will fail otherwise.
-        ['charts', self.class::LISTENERS_FIXTURE].each do |what|
+        ['charts', '.fixtures/'].each do |what|
           FileUtils.cp_r File.join(source, what), dir
         end
         block.call dir
@@ -553,22 +553,41 @@ module Tester
       charts_dir = File.join dir, 'charts'
       helmfile_glob = File.join(dir, '**/helmfile*.yaml')
       fixtures_file = File.join(dir, '.fixtures.yaml')
+      # generated_fixtures_files will contain the megred content of
+      # general environment fixtures and local fixtures (for services)
+      generated_fixtures_file = File.join(dir, '.generated_fixtures.yaml')
       FileList.new(helmfile_glob).each do |helmfile_path|
         # Replace references to charts in the repository with local ones
         # to also catch changes to charts that are not released yet.
         content_lines = patch_charts(helmfile_path, env, charts_dir)
         content = change_helm_args(content_lines)
 
-        # Add fixtures.
-        # For services, we patch helmfile unconditionally, then if the file doesn't exist, we copy
-        # the default listeners file over. For admin, we only patch helmfile if the fixtures file exists.
-        content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', fixtures_file)
-        if File.exist? fixtures_file
-          # Patch admin_ng as well, if the fixtures file exists
-          content.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures_file)
+        # Read the general environment fixtures if there are any
+        general_fixtures_file = ".fixtures/general-#{env}.yaml"
+        if File.exist? general_fixtures_file
+          fixtures = YAML.safe_load(File.read(general_fixtures_file), aliases: true)
         else
-          # Please note that this won't affect admin fixtures.
-          FileUtils.cp LISTENERS_FIXTURE, fixtures_file
+          fixtures = {}
+        end
+
+        # For services, we patch helmfile unconditionally, then if the file doesn't exist, we use
+        # the general environment fixtures. If the file does exist we merge it into the general
+        # environment fixtures.
+        # For admin_ng, we only patch helmfile if the fixtures file exists.
+        content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', generated_fixtures_file)
+        if File.exist? fixtures_file
+          # Patch admin_ng if the fixture_file exists.
+          # admin_ng will never include general environment fixtures so we replace with fixtures_file here
+          content.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures_file)
+
+          # Merge the values of local fixtures into the general fixtures to be used by services
+          # (see below)
+          fixtures = deep_merge(YAML.safe_load(File.read(fixtures_file), aliases: true), fixtures)
+        end
+        # Write the generated fixtures.
+        # Please note that this won't affect admin fixtures.
+        File.open(generated_fixtures_file, 'w') do |out|
+          YAML.dump(fixtures, out)
         end
         File.write helmfile_path, content
       end
