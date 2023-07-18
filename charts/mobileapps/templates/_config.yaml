@@ -108,4 +108,5 @@ services:
         - kk
       restbase_compatibility:
         security_headers: false
+      use_coreparsoid_endpoint: {{ .Values.main_app.use_coreparsoid_endpoint }}
 {{- end -}}
