@@ -16,14 +16,14 @@ inference:
         value: "mediawiki.revision-score-test"
 
 revscoring_inference_services:
-  - wiki: "en"
+  - wiki: "enwiki"
     version: "20211022183902"
-  - wiki: "ru"
+  - wiki: "ruwiki"
     version: "20220509073816"
     predictor:
       config:
         minReplicas: 0
         maxReplicas: 2
-  - wiki: "wikidata"
+  - wiki: "wikidatawiki"
     version: "20220509074653"
     model: "itemquality"

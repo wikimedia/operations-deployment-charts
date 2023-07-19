@@ -28,9 +28,9 @@ inference:
       - name: REQUESTS_CA_BUNDLE
         value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
 revscoring_inference_services:
-  - wiki: "en"
+  - wiki: "enwiki"
     version: "202105140814"
-  - wiki: "it"
+  - wiki: "itwiki"
     version: "202106140815"
     predictor:
       container:
@@ -49,7 +49,7 @@ revscoring_inference_services:
           options:
           - name: ndots
             value: "2"
-  - wiki: "es"
+  - wiki: "eswiki"
     version: "202106140815"
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
@@ -57,14 +57,14 @@ revscoring_inference_services:
   - wiki: "eswikibooks"
     host: es.wikibooks.org
     version: "202106140815"
-  - wiki: "es"
+  - wiki: "eswiki"
     version: "202106140815"
     s3_storage_base_uri: "s3://wmf-ml-models-other"
     predictor:
       image: machinelearning-liftwing-inference-services-editquality-custom
       version: '42'
-  - wiki: "test"
+  - wiki: "testwiki"
     version: "202105140814"
     use_model_from_wiki: "enwiki"
-  - wiki: "wikidata"
+  - wiki: "wikidatawiki"
     version: "202106140666"

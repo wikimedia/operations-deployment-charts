@@ -5,7 +5,7 @@
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
-  name: "{{ .wiki }}wiki-{{ $model}}"
+  name: "{{ .wiki }}-{{ $model}}"
   annotations:
     {{ if $.Values.monitoring.enabled -}}
     prometheus.io/scrape: "true"
@@ -36,21 +36,21 @@ spec:
     # the suffix "wiki" will be appended.
     # en => en + "wiki"
     # enwikibooks => enwikibooks
-    {{- $s3_storage_wiki_name := or .use_model_from_wiki (ternary .wiki (list .wiki "wiki" | join "") (regexMatch ".+(wiki|wiktionary).*" .wiki)) }}
+    {{- $s3_storage_wiki_name := or .use_model_from_wiki .wiki }}
     {{- if $final_predictor_config }}
     {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
     containers:
-    - name: kserve-predictor-{{ .wiki }}wiki-{{ $model}}
+    - name: kserve-predictor-{{ .wiki }}-{{ $model}}
       image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.version | default $generic_predictor.version }}
       imagePullPolicy: {{ $.Values.docker.imagePullPolicy }}
       env:
       # To have a more DRY config, we add INFERENCE_NAME and WIKI_HOST
       # automatically.
       - name: INFERENCE_NAME
-        value: {{ .wiki }}wiki-{{ $model}}
+        value: {{ .wiki }}-{{ $model}}
       - name: WIKI_HOST
-        value: {{ .host | default (list .wiki "wikipedia.org" | join ".") }}
+        value: {{ .host | default (printf "%s.wikipedia.org" (regexReplaceAll "wiki$" .wiki "")) }}
       - name: STORAGE_URI
         value: {{ $s3_storage_base_uri }}/{{ $model }}/{{ $s3_storage_wiki_name }}/{{ .version }}/
       {{- range concat ($generic_predictor.base_env | default list) ($custom_predictor.custom_env | default list) }}
