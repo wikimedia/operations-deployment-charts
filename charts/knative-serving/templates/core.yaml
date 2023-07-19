@@ -546,6 +546,9 @@ data:
     # (including a maxScale of "0" = unlimited) is disallowed.
     # A value of zero (the default) allows any limit, including unlimited.
     max-scale-limit: "0"
+  {{- range $k, $v := .Values.core.config_autoscaler }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2019 The Knative Authors
@@ -701,6 +704,9 @@ data:
     # to set this value to `false`.
     # See https://github.com/knative/serving/issues/8498.
     enable-service-links: "false"
+  {{- range $k, $v := .Values.core.config_defaults }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2019 The Knative Authors
@@ -808,6 +814,9 @@ data:
     #
     # NOTE THAT THIS IS AN EXPERIMENTAL / ALPHA FEATURE
     concurrency-state-endpoint: ""
+  {{- range $k, $v := .Values.core.config_deployment }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2018 The Knative Authors
@@ -874,6 +883,9 @@ data:
     svc.cluster.local: |
       selector:
         app: secret
+  {{- range $k, $v := .Values.core.config_domain }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2020 The Knative Authors
@@ -1178,6 +1190,9 @@ data:
     # Maximum number of non-active revisions to retain
     # or "disabled" to disable any maximum limit.
     max-non-active-revisions: "1000"
+  {{- range $k, $v := .Values.core.config_gc }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2020 The Knative Authors
@@ -1240,6 +1255,9 @@ data:
     # bucket will take care of the reconciling for the keys partitioned into
     # that bucket.
     buckets: "1"
+  {{- range $k, $v := .Values.core.leader_election }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2018 The Knative Authors
@@ -1320,6 +1338,9 @@ data:
     loglevel.net-certmanager-controller: "info"
     loglevel.net-istio-controller: "info"
     loglevel.net-contour-controller: "info"
+  {{- range $k, $v := .Values.core.config_logging }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2018 The Knative Authors
@@ -1348,7 +1369,6 @@ metadata:
   annotations:
     knative.dev/example-checksum: "73d96d1b"
 data:
-  _example: |
   _example: |
     ################################
     #                              #
@@ -1507,6 +1527,9 @@ data:
     # NOTE: This flag is in an alpha state and is mostly here to enable internal testing
     #       for now. Use with caution.
     internal-encryption: "false"
+  {{- range $k, $v := .Values.core.config_network }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -1615,6 +1638,9 @@ data:
     # enabled, the Knative Serving pods expose the profiling data on an alternate HTTP port 8008.
     # The HTTP context root for profiling is then /debug/pprof/.
     profiling.enable: "false"
+  {{- range $k, $v := .Values.core.config_observability }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2019 The Knative Authors
@@ -1672,6 +1698,9 @@ data:
 
     # Percentage (0-1) of requests to trace
     sample-rate: "0.1"
+  {{- range $k, $v := .Values.core.config_tracing }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 
 ---
 # Copyright 2020 The Knative Authors
