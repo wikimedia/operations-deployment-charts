@@ -2604,6 +2604,8 @@ spec:
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
+            failureThreshold: 6
+            initialDelaySeconds: 120
           livenessProbe:
             periodSeconds: 1
             httpGet:
