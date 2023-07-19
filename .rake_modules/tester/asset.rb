@@ -148,22 +148,24 @@ module Tester
       return unless should_test?
 
       diffs = @result[:diff]
-      # Get the templates for the head of origin/master
-      head = templates(orig_dir)
+      # Get the templates for the HEAD of origin/master
+      origin_master = templates(orig_dir)
+      # Iterate over the templates of HEAD of the local branch
       cached_templates.each do |label, outcome|
         manifest = outcome.ok? ? outcome.out : 'Template did not render correctly (HEAD of local branch).'
-        if head.include?(label)
-          head_outcome = head[label]
-          head_manifest = head_outcome.ok? ? head_outcome.out : 'Template did not render correctly (HEAD of origin/master).'
+        if origin_master.include?(label)
+          origin_master_outcome = origin_master[label]
+          origin_master_manifest = origin_master_outcome.ok? ? origin_master_outcome.out : 'Template did not render correctly (HEAD of origin/master).'
         else
           # New asset!
-          head_manifest = nil
+          origin_master_manifest = nil
         end
-        diffs[label] = _diff(head_manifest, manifest)
+        diffs[label] = _diff(origin_master_manifest, manifest)
       end
+
       new_labels = cached_templates.keys
-      head.keys.reject { |k| new_labels.include? k }.each do |k|
-        diffs[k] = TestOutcome.new('', "#{label} has been removed", 2, "diff-for #{label}")
+      origin_master.keys.reject { |k| new_labels.include? k }.each do |k|
+        diffs[k] = TestOutcome.new('Removed in HEAD of local branch'.red, '', 2, "diff-for #{label}")
       end
     end
 
