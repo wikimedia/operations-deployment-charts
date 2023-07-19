@@ -139,6 +139,11 @@ spec:
               name: https
               protocol: TCP
               nodePort: 30443
+          resources:
+            requests:
+              memory: "1.5Gi"
+            limits:
+              memory: "1.5Gi"
       # This is another Ingress Gateway installed via istioctl, aimed for ML services
       # that are not KServe related.
       # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
@@ -191,3 +196,8 @@ spec:
             selector:
               service.istio.io/canonical-name: istio-ingressgateway-services
               istio: ingressgateway
+          resources:
+            requests:
+              memory: "1.5Gi"
+            limits:
+              memory: "1.5Gi"
