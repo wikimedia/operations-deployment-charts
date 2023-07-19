@@ -67,6 +67,15 @@ main_app:
       path: metrics/unique-devices
       internal_host: device-analytics.discovery.wmnet
       full_path_trim: /service/
+    knowledge_gap:
+      # This cluster is used to route to aqs v1 for the knowledge-gap URL only
+      tls: true
+      port: 7232
+      timeout: 15s
+      # This path won't get used - see the `aqs` stanza below
+      path: metrics/knowledge-gap
+      internal_host: aqs.discovery.wmnet
+      full_path_trim: /service/
 
     # Models/endpoints on Lift Wing (run by ML Team)
     # The `lw/` prefix is just convention, and does not have any
@@ -208,7 +217,8 @@ main_app:
   aqs:
     device_analytics:
       path: unique-devices
-
+    knowledge_gap:
+      path: knowledge-gap
 
   #TODO regex on v1
   pathing_map:
@@ -408,3 +418,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4972
+    - cidr: 10.2.2.12/32 # aqs.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 7232
+    - cidr: 10.2.1.12/32 # aqs.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 7232
