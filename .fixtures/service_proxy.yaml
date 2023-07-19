@@ -159,30 +159,45 @@ services_proxy:
     timeout: 60s
     service: shellbox
     keepalive: 4s
+    retry:
+      retry_on: 5xx
+      num_retries: 1
     upstream: *1
   shellbox-constraints:
     port: 6025
     timeout: 10s
     service: shellbox-constraints
     keepalive: 4s
+    retry:
+      retry_on: 5xx
+      num_retries: 1
     upstream: *1
   shellbox-media:
     port: 6026
     timeout: 60s
     service: shellbox-media
     keepalive: 4s
+    retry:
+      retry_on: 5xx
+      num_retries: 1
     upstream: *1
   shellbox-syntaxhighlight:
     port: 6027
     timeout: 60s
     service: shellbox-syntaxhighlight
     keepalive: 4s
+    retry:
+      retry_on: 5xx
+      num_retries: 1
     upstream: *1
   shellbox-timeline:
     port: 6028
     timeout: 60s
     service: shellbox-timeline
     keepalive: 4s
+    retry:
+      retry_on: 5xx
+      num_retries: 1
     upstream: *1
   linkrecommendation:
     port: 6029
@@ -199,7 +214,7 @@ services_proxy:
   inference:
     port: 6031
     service: inference
-    timeout: 10s
+    timeout: 60s
     upstream: *1
   device-analytics:
     port: 6032
@@ -306,6 +321,13 @@ services_proxy:
     keepalive: 4s
     timeout: 60s
     xfp: https
+  mw-api-int-async-ro:
+    port: 6500
+    service: mw-api-int
+    upstream: *1
+    keepalive: 4s
+    timeout: 120s
+    xfp: https
   restbase-for-services:
     port: 6503
     service: restbase-https
@@ -313,9 +335,9 @@ services_proxy:
     keepalive: 4s
     upstream: *1
     xfp: https
-  machinetranslation:  # called by cxserver
+  machinetranslation:
     port: 6504
-    service: matchinetranslation
-    timeout: "120s"
+    service: machinetranslation
+    timeout: 120s
+    uses_ingress: true
     upstream: *1
-    xfp: https
