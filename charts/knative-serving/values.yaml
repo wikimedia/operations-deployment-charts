@@ -50,16 +50,6 @@ core:
   retain_since_last_active_time: "disabled"
   # This domain will be used when creating hostnames for routes by Knative
   default_domain: 'wikimedia.org'
-  config_logging:
-    loglevel.controller: "warn"
-    loglevel.autoscaler: "warn"
-    loglevel.queueproxy: "warn"
-    loglevel.webhook: "warn"
-    loglevel.activator: "warn"
-    loglevel.hpaautoscaler: "warn"
-    loglevel.certcontroller: "warn"
-    loglevel.istiocontroller: "warn"
-    loglevel.nscontroller: "warn"
   queue_proxy:
     image: knative-serving-queue
     version: 1.7.2-1
