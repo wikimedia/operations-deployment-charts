@@ -105,7 +105,7 @@ inference_services:
         - name: LLM_CLASS
           value: "nllb.NLLB"
         - name: QUANTIZED
-          value: "True"
+          value: "False"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M/"
       container:
@@ -113,8 +113,6 @@ inference_services:
           limits:
             cpu: "4"
             memory: 6Gi
-            amd.com/gpu: 1
           requests:
             cpu: "4"
             memory: 6Gi
-            amd.com/gpu: 1
