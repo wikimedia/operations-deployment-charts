@@ -123,6 +123,10 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
+  mw-misc:
+    pspClusterRole: allow-mediawiki-psp
+    tlsExtraSANs:
+      - noc.wikimedia.org
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
