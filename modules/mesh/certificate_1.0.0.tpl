@@ -4,7 +4,11 @@ kind: Certificate
 metadata:
   {{- include "base.meta.metadata" (dict "Root" . "Name" "tls-proxy-certs") | indent 2 }}
 spec:
-  commonName: {{ include "mesh.name.fqdn" . }}
+  # CommonName is a common name to be used on the Certificate. The CommonName
+  # should have a length of 64 characters or fewer to avoid generating invalid
+  # CSRs. This value is ignored by TLS clients when any subject alt name is
+  # set. This is x509 behavior: https://tools.ietf.org/html/rfc6125#section-6.4.4
+  commonName: {{ include "base.meta.name" (dict "Root" . "Name" "tls-proxy-certs") | trunc 64 }}
   secretName: {{ include "base.meta.name" (dict "Root" . "Name" "tls-proxy-certs") }}
   dnsNames:
 {{ include "mesh.name.fqdn_all" . | indent 4 }}
