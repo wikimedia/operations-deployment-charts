@@ -12,6 +12,8 @@ resources:
 - name: {{ template "base.name.release" . }}
   image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  securityContext:
+    readOnlyRootFilesystem: true
   {{- if .Values.main_app.command }}
   command:
     {{- range .Values.main_app.command }}
