@@ -1,0 +1,98 @@
+resources:
+  replicas: 2
+
+ingress:
+  enabled: true
+
+mesh:
+  # The port on which envoy will be listening. Given we're enabling ingress,
+  # this will only be internal to the cluster and doesn't need to be unique
+  public_port: 8000
+  certmanager:
+    enabled: true
+    extraFQDNs:
+      - noc.wikimedia.org
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 250m
+      memory: 250Mi
+
+# Reduce resources used by the application
+
+main_app:
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 1000m
+    memory: 1000Mi
+php:
+  workers: 3
+  opcache:
+    nofiles: "1000"
+    size: "100"
+  apc:
+    size: "64M"
+  httpd:
+    requests:
+      cpu: 100m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+
+mw:
+  # Override the global configuration which is set up
+  # via puppet under /etc/helmfile-defaults/mediawiki
+  sites:
+    - name: noc.wikimedia.org
+      priority: 10
+      content: |+
+        <VirtualHost *:8080>
+            ServerAdmin noc@wikimedia.org
+
+            ServerName noc.wikimedia.org
+
+            DocumentRoot /srv/mediawiki/docroot/noc
+
+            RewriteEngine On
+            RewriteRule   ^/~(.+) https://people.wikimedia.org/~$1  [R=301,L]
+            RewriteRule   ^/dbtree(.*)$ https://dbtree.wikimedia.org [R=301,L]
+            # Allow reaching the db configuration jsons from the web.
+            RewriteRule ^/dbconfig/(.+)\.json$ /dbconfig.php [L]
+
+            # This domain is expected to show current cluster information.
+            # Disable unconditional client-side caching, and shorten server-side
+            # caching to just 1 minute. This does not mean browsers and cache proxies
+            # re-download responses every time, they are still able to store responses
+            # And use E-Tag/If-None-Match/304 to validate stored responses (T202734)
+            Header set Cache-Control "s-maxage=60, must-revalidate, max-age=0"
+
+            <Directory />
+                AllowOverride None
+                Require all granted
+            </Directory>
+
+            <Directory /srv/mediawiki/docroot/noc/conf>
+                AddDefaultCharset utf-8
+                # Force the Content-Type to text/plain
+                # for files without an extension, since
+                # AddDefaultCharset works only
+                # for text/plain or text/html.
+                <FilesMatch "^[^.]+$">
+                    ForceType text/plain
+                </FilesMatch>
+            </Directory>
+            <FilesMatch "\.php$">
+                <If "osenv('FCGI_MODE') == 'FCGI_TCP'">
+                    SetHandler "proxy:fcgi://localhost:9000"
+                </If>
+                <Else>
+                    SetHandler "proxy:unix:/run/shared/fpm-www.sock|fcgi://localhost"
+                </Else>
+            </FilesMatch>
+        </VirtualHost>
+
