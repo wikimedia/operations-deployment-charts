@@ -50,7 +50,7 @@ config:
           # Primary Python executor
           {
             "programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"],
-            "evaluatorUri": "https://function-evaluator-main-evaluator.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/",
+            "evaluatorUri": "https://function-evaluator-main-evaluator-tls-service.wikifunctions.svc.cluster.local:4970/1/v1/evaluate/",
             # Do not enable re-entrance or the evaluator Web socket in production without SRE & Security sign-off
             "evaluatorWs": "",
             "useReentrance": false
@@ -58,7 +58,7 @@ config:
           # Primary JavaScript executor
           {
             "programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"],
-            "evaluatorUri": "https://function-evaluator-main-evaluator.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/",
+            "evaluatorUri": "https://function-evaluator-main-evaluator-tls-service.wikifunctions.svc.cluster.local:4970/1/v1/evaluate/",
             # Do not enable re-entrance or the evaluator Web socket in production without SRE & Security sign-off
             "evaluatorWs": "",
             "useReentrance": false
