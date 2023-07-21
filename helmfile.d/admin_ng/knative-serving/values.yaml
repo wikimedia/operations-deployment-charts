@@ -10,6 +10,13 @@ net_istio:
 core:
   activator:
     replicaCount: 4
+    resources:
+      requests:
+        cpu: 500m
+        memory: 800Mi
+      limits:
+        cpu: 1000m
+        memory: 800Mi
   autoscaler:
     replicaCount: 2
   controller:
