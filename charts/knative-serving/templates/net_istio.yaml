@@ -59,6 +59,7 @@ metadata:
 spec:
   selector:
     istio: ingressgateway
+    service.istio.io/canonical-name: {{ $.Values.net_istio.ingressgateway.canonical_name | quote }}
   servers: {{- $.Values.net_istio.ingressgateway.servers | toYaml | nindent 4 }}
 
 ---
@@ -92,6 +93,7 @@ metadata:
 spec:
   selector:
     istio: ingressgateway
+    service.istio.io/canonical-name: {{ $.Values.net_istio.ingressgateway.canonical_name | quote }}
   servers:
     - port:
         number: 8081
@@ -115,6 +117,7 @@ spec:
   type: ClusterIP
   selector:
     istio: ingressgateway
+    service.istio.io/canonical-name: {{ $.Values.net_istio.ingressgateway.canonical_name | quote }}
   ports:
     - name: http2
       port: 80
