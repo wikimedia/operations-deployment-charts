@@ -35,7 +35,7 @@ releases:
             name: restricted
             annotations:
               seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
-              apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+              apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default,localhost/wikifunctions-orchestrator,localhost/wikifunctions-evaluator'
               seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
               apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
           spec:
