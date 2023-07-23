@@ -2390,7 +2390,7 @@ spec:
             - name: https-webhook
               containerPort: 8443
           readinessProbe:
-            periodSeconds: 1
+            periodSeconds: 10
             httpGet:
               scheme: HTTPS
               port: 8443
@@ -2398,15 +2398,15 @@ spec:
                 - name: k-kubelet-probe
                   value: "webhook"
           livenessProbe:
-            periodSeconds: 1
+            periodSeconds: 10
             httpGet:
               scheme: HTTPS
               port: 8443
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
-            failureThreshold: 6
-            initialDelaySeconds: 120
+            failureThreshold: 12
+            initialDelaySeconds: 30
       # Our webhook should gracefully terminate by lame ducking first, set this to a sufficiently
       # high value that we respect whatever value it has configured for the lame duck grace period.
       terminationGracePeriodSeconds: 300
@@ -2597,25 +2597,25 @@ spec:
             - name: https-webhook
               containerPort: 8443
           readinessProbe:
-            periodSeconds: 1
+            periodSeconds: 10
             httpGet:
               scheme: HTTPS
               port: 8443
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
-            failureThreshold: 6
-            initialDelaySeconds: 120
+            failureThreshold: 12
+            initialDelaySeconds: 30
           livenessProbe:
-            periodSeconds: 1
+            periodSeconds: 10
             httpGet:
               scheme: HTTPS
               port: 8443
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
-            failureThreshold: 6
-            initialDelaySeconds: 120
+            failureThreshold: 12
+            initialDelaySeconds: 30
       # Our webhook should gracefully terminate by lame ducking first, set this to a sufficiently
       # high value that we respect whatever value it has configured for the lame duck grace period.
       terminationGracePeriodSeconds: 300
