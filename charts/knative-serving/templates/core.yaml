@@ -1945,7 +1945,7 @@ metadata:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 spec:
-  replicas: 1
+  replicas: {{ .Values.core.autoscaler.replicaCount }}
   selector:
     matchLabels:
       app: autoscaler
