@@ -134,6 +134,28 @@ namespaces:
         limits:
           cpu: "150"
           memory: "125Gi"
+    # Bump max pod cpu limit to 10, otherwise use the defaults T342252
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "3Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "10"
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
