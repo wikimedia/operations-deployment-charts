@@ -1,6 +1,10 @@
 resources:
   replicas: 2
 
+config:
+  public:
+    NODE_EXTRA_CA_CERTS: /etc/ssl/certs/wmf-ca-certificates.crt
+
 mesh:
   enabled: true
   certmanager:
