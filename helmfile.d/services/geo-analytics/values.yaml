@@ -1,0 +1,235 @@
+main_app:
+  image: wikimedia/generated-data-platform-aqs-geo-analytics
+  version: 2023-08-23-144351-production
+  command: ["./geo-analytics"]
+  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  service_name: geo-analytics
+  consistency: localQuorum
+  # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+
+  # note the "_"
+  cassandra_user: "geo_analytics"
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+  log_level: debug
+
+resources:
+  replicas: 2
+
+mesh:
+  enabled: true
+  public_port: 4973
+
+ingress:
+  enabled: false
+
+service:
+  deployment: production
+  port:
+    nodePort: 4973
+
+monitoring:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.64.0.88/32 # aqs1010-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.0.120/32 # aqs1010-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.204/32 # aqs1011-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.206/32 # aqs1011-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.128/32 # aqs1012-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.145/32 # aqs1012-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.146/32 # aqs1013-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.147/32 # aqs1013-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.65/32 # aqs1014-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.67/32 # aqs1014-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.68/32 # aqs1015-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.69/32 # aqs1015-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.0.199/32 # aqs1016-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.0.213/32 # aqs1016-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.74/32 # aqs1017-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.78/32 # aqs1017-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.22/32 # aqs1018-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.32.31/32 # aqs1018-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.119/32 # aqs1019-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.122/32 # aqs1019-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.131.14/32 # aqs1020-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.131.15/32 # aqs1020-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.135.14/32 # aqs1021-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.135.15/32 # aqs1021-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.214/32 # aqs2001-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.215/32 # aqs2001-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.216/32 # aqs2002-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.217/32 # aqs2002-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.218/32 # aqs2003-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.219/32 # aqs2003-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.220/32 # aqs2004-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.221/32 # aqs2004-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.174/32 # aqs2005-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.179/32 # aqs2005-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.183/32 # aqs2006-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.185/32 # aqs2006-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.186/32 # aqs2007-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.187/32 # aqs2007-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.188/32 # aqs2008-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.189/32 # aqs2008-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.192/32 # aqs2009-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.193/32 # aqs2009-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.194/32 # aqs2010-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.195/32 # aqs2010-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.196/32 # aqs2011-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.197/32 # aqs2011-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.198/32 # aqs2012-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.199/32 # aqs2012-b
+        ports:
+          - protocol: tcp
+            port: 9042
