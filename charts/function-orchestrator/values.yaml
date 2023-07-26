@@ -41,8 +41,8 @@ config:
   public:
     # Envoy access URL for all production wikis
     WIKI_API_URL: https://api-rw.discovery.wmnet/w/api.php
-    # NOTE: This tells the orchestrator to pass Envoy, a "Host: wikifunctions.org" header
-    WIKI_VIRTUAL_HOST: wikifunctions.org
+    # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
+    WIKI_VIRTUAL_HOST: www.wikifunctions.org
     # TODO: Actually point these at different evaluators
     ORCHESTRATOR_CONFIG: |
       {
