@@ -10,7 +10,7 @@ main_app:
   # TODO: Split this into a different service each for python and JS.
   # TODO: Split each service into multiple ones for each supported version of python and JS.
   image: repos/abstract-wiki/wikifunctions/function-evaluator/omnibus
-  version: 2023-07-24-140325
+  version: 2023-07-31-173608
   port: 6927
   command: []
   args: []
@@ -45,7 +45,8 @@ service:
     nodePort: null
 
 config:
-  public: {}
+  public:
+    FUNCTION_EVALUATOR_TIMEOUT_MS: "10000"
   private: {}
 
 mesh:

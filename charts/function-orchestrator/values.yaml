@@ -8,7 +8,7 @@ resources:
 main_app:
   type: "default"
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
-  version: 2023-07-20-162557
+  version: 2023-07-26-222348
   port: 6254
   command: []
   args: []
@@ -43,6 +43,7 @@ config:
     WIKI_API_URL: https://api-rw.discovery.wmnet/w/api.php
     # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
+    ORCHESTRATOR_TIMEOUT_MS: "10000"
     # TODO: Actually point these at different evaluators
     ORCHESTRATOR_CONFIG: |
       {
