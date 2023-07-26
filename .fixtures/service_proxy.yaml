@@ -228,6 +228,12 @@ services_proxy:
     timeout: 10s
     keepalive: 4s
     upstream: *1
+  wikifunctions:
+    port: 6034
+    service: wikifunctions
+    timeout: 60s
+    uses_ingress: true
+    upstream: *1
   swift-eqiad:
     port: 6101
     service: swift-https
