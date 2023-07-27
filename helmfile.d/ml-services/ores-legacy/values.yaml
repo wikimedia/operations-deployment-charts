@@ -33,6 +33,13 @@ mesh:
   public_port: 8443
   telemetry:
     enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
 networkpolicy:
   egress:
     enabled: true
