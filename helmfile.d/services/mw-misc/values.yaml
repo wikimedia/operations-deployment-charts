@@ -3,6 +3,9 @@ resources:
 
 ingress:
   enabled: true
+  gatewayHosts:
+    extraFQDNs:
+      - noc.wikimedia.org
 
 mesh:
   # The port on which envoy will be listening. Given we're enabling ingress,
