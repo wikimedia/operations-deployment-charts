@@ -20,10 +20,16 @@ main_app:
   # - 1 GB for apcu (maybe something more for appservers)
   # - 500 Mb per worker
   # - 500mi CPU per worker + 500mi for the master process
+  # Following removed and calculated in lamp deployment based on php workers number
   requests:
+    # Set to true to ignore the cpu/memory requests and let the chart compute them
+    # See php.cpu_per_worker and php.memory_per_worker for documentation
+    auto_compute: false
     cpu: 1000m
     memory: 3500Mi # This allows up to 5 workers
   limits:
+    # Set to true to enforce cpu/memory limits, if this is false no limits will be set
+    enforce: true
     cpu: 2000m
     memory: 4000Mi
   # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
@@ -120,12 +126,23 @@ php:
   auto_prepend_file: "/srv/mediawiki/wmf-config/PhpAutoPrepend.php"
   # Values for local development
   opcache:
-    size: "200" # Megabytes. Probably needs a boost in production
+    size: 200 # Megabytes. Probably needs a boost in production
     nofiles: "1000" # Number of files. Definitely needs a boost in production
     interned_strings_buffer: "10" # Megabytes. Memory used to store identical strings
   apc:
-    size: "400M" #
-  workers: "5" # You need 2 at the very least.
+    size: 400 # Megabytes
+  workers: 5 # You need 2 at the very least.
+  # CPU requests calculation done by the chart:
+  # Minimum 1 whole CPU (enforced by the chart)
+  # Multiply the amount of cpu_per_worker (float, unit: cpu, ex: 0.5 is half a CPU per worker)
+  # by the number of configured workers + 1 (to take into account the main php-fpm process)
+  # The example below results in a cpu request of 3
+  cpu_per_worker: 0.5
+  # RAM requests calculation done by the chart:
+  # Multiply the amount of memory_per_worker by the number of workers (ignoring the main php-fpm process)
+  # Add 50% of the opcache size and 50% of the apc size (close to the average real consumption)
+  # The example below results in a memory request of 2800Mi
+  memory_per_worker: 500 # Megabytes. 500MB is half the memory limit per worker set in mediawiki.
   timeout: "60"
   slowlog_timeout: 0
   display_errors: "Off"

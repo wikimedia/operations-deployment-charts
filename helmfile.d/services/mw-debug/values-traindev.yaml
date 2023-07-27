@@ -3,9 +3,11 @@
 
 main_app:
   requests:
+    auto_compute: false
     cpu: 1000m
     memory: 1000Mi
   limits:
+    enforce: true
     cpu: 2000m
     memory: 2000Mi
 
@@ -34,7 +36,7 @@ php:
   # Values for local development
   devel_mode: true
   opcache:
-    size: "200" # Megabytes. Probably needs a boost in production
+    size: 200 # Megabytes. Probably needs a boost in production
     nofiles: "1000" # Number of files. Definitely needs a boost in production
     interned_strings_buffer: "10" # Megabytes. Memory used to store identical strings
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.

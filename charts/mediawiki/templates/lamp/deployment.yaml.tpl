@@ -109,7 +109,7 @@
   - name: FPM__request_terminate_timeout
     value: "{{ .Values.php.timeout }}"
   - name: PHP__apc__shm_size
-    value: {{ .Values.php.apc.size }}
+    value: {{ .Values.php.apc.size }}M
   - name: FPM__pm__max_children
     value: "{{ .Values.php.workers }}"
   - name: FPM__request_slowlog_timeout
@@ -159,9 +159,29 @@
     periodSeconds: 5
   resources:
     requests:
-{{ toYaml .Values.main_app.requests | indent 6 }}
+    {{- if .Values.main_app.requests.auto_compute }}
+      # CPU calculation:
+      # Minimum 1 whole CPU
+      # Multiply the amount of cpu_per_worker (float, unit: cpu, ex: 0.5 is half a CPU per worker)
+      # by the number of configured workers + 1 (to take into account the main php-fpm process)
+      cpu: {{ maxf 1 (mulf (add .Values.php.workers 1) .Values.php.cpu_per_worker) }}
+      # RAM calculation:
+      # Multiply the amount of memory_per_worker by the number of workers (ignoring the main php-fpm process)
+      # Add 50% of the opcache size and the apc size (close to the average real consumption)
+      memory: {{ add (mul .Values.php.workers .Values.php.memory_per_worker) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
+    {{- else }}
+      cpu: {{ .Values.main_app.requests.cpu }}
+      memory: {{ .Values.main_app.requests.memory }}
+    {{- end }}
+    {{- if and .Values.main_app.limits.enforce }}
     limits:
-{{ toYaml .Values.main_app.limits | indent 6 }}
+      {{- if .Values.main_app.limits.cpu }}
+      cpu: {{ .Values.main_app.limits.cpu }}
+      {{- end }}
+      {{- if .Values.main_app.limits.memory }}
+      memory: {{ .Values.main_app.limits.memory }}
+      {{- end }}
+    {{- end }}
   volumeMounts:
   # TODO: use an env variable for this.
   - name: {{ $release }}-wikimedia-cluster

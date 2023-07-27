@@ -1,12 +1,6 @@
 docker:
   registry: docker-registry.discovery.wmnet
-main_app:
-  requests:
-    cpu: 4000m
-    memory: 1000Mi
-  limits:
-    cpu: 5000m
-    memory: 2800Mi
+
 resources:
   replicas: 2
 
@@ -59,10 +53,10 @@ php:
       memory: 400Mi
   opcache:
     nofiles: "32531"
-    size: "500"
+    size: 500
     interned_strings_buffer: "50"
   apc:
-    size: "768M"
+    size: 768
 mw:
   domain_suffix: "org"
   egress:
