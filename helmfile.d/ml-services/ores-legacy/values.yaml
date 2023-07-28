@@ -11,6 +11,9 @@ config:
     LIFTWING_URL: "http://localhost:6031"
     LOG_LEVEL: "DEBUG"
 
+resources:
+  replicas: 5
+
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-ores-legacy
   version: "2023-07-28-100700-publish"
