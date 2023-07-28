@@ -9,7 +9,7 @@ resources:
   replicas: 1
 main_app:
   type: "default"
-  image: wikimedia/datahub-gms
+  image: repos/data-engineering/datahub/gms
   version: latest # we use latest everywhere in the defaults.
   port: 8080
   command: []

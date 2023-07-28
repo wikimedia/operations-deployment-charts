@@ -12,25 +12,25 @@ docker:
 elasticsearchSetupJob:
   enabled: false
   image:
-    repository: wikimedia/datahub-elasticsearch-setup
+    repository: repos/data-engineering/datahub/elasticsearch-setup
     tag: latest
 
 kafkaSetupJob:
   enabled: false
   image:
-    repository: wikimedia/datahub-kafka-setup
+    repository: repos/data-engineering/datahub/kafka-setup
     tag: latest
 
 mysqlSetupJob:
   enabled: false
   image:
-    repository: wikimedia/datahub-mysql-setup
+    repository: repos/data-engineering/datahub/mysql-setup
     tag: latest
 
 datahubUpgrade:
   enabled: true
   image:
-    repository: wikimedia/datahub-upgrade
+    repository: repos/data-engineering/datahub/upgrade
     tag: latest
   batchSize: 1000
   batchDelayMs: 100
@@ -62,7 +62,7 @@ datahubUpgrade:
 ## Includes: Elasticsearch Indices Creation/Reindex (See global.elasticsearch.index for additional configuration)
 datahubSystemUpdate:
   image:
-    repository: wikimedia/datahub-upgrade
+    repository: repos/data-engineering/datahub/upgrade
     tag: latest
   podSecurityContext: {}
   securityContext: {}
