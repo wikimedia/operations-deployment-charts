@@ -1,0 +1,11 @@
+# monitoring
+monitoring:
+  enabled: true
+  image_version: latest
+  exporter_resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
