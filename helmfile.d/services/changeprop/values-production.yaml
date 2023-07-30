@@ -1,6 +1,14 @@
+# See T328683 for more info
+monitoring:
+  exporter_resources:
+    requests:
+      cpu: 500m
+    limits:
+      cpu: 1000m
+
 main_app:
   limits:
-    cpu: 3
+    cpu: 2
     memory: 1500Mi
 
   changeprop:
