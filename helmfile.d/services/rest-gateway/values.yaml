@@ -116,6 +116,7 @@ main_app:
           out: '\1/v1/page/random/redirect/\2'
 
   discovery_endpoints:
+    # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
       tls: true
       port: 4102
@@ -163,3 +164,19 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4030
+    - cidr: 10.2.1.47/32 # wikifeeds.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4101
+    - cidr: 10.2.2.47/32 # wikifeeds.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4101
+    - cidr: 10.2.1.19/32 # citoid.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4003
+    - cidr: 10.2.2.19/32 # citoid.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4003
