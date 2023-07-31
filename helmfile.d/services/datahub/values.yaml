@@ -26,12 +26,10 @@ datahubUpgrade:
   enabled: true
   docker: *docker
   image:
-    repository: wikimedia/datahub-upgrade
     tag: *version
 datahubSystemUpdate:
   docker: *docker
   image:
-    repository: wikimedia/datahub-upgrade
     tag: *version
 
 networkpolicy:
