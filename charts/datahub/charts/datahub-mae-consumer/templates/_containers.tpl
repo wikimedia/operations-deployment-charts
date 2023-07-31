@@ -47,6 +47,10 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
+    {{- if .Values.global.datahub.monitoring.enablePrometheus }}
+    - name: ENABLE_PROMETHEUS
+      value: "true"
+    {{- end }}
     - name: MAE_CONSUMER_ENABLED
       value: "true"
     - name: ENTITY_REGISTRY_CONFIG_PATH
