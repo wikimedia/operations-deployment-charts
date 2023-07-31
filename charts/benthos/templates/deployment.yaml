@@ -28,10 +28,11 @@ spec:
             httpGet:
               path: /ping
               port: {{ .Values.app.port }}
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: {{ .Values.app.port }}
+          # Temporarily disable readiness probe for debugging
+          # readinessProbe:
+          #   httpGet:
+          #     path: /ready
+          #     port: {{ .Values.app.port }}
           env: []
           {{ include "base.helper.resources" .Values.app | indent 10}}
           volumeMounts:
