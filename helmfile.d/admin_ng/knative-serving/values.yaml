@@ -15,12 +15,26 @@ core:
         cpu: 500m
         memory: 800Mi
       limits:
-        cpu: 1000m
+        cpu: 1500m
         memory: 800Mi
   autoscaler:
     replicaCount: 2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 1000m
+        memory: 600Mi
   controller:
     replicaCount: 2
+    resources:
+      requests:
+        cpu: 500m
+        memory: 100Mi
+      limits:
+        cpu: 1200m
+        memory: 1000Mi
   webhook:
     replicaCount: 2
 
