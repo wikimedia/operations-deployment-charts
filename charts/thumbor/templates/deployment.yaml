@@ -29,7 +29,6 @@ spec:
         checksum/thumbor: {{ include "thumbor_server.config" . | sha256sum }}
         checksum/haproxy: {{ include "haproxy.config" . | sha256sum }}
         checksum/swift: {{ include "swift.config" . | sha256sum }}
-        checksum/mcrouter: {{ include "cache.mcrouter.config" . | sha256sum }}
         {{- if .Values.monitoring.enabled }}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         prometheus.io/scrape: "true"
