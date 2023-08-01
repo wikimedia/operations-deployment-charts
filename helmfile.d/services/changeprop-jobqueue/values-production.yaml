@@ -1,3 +1,11 @@
+# See T328683 for more info
+monitoring:
+  exporter_resources:
+    requests:
+      cpu: 500m
+    limits:
+      cpu: 1000m
+
 rollingUpdateStrategy:
   # we can tolerate being under capacity for a while during a
   # rollout. Don't surge so that we don't hit namespace limits.
