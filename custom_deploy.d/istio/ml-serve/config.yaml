@@ -144,9 +144,11 @@ spec:
               istio: ingressgateway
           resources:
             requests:
+              cpu: "2000m"
               memory: "1.5Gi"
             limits:
-              memory: "1.5Gi"
+              cpu: "2500m"
+              memory: "2Gi"
       # This is another Ingress Gateway installed via istioctl, aimed for ML services
       # that are not KServe related.
       # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
