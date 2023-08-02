@@ -67,6 +67,7 @@ mw:
             # Allow reaching the db configuration jsons from the web.
             RewriteRule ^/dbconfig/(.+)\.json$ /dbconfig.php [L]
             # serve the files from php if they don't exists
+            RewriteRule ^/conf/$ /conf/index.php [L]
             RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f
             RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-d
             RewriteRule ^/conf/.* /conf/fileserve.php [L]
