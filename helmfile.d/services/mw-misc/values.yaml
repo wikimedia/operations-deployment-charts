@@ -66,6 +66,11 @@ mw:
             RewriteRule   ^/dbtree(.*)$ https://dbtree.wikimedia.org [R=301,L]
             # Allow reaching the db configuration jsons from the web.
             RewriteRule ^/dbconfig/(.+)\.json$ /dbconfig.php [L]
+            # serve the files from php if they don't exists
+            RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f
+            RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-d
+            RewriteRule ^/conf/.* /conf/fileserve.php [L]
+
 
             # This domain is expected to show current cluster information.
             # Disable unconditional client-side caching, and shorten server-side
