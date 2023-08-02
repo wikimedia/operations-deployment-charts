@@ -7,14 +7,14 @@ resources:
   replicas: 1
 main_app:
   type: "default"
-  # TODO: Split this into a different service each for python and JS.
-  # TODO: Split each service into multiple ones for each supported version of python and JS.
+  # TODO (T343388): Split this into a different service each for python and JS.
+  # TODO (T343389): Split each service into multiple ones for each supported version of python and JS.
   image: repos/abstract-wiki/wikifunctions/function-evaluator/omnibus
   version: 2023-07-31-173608
   port: 6927
   command: []
   args: []
-  # FIXME: Set appropriate values for these
+  # TODO (T??????): Set appropriate values for these
   requests:
     cpu: 100m
     memory: 200Mi
@@ -29,9 +29,7 @@ main_app:
       path: /_info
       port: 6927
 
-# FIXME: Add AppArmor annotations based on https://gitlab.wikimedia.org/repos/abstract-wiki/aw-ci-chart/-/blob/main/disallow-everything.apparmorprofile
-
-# TODO: Add gVisor config, later.
+# TODO (T316706): Add gVisor config, later.
 
 monitoring:
   enabled: true

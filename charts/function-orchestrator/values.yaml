@@ -44,7 +44,7 @@ config:
     # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
     ORCHESTRATOR_TIMEOUT_MS: "10000"
-    # TODO: Actually point these at different evaluators
+    # TODO (T343388): Actually point these at different evaluators
     ORCHESTRATOR_CONFIG: |
       {
         "evaluatorConfigs": [
