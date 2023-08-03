@@ -114,6 +114,9 @@ main_app:
         featured:
           in: '(.+)/v1/feed/featured/(.+)/(.+)/(.+)'
           out: '\1/v1/aggregated/featured/\2/\3/\4'
+        availability:
+          in: '(.+)/v1/feed/availability'
+          out: '\1/v1/feed/availability'
         random:
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
