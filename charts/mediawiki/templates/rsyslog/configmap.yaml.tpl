@@ -106,6 +106,8 @@ metadata:
   name: {{ template "base.name.release" . }}-rsyslog-config
   {{- include "mw.labels" . | indent 2}}
 data:
+  00-max-message-size.conf: |-
+    $MaxMessageSize {{ .Values.mw.logging.rsyslog_max_message_size }}
   10-templates.conf: |-
 {{ .Files.Get "rsyslog/templates.conf" | indent 4 }}
   20-mediawiki.conf: |-
