@@ -20,6 +20,10 @@ cache:
         replica:
           route: /eqiad/mw-wan
           pool: eqiad-servers
+      - route: /wikifunctions
+        pool: wf-codfw
+        # No failover for wikifunction
+        failover_time: 0
 mesh:
   drain: false
   admin:

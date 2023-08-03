@@ -22,3 +22,7 @@ cache:
         replica:
           route: /codfw/mw-wan
           pool: codfw-servers
+      - route: /wikifunctions
+        pool: wf-eqiad
+        # No failover for wikifunction
+        failover_time: 0
