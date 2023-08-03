@@ -121,6 +121,13 @@ main_app:
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
 
+    aqs:
+      timeout: 120s
+      urls:
+        knowledge_gap:
+          in: '(.+)/api/rest_v1/metrics/knowledge-gap/(.+)'
+          out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -135,6 +142,9 @@ main_app:
     wikifeeds:
       tls: true
       port: 4101
+    aqs:
+      port: 7232
+      tls: false
 
 service:
   deployment: production
@@ -186,3 +196,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4003
+    - cidr: 10.2.2.12/32 # aqs.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 7232
+    - cidr: 10.2.1.12/32 # aqs.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 7232
