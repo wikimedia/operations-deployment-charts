@@ -15,7 +15,7 @@ core:
         cpu: 1000m
         memory: 800Mi
       limits:
-        cpu: 2000m
+        cpu: 3000m
         memory: 800Mi
   autoscaler:
     replicaCount: 2
@@ -24,7 +24,7 @@ core:
         cpu: 500m
         memory: 100Mi
       limits:
-        cpu: 1500m
+        cpu: 2000m
         memory: 600Mi
   controller:
     replicaCount: 2
@@ -33,7 +33,7 @@ core:
         cpu: 500m
         memory: 100Mi
       limits:
-        cpu: 1500m
+        cpu: 2000m
         memory: 1000Mi
   webhook:
     replicaCount: 2
