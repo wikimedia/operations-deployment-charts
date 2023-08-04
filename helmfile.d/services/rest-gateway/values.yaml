@@ -125,7 +125,7 @@ main_app:
       timeout: 120s
       urls:
         knowledge_gap:
-          in: '(.+)/api/rest_v1/metrics/knowledge-gap/(.+)'
+          in: '(.+)/v1/knowledge-gap/(.+)'
           out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
 
   discovery_endpoints:
