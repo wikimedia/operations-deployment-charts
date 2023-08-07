@@ -35,6 +35,9 @@ query:
         - protocol: TCP
           port: 443
 collector:
+  ingress:
+    hosts:
+      - 'jaeger.svc.eqiad.wmnet'
   networkPolicy:
     enabled: true
     ingressRules:
@@ -42,6 +45,13 @@ collector:
       - from:
         - ipBlock:
             cidr: 10.2.2.79/32
+        ports:
+        # OTLP GRPC
+        - protocol: TCP
+          port: 4317
+        # OTLP HTTP
+        - protocol: TCP
+          port: 4318
     egressRules:
       customRules:
       - to:
