@@ -9,7 +9,7 @@ net_istio:
     replicaCount: 2
 core:
   activator:
-    replicaCount: 4
+    replicaCount: 2
     resources:
       requests:
         cpu: 1000m
@@ -40,3 +40,12 @@ core:
 
   config_autoscaler:
     scale-down-delay: "15m"
+    # The Activator pods can be placed between Ingress and Target pods (like
+    # Kserve ones) to buffer traffic in case a surge of requests happens.
+    # It turns out that figuring out the exact sweet spot is not easy, plus
+    # it adds more complexity to the request path.
+    # Setting this value to zero forces the Activator pods to be placed in
+    # the request path only for scale-to-zero environments (where revisions
+    # can have zero serving pods, waiting for requests to happen).
+    # More info https://knative.dev/docs/serving/load-balancing/target-burst-capacity/
+    target-burst-capacity: "0"
