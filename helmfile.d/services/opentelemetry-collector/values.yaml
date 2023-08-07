@@ -9,6 +9,11 @@ config:
     jaeger: null
     prometheus: null
     zipkin: null
+  exporters:
+    otlp:
+      endpoint: jaeger-collector-grpc.svc.eqiad.wmnet:30443
+      tls:
+        ca_file: /etc/ssl/certs/wmf-ca-certificates.crt
   service:
     pipelines:
       metrics:
@@ -16,6 +21,8 @@ config:
           - otlp
       traces:
         receivers:
+          - otlp
+        exporters:
           - otlp
 
 
