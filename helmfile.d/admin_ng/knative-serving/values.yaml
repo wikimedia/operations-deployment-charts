@@ -5,6 +5,13 @@ docker:
 net_istio:
   controller:
     replicaCount: 2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 40Mi
+      limits:
+        cpu: 1000m
+        memory: 400Mi
   webhook:
     replicaCount: 2
 core:
@@ -21,10 +28,10 @@ core:
     replicaCount: 2
     resources:
       requests:
-        cpu: 500m
+        cpu: 1000m
         memory: 100Mi
       limits:
-        cpu: 2000m
+        cpu: 3000m
         memory: 600Mi
   controller:
     replicaCount: 2
@@ -33,7 +40,7 @@ core:
         cpu: 500m
         memory: 100Mi
       limits:
-        cpu: 2000m
+        cpu: 2500m
         memory: 1000Mi
   webhook:
     replicaCount: 2
