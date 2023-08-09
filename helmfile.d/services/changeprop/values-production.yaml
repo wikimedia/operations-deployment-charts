@@ -36,7 +36,7 @@ main_app:
           match_config_need_quotes: ['wiki_id', 'page_change_kind', 'domain']
           match_config:
             match:
-              wiki_id: /^(?!.*(?:commons|meta|species|wikidata)).*wiki$/
+              wiki_id: /^(?!.*(?:commons|meta|sources|species|wikidata)).*wiki$/
               page_change_kind: /^(edit|create|move)$/
               page:
                 is_redirect: false
