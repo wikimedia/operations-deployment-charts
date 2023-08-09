@@ -25,6 +25,9 @@ service:
 mesh:
   enabled: true
   public_port: 4666
+  certmanager:
+    extraFQDNs:
+      - blubberoid.wikimedia.org
   telemetry:
     enabled: true
 networkpolicy:
