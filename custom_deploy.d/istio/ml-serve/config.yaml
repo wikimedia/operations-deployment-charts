@@ -203,6 +203,8 @@ spec:
               istio: ingressgateway
           resources:
             requests:
+              cpu: "1000m"
               memory: "1.5Gi"
             limits:
+              cpu: "3000m"
               memory: "1.5Gi"
