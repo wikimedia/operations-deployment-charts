@@ -681,9 +681,7 @@ module Tester
 
     def initialize(path, to_run = nil)
       super
-      if should_run?
-        @kube_version = collect_kube_version(path)
-      end
+      @kube_version = collect_kube_version(path) if should_test?
     end
 
     # Given we have only one admin asset with multiple "fixtures",
