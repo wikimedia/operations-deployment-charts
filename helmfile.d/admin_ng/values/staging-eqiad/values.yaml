@@ -8,7 +8,6 @@ chartVersions:
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 # Allow only up to 3 replicas to safeguard the staging cluster
 resourcequota:
-  pods: {}
   compute:
     requests:
       cpu: "20"
@@ -22,7 +21,6 @@ namespaces:
     deployUser: jenkins
     deployClusterRole: deploy-flink
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "20"
@@ -34,7 +32,6 @@ namespaces:
   # these, but we don't want that for now on the staging ones
   changeprop-jobqueue:
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "20"
@@ -44,7 +41,6 @@ namespaces:
           memory: "20Gi"
   mobileapps:
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "20"
@@ -54,7 +50,6 @@ namespaces:
           memory: "20Gi"
   mw-web:
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "20"
@@ -85,7 +80,6 @@ namespaces:
           memory: "33Gi"
           cpu: "9"
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "20"

@@ -72,7 +72,7 @@ NamespaceDefaultLabelName: true
 
 limitranges:
   # check out documentation to understand this well
-  # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/
+  # https://v1-23.docs.kubernetes.io/docs/concepts/policy/limit-range/
   container:
     min:
       memory: "100Mi"
@@ -80,9 +80,13 @@ limitranges:
     max:
       memory: "3Gi"
       cpu: "8"
+    # defaultRequest requests will be assigned to containers that don't have requests set
+    # defaults to "max" if undefined.
     defaultRequest:
       memory: "100Mi"
       cpu: "100m"
+    # default limits will be assigned to containers that don't have limits set
+    # defaults to "max" if undefined.
     default:
       memory: "100Mi"
       cpu: "100m"
@@ -94,9 +98,11 @@ limitranges:
       memory: "5Gi"
       cpu: "9"
 
-# https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
+# https://v1-23.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
 resourcequota:
-  pods: {}
+  # Object count quota may be specified in count in <resource>: <count> format
+  # count:
+  #   pods: 42
   compute:
     requests:
       cpu: "90"

@@ -83,6 +83,7 @@ releases:
                 name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
           {{- with $limitranges}}
+          {{- if or .container .pod }}
           - |
             apiVersion: v1
             kind: LimitRange
@@ -91,29 +92,42 @@ releases:
               namespace: {{ $namespace }}
             spec:
               limits:
-                - min:
-                    cpu: {{ .container.min.cpu  | quote }}
-                    memory: {{ .container.min.memory | quote }}
+                {{- if .container }}
+                - type: Container
+                  {{- if .container.min }}
+                  min:
+                    {{- .container.min | toYaml | nindent 20 }}
+                  {{- end }}
+                  {{- if .container.max }}
                   max:
-                    cpu: {{ .container.max.cpu  | quote }}
-                    memory: {{ .container.max.memory | quote }}
+                    {{- .container.max | toYaml | nindent 20 }}
+                  {{- end }}
+                  {{- if .container.defaultRequest }}
                   defaultRequest:
-                    cpu: {{ .container.defaultRequest.cpu | quote }}
-                    memory: {{ .container.defaultRequest.memory | quote }}
+                    {{- .container.defaultRequest | toYaml | nindent 20 }}
+                  {{- end }}
+                  {{- if .container.default }}
                   default:
-                    cpu: {{ .container.default.cpu | quote}}
-                    memory: {{ .container.default.memory | quote }}
-                  type: Container
-                - min:
-                    cpu: {{ .pod.min.cpu | quote }}
-                    memory: {{ .pod.min.memory | quote }}
+                    {{- .container.default | toYaml | nindent 20 }}
+                  {{- end }}
+                {{- end }}{{/* end if .container */}}
+                {{- if .pod }}
+                - type: Pod
+                  {{- if .pod.min }}
+                  min:
+                    {{- .pod.min | toYaml | nindent 20 }}
+                  {{- end }}
+                  {{- if .pod.max }}
                   max:
-                    cpu: {{ .pod.max.cpu | quote }}
-                    memory: {{ .pod.max.memory | quote }}
-                  type: Pod
+                    {{- .pod.max | toYaml | nindent 20 }}
+                  {{- end }}
+                {{- end }}{{/* end if .pod */}}
+          {{- end }}
           {{- end }}
           {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
           {{- with $resourcequota }}
+          {{- $count := . | get "count" list }}
+          {{- if or $count .compute.requests .compute.limits }}
           - |
             apiVersion: v1
             kind: ResourceQuota
@@ -122,13 +136,22 @@ releases:
               namespace: {{ $namespace }}
             spec:
               hard:
-                {{- if .pods  }}
-                pods: {{ .pods | quote }}
+                {{- range $resource, $c := $count }}
+                count/{{ $resource }}: {{ $c }}
                 {{- end }}
-                requests.cpu: {{ .compute.requests.cpu  | quote}}
+                {{- if .compute.requests.cpu }}
+                requests.cpu: {{ .compute.requests.cpu | quote}}
+                {{- end }}
+                {{- if .compute.requests.memory }}
                 requests.memory: {{ .compute.requests.memory | quote }}
+                {{- end }}
+                {{- if .compute.limits.cpu }}
                 limits.cpu: {{ .compute.limits.cpu | quote }}
+                {{- end }}
+                {{- if .compute.limits.memory }}
                 limits.memory: {{ .compute.limits.memory | quote }}
+                {{- end }}
+          {{- end }}
           {{- end }}
         {{- else }}{{- /* else if eq $isSystemNamespace false */}}
           - |

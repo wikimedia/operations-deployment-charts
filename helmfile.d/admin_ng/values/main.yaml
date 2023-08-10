@@ -32,7 +32,6 @@ namespaces:
   changeprop: {}
   changeprop-jobqueue:
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "180"
@@ -85,7 +84,6 @@ namespaces:
           memory: "33Gi"
           cpu: "9"
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "90"
@@ -114,7 +112,6 @@ namespaces:
       - www.wikiworkshop.org
   mobileapps:
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "600"
@@ -131,7 +128,6 @@ namespaces:
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "125"
@@ -164,7 +160,6 @@ namespaces:
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "125"
@@ -181,7 +176,6 @@ namespaces:
   mw-web:
     pspClusterRole: allow-mediawiki-psp
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "125"
@@ -251,7 +245,6 @@ namespaces:
           memory: "20Gi"
           cpu: "18"
     resourcequota:
-      pods: {}
       compute:
         requests:
           cpu: "450"
