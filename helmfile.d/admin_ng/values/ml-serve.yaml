@@ -477,11 +477,20 @@ limitranges:
     max:
       memory: "8Gi"
 
+typha:
+  resources:
+    requests:
+      cpu: 500m
+      memory: 150Mi
+    limits:
+      cpu: 500m
+      memory: 150Mi
+
 kubeControllers:
   resources:
     requests:
-      cpu: 300m
+      cpu: 500m
       memory: 150Mi
     limits:
-      cpu: 300m
+      cpu: 500m
       memory: 150Mi
