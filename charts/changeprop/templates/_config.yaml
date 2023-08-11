@@ -848,6 +848,7 @@ spec: &spec
                 retry_on:
                   status:
                     - 503
+                    - 502
                 {{- $need_quotes := ($model_settings.match_config_need_quotes | default list) }}
                 {{- if hasKey $model_settings "match_config" }}
                 {{- range $match_action, $match_settings := $model_settings.match_config }}
