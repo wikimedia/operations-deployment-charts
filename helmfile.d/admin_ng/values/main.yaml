@@ -392,3 +392,21 @@ GlobalNetworkPolicies:
           nets:
             - 10.2.2.22/32
             - 10.2.1.22/32
+
+typha:
+  resources:
+    requests:
+      cpu: 300m
+      memory: 150Mi
+    limits:
+      cpu: 300m
+      memory: 150Mi
+
+kubeControllers:
+  resources:
+    requests:
+      cpu: 300m
+      memory: 150Mi
+    limits:
+      cpu: 300m
+      memory: 150Mi
