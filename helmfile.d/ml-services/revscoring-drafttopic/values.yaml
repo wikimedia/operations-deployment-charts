@@ -38,7 +38,8 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
-    autoscaling.knative.dev/target: "3"
+    autoscaling.knative.dev/metric: "concurrency"
+    autoscaling.knative.dev/target: "5"
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "drafttopic"
   predictor:
@@ -47,7 +48,6 @@ inference:
     config:
       minReplicas: 1
       maxReplicas: 3
-      containerConcurrency: 5
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
