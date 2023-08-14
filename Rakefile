@@ -399,14 +399,14 @@ task :check, [:kind, :tests, :assets] do |_, args|
 end
 
 desc 'Run checks for all the charts.'
-task :check_charts, [:tests, :charts] do |_, args|
+task :check_charts, %i[tests charts] => [:refresh_fixtures] do |_, args|
   args = {} if args.nil?
   Rake::Task[:check].invoke('charts', args.fetch(:tests, nil), args.fetch(:charts, nil))
   Rake::Task[:check].reenable
 end
 
 desc 'Run checks for all deployments.'
-task :check_deployments, %i[tests deployments] do |_, args|
+task :check_deployments, %i[tests deployments] => [:refresh_fixtures] do |_, args|
   args = {} if args.nil?
   Rake::Task[:repo_update].invoke
   Rake::Task[:refresh_fixtures].invoke
@@ -415,8 +415,7 @@ task :check_deployments, %i[tests deployments] do |_, args|
 end
 
 desc 'Run checks for the admin section'
-task :check_admin do
-  Rake::Task[:repo_update].invoke
+task check_admin: %i[repo_update refresh_fixtures] do
   Rake::Task[:check].invoke('admin', nil, nil)
   Rake::Task[:check].reenable
 end
