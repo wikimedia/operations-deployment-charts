@@ -59,11 +59,15 @@ releases:
     <<: *default
   - name: statictendril
     <<: *default
+  - name: research-landing-page
+    <<: *default
+  - name: wikiworkshop
+    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril]
+      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril, research-landing-page, wikiworkshop]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
