@@ -7,3 +7,9 @@ IPPools:
     cidr: '10.67.80.0/21'
   ipv6:
     cidr: '2620:0:861:305::/64'
+
+# All aux worker nodes are in the same typology zone currently (ganeti-eqiad-a)
+# so we override the default podAntiAffinity here.
+# See T292077, T344230
+typha:
+  affinity: ~
