@@ -71,13 +71,13 @@ services:
       user_agent: "Wikifeeds/WMF"
       # the template used for contacting the MW API
       mwapi_req:
-        method: post
+        method: get
         uri: {{ .Values.main_app.mwapi_uri }}
         headers:
           host: {{ "'{{" }}request.params.domain{{ "}}'" }}
           user-agent: {{ "'{{" }}user-agent{{ "}}'" }}
           accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
-        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
       # the template used for contacting RESTBase
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}
