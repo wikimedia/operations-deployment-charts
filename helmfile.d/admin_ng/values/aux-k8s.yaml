@@ -2,6 +2,10 @@
 # that share some config (values) in "admin_ng/values/<cluster_group>.yaml"
 cluster_group: 'aux-k8s'
 
+# See T292077
+typha:
+  replicaCount: 1
+
 # Defaults applied to all aux-k8s clusters
 GlobalNetworkPolicies:
   # Allow ICMP for all pods and all directions. Useful in debugging
