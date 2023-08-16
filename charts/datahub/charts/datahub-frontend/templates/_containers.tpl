@@ -125,12 +125,27 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
-    {{- if .Values.auth.ldap.enabled }}
+    - name: AUTH_OIDC_ENABLED
+      value: "true"
+    - name: AUTH_OIDC_CLIENT_ID
+      value: "datahub_staging"
+    - name: AUTH_OIDC_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: {{ template "base.name.release" $ }}-secret-config
+          key: auth_oidc_client_secret
+    - name: AUTH_OIDC_PRE_PROVISIONING_REQUIRED
+      value: "false"
+    - name: AUTH_OIDC_DISCOVERY_URI
+      value: "https://idp-test.wikimedia.org/oidc/.well-known"
+    - name: AUTH_OIDC_BASE_URL
+      value: "https://datahub-frontend.k8s-staging.discovery.wmnet"
+    - name: AUTH_OIDC_USER_NAME_CLAIM
+      value: "preferred_username"
     - name: AUTH_OIDC_JIT_PROVISIONING_ENABLED
       value: "true"
     - name: AUTH_OIDC_EXTRACT_GROUPS_ENABLED
       value: "true"
-    {{- end }}
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:

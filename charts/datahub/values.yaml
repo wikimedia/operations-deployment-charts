@@ -97,6 +97,7 @@ config: &config
     elasticsearch_password: ""    # This is used to encrypt the ES data in-flight
     mysql_password: ""            # This is the MySQL user account password
     token_service_signing_key: "" # This is used for GMS server authentication
+    auth_oidc_client_secret: ""   # This is used for authentication to the IDP
 
 datahub-frontend:
   auth:

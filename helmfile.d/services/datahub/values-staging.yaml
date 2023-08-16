@@ -15,10 +15,26 @@ kafka: &kafka
   allowed_clusters:
     - test-eqiad
 
+config: &config
+  public: {}
+
 datahub-frontend:
   kafka: *kafka
   ingress:
     staging: true
+  auth:
+    ldap:
+      enabled: false
+  config:
+    <<: *config
+    public:
+      AUTH_JAAS_ENABLED: false
+  networkpolicy:
+    egress:
+      dst_nets:
+        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+        - cidr: 208.80.154.72/32                # idp-test1002.wikimedia.org
+        - cird: 2620:0:861:3:208:80:154:72/128  # idp-test1002.wikimedia.org
 
 datahub-gms:
   kafka: *kafka
