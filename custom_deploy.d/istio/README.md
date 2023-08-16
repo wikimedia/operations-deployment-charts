@@ -60,16 +60,16 @@ In order to get the Istio version, it should be sufficient to:
 
 ```
 # Populate the cluster's env variables
-kube_env admin ml-serve-eqiad
-# Get pods and check their version
-kubectl get pods -n istio-system
+kube-env admin ml-serve-eqiad
+# Get pods and check their version (the number after the column)
+kubectl describe pods -n istio-system | grep Image:
 ```
 
 Then you can apply the config:
 
 ```
 # Populate the cluster's env variables
-kube_env admin ml-serve-eqiad
+kube-env admin ml-serve-eqiad
 # Apply the istio config (where X is the istio version)
 istioctlX apply -f ml-serve/config.yaml
 ```
