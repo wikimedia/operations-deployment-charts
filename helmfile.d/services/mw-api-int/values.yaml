@@ -5,5 +5,7 @@ mesh:
   public_port: 4446
 
 main_app:
+  requests:
+    auto_compute: true
   limits:
-    cpu: 6000m # Raised because of CPU throttling
+    enforce: false

@@ -2,9 +2,11 @@ docker:
   registry: docker-registry.discovery.wmnet
 main_app:
   requests:
+    auto_compute: false
     cpu: 4000m
     memory: 1000Mi
   limits:
+    enforce: true
     cpu: 5000m
     memory: 2800Mi
 

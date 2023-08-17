@@ -3,9 +3,11 @@
 
 main_app:
   requests:
+    auto_compute: false
     cpu: 1000m
     memory: 1000Mi
   limits:
+    enforce: true
     cpu: 2000m
     memory: 2000Mi
 
