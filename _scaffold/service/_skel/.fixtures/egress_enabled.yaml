@@ -3,6 +3,15 @@ networkpolicy:
     enabled: true
     dst_nets:
       - cidr: 123.123.123.123/24
+    extraRules:
+    - to:
+      - podSelector:
+          matchLabels:
+            nicepod: 'true'
+      ports:
+      - protocol: TCP
+        port: 1234
+
 # The discovery stuff adds networkpolicies.
 mesh:
   enabled: true
