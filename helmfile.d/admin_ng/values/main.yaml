@@ -133,42 +133,69 @@ namespaces:
           cpu: "125"
           memory: "125Gi"
         limits:
-          cpu: "150"
-          memory: "125Gi"
-    # Bump max pod cpu limit to 10, otherwise use the defaults T342252
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
     limitranges:
       container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "3Gi"
-          cpu: "8"
         defaultRequest:
           memory: "100Mi"
           cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
       pod:
         min:
           memory: "100Mi"
           cpu: "100m"
-        max:
-          memory: "5Gi"
-          cpu: "10"
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
+    # Don't set a quota on resource limits
     resourcequota:
       compute:
         requests:
           cpu: "125"
           memory: "125Gi"
         limits:
-          cpu: "150"
-          memory: "125Gi"
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
+    # Don't set a quota on resource limits
+    resourcequota:
+      compute:
+        requests:
+          cpu: "90"
+          memory: "100Gi"
+        limits:
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
   # Commented out until discussion of videoscaler on kubernetes is done
   # https://phabricator.wikimedia.org/T321899
   #  mw-videoscaler:
@@ -180,9 +207,23 @@ namespaces:
         requests:
           cpu: "125"
           memory: "125Gi"
+        # Don't set a quota on resource limits
         limits:
-          cpu: "150"
-          memory: "125Gi"
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
   opentelemetry-collector: {}
   proton: {}
   push-notifications: {}

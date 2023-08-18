@@ -113,11 +113,11 @@ releases:
                 {{- end }}{{/* end if .container */}}
                 {{- if .pod }}
                 - type: Pod
-                  {{- if .pod.min }}
+                  {{- if hasKey .pod "min" }}
                   min:
                     {{- .pod.min | toYaml | nindent 20 }}
                   {{- end }}
-                  {{- if .pod.max }}
+                  {{- if hasKey .pod "max" }}
                   max:
                     {{- .pod.max | toYaml | nindent 20 }}
                   {{- end }}
