@@ -64,7 +64,13 @@
   livenessProbe:
     tcpSocket:
       port: mcr-metrics
-  resources: {}
+  {{- with .Values.cache.mcrouter.exporter.resources }}
+  resources:
+    requests:
+{{ toYaml .requests | indent 6 }}
+    limits:
+{{ toYaml .limits | indent 6 }}
+  {{- end }}
 {{- if .Values.cache.mcrouter.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
 {{- end }}

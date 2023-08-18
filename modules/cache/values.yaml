@@ -64,3 +64,11 @@ cache:
             warmup:
               pool: foo-pool
               ttl: 60
+    exporter:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+        limits:
+          cpu: 500m
+          memory: 200Mi

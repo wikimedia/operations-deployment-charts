@@ -227,7 +227,7 @@
 # php-fpm exporter
 # apache exporter on port 9117
 - name: {{ $release }}-httpd-exporter
-  image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter_version }}
+  image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["-scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
   ports:
@@ -236,11 +236,16 @@
   livenessProbe:
     tcpSocket:
       port: 9117
+  resources:
+    requests:
+{{ toYaml .Values.php.httpd.exporter.requests | indent 6 }}
+    limits:
+{{ toYaml .Values.php.httpd.exporter.limits | indent 6 }}
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
 - name: {{ $release }}-php-fpm-exporter
-  image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
+  image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", "--addr=0.0.0.0:9118"]
   ports:
@@ -249,6 +254,11 @@
   livenessProbe:
     tcpSocket:
       port: 9118
+  resources:
+    requests:
+{{ toYaml .Values.php.exporter.requests | indent 6 }}
+    limits:
+{{ toYaml .Values.php.exporter.limits | indent 6 }}
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}

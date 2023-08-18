@@ -113,7 +113,14 @@ php:
   httpd:
     version: "2.4.38-1-s1"
     port: "8080"
-    exporter_version: 0.0.1
+    exporter:
+      version: 0.0.3
+      requests:
+        cpu: 100m
+        memory: 50Mi
+      limits:
+        cpu: 500m
+        memory: 200Mi
     requests:
       cpu: 200m
       memory: 600Mi
@@ -121,7 +128,14 @@ php:
       cpu: 1
       memory: 800Mi
   fcgi_mode: FCGI_TCP
-  exporter_version: 0.0.1
+  exporter:
+    version: 0.0.2
+    requests:
+      cpu: 100m
+      memory: 50Mi
+    limits:
+      cpu: 500m
+      memory: 200Mi
   servergroup: main
   auto_prepend_file: "/srv/mediawiki/wmf-config/PhpAutoPrepend.php"
   # Values for local development
@@ -299,6 +313,14 @@ cache:
         replica:
           route: /remote/mw-wan
           pool: remote-pool
+    exporter:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+        limits:
+          cpu: 500m
+          memory: 200Mi
 
 # ingress configuration. Turned off for any normal deployment
 # as this is only to consider for very low traffic instances.
