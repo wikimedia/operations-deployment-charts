@@ -27,9 +27,12 @@ mesh:
 
 main_app:
   requests:
+    autocompute: false
     cpu: 500m
     memory: 500Mi
   limits:
+    autocompute: false
+    enforce: true
     cpu: 1000m
     memory: 1000Mi
 php:
