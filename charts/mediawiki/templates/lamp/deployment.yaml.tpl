@@ -178,7 +178,12 @@
       {{- if .Values.main_app.limits.cpu }}
       cpu: {{ .Values.main_app.limits.cpu }}
       {{- end }}
-      {{- if .Values.main_app.limits.memory }}
+      {{- if .Values.main_app.limits.auto_compute }}
+      # RAM calculation:
+      # Multiply the amount of memory_per_worker by the number of workers (ignoring the main php-fpm process)
+      # Add 50% of the opcache size and the apc size (close to the average real consumption)
+      memory: {{ add (mul .Values.php.workers .Values.php.memory_per_worker) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
+      {{- else if .Values.main_app.limits.memory }}
       memory: {{ .Values.main_app.limits.memory }}
       {{- end }}
     {{- end }}

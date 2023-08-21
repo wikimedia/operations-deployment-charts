@@ -30,6 +30,7 @@ main_app:
   limits:
     # Set to true to enforce cpu/memory limits, if this is false no limits will be set
     enforce: true
+    auto_compute: false
     cpu: 2000m
     memory: 4000Mi
   # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
