@@ -1,0 +1,6 @@
+app:
+  config_files:
+    app.config.properties:
+      pipeline: cirrus-streaming-updater-producer-staging
+      topic-prefix-filter: '^eqiad\.'
+      kafka-source-config.group.id: cirrus-streaming-updater-producer-staging

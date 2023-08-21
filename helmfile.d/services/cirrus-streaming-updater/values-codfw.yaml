@@ -1,0 +1,27 @@
+# NOTE: values-codfw.yaml is configured to be deployed in wikikube-codfw k8s.
+#
+# - reads codfw prefixed topic Kafka main-codfw,
+# - writes to codfw prefixed topic Kafka main-codfw
+# - Stores Flink Checkpoints in thanos swift in codfw (via discovery endpoint)
+# - Stores Flink HA state in Zookeeper main-codfw.
+
+app:
+  config_files:
+    app.config.properties:
+      kafka-source-config.bootstrap.servers: kafka-main2001.codfw.wmnet:9093,kafka-main2002.codfw.wmnet:9093,kafka-main2003.codfw.wmnet:9093,kafka-main2004.codfw.wmnet:9093,kafka-main2005.codfw.wmnet:9093
+      update-topic: codfw.cirrussearch.update_pipeline.update
+
+flink:
+  object_store:
+    swift_bucket: cirrus-streaming-updater.wikikube-codfw
+  high_availability:
+    zookeeper_quorum: flink-zk2001.codfw.wmnet:2181,flink-zk2002.codfw.wmnet:2181,flink-zk2003.codfw.wmnet:2181
+
+kafka:
+  allowed_clusters:
+    # Read page change events from main
+    - main-codfw
+
+zookeeper:
+  allowed_clusters:
+    - flink-codfw

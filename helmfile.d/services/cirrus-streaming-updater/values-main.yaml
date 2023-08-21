@@ -1,0 +1,72 @@
+# WMF production main release specific values.
+#
+# These are kept out of the primary values.yaml just so that it is easier to use
+# with local development.
+#
+# Settings in this file should apply for all WMF production k8s clusters & enviroments.
+# cluster/environment/release specific settings belong in env specific values files.
+
+flink:
+  object_store:
+    swift_access_key: cirrus-streaming-updater:prod
+    swift_secret_key: secret
+    # We can put this config in values-main.yaml because it uses discovery endpoint,
+    # which will be resolved correctly depending on which DC we are deploying to.
+    swift_cluster: thanos-swift.discovery.wmnet
+
+app:
+  job:
+    upgradeMode: last-state
+
+  flinkConfiguration:
+    # Flink HA config shared across clusters.
+    # Swift and Zookeeper specific configs (paths), should be defined
+    # in each cluster's  helmfile.
+    state.backend.type: hashmap
+    state.checkpoints.num-retained: "10"
+    # Since we don't have much operational experience yet, fixed-delay seems like a fine default.
+    # We might want to re-assess in the future. With this policy, the application will try a number of
+    # `attempts` with a `delay` (seconds) between each try.
+    restart-strategy.type: fixed-delay
+    # delay * attempts should be higher than the usual downtime we see.
+    # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
+    # to err on the side of caution.
+    restart-strategy.fixed-delay.attempts: "10"
+    restart-strategy.fixed-delay.delay: "180"
+    # When HA is disabled we need to set an interval in order to trigger checkpointing.
+    # TODO: after gaining some operational experience, set this value to something
+    # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
+    # default.
+    execution.checkpointing.interval: "10000" # 10 seconds.
+    # Have flink-operator periodic savepoints for handling job restarts and upgrades.
+    kubernetes.operator.periodic.savepoint.interval: 5m
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    kubernetes.operator.savepoint.history.max.age: 24h
+
+  config_files:
+    app.config.properties:
+      http-routes.00-schema: schema.wikimedia.org(:\d+)?=http://localhost:6023
+      # mw-api-int-ro
+      http-routes.99-mwapi: .*=http://localhost:6500
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+# Open up communication to listed services
+# Note that this is overridden for each consumer instance to add
+# in the appropriate elasticsearch clusters
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+    - schema
+    - thanos-swift # cluster for checkpoints

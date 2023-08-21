@@ -1,0 +1,22 @@
+# NOTE: values-staging.yaml is configured to be deployed in staging-eqiad.
+# It uses Kafka test-eqiad and thanos swift in eqiad.
+#
+app:
+  config_files:
+    app.config.properties:
+      kafka-source-config.bootstrap.servers: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093,kafka-main1004.eqiad.wmnet:9093,kafka-main1005.eqiad.wmnet:9093
+      update-topic: eqiad.cirrussearch.update_pipeline.update
+
+flink:
+  object_store:
+    swift_bucket: cirrus-streaming-updater.wikikube-staging
+  high_availability:
+    # Note that this isn't a staging specific cluster, but we pass the environment name into values
+    # and the chart will include staging in the zk path.
+    zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
+
+kafka:
+  allowed_clusters: [test-eqiad]
+
+zookeeper:
+  allowed_clusters: [flink-eqiad]

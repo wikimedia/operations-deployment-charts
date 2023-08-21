@@ -1,0 +1,52 @@
+app:
+  config_files:
+    app.config.properties:
+      kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
+      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
+      elasticsearch-urls.chi: http://relforge1003.eqiad.wmnet:9243/
+      elasticsearch-urls.omega: http://relforge1003.eqiad.wmnet:9443/
+      elasticsearch-urls.psi: http://relforge1003.eqiad.wmnet:9643/
+
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+    - schema
+    - thanos-swift # cluster for checkpoints
+
+networkpolicy:
+  egress:
+    dst_nets:
+      # relforge1003
+      - cidr: 10.64.5.37/32
+        ports:
+         - port: 9243
+           protocol: TCP
+         - port: 9443
+           protocol: TCP
+         - port: 9643
+           protocol: TCP
+      - cidr: 2620:0:861:104:10:64:5:37/128
+        ports:
+         - port: 9243
+           protocol: TCP
+         - port: 9443
+           protocol: TCP
+         - port: 9643
+           protocol: TCP
+      # relforge1004
+      - cidr: 10.64.21.126/32
+        ports:
+         - port: 9243
+           protocol: TCP
+         - port: 9443
+           protocol: TCP
+         - port: 9643
+           protocol: TCP
+      - cidr: 2620:0:861:105:10:64:21:126/128
+        ports:
+         - port: 9243
+           protocol: TCP
+         - port: 9443
+           protocol: TCP
+         - port: 9643
+           protocol: TCP

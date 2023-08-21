@@ -1,0 +1,18 @@
+---
+kafka_brokers:
+  fixture-eqiad:
+    - 10.10.10.10/32    # fake kafka broker ip
+  main-eqiad:
+    - 10.10.10.10/32    # fake kafka broker ip
+  main-codfw:
+    - 10.10.10.10/32    # fake kafka broker ip
+
+zookeeper_clusters:
+  flink-zk-eqiad:
+    - 10.10.10.10/32    # fake zookeeper broker ip
+  flink-zk-codfw:
+    - 10.10.10.10/32    # fake zookeeper broker ip
+
+flink:
+  object_store:
+    swift_secret: secret

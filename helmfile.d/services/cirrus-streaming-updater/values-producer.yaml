@@ -1,0 +1,9 @@
+app:
+  image: docker-registry.discovery.wmnet/repos/search-platform/cirrus-streaming-updater/producer
+  entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ProducerApplication
+  config_files:
+    app.config.properties:
+      page-change-stream: mediawiki.page_change.v1
+      article-topic-stream: mediawiki.revision_score_articletopic
+      draft-topic-stream: mediawiki.revision-score_drafttopic
+      recommendation-create-stream: mediawiki.revision-recommendation-create

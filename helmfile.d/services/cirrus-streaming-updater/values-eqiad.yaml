@@ -1,0 +1,28 @@
+# NOTE: values-eqiad.yaml is configured to be deployed in wikikube-eqiad k8s.
+#
+# - reads eqiad prefixed topic Kafka main-eqiad,
+# - writes to eqiad prefixed topic Kafka main-eqiad
+# - Stores Flink Checkpoints in thanos swift in eqiad (via discovery endpoint)
+# - TODO: Stores Flink HA state in Zookeeper main-eqiad.
+#   https://phabricator.wikimedia.org/T331283
+
+app:
+  config_files:
+    app.config.properties:
+      kafka-source-config.bootstrap.servers: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093,kafka-main1004.eqiad.wmnet:9093,kafka-main1005.eqiad.wmnet:9093
+      update-topic: eqiad.cirrussearch.update_pipeline.update
+
+flink:
+  object_store:
+    swift_bucket: cirrus-streaming-updater.wikikube-eqiad
+  high_availability:
+    zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
+
+kafka:
+  allowed_clusters:
+    # Read page change events from main
+    - main-eqiad
+
+zookeeper:
+  allowed_clusters:
+    - flink-eqiad

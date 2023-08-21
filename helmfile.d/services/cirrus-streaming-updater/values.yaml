@@ -1,0 +1,37 @@
+# We are trying to keep this base values.yaml files useable in minikube developemnt enviroments.
+# Please put overrides for production in other values files.
+
+app:
+  version: v20231004222643-6cd9a47
+  flinkVersion: v1_17
+
+  job:
+    # Desired state for the job., either 'running' or 'suspended'.
+    # Alter this property to trigger a restart.
+    state: running
+    jarURI: local:///opt/flink/usrlib/app-with-dependencies.jar
+    args:
+      - /srv/app/conf/app.config.properties
+
+  config_files:
+    app.config.properties:
+      event-stream-config-url: https://meta.wikimedia.org/w/api.php/
+      event-stream-json-schema-urls: https://schema.wikimedia.org/repositories/primary; https://schema.wikimedia.org/repositories/secondary
+      # Intent is for initial deployment to be limited to testwiki
+      wikiids: testwiki
+
+  # (job|task)Manager.resource are k8s Resource configs, and used by the
+  # flink-kubernetes-operator to request resources from k8s.
+  # These should be the 'limit' requests.
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#resource
+  jobManager:
+    resource:
+      memory: 1000m
+
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # To increase default job parellism, we can increase this
+    # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
+    replicas: 1
+    resource:
+      memory: 1500m

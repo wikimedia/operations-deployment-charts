@@ -1,0 +1,17 @@
+app:
+  config_files:
+    app.config.properties:
+      kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-eqiad
+      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
+      elasticsearch-urls.chi: http://localhost:6102
+      elasticsearch-urls.omega: http://localhost:6103
+      elasticsearch-urls.psi: http://localhost:6104
+
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+    - schema
+    - search-omega-eqiad
+    - search-psi-eqiad
+    - search-chi-eqiad
+    - thanos-swift # cluster for checkpoints
