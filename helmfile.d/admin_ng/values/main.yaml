@@ -146,7 +146,7 @@ namespaces:
         max: ~
       pod:
         min:
-          memory: "100Mi"
+          memory: "50Mi"
           cpu: "100m"
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
@@ -170,7 +170,7 @@ namespaces:
         max: ~
       pod:
         min:
-          memory: "100Mi"
+          memory: "50Mi"
           cpu: "100m"
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
@@ -194,7 +194,7 @@ namespaces:
         max: ~
       pod:
         min:
-          memory: "100Mi"
+          memory: "50Mi"
           cpu: "100m"
   # Commented out until discussion of videoscaler on kubernetes is done
   # https://phabricator.wikimedia.org/T321899
@@ -222,7 +222,7 @@ namespaces:
         max: ~
       pod:
         min:
-          memory: "100Mi"
+          memory: "50Mi"
           cpu: "100m"
   opentelemetry-collector: {}
   proton: {}
