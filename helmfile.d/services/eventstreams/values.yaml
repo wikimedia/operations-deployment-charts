@@ -92,8 +92,8 @@ main_app:
       - mediawiki.revision-visibility-change
       - mediawiki.revision-score
       - mediawiki.revision-tags-change
+      - mediawiki.page_change.v1
       - eventgate-main.test.event
-
     # Before integrating with EventStreamConfig API,
     # stream route to topic name mapping was explicitly declared here.
     # The routes here did not include the 'mediawiki.' prefix
