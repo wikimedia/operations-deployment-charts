@@ -5,7 +5,7 @@ provisionDataStore:
 agent:
   enabled: false
 query:
-  image: docker-registry.wikimedia.org/jaeger-query
+  image: docker-registry.discovery.wmnet/jaeger-query
   cmdlineParams:
     es.tls.enabled: true
   ingress:
@@ -14,7 +14,7 @@ query:
   agentSidecar:
     enabled: false
 collector:
-  image: docker-registry.wikimedia.org/jaeger-collector
+  image: docker-registry.discovery.wmnet/jaeger-collector
   cmdlineParams:
     es.tls.enabled: true
   service:
@@ -30,7 +30,7 @@ spark:
   enabled: false
 esIndexCleaner:
   enabled: true
-  image: docker-registry.wikimedia.org/jaeger-es-index-cleaner
+  image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
   # Number of days to keep trace data, before deleting
   numberOfDays: 30
   # When to schedule the Kubernetes cron job
