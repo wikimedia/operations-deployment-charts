@@ -141,6 +141,8 @@ resources:
       value: "true"
     - name: AUTH_OIDC_EXTRACT_GROUPS_ENABLED
       value: "true"
+    - name: AUTH_OIDC_CLIENT_AUTHENTICATION_METHOD
+      value: "client_secret_post"
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:
