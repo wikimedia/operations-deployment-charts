@@ -129,11 +129,6 @@ resources:
       value: "true"
     - name: AUTH_OIDC_CLIENT_ID
       value: "datahub_staging"
-    - name: AUTH_OIDC_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: {{ template "base.name.release" $ }}-secret-config
-          key: auth_oidc_client_secret
     - name: AUTH_OIDC_PRE_PROVISIONING_REQUIRED
       value: "false"
     - name: AUTH_OIDC_DISCOVERY_URI
