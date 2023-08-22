@@ -1,0 +1,38 @@
+main_app:
+  image: wikimedia/generated-data-platform-aqs-media-analytics
+  version: 2023-08-24-203003-production
+  command: ["./media-analytics"]
+  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  service_name: media-analytics
+  consistency: localQuorum
+  # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+
+  # note the "_"
+  cassandra_user: "media_analytics"
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+  log_level: debug
+
+resources:
+  replicas: 4
+
+mesh:
+  enabled: true
+  public_port: 4973
+
+ingress:
+  enabled: true
+
+service:
+  deployment: production
+  port:
+    nodePort: 4973
+
+monitoring:
+  enabled: true
