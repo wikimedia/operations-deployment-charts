@@ -4,15 +4,34 @@ provisionDataStore:
   elasticsearch: false
 agent:
   enabled: false
+spark:
+  enabled: false
 query:
   image: docker-registry.discovery.wmnet/jaeger-query
   cmdlineParams:
     es.tls.enabled: true
+    query.http.tls.enabled: true
+    query.http.tls.key: /tls/tls.key
+    query.http.tls.cert: /tls/tls-crt
+    admin.http.tls.enabled: true
+    admin.http.tls.key: /tls/tls.key
+    admin.http.tls.cert: /tls/tls-crt
+  service:
+    # query.service.port is 80 by default which makes it confusing if tls is enabled.
+    # jaeger-query is listening on 16686 by default so we can as well use that as
+    # service port to make it less confusing.
+    port: 16686
   ingress:
     enabled: true
     ingressClassName: 'istio'
   agentSidecar:
     enabled: false
+  extraSecretMounts:
+    - name: jaeger-tls
+      mountPath: /tls
+      subPath: ""
+      secretName: jaeger-query
+      readOnly: true
 collector:
   image: docker-registry.discovery.wmnet/jaeger-collector
   cmdlineParams:
@@ -26,8 +45,6 @@ collector:
         port: 4317
       http:
         port: 4318
-spark:
-  enabled: false
 esIndexCleaner:
   enabled: true
   image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
@@ -37,3 +54,19 @@ esIndexCleaner:
   schedule: "0 * * * *"
   cmdlineParams:
     es.tls.enabled: true
+# Array with extra yaml objects to install alongside the chart. Values are evaluated as a template.
+extraObjects:
+  - apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: jaeger-query
+    spec:
+      secretName: "{{ template \"jaeger.query.name\" . }}"
+      commonName: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
+      dnsNames:
+        - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
+        - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+      issuerRef:
+        name: discovery
+        group: cfssl-issuer.wikimedia.org
+        kind: ClusterIssuer
