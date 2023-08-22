@@ -185,6 +185,11 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+  readability:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
   ores-legacy:
     deployClusterRole: deploy
     deployTLSCertificate: true

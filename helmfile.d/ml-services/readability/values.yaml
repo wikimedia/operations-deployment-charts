@@ -1,0 +1,56 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # These endpoints should be reachable by Istio proxy sidecars.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.22/32 # api-ro.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.22/32 # api-ro.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+
+monitoring:
+  enabled: true
+
+inference:
+  annotations:
+    sidecar.istio.io/inject: "true"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "4"
+
+inference_services:
+  readability:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-readability"
+      image_version: "2023-08-01-134106-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "readability"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/readability/multilingual/20230824102026/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+

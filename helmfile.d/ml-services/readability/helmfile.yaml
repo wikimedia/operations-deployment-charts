@@ -1,0 +1,64 @@
+helmBinary: helm3
+helmDefaults:
+  createNamespace: false
+  verify: false
+  atomic: true
+  timeout: 600
+  force: false
+  recreatePods: false
+  args:
+    - "--kubeconfig=/etc/kubernetes/readability-deploy-{{ .Environment.Name }}.config"
+
+templates:
+  default: &default
+    namespace: readability
+    chart: wmf-stable/kserve-inference
+    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
+    # This template gets applied for every release, all of which are applied in every environment
+    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
+    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values.yaml" # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/ml-serve_services/readability/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+    hooks:
+      - name: "log_sal"
+        events: ["presync"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+          ]
+    needs:
+      - readability/service-secrets
+
+  service_secrets: &service_secrets
+    name: service-secrets
+    namespace: readability
+    chart: "wmf-stable/secrets"
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/private/ml-serve_services/readability/{{ .Environment.Name }}.yaml"
+
+releases:
+  - <<: *service_secrets
+  - name: main
+    <<: *default
+
+# Please note: you might not need to declare all of these releases.
+environments:
+  ml-serve-eqiad:
+    values:
+      - releases: [main]
+  ml-serve-codfw:
+    values:
+      - releases: [main]
+  ml-staging-codfw:
+    values:
+      - releases: [main]
