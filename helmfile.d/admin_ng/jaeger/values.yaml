@@ -8,7 +8,6 @@ query:
   image: docker-registry.wikimedia.org/jaeger-query
   cmdlineParams:
     es.tls.enabled: true
-    es.tls.skip-host-verify: true
   ingress:
     enabled: true
     ingressClassName: 'istio'
@@ -18,7 +17,6 @@ collector:
   image: docker-registry.wikimedia.org/jaeger-collector
   cmdlineParams:
     es.tls.enabled: true
-    es.tls.skip-host-verify: true
   service:
     grpc: {}
     http: {}
