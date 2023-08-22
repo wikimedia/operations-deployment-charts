@@ -13,9 +13,6 @@ query:
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
-    admin.http.tls.enabled: true
-    admin.http.tls.key: /tls/tls.key
-    admin.http.tls.cert: /tls/tls.crt
   service:
     # query.service.port is 80 by default which makes it confusing if tls is enabled.
     # jaeger-query is listening on 16686 by default so we can as well use that as
@@ -36,6 +33,19 @@ collector:
   image: docker-registry.discovery.wmnet/jaeger-collector
   cmdlineParams:
     es.tls.enabled: true
+    # Enabling TLS for all ports exposed by default (although we only use the otlp ones)
+    collector.http.tls.enabled: true
+    collector.http.tls.key: /tls/tls.key
+    collector.http.tls.cert: /tls/tls.crt
+    collector.grpc.tls.enabled: true
+    collector.grpc.tls.key: /tls/tls.key
+    collector.grpc.tls.cert: /tls/tls.crt
+    collector.otlp.http.tls.enabled: true
+    collector.otlp.http.tls.key: /tls/tls.key
+    collector.otlp.http.tls.cert: /tls/tls.crt
+    collector.otlp.grpc.tls.enabled: true
+    collector.otlp.grpc.tls.key: /tls/tls.key
+    collector.otlp.grpc.tls.cert: /tls/tls.crt
   service:
     grpc: {}
     http: {}
@@ -45,6 +55,12 @@ collector:
         port: 4317
       http:
         port: 4318
+  extraSecretMounts:
+    - name: jaeger-tls
+      mountPath: /tls
+      subPath: ""
+      secretName: jaeger-collector
+      readOnly: true
 esIndexCleaner:
   enabled: true
   image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
@@ -66,6 +82,20 @@ extraObjects:
       dnsNames:
         - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
         - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+      issuerRef:
+        name: discovery
+        group: cfssl-issuer.wikimedia.org
+        kind: ClusterIssuer
+  - apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: jaeger-collector
+    spec:
+      secretName: "{{ template \"jaeger.collector.name\" . }}"
+      commonName: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
+      dnsNames:
+        - "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
+        - "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
       issuerRef:
         name: discovery
         group: cfssl-issuer.wikimedia.org
