@@ -12,10 +12,10 @@ query:
     es.tls.enabled: true
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
-    query.http.tls.cert: /tls/tls-crt
+    query.http.tls.cert: /tls/tls.crt
     admin.http.tls.enabled: true
     admin.http.tls.key: /tls/tls.key
-    admin.http.tls.cert: /tls/tls-crt
+    admin.http.tls.cert: /tls/tls.crt
   service:
     # query.service.port is 80 by default which makes it confusing if tls is enabled.
     # jaeger-query is listening on 16686 by default so we can as well use that as
