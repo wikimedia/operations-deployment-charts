@@ -18,9 +18,15 @@ releases:
       # If you are sure you don't depend on that, remove the "needs".
       - kube-system/coredns
     values:
-      - "values/common.yaml"                                                   # Generic default values for all environments
-      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
-      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
-      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
-      - "/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+      # Generic default values for all environments
+      - "values/common.yaml"
+      # Default values for this cluster group
+      - "values/{{ .Values.cluster_group }}.yaml"
+      # Environment specific defaults
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # Release specific overrides
+      - "{{`{{ .Release.Name }}`}}/values.yaml"
+      # Overrides specific to release in environment
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+      # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"

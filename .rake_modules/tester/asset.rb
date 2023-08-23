@@ -543,7 +543,7 @@ module Tester
 
     # Patch helmfiles so that .fixtures.yaml is used instead of
     # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
-    # * /etc/helmfile-defaults/private/admin/#{env}.yaml for admin_ng helmfiles
+    # * /etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml for admin_ng helmfiles
     # * For services, also add the service-proxy fixture
     # Also replace references to charts in wmf-stable repo with the local path,
     # and add --debug to the helm args
@@ -578,7 +578,7 @@ module Tester
         if File.exist? fixtures_file
           # Patch admin_ng if the fixture_file exists.
           # admin_ng will never include general environment fixtures so we replace with fixtures_file here
-          content.gsub!('/etc/helmfile-defaults/private/admin/{{ .Environment.Name }}.yaml', fixtures_file)
+          content.gsub!(%r{/etc/helmfile-defaults/private/admin/.*\.yaml}, fixtures_file)
 
           # Merge the values of local fixtures into the general fixtures to be used by services
           # (see below)

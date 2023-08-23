@@ -22,4 +22,4 @@ releases:
       # Overrides specific to release in environment
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
       # Secrets (from private puppet repo)
-      - "/etc/helmfile-defaults/private/{{ .Values.cluster_group }}_services/kserve/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
