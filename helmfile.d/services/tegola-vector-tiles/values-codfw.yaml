@@ -1,12 +1,6 @@
 resources:
   replicas: 12
 
-# The 2023-08-18-110840-publish image has debug on, please do not
-# use with production traffic
-
-main_app:
-  version: 2023-08-18-110840-publish
-
 config:
   public:
     TEGOLA_BROKER_URL: "kafka://kafka-main2001.codfw.wmnet:9092"
