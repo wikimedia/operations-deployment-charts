@@ -6,6 +6,15 @@ agent:
   enabled: false
 spark:
   enabled: false
+storage:
+  type: elasticsearch
+  elasticsearch:
+    host: 'logs-api.svc.eqiad.wmnet'
+    port: 443
+    scheme: https
+    user: 'jaeger-prod'
+networkPolicy:
+  enabled: true
 query:
   image: docker-registry.discovery.wmnet/jaeger-query
   cmdlineParams:
@@ -13,16 +22,33 @@ query:
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
+  agentSidecar:
+    enabled: false
   service:
     # query.service.port is 80 by default which makes it confusing if tls is enabled.
     # jaeger-query is listening on 16686 by default so we can as well use that as
     # service port to make it less confusing.
     port: 16686
-  ingress:
+  networkPolicy:
     enabled: true
-    ingressClassName: 'istio'
-  agentSidecar:
-    enabled: false
+    ingressRules:
+      # Allow ingress from the ingressgateway
+      # FIXME: This actually allows traffic from namespace istio-system as well as
+      #        from all pods with label "istio: ingressgateway" (regardless of the namespace)
+      #        to all ports.
+      namespaceSelector:
+        kubernetes.io/metadata.name: istio-system
+      podSelector:
+        istio: ingressgateway
+    egressRules:
+      # Allow egress to logs-api.svc.eqiad.wmnet
+      customRules:
+      - to:
+        - ipBlock:
+            cidr: 10.2.2.79/32
+        ports:
+        - protocol: TCP
+          port: 443
   extraSecretMounts:
     - name: jaeger-tls
       mountPath: /tls
@@ -55,6 +81,27 @@ collector:
         port: 4317
       http:
         port: 4318
+  networkPolicy:
+    enabled: true
+    ingressRules:
+      # FIXME: This allows ingress from everywhere
+      customRules:
+      - ports:
+        # OTLP GRPC
+        - protocol: TCP
+          port: 4317
+        # OTLP HTTP
+        - protocol: TCP
+          port: 4318
+    egressRules:
+      # Allow egress to logs-api.svc.eqiad.wmnet
+      customRules:
+      - to:
+        - ipBlock:
+            cidr: 10.2.2.79/32
+        ports:
+        - protocol: TCP
+          port: 443
   extraSecretMounts:
     - name: jaeger-tls
       mountPath: /tls

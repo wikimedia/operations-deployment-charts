@@ -113,7 +113,6 @@ environments:
       - install_cert_manager: true
       # Create default service certificates
       - namespace_certificates: true
-      - install_jaeger: true
 
 ---
 bases:
@@ -132,7 +131,6 @@ bases:
   - helm-state-metrics/helmfile.yaml
   - flink-operator/helmfile.yaml
   - spark-operator/helmfile.yaml
-  - jaeger/helmfile.yaml
 
 hooks:
   - events: ["prepare"]

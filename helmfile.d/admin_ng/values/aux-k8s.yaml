@@ -65,9 +65,6 @@ namespaces:
     systemNamespace: true
     allowCriticalPods: true
   jaeger:
-    systemNamespace: true
-    allowCriticalPods: true
-    deployTLSCertificate: true
     tlsHostnames:
       - jaeger-collector
       - jaeger-query

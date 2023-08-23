@@ -10,12 +10,12 @@ helmDefaults:
     # Use the following example as a reference:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     - --kubeconfig
-    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-deploy-%s.config" .Environment.Name) }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/jaeger-deploy-%s.config" .Environment.Name) }}
 
 templates:
   default: &default
-    namespace: SERVICE_NAME
-    chart: wmf-stable/SERVICE_NAME
+    namespace: jaeger
+    chart: wmf-stable/jaeger
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     # This template gets applied for every release, all of which are applied in every environment
@@ -26,7 +26,7 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/main_services/SERVICE_NAME/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/aux-k8s-eqiad_services/jaeger/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
 
@@ -36,41 +36,27 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/SERVICE_NAME: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/aus-k8s-eqiad-services/jaeger: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/SERVICE_NAME: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/aus-k8s-eqiad-services/jaeger: {{`{{.HelmfileCommand}}`}}",
 
       ]
 
 
 releases:
-  - name: main
-    <<: *default
-  - name: canary
-    <<: *default
-  - name: test
+  - name: jaeger
     <<: *default
 
 # Please note: you might not need to declare all of these releases. Most applications
 # might be fine just declaring "main" everywhere.
 environments:
-  staging:
+  aux-k8s-eqiad:
     values:
-      - releases: [main, test]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [main, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [main, canary]
+      - releases: [jaeger]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
