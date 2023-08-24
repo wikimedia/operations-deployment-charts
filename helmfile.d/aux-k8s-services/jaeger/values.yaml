@@ -146,7 +146,7 @@ extraObjects:
     metadata:
       name: main-jaeger-query
     spec:
-      secretName: main-jeager-query
+      secretName: main-jaeger-query
       commonName: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
       # FIXME: Temporarily lower the lifetime of certificates to two days (as we do in staging)
       duration: 172800s
