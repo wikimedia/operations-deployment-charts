@@ -44,6 +44,14 @@ Network egress for MediaWiki
   - protocol: TCP
     port: {{ .port }}
 {{- end -}}
+{{- range .Values.mw.egress.kubestage_servers }}
+- to:
+  - ipBlock:
+      cidr: {{ .ip }}/32
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+{{- end -}}
 {{- end -}}
 
 {{/*

@@ -87,6 +87,17 @@ mw:
         port: 4001
       - ip: 2620:0:860:104:10:192:48:59
         port: 4001
+    kubestage_servers:
+      # termbox-test - all kubestage nodes
+      - ip: 10.192.0.195
+        port: 3031
+      - ip: 10.192.16.137
+        port: 3031
+      - ip: 10.64.16.55
+        port: 3031
+      - ip: 10.64.48.106
+        port: 3031
+
   httpd:
     # TODO: Remove image_tag overriden by deploy-mwdebug.py
     image_tag: "restricted/mediawiki-webserver:2021-07-26-084018-webserver"
