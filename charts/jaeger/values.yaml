@@ -705,6 +705,12 @@ esIndexCleaner:
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   podLabels: {}
   # ttlSecondsAfterFinished: 120
+  networkPolicy:
+    enabled: false
+    # egressRules:
+    #   namespaceSelector: {}
+    #   podSelector: {}
+    #   customRules: []
 
 esRollover:
   enabled: false
