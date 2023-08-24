@@ -119,8 +119,9 @@ esIndexCleaner:
     create: false
   # Number of days to keep trace data, before deleting
   numberOfDays: 30
-  # When to schedule the Kubernetes cron job
-  schedule: "0 * * * *"
+  # Run the cleaner once a day after midnight
+  # as a new index will probably be created at ~00:00
+  schedule: "42 0 * * *"
   cmdlineParams:
     es.tls.enabled: true
   networkPolicy:
