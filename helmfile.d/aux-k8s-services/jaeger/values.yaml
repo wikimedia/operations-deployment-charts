@@ -24,6 +24,8 @@ query:
     query.http.tls.cert: /tls/tls.crt
   agentSidecar:
     enabled: false
+  serviceAccount:
+    create: false
   service:
     # query.service.port is 80 by default which makes it confusing if tls is enabled.
     # jaeger-query is listening on 16686 by default so we can as well use that as
@@ -72,6 +74,8 @@ collector:
     collector.otlp.grpc.tls.enabled: true
     collector.otlp.grpc.tls.key: /tls/tls.key
     collector.otlp.grpc.tls.cert: /tls/tls.crt
+  serviceAccount:
+    create: false
   service:
     grpc: {}
     http: {}
@@ -111,12 +115,25 @@ collector:
 esIndexCleaner:
   enabled: true
   image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
+  serviceAccount:
+    create: false
   # Number of days to keep trace data, before deleting
   numberOfDays: 30
   # When to schedule the Kubernetes cron job
   schedule: "0 * * * *"
   cmdlineParams:
     es.tls.enabled: true
+  networkPolicy:
+    enabled: true
+    egressRules:
+      # Allow egress to logs-api.svc.eqiad.wmnet
+      customRules:
+      - to:
+        - ipBlock:
+            cidr: 10.2.2.79/32
+        ports:
+        - protocol: TCP
+          port: 443
 # Array with extra yaml objects to install alongside the chart. Values are evaluated as a template.
 extraObjects:
   - apiVersion: cert-manager.io/v1
