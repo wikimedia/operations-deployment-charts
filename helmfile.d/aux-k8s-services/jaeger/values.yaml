@@ -55,7 +55,9 @@ query:
     - name: jaeger-tls
       mountPath: /tls
       subPath: ""
-      secretName: jaeger-query
+      # The secret name is static as is is not templateable.
+      # There must be a Certificate specified in extraObjects that creates a secret with this name.
+      secretName: main-jaeger-query
       readOnly: true
 collector:
   image: docker-registry.discovery.wmnet/jaeger-collector
@@ -110,7 +112,9 @@ collector:
     - name: jaeger-tls
       mountPath: /tls
       subPath: ""
-      secretName: jaeger-collector
+      # The secret name is static as is is not templateable.
+      # There must be a Certificate specified in extraObjects that creates a secret with this name.
+      secretName: main-jaeger-collector
       readOnly: true
 esIndexCleaner:
   enabled: true
@@ -140,9 +144,9 @@ extraObjects:
   - apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
-      name: jaeger-query
+      name: main-jaeger-query
     spec:
-      secretName: "{{ template \"jaeger.query.name\" . }}"
+      secretName: main-jeager-query
       commonName: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
       dnsNames:
         - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
@@ -154,9 +158,9 @@ extraObjects:
   - apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
-      name: jaeger-collector
+      name: main-jaeger-collector
     spec:
-      secretName: "{{ template \"jaeger.collector.name\" . }}"
+      secretName: main-jaeger-collector
       commonName: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
       dnsNames:
         - "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
