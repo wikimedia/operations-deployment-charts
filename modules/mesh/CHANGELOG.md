@@ -1,3 +1,6 @@
+## deployment 1.2.3
+- Add concurrency option
+
 ## deployment 1.2.0
 - Add draining and prestop_sleep options
 
