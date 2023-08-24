@@ -143,6 +143,8 @@ resources:
       value: "true"
     - name: AUTH_OIDC_CLIENT_AUTHENTICATION_METHOD
       value: "client_secret_post"
+    - name: AUTH_OIDC_PREFERRED_JWS_ALGORITHM
+      value: "RS256"
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:
