@@ -148,6 +148,8 @@ extraObjects:
     spec:
       secretName: main-jeager-query
       commonName: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
+      # FIXME: Temporarily lower the lifetime of certificates to two days (as we do in staging)
+      duration: 172800s
       dnsNames:
         - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
         - "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
@@ -162,6 +164,8 @@ extraObjects:
     spec:
       secretName: main-jaeger-collector
       commonName: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
+      # FIXME: Temporarily lower the lifetime of certificates to two days (as we do in staging)
+      duration: 172800s
       dnsNames:
         - "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc"
         - "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
