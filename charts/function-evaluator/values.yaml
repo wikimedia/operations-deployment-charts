@@ -64,7 +64,8 @@ debug:
 
 networkpolicy:
   egress:
-    enabled: false
+    # enabled: true without any rules does prohibit egress traffic
+    enabled: true
 
 ingress:
   enabled: false
