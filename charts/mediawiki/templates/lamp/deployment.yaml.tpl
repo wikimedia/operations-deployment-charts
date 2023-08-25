@@ -118,6 +118,10 @@
     value: "{{ .Values.php.display_errors }}"
   - name: PHP__error_reporting
     value: "{{ .Values.php.error_reporting }}"
+  - name: PHP__pcre__backtrack_limit
+    value: "{{ .Values.php.pcre_backtrack_limit }}"
+  - name: PHP__max_execution_time
+    value: "{{ .Values.php.max_execution_time }}"
   {{- if .Values.php.devel_mode }}
   - name: PHP__opcache__validate_timestamps
     value: "1"
