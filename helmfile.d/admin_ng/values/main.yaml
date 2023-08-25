@@ -353,7 +353,7 @@ GlobalNetworkPolicies:
   # This allows egress from all pods to all pods. Ingress still needs to be
   # allowed by the destination, though.
   allow-pod-to-pod:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
     types:
       - Egress
     egress:
@@ -381,7 +381,7 @@ GlobalNetworkPolicies:
             - "2620:0:860:babe::/64"
   # FIXE: This is probably no longer needed, everything should use CoreDNS now
   allow-dns:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
     types:
       - Egress
     egress:
@@ -394,7 +394,7 @@ GlobalNetworkPolicies:
             - 10.3.0.1/32
   # Allow all pods access to url-downloaders
   allow-urldownloaders:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
     types:
       - Egress
     egress:
@@ -420,7 +420,7 @@ GlobalNetworkPolicies:
             - 2620:0:860:4:208:80:153:109/128  # urldownloader2004
   # Allow all pods access to restbase
   allow-restbase:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
     types:
       - Egress
     egress:
