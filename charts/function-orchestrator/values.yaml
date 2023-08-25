@@ -81,16 +81,7 @@ debug:
 
 networkpolicy:
   egress:
-    enabled: true
-    extraRules:
-    - to:
-      - podSelector:
-          matchLabels:
-            app: function-evaluator
-      ports:
-      - protocol: TCP
-        port: 4970
-
+    enabled: false
 
 ingress:
   enabled: false
