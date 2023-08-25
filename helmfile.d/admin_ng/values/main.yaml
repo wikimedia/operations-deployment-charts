@@ -123,6 +123,14 @@ namespaces:
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
     # Don't enforce ranges for containers or pods TEMP for testing T344814
+    resourcequota:
+      compute:
+        requests:
+          cpu: "90"
+          memory: "100Gi"
+        limits:
+          cpu: ~
+          memory: ~
     limitranges:
       container:
         defaultRequest:

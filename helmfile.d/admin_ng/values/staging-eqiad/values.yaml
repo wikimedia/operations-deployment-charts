@@ -48,6 +48,15 @@ namespaces:
         limits:
           cpu: "20"
           memory: "20Gi"
+  mw-debug:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "20"
+          memory: "10Gi"
+        limits:
+          cpu: "20"
+          memory: "10Gi"
   mw-web:
     resourcequota:
       compute:
