@@ -8,10 +8,6 @@
       value: {{ .Release.Name }}
     - name: SERVICE_ZONE
       value: "default"
-    {{- if .Values.mesh.concurrency }}
-    - name: CONCURRENCY
-      value: "{{ .Values.mesh.concurrency }}"
-    {{- end }}
     {{- with .Values.mesh.admin }}
     - name: ADMIN_PORT
       value: "{{ .port | default 1666 }}"
