@@ -88,6 +88,15 @@ mesh:
   # All other containers in the pod need to finish after, so remember to bump the other
   # prestop_sleep variables if this is changed.
   prestop_sleep: 7
+  # Following setting sets up number of workers for envoy.
+  # Defaults to envoy default behaviour of number of hardware CPUs
+  #concurrency: "12"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      memory: 500Mi
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
