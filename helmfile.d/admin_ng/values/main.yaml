@@ -122,6 +122,19 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
+    # Don't enforce ranges for containers or pods TEMP for testing T344814
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
   mw-misc:
     pspClusterRole: allow-mediawiki-psp
     tlsExtraSANs:
