@@ -3,3 +3,10 @@ resources:
 
 mesh:
   public_port: 4450
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 750m
+      memory: 350Mi
