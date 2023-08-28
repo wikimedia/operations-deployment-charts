@@ -1,3 +1,10 @@
+## configuration 1.4.0
+- Stop listening for admin connections on .Values.mesh.admin.port by default.
+  If this it still required (which it is for draining support)
+  .Values.admin.bind_tcp needs to be set to true.
+- Configuration wise this is backwards compatible with previous versions
+  although it is a behavior change.
+
 ## deployment 1.2.3
 - Add concurrency option
 

@@ -59,7 +59,9 @@ mesh:
   # Define a different port for the envoy admin interface
   # and/or drain strategy settings.
   admin:
-    port: "1666"
+    # bind_tcp needs to be true in order for all other options to work
+    bind_tcp: false
+    port: 1666
     # drain_time_s: "600"
     # drain_strategy: "gradual"
   # Enable staging/mlstaging for staging deployments.

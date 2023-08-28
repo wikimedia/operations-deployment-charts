@@ -51,6 +51,18 @@ error_page.html: |-
 {{ end -}}
 {{- end -}}
 
+{{- define "mesh.configuration.envoy_admin_address" -}}
+{{ $admin := (.Values.mesh.admin | default dict) }}
+{{- if $admin.bind_tcp | default false }}
+socket_address:
+  address: 127.0.0.1
+  port_value: {{ $admin.port | default 1666 }}
+{{- else }}
+pipe:
+  path: /var/run/envoy/admin.sock
+{{- end }}
+{{- end -}}
+
 {{- define "mesh.configuration.envoy" -}}
 admin:
   access_log:
@@ -59,7 +71,7 @@ admin:
       # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
       path: /var/log/envoy/admin-access.log
   address:
-    socket_address: {address: 127.0.0.1, port_value: {{ (.Values.mesh.admin | default dict).port | default 1666 }}}
+    {{- include "mesh.configuration.envoy_admin_address" . | indent 4 }}
   # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
   ignore_global_conn_limit: true
 layered_runtime:
@@ -448,6 +460,7 @@ under 'tcp_services_proxy'.
 
 {{- define "mesh.configuration._admin_cluster" }}
 - name: admin_interface
+  type: static
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
@@ -456,8 +469,7 @@ under 'tcp_services_proxy'.
     - lb_endpoints:
       - endpoint:
           address:
-            socket_address: {address: 127.0.0.1, port_value: 1666 }
-  type: strict_dns
+            {{- include "mesh.configuration.envoy_admin_address" . | indent 12 }}
 {{- end }}
 
 
