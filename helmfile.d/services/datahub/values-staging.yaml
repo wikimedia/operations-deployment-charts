@@ -25,6 +25,8 @@ datahub-frontend:
   auth:
     ldap:
       enabled: false
+    oidc:
+      enabled: true
   config:
     <<: *config
     public:

@@ -125,6 +125,7 @@ resources:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
     {{- end }}
+    {{- if .Values.auth.oidc.enabled}}
     - name: AUTH_OIDC_ENABLED
       value: "true"
     - name: AUTH_OIDC_CLIENT_ID
@@ -135,6 +136,8 @@ resources:
       value: "https://idp-test.wikimedia.org/oidc/.well-known"
     - name: AUTH_OIDC_BASE_URL
       value: "https://datahub-frontend.k8s-staging.discovery.wmnet"
+    - name: AUTH_OIDC_SCOPE
+      value: "openid profile email"
     - name: AUTH_OIDC_USER_NAME_CLAIM
       value: "preferred_username"
     - name: AUTH_OIDC_JIT_PROVISIONING_ENABLED
@@ -145,6 +148,7 @@ resources:
       value: "client_secret_post"
     - name: AUTH_OIDC_PREFERRED_JWS_ALGORITHM
       value: "RS256"
+    {{- end}}
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}
   volumeMounts:
