@@ -15,10 +15,12 @@ storage:
     user: 'jaeger-prod'
 networkPolicy:
   enabled: true
+
 query:
   image: docker-registry.discovery.wmnet/jaeger-query
   cmdlineParams:
     es.tls.enabled: true
+    es.index-date-separator: '.'
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
@@ -59,10 +61,12 @@ query:
       # There must be a Certificate specified in extraObjects that creates a secret with this name.
       secretName: main-jaeger-query
       readOnly: true
+
 collector:
   image: docker-registry.discovery.wmnet/jaeger-collector
   cmdlineParams:
     es.tls.enabled: true
+    es.index-date-separator: '.'
     # Enabling TLS for all ports exposed by default (although we only use the otlp ones)
     collector.http.tls.enabled: true
     collector.http.tls.key: /tls/tls.key
@@ -116,6 +120,7 @@ collector:
       # There must be a Certificate specified in extraObjects that creates a secret with this name.
       secretName: main-jaeger-collector
       readOnly: true
+
 esIndexCleaner:
   enabled: true
   image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
@@ -128,6 +133,7 @@ esIndexCleaner:
   schedule: "42 0 * * *"
   cmdlineParams:
     es.tls.enabled: true
+    index-date-separator: '.'
   networkPolicy:
     enabled: true
     egressRules:
@@ -139,6 +145,7 @@ esIndexCleaner:
         ports:
         - protocol: TCP
           port: 443
+
 # Array with extra yaml objects to install alongside the chart. Values are evaluated as a template.
 extraObjects:
   - apiVersion: cert-manager.io/v1
