@@ -28,6 +28,9 @@ query:
     enabled: false
   serviceAccount:
     create: false
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "16687"
   service:
     # query.service.port is 80 by default which makes it confusing if tls is enabled.
     # jaeger-query is listening on 16686 by default so we can as well use that as
@@ -36,14 +39,27 @@ query:
   networkPolicy:
     enabled: true
     ingressRules:
-      # Allow ingress from the ingressgateway
-      # FIXME: This actually allows traffic from namespace istio-system as well as
-      #        from all pods with label "istio: ingressgateway" (regardless of the namespace)
-      #        to all ports.
-      namespaceSelector:
-        kubernetes.io/metadata.name: istio-system
-      podSelector:
-        istio: ingressgateway
+      customRules:
+        - from:
+            # Allow ingress from ingressgateway to the default http port
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: istio-system
+              podSelector:
+                matchLabels:
+                  istio: ingressgateway
+              ports:
+                - port: 16686
+                  protocol: TCP
+            # Allow ingress from everywhere to the admin port
+            # FIXME: This should be limited to prometheus nodes and kubelets
+            # FIXME: admin port sounds evil, I could not find docs
+            #        on what is running there apart from health check
+            #        and monitoring.
+            - ports:
+                - port: 16687
+                  protocol: TCP
+
     egressRules:
       # Allow egress to logs-api.svc.eqiad.wmnet
       customRules:
@@ -82,6 +98,9 @@ collector:
     collector.otlp.grpc.tls.cert: /tls/tls.crt
   serviceAccount:
     create: false
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "14269"
   service:
     grpc: {}
     http: {}
@@ -94,15 +113,30 @@ collector:
   networkPolicy:
     enabled: true
     ingressRules:
-      # FIXME: This allows ingress from everywhere
       customRules:
-      - ports:
-        # OTLP GRPC
-        - protocol: TCP
-          port: 4317
-        # OTLP HTTP
-        - protocol: TCP
-          port: 4318
+        - from:
+            # Allow ingress from ingressgateway to the default http port
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: istio-system
+              podSelector:
+                matchLabels:
+                  istio: ingressgateway
+              ports:
+                # OTLP GRPC
+                - protocol: TCP
+                  port: 4317
+                # OTLP HTTP
+                - protocol: TCP
+                  port: 4318
+            # Allow ingress from everywhere to the admin port
+            # FIXME: This should be limited to prometheus nodes and kubelets
+            # FIXME: admin port sounds evil, I could not find docs
+            #        on what is running there apart from health check
+            #        and monitoring.
+            - ports:
+                - port: 14269
+                  protocol: TCP
     egressRules:
       # Allow egress to logs-api.svc.eqiad.wmnet
       customRules:
@@ -176,3 +210,116 @@ extraObjects:
         name: discovery
         group: cfssl-issuer.wikimedia.org
         kind: ClusterIssuer
+  # Istio Gateway used by query and collector
+  - apiVersion: networking.istio.io/v1beta1
+    kind: Gateway
+    metadata:
+      name: "{{ .Release.Name }}"
+    spec:
+      selector:
+        istio: ingressgateway
+      servers:
+      - hosts:
+          - jaeger-query.discovery.wmnet
+          - jaeger-query.svc.codfw.wmnet
+          - jaeger-query.svc.eqiad.wmnet
+          - jaeger-collector-http.discovery.wmnet
+          - jaeger-collector-http.svc.codfw.wmnet
+          - jaeger-collector-http.svc.eqiad.wmnet
+          - jaeger-collector-grpc.discovery.wmnet
+          - jaeger-collector-grpc.svc.codfw.wmnet
+          - jaeger-collector-grpc.svc.eqiad.wmnet
+        port:
+          name: https
+          number: 443
+          protocol: HTTPS
+        tls:
+          credentialName: jaeger-tls-certificate
+          mode: SIMPLE
+  # Ingress config for query
+  - apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: "{{ template \"jaeger.query.name\" . }}"
+    spec:
+      gateways:
+        - "{{ .Release.Name }}"
+      hosts:
+        - jaeger-query.discovery.wmnet
+        - jaeger-query.svc.codfw.wmnet
+        - jaeger-query.svc.eqiad.wmnet
+      http:
+      - name: default-route
+        route:
+        - destination:
+            host: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+            port:
+              number: 16686
+  - apiVersion: networking.istio.io/v1beta1
+    kind: DestinationRule
+    metadata:
+      name: "{{ template \"jaeger.query.name\" . }}"
+    spec:
+      host: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+      trafficPolicy:
+        tls:
+          mode: SIMPLE
+          # The ingressgateway will verify that the upstreams certificate SAN matches one of(!)
+          # the subjectAltNames provided here.
+          subjectAltNames:
+            - jaeger-query.discovery.wmnet
+            - jaeger-query.svc.codfw.wmnet
+            - jaeger-query.svc.eqiad.wmnet
+  # Ingress config for collector
+  - apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: "{{ template \"jaeger.collector.name\" . }}-http"
+    spec:
+      gateways:
+        - "{{ .Release.Name }}"
+      hosts:
+        - jaeger-collector-http.discovery.wmnet
+        - jaeger-collector-http.svc.codfw.wmnet
+        - jaeger-collector-http.svc.eqiad.wmnet
+      http:
+      - name: default-route
+        route:
+        - destination:
+            host: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+            port:
+              number: 4318
+  - apiVersion: networking.istio.io/v1beta1
+    kind: VirtualService
+    metadata:
+      name: "{{ template \"jaeger.collector.name\" . }}-grpc"
+    spec:
+      gateways:
+        - "{{ .Release.Name }}"
+      hosts:
+        - jaeger-collector-grpc.discovery.wmnet
+        - jaeger-collector-grpc.svc.codfw.wmnet
+        - jaeger-collector-grpc.svc.eqiad.wmnet
+      http:
+      - name: default-route
+        route:
+        - destination:
+            host: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+            port:
+              number: 4317
+  - apiVersion: networking.istio.io/v1beta1
+    kind: DestinationRule
+    metadata:
+      name: "{{ template \"jaeger.collector.name\" . }}"
+    spec:
+      host: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+      trafficPolicy:
+        tls:
+          mode: SIMPLE
+          subjectAltNames:
+            - jaeger-collector-http.discovery.wmnet
+            - jaeger-collector-http.svc.codfw.wmnet
+            - jaeger-collector-http.svc.eqiad.wmnet
+            - jaeger-collector-grpc.discovery.wmnet
+            - jaeger-collector-grpc.svc.codfw.wmnet
+            - jaeger-collector-grpc.svc.eqiad.wmnet
