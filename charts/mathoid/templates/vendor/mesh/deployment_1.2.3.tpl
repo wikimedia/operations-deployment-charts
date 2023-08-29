@@ -8,6 +8,10 @@
       value: {{ .Release.Name }}
     - name: SERVICE_ZONE
       value: "default"
+    {{- if .Values.mesh.concurrency }}
+    - name: CONCURRENCY
+      value: "{{ .Values.mesh.concurrency }}"
+    {{- end }}
     {{- with .Values.mesh.admin }}
     - name: ADMIN_PORT
       value: "{{ .port | default 1666 }}"
@@ -67,8 +71,13 @@
     name: {{ $release }}-envoy-config-volume
 {{- if .Values.mesh.public_port }}
 - name: tls-certs-volume
+{{- if (.Values.mesh.certmanager | default dict).enabled }}
+  secret:
+    secretName: {{ $release }}-tls-proxy-certs
+{{- else }}
   configMap:
     name: {{ $release }}-tls-proxy-certs
-{{- end }}
-{{- end }}
+{{- end }}{{- /* end if (.Values.mesh.certmanager | default dict).enabled */ -}}
+{{- end }}{{- /* end if .Values.mesh.public_port */ -}}
+{{- end }}{{- /* end if .Values.mesh.enabled */ -}}
 {{- end -}}
