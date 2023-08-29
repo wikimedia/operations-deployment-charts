@@ -28,6 +28,7 @@ spec:
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:
+      automountServiceAccountToken: false
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
