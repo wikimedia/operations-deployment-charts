@@ -1,0 +1,127 @@
+main_app:
+  cassandra_hosts:
+    - aqs2001-a.codfw.wmnet
+    - aqs2001-b.codfw.wmnet
+    - aqs2002-a.codfw.wmnet
+    - aqs2002-b.codfw.wmnet
+    - aqs2003-a.codfw.wmnet
+    - aqs2003-b.codfw.wmnet
+    - aqs2004-a.codfw.wmnet
+    - aqs2004-b.codfw.wmnet
+    - aqs2005-a.codfw.wmnet
+    - aqs2005-b.codfw.wmnet
+    - aqs2006-a.codfw.wmnet
+    - aqs2006-b.codfw.wmnet
+    - aqs2007-a.codfw.wmnet
+    - aqs2007-b.codfw.wmnet
+    - aqs2008-a.codfw.wmnet
+    - aqs2008-b.codfw.wmnet
+    - aqs2009-a.codfw.wmnet
+    - aqs2009-b.codfw.wmnet
+    - aqs2010-a.codfw.wmnet
+    - aqs2010-b.codfw.wmnet
+    - aqs2011-a.codfw.wmnet
+    - aqs2011-b.codfw.wmnet
+    - aqs2012-a.codfw.wmnet
+    - aqs2012-b.codfw.wmnet
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.192.0.214/32 # aqs2001-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.215/32 # aqs2001-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.216/32 # aqs2002-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.217/32 # aqs2002-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.218/32 # aqs2003-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.219/32 # aqs2003-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.220/32 # aqs2004-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.0.221/32 # aqs2004-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.174/32 # aqs2005-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.179/32 # aqs2005-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.183/32 # aqs2006-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.185/32 # aqs2006-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.186/32 # aqs2007-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.187/32 # aqs2007-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.188/32 # aqs2008-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.189/32 # aqs2008-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.192/32 # aqs2009-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.193/32 # aqs2009-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.194/32 # aqs2010-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.195/32 # aqs2010-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.196/32 # aqs2011-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.197/32 # aqs2011-b
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.198/32 # aqs2012-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.199/32 # aqs2012-b
+        ports:
+          - protocol: tcp
+            port: 9042

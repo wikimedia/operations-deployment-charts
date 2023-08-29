@@ -1,0 +1,1 @@
+Global defaults for all AQS2 services to use
