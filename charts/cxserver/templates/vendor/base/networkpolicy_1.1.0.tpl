@@ -4,7 +4,7 @@
 These templates provide the basic networkpolicy functionalities
 in particular for egress.
 
- - base.networkpolicy.egress-basic provides basic networkpolicy support
+ - base.networkpolicy.egress-basic - provides basic networkpolicy support
  - base.networkpolicy.egress.mariadb - provides access to specifically defined WMF MariaDB sections
 */}}
 
