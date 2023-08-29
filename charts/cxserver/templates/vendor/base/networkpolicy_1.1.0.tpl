@@ -71,6 +71,7 @@ in particular for egress.
 - to:
   - ipBlock:
       cidr: 10.64.0.0/12
+  - ipBlock:
       cidr: 10.192.0.0/12
   ports:
   {{- range $ports }}
