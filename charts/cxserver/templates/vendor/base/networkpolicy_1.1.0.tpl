@@ -57,7 +57,7 @@ in particular for egress.
 {{/* Auto-generate egress networkpolicies for MariaDB sections */}}
 {{- define "base.networkpolicy.egress.mariadb" -}}
 {{/* MariaDB egress. Ask for MariaDB section names. We hardcode eqiad/codfw CIDRs they are kinda ossified */}}
-{{- if .Values.mariadb }}
+{{- if and .Values.mariadb .Values.mariadb.egress }}
 {{- $section_ports := .Values.mariadb.section_ports }}
 {{- $ports := list 3306 }}
 {{- range .Values.mariadb.egress.sections }}
