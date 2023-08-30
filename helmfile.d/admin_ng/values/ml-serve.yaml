@@ -222,6 +222,15 @@ namespaces:
         max:
           memory: "44Gi"
           cpu: "16"
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "90"
+          memory: "150Gi"
+        limits:
+          cpu: "90"
+          memory: "150Gi"
 
 net_istio:
   ingressgateway:
