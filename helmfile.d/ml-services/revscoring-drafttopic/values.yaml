@@ -38,8 +38,8 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
-    autoscaling.knative.dev/metric: "concurrency"
-    autoscaling.knative.dev/target: "5"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "8"
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "drafttopic"
   predictor:

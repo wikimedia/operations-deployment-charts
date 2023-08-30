@@ -38,12 +38,11 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
-    autoscaling.knative.dev/target: "3"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "8"
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
     version: "2023-08-09-155546-publish"
-    config:
-      containerConcurrency: 5
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"

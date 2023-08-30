@@ -38,7 +38,8 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
-    autoscaling.knative.dev/target: "3"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "8"
 
 inference_services:
   revertrisk-language-agnostic:
@@ -46,7 +47,6 @@ inference_services:
       config:
         minReplicas: 5
         maxReplicas: 15
-        containerConcurrency: 10
       image: "machinelearning-liftwing-inference-services-revertrisk"
       image_version: "2023-08-11-105206-publish"
       custom_env:
@@ -61,7 +61,6 @@ inference_services:
       config:
         minReplicas: 5
         maxReplicas: 15
-        containerConcurrency: 5
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
       image_version: "2023-08-11-105206-publish"
       custom_env:

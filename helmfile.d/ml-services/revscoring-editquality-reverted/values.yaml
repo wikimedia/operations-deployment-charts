@@ -38,9 +38,15 @@ monitoring:
 inference:
   annotations:
     sidecar.istio.io/inject: "true"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "8"
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "reverted"
   predictor:
+  predictor:
+    config:
+      minReplicas: 1
+      maxReplicas: 2
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2023-06-28-092250-publish"
     base_env:
