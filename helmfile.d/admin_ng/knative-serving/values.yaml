@@ -56,3 +56,9 @@ core:
     # can have zero serving pods, waiting for requests to happen).
     # More info https://knative.dev/docs/serving/load-balancing/target-burst-capacity/
     target-burst-capacity: "0"
+    # Percentage of avg concurrent (if configured as metric, otherwise rps etc..)
+    # requests to initiate a scale up action. Basically knative tries to scale
+    # up earlier to smooth the transition time to more capacity (to avoid overloading
+    # the other instances). Default is 70.
+    # More info: https://knative.dev/docs/serving/autoscaling/concurrency/#target-utilization
+    container-concurrency-target-percentage: "85"
