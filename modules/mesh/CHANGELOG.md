@@ -1,3 +1,6 @@
+## configuration 1.4.1
+- Add tracing support (sending to otel-collector over grpc)
+
 ## configuration 1.4.0
 - Stop listening for admin connections on .Values.mesh.admin.port by default.
   If this it still required (which it is for draining support)

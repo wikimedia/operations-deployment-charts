@@ -1,0 +1,29 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 123.123.123.123/24
+    extraRules:
+    - to:
+      - podSelector:
+          matchLabels:
+            nicepod: 'true'
+      ports:
+      - protocol: TCP
+        port: 1234
+
+# The discovery stuff adds networkpolicies.
+mesh:
+  enabled: true
+  public_port: 4004 # the port where TLS will be exposed
+  tracing:
+    enabled: true
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+discovery:
+  listeners:
+    - parsoid-php
+    - mathoid
+    - eventgate-analytics

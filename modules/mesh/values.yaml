@@ -69,6 +69,15 @@ mesh:
   # staging: true
   # mlstaging: true
 
+  # Tracing (via otel-collector) configuration
+  # When enabled, all outbound requests will be traced
+  tracing:
+    enabled: false
+    # host: hostname to talk to. default main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local
+    # port: grpc port to use. default 4317
+    # otel_collector_namespace: the namespace where the collector daemonset is running. default opentelemetry-collector
+    # otel_pod_selector: the pod selector for otel collector egress. default component=agent-collector
+
 # Mesh-related discovery
 # TODO: move under mesh.* once we can
 discovery:
