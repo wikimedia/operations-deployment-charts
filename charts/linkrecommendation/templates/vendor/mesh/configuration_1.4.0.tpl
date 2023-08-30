@@ -8,8 +8,8 @@
 
 {{- define "mesh.configuration.configmap" }}
 {{- if .Values.mesh.enabled }}
-{{/* Only render the certs configmap if public_port is configured. */}}
-{{- if .Values.mesh.public_port }}
+{{/* Only render the certs configmap if public_port is configured but certmanager is disabled. */}}
+{{- if and (.Values.mesh.public_port) (not (.Values.mesh.certmanager | default dict).enabled) }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -20,23 +20,50 @@ data:
 {{ .Values.mesh.certs.cert | indent 4 }}
   service.key: |-
 {{ .Values.mesh.certs.key | indent 4 }}
-{{ end -}}
+{{ end -}}{{- /* end if .Values.mesh.public_port */ -}}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   {{- include "base.meta.metadata" (dict "Root" . "Name" "envoy-config-volume") | indent 2 }}
 data:
-  envoy.yaml: |-
-    {{- include "mesh.configuration.full" . | nindent 4 }}
-{{- if .Values.mesh.error_page }}
-  error_page.html: |-
-    {{- .Values.mesh.error_page | nindent 4 }}
-{{ end -}}
+  {{- include "mesh.configuration.full" . | nindent 2 }}
 {{ end -}}{{/* end mesh enabled */}}
 {{- end -}}
 
+{{/*
+
+mesh.configuration.full should output all config parts required by envoy as it's
+output is also used to compute the checksum/tls-config (e.g. restat the pod on
+config changes).
+
+*/}}
 {{- define "mesh.configuration.full" -}}
+envoy.yaml: |-
+  {{- include "mesh.configuration.envoy" . | nindent 2 }}
+{{- if and (.Values.mesh.certmanager | default dict).enabled .Values.mesh.public_port }}
+tls_certificate_sds_secret.yaml: |-
+  {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 2 }}
+{{- end }}
+{{- if .Values.mesh.error_page }}
+error_page.html: |-
+  {{- .Values.mesh.error_page | nindent 2 }}
+{{ end -}}
+{{- end -}}
+
+{{- define "mesh.configuration.envoy_admin_address" -}}
+{{ $admin := (.Values.mesh.admin | default dict) }}
+{{- if $admin.bind_tcp | default false }}
+socket_address:
+  address: 127.0.0.1
+  port_value: {{ $admin.port | default 1666 }}
+{{- else }}
+pipe:
+  path: /var/run/envoy/admin.sock
+{{- end }}
+{{- end -}}
+
+{{- define "mesh.configuration.envoy" -}}
 admin:
   access_log:
     typed_config:
@@ -44,14 +71,14 @@ admin:
       # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
       path: /var/log/envoy/admin-access.log
   address:
-    socket_address: {address: 127.0.0.1, port_value: {{ (.Values.mesh.admin | default dict).port | default 1666 }}}
+    {{- include "mesh.configuration.envoy_admin_address" . | indent 4 }}
   # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
   ignore_global_conn_limit: true
 layered_runtime:
   layers:
     # Limit the total number of allowed active connections per envoy instance.
     # Envoys configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
-    # wich is still essentially unlimited in our use case.
+    # which is still essentially unlimited in our use case.
     - name: static_layer_0
       static_layer:
         overload:
@@ -184,9 +211,22 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
         common_tls_context:
+          {{- if (.Values.mesh.certmanager | default dict).enabled }}
+          {{- /*
+          Configure envoy to read certificates from static SDS config.
+          This will enable an inotify watcher and hot-reloading on certificate changes.
+          */}}
+          tls_certificate_sds_secret_configs:
+            name: tls_sds
+            sds_config:
+              path_config_source:
+                path: /etc/envoy/tls_certificate_sds_secret.yaml
+              resource_api_version: V3
+          {{- else }}
           tls_certificates:
             - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
               private_key: {filename: /etc/envoy/ssl/service.key}
+          {{- end }}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
     typed_config:
@@ -420,6 +460,7 @@ under 'tcp_services_proxy'.
 
 {{- define "mesh.configuration._admin_cluster" }}
 - name: admin_interface
+  type: static
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
@@ -428,8 +469,7 @@ under 'tcp_services_proxy'.
     - lb_endpoints:
       - endpoint:
           address:
-            socket_address: {address: 127.0.0.1, port_value: 1666 }
-  type: strict_dns
+            {{- include "mesh.configuration.envoy_admin_address" . | indent 12 }}
 {{- end }}
 
 
@@ -458,3 +498,21 @@ local_reply_config:
       content_type: "text/html; charset=UTF-8"
 {{- end }}
 {{- end }}
+
+
+{{/*
+
+Create a SDS config for TLS secrets to have the certificate and key files
+watched with inotify and reloaded automatically without restart.
+
+*/}}
+{{- define "mesh.configuration.tls_certificate_sds_secret" -}}
+resources:
+- "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+  name: tls_sds
+  tls_certificate:
+    certificate_chain:
+      filename: /etc/envoy/ssl/tls.crt
+    private_key:
+      filename: /etc/envoy/ssl/tls.key
+{{- end -}}
