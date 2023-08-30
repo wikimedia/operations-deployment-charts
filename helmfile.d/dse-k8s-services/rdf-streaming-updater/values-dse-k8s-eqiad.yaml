@@ -31,3 +31,33 @@ app:
 kafka:
   allowed_clusters:
     - jumbo-eqiad
+
+networkpolicy:
+  egress:
+    dst_nets:
+          # Zookeeper flink-zk
+      - cidr: 10.64.16.9/32 # flink-zk1001
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 2620:0:861:102:10:64:16:9/128 # flink-zk1001
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 10.64.0.8/32 # flink-zk1002
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 2620:0:861:101:10:64:0:8/128 # flink-zk1002
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 10.64.32.41/32 # flink-zk1003
+        ports:
+          - port: 2181
+            protocol: tcp
+      - cidr: 2620:0:861:103:10:64:32:41/128 #flink-zk1003
+        ports:
+          - port: 2181
+            protocol: tcp
+
