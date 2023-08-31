@@ -127,27 +127,27 @@ resources:
     {{- end }}
     {{- if .Values.auth.oidc.enabled}}
     - name: AUTH_OIDC_ENABLED
-      value: "true"
+      value: {{ .Values.auth.oidc.enabled | quote}}
     - name: AUTH_OIDC_CLIENT_ID
-      value: "datahub_staging"
+      value: {{ .Values.auth.oidc.client_id }}
     - name: AUTH_OIDC_PRE_PROVISIONING_REQUIRED
-      value: "false"
+      value: {{ .Values.auth.oidc.pre_provisioning_required | quote }}
     - name: AUTH_OIDC_DISCOVERY_URI
-      value: "https://idp-test.wikimedia.org/oidc/.well-known"
+      value: {{ .Values.auth.oidc.discovery_uri }}
     - name: AUTH_OIDC_BASE_URL
-      value: "https://datahub-frontend.k8s-staging.discovery.wmnet"
+      value: {{ .Values.auth.oidc.base_url }}
     - name: AUTH_OIDC_SCOPE
-      value: "openid profile email"
+      value: {{ .Values.auth.oidc.scope | quote | default "openid profile email" }}
     - name: AUTH_OIDC_USER_NAME_CLAIM
-      value: "preferred_username"
+      value: {{ .Values.auth.oidc.user_name_claim }}
     - name: AUTH_OIDC_JIT_PROVISIONING_ENABLED
-      value: "true"
+      value: {{ .Values.auth.oidc.jit_provisioning_enabled | quote }}
     - name: AUTH_OIDC_EXTRACT_GROUPS_ENABLED
-      value: "true"
+      value: {{ .Values.auth.oidc.extract_groups_enabled | quote }}
     - name: AUTH_OIDC_CLIENT_AUTHENTICATION_METHOD
-      value: "client_secret_post"
+      value: {{ .Values.auth.oidc.client_authentication_method }}
     - name: AUTH_OIDC_PREFERRED_JWS_ALGORITHM
-      value: "RS256"
+      value: {{ .Values.auth.oidc.preferred_jws_algorithm }}
     {{- end}}
 {{ include "limits.frontend" . | indent 2}}
 {{- if or (.Values.main_app.volumeMounts) (.Values.auth.ldap.enabled) }}

@@ -103,6 +103,11 @@ datahub-frontend:
   auth:
     ldap:
       enabled: false
+    oidc:
+      enabled: true
+      client_id: "datahub"
+      base_url: "https://datahub.wikimedia.org/"
+      discovery_uri: "https://idp.wikimedia.org/oidc/.well-known"
   kafka: *kafka
   kafka_brokers: *kafka_brokers
   config:

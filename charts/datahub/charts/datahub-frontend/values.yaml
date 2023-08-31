@@ -43,13 +43,22 @@ config:
   public: {}
   private: {} # Add here all the keys that should be private but still available as env variables
 
-# The following key is used to enabled a ConfigMap containing an alternative JaaS configuration file
+# The following key is used to set authentication mechanism for datahub.
+# ldap enables a ConfigMap containing an alternative JaaS configuration file
 # that enables LDAP authentication.
+# oidc enables authentication via the Wikimedia Developer SSO Portal backed by ldap.
+# Only one should be enabled
 auth:
   ldap:
     enabled: false
   oidc:
-    enabled: true
+    client_authentication_method: "client_secret_post"
+    scope: "openid profile email"
+    user_name_claim: "preferred_username"
+    jit_provisioning_enabled: true
+    pre_provisioning_required: false
+    extract_groups_enabled: true
+    preferred_jws_algorithm: "RS256"
 
 mesh:
   enabled: false # Switch to true in production

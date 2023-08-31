@@ -27,6 +27,9 @@ datahub-frontend:
       enabled: false
     oidc:
       enabled: true
+      client_id: "datahub_staging"
+      base_url: "https://datahub-frontend.k8s-staging.discovery.wmnet"
+      discovery_uri: "https://idp-test.wikimedia.org/oidc/.well-known"
   config:
     <<: *config
     public:
