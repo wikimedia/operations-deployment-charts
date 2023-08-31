@@ -2601,7 +2601,7 @@ spec:
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
-            failureThreshold: 12
+            failureThreshold: 24
             initialDelaySeconds: 30
           livenessProbe:
             periodSeconds: 10
@@ -2611,7 +2611,7 @@ spec:
               httpHeaders:
                 - name: k-kubelet-probe
                   value: "webhook"
-            failureThreshold: 12
+            failureThreshold: 24
             initialDelaySeconds: 30
       # Our webhook should gracefully terminate by lame ducking first, set this to a sufficiently
       # high value that we respect whatever value it has configured for the lame duck grace period.
