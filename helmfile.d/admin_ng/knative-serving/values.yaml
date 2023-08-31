@@ -62,3 +62,11 @@ core:
     # the other instances). Default is 70.
     # More info: https://knative.dev/docs/serving/autoscaling/concurrency/#target-utilization
     container-concurrency-target-percentage: "85"
+
+  config_gc:
+    # Immediately clean up old Knative revisions not active anymore.
+    # More info: https://knative.dev/docs/serving/revisions/revision-admin-config-options/#garbage-collection
+    max-non-active-revisions: "0"
+    min-non-active-revisions: "0"
+    retain-since-create-time: "disabled"
+    retain-since-last-active-time: "disabled"
