@@ -48,17 +48,17 @@ query:
               podSelector:
                 matchLabels:
                   istio: ingressgateway
-              ports:
-                - port: 16686
-                  protocol: TCP
-            # Allow ingress from everywhere to the admin port
-            # FIXME: This should be limited to prometheus nodes and kubelets
-            # FIXME: admin port sounds evil, I could not find docs
-            #        on what is running there apart from health check
-            #        and monitoring.
-            - ports:
-                - port: 16687
-                  protocol: TCP
+          ports:
+            - port: 16686
+              protocol: TCP
+        # Allow ingress from everywhere to the admin port
+        # FIXME: This should be limited to prometheus nodes and kubelets
+        # FIXME: admin port sounds evil, I could not find docs
+        #        on what is running there apart from health check
+        #        and monitoring.
+        - ports:
+            - port: 16687
+              protocol: TCP
 
     egressRules:
       # Allow egress to logs-api.svc.eqiad.wmnet
@@ -122,21 +122,21 @@ collector:
               podSelector:
                 matchLabels:
                   istio: ingressgateway
-              ports:
-                # OTLP GRPC
-                - protocol: TCP
-                  port: 4317
-                # OTLP HTTP
-                - protocol: TCP
-                  port: 4318
-            # Allow ingress from everywhere to the admin port
-            # FIXME: This should be limited to prometheus nodes and kubelets
-            # FIXME: admin port sounds evil, I could not find docs
-            #        on what is running there apart from health check
-            #        and monitoring.
-            - ports:
-                - port: 14269
-                  protocol: TCP
+          ports:
+            # OTLP GRPC
+            - protocol: TCP
+              port: 4317
+            # OTLP HTTP
+            - protocol: TCP
+              port: 4318
+        # Allow ingress from everywhere to the admin port
+        # FIXME: This should be limited to prometheus nodes and kubelets
+        # FIXME: admin port sounds evil, I could not find docs
+        #        on what is running there apart from health check
+        #        and monitoring.
+        - ports:
+            - port: 14269
+              protocol: TCP
     egressRules:
       # Allow egress to logs-api.svc.eqiad.wmnet
       customRules:
