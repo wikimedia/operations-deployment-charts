@@ -43,7 +43,12 @@ core:
         cpu: 3000m
         memory: 1000Mi
   webhook:
-    replicaCount: 2
+    # We raise the max number of pods in production since sometimes,
+    # when a new knative-serving chart version is rolled out, there is the chance
+    # that the webhook pods are not avaiable to answer validation requests
+    # from the Kube API (that in turn is contacted by Helm).
+    # Having 4 pods helped during the last deployment issue.
+    replicaCount: 4
     resources:
       requests:
         cpu: 500m

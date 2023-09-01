@@ -1,4 +1,6 @@
-# Reduce the activator replicas from what we set for production.
+# Reduce the replicas from what we set for production.
 core:
   activator:
+    replicaCount: 2
+  webhook:
     replicaCount: 2
