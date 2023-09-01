@@ -72,11 +72,13 @@ namespaces:
     pspClusterRole: allow-privileged-psp
     labels:
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
     labels:
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
@@ -107,6 +109,7 @@ namespaces:
       - '*.revertrisk.wikimedia.org'
     labels:
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   kserve:
     systemNamespace: true
     allowCriticalPods: true
@@ -114,11 +117,13 @@ namespaces:
       control-plane: kserve-controller-manager
       controller-tools.k8s.io: "1.0"
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   cert-manager:
     systemNamespace: true
     allowCriticalPods: true
     labels:
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   revscoring-editquality-goodfaith:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
@@ -189,6 +194,7 @@ namespaces:
     # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
     labels:
       istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
     tlsExtraSANs:
       - 'ores.wikimedia.org'
       - 'ores-legacy.wikimedia.org'
