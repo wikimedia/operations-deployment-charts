@@ -1698,6 +1698,7 @@ data:
   {{ $k }}: {{ $v | quote }}
   {{- end }}
 
+{{- if .Values.enable_hpa | default false }}
 ---
 # Copyright 2020 The Knative Authors
 #
@@ -1737,6 +1738,7 @@ spec:
           type: Utilization
           # Percentage of the requested CPU
           averageUtilization: 100
+{{- end }}
 ---
 # Activator PDB. Currently we permit unavailability of 20% of tasks at the same time.
 # Given the subsetting and that the activators are partially stateful systems, we want
@@ -2433,6 +2435,7 @@ spec:
   selector:
     role: domainmapping-webhook
 
+{{- if .Values.enable_hpa | default false }}
 ---
 # Copyright 2020 The Knative Authors
 #
@@ -2472,6 +2475,7 @@ spec:
           type: Utilization
           # Percentage of the requested CPU
           averageUtilization: 100
+{{- end }}
 ---
 # Webhook PDB.
 apiVersion: policy/v1

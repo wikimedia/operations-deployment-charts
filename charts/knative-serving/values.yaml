@@ -45,6 +45,7 @@ net_istio:
         cpu: 200m
         memory: 200Mi
 core:
+  enable_hpa: false
   # This domain will be used when creating hostnames for routes by Knative
   default_domain: 'wikimedia.org'
   queue_proxy:
@@ -61,9 +62,6 @@ core:
     image: knative-serving-activator
     version: 1.7.2-1
     replicaCount: 1
-    autoscaling:
-      minReplicas: 1
-      maxReplicas: 20
     podDisruptionBudget:
       minAvailable: 1
     resources:
