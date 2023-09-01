@@ -78,7 +78,6 @@ namespaces:
     allowCriticalPods: true
     labels:
       istio-injection: disabled
-      webhooks.knative.dev/exclude: "true"
   knative-serving:
     systemNamespace: true
     allowCriticalPods: true
@@ -109,7 +108,6 @@ namespaces:
       - '*.revertrisk.wikimedia.org'
     labels:
       istio-injection: disabled
-      webhooks.knative.dev/exclude: "true"
   kserve:
     systemNamespace: true
     allowCriticalPods: true
