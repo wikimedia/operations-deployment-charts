@@ -314,6 +314,14 @@ extraObjects:
     spec:
       host: "{{ template \"jaeger.collector.name\" . }}.{{ .Release.Namespace }}.svc.cluster.local"
       trafficPolicy:
+        connectionPool:
+          http:
+            # The istio gateway will forward all incoming HTTP requests using HTTP/1.1 regardless
+            # of the protocol the client used. The following option instructs the gateway to forward
+            # requests using the same protocol as the incoming request.
+            # As the gateway will always advertize HTTP/1.1 and HTTP/2, this will break if the backend
+            # does not support HTTP/2.
+            useClientProtocol: true
         tls:
           mode: SIMPLE
           subjectAltNames:
