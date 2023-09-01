@@ -10,6 +10,9 @@ service:
 mesh:
   enabled: true
   public_port: 4011
+  certmanager:
+    extraFQDNs:
+      - toolhub.wikimedia.org
 
 mariadb:
   egress:
