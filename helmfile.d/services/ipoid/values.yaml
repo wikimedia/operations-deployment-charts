@@ -56,3 +56,7 @@ mesh:
   enabled: true
   certmanager:
     enabled: true
+# Allow to reach out to WMF MariaDB m5 section
+mariadb:
+  egress:
+    sections: ["m5"]
