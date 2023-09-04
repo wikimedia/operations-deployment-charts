@@ -46,8 +46,8 @@ inference:
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2023-06-28-092250-publish"
     config:
-      minReplicas: 1
-      maxReplicas: 3
+      minReplicas: 2
+      maxReplicas: 4
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"

@@ -39,7 +39,7 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
-    autoscaling.knative.dev/target: "8"
+    autoscaling.knative.dev/target: "4"
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "articlequality"
   predictor:
@@ -47,7 +47,7 @@ inference:
     version: "2023-06-28-092250-publish"
     config:
       minReplicas: 1
-      maxReplicas: 3
+      maxReplicas: 4
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
