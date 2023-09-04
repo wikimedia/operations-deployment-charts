@@ -3,8 +3,6 @@ monitoring:
 
 inference:
   predictor:
-    config:
-      maxReplicas: 1
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -16,4 +14,12 @@ inference:
         value: "mediawiki.page_outlink_topic_prediction_change.v1"
 
 inference_services:
-  outlink-topic-model: {}
+  outlink-topic-model:
+    transformer:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
