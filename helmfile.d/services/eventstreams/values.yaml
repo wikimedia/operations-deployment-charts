@@ -40,7 +40,7 @@ main_app:
       # NOTE: The kafka brokers list is set in site specific values files.
       #metadata.broker.list:
       queued.max.messages.kbytes: 32768
-      fetch.message.max.bytes: 8388608
+      fetch.message.max.bytes: 10485760
       queued.min.messages: 1000
       statistics.interval.ms: 60000
       # Enable Kafka consumer TLS (no authentication, just encryption).
