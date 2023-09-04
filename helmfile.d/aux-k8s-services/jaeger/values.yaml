@@ -21,6 +21,8 @@ query:
   cmdlineParams:
     es.tls.enabled: true
     es.index-date-separator: '.'
+    es.num-replicas: 2
+    es.num-shards: 1
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
@@ -83,6 +85,8 @@ collector:
   cmdlineParams:
     es.tls.enabled: true
     es.index-date-separator: '.'
+    es.num-replicas: 2
+    es.num-shards: 1
     # Enabling TLS for all ports exposed by default (although we only use the otlp ones)
     collector.http.tls.enabled: true
     collector.http.tls.key: /tls/tls.key
