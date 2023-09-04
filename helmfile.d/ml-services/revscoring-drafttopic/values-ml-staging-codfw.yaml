@@ -4,6 +4,7 @@ monitoring:
 inference:
   predictor:
     config:
+      minReplicas: 1
       maxReplicas: 1
     base_env:
       - name: WIKI_URL
