@@ -11,6 +11,7 @@ config:
     zipkin: null
   exporters:
     otlp:
+      # Don't forget to update the egress rules below upon changing this
       endpoint: jaeger-collector-grpc.svc.eqiad.wmnet:30443
       tls:
         ca_file: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -57,3 +58,13 @@ service:
   enabled: true
   type: NodePort
   internalTrafficPolicy: Local
+
+networkPolicy:
+  enabled: true
+  egressRules:
+    - to:
+        - ipBlock:
+            cidr: 10.2.2.78/32 # jaeger-collector-grpc.svc.eqiad.wmnet
+      ports:
+        - port: 30443
+          protocol: TCP
