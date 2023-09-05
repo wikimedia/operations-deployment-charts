@@ -32,6 +32,7 @@ DEPLOYMENT_SERVER_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/op
 LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'.freeze
 MARIADB_SECTION_PORTS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/mariadb.yaml?format=TEXT'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
+COMMON_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common.yaml?format=TEXT'.freeze
 
 ## RAKE TASKS
 
@@ -361,6 +362,27 @@ task :refresh_fixtures do
     mariadb_sections = { 'mariadb' => { 'section_ports' => hiera['profile::mariadb::section_ports'] } }
   end
 
+  # Fetch hiera's common.yaml to extract lists of known clusters.
+  common_clusters = {}
+  URI.open(COMMON_HIERA_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded)
+
+    zookeeper_mock = ['1.2.3.4/32']
+    zookeeper_clusters = {}
+    hiera['zookeeper_clusters'].each_key do |cluster_name|
+      zookeeper_clusters[cluster_name] = zookeeper_mock
+    end
+    common_clusters['zookeeper_clusters'] = zookeeper_clusters
+
+    kafka_mock = ['1.2.3.4/32']
+    kafka_brokers = {}
+    hiera['kafka_clusters'].each_key do |cluster_name|
+      kafka_brokers[cluster_name] = kafka_mock
+    end
+    common_clusters['kafka_brokers'] = kafka_brokers
+  end
+
   # Fetch general settings for all environment, similar to
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
   URI.open(DEPLOYMENT_SERVER_HIERA_URL) do |res|
@@ -373,13 +395,17 @@ task :refresh_fixtures do
 
       env_name = cluster_name == 'staging-eqiad' ? 'staging' : cluster_name
       File.open(".fixtures/general-#{env_name}.yaml", 'w') do |out|
-        res = data['default']
-        res = deep_merge(mariadb_sections, deep_merge(service_proxy, deep_merge(cluster_values, res)))
+        res = [
+          data['default'],
+          cluster_values,
+          service_proxy,
+          mariadb_sections,
+          common_clusters
+        ].reduce { |acc, h| deep_merge(h, acc) }
         YAML.dump(res, out)
       end
     end
   end
-
 end
 
 task :check, [:kind, :tests, :assets] do |_, args|

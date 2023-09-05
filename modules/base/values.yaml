@@ -28,6 +28,14 @@ kafka_brokers: {}
 kafka:
   allowed_clusters: ~
 
+# List of zookeeper clusters, usually provided by
+# configuration management.
+zookeeper_clusters: {}
+
+# allowed_clusters is a list of cluster names
+zookeeper:
+  allowed_clusters: ~
+
 certificates: []
 
 mariadb: ~
