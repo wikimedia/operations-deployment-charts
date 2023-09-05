@@ -197,6 +197,10 @@ networkpolicy:
 kafka:
   allowed_clusters: []
 
+# Add here the list of zookeeper-clusters (by name) that the service will need to reach.
+zookeeper:
+  allowed_clusters: []
+
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 #
