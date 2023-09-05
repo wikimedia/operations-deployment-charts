@@ -100,7 +100,7 @@ main_app:
           out: '/api?format=\2&search=\3'
 
     wikifeeds:
-      timeout: 120s
+      timeout: 15s
       urls:
         announcements:
           in: '(.+)/v1/feed/announcements'
@@ -122,11 +122,18 @@ main_app:
           out: '\1/v1/page/random/redirect/\2'
 
     aqs:
-      timeout: 120s
+      timeout: 15s
       urls:
         knowledge_gap:
           in: '(.+)/v1/knowledge-gap/(.+)'
           out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
+
+    geo-analytics:
+      timeout: 15s
+      urls:
+        geo-editors:
+          in: '(.+)/v1/metrics/editors/by-country/(.+)'
+          out: '/metrics/editors/by-country/\2'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
@@ -145,6 +152,9 @@ main_app:
     aqs:
       port: 7232
       tls: false
+    geo-analytics:
+      port: 30443 # ingress
+      tls: true
 
 service:
   deployment: production
@@ -204,3 +214,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 7232
+    - cidr: 10.2.2.70/32 # k8s-ingress-wikikube-ro.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.70/32 # k8s-ingress-wikikube-ro.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 30443
