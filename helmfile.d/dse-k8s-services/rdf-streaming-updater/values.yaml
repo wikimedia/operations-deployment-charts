@@ -26,7 +26,7 @@ app:
 
   flinkConfiguration:
     "taskmanager.numberOfTaskSlots": "4"
-    "high-availability": KUBERNETES
+    "high-availability.type": ZOOKEEPER
     "s3.access-key": wdqs:flink
     "s3.secret-key": secret
     "s3.endpoint": thanos-swift.discovery.wmnet
