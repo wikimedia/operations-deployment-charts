@@ -12,9 +12,8 @@ app:
     upgradeMode: savepoint
     args: [ "/srv/app/conf/rdf-streaming-updater-config.properties" ]
 
-# HA Mode requires multiple jobmanagers; see https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/deployment/ha/overview/
   jobManager:
-    replicas: 3
+    replicas: 1
     resource:
       memory: 1600m
 
