@@ -451,9 +451,9 @@ def tasklist_from_changes(changes)
   tasks = {scaffold: false, charts: [], deployments: [], admin: false, envoy: true, istio: false}
   all_changes = changes.values.flatten
 
-  # Scaffold is easy. Any file under _scaffold changed?
+  # Scaffold is easy. Any file under _scaffold or modules changed?
   all_changes.each do |path|
-    if path.start_with?('_scaffold/')
+    if path.start_with?('_scaffold/') || path.start_with?('modules')
       tasks[:scaffold] = true
       break
     end
