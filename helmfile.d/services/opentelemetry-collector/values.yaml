@@ -1,11 +1,8 @@
 mode: daemonset
 
 config:
-  # Disable all receivers except OTLP-over-gRPC.
+  # Disable all receivers except OTLP
   receivers:
-    otlp:
-      protocols:
-        http: null
     jaeger: null
     prometheus: null
     zipkin: null
@@ -38,13 +35,14 @@ command:
   # installed at the root.)
   name: usr/bin/otelcol-contrib
 
-# Disable all ports except OTLP-over-gRPC.
+# Disable all ports except OTLP
 ports:
   otlp:
     # Disable the hostPort; we'll use a NodePort service instead.
     hostPort: null
   otlp-http:
-    enabled: false
+    # Disable the hostPort; we'll use a NodePort service instead.
+    hostPort: null
   jaeger-compact:
     enabled: false
   jaeger-thrift:
