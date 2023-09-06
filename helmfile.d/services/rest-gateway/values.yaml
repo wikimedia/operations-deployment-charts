@@ -222,3 +222,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 30443
+    - cidr: 10.2.2.69/32 # *.k8s-staging.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.69/32 # *.k8s-staging.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 30443

@@ -28,6 +28,7 @@ main_app:
           out: '\1/v1/page/summary/\2/\3'
     proton:
       timeout: 150s
+      ingress: true
       urls:
         #TODO tighten capture group criteria
         proton_title:

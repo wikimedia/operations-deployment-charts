@@ -63,6 +63,9 @@
                     substitution: '{{ $route_paths.out }}'
                   timeout: {{ $endpoint_config.timeout | default "15s" }}
                   cluster: {{ $endpoint }}_cluster
+                  {{- if $endpoint_config.ingress }}
+                  auto_host_rewrite: true
+                  {{- end }}
 {{- end }}
 {{- end }}
 {{- /* END restbase_routes definition */}}
