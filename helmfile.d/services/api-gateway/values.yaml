@@ -153,8 +153,8 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-damaging:predict'
-      host_rewrite_path: '\1wiki-damaging.revscoring-editquality-damaging.wikimedia.org'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-damaging:predict'
+      host_rewrite_path: '\1\2-damaging.revscoring-editquality-damaging.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
       # Total requests / hour allowed for a single IP
@@ -181,8 +181,8 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-reverted:predict'
-      host_rewrite_path: '\1wiki-reverted.revscoring-editquality-reverted.wikimedia.org'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-reverted:predict'
+      host_rewrite_path: '\1\2-reverted.revscoring-editquality-reverted.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
       # Total requests / hour allowed for a single IP
