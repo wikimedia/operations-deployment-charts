@@ -30,6 +30,7 @@ JSON_SCHEMA = 'jsonschema/'.freeze
 # This returns a base64-encoded value.
 DEPLOYMENT_SERVER_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/role/common/deployment_server/kubernetes.yaml?format=TEXT'.freeze
 LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'.freeze
+MARIADB_SECTION_PORTS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/mariadb.yaml?format=TEXT'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 
 ## RAKE TASKS
@@ -351,6 +352,15 @@ task :refresh_fixtures do
     end
   end
 
+  # Fetch mariadb section ports
+  # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+  mariadb_sections = {}
+  URI.open(MARIADB_SECTION_PORTS_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded, aliases: true)
+    mariadb_sections = { 'mariadb' => { 'section_ports' => hiera['profile::mariadb::section_ports'] } }
+  end
+
   # Fetch general settings for all environment, similar to
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
   URI.open(DEPLOYMENT_SERVER_HIERA_URL) do |res|
@@ -364,11 +374,12 @@ task :refresh_fixtures do
       env_name = cluster_name == 'staging-eqiad' ? 'staging' : cluster_name
       File.open(".fixtures/general-#{env_name}.yaml", 'w') do |out|
         res = data['default']
-        res = deep_merge(service_proxy, deep_merge(cluster_values, res))
+        res = deep_merge(mariadb_sections, deep_merge(service_proxy, deep_merge(cluster_values, res)))
         YAML.dump(res, out)
       end
     end
   end
+
 end
 
 task :check, [:kind, :tests, :assets] do |_, args|
