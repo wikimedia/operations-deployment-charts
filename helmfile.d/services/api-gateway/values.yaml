@@ -167,8 +167,8 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-goodfaith:predict'
-      host_rewrite_path: '\1wiki-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-goodfaith:predict'
+      host_rewrite_path: '\1\2-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
       # Total requests / hour allowed for a single IP
