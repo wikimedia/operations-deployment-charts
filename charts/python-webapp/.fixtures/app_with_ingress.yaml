@@ -1,0 +1,21 @@
+chartName: unicorn-web-app
+
+monitoring:
+  enabled: true
+
+app:
+  image: unicorn-ml
+  version: latest
+  limits:
+    cpu: 1
+    memory: 1G
+  requests:
+    cpu: 1
+    memory: 1G
+
+service:
+  deployment: production
+
+ingress:
+  enabled: true
+  staging: true
