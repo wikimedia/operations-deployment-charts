@@ -130,6 +130,7 @@ main_app:
 
     geo-analytics:
       timeout: 15s
+      ingress: true
       urls:
         geo-editors:
           in: '(.+)/v1/metrics/editors/by-country/(.+)'
@@ -153,6 +154,7 @@ main_app:
       port: 7232
       tls: false
     geo-analytics:
+      ingress: true
       port: 30443 # ingress
       tls: true
 

@@ -279,6 +279,7 @@ static_resources:
 {{- /* END endpoints cluster definition */}}
 {{- /* BEGIN discovery cluster definition */}}
 {{- range $cluster_name, $cluster_opts := .Values.main_app.discovery_endpoints }}
+{{- $address := $cluster_opts.internal_host | default (printf  "%s.discovery.wmnet" $cluster_name )}}
   - name: {{ $cluster_name }}_cluster
     connect_timeout: 0.25s
     max_requests_per_connection: 1000
@@ -293,6 +294,9 @@ static_resources:
       name: envoy.transport_sockets.tls
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        {{- if $cluster_opts.ingress }}
+        sni: {{ $address }}
+        {{- end }}
         common_tls_context:
           tls_params:
             tls_minimum_protocol_version: TLSv1_2
@@ -308,7 +312,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: {{ $cluster_opts.internal_host | default (list $cluster_name "discovery.wmnet" | join ".") }}
+                address: {{ $address }}
                 port_value: {{ $cluster_opts.port }}
 {{- end }}
 {{- /* END discovery cluster definition */}}
