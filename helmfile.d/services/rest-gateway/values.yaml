@@ -136,6 +136,14 @@ main_app:
           in: '(.+)/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\2'
 
+    media-analytics:
+      timeout: 15s
+      ingress: true
+      urls:
+        geo-editors:
+          in: '(.+)/v1/metrics/mediarequests/(.+)'
+          out: '/metrics/mediarequests/\2'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -154,6 +162,10 @@ main_app:
       port: 7232
       tls: false
     geo-analytics:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+    media-analytics:
       ingress: true
       port: 30443 # ingress
       tls: true
