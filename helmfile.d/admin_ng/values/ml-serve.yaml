@@ -196,6 +196,14 @@ namespaces:
     tlsExtraSANs:
       - 'ores.wikimedia.org'
       - 'ores-legacy.wikimedia.org'
+  recommendation-api-ng:
+    deployClusterRole: deploy
+    deployTLSCertificate: true
+    # NOTE: istio-injection is disabled here because we want to keep comparibility
+    # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
+    labels:
+      istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   # The experimental namespace allows the deployment of model servers
   # that are not ready for production yet. After an incubation period,
   # a model server may be promoted to production in its own dedicated
