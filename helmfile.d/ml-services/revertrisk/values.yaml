@@ -39,10 +39,11 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
-    autoscaling.knative.dev/target: "8"
 
 inference_services:
   revertrisk-language-agnostic:
+    annotations:
+      autoscaling.knative.dev/target: "15"
     predictor:
       config:
         minReplicas: 5
@@ -57,6 +58,8 @@ inference_services:
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
   revertrisk-multilingual:
+    annotations:
+      autoscaling.knative.dev/target: "3"
     predictor:
       config:
         minReplicas: 5
