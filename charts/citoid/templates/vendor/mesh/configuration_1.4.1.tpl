@@ -51,6 +51,18 @@ error_page.html: |-
 {{ end -}}
 {{- end -}}
 
+{{- define "mesh.configuration.envoy_admin_address" -}}
+{{ $admin := (.Values.mesh.admin | default dict) }}
+{{- if $admin.bind_tcp | default false }}
+socket_address:
+  address: 127.0.0.1
+  port_value: {{ $admin.port | default 1666 }}
+{{- else }}
+pipe:
+  path: /var/run/envoy/admin.sock
+{{- end }}
+{{- end -}}
+
 {{- define "mesh.configuration.envoy" -}}
 admin:
   access_log:
@@ -59,7 +71,7 @@ admin:
       # Don't write this to stdout/stderr to not send all the requests for metrics from prometheus to logstash.
       path: /var/log/envoy/admin-access.log
   address:
-    socket_address: {address: 127.0.0.1, port_value: {{ (.Values.mesh.admin | default dict).port | default 1666 }}}
+    {{- include "mesh.configuration.envoy_admin_address" . | indent 4 }}
   # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
   ignore_global_conn_limit: true
 layered_runtime:
@@ -81,6 +93,9 @@ static_resources:
   {{- if .Values.mesh.public_port -}}
   {{- include "mesh.configuration._local_cluster" . | indent 2 }}
   {{- end -}}
+  {{- if (.Values.mesh.tracing | default dict).enabled }}
+  {{- include "mesh.configuration._tracing_cluster" . | indent 2}}
+  {{- end -}}
   {{- include "mesh.configuration._admin_cluster" . | indent 2 }}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
@@ -101,13 +116,13 @@ static_resources:
   {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
-      {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) -}}
+      {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) "Root" $ -}}
       {{- include "mesh.configuration._listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
   {{- if .Values.tcp_proxy| default false -}}
     {{- range $name := .Values.tcp_proxy.listeners }}
-      {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) }}
+      {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) "Root" $ }}
       {{- include "mesh.configuration._tcp_listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
@@ -137,6 +152,26 @@ static_resources:
           address:
             socket_address: {address: 127.0.0.1, port_value: {{ .Values.app.port }} }
   type: strict_dns
+{{- end }}
+{{/* Tracing cluster */}}
+{{- define "mesh.configuration._tracing_cluster" }}
+- name: otel_collector
+  type: strict_dns
+  lb_policy: round_robin
+  typed_extension_protocol_options:
+    envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+      "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+      explicit_http_config:
+        http2_protocol_options: {}
+  load_assignment:
+    cluster_name: otel_collector
+    endpoints:
+    - lb_endpoints:
+      - endpoint:
+          address:
+            socket_address:
+              address: {{ .Values.mesh.tracing.host | default "main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local" }}
+              port_value: {{ .Values.mesh.tracing.port | default "4317" }}
 {{- end }}
 {{- /*
   TLS termination for the downstream service.
@@ -239,6 +274,7 @@ static_resources:
       port: 6060  # this is the local port
       http_host: foobar.example.org  # this is the Host: header that will be added to your request
       timeout: "60s"
+      tracing_enabled: false # default to true
       retry_policy:
         num_retries: 1
         retry_on: 5xx
@@ -288,6 +324,17 @@ under 'tcp_services_proxy'.
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
             path: "/dev/stdout"
+        {{- if and (.Root.Values.mesh.tracing | default dict).enabled (.Listener.tracing_enabled | default true) }}
+        tracing:
+          provider:
+            name: envoy.tracers.opentelemetry
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.trace.v3.OpenTelemetryConfig
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: otel_collector
+                timeout: 0.250s
+        {{- end }}
         stat_prefix: {{ .Name }}_egress
         http_filters:
         - name: envoy.filters.http.router
@@ -448,6 +495,7 @@ under 'tcp_services_proxy'.
 
 {{- define "mesh.configuration._admin_cluster" }}
 - name: admin_interface
+  type: static
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
@@ -456,8 +504,7 @@ under 'tcp_services_proxy'.
     - lb_endpoints:
       - endpoint:
           address:
-            socket_address: {address: 127.0.0.1, port_value: 1666 }
-  type: strict_dns
+            {{- include "mesh.configuration.envoy_admin_address" . | indent 12 }}
 {{- end }}
 
 
