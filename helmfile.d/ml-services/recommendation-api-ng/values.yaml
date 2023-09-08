@@ -1,0 +1,62 @@
+# Values common to both ML serve clusters. If you need to add per-cluster
+# specific values, please create ./ml-serve-{eqiad,codfw}.yaml files.
+
+chartName: recommendation-api-ng
+
+monitoring:
+  enabled: true
+
+config:
+  public:
+    # environment variables used by swift client to get embedding
+    # Notes:
+    # - SWIFT_USER and SWIFT_SECRET_KEY env vars are stored in a private helm file by SRE
+    # - "http://localhost:6022/auth/v1.0" represents "https://thanos-swift.discovery.wmnet/auth/v1.0"
+    SWIFT_AUTHURL: "http://localhost:6022/auth/v1.0"
+    SWIFT_CONTAINER: "wmf-ml-models"
+    SWIFT_OBJECT_PATH: "recommendation-api/enwiki/20230803082546/mini_embedding"
+
+resources:
+  replicas: 5
+
+app:
+  image: wikimedia/research-recommendation-api
+  version: "2023-08-28-153047-production"
+  limits:
+    cpu: 1
+    memory: 1G
+  requests:
+    cpu: 1
+    memory: 1G
+
+service:
+  deployment: production
+
+discovery:
+  listeners:
+  - thanos-swift
+
+mesh:
+  enabled: true
+  public_port: 8443
+  telemetry:
+    enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 443
+    - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 443
