@@ -15,6 +15,9 @@ config:
     SWIFT_AUTHURL: "http://localhost:6022/auth/v1.0"
     SWIFT_CONTAINER: "wmf-ml-models"
     SWIFT_OBJECT_PATH: "recommendation-api/enwiki/20230803082546/mini_embedding"
+    # Needed by swiftclient (since it uses requests behing the scenes)
+    # to properly validate TLS certificates.
+    REQUESTS_CA_BUNDLE: "/etc/ssl/certs/wmf-ca-certificates.crt"
 
 resources:
   replicas: 5
