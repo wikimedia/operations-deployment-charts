@@ -8,7 +8,7 @@ docker:
 resources:
   replicas: 1
 main_app:
-  image: wikimedia/mediawiki-services-mathoid
+  image: repos/mediawiki/services/mathoid
   version: latest # we use latest everywhere in the defaults.
   port: 10044
   requests:

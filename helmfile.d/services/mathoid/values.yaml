@@ -6,14 +6,14 @@ docker:
   registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.2
 main_app:
-  image: wikimedia/mediawiki-services-mathoid
+  image: repos/mediawiki/services/mathoid
   limits:
     cpu: 1
     memory: 1G
   requests:
     cpu: 100m
     memory: 200Mi
-  version: 2023-05-13-192519-production
+  version: 2023-09-11-183750-production
 monitoring:
   enabled: true
 resources:
