@@ -1,6 +1,9 @@
 main_app:
   args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
   http_https_echo: true
+  access_log:
+    type: stdout
+    sample_percentage: 100
 
   domains:
     - localhost
@@ -8,6 +11,7 @@ main_app:
     - 127.0.0.1
     - 127.0.0.1:*
     - restgateway.discovery.wmnet
+    - mytestdomain.discovery.wmnet
 
   restbase_routes:
     mobileapps:
@@ -29,6 +33,7 @@ main_app:
     proton:
       timeout: 150s
       ingress: true
+      domain: mytestdomain.discovery.wmnet
       urls:
         #TODO tighten capture group criteria
         proton_title:

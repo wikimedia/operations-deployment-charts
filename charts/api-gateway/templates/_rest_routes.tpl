@@ -55,6 +55,11 @@
                   safe_regex:
                     google_re2: {}
                     regex: '^/{{ $route_paths.in }}$'
+                  {{- if $endpoint_config.domain }}
+                  headers:
+                  - name: ':authority'
+                    exact_match: '{{ $endpoint_config.domain }}'
+                  {{- end }}
                 route:
                   regex_rewrite:
                     pattern:

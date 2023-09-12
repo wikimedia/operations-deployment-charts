@@ -144,6 +144,8 @@ static_resources:
                 - name: ":path"
                   exact_match: "/healthz"
           - name: envoy.filters.http.cors
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
 {{- if .Values.main_app.jwt.enabled }}
           - name: envoy.filters.http.jwt_authn
             typed_config:
@@ -201,6 +203,8 @@ static_resources:
 {{ include "restgateway.lua" . | indent 16 }}
 {{- end }}
           - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 {{- if .Values.mesh.enabled }}
       transport_socket:
         name: envoy.transport_sockets.tls

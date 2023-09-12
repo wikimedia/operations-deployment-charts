@@ -131,6 +131,7 @@ main_app:
     geo-analytics:
       timeout: 15s
       ingress: true
+      domain: "wikimedia.org"
       urls:
         geo-editors:
           in: '(.+)/v1/metrics/editors/by-country/(.+)'
@@ -139,6 +140,7 @@ main_app:
     media-analytics:
       timeout: 15s
       ingress: true
+      domain: "wikimedia.org"
       urls:
         geo-editors:
           in: '(.+)/v1/metrics/mediarequests/(.+)'
