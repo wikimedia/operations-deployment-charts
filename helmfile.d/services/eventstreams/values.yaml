@@ -90,7 +90,6 @@ main_app:
       - mediawiki.recentchange
       - mediawiki.revision-create
       - mediawiki.revision-visibility-change
-      - mediawiki.revision-score
       - mediawiki.revision-tags-change
       - mediawiki.page_change.v1
       - eventgate-main.test.event
@@ -123,16 +122,6 @@ main_app:
         stream_aliases: [recentchange]
       mediawiki.revision-create:
         stream_aliases: [revision-create]
-      mediawiki.revision-score:
-        description: |-
-          MediaWiki revision score events. Every new revision in an
-          ORES enabled wiki should have a revision-score event.
-          This schema is structured differnetly than ORES API results, as
-          event schemas should map well into RDBMS / SQL environments where
-          columns must be strongly typed.
-          NOTE: Only the most commonly used ORES model scores are included in
-          each event (the ones returned by https://ores.wikimedia.org/v3/precache).
-        stream_aliases: [revision-score]
       eventgate-main.test.event:
         description: |-
           A test event stream. A new event is posted about once a minute.
