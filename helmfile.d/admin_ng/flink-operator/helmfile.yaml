@@ -36,6 +36,7 @@ releases:
       # WMF maintains flink-kubernetes-operator-crds as separate chart and release
       - flink-operator/flink-operator-crds
     values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults

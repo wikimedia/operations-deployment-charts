@@ -15,6 +15,9 @@ watchNamespaces:
 rbac:
   create: true
 
+zookeeper:
+  allowed_clusters:
+    - flink-eqiad
 # Commented out for now, we need a newer version of Zookeeper to use Zookeeper HA with Flink.
 # https://phabricator.wikimedia.org/T331283#8874029
 # networkpolicy:

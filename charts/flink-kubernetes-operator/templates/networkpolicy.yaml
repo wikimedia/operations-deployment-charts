@@ -146,6 +146,7 @@ spec:
   egress:
     # Allow flink-app pods to query the K8s API.
     {{- include "flink-operator.k8s-egress-rule" $ | nindent 4 }}
+    {{- include "base.networkpolicy.egress.zookeeper" $ | nindent 4 }}
 
 {{- end }}
 

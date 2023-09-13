@@ -4,10 +4,13 @@ watchNamespaces:
   # https://phabricator.wikimedia.org/T328675
   - rdf-streaming-updater
 
-
 # Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
 rbac:
   create: true
+
+zookeeper:
+  allowed_clusters:
+    - flink-eqiad
 
 # Commented out for now, we need a newer version of Zookeeper to use Zookeeper HA with Flink.
 # https://phabricator.wikimedia.org/T331283#8874029

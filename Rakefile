@@ -390,10 +390,7 @@ task :refresh_fixtures do
     hiera = YAML.safe_load(decoded, aliases: true)
     data = hiera['profile::kubernetes::deployment_server::general']
 
-    data.each do |cluster_name, cluster_values|
-      next if %w[default staging-codfw].include? cluster_name
-
-      env_name = cluster_name == 'staging-eqiad' ? 'staging' : cluster_name
+    write_env_fixtures = lambda do |env_name, cluster_values|
       File.open(".fixtures/general-#{env_name}.yaml", 'w') do |out|
         res = [
           data['default'],
@@ -403,6 +400,14 @@ task :refresh_fixtures do
           common_clusters
         ].reduce { |acc, h| deep_merge(h, acc) }
         YAML.dump(res, out)
+      end
+    end
+
+    data.each do |cluster_name, cluster_values|
+      next if cluster_name == "default"
+      write_env_fixtures.call(cluster_name, cluster_values)
+      if cluster_name == 'staging-eqiad'
+        write_env_fixtures.call('staging', cluster_values)
       end
     end
   end
