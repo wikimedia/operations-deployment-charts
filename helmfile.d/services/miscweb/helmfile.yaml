@@ -63,20 +63,24 @@ releases:
     <<: *default
   - name: wikiworkshop
     <<: *default
+  - name: static-codereview
+    <<: *default
 
 environments:
-  staging:
+  staging: &default_values
     values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril, research-landing-page, wikiworkshop]
+      - releases:
+        - bugzilla
+        - annualreport
+        - bienvenida
+        - transparencyreport
+        - statictendril
+        - research-landing-page
+        - wikiworkshop
+        - static-codereview
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
-    values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril, research-landing-page, wikiworkshop]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
+    <<: *default_values
   codfw:
-    values:
-      - releases: [bugzilla, annualreport, bienvenida, transparencyreport, statictendril, research-landing-page, wikiworkshop]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
+    <<: *default_values
