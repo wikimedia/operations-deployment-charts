@@ -1,14 +1,21 @@
 {{/*
 == Functions for metadata management
 
- - base.meta.metadata: returns the standard set of medatada we add to basically
+ - base.meta-name: returns the standard object name for objects we define.
+   Usage:
+   {{- include "base.meta.name" (dict "Root" . "Name" "object-name" ) | indent 2 }}
+ - base.meta.metadata: returns the standard set of metadata we add to basically
    any object we define.
    Usage:
    {{- include "base.meta.metadata" (dict "Root" . "Name" "object-name" ) | indent 2 }}
  - base.meta.routing: labels for traffic routing between service and deployments.
 */}}
+{{- define "base.meta.name" -}}
+{{ template "base.name.release" .Root }}{{- if .Name }}-{{ .Name }}{{ end }}
+{{- end -}}
+
 {{- define "base.meta.metadata" }}
-name: {{ template "base.name.release" .Root }}{{- if .Name }}-{{ .Name }}{{ end }}
+name: {{ template "base.meta.name" . }}
 {{- include "base.meta.labels" .Root }}
 {{- end -}}
 
