@@ -1,4 +1,13 @@
 # This file is used to override the production values defaults for the canary release.
+# Lower requests so it goes through (temporary until more resources are added)
+main_app:
+  requests:
+    cpu: 2000m
+    memory: 1000Mi
+  limits:
+    cpu: 5000m
+    memory: 2800Mi
+
 # route canary access through the main release
 routed_via: main
 
