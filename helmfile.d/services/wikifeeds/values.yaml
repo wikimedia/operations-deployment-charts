@@ -3,7 +3,7 @@ docker:
   registry: docker-registry.discovery.wmnet
   pull_policy: IfNotPresent
 resources:
-  replicas: 12
+  replicas: 10
 main_app:
   image: wikimedia/mediawiki-services-wikifeeds
   mw_uri: http://localhost:6500/w/index.php
