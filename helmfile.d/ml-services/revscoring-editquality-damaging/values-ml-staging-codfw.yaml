@@ -5,6 +5,8 @@ inference:
   predictor:
     config:
       maxReplicas: 1
+    image: "machinelearning-liftwing-inference-services-revscoring"
+    version: "2023-09-19-062121-publish"
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
