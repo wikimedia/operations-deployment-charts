@@ -1,0 +1,30 @@
+app:
+  image: flink_app0
+  version: 0.0.1
+
+  job:
+    jarURI: /srv/flink_app0/MyFlinkApp.jar
+    entryClass: org.wikimedia.MyMainFlinkClass
+    args: [ --arg1, val1 ]
+
+environmentName: fixture-env
+
+flink:
+  object_store:
+    swift_access_key: access_key
+    swift_secret_key: secret_key
+    swift_cluster: swift.example.org
+    swift_bucket: example-bucket
+  high_availability:
+    zookeeper_quorum: zk1.example.com:2181,zk2.example.com:2181
+
+zookeeper_clusters:
+  test:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  test1:
+    - 4.3.2.1/32
+
+zookeeper:
+  allowed_clusters:
+    - test

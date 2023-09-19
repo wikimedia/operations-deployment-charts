@@ -48,6 +48,24 @@ spec:
     metrics.reporter.prometheus.port: "9999"
     {{- end }}
 
+    {{- with $store := .Values.flink.object_store }}
+    ### Flink object store configuration
+    s3.access-key:  {{ $store.swift_access_key }}
+    s3.secret-key: {{ $store.swift_secret_key }}
+    s3.endpoint: {{ $store.swift_cluster }}
+    s3.path.style.access: "true"
+    state.savepoints.dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/savepoints
+    state.checkpoints.dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/checkpoints
+
+    {{- with $ha := $.Values.flink.high_availability }}
+    ### Flink high-availability configuration
+    high-availability: zookeeper
+    high-availability.storageDir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/zookeeper_ha_storage
+    high-availability.zookeeper.quorum: {{ $ha.zookeeper_quorum }}
+    high-availability.zookeeper.path.root: /flink/{{ $.Values.environmentName }}/{{ $.Release.Namespace }}/{{ $.Release.Name }}
+    {{- end }}
+    {{- end }}
+
     {{- if .Values.app.flinkConfiguration }}
     ### User provided configuration
     # flinkConfiguration must be map of str: str.

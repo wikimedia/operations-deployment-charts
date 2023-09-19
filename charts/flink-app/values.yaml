@@ -189,6 +189,11 @@ tcp_proxy:
 services_proxy: ~
 tcp_services_proxy: ~
 
+flink:
+  object_store: ~
+  # Enable HA using zookeeper. Requires object_store to be configured.
+  high_availability: ~
+
 networkpolicy:
   egress:
     enabled: false

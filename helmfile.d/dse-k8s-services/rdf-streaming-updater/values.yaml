@@ -25,12 +25,6 @@ app:
 
   flinkConfiguration:
     "taskmanager.numberOfTaskSlots": "1"
-    "high-availability": zookeeper
-    "high-availability.zookeeper.path.root": "/dse-k8s-eqiad/rdf-streaming-updater/wdqs"
-    "s3.access-key": wdqs:savepoints
-    "s3.secret-key": secret
-    "s3.endpoint": thanos-swift.discovery.wmnet
-    "s3.path.style.access": "true"
     "kubernetes.operator.savepoint.format.type": NATIVE
     "kubernetes.operator.savepoint.history.max.count": "5"
     "kubernetes.operator.savepoint.trigger.grace-period": 20sec
@@ -76,6 +70,12 @@ discovery:
     # TODO: consider packaging the schemas in the image directly instead of relying on the service at runtime
     - schema
     - thanos-swift
+
+flink:
+  object_store:
+      swift_access_key: wdqs:savepoints
+      swift_secret_key: secret
+      swift_cluster: thanos-swift.discovery.wmnet
 
 mesh:
   enabled: true

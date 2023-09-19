@@ -18,18 +18,19 @@ app:
       output_topic_prefix: eqiad.
       consumer_group: wdqs_streaming_updater_dse_k8s_op_test
       side-outputs-domain: dse-k8s-op-test-pipeline.wikidata.org
-      checkpoint_dir: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata_test/checkpoints
+      # TODO: This value is also constructed by the chart and fed to flink config, but the chart can't
+      # know anything about our specific application. Is there some way to read the flink value
+      # instead of copying it here?
+      checkpoint_dir: s3://rdf-streaming-updater-staging-k8s-op-test-dse/wikidata/checkpoints
       output_topic: wdqs_streaming_updater_test_T289836
       output_topic_partition: 0
       reconciliation_topic: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
 
-  flinkConfiguration:
-  # See https://nightlies.apache.org/flink/flink-docs-master/docs/deployment/ha/zookeeper_ha
-    high-availability.storageDir: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wdqs/zookeeper_ha_storage
-    high-availability.zookeeper.quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
-    state.savepoints.dir: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata/savepoints
-    state.checkpoints.dir: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata/checkpoints
-
+flink:
+  object_store:
+    swift_bucket: rdf-streaming-updater-staging-k8s-op-test-dse
+  high_availability:
+    zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
 
 kafka:
   allowed_clusters:
