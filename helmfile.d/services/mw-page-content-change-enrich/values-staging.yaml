@@ -43,9 +43,16 @@ kafka:
 networkpolicy:
   egress:
     dst_nets:
-
+      # If we want to use thanos-swift.discovery.wmnet, our app should be DC
+      # agnostic.
+      # See https://phabricator.wikimedia.org/T346877
       # thanos-swift cluster in eqiad for checkpoints
       - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
+      # thanos-swift cluster in codfw for checkpoints
+      - cidr: 10.2.1.54/32   # thanos-swift.svc.codfw.wmnet
         ports:
           - port: 443
             protocol: tcp
