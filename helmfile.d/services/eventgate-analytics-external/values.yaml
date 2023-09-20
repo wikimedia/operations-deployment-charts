@@ -8,6 +8,9 @@ networkpolicy:
 
 mesh:
   enabled: true
+  certmanager:
+    extraFQDNs:
+      - intake-analytics.wikimedia.org
   public_port: 4692 # the port where TLS will be exposed
 
 discovery:

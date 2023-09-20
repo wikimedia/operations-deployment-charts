@@ -8,6 +8,9 @@ networkpolicy:
 
 mesh:
   enabled: true
+  certmanager:
+    extraFQDNs:
+      - intake-logging.wikimedia.org
   public_port: 4392 # the port where TLS will be exposed
   resources:
     requests:
