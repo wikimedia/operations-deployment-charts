@@ -1,3 +1,6 @@
+## configuration 1.4.2
+- Rename parameter uses_ingress to uses_sni.
+
 ## configuration 1.4.1
 - Add tracing support (sending to otel-collector over grpc)
 
