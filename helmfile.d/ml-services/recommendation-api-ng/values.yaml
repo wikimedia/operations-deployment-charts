@@ -12,9 +12,12 @@ config:
     # Notes:
     # - SWIFT_USER and SWIFT_SECRET_KEY env vars are stored in a private helm file by SRE
     # - "http://localhost:6022/auth/v1.0" represents "https://thanos-swift.discovery.wmnet/auth/v1.0"
+    # - swift variables are required only if `related_articles=True` in recommendation_liftwing.ini
+    # - if related_articles is enabled, the memory limit should increase from 1Gi to 2Gi (see T339890#9162780 and T346218)
     SWIFT_AUTHURL: "http://localhost:6022/auth/v1.0"
     SWIFT_CONTAINER: "wmf-ml-models"
-    SWIFT_OBJECT_PATH: "recommendation-api/enwiki/20230803082546/mini_embedding"
+    SWIFT_WIKIDATA_IDS_PATH: "recommendation_api/enwiki/20230915010659/wikidata_ids.npy"
+    SWIFT_DECODED_LINES_FLOAT32_PATH: "recommendation_api/enwiki/20230915011054/decoded_lines_float32.npy"
     # Needed by swiftclient (since it uses requests behing the scenes)
     # to properly validate TLS certificates.
     REQUESTS_CA_BUNDLE: "/etc/ssl/certs/wmf-ca-certificates.crt"
@@ -24,13 +27,13 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2023-09-11-100246-production"
+  version: "2023-09-20-093023-production"
   limits:
     cpu: 1
-    memory: 1G
+    memory: 1Gi
   requests:
     cpu: 1
-    memory: 1G
+    memory: 1Gi
 
 service:
   deployment: production
