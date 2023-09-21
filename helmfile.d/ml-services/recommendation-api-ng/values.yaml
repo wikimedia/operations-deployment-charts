@@ -70,3 +70,9 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 443
+
+ingress:
+  enabled: true
+  selectors:
+    service.istio.io/canonical-name: istio-ingressgateway-services
+    istio: ingressgateway
