@@ -7,11 +7,29 @@ ingress:
 # defined
 routed_via: production
 
+common_images:
+  statsd:
+    exporter: prometheus-statsd-exporter:latest
+
 # Monitoring
 monitoring:
   enabled: false
   named_ports: false
-
+# If you want the prometheus-statsd-exporter sidecar, you
+# need the following
+  statsd:
+    requests:
+      memory: 100M
+      cpu: 100m
+    limits:
+      memory: 200M
+      cpu: 200m
+    # if you want to provide a file-based configuration.
+    # simpler to reason about, but will require a chart version change to be deployed
+    filename: config/prometheus-statsd.conf
+    # To allow more flexibility on deployments, you can instead declare the configuration inline
+    config: |-
+      ...
 # Values to override .Chart.Name
 chartName: ""
 

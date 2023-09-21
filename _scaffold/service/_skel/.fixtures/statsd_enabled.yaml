@@ -1,0 +1,16 @@
+monitoring:
+  enabled: true
+  named_ports: true
+  statsd:
+    requests:
+      memory: 100M
+      cpu: 100m
+    limits:
+      memory: 200M
+      cpu: 200m
+    # To allow more flexibility on deployments, you can instead declare the configuration inline
+    config: |-
+      test
+common_images:
+  statsd:
+    exporter: prometheus-statsd-exporter:latest

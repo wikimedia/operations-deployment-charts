@@ -4,9 +4,9 @@ modules:
   - "cache.mcrouter:1.0"
 priority: 99
 templates:
-  deployment: |
+  containers: |
     {{- include "cache.mcrouter.deployment" . }}
-  volume: |
+  volumes: |
     {{- include "cache.mcrouter.volume" . }}
   configmap: |
     {{- include "cache.mcrouter.configmap" . }}

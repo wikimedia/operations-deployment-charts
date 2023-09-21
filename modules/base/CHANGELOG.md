@@ -1,3 +1,6 @@
+## statsd 1.0.0
+- Add templates to add prometheus-statsd-exporter to a pod
+
 ## networkpolicy 1.2.0
 
 - Add base.networkpolicy.egress.zookeeper. It allows charts to declare

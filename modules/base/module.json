@@ -2,9 +2,11 @@
     "namespace": "base",
     "modules": [
         {
-            "name": "name",
+            "name": "certificate",
             "version": "1.0",
-            "depends": []
+            "depends": [
+                "base.name:1.0"
+            ]
         },
         {
             "name": "helper",
@@ -25,6 +27,11 @@
             ]
         },
         {
+            "name": "name",
+            "version": "1.0",
+            "depends": []
+        },
+        {
             "name": "networkpolicy",
             "version": "1.0",
             "depends": []
@@ -40,10 +47,11 @@
             "depends": []
         },
         {
-            "name": "certificate",
+            "name": "statsd",
             "version": "1.0",
             "depends": [
-                "base.name:1.0"
+                "base.name:1.0",
+                "base.meta:1.0"
             ]
         }
     ]

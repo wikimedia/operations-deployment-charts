@@ -1,0 +1,22 @@
+name: prometheus-statsd
+description: sets up prometheus-statsd-exporter
+modules:
+  - "base.statsd:1.0"
+priority: 99
+templates:
+  containers: |
+    {{- include "base.statsd.container" . }}
+  volumes: |
+    {{- include "base.statsd.volume" . }}
+  configmap: |
+    {{- include "base.statsd.configmap" . }}
+values: |
+  common_images:
+    statsd:
+      image: prometheus-statsd-exporter
+      version: latest
+  # WARNING: If you want to enable the module,
+  # you will need to add a "statsd" stanza to monitoring
+  # see modules/base/values.yaml for reference.
+
+
