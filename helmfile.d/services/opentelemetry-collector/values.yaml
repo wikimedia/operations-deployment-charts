@@ -66,3 +66,11 @@ networkPolicy:
       ports:
         - port: 30443
           protocol: TCP
+  extraIngressRules:
+    - ports:
+      - port: 8888
+        protocol: TCP
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8888"
