@@ -85,13 +85,6 @@ revscoring_inference_services:
     use_model_from_wiki: "eswikibooks"
   - wiki: "eswiki"
     version: "20220214192151"
-    predictor:
-      container:
-        resources:
-          limits:
-            memory: 4Gi
-          requests:
-            memory: 2Gi
   - wiki: "eswikiquote"
     host: es.wikiquote.org
     version: "20220214192153"
