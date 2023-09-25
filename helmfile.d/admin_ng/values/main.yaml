@@ -123,15 +123,16 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
-    # Don't enforce ranges for containers or pods TEMP for testing T344814
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "90"
-          memory: "100Gi"
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
+    # Don't enforce ranges for containers or pods
     limitranges:
       container:
         defaultRequest:
@@ -150,11 +151,12 @@ namespaces:
       - noc.wikimedia.org
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "125"
-          memory: "125Gi"
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
@@ -173,12 +175,12 @@ namespaces:
           cpu: "100m"
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
-    # Don't set a quota on resource limits
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "125"
-          memory: "125Gi"
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
@@ -197,12 +199,12 @@ namespaces:
           cpu: "100m"
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
-    # Don't set a quota on resource limits
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "90"
-          memory: "100Gi"
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
@@ -221,12 +223,12 @@ namespaces:
           cpu: "100m"
   mw-script:
     pspClusterRole: allow-mediawiki-psp
-    # Don't set a quota on resource limits
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "90"
-          memory: "100Gi"
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
@@ -249,12 +251,12 @@ namespaces:
   #    pspClusterRole: allow-mediawiki-psp
   mw-web:
     pspClusterRole: allow-mediawiki-psp
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "125"
-          memory: "125Gi"
-        # Don't set a quota on resource limits
+          cpu: ~
+          memory: ~
         limits:
           cpu: ~
           memory: ~
