@@ -41,6 +41,19 @@ monitoring:
   # MediaWiki's data can be scraped using named ports only so it will by default
   # assume named_ports is set to true even if not indicated here.
   enabled: false
+  statsd: ~
+  # If you want to enable prometheus-statsd-exporter in the pod, add the following:
+  # statsd:
+  #   requests:
+  #     memory: 100M
+  #     cpu: 100m
+  #   limits:
+  #     memory: 200M
+  #     cpu: 200m
+  #   # Add the configuration inline
+  #   config: |-
+  #     ...
+
 service:
   deployment: minikube # valid values are "production" and "minikube"
   expose_http: false # set this to true if you want to expose both the https and http endpoint
@@ -276,6 +289,8 @@ common_images:
     exporter: prometheus-mcrouter-exporter:latest
   memcached: memcached:latest
   wmfdebug: wmfdebug:latest
+  statsd:
+    exporter: prometheus-statsd-exporter:latest
 
 app:
   port: 8080

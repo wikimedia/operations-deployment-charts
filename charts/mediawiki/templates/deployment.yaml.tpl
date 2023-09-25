@@ -22,6 +22,7 @@ spec:
 {{/* please note: we don't use the base.meta module as mediawiki has no secrets whatsoever */}}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape_by_name: "true"
+        {{- include "base.statsd.deployment_annotations" . | indent 8 }}
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
         {{- if .Values.debug.enabled }}
@@ -43,5 +44,7 @@ spec:
       {{- end }}
       {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "rsyslog.deployment" . | indent 8 }}
+      {{- include "base.statsd.container" . | indent 8 }}
       volumes:
       {{- include "mw.volumes" . | indent 8}}
+      {{- include "base.statsd.volume" . | indent 8 }}

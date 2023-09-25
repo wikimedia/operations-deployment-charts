@@ -26,6 +26,16 @@ mw:
       die("test");
 monitoring:
   enabled: true
+  statsd:
+    requests:
+      memory: 100M
+      cpu: 100m
+    limits:
+      memory: 200M
+      cpu: 200m
+    # Add the configuration inline
+    config: |-
+      some_metric config
 cache:
   mcrouter:
     enabled: true

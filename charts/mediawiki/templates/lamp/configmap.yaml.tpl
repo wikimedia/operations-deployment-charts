@@ -1,4 +1,4 @@
-{{ include "mesh.configuration.configmap" . }}
+{{ define "mw.lamp.configmap" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -56,3 +56,4 @@ data:
     from wiki@wikimedia.org
     timeout 1
 {{- end }}
+{{- end -}}
