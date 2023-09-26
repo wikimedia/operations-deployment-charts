@@ -4,14 +4,14 @@
 
 app:
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata_test/checkpoints/ad699cfb0eb2c53365df1d982b806b70/chk-19444
+    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata_test/checkpoints/434830c8020a6fe160224465a127517b/chk-31011
     state: running
     allowNonRestoredState: false # might need to switch to true for some upgrades
     # This triggers a savepoint; see
     # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
     # custom-resource/job-management/#manual-savepoint-triggering
     # for more details
-    savepointTriggerNonce: 226
+    savepointTriggerNonce: 227
   config_files:
     rdf-streaming-updater-config.properties:
       brokers: kafka-jumbo1009.eqiad.wmnet:9092
