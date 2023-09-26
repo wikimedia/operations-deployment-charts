@@ -1,6 +1,11 @@
 ingress:
   enabled: true
 
+config:
+  public:
+    # Service proxy access URL for all production wikis
+    WIKI_API_URL: http://localhost:6501/w/api.php
+
 discovery:
   listeners:
     - mw-api-int
