@@ -23,6 +23,16 @@ ingress:
     extraFQDNs:
       - somehost.somedomain.sometld
       - another.somedomain.sometld
+  custom_cors_policy:
+    allowOrigins:
+    - exact: https://example.com
+    allowMethods:
+    - POST
+    - GET
+    allowCredentials: false
+    allowHeaders:
+    - X-Foo-Bar
+    maxAge: "24h"
   httproutes:
     - match:
         - uri:

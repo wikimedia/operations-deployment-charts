@@ -44,3 +44,9 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
+  # Base CORS HTTP headers for the general use case.
+  base_cors_policy: false
+  # Add a custom CORS policy, injecting an Istio CorsPolicy config:
+  # https://istio.io/latest/docs/reference/config/networking/virtual-service/#CorsPolicy
+  # Takes precedence over base_cors_policy.
+  custom_cors_policy: {}
