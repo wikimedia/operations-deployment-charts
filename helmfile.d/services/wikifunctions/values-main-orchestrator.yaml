@@ -1,6 +1,38 @@
 ingress:
   enabled: true
 
+config:
+  public:
+    # Service proxy access URL for all production wikis
+    WIKI_API_URL: http://localhost:6501/w/api.php
+
 discovery:
   listeners:
     - mw-api-int
+
+networkpolicy:
+  egress:
+    extraRules:
+    # This is a copy from the charts values.yaml as these don't get deep merged here
+    - ports:
+      - protocol: TCP
+        port: 4970
+      to:
+      - podSelector:
+          matchLabels:
+            app: function-evaluator
+    # This is to allow access to the mw-api-int pods in the *local* cluster.
+    # NetworkPolicy rules apply after all DNAT has taken place, to just
+    # allowing the LVS IP (what our mesh templates do) it not enough for
+    # wikifunctions as we don't allow genreal pod-to-pod traffic.
+    - ports:
+      - port: 4446
+        protocol: TCP
+      to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: mw-api-int
+        podSelector:
+          matchLabels:
+            app: mediawiki
+            deployment: mw-api-int
