@@ -462,7 +462,7 @@ GlobalNetworkPolicies:
             - 10.2.1.17/32
   # Allow all pods access to uncached api
   allow-uncached-api:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
     types:
       - Egress
     egress:
