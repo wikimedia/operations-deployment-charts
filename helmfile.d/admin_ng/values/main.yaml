@@ -370,9 +370,16 @@ GlobalNetworkPolicies:
       - Ingress
       - Egress
     egress:
-      # Allow all namespaces to communicate to DNS pods
+      # Allow all namespaces to communicate to DNS pods (UDP)
       - action: Allow
         protocol: UDP
+        destination:
+          selector: 'k8s-app == "kube-dns"'
+          ports:
+            - 53
+      # Allow all namespaces to communicate to DNS pods (TCP)
+      - action: Allow
+        protocol: TCP
         destination:
           selector: 'k8s-app == "kube-dns"'
           ports:
