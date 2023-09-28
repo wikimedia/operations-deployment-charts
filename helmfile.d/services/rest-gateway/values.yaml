@@ -59,72 +59,72 @@ main_app:
       timeout: 120s
       urls:
         #TODO tighten capture group criteria
-        ma_mobile_no_revision:
+        - name: ma_mobile_no_revision
           in: '(.+)/v1/page/mobile-html/(.+)'
           out: '\1/v1/page/mobile-html/\2'
-        ma_mobile_revision:
+        - name: ma_mobile_revision
           in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
           out: '\1/v1/page/mobile-html/\2/\3'
-        ma_summary_no_revision:
+        - name: ma_summary_no_revision
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
-        ma_summary_revision:
+        - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
     proton:
       timeout: 150s
       urls:
         # Proton doesn't actually support not passing a format - restbase usually adds this
-        proton_title:
+        - name: proton_title
           in: '(.+)/v1/page/pdf/([^/]+)'
           out: '\1/v1/pdf/\2/a4'
-        proton_title_format:
+        - name: proton_title_format
           in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b'
           out: '\1/v1/pdf/\2/\3'
-        proton_title_format_type:
+        - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
     citoid:
       timeout: 120s
       urls:
-        citoid_slash:
+        - name: citoid_slash
           # We ignore the sitename (first matching group)
           # it is assumed the URL will be properly encoded here - ie / replaced by %2F
           in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/api?format=\2&search=\3'
-        citoid_query_api:
+        - name: citoid_query_api
           in: '(.+)/v1/data/citation/api?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
-        citoid_query:
+        - name: citoid_query
           in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
 
     wikifeeds:
       timeout: 15s
       urls:
-        announcements:
+        - name: announcements
           in: '(.+)/v1/feed/announcements'
           out: '\1/v1/feed/announcements'
-        onthisday_all:
+        - name: onthisday_all
           in: '(.+)/v1/feed/onthisday/all/(.+)/(.+)'
           out: '\1/v1/aggregated/onthisday/all/\2/\3'
-        onthisday:
+        - name: onthisday
           in: '(.+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
           out: '\1/v1/feed/onthisday/\2/\3/\4'
-        featured:
+        - name: featured
           in: '(.+)/v1/feed/featured/(.+)/(.+)/(.+)'
           out: '\1/v1/aggregated/featured/\2/\3/\4'
-        availability:
+        - name: availability
           in: '(.+)/v1/feed/availability'
           out: '\1/v1/feed/availability'
-        random:
+        - name: random
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
 
     aqs:
       timeout: 15s
       urls:
-        knowledge_gap:
+        - name: knowledge_gap
           in: '(.+)/v1/knowledge-gap/(.+)'
           out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
 
@@ -133,7 +133,7 @@ main_app:
       ingress: true
       domain: "wikimedia.org"
       urls:
-        geo-editors:
+        - name: geo-editors
           in: '(.+)/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\2'
 
@@ -142,7 +142,7 @@ main_app:
       ingress: true
       domain: "wikimedia.org"
       urls:
-        geo-editors:
+        - name: geo-editors
           in: '(.+)/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\2'
 

@@ -49,12 +49,12 @@
                   body: {inline_string: "This is the REST Gateway."}
 {{- /* BEGIN restbase_routes definition */}}
 {{- range $endpoint, $endpoint_config := .Values.main_app.restbase_routes }}
-{{- range $route_name, $route_paths := $endpoint_config.urls }}
-              - name: {{ $endpoint }}_{{ $route_name }}
+{{- range $route := $endpoint_config.urls }}
+              - name: {{ $endpoint }}_{{ $route.name }}
                 match:
                   safe_regex:
                     google_re2: {}
-                    regex: '^/{{ $route_paths.in }}$'
+                    regex: '^/{{ $route.in }}$'
                   {{- if $endpoint_config.domain }}
                   headers:
                   - name: ':authority'
@@ -64,8 +64,8 @@
                   regex_rewrite:
                     pattern:
                       google_re2: {}
-                      regex: '^{{ $route_paths.in }}$'
-                    substitution: '{{ $route_paths.out }}'
+                      regex: '^{{ $route.in }}$'
+                    substitution: '{{ $route.out }}'
                   timeout: {{ $endpoint_config.timeout | default "15s" }}
                   cluster: {{ $endpoint }}_cluster
                   {{- if $endpoint_config.ingress }}

@@ -18,16 +18,16 @@ main_app:
       hostname: mobileapps.discovery.wmnet
       urls:
         #TODO tighten capture group criteria
-        ma_mobile_no_revision:
+        - name: ma_mobile_no_revision
           in: '(.+)/v1/page/mobile-html/(.+)'
           out: '\1/v1/page/mobile-html/\2'
-        ma_mobile_revision:
+        - name: ma_mobile_revision
           in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
           out: '\1/v1/page/mobile-html/\2/\3'
-        ma_summary_no_revision:
+        - name: ma_summary_no_revision
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
-        ma_summary_revision:
+        - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
     proton:
@@ -36,13 +36,13 @@ main_app:
       domain: mytestdomain.discovery.wmnet
       urls:
         #TODO tighten capture group criteria
-        proton_title:
+        - name: proton_title
           in: '(.+)/v1/page/pdf/(.+)'
           out: '\1/v1/pdf/\2'
-        proton_title_format:
+        - name: proton_title_format
           in: '(.+)/v1/page/pdf/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3'
-        proton_title_format_type:
+        - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
 
