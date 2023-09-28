@@ -45,7 +45,6 @@ app:
             kafka_topic_prefix: codfw.
 
   flinkConfiguration:
-    "execution.checkpointing.unaligned": true
     "high-availability.storageDir": s3://mw-page-content-change-enrich.wikikube-codfw/flink/high-availability
     "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-codfw/flink/checkpoints # needed for upgradeMode: savepoint
     "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-codfw/flink/savepoints # needed for upgradeMode: savepoint
