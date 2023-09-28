@@ -96,4 +96,11 @@ services:
           accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
         query:
           title: {{ "'{{" }}request.params.title{{ "}}'" }}
+      mwrestapi_req:
+        method: get
+        uri: {{ .Values.main_app.mwrest_uri }}/v1/{+path}
+        headers:
+          host: {{ "'{{" }}request.params.domain{{ "}}'" }}
+          accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
+      usecorepagehtml: {{ .Values.main_app.usecorepagehtml }}
 {{- end -}}
