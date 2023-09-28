@@ -1,4 +1,14 @@
 apiVersion: v2
-description: A Helm chart for Kubernetes
+description: A Helm chart for mcrouter
+kubeVersion: ">=1.23"
 name: mcrouter
-version: 0.0.1
+version: 0.0.3
+keywords:
+  - mcrouter
+  - memcached
+home: https://wikitech.wikimedia.org/wiki/Memcached_for_MediaWiki
+sources:
+  - https://gerrit.wikimedia.org/r/admin/repos/operations/docker-images/production-images
+maintainers:
+  - name: Effie Mouzeli
+    email: effie@wikimedia.org

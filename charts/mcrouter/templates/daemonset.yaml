@@ -1,11 +1,14 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
 spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
-  replicas: {{ .Values.resources.replicas }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -19,7 +22,5 @@ spec:
       containers:
         {{- include "cache.mcrouter.container" . | indent 8 }}
       volumes:
-        {{- include "cache.mcrouter.volume" . | indent 8 }}
-
-
+        {{- include "cache.mcrouter.volume" .  | indent 8 }}
 

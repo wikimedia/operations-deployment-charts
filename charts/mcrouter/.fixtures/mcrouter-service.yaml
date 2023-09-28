@@ -1,6 +1,7 @@
 cache:
   mcrouter:
     enabled: true
+    port: 4442
     public_service: true
 
 config:
@@ -13,4 +14,4 @@ service:
     targetPort: 4442 # the number or name of the exposed port on the container
     port: 4442
   nodePort: 0
-  use_node_local_endpoints: trueL
+  use_node_local_endpoints: true
