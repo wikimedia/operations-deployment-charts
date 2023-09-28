@@ -360,7 +360,7 @@ under 'tcp_services_proxy'.
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.uses_ingress (not .Listener.http_host) }}
+                {{- if and .Listener.uses_sni (not .Listener.http_host) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}
