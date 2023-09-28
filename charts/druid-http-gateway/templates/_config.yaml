@@ -1,0 +1,19 @@
+{{- define "config.app" }}
+service_name: {{ .Values.main_app.service_name }}
+
+listen_address: 0.0.0.0
+listen_port: 8080
+
+# Log level, one of (in increasing severity): debug, info, warning, error and fatal
+log_level: {{ .Values.main_app.log_level }}
+
+druid:
+  host: {{ .Values.main_app.druid.host }}
+  port: {{ .Values.main_app.druid.port }}
+  datasource: {{ .Values.main_app.druid.datasource }}
+  authentication:
+    username: {{ .Values.main_app.druid.username }}
+    password: {{ .Values.config.private.druid_pass }}
+  tls:
+    ca: /etc/ssl/certs/wmf-ca-certificates.crt
+{{- end }}

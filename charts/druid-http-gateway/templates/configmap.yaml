@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: druid-http-gateway-base-config
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{ include "mesh.configuration.configmap" . }}

@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "base.name.chart" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+  {{- if .Values.networkpolicy.egress.enabled }}
+    - Egress
+  {{- end }}
+    - Ingress
+  ingress:
+    - ports:
+      {{- if or (not .Values.mesh.enabled) (ne .Values.app.port .Values.mesh.public_port)}}
+      - port: {{ .Values.app.port }}
+        protocol: TCP
+      {{- end }}
+      {{- if .Values.debug.enabled }}
+      {{- range .Values.debug.ports }}
+      - port: {{ . }}
+        protocol: TCP
+      {{- end }}{{- end }}
+      {{- if .Values.monitoring.enabled }}
+      - port: 9102
+        protocol: TCP
+      {{- end }}
+      {{- include "mesh.networkpolicy.ingress" . | indent 6}}
+{{- if .Values.networkpolicy.egress.enabled }}
+  egress:
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
+{{- end }}
