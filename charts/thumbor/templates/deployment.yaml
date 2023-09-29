@@ -49,6 +49,9 @@ spec:
         - name: thumbor-config
           configMap:
             name: {{ template "base.name.release" . }}-thumbor-config
+        - name: imagemagick-config
+          configMap:
+            name: {{ template "base.name.release" . }}-imagemagick-config
         - name: haproxy-config
           configMap:
             name: {{ template "base.name.release" . }}-haproxy-config

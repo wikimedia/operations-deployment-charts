@@ -233,6 +233,9 @@ config:
     # Set this path to include the override module that we define to
     # include our own plugins
     PYTHONPATH: "/srv/service:/opt/lib/python/site-packages"
+    # Allows us to include our own policy.xml file alongside the
+    # imagemagick defaults
+    MAGICK_CONFIGURE_PATH: "/etc/imagemagick-thumbor"
   # all values injected by puppet
   private:
     swift_key: "foobar"

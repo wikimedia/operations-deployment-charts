@@ -26,6 +26,18 @@ metadata:
 data:
   60-thumbor-server.conf: |- {{ include "thumbor_server.config" . | indent 4 }}
   80-thumbor-swift.conf: |- {{ include "swift.config" . | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-imagemagick-config
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  policy.xml: |- {{ include "imagemagick-policy.config" . | indent 4 }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
