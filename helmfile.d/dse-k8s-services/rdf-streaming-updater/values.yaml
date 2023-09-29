@@ -1,6 +1,6 @@
 app:
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.16-rc4
+  version: flink-1.16.1-rdf-0.3.132
   env:
     # disable JEMALLOC for testing
     - name: "DISABLE_JEMALLOC"
@@ -47,7 +47,7 @@ app:
     rdf-streaming-updater-config.properties:
       parallelism: 12
       acceptable_mediawiki_lag: 10
-      use_versioned_serializers: true
+      produce_side_outputs: false # T347515
       topic_prefixes: eqiad.,codfw.
       rev_create_topic: mediawiki.revision-create
       page_delete_topic: mediawiki.page-delete
@@ -61,7 +61,7 @@ app:
       uris_scheme: wikidata
       entity_namespaces: 0,120,146
       generate_diff_timeout: -1
-      wikibase_repo_thread_pool_size: 5
+      wikibase_repo_thread_pool_size: 1 # TODO: reduce overall parallelism to 3 and set mediawiki_max_concurrent_requests instead
       input_idleness: 60000
       checkpoint_interval: 30000
       checkpoint_timeout: 900000
