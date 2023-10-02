@@ -7,10 +7,10 @@ resources:
   replicas: 1
 main_app:
   type: "default"
-  # TODO (T343388): Split this into a different service each for python and JS.
   # TODO (T343389): Split each service into multiple ones for each supported version of python and JS.
-  image: repos/abstract-wiki/wikifunctions/function-evaluator/omnibus
-  version: 2023-09-19-183305
+  # NOTE: The image: and version: values are over-ridden in the helmfile.d/services/wikifunctions/values-*-evaluator.yaml files
+  image: repos/abstract-wiki/wikifunctions/function-evaluator/some-such-image
+  version: versionNumberGoesHere
   port: 6927
   command: []
   args: []

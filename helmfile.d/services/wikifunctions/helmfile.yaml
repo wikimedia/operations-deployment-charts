@@ -56,12 +56,22 @@ releases:
     <<: *default
     chart: wmf-stable/function-evaluator
 
+  - name: javascript-evaluator
+    <<: *default
+    chart: wmf-stable/function-evaluator
+
+  - name: python-evaluator
+    <<: *default
+    chart: wmf-stable/function-evaluator
+
 environments:
   staging: &default_values
     values:
       - releases:
         - main-orchestrator
         - main-evaluator
+        - javascript-evaluator
+        - python-evaluator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:

@@ -1,0 +1,6 @@
+# Over-ride values for the 'main' (legacy, all-languages) evaluator
+
+main_app:
+  # TODO (T343389): Split each service into multiple ones for each supported version of python and JS.
+  image: repos/abstract-wiki/wikifunctions/function-evaluator/omnibus
+  version: 2023-09-19-183305
