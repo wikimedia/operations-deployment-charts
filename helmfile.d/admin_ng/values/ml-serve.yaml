@@ -165,6 +165,15 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "120"
+          memory: "100Gi"
+        limits:
+          cpu: "120"
+          memory: "100Gi"
   revscoring-articletopic:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
