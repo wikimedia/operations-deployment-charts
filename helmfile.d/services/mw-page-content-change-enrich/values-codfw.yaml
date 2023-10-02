@@ -12,7 +12,7 @@ app:
     # For now, set replicas to 1, as the input codfw mediawiki.page_change stream has only 1
     # Kafka topic-partitions (eqiad or codfw)  We'll need to adjust
     # this accordingly if/when we we increase the number of Kafka partitions per topic.
-    replicas: 1
+    replicas: 4
     resource:
       cpu: 2
       # When backfilling, a single TM maxed out at around 2.7GB. Reserve 3G.
