@@ -1,10 +1,10 @@
 main_app:
-  image: wikimedia/generated-data-platform-datasets-image-suggestions
-  version: stable
-  command: ["./image-suggestions"]
+  image: wikimedia/generated-data-platform-aqs-edit-analytics
+  version: 2023-10-03-114937-production
+  command: ["./edit-analytics"]
   args: ["-config", "/etc/druid-http-gateway/config.yaml"]
+  service_name: edit-analytics
 
-  service_name: image-suggestions
   druid:
     host: http://localhost
     port: 8082

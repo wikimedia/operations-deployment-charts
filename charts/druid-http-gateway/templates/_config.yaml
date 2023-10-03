@@ -11,9 +11,11 @@ druid:
   host: {{ .Values.main_app.druid.host }}
   port: {{ .Values.main_app.druid.port }}
   datasource: {{ .Values.main_app.druid.datasource }}
+{{- if .Values.main_app.druid.username }}
   authentication:
     username: {{ .Values.main_app.druid.username }}
     password: {{ .Values.config.private.druid_pass }}
+{{- end }}
   tls:
     ca: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
