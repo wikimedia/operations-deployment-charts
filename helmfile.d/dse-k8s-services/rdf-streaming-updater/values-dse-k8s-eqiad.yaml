@@ -4,9 +4,9 @@
 
 app:
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata_test/checkpoints/fb15d3590dbcc2855d9bdddb26fc2120/chk-32421
+    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata/savepoints/savepoint-792a6a-c103624a0d07
     state: running
-    allowNonRestoredState: true # required because we are removing some kafka producers with produce_side_outputs: false
+    allowNonRestoredState: true # required because we are moving away from deprecated kafka connectors T326914
     # This triggers a savepoint; see
     # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
     # custom-resource/job-management/#manual-savepoint-triggering

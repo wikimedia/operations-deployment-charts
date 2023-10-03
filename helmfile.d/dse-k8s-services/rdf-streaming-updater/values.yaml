@@ -24,7 +24,7 @@ app:
       cpu: 4
 
   flinkConfiguration:
-    "taskmanager.numberOfTaskSlots": "4"
+    "taskmanager.numberOfTaskSlots": "1"
     "high-availability": zookeeper
     "high-availability.zookeeper.path.root": "/dse-k8s-eqiad/rdf-streaming-updater/wdqs"
     "s3.access-key": wdqs:savepoints
@@ -45,7 +45,8 @@ app:
 
   config_files:
     rdf-streaming-updater-config.properties:
-      parallelism: 12
+      parallelism: 3
+      mediawiki_max_concurrent_requests: 12
       acceptable_mediawiki_lag: 10
       produce_side_outputs: false # T347515
       topic_prefixes: eqiad.,codfw.
@@ -61,13 +62,13 @@ app:
       uris_scheme: wikidata
       entity_namespaces: 0,120,146
       generate_diff_timeout: -1
-      wikibase_repo_thread_pool_size: 1 # TODO: reduce overall parallelism to 3 and set mediawiki_max_concurrent_requests instead
       input_idleness: 60000
       checkpoint_interval: 30000
       checkpoint_timeout: 900000
       restart_failures_rate_interval: 180000
       restart_failures_rate_max_per_interval: 10
       restart_failures_rate_delay: 60000
+      use_new_flink_kafka_api: true
 
 discovery:
   listeners:
