@@ -14,7 +14,7 @@ app:
     # there are more tasks running that can process the messages.
     # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
     # still produces messages in the proper order, per page.
-    replicas: 12 # NOTE: reset after backfilling for https://phabricator.wikimedia.org/T347676
+    replicas: 2
     resource:
       cpu: 2
       # When backfilling, a single TM maxed out at around 2.7GB. Reserve 3G.
