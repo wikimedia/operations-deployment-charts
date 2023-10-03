@@ -75,3 +75,14 @@ kafka_brokers:
 kafka:
   allowed_clusters:
     - test
+# Zookeper adds network policys as well
+zookeeper_clusters:
+  test:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  test1:
+    - 4.3.2.1/32
+
+zookeeper:
+  allowed_clusters:
+    - test
