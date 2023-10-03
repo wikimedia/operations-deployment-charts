@@ -136,9 +136,14 @@ networkpolicy:
       - cidr: 208.80.155.105/32
       # irc2001
       - cidr: 208.80.153.62/32
-      # xenon
-      # mwlog1002
-      - cidr: 10.64.32.141/32
+      # xenon / arclamp
+      # arclamp1001
+      - cidr: 10.64.16.88/32
+        ports:
+          - protocol: TCP
+            port: 6379
+      # arclamp2001
+      - cidr: 10.192.48.82/32
         ports:
           - protocol: TCP
             port: 6379
