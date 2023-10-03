@@ -3,7 +3,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
-  version: v1.24.0
+  version: v1.27.0
   flinkVersion: v1_17
 
   config_files:
@@ -50,8 +50,11 @@ app:
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
-    # To increase default job parellism, we can increase this
-    # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
+    # Input mediawiki.page_change topic has only 1 Kafka topic-partitions (eqiad or codfw).
+    # Increasing the parallelism (replicas) can still help process things faster, as
+    # there are more tasks running that can process the messages.
+    # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
+    # still produces messages in the proper order, per page.
     replicas: 1
     resource:
       # Default lower value for development.

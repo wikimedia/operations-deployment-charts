@@ -9,10 +9,12 @@
 app:
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
-    # For now, set replicas to 1, as the input codfw mediawiki.page_change stream has only 1
-    # Kafka topic-partitions (eqiad or codfw)  We'll need to adjust
-    # this accordingly if/when we we increase the number of Kafka partitions per topic.
-    replicas: 4
+    # Input mediawiki.page_change topic has only 1 Kafka topic-partitions (eqiad or codfw).
+    # Increasing the parallelism (replicas) can still help process things faster, as
+    # there are more tasks running that can process the messages.
+    # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
+    # still produces messages in the proper order, per page.
+    replicas: 12 # NOTE: reset after backfilling for https://phabricator.wikimedia.org/T347676
     resource:
       cpu: 2
       # When backfilling, a single TM maxed out at around 2.7GB. Reserve 3G.
