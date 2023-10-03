@@ -35,3 +35,12 @@ service:
 
 monitoring:
   enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.2.38/32
+      ports:
+        - protocol: tcp
+          port: 8082
