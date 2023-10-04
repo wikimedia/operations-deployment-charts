@@ -48,12 +48,12 @@ hooks:
 
 
 releases: # we hope to be able to use the release bits to configure WDQS & WCQS with this same helmfile
-  - name: wdqs
+  - name: wikidata
     <<: *default
 
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [wdqs]
+      - releases: [wikidata]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
