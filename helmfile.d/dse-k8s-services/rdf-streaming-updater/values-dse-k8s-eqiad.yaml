@@ -4,7 +4,7 @@
 
 app:
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata/savepoints/savepoint-792a6a-c103624a0d07
+    initialSavepointPath: s3://rdf-streaming-updater-staging/k8s_op_test_dse/wikidata_test/checkpoints/c024bd317accdd17032af4d05e9ea97e/chk-32582
     state: running
     allowNonRestoredState: true # required because we are moving away from deprecated kafka connectors T326914
     # This triggers a savepoint; see
