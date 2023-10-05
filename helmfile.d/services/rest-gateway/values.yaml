@@ -143,9 +143,48 @@ main_app:
       ingress: true
       domain: "wikimedia.org"
       urls:
-        - name: geo-editors
+        - name: mediarequests
           in: '(.+)/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\2'
+
+    edit-analytics:
+      timeout: 5s
+      ingress: true
+      domain: "wikimedia.org"
+      urls:
+        - name: edits
+          in: '(.+)/v1/metrics/edits/(.+)'
+          out: 'metrics/edits/\2'
+        - name: bytes_difference
+          in: '(.+)/v1/metrics/bytes_difference/(.+)'
+          out: 'metrics/bytes_difference/\2'
+        - name: edited_pages
+          in: '(.+)/v1/metrics/edited_pages/(.+)'
+          out: 'metrics/edited_pages/\2'
+
+    editor-analytics:
+      timeout: 5s
+      ingress: true
+      domain: 'wikimedia.org'
+      urls:
+        - name: edits
+          in: '(.+)/v1/metrics/editors/(.+)'
+          out: 'metrics/editors/\2'
+        - name: registered
+          in: '(.+)/v1/metrics/registered_users/(.+)'
+          out: 'metrics/registered_users/\2'
+
+    page-analytics:
+      timeout: 5s
+      ingress: true
+      domain: 'wikimedia.org'
+      urls:
+        - name: pageviews
+          in: '(.+)/v1/metrics/pageviews/(.+)'
+          out: 'metrics/pageviews/\2'
+        - name: legacy
+          in: '(.+)/v1/metrics/legacy/(.+)'
+          out: 'metrics/legacy/\2'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
@@ -169,6 +208,18 @@ main_app:
       port: 30443 # ingress
       tls: true
     media-analytics:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+    page-analytics:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+    edit-analytics:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+    editor-analytics:
       ingress: true
       port: 30443 # ingress
       tls: true
