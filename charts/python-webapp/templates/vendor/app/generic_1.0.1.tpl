@@ -132,7 +132,7 @@ command:
 {{- if .Values.app.args }}
 args:
   {{- range .Values.app.args }}
-  - {{ . }}
+  - {{ . | quote }}
   {{- end }}
 {{- end }}
 {{- end -}}
