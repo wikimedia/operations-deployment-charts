@@ -25,6 +25,7 @@ app:
   # These should be the 'limit' requests.
   # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#resource
   jobManager:
+    replicas: 1
     resource:
       memory: 1000m
 
