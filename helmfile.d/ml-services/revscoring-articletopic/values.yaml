@@ -40,6 +40,9 @@ inference:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
     autoscaling.knative.dev/target: "8"
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
   s3_storage_base_uri: "s3://wmf-ml-models"
   model: "articletopic"
   predictor:

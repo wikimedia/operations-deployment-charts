@@ -39,6 +39,9 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
 
 inference_services:
   revertrisk-language-agnostic:

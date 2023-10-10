@@ -39,6 +39,9 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     proxy.istio.io/config: '{"readiness.status.sidecar.istio.io/periodSeconds": "600" }'
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
 
 inference_services:
   bloom-560m:

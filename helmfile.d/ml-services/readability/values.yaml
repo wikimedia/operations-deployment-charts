@@ -40,6 +40,9 @@ inference:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
     autoscaling.knative.dev/target: "4"
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
 
 inference_services:
   readability:
@@ -53,4 +56,3 @@ inference_services:
           value: "s3://wmf-ml-models/readability/multilingual/20230824102026/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
-
