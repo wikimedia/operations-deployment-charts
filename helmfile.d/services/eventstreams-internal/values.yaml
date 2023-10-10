@@ -28,7 +28,7 @@ resources:
 
 main_app:
   name: eventstreams-internal
-  version: 2022-01-20-101239-production
+  version: 2023-10-02-151622-production
 
   requests:
     cpu: 200m
@@ -60,3 +60,4 @@ main_app:
     stream_config_object_path: streams
     # Refresh the list of available streams every 5 minutes.
     stream_config_ttl: 300
+    stream_ui_enabled: true
