@@ -30,7 +30,7 @@ app:
   version: "2023-09-21-131648-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: ["uwsgi"]
-  args: ["--http", ":8080", "--workers", "2", "--wsgi-file", "recommendation/data/recommendation.wsgi", "--harakiri", "15"]
+  args: ["--http", ":8080", "--master", "--workers", "2", "--wsgi-file", "recommendation/data/recommendation.wsgi", "--harakiri", "15"]
   limits:
     cpu: 2
     memory: 1Gi
