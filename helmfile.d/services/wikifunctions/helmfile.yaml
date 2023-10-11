@@ -47,45 +47,24 @@ hooks:
 
       ]
 
-
 releases:
   - name: main-orchestrator
     <<: *default
     chart: wmf-stable/function-orchestrator
-  # Uncomment canary and test, if/when needed
-  # - name: canary-orchestrator
-  #   <<: *default
-  #   chart: wmf-stable/function-orchestrator
-  #   # 
-  # - name: test-orchestrator
-  #   <<: *default
-  #   chart: wmf-stable/function-orchestrator
+
   - name: main-evaluator
     <<: *default
     chart: wmf-stable/function-evaluator
-  # Uncomment canary and test, if/when needed
-  #- name: canary-evaluator
-  #  <<: *default
-  #  chart: wmf-stable/function-evaluator
-  #- name: test-evaluator
-  #  <<: *default
-  #  chart: wmf-stable/function-evaluator
 
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
 environments:
-  staging:
+  staging: &default_values
     values:
-      - releases: [main-orchestrator, main-evaluator]
+      - releases:
+        - main-orchestrator
+        - main-evaluator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
-    values:
-      - releases: [main-orchestrator, main-evaluator]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
+    <<: *default_values
   codfw:
-    values:
-      - releases: [main-orchestrator, main-evaluator]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
+    <<: *default_values
