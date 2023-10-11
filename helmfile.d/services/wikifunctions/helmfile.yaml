@@ -52,6 +52,8 @@ releases:
     <<: *default
     chart: wmf-stable/function-orchestrator
 
+  # TODO (T343389): Split each language evaluator into a release for each supported version of python and JS.
+
   - name: javascript-evaluator
     <<: *default
     chart: wmf-stable/function-evaluator

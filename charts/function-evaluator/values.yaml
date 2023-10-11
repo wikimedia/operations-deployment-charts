@@ -7,14 +7,13 @@ resources:
   replicas: 1
 main_app:
   type: "default"
-  # TODO (T343389): Split each service into multiple ones for each supported version of python and JS.
   # NOTE: The image: and version: values are over-ridden in the helmfile.d/services/wikifunctions/values-*-evaluator.yaml files
   image: repos/abstract-wiki/wikifunctions/function-evaluator/some-such-image
   version: versionNumberGoesHere
   port: 6927
   command: []
   args: []
-  # TODO (T??????): Set appropriate values for these
+  # TODO (T348681) Set appropriate values for these; will probably vary by language, so move to helmfile.d values files?
   requests:
     cpu: 100m
     memory: 200Mi
@@ -29,7 +28,7 @@ main_app:
       path: /_info
       port: 6927
 
-# TODO (T316706): Add gVisor config, later.
+# TODO (T316706): Add gVisor config at some point?
 
 monitoring:
   enabled: true
@@ -48,9 +47,8 @@ config:
   private: {}
 
 mesh:
-  # FIXME: Set this to true to go live in production
-  enabled: false
-  public_port: 4970
+  enabled: false # Set true in helmfile.d values files.
+  public_port: 4970 # now-unused; over-ridden in each helmfile.d values file.
   upstream_timeout: "180.0s"
   certs:
     cert: "snakeoil"

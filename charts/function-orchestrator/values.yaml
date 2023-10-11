@@ -43,8 +43,7 @@ config:
   private: {}
 
 mesh:
-  # FIXME: Set this to true to go live in production
-  enabled: false
+  enabled: false # Set true in helmfile.d values file.
   public_port: 4971
   upstream_timeout: "180.0s"
   certs:
