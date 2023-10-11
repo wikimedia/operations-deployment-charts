@@ -106,6 +106,7 @@ namespaces:
       - '*.experimental.wikimedia.org'
       - '*.articletopic-outlink.wikimedia.org'
       - '*.revertrisk.wikimedia.org'
+      - '*.llm.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -218,6 +219,11 @@ namespaces:
     labels:
       istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
+  llm:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
   # The experimental namespace allows the deployment of model servers
   # that are not ready for production yet. After an incubation period,
   # a model server may be promoted to production in its own dedicated
