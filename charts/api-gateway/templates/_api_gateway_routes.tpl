@@ -193,7 +193,7 @@ BEGIN restbase route definition
                   cors: &api_cors
                     allow_origin_string_match:
                       - prefix: "*"
-                    allow_headers: 'Api-User-Agent,Authorization'
+                    allow_headers: 'Api-User-Agent,Authorization,Content-type'
                   regex_rewrite:
                     pattern:
                       google_re2: {}
