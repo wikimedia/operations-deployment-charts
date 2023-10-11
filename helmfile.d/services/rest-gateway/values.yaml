@@ -154,13 +154,13 @@ main_app:
       urls:
         - name: edits
           in: '(.+)/v1/metrics/edits/(.+)'
-          out: 'metrics/edits/\2'
+          out: '/metrics/edits/\2'
         - name: bytes_difference
           in: '(.+)/v1/metrics/bytes_difference/(.+)'
-          out: 'metrics/bytes_difference/\2'
+          out: '/metrics/bytes_difference/\2'
         - name: edited_pages
           in: '(.+)/v1/metrics/edited_pages/(.+)'
-          out: 'metrics/edited_pages/\2'
+          out: '/metrics/edited_pages/\2'
 
     editor-analytics:
       timeout: 5s
@@ -169,10 +169,10 @@ main_app:
       urls:
         - name: edits
           in: '(.+)/v1/metrics/editors/(.+)'
-          out: 'metrics/editors/\2'
+          out: '/metrics/editors/\2'
         - name: registered
           in: '(.+)/v1/metrics/registered_users/(.+)'
-          out: 'metrics/registered_users/\2'
+          out: '/metrics/registered_users/\2'
 
     page-analytics:
       timeout: 5s
