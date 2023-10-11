@@ -1,7 +1,7 @@
 app:
   image: docker-registry.discovery.wmnet/repos/search-platform/cirrus-streaming-updater/producer
   job:
-    entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ProducerApplication
+    entryClass: org.wikimedia.discovery.cirrus.updater.producer.ProducerApplication
   config_files:
     app.config.properties:
       page-change-stream: mediawiki.page_change.v1
