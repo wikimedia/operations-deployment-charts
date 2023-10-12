@@ -71,7 +71,7 @@ main_app:
     # which are all produced via eventgate-main.
     # Only request streams from EventStreamConfig API that have
     # destination_event_service == 'eventgate-main'
-    stream_config_uri: 'http://localhost:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-main'
+    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-main'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
     stream_config_object_path: streams
     # Since we manually restrict the list of allowed streams, there's no need
@@ -79,6 +79,10 @@ main_app:
     # Set ttl to 0 to only look up stream configs at service start up.
     stream_config_ttl: 0
     stream_ui_enabled: true
+
+    schema_base_uris:
+    - http://127.0.0.1:6023/repositories/primary/jsonschema
+    - http://127.0.0.1:6023/repositories/secondary/jsonschema
 
     # Only these streams will be exposed.
     allowed_streams:

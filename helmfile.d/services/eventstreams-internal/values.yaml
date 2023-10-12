@@ -55,9 +55,13 @@ main_app:
     # Kafka main-* topics are mirrored to jumbo-eqiad, so this will mostly be ok.
     # We don't (yet) mirror from Kafka logging-* to jumbo-eqiad, so the streams that
     # go through eventgate-logging-external will not be available.
-    stream_config_uri: 'http://localhost:6500/w/api.php?format=json&action=streamconfigs'
+    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
     stream_config_object_path: streams
     # Refresh the list of available streams every 5 minutes.
     stream_config_ttl: 300
     stream_ui_enabled: true
+    
+    schema_base_uris:
+    - http://127.0.0.1:6023/repositories/primary/jsonschema
+    - http://127.0.0.1:6023/repositories/secondary/jsonschema
