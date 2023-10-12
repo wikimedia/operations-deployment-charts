@@ -28,7 +28,7 @@ config:
 
 discovery:
   listeners:
-    - mw-api-int
+    - mw-wikifunctions-ro
 
 networkpolicy:
   egress:
@@ -43,18 +43,18 @@ networkpolicy:
       - podSelector:
           matchLabels:
             app: function-evaluator
-    # This is to allow access to the mw-api-int pods in the *local* cluster.
+    # This is to allow access to the mw-wikifunctions pods in the *local* cluster.
     # NetworkPolicy rules apply after all DNAT has taken place, to just
     # allowing the LVS IP (what our mesh templates do) it not enough for
     # wikifunctions as we don't allow genreal pod-to-pod traffic.
     - ports:
-      - port: 4446
+      - port: 4451
         protocol: TCP
       to:
       - namespaceSelector:
           matchLabels:
-            kubernetes.io/metadata.name: mw-api-int
+            kubernetes.io/metadata.name: mw-wikifunctions
         podSelector:
           matchLabels:
             app: mediawiki
-            deployment: mw-api-int
+            deployment: mw-wikifunctions
