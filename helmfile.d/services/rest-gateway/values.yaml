@@ -181,10 +181,10 @@ main_app:
       urls:
         - name: pageviews
           in: '(.+)/v1/metrics/pageviews/(.+)'
-          out: 'metrics/pageviews/\2'
+          out: '/metrics/pageviews/\2'
         - name: legacy
           in: '(.+)/v1/metrics/legacy/(.+)'
-          out: 'metrics/legacy/\2'
+          out: '/metrics/legacy/\2'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
