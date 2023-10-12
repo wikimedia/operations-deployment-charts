@@ -9,3 +9,17 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+  revertrisk-language-agnostic-old:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+      image: "machinelearning-liftwing-inference-services-revertrisk"
+      image_version: "2023-10-02-075714-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-language-agnostic-old"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/language-agnostic/20230929145934/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
