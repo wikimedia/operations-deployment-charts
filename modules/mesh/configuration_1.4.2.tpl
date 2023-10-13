@@ -274,7 +274,7 @@ static_resources:
       port: 6060  # this is the local port
       http_host: foobar.example.org  # this is the Host: header that will be added to your request
       timeout: "60s"
-      tracing_enabled: false # default to true
+      tracing_enabled: false # default is true
       retry_policy:
         num_retries: 1
         retry_on: 5xx

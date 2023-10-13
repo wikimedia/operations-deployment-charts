@@ -35,6 +35,7 @@ monitoring:
 
 service:
   deployment: minikube
+  nodePort: false
   port:
     name: http
     targetPort: 6927
@@ -48,7 +49,7 @@ config:
 
 mesh:
   enabled: false # Set true in helmfile.d values files.
-  public_port: 4970 # now-unused; over-ridden in each helmfile.d values file.
+  public_port: 6927
   upstream_timeout: "180.0s"
   certs:
     cert: "snakeoil"

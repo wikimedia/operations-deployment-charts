@@ -20,13 +20,13 @@ config:
         "evaluatorConfigs": [
           {
             "programmingLanguages": ["python-3-9", "python-3-8", "python-3-7", "python-3", "python"],
-            "evaluatorUri": "https://function-evaluator-python-evaluator-tls-service.wikifunctions.svc.cluster.local:4981/1/v1/evaluate/",
+            "evaluatorUri": "https://function-evaluator-python-evaluator-tls-service.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/",
             "evaluatorWs": "",
             "useReentrance": false
           },
           {
             "programmingLanguages": ["javascript-es2020", "javascript-es2019", "javascript-es2018", "javascript-es2017", "javascript-es2016", "javascript-es2015", "javascript"],
-            "evaluatorUri": "https://function-evaluator-javascript-evaluator-tls-service.wikifunctions.svc.cluster.local:4980/1/v1/evaluate/",
+            "evaluatorUri": "https://function-evaluator-javascript-evaluator-tls-service.wikifunctions.svc.cluster.local:6927/1/v1/evaluate/",
             "evaluatorWs": "",
             "useReentrance": false
           }
@@ -43,9 +43,7 @@ networkpolicy:
     # This is a copy from the charts values.yaml as these don't get deep merged here
     - ports:
       - protocol: TCP
-        port: 4980
-      - protocol: TCP
-        port: 4981
+        port: 6927
       to:
       - podSelector:
           matchLabels:
