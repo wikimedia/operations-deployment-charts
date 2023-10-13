@@ -38,6 +38,7 @@ monitoring:
 
 service:
   deployment: minikube # valid values are "production" and "minikube"
+  nodePort: true # set to false to create ClusterIP services
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
