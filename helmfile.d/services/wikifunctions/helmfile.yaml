@@ -52,10 +52,6 @@ releases:
     <<: *default
     chart: wmf-stable/function-orchestrator
 
-  - name: main-evaluator
-    <<: *default
-    chart: wmf-stable/function-evaluator
-
   - name: javascript-evaluator
     <<: *default
     chart: wmf-stable/function-evaluator
@@ -69,7 +65,6 @@ environments:
     values:
       - releases:
         - main-orchestrator
-        - main-evaluator
         - javascript-evaluator
         - python-evaluator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
