@@ -18,9 +18,6 @@ inference:
 revscoring_inference_services:
   - wiki: "enwiki"
     version: "20230824150035"
-  - wiki: "enwiki-mp"
-    version: "20230824150035"
-    use_model_from_wiki: "enwiki"
     predictor:
       custom_env:
         - name: ASYNCIO_USE_PROCESS_POOL
