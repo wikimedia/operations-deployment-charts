@@ -7,8 +7,9 @@ resources:
   replicas: 1
 main_app:
   type: "default"
+  # NOTE: The version: value is over-ridden in the helmfile.d/services/wikifunctions/values-main-orchestrator.yaml file
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
-  version: 2023-10-02-145138
+  version: versionNumberGoesHere
   port: 6254
   command: []
   args: []
