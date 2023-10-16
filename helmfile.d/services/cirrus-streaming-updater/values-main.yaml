@@ -19,6 +19,7 @@ app:
     upgradeMode: last-state
 
   flinkConfiguration:
+    pipeline.name: cirrus-streaming-updater
     # Flink HA config shared across clusters.
     # Swift and Zookeeper specific configs (paths), should be defined
     # in each cluster's  helmfile.
