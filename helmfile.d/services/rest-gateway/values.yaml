@@ -137,6 +137,9 @@ main_app:
         - name: geo-editors
           in: '(.+)/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\2'
+        - name: api-spec
+          in: '(.+)/v1/metrics/editors/by-country/api-spec.json'
+          out: '/geo-analytics/api-spec.json'
 
     media-analytics:
       timeout: 15s
@@ -146,6 +149,9 @@ main_app:
         - name: mediarequests
           in: '(.+)/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\2'
+        - name: api-spec
+          in: '(.+)/v1/metrics/mediarequests/api-spec.json'
+          out: '/mediarequests/api-spec.json'
 
     edit-analytics:
       timeout: 5s
@@ -161,6 +167,9 @@ main_app:
         - name: edited_pages
           in: '(.+)/v1/metrics/edited_pages/(.+)'
           out: '/metrics/edited_pages/\2'
+        - name: api-spec
+          in: '(.+)/v1/metrics/edits/api-spec.json'
+          out: '/edit-analytics/api-spec.json'
 
     editor-analytics:
       timeout: 5s
@@ -173,6 +182,9 @@ main_app:
         - name: registered
           in: '(.+)/v1/metrics/registered_users/(.+)'
           out: '/metrics/registered_users/\2'
+        - name: api-spec
+          in: '(.+)/v1/metrics/editors/api-spec.json'
+          out: '/editors/api-spec.json'
 
     page-analytics:
       timeout: 5s
@@ -185,6 +197,7 @@ main_app:
         - name: legacy
           in: '(.+)/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\2'
+      # api-spec TODO when added
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
