@@ -1,6 +1,7 @@
 app:
   config_files:
     app.config.properties:
+      pipeline.name: cirrus-streaming-updater-consumer-search-eqiad
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-eqiad
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
       elasticsearch-urls.chi: http://localhost:6102
