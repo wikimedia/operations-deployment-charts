@@ -49,10 +49,9 @@ app:
     app.config.properties:
       # mw-api-int-async-ro
       http-routes.99-mwapi: .*=http://localhost:6500
-      # schema
-      event-stream-http-routes.https://schema.wikimedia.org: http://localhost:6023/
+      event-stream-http-routes.schema: https://schema.wikimedia.org=http://localhost:6023/
       # mw-api-int-async-ro
-      event-stream-http-routes.https://meta.wikimedia.org: http://localhost:6500/
+      event-stream-http-routes.meta: https://meta.wikimedia.org=http://localhost:6500/
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
