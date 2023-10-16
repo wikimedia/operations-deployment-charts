@@ -67,6 +67,21 @@ revscoring_inference_services:
     predictor:
       config:
         minReplicas: 2
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 2
+        - name: PREPROCESS_MP
+          value: "True"
+      container:
+        resources:
+          limits:
+            cpu: "3"
+            memory: 2Gi
+          requests:
+            cpu: "3"
+            memory: 2Gi
   - wiki: "euwiki"
     version: "20220509070939"
   - wiki: "fawiki"
