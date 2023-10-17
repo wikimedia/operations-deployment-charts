@@ -134,30 +134,33 @@ main_app:
       ingress: true
       domain: "wikimedia.org"
       urls:
-        - name: geo-editors
-          in: '(.+)/v1/metrics/editors/by-country/(.+)'
-          out: '/metrics/editors/by-country/\2'
         - name: api-spec
           in: '(.+)/v1/metrics/editors/by-country/api-spec.json'
           out: '/geo-analytics/api-spec.json'
+        - name: geo-editors
+          in: '(.+)/v1/metrics/editors/by-country/(.+)'
+          out: '/metrics/editors/by-country/\2'
 
     - name: media-analytics
       timeout: 15s
       ingress: true
       domain: "wikimedia.org"
       urls:
-        - name: mediarequests
-          in: '(.+)/v1/metrics/mediarequests/(.+)'
-          out: '/metrics/mediarequests/\2'
         - name: api-spec
           in: '(.+)/v1/metrics/mediarequests/api-spec.json'
           out: '/mediarequests/api-spec.json'
+        - name: mediarequests
+          in: '(.+)/v1/metrics/mediarequests/(.+)'
+          out: '/metrics/mediarequests/\2'
 
     - name: edit-analytics
       timeout: 5s
       ingress: true
       domain: "wikimedia.org"
       urls:
+        - name: api-spec
+          in: '(.+)/v1/metrics/edits/api-spec.json'
+          out: '/edit-analytics/api-spec.json'
         - name: edits
           in: '(.+)/v1/metrics/edits/(.+)'
           out: '/metrics/edits/\2'
@@ -167,24 +170,21 @@ main_app:
         - name: edited_pages
           in: '(.+)/v1/metrics/edited_pages/(.+)'
           out: '/metrics/edited_pages/\2'
-        - name: api-spec
-          in: '(.+)/v1/metrics/edits/api-spec.json'
-          out: '/edit-analytics/api-spec.json'
 
     - name: editor-analytics
       timeout: 5s
       ingress: true
       domain: 'wikimedia.org'
       urls:
+        - name: api-spec
+          in: '(.+)/v1/metrics/editors/api-spec.json'
+          out: '/editors/api-spec.json'
         - name: edits
           in: '(.+)/v1/metrics/editors/(.+)'
           out: '/metrics/editors/\2'
         - name: registered
           in: '(.+)/v1/metrics/registered_users/(.+)'
           out: '/metrics/registered_users/\2'
-        - name: api-spec
-          in: '(.+)/v1/metrics/editors/api-spec.json'
-          out: '/editors/api-spec.json'
 
     - name: page-analytics
       timeout: 5s
