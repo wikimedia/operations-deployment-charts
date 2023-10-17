@@ -55,7 +55,7 @@ main_app:
     - wikipedia.org
 
   restbase_routes:
-    mobileapps:
+    - name: mobileapps
       timeout: 120s
       urls:
         #TODO tighten capture group criteria
@@ -71,7 +71,7 @@ main_app:
         - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
-    proton:
+    - name: proton
       timeout: 150s
       urls:
         # Proton doesn't actually support not passing a format - restbase usually adds this
@@ -84,7 +84,7 @@ main_app:
         - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
-    citoid:
+    - name: citoid
       timeout: 120s
       urls:
         - name: citoid_slash
@@ -99,7 +99,7 @@ main_app:
           in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
           out: '/api?format=\2&search=\3'
 
-    wikifeeds:
+    - name: wikifeeds
       timeout: 15s
       urls:
         - name: announcements
@@ -121,7 +121,7 @@ main_app:
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
 
-    aqs:
+    - name: aqs
       timeout: 15s
       domain: "wikimedia.org"
       urls:
@@ -129,7 +129,7 @@ main_app:
           in: '(.+)/v1/knowledge-gap/(.+)'
           out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
 
-    geo-analytics:
+    - name: geo-analytics
       timeout: 15s
       ingress: true
       domain: "wikimedia.org"
@@ -141,7 +141,7 @@ main_app:
           in: '(.+)/v1/metrics/editors/by-country/api-spec.json'
           out: '/geo-analytics/api-spec.json'
 
-    media-analytics:
+    - name: media-analytics
       timeout: 15s
       ingress: true
       domain: "wikimedia.org"
@@ -153,7 +153,7 @@ main_app:
           in: '(.+)/v1/metrics/mediarequests/api-spec.json'
           out: '/mediarequests/api-spec.json'
 
-    edit-analytics:
+    - name: edit-analytics
       timeout: 5s
       ingress: true
       domain: "wikimedia.org"
@@ -171,7 +171,7 @@ main_app:
           in: '(.+)/v1/metrics/edits/api-spec.json'
           out: '/edit-analytics/api-spec.json'
 
-    editor-analytics:
+    - name: editor-analytics
       timeout: 5s
       ingress: true
       domain: 'wikimedia.org'
@@ -186,7 +186,7 @@ main_app:
           in: '(.+)/v1/metrics/editors/api-spec.json'
           out: '/editors/api-spec.json'
 
-    page-analytics:
+    - name: page-analytics
       timeout: 5s
       ingress: true
       domain: 'wikimedia.org'

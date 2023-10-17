@@ -14,7 +14,7 @@ main_app:
     - mytestdomain.discovery.wmnet
 
   restbase_routes:
-    mobileapps:
+    - name: mobileapps
       hostname: mobileapps.discovery.wmnet
       urls:
         #TODO tighten capture group criteria
@@ -30,7 +30,7 @@ main_app:
         - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
-    proton:
+    - name: proton
       timeout: 150s
       ingress: true
       domain: mytestdomain.discovery.wmnet

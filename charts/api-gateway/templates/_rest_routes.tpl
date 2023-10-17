@@ -48,17 +48,17 @@
                   status: 200
                   body: {inline_string: "This is the REST Gateway."}
 {{- /* BEGIN restbase_routes definition */}}
-{{- range $endpoint, $endpoint_config := .Values.main_app.restbase_routes }}
-{{- range $route := $endpoint_config.urls }}
-              - name: {{ $endpoint }}_{{ $route.name }}
+{{- range $endpoint := .Values.main_app.restbase_routes }}
+{{- range $route := $endpoint.urls }}
+              - name: {{ $endpoint.name }}_{{ $route.name }}
                 match:
                   safe_regex:
                     google_re2: {}
                     regex: '^/{{ $route.in }}$'
-                  {{- if $endpoint_config.domain }}
+                  {{- if $endpoint.domain }}
                   headers:
                   - name: ':authority'
-                    exact_match: '{{ $endpoint_config.domain }}'
+                    exact_match: '{{ $endpoint.domain }}'
                   {{- end }}
                 route:
                   regex_rewrite:
@@ -66,9 +66,9 @@
                       google_re2: {}
                       regex: '^{{ $route.in }}$'
                     substitution: '{{ $route.out }}'
-                  timeout: {{ $endpoint_config.timeout | default "15s" }}
-                  cluster: {{ $endpoint }}_cluster
-                  {{- if $endpoint_config.ingress }}
+                  timeout: {{ $endpoint.timeout | default "15s" }}
+                  cluster: {{ $endpoint.name }}_cluster
+                  {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
 {{- end }}
