@@ -8,7 +8,7 @@ main_app:
   image: wikimedia/operations-software-tegola
   version: latest
   port: 8080
-  args: ["serve", "--config", "/etc/tegola/config.toml"]
+  args: ["serve", "--logger", "zap" ,"--config", "/etc/tegola/config.toml"]
   requests:
     cpu: 1m
     memory: 200Mi
