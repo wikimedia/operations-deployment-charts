@@ -55,9 +55,8 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
-  # TODO: Refactor keyname to avoid confusion in future after migration
-  restbase_host: localhost:6500
-  version: 2023-10-12-080927-production
+  restbase_host: localhost:6503
+  version: 2023-10-11-114410-production
 monitoring:
   enabled: true
 resources:
@@ -75,6 +74,7 @@ mesh:
 discovery:
   listeners:
     - mw-api-int-async
+    - restbase-for-services
     - apertium
     - machinetranslation
 networkpolicy:

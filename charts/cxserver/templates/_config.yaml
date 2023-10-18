@@ -56,7 +56,7 @@ services:
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
         headers: {{ "'{{" }} request.headers {{ "}}'" }}
         body: {{ "'{{" }} request.body {{ "}}'" }}
-        uri: http://{{ .Values.main_app.restbase_host }}/{{ "{{" }}domain{{ "}}"}}/w/rest.php/{+path}
+        uri: http://{{ .Values.main_app.restbase_host }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
       {{ if .Values.main_app.proxy -}}
       proxy: {{ .Values.main_app.proxy }}
       {{ end -}}
