@@ -27,7 +27,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2023-10-17-133753-production"
+  version: "2023-10-18-094845-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: ["uwsgi"]
   args: ["--http", ":8080", "--master", "--workers", "2", "--wsgi-file", "recommendation/data/recommendation.wsgi", "--harakiri", "15"]
@@ -50,6 +50,8 @@ discovery:
   listeners:
   - thanos-swift
   - mw-api-int-async-ro
+  - cxserver
+  - eventgate-analytics
 
 mesh:
   enabled: true
