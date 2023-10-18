@@ -58,6 +58,11 @@ releases:
     <<: *default
     chart: wmf-stable/function-evaluator
 
+  # Temporary service
+  - name: javascript-wasm-evaluator
+    <<: *default
+    chart: wmf-stable/function-evaluator
+
   - name: python-evaluator
     <<: *default
     chart: wmf-stable/function-evaluator
@@ -68,6 +73,7 @@ environments:
       - releases:
         - main-orchestrator
         - javascript-evaluator
+        - javascript-wasm-evaluator
         - python-evaluator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
