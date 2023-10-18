@@ -49,6 +49,11 @@ spec:
         # Flink taskmanager.data.port
         - port: {{ index .Values.app.flinkConfiguration "taskmanager.data.port" }}
           protocol: TCP
+        {{- if index .Values.app.flinkConfiguration "metrics.internal.query-service.port" }}
+        # Flink internal metrics port
+        - port: {{ index .Values.app.flinkConfiguration "metrics.internal.query-service.port" }}
+          protocol: TCP
+        {{- end }}
 
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:

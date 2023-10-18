@@ -6,6 +6,8 @@ app:
     jarURI: /srv/flink_app0/MyFlinkApp.jar
     entryClass: org.wikimedia.MyMainFlinkClass
     args: [ --arg1, val1 ]
+  flinkConfiguration:
+    "metrics.internal.query-service.port": "50000"
 
 
 networkpolicy:

@@ -19,6 +19,8 @@ app:
     upgradeMode: last-state
 
   flinkConfiguration:
+    # Set to a constant port which will have trigger adding appropriate networkpolicy
+    "metrics.internal.query-service.port": "50100"
     # Flink HA config shared across clusters.
     # Swift and Zookeeper specific configs (paths), should be defined
     # in each cluster's  helmfile.
