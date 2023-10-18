@@ -35,4 +35,10 @@ app:
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
     replicas: 1
     resource:
-      memory: 1500m
+      memory: 2000m
+
+  env:
+    # Disable use of jemalloc, we've mostly seen it just cause more memory use
+    # https://phabricator.wikimedia.org/T332948#8792955
+    - name: DISABLE_JEMALLOC
+      value: "true"
