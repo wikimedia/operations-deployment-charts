@@ -74,8 +74,9 @@ networkpolicy:
   egress:
     enabled: false
 
-httpd:
-  exporter_version: latest
+common_images:
+  httpd:
+    exporter: prometheus-apache-exporter:latest
 
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
