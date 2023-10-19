@@ -1,23 +1,42 @@
-main_app:
-  config:
-    cluster_id: rdf-streaming-updater-staging-flink-cluster
-# thanos is replicated between clusters so we want a separate bucket for
-# the flink HA storage
-    ha_storage_dir: s3://rdf-streaming-updater-staging/flink_ha_storage
-
-task_manager:
-  replicas: 2
-  requests:
-    cpu: 500m
-    memory: 2048M
-  limits:
-    cpu: 1000m
-    memory: 2048M
-
+app:
+  config_files:
+    rdf-streaming-updater-config.properties:
+      brokers: kafka-main1001.eqiad.wmnet:9092,kafka-main1002.eqiad.wmnet:9092,kafka-main1003.eqiad.wmnet:9092,kafka-main1004.eqiad.wmnet:9092,kafka-main1005.eqiad.wmnet:9092
+      parallelism: 1
+      produce_side_outputs: false
+      output_topic_prefix: eqiad.
+  jobManager:
+    replicas: 1
+    resource:
+      memory: 1600m
+  taskManager:
+    replicas: 1
+    resource:
+      memory: 2Gb
+      cpu: 1
+flink:
+  object_store:
+    swift_bucket: rdf-streaming-updater-staging
+  high_availability:
+    zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
+job:
+  flinkConfiguration:
+    "taskmanager.memory.jvm-overhead.fraction": "0.1"
 kafka:
-  # unclear where staging is actually running so allow both kafka-main clusters
-  # TODO: ideally we'd like to use a "test" cluster (test-eqiad?) but we need actual data and it's unclear if the test
-  # cluster has some production data replicated to it
   allowed_clusters:
-  - main-eqiad
-  - main-codfw
+    - main-eqiad
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.64.16.203/32   # kubestagemaster1001.eqiad.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+    - cidr: 10.192.48.10/32   # kubestagemaster2001.codfw.wmnet
+      ports:
+      - port: 6443
+        protocol: tcp
+zookeeper:
+  allowed_clusters:
+    - flink-eqiad

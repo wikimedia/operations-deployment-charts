@@ -1,0 +1,18 @@
+# WMF kubernetes cluster specific values.
+# These are kept out of the main values.yaml just so that it is easier to use
+# with local development.
+
+app:
+  config_files:
+    rdf-streaming-updater-config.properties:
+      checkpoint_dir: s3://rdf-streaming-updater-eqiad/commons/checkpoints
+      output_topic: eqiad.mediainfo-streaming-updater.mutation
+      reconciliation_topic: rdf-streaming-updater.reconcile[wcqs_sideoutputs_reconcile@eqiad]
+  job:
+    initialSavepointPath: s3://rdf-streaming-updater-eqiad/commons/2023-11-29T150003/savepoint-7f68e9-33abb6b4089d
+    # savepointTriggerNonce triggers a savepoint; see
+    # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
+    # custom-resource/job-management/#manual-savepoint-triggering
+    # for more details
+    savepointTriggerNonce: 228
+    state: running

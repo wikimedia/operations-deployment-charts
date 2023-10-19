@@ -4,7 +4,6 @@ helmDefaults:
   verify: false
   atomic: true
   timeout: 600
-  recreatePods: false
   force: false
   args:
     # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
@@ -16,11 +15,11 @@ helmDefaults:
 templates:
   default: &default
     namespace: rdf-streaming-updater
-    chart: wmf-stable/flink-session-cluster
+    chart: wmf-stable/flink-app
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     # This template gets applied for every release, all of which are applied in every environment
-    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
+    # The installedTemplate line below is how we guarantee we only install the appropriate release in each environment.
     # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
     installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
     missingFileHandler: Warn
@@ -30,6 +29,8 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/rdf-streaming-updater/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      - "values-{{ .Environment.Name }}-{{`{{ .Release.Name }}`}}.yaml" # env AND release-specific overrides
+      - environmentName: "{{ .Environment.Name }}"
 
 hooks:
   - events: ["prepare"]
@@ -45,11 +46,12 @@ hooks:
       [
         "{{`{{.HelmfileCommand}}`}}",
         "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/rdf-streaming-updater: {{`{{.HelmfileCommand}}`}}",
-
       ]
 
-releases:
-  - name: main
+releases: # we hope to be able to use the release bits to configure WDQS & WCQS with this same helmfile
+  - name: wikidata
+    <<: *default
+  - name: commons
     <<: *default
 
 # Please note: you might not need to declare all of these releases. Most applications
@@ -57,16 +59,16 @@ releases:
 environments:
   staging:
     values:
-      - releases: [main]
+      - releases: [wikidata,commons]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [main]
+      - releases: [wikidata,commons]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main]
+      - releases: [wikidata,commons]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn

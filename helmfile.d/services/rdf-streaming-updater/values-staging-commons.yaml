@@ -1,0 +1,23 @@
+# WMF kubernetes cluster specific values.
+# These are kept out of the main values.yaml just so that it is easier to use
+# with local development.
+
+app:
+  config_files:
+    rdf-streaming-updater-config.properties:
+      brokers: kafka-main1001.eqiad.wmnet:9092
+      checkpoint_dir: s3://rdf-streaming-updater-staging/commons/checkpoints
+      commons_concept_uri: https://test-commons.wikidata.org
+      consumer_group: wcqs_streaming_updater_test
+      hostname: test-commons.wikimedia.org
+      output_topic: eqiad.mediainfo-streaming-updater.mutation-staging
+      wikidata_concept_uri: http://test.wikidata.org
+  job:
+  # Savepoint TBD, will fill in during operations work as described at
+    initialSavepointPath:
+    state: running
+    # savepointTriggerNonce triggers a savepoint; see
+    # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
+    # custom-resource/job-management/#manual-savepoint-triggering
+    # for more details
+    savepointTriggerNonce: 1

@@ -1,0 +1,21 @@
+# WMF kubernetes cluster specific values.
+# These are kept out of the main values.yaml just so that it is easier to use
+# with local development.
+
+app:
+  config_files:
+    rdf-streaming-updater-config.properties:
+      # TODO: This value is also constructed by the chart and fed to flink config, but the chart can't
+      # know anything about our specific application. Is there some way to read the flink value
+      # instead of copying it here?
+      checkpoint_dir: s3://rdf-streaming-updater-codfw/commons/checkpoints
+      output_topic: codfw.mediainfo-streaming-updater.mutation
+      reconciliation_topic: rdf-streaming-updater.reconcile[wcqs_sideoutputs_reconcile@codfw]
+  job:
+    initialSavepointPath: s3://rdf-streaming-updater-codfw/commons/2023-11-29T162202/savepoint-4d8b66-8b37083f9f60
+    # savepointTriggerNonce triggers a savepoint; see
+    # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
+    # custom-resource/job-management/#manual-savepoint-triggering
+    # for more details
+    savepointTriggerNonce: 228
+    state: running

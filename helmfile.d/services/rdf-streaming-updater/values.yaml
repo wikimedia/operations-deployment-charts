@@ -1,88 +1,91 @@
-docker:
-  registry: docker-registry.wikimedia.org
-  pull_policy: IfNotPresent
-
-main_app:
-  image: repos/search-platform/flink-rdf-streaming-updater
+app:
+  config_files:
+    rdf-streaming-updater-config.properties:
+      checkpoint_interval: 30000
+      checkpoint_timeout: 900000
+      event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
+      generate_diff_timeout: -1
+      http_routes: test-commons.wikimedia.org=localhost:6500,commons.wikimedia.org=localhost:6500,test.wikidata.org=localhost:6500,www.wikidata.org=localhost:6500,meta.wikimedia.org=localhost:6500,schema.wikimedia.org=localhost:6023
+      input_idleness: 60000
+      mediawiki_max_concurrent_requests: 12
+      output_topic_partition: 0
+      page_delete_topic: mediawiki.page-delete
+      page_undelete_topic: mediawiki.page-undelete
+      parallelism: 3
+      produce_side_outputs: true
+      restart_failures_rate_delay: 60000
+      restart_failures_rate_interval: 180000
+      restart_failures_rate_max_per_interval: 10
+      rev_create_topic: mediawiki.revision-create
+      schema_repositories: https://schema.wikimedia.org/repositories/primary/jsonschema,https://schema.wikimedia.org/repositories/secondary/jsonschema
+      suppressed_delete_topic: mediawiki.page-suppress
+      topic_prefixes: eqiad.,codfw.
+      use_new_flink_kafka_api: true
+      wikibase_repo_thread_pool_size: 30
+  image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
   version: flink-1.16.1-rdf-0.3.136
-  replicas: 1
-  requests:
-    cpu: 500m
-    memory: 1600M
-  limits:
-    cpu: 1000m
-    memory: 1650M
-  config:
-    task_slots: 4
-    job_manager_mem: 1600m
-    task_manager_mem: 6000m
-    parallelism: 12
-    swift_auth_url: https://thanos-swift.discovery.wmnet/auth/v1.0
-    swift_username: wdqs:savepoints
-    swift_s3_endpoint: thanos-swift.discovery.wmnet
+  env:
+    # disable JEMALLOC for testing
+    - name: "DISABLE_JEMALLOC"
+      value: "true"
+  job:
+    allowNonRestoredState: true # required because we are moving away from deprecated kafka connectors T326914
+    args: [ "/srv/app/conf/rdf-streaming-updater-config.properties" ]
+    entryClass: org.wikidata.query.rdf.updater.UpdaterJob
+  # Savepoint TBD, will fill in during operations work
+    jarURI: local:///opt/flink/streaming-updater-producer.jar
+    upgradeMode: savepoint
+  jobManager:
+    replicas: 1
+    resource:
+      memory: 1600m
 
-task_manager:
-  replicas: 6
-  requests:
-    cpu: 1000m
-    memory: 5Gi
-  limits:
-    cpu: 4000m
-    memory: 7Gi
+  taskManager:
+    replicas: 3
+    resource:
+      memory: 3Gb
+      cpu: 4
 
-service:
-  deployment: production
-  port:
-    port: 14007 # the port number desired to be exposed to the cluster
-config:
-  public:
-    DISABLE_JEMALLOC: "true"
-  private:
-    swift_api_key: some_secret_key
-mesh:
-  enabled: true
-  public_port: 4007
-  upstream_timeout: "180.0s"
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
+  flinkConfiguration:
+    "taskmanager.numberOfTaskSlots": "1"
+    "kubernetes.operator.savepoint.format.type": NATIVE
+    "kubernetes.operator.savepoint.history.max.count": "5"
+    "kubernetes.operator.savepoint.trigger.grace-period": 20sec
+    "kubernetes.operator.cluster.health-check.checkpoint-progress.window": 10min
+    "taskmanager.memory.jvm-overhead.max": "2Gb"
+    "taskmanager.memory.jvm-overhead.fraction": "0.45"
+    "taskmanager.memory.managed.consumer-weights": "STATE_BACKEND:100"
+    "s3.access-key": wdqs:savepoints
+    # We can put this config in values-main.yaml because it uses discovery endpoint,
+    # which will be resolved correctly depending on which DC we are deploying to.
+    "s3.endpoint": thanos-swift.discovery.wmnet
+    "s3.path.style.access": "true"
+    "state.backend.rocksdb.metrics.estimate-num-keys": "true"
+    "state.backend.rocksdb.metrics.estimate-live-data-size": "true"
+    "state.backend.rocksdb.metrics.cur-size-active-mem-table": "true"
+    "state.backend.rocksdb.metrics.size-all-mem-tables": "true"
 discovery:
   listeners:
-  - mw-api-int-async-ro
-  - schema
+    - mw-api-int-async-ro
+    # TODO: consider packaging the schemas in the image directly instead of relying on the service at runtime
+    - schema
+    - thanos-swift
+
+flink:
+  object_store:
+    swift_access_key: wdqs:savepoints
+    swift_secret_key: secret
+    # We can put this config in values-main.yaml because it uses discovery endpoint,
+    # which will be resolved correctly depending on which DC we are deploying to.
+    swift_cluster: thanos-swift.discovery.wmnet
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
 networkpolicy:
   egress:
     enabled: true
-    dst_nets:
-    - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
-      ports:
-      - port: 443
-        protocol: tcp
-    - cidr: 10.2.1.54/32   # thanos-swift.svc.codfw.wmnet
-      ports:
-      - port: 443
-        protocol: tcp
-    - cidr: 10.64.0.117/32   # kubemaster1001.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.64.32.116/32   # kubemaster1002.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.192.0.56/32   # kubemaster2001.codfw.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.192.16.48/32   # kubemaster2002.codfw.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.64.16.203/32   # kubestagemaster1001.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.192.48.10/32   # kubestagemaster2001.codfw.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
