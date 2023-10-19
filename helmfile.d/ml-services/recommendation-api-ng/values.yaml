@@ -21,13 +21,14 @@ config:
     # Needed by swiftclient (since it uses requests behing the scenes)
     # to properly validate TLS certificates.
     REQUESTS_CA_BUNDLE: "/etc/ssl/certs/wmf-ca-certificates.crt"
+    MAX_CANDIDATES: 250
 
 resources:
   replicas: 5
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2023-10-18-094845-production"
+  version: "2023-10-19-133124-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: ["uwsgi"]
   args: ["--http", ":8080", "--master", "--workers", "2", "--wsgi-file", "recommendation/data/recommendation.wsgi", "--harakiri", "15"]
