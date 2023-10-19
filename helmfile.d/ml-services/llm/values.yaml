@@ -29,12 +29,14 @@ inference:
 
 inference_services:
   langid:
+    annotations:
+      autoscaling.knative.dev/target: "50"
     predictor:
       image: "machinelearning-liftwing-inference-services-langid"
       image_version: "2023-10-16-162753-publish"
       config:
         minReplicas: 1
-        maxReplicas: 1
+        maxReplicas: 3
       custom_env:
         - name: MODEL_NAME
           value: "langid"
