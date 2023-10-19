@@ -49,7 +49,7 @@ inference_services:
   nllb-200:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-10-16-110524-publish"
+      image_version: "2023-10-19-095650-publish"
       custom_env:
         - name: MODEL_NAME
           value: "nllb-200-distilled-600M"
@@ -68,7 +68,7 @@ inference_services:
   nllb-200-gpu:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-10-16-110524-publish"
+      image_version: "2023-10-19-095650-publish"
       custom_env:
         - name: MODEL_NAME
           value: "nllb-200-distilled-600M"
