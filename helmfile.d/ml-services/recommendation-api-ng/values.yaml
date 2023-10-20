@@ -21,7 +21,7 @@ config:
     # Needed by swiftclient (since it uses requests behing the scenes)
     # to properly validate TLS certificates.
     REQUESTS_CA_BUNDLE: "/etc/ssl/certs/wmf-ca-certificates.crt"
-    MAX_CANDIDATES: 250
+    MAX_CANDIDATES: 500
 
 resources:
   replicas: 5
