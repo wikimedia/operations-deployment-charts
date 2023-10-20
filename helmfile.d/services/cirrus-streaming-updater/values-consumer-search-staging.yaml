@@ -5,8 +5,8 @@ app:
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
       elasticsearch-urls.chi: https://relforge1003.eqiad.wmnet:9243/
-      elasticsearch-urls.omega: https://relforge1003.eqiad.wmnet:9443/
-      elasticsearch-urls.psi: https://relforge1003.eqiad.wmnet:9643/
+      elasticsearch-urls.omega: https://relforge1003.eqiad.wmnet:9243/
+      elasticsearch-urls.psi: https://relforge1003.eqiad.wmnet:9243/
       # The normal .*= route ends up catching the elasticsearch urls above.
       # We only need a couple hosts, spell them out instead of having a .*
       # for the moment. We will need to rethink how the application works here
