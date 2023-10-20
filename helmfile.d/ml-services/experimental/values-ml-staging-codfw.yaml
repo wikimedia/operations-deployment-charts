@@ -10,6 +10,8 @@ inference_services:
           value: "s3://wmf-ml-models/experimental/revertrisk-wikidata/20230512162400/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
+        - name: OMP_NUM_THREADS
+          value: "1"
       container:
         resources:
           limits:
