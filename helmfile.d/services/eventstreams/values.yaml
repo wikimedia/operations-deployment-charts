@@ -10,6 +10,9 @@ networkpolicy:
 mesh:
   enabled: true
   # HTTPS port 4892 in chart values.yaml
+  certmanager:
+    extraFQDNs:
+      - stream.wikimedia.org
   telemetry:
     enabled: true
 

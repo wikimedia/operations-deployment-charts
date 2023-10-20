@@ -9,6 +9,9 @@ networkpolicy:
 mesh:
   enabled: true
   public_port: 4992
+  certmanager:
+    extraFQDNs:
+      - stream-internal.wikimedia.org
   telemetry:
     enabled: true
 
