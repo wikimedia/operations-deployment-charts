@@ -7,9 +7,6 @@ app:
       elasticsearch-urls.chi: http://relforge1003.eqiad.wmnet:9243/
       elasticsearch-urls.omega: http://relforge1003.eqiad.wmnet:9443/
       elasticsearch-urls.psi: http://relforge1003.eqiad.wmnet:9643/
-      # event streams metadata will want to read the codfw topic, but it doesn't exist in staging.
-      # Limit inputs to eqiad to resolve.
-      topic-prefix-filter: 'eqiad'
 
 discovery:
   listeners:
