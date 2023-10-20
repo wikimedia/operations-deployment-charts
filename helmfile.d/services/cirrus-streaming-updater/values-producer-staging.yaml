@@ -8,10 +8,6 @@ app:
       kafka-source-config.group.id: cirrus-streaming-updater-producer-staging
       # Read prod events, outputs still flow to test cluster
       kafka-source-config.bootstrap.servers: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093,kafka-main1004.eqiad.wmnet:9093,kafka-main1005.eqiad.wmnet:9093
-      # The consumer is failing because the codfw topic doesn't exist. Coax the topic into
-      # existing by asking the producer to use it. Will be reverted after the topic exists
-      # in kafka-test
-      update-topic: codfw.cirrussearch.update_pipeline.update
 
 kafka:
   allowed_clusters: [main-eqiad, test-eqiad]
