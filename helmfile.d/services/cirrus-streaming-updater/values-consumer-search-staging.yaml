@@ -4,9 +4,14 @@ app:
       pipeline.name: cirrus-streaming-updater-consumer-search-staging
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
-      elasticsearch-urls.chi: http://relforge1003.eqiad.wmnet:9243/
-      elasticsearch-urls.omega: http://relforge1003.eqiad.wmnet:9443/
-      elasticsearch-urls.psi: http://relforge1003.eqiad.wmnet:9643/
+      elasticsearch-urls.chi: https://relforge1003.eqiad.wmnet:9243/
+      elasticsearch-urls.omega: https://relforge1003.eqiad.wmnet:9443/
+      elasticsearch-urls.psi: https://relforge1003.eqiad.wmnet:9643/
+      # We have a catch-all route that sends all the unknown urls to mw api.
+      # To get around it we need to spell these out here even though they do nothing
+      http-routes.00-chi: https://relforge1003.eqiad.wmnet:9243/.*=https://relforge1003.eqiad.wmnet:9243/
+      http-routes.00-omega: https://relforge1003.eqiad.wmnet:9443/.*=https://relforge1003.eqiad.wmnet:9443/
+      http-routes.00-psi: https://relforge1003.eqiad.wmnet:9643/.*=https://relforge1003.eqiad.wmnet:9643/
 
 discovery:
   listeners:
