@@ -530,10 +530,26 @@ def tasklist_from_changes(changes)
     end
   end
   tasks[:charts] = charts.uniq
-  # Now let's check deployments. First let's find deployments that have been modified directly
+
+  # Now let's check deployments.
+  # First let's find deployments that have been modified directly
   deps = all_changes.filter { |p| p.start_with?(%r{helmfile.d/.*services/}) && p.split('/').length > 2 }
+  # Now check if any file in each service deployment directory links to a modified file
+  deps.map{ |p| File.dirname(File.dirname(p)) }.uniq.each do |dir|
+    FileList.new(dir + '/**/*').each do |path|
+      if File.symlink?(path)
+        # Get target path relative to the repository path (as thats what we got in all_changes)
+        target = (Pathname.new(File.dirname(path)) + File.readlink(path)).to_s
+        if deps.include?(target)
+          # This deployment links to a modified file, add it to the array
+          deps << path unless deps.include? path
+        end
+      end
+    end
+  end
   tasks[:deployments] = deps.map{ |p| p.split('/')[2] }.uniq
-  # Which of these deployments depend on a specific chart that changed?
+
+  # Find deployments that depend on a specific chart that changed
   FileList.new(HELMFILE_GLOB).each do |path_to_helmfile|
     # We load an helmfile asset, but do not intend to run it or collect fixtures
     # this is, unless someone adds a "nonexistent" deployment one day.
@@ -546,6 +562,7 @@ def tasklist_from_changes(changes)
       tasks[:deployments] << asset.name
     end
   end
+
   # Now let's check if any file was changed in helmfile.d/admin_ng
   all_changes.each do |changed_file|
     if changed_file.start_with?('helmfile.d/admin_ng')
@@ -553,6 +570,7 @@ def tasklist_from_changes(changes)
       break
     end
   end
+
   # We also need to see if any chart used there is actually changed.
   unless tasks[:admin]
     asset = Tester::AdminAsset.new('helmfile.d/admin_ng/helmfile.yaml', ['nonexistent'])
