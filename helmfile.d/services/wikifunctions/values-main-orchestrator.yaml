@@ -14,6 +14,8 @@ config:
     WIKI_API_URL: http://localhost:6501/w/api.php
     # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
+    # Top-level request timeout at the orchestrator level (in milliseconds)
+    # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
     ORCHESTRATOR_TIMEOUT_MS: "10000"
     ORCHESTRATOR_CONFIG: |
       {
