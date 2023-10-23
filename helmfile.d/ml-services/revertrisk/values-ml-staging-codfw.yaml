@@ -9,7 +9,29 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+  revertrisk-multilingual-batcher:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
         timeout: 60
         batcher:
           maxBatchSize: 32
           maxLatency: 250
+      image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
+      image_version: "2023-10-16-110525-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-multilingual"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 6Gi
+          requests:
+            cpu: "4"
+            memory: 6Gi
