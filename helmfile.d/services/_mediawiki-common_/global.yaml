@@ -16,6 +16,9 @@ mesh:
   enabled: true
   certmanager:
     enabled: false
+    # WARNING: If you change the SAN here, also update:
+    #  mw-debug/values.yaml
+    #  private/modules/secret/secrets/certificates/certificate.manifests.d/mediawiki.certs.yaml
     extraFQDNs:
       - "*.m.mediawiki.org"
       - "*.m.wikibooks.org"
