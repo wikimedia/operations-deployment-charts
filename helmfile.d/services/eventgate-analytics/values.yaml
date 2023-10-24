@@ -23,7 +23,7 @@ kafka:
 
 main_app:
   name: eventgate-analytics
-  version: 2023-09-26-111847-production
+  version: 2023-10-17-204606-production
   conf:
     kafka:
       conf:
@@ -47,8 +47,8 @@ main_app:
     schema_base_uris:
     - 'file:///srv/service/schemas/event/primary/jsonschema/'
     - 'file:///srv/service/schemas/event/secondary/jsonschema/'
-    - 'http://localhost:6023/repositories/primary/jsonschema/'   # schema service mesh port
-    - 'http://localhost:6023/repositories/secondary/jsonschema/' # schema service mesh port
+    - 'http://127.0.0.1:6023/repositories/primary/jsonschema/'   # schema service mesh port
+    - 'http://127.0.0.1:6023/repositories/secondary/jsonschema/' # schema service mesh port
 
     # Request static stream config during startup from the EventStreamConfig extension
     # MW API endpoint for all streams with destination_event_service == eventgate-analytics
@@ -56,7 +56,7 @@ main_app:
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
     # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
-    stream_config_uri: 'http://localhost:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics'
+    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
     # Only request stream configs once at startup.
     stream_config_is_dynamic: false
