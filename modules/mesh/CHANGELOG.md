@@ -1,3 +1,5 @@
+## configuration 1.4.3
+- Rename parameter uses_sni to the correct sets_sni
 ## configuration 1.4.2
 - Rename parameter uses_ingress to uses_sni.
 
