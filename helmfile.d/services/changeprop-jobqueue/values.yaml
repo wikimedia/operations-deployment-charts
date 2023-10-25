@@ -75,7 +75,7 @@ main_app:
         reenqueue_delay: 604800
       refreshUserImpactJob:
         enabled: true
-        concurrency: 3
+        concurrency: 10
       # For cirrus search jobs the retries are built into the job itself,
       # so disable the retries by change-prop. We need special rules for cirrus
       # jobs because they need special configuration.
