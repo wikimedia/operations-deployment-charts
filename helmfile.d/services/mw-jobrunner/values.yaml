@@ -3,3 +3,33 @@ resources:
 
 mesh:
   public_port: 4448
+
+# Only one website needed here.
+mw:
+  sites:
+  - name: mw-jobrunner
+    priority: 1
+    content: |+
+      <Virtualhost *:8080>
+        Servername mw-jobrunner.discovery.wmnet
+        ServerAlias mw-jobrunner.svc.codfw.wmnet mw-jobrunner.svc.eqiad.wmnet
+        # MediaWiki has a timeout of 20 minutes, add 2 seconds here to let 
+        # mediawiki handle timeouts in most cases.
+        Timeout 1202
+        DocumentRoot "/srv/mediawiki"
+        RewriteEngine On
+        <Directory /srv/mediawiki>
+          Require all granted
+        </Directory>
+        # Only selected paths are allowed here
+        RewriteCond %{REQUEST_URI} !^/(w/health-check|rpc/RunSingleJob)\.php
+        RewriteRule ^ - [R=404,L]
+
+        <FilesMatch "\.php$">
+          SetHandler "unix:/run/shared/fpm-www.sock|fcgi://localhost"
+        </FilesMatch>
+
+        ErrorLog /dev/stderr
+        CustomLog /dev/stdout wmfjson "expr=%{REQUEST_STATUS} != 200"
+      </VirtualHost>
+
