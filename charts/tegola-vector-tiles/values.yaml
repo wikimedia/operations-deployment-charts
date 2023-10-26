@@ -69,6 +69,10 @@ mesh:
   telemetry:
     enabled: true
     port: 9361
+  # Ensure the envoy admin listener is bound to a tcp port, not a UNIX socket.
+  # This is required for the pregenerate-maps-tiles.sh script to work properly in the CronJob
+  admin:
+    bind_tcp: true
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
   enabled: false
