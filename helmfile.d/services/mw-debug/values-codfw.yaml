@@ -1,8 +1,3 @@
-# mw site-specific configurations
-
-resources:
-  replicas: 4
-prestop_sleep: 8
 mw:
   datacenter: codfw
   mail_host: wiki-mail-codfw.wikimedia.org
@@ -24,15 +19,3 @@ cache:
         pool: wf-codfw
         # No failover for wikifunction
         failover_time: 0
-mesh:
-  drain: false
-  admin:
-    port: "1666"
-    drain_time_s: "5"
-    drain_strategy: "immediate"
-debug:
-  enabled: true
-  ports: []
-  php:
-    enabled: true
-  annotation: "change-me-to-redeploy"
