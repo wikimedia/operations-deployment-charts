@@ -4,14 +4,15 @@ app:
       pipeline.name: cirrus-streaming-updater-consumer-search-staging
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
-      elasticsearch-urls.chi: https://relforge1003.eqiad.wmnet:9243/
-      elasticsearch-urls.omega: https://relforge1003.eqiad.wmnet:9243/
-      elasticsearch-urls.psi: https://relforge1003.eqiad.wmnet:9243/
+      # relforge doesn't have three clusters like the prod endpoints, point
+      # it all at the same cluster.
+      elasticsearch-urls.chi: https://relforge1003.eqiad.wmnet:9243
+      elasticsearch-urls.omega: https://relforge1003.eqiad.wmnet:9243
+      elasticsearch-urls.psi: https://relforge1003.eqiad.wmnet:9243
       # The normal .*= route ends up catching the elasticsearch urls above.
-      # We only need a couple hosts, spell them out instead of having a .*
-      # for the moment. We will need to rethink how the application works here
-      http-routes.99-mwapi: .*\.wikipedia\.org=http://localhost:6500
-      http-routes.99-wikimeida: .*\.wikimedia\.org=http://localhost:6500
+      # Define a relforge route that doesn't change anything to avoid that.
+      http-routes.00-relforge: https://relforge1003.eqiad.wmnet:9243=https://relforge1003.eqiad.wmnet:9243
+      http-routes.99-mwapi: .*=http://localhost:6500
 
 discovery:
   listeners:
