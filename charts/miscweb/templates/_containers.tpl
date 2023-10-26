@@ -74,7 +74,7 @@ resources:
 {{- define "httpd-exporter" }}
 # apache exporter on port 9117
 - name: {{ template "base.name.release" . }}-httpd-exporter
-  image: {{ .Values.docker.registry }}/:{{ .Values.common_images.httpd.exporter }}
+  image: {{ .Values.docker.registry }}/{{ .Values.common_images.httpd.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["-scrape_uri=http://127.0.0.1:9181/server-status"]
   ports:
