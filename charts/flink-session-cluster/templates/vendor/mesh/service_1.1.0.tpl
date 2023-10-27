@@ -1,5 +1,5 @@
 {{- define "mesh.service" -}}
-{{ if .Values.mesh.enabled }}
+{{ if and .Values.mesh.enabled .Values.mesh.public_port }}
 ---
 apiVersion: v1
 kind: Service
