@@ -42,7 +42,7 @@ spec:
 # If debug_mode, then enable the NodeJS Inspector and save v8 profiling data.
 # service-runner master inspector port will be 9229, and worker will be 9230.
 {{- if .Values.debug_mode_enabled | default false }}
-          args: ["--inspect=0.0.0.0:9229", "--prof", "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log", "--no-logfile-per-isolate", "/srv/service/server.js", "-c", "/etc/eventgate/config.yaml"]
+          args: ["--inspect=0.0.0.0:9229", "--prof", "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log", "--no-logfile-per-isolate", "/srv/service/node_modules/.bin/eventgate", "-c", "/etc/eventgate/config.yaml"]
 {{- else }}
           args: ["/srv/service/node_modules/.bin/eventgate", "-c", "/etc/eventgate/config.yaml"]
 {{- end }}
