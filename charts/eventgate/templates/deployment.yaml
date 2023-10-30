@@ -77,19 +77,18 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
-{{- if .Values.debug_mode_enabled | default false }}
+{{- if .Values.wmfdebug_container_enabled | default false }}
         - name: {{ .Values.main_app.name }}-wmfdebug
           image: {{ .Values.docker.registry }}/wmfdebug:latest
           command: ["/bin/bash"]
           args: ["-c", "echo 'Sleeping infinitely...'; sleep infinity;"]
           imagePullPolicy: {{ .Values.docker.pull_policy }}
-          # SYS_PTRACE in chart here is not working as of 2023-11. Disabling for now.
+          # NOTE: SYS_PTRACE in chart here is not working as of 2023-11.
           # PodSecurityPolicy: unable to admit pod: [spec.containers[1].securityContext.capabilities.add: Invalid value: "SYS_PTRACE": capability may not be added]
-          #
-          # securityContext:
-          #   capabilities:
-          #     add:
-          #     - SYS_PTRACE
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
           stdin: true
           tty: true
 {{- end }}
