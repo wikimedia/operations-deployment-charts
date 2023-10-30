@@ -83,10 +83,13 @@ spec:
           command: ["/bin/bash"]
           args: ["-c", "echo 'Sleeping infinitely...'; sleep infinity;"]
           imagePullPolicy: {{ .Values.docker.pull_policy }}
-          securityContext:
-            capabilities:
-              add:
-              - SYS_PTRACE
+          # SYS_PTRACE in chart here is not working as of 2023-11. Disabling for now.
+          # PodSecurityPolicy: unable to admit pod: [spec.containers[1].securityContext.capabilities.add: Invalid value: "SYS_PTRACE": capability may not be added]
+          #
+          # securityContext:
+          #   capabilities:
+          #     add:
+          #     - SYS_PTRACE
           stdin: true
           tty: true
 {{- end }}
