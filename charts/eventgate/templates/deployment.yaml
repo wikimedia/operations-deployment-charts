@@ -39,13 +39,27 @@ spec:
         - name: {{ .Values.main_app.name }}
           image: "{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
           command: ["nodejs"]
-# If debug_mode, then enable the NodeJS Inspector and save v8 profiling data.
-# service-runner master inspector port will be 9229, and worker will be 9230.
+          args: [
 {{- if .Values.debug_mode_enabled | default false }}
-          args: ["--inspect=0.0.0.0:9229", "--prof", "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log", "--no-logfile-per-isolate", "/srv/service/node_modules/.bin/eventgate", "-c", "/etc/eventgate/config.yaml"]
-{{- else }}
-          args: ["/srv/service/node_modules/.bin/eventgate", "-c", "/etc/eventgate/config.yaml"]
+          # Debug mode is enabled. The NodeJS Inspector and save v8 profiling data.
+          # service-runner master inspector port will be 9229, and worker will be 9230.
+            # Allow inspect debugger to connect
+            "--inspect=0.0.0.0:9229",
+            # Log profiling data
+            "--prof",
+            "--prof-process",
+            "--no-logfile-per-isolate",
+            "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log",
+            # Some settings for perf to better see funtions names.
+            # https://phabricator.wikimedia.org/T348950#9286732
+            "--perf-basic-prof",
+            "--no-turbo-inlining"
+            "--interpreted-frames-native-stack",
 {{- end }}
+            "/srv/service/node_modules/.bin/eventgate",
+            "-c",
+            "/etc/eventgate/config.yaml"
+          ]
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.app.port }}
