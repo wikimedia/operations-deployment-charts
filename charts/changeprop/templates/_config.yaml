@@ -66,34 +66,15 @@ spec: &spec
             metadata_broker_list:
 {{ toYaml .Values.main_app.kafka.broker_list | indent 14 }}
             dc_name: {{ .Values.main_app.site }}
+{{- if (.Values.main_app.changeprop.kafka | default dict) }}
+{{- if (.Values.main_app.changeprop.kafka.consumer | default dict) }}
             consumer:
-              # JobQueue jobs might sent messages larget then 1 Meg,
-              # so we increase the max message size in kafka and have to
-              # ajust the consumers accordingly.
-              fetch.message.max.bytes: {{ .Values.main_app.kafka.max_bytes | int64 }}
-              # Silence noisy connection reaper logging
-              # https://github.com/Blizzard/node-rdkafka/issues/326
-              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
-              log.connection.close: false
-{{- if .Values.main_app.kafka.ssl }}
-              # Set these to enable Kafka producer TLS (no authentication, just encryption).
-              security.protocol: ssl
-              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+{{ toYaml .Values.main_app.changeprop.kafka.consumer | indent 14 }}
 {{- end }}
+{{- if (.Values.main_app.changeprop.kafka.producer | default dict) }}
             producer:
-              compression.codec: {{ .Values.main_app.kafka.compression_codec }}
-              # Silence noisy connection reaper logging
-              # https://github.com/Blizzard/node-rdkafka/issues/326
-              # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
-              log.connection.close: false
-              # The default value is 5ms, and we want Changeprop to batch
-              # more messages rather than keep sending small ones.
-              # T338357
-              linger.ms: 20
-{{- if .Values.main_app.kafka.ssl }}
-              # Set these to enable Kafka producer TLS (no authentication, just encryption).
-              security.protocol: ssl
-              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+{{ toYaml .Values.main_app.changeprop.kafka.producer | indent 14 }}
+{{- end }}
 {{- end }}
             concurrency: {{ .Values.main_app.concurrency }}
             startup_delay: 60000
