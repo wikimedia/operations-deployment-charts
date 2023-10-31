@@ -47,7 +47,6 @@ spec:
             "--inspect=0.0.0.0:9229",
             # Log profiling data
             "--prof",
-            "--prof-process",
             "--no-logfile-per-isolate",
             "--logfile=/tmp/{{ .Values.main_app.name }}-v8.log",
             # Some settings for perf to better see funtions names.
