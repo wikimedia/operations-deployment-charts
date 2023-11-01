@@ -1,5 +1,11 @@
 resources:
   replicas: 30
+  requests:
+    cpu: 200m
+    memory: 150Mi
+  limits:
+    cpu: 2000m
+    memory: 500Mi
 
 main_app:
   conf:
