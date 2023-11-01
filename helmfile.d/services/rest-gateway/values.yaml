@@ -203,6 +203,17 @@ main_app:
           in: '/wikimedia.org/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\1'
 
+    - name: device-analytics
+      timeout: 15s
+      domain: "wikimedia.org"
+      urls:
+        - name: api-spec
+          in: '/wikimedia.org/v1/metrics/unique-devices/api-spec.json'
+          out: '/unique-devices/api-spec.json'
+        - name: unique-devices
+          in: '/wikimedia.org/v1/metrics/unique-devices/(.+)'
+          out: '/metrics/unique-devices/\2'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -220,6 +231,9 @@ main_app:
     aqs:
       port: 7232
       tls: false
+    device-analytics:
+      port: 4972
+      tls: true
     geo-analytics:
       ingress: true
       port: 30443 # ingress
@@ -358,3 +372,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 30443
+    - cidr: 10.2.2.80/32 # device-analytics.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4972
+    - cidr: 10.2.1.80/32 # device-analytics.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4972
