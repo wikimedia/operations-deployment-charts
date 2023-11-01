@@ -7,6 +7,12 @@ service:
   # Don't deploy a k8s Service for this canary release
   deployment: none
 
-# We only need one replica in the canary release.
 resources:
+  # We only need one replica in the canary release.
   replicas: 1
+  requests:
+    cpu: 200m
+    memory: 150Mi
+  limits:
+    cpu: 2000m
+    memory: 400Mi
