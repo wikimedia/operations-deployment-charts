@@ -49,8 +49,8 @@ main_app:
     # event schema repositories. Since eventgate-analytics-external needs to be more dynamic without
     # new schemas and versions, it is configured to only use the remote schema repos.
     schema_base_uris:
-    - 'http://localhost:6023/repositories/primary/jsonschema/'
-    - 'http://localhost:6023/repositories/secondary/jsonschema/'
+    - 'http://127.0.0.1::6023/repositories/primary/jsonschema/'
+    - 'http://127.0.0.1::6023/repositories/secondary/jsonschema/'
 
     # If test_events is set, EventGate will set up a /v1/_test/events
     # route that will process these test_events as if they were POSTed
@@ -73,7 +73,7 @@ main_app:
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
     # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
-    stream_config_uri: 'http://localhost:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics-external&streams=<%= streams %>'
+    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics-external&streams=<%= streams %>'
     stream_config_uri_streams_delimiter: '|'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}    # Re-request for yet unknown streams at runtime
     # Expect the stream -> settings map in the response at this subobject key
