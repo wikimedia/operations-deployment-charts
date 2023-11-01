@@ -39,6 +39,9 @@ monitoring:
 #
 #debug_mode_enabled: false
 
+# Set nodejs_extra_opts array to add extra opts to the nodejs CLI startup.
+# Useful mostly for debugging, e.g. nodejs_extra_opts: [--trace-gc].
+#nodejs_extra_opts: false
 
 # Deploys a wmfdebug sidecar container in the pod.
 # NOTE: As of 2023-11 this isn't working due to changed k8s security permissions.

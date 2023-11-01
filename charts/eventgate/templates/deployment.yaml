@@ -55,6 +55,11 @@ spec:
             "--no-turbo-inlining",
             "--interpreted-frames-native-stack",
 {{- end }}
+{{- if .Values.nodejs_extra_opts | default false }}
+{{- range $opt := .Values.nodejs_extra_opts }}
+            "{{ $opt }}",
+{{- end }}
+{{- end }}
             "/srv/service/node_modules/.bin/eventgate",
             "-c",
             "/etc/eventgate/config.yaml"
