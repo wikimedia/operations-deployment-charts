@@ -66,15 +66,29 @@ spec: &spec
             metadata_broker_list:
 {{ toYaml .Values.main_app.kafka.broker_list | indent 14 }}
             dc_name: {{ .Values.main_app.site }}
-{{- if (.Values.main_app.changeprop.kafka | default dict) }}
-{{- if (.Values.main_app.changeprop.kafka.consumer | default dict) }}
+{{- if (or .Values.main_app.kafka.consumer .Values.main_app.changeprop.kafka.consumer) }}
             consumer:
-{{ toYaml .Values.main_app.changeprop.kafka.consumer | indent 14 }}
+{{- with .Values.main_app.kafka.consumer }}
+{{ toYaml . | indent 14 }}
+{{- end -}}
+{{- with .Values.main_app.changeprop.kafka.consumer }}
+{{ toYaml . | indent 14 }}
+{{- end -}}
+{{- if .Values.main_app.kafka.ssl.enabled }}
+{{ toYaml .Values.main_app.kafka.ssl.settings | indent 14 }}
+{{- end -}}
 {{- end }}
-{{- if (.Values.main_app.changeprop.kafka.producer | default dict) }}
+{{- if (or .Values.main_app.kafka.producer .Values.main_app.changeprop.kafka.producer) }}
             producer:
-{{ toYaml .Values.main_app.changeprop.kafka.producer | indent 14 }}
-{{- end }}
+{{- with .Values.main_app.kafka.producer }}
+{{ toYaml . | indent 14 }}
+{{- end -}}
+{{- with .Values.main_app.changeprop.kafka.producer }}
+{{ toYaml . | indent 14 }}
+{{- end -}}
+{{- if .Values.main_app.kafka.ssl.enabled }}
+{{ toYaml .Values.main_app.kafka.ssl.settings | indent 14 }}
+{{- end -}}
 {{- end }}
             concurrency: {{ .Values.main_app.concurrency }}
             startup_delay: 60000

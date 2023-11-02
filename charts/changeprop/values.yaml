@@ -48,6 +48,7 @@ main_app:
   site: datacenter1
 
   changeprop:
+    kafka: {}
 
     domain_zone: org
 
@@ -94,10 +95,12 @@ main_app:
       rerendered_pcs_endpoints: true
       liftwing_models: false
 
-  # if jobqueue is true, then we'll configure our pod as a
-  # changeprop-jobqueue instance. If it's false, we'll assume that
-  # we're doing regular changeprop.
-  jobqueue: {}
+  jobqueue:
+    # if jobqueue is true, then we'll configure our pod as a
+    # changeprop-jobqueue instance. If it's false, we'll assume that
+    # we're doing regular changeprop.
+    enabled: false
+    kafka: {}
 
   purge_stream: resource-purge
 
@@ -105,6 +108,32 @@ main_app:
   kafka:
     broker_list:
       - localhost
+    # Base consumer/producer config, shared by all instances.
+    # NOTE: the change-prop values for Beta/Deployment-Prep
+    # are defined in values-beta yaml file.
+    # More info:
+    # https://wikitech.wikimedia.org/wiki/Changeprop#To_deployment-prep
+    consumer:
+      # JobQueue jobs might sent messages larget then 1 Meg,
+      # so we increase the max message size in kafka and have to
+      # ajust the consumers accordingly.
+      fetch.message.max.bytes: 4194304
+      # Silence noisy connection reaper logging
+      # https://github.com/Blizzard/node-rdkafka/issues/326
+      # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+      log.connection.close: false
+    producer:
+      compression.codec: snappy
+      # Silence noisy connection reaper logging
+      # https://github.com/Blizzard/node-rdkafka/issues/326
+      # https://github.com/edenhill/librdkafka/issues/768#issuecomment-246302856
+      log.connection.close: false
+    ssl:
+      enabled: true
+      settings:
+        # Set these to enable Kafka producer TLS (no authentication, just encryption).
+        security.protocol: ssl
+        ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
 
   # redis
   redis:

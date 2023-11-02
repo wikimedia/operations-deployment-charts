@@ -2,18 +2,16 @@ main_app:
   site: eqiad
 
   kafka:
-    ssl:
-      enabled: false
     broker_list:
-      - deployment-kafka-main-5.deployment-prep.eqiad1.wikimedia.cloud:9092
-      - deployment-kafka-main-6.deployment-prep.eqiad1.wikimedia.cloud:9092
+      - kafka-main-test1.eqiad.wmnet:9092
+      - kafka-main-test2.eqiad.wmnet:9092
     concurrency: 10
 
   redis: false
 
   jobqueue:
     enabled: true
-    jobrunner_uri: http://deployment-jobrunner04.deployment-prep.eqiad1.wikimedia.cloud:9006/rpc/RunSingleJob.php
+    jobrunner_uri: http://jobrunner01.eqiad.wmnet:9006/rpc/RunSingleJob.php
     # explicitly do not set a k8s_jobrunner_uri
 
     partitioners: false

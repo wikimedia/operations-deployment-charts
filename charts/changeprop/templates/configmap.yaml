@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-{{- if .Values.main_app.jobqueue }}
+{{- if .Values.main_app.jobqueue.enabled }}
   config.yaml: |- {{ include "jobqueue.app" . | indent 4 }}
 {{- else }}
   config.yaml: |- {{ include "config.app" . | indent 4 }}

@@ -12,11 +12,14 @@ main_app:
     tcpSocket:
       port: 7200
 
-  kafka:
-    max_bytes: 4194304
-    compression_codec: snappy
-
   jobqueue:
+    enabled: true
+    kafka:
+      producer:
+        # The default value is 5ms, and we want Changeprop to batch
+        # more messages rather than keep sending small ones.
+        # T338357
+        linger.ms: 20
     jobrunner_uri: https://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
     k8s_jobrunner_uri: https://mw-jobrunner.discovery.wmnet:4448/rpc/RunSingleJob.php
     videoscaler_uri: https://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
