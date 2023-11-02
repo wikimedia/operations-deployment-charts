@@ -191,13 +191,15 @@ main_app:
       ingress: true
       domain: 'wikimedia.org'
       urls:
+        - name: api-spec
+          in: '(.+)/v1/metrics/pageviews/api-spec.json'
+          out: '/pageviews/api-spec.json'
         - name: pageviews
           in: '(.+)/v1/metrics/pageviews/(.+)'
           out: '/metrics/pageviews/\2'
         - name: legacy
           in: '(.+)/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\2'
-      # api-spec TODO when added
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
