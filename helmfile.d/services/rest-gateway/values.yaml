@@ -193,7 +193,7 @@ main_app:
       urls:
         - name: api-spec
           in: '(.+)/v1/metrics/pageviews/api-spec.json'
-          out: '/pageviews/api-spec.json'
+          out: '/page-analytics/api-spec.json'
         - name: pageviews
           in: '(.+)/v1/metrics/pageviews/(.+)'
           out: '/metrics/pageviews/\2'
