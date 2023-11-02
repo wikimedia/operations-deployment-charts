@@ -8,7 +8,10 @@
 # a template conditional.  The user may want to set num_workers to 0, so
 # we need to check it in a different way.
 # See: https://github.com/helm/helm/issues/3164#issuecomment-709537506
-num_workers: {{ if not (kindIs "invalid" .Values.main_app.num_workers) }}{{ .Values.main_app.num_workers }}{{ else }}{{ 1 }}{{ end }}
+#
+# This eventgate chart defaults to num_workers: 0.  This should work better
+# with k8s CPU scheduling, as there will be fewer threads to divide work between.
+num_workers: {{ if not (kindIs "invalid" .Values.main_app.num_workers) }}{{ .Values.main_app.num_workers }}{{ else }}{{ 0 }}{{ end }}
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
