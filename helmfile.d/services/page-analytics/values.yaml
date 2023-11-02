@@ -1,6 +1,6 @@
 main_app:
   image: wikimedia/generated-data-platform-aqs-page-analytics
-  version: 2023-10-02-112228-production
+  version: 2023-11-02-105552-production
   command: ["./page-analytics"]
   args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
   service_name: page-analytics
