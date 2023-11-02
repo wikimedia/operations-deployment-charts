@@ -243,7 +243,7 @@ spec: &spec
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
-num_workers: 1
+num_workers: {{ .Values.main_app.num_workers }}
 
 # Number of workers to start in parallel after the first worker.
 # The first worker is always started independently. After it has completed

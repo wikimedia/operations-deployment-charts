@@ -35,7 +35,10 @@ main_app:
 
   concurrency: 50
 
-  num_workers: 1
+  # We don't need to use a master/worker architecture
+  # when change-prop is running in a container, so explicitly
+  # force service runner to create a single process.
+  num_workers: 0
 
   # Log threshold. Defaults info in template if not defined here
   log_level: debug
