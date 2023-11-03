@@ -86,6 +86,14 @@ services:
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
         timeout: 60000
+      # the template used for contacting the REST Gateway
+      rest_gateway_req:
+        method: {{ "'{{" }}request.method{{ "}}'" }}
+        uri: {{ .Values.main_app.rest_gateway_uri }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers: {{ "'{{" }}request.headers{{ "}}'" }}
+        body: {{ "'{{" }}request.body{{ "}}'" }}
+        timeout: 60000
       # the template used for requesting a page from a MediaWiki appserver
       mw_req:
         method: get
