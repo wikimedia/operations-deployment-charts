@@ -123,7 +123,6 @@ main_app:
 
     - name: aqs
       timeout: 15s
-      domain: "wikimedia.org"
       urls:
         - name: knowledge_gap
           in: '(.+)/v1/knowledge-gap/(.+)'
@@ -132,73 +131,68 @@ main_app:
     - name: geo-analytics
       timeout: 15s
       ingress: true
-      domain: "wikimedia.org"
       urls:
         - name: api-spec
-          in: '(.+)/v1/metrics/editors/by-country/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/editors/by-country/api-spec.json'
           out: '/geo-analytics/api-spec.json'
         - name: geo-editors
-          in: '(.+)/v1/metrics/editors/by-country/(.+)'
+          in: '/wikimedia.org/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\2'
 
     - name: media-analytics
       timeout: 15s
       ingress: true
-      domain: "wikimedia.org"
       urls:
         - name: api-spec
-          in: '(.+)/v1/metrics/mediarequests/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/mediarequests/api-spec.json'
           out: '/mediarequests/api-spec.json'
         - name: mediarequests
-          in: '(.+)/v1/metrics/mediarequests/(.+)'
+          in: '/wikimedia.org/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\2'
 
     - name: edit-analytics
       timeout: 5s
       ingress: true
-      domain: "wikimedia.org"
       urls:
         - name: api-spec
-          in: '(.+)/v1/metrics/edits/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/edits/api-spec.json'
           out: '/edit-analytics/api-spec.json'
         - name: edits
-          in: '(.+)/v1/metrics/edits/(.+)'
+          in: '/wikimedia.org/v1/metrics/edits/(.+)'
           out: '/metrics/edits/\2'
         - name: bytes_difference
-          in: '(.+)/v1/metrics/bytes_difference/(.+)'
+          in: '/wikimedia.org/v1/metrics/bytes_difference/(.+)'
           out: '/metrics/bytes_difference/\2'
         - name: edited_pages
-          in: '(.+)/v1/metrics/edited_pages/(.+)'
+          in: '/wikimedia.org/v1/metrics/edited_pages/(.+)'
           out: '/metrics/edited_pages/\2'
 
     - name: editor-analytics
       timeout: 5s
       ingress: true
-      domain: 'wikimedia.org'
       urls:
         - name: api-spec
-          in: '(.+)/v1/metrics/editors/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/editors/api-spec.json'
           out: '/editors/api-spec.json'
         - name: edits
-          in: '(.+)/v1/metrics/editors/(.+)'
+          in: '/wikimedia.org/v1/metrics/editors/(.+)'
           out: '/metrics/editors/\2'
         - name: registered
-          in: '(.+)/v1/metrics/registered_users/(.+)'
+          in: '/wikimedia.org/v1/metrics/registered_users/(.+)'
           out: '/metrics/registered_users/\2'
 
     - name: page-analytics
       timeout: 5s
       ingress: true
-      domain: 'wikimedia.org'
       urls:
         - name: api-spec
-          in: '(.+)/v1/metrics/pageviews/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/pageviews/api-spec.json'
           out: '/page-analytics/api-spec.json'
         - name: pageviews
-          in: '(.+)/v1/metrics/pageviews/(.+)'
+          in: '/wikimedia.org/v1/metrics/pageviews/(.+)'
           out: '/metrics/pageviews/\2'
         - name: legacy
-          in: '(.+)/v1/metrics/legacy/(.+)'
+          in: '/wikimedia.org/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\2'
 
   discovery_endpoints:
