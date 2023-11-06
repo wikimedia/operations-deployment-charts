@@ -34,6 +34,9 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds | default false }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         # The main application container
         - name: {{ .Values.main_app.name }}
@@ -79,6 +82,9 @@ spec:
               path: /v1/_test/events
               port: {{ .Values.app.port }}
             initialDelaySeconds: 2
+{{- end }}
+{{- if .Values.main_app.prestop_sleep | default false }}
+          {{- include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 10 }}
 {{- end }}
           env:
             - name: SERVICE_IDENTIFIER

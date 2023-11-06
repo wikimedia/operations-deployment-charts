@@ -55,6 +55,32 @@ subcharts:
   # You only need to do this if you don't manually install the kafka-dev chart.
   kafka: false
 
+
+# === Timeout & k8s lifecycle sleep settings ===
+#
+# The default EventBus MW extension request timeout
+# is 10 seconds.  We want to give eventgate at least much
+# time to process a request before k8s forcefully terminates pods.
+# This also relates to the prestop hook used on envoy proxy & eventgate
+# containers. If MW configures EventBus with a different request timeout,
+# then the relevant eventgate's prestop and terminationGracePeriod should be
+# adjusted, to avoid losing in flight events.
+# In summary, all the different timeout settings should be set relative to the
+# most relevant client (EventBus) request timeout.
+#
+# - client_request_timeout = Largest (e.g. MW EventBus wgEventServices) request timeout
+# - Outgoing eventgate envoy service_proxy `timeout` setting: client_request_timeout - 1
+# - eventgate main_app.prestop_sleep: client_request_timeout + 1
+# - eventgate's service mesh TLS proxy mesh.prestop_sleep: client_request_timeout + 2
+# - pod terminationGracePeriodSeconds: client_request_timeout + 3
+#
+# By setting all these values relative to the primary/largest client request timeout,
+# we ensure that a client timeout should happen before any containers are killed by k8s.
+# https://phabricator.wikimedia.org/T349823
+
+# Default to 13, as EventBus MW extension timeout defaults to 10.
+terminationGracePeriodSeconds: 13
+
 # TODO: rename 'main_app' to 'app'.
 main_app:
   # This should uniquely identify your chart's main app's name.
@@ -74,6 +100,9 @@ main_app:
   limits:
     cpu: 2000m
     memory: 300Mi
+
+  # Default to 11, as EventBus MW extension timeout defaults to 10.
+  prestop_sleep: 11
 
   # The schema at this URL MUST have an JSONSchema examples event entry
   # That this eventgate instance is configured to allow.
@@ -239,6 +268,8 @@ mesh:
   telemetry:
     enabled: true
     port: 9361
+  # Default to 11, as EventBus MW extension timeout defaults to 10.
+  prestop_sleep: 12
 
 # Mesh related pure TCP proxies
 tcp_proxy:
