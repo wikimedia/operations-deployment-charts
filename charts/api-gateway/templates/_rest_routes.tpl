@@ -54,7 +54,7 @@
                 match:
                   safe_regex:
                     google_re2: {}
-                    regex: '^/{{ $route.in }}$'
+                    regex: '^{{ $route.in }}$'
                   {{- if $endpoint.domain }}
                   headers:
                   - name: ':authority'
