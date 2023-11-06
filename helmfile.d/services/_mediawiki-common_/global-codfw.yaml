@@ -7,6 +7,9 @@ cache:
     route_prefix: codfw/mw
     zone: codfw
     routes:
+      - route: /eqiad/mw
+        pool: eqiad-servers
+        failover_time: 600
       - route: /codfw/mw
         pool: codfw-servers
         failover_time: 600
