@@ -104,12 +104,6 @@ main_app:
   # Default to 11, as EventBus MW extension timeout defaults to 10.
   prestop_sleep: 11
 
-  # The schema at this URL MUST have an JSONSchema examples event entry
-  # That this eventgate instance is configured to allow.
-  # This example event will be POSTed by the readinessProbe to determine
-  # that eventgate is ready to handle events.
-  readiness_probe_schema_url: 'file:///srv/service/schemas/event/primary/jsonschema/test/event/0.0.3'
-
   # EventGate service-runner app defaults config.
   # In production, these should be overridden in service/release specific values files.
   conf:
