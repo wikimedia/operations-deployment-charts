@@ -9,6 +9,9 @@ cache:
       - route: /eqiad/mw
         pool: eqiad-servers
         failover_time: 600
+      - route: /codfw/mw
+        pool: codfw-servers
+        failover_time: 600
       - route: /eqiad/mw-wan
         pool: eqiad-servers
         failover_time: 600
