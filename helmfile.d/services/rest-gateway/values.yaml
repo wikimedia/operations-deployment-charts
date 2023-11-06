@@ -137,7 +137,7 @@ main_app:
           out: '/geo-analytics/api-spec.json'
         - name: geo-editors
           in: '/wikimedia.org/v1/metrics/editors/by-country/(.+)'
-          out: '/metrics/editors/by-country/\2'
+          out: '/metrics/editors/by-country/\1'
 
     - name: media-analytics
       timeout: 15s
@@ -148,7 +148,7 @@ main_app:
           out: '/mediarequests/api-spec.json'
         - name: mediarequests
           in: '/wikimedia.org/v1/metrics/mediarequests/(.+)'
-          out: '/metrics/mediarequests/\2'
+          out: '/metrics/mediarequests/\1'
 
     - name: edit-analytics
       timeout: 5s
@@ -159,13 +159,13 @@ main_app:
           out: '/edit-analytics/api-spec.json'
         - name: edits
           in: '/wikimedia.org/v1/metrics/edits/(.+)'
-          out: '/metrics/edits/\2'
+          out: '/metrics/edits/\1'
         - name: bytes_difference
           in: '/wikimedia.org/v1/metrics/bytes_difference/(.+)'
-          out: '/metrics/bytes_difference/\2'
+          out: '/metrics/bytes_difference/\1'
         - name: edited_pages
           in: '/wikimedia.org/v1/metrics/edited_pages/(.+)'
-          out: '/metrics/edited_pages/\2'
+          out: '/metrics/edited_pages/\1'
 
     - name: editor-analytics
       timeout: 5s
@@ -176,10 +176,10 @@ main_app:
           out: '/editors/api-spec.json'
         - name: edits
           in: '/wikimedia.org/v1/metrics/editors/(.+)'
-          out: '/metrics/editors/\2'
+          out: '/metrics/editors/\1'
         - name: registered
           in: '/wikimedia.org/v1/metrics/registered_users/(.+)'
-          out: '/metrics/registered_users/\2'
+          out: '/metrics/registered_users/\1'
 
     - name: page-analytics
       timeout: 5s
@@ -190,10 +190,10 @@ main_app:
           out: '/page-analytics/api-spec.json'
         - name: pageviews
           in: '/wikimedia.org/v1/metrics/pageviews/(.+)'
-          out: '/metrics/pageviews/\2'
+          out: '/metrics/pageviews/\1'
         - name: legacy
           in: '/wikimedia.org/v1/metrics/legacy/(.+)'
-          out: '/metrics/legacy/\2'
+          out: '/metrics/legacy/\1'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
