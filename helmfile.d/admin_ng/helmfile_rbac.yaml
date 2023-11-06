@@ -115,6 +115,9 @@ releases:
             - apiGroups: ["cert-manager.io"]
               resources: ["certificates"]
               verbs: ["*"]
+            - apiGroups: ["flink.apache.org"]
+              resources: ["flinkdeployments"]
+              verbs: ["*"]
       {{- end }}
       {{- if eq . "kserve" }}
         ## Used by deploy users
