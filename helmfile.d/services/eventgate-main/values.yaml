@@ -2,14 +2,19 @@ service:
   deployment: production
   port: 34192
 
-
 networkpolicy:
   egress:
     enabled: true
 
+# MW EventBus wgEventServices sets request timeout for
+# eventgate-main to 62 seconds. Following docs in charts/eventgate/values.yaml
+# to set relative sleep and container termination timeouts.
+terminationGracePeriodSeconds: 65
+
 mesh:
   enabled: true
   public_port: 4492 # the port where TLS will be exposed
+  prestop_sleep: 64
 
 discovery:
   # List of listeners. These should match service mesh endpoint names
@@ -26,6 +31,7 @@ main_app:
   version: 2023-09-26-111847-production
   limits:
     memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
+  prestop_sleep: 63
   conf:
     kafka:
       conf:
