@@ -28,7 +28,7 @@ resources:
 
 main_app:
   name: eventgate-main
-  version: 2023-09-26-111847-production
+  version: 2023-10-25-155509-production
   limits:
     memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
   prestop_sleep: 63
@@ -72,15 +72,13 @@ main_app:
 
 
     # Request static stream config during startup from the EventStreamConfig extension
+    # stream_config_ttl is not set, so stream configs will be cached permanently.
     # MW API endpoint for all streams with destination_event_service == eventgate-main
     # We use meta.wikimedia.org here as the default stream configuration wiki.
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
-    # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
     stream_config_uri: 'http://localhost:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-main'
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
-    # Only request stream configs once at startup.
-    stream_config_is_dynamic: false
     # Expect the stream -> settings map in the response at this subobject key
     stream_config_object_path: streams
 

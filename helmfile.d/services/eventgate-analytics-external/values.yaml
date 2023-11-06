@@ -29,7 +29,7 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: 2023-10-17-204606-production
+  version: 2023-10-25-155509-production
   requests:
     memory: 300Mi
   limits:
@@ -71,20 +71,13 @@ main_app:
           # make sure this is configured in stream config if you are using it.
         stream: eventgate-analytics-external.test.event
 
-    # Request dynamic stream config from the EventStreamConfig extension MW API endpoint.
+    # Request stream config from the EventStreamConfig extension MW API endpoint every minute.
     # We use meta.wikimedia.org here as the default stream configuration wiki.
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
     # least configured with a stream name and schema_title available from meta.wikimedia.org.
-    # NOTE: Request config from MW internal api.svc and set Host to meta.wikimedia.org.
-    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics-external&streams=<%= streams %>'
-    stream_config_uri_streams_delimiter: '|'
-    stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}    # Re-request for yet unknown streams at runtime
+    stream_config_uri: 'http://127.0.0.1:6500/w/api.php?format=json&action=streamconfigs&constraints=destination_event_service=eventgate-analytics-external'
+    stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
     # Expect the stream -> settings map in the response at this subobject key
     stream_config_object_path: streams
-    stream_config_is_dynamic: true
-    # Expire and re-request dynamic stream configs every 5 minutes
-    stream_config_ttl: 300
-    stream_config_recache_on_expire: true
-    stream_config_precache_list:
-    - eventgate-analytics-external.test.event
-    - eventgate-analytics-external.error.validation
+    # Expire and re-request dynamic stream configs every minute.
+    stream_config_ttl: 60
