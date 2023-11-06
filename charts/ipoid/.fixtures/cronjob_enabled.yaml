@@ -1,34 +1,56 @@
 cronjobs:
-  # Run cowsay every hour
-  - name: my-cron-hourly
-    enabled: true
-    command:
-      - /bin/cowsay
-      - "hello"
-    schedule: "@hourly"
-    concurrency: Replace
-    image_versioned: my-app:1.1.1
-    resources:
-      requests:
-        cpu: 500m
-        memory: 200M
-      limits:
-        cpu: 500m
-        memory: 200M
-  # Remove root every day, disabled
-  - name: delete-all
-    enabled: false
-    command:
-      - /bin/rm
-      - "-rf"
-      - /
-    schedule: "@daily"
-    concurrency: Allow
-    image_versioned: my-app:1.1.1
-    resources:
-      requests:
-        cpu: 500m
-        memory: 200M
-      limits:
-        cpu: 500m
-        memory: 200M
+    my-cron-hourly:
+      enabled: true
+      command:
+        - /bin/cowsay
+        - "hello"
+      schedule: "@hourly"
+      concurrency: Replace
+      image_versioned: my-app:1.1.1
+      volumeMounts:
+        - mountPath: "/tmp/acow"
+          name: tmp-cow-memory
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M
+      volumes:
+        - name: tmp-cow-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: "10Gi"
+# Remove root every day, disabled
+    delete-all:
+      enabled: false
+      command:
+        - /bin/rm
+        - "-rf"
+        - /
+      schedule: "@daily"
+      concurrency: Allow
+      image_versioned: my-app:1.1.1
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M
+    one-more:
+      name: one-more
+      enabled: true
+      command:
+        - fortune
+      schedule: "@daily"
+      concurrency: Allow
+      image_versioned: my-app:1.1.1
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M

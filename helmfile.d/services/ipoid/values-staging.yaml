@@ -1,8 +1,27 @@
-config:
-  public:
-    HTTP_PROXY: http://url-downloader.codfw.wikimedia.org:8080
-    HTTPS_PROXY: http://url-downloader.codfw.wikimedia.org:8080
-    NO_PROXY: wikipedia.org,wiktionary.org,wikiquote.org,wikibooks.org,wikiquote.org,wikinews.org,wikisource.org,wikiversity.org,wikivoyage.org,www.wikidata.org,meta.wikimedia.org,commons.wikimedia.org,www.mediawiki.org
-
 ingress:
   staging: true
+cronjobs:
+  crons:
+    testing-crons:
+      enabled: true
+      command:
+        - sleep
+        - "3600"
+      schedule: "0 0 1 11 *"  # 1st of Nov every year
+      concurrency: Forbid
+      backoffLimit: 2
+      volumeMounts:
+        - mountPath: "/tmp/ipoid"
+          name: tmp-ipoid-memory
+      resources:
+        requests:
+          cpu: 500m
+          memory: 800M
+        limits:
+          cpu: 500m
+          memory: 800M
+      volumes:
+        - name: tmp-ipoid-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: "100m"

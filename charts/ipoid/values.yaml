@@ -30,7 +30,6 @@ app:
   #     mountPath: /scratch/ # where it should live in your container
 monitoring:
   enabled: false
-
 service:
   deployment: minikube
   port:
@@ -38,17 +37,14 @@ service:
     targetPort: 6927
     port: 4250
     nodePort: null
-
 config:
   public: {}
   private: {} # MySQL connection details are ENV values in values.yaml in helmfile.d/ipoid
-
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
   enabled: false
   # Define here any port that you want to expose for debugging purposes
   ports: []
-
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
@@ -91,17 +87,14 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
-
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 resources:
   replicas: 1
-
 networkpolicy:
   egress:
     enabled: false
-
 mesh:
   enabled: false
   image_version: latest
@@ -129,34 +122,19 @@ mesh:
     limits:
       cpu: 500m
       memory: 500Mi
-
 # Mesh-related discovery
 # TODO: move under mesh.* once we can
 discovery:
   # List of listeners
   listeners: []
-
 # Mesh related pure TCP proxies
 tcp_proxy:
   listeners: []
-
-
 # Should be provided by configuration management.
 # See details of the structures in the comments
 # In the configuration module.
 services_proxy: ~
 tcp_services_proxy: ~
-
 # Cronjob definitions
 # Here you can define your cronjobs
-cronjobs: []
-# Example of a job:
-# - name: my-cron-hourly
-#   enabled: true
-#   command:
-#      - /bin/cowsay
-#      - "hello"
-#   schedule: "@hourly" (defaults to @daily)
-#   concurrency: Replace (defaults to "Forbid")
-#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
-#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
+cronjobs: {}

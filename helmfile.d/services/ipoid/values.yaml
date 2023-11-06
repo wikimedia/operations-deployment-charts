@@ -17,6 +17,7 @@ resources:
   replicas: 1
 service:
   deployment: production
+
 config:
   public:
     MYSQL_HOST: nohost # change to m5-master.eqiad.wmnet when ready for prod
@@ -24,29 +25,61 @@ config:
     MYSQL_DATABASE: ipoid
     MYSQL_RW_USER: ipoid_rw
     MYSQL_RO_USER: ipoid_ro
+    TMPDIR: "/tmp/ipoid"
   private: {}
-
 cronjobs:
-  - name: placeholderCron
+  dailyUpdates:
     enabled: false
     command:
-      - /bin/cowsay
-      - "hello"
-    schedule: "@hourly"
+      - ./main.sh
+      - "--updatedb"
+      - "true"
+      - "--debug"
+      - "false"
+    schedule: "0 0 1 11 *"  # 1st of Nov every year
     concurrency: Forbid
-    image_versioned: my-app:1.1.1
+    backoffLimit: 2
+    volumeMounts:
+      - mountPath: "/tmp/ipoid"
+        name: tmp-ipoid-memory
     resources:
       requests:
         cpu: 500m
-        memory: 100M
+        memory: 11Gi
       limits:
+        cpu: 1
+        memory: 12Gi
+    volumes:
+      - name: tmp-ipoid-memory
+        emptyDir:
+          medium: Memory
+          sizeLimit: "10Gi"
+  initialImport:
+    enabled: false
+    command:
+      - ./main.sh
+      - "--init"
+      - "true"
+      - "--debug"
+      - "true"
+    schedule: "0 0 1 11 *" # 1st of Nov every year
+    concurrency: Forbid
+    backoffLimit: 1
+    volumeMounts:
+      - mountPath: "/tmp/ipoid"
+        name: tmp-ipoid-memory
+    resources:
+      requests:
         cpu: 500m
-        memory: 100M
-
-# real data in puppet master
-# MYSQL_RW_PASS
-# MYSQL_DATABASE
-# FEED_API_KEY
+        memory: 11Gi
+      limits:
+        cpu: 1
+        memory: 12Gi
+    volumes:
+      - name: tmp-ipoid-memory
+        emptyDir:
+          medium: Memory
+          sizeLimit: "10Gi"
 networkpolicy:
   egress:
     enabled: true
