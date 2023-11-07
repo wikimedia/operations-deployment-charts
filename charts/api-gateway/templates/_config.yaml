@@ -212,11 +212,22 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
           common_tls_context:
+            {{- if (.Values.mesh.certmanager | default dict).enabled }}
+            {{- /*
+            Configure envoy to read certificates from static SDS config.
+            This will enable an inotify watcher and hot-reloading on certificate changes.
+            */}}
+            tls_certificate_sds_secret_configs:
+              name: tls_sds
+              sds_config:
+                path_config_source:
+                  path: /etc/envoy/tls_certificate_sds_secret.yaml
+                resource_api_version: V3
+            {{- else }}
             tls_certificates:
-              certificate_chain:
-                filename: "/etc/envoy-ssl/service.crt"
-              private_key:
-                filename: "/etc/envoy-ssl/service.key"
+              - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
+                private_key: {filename: /etc/envoy/ssl/service.key}
+            {{- end }}
 {{- end }}
   clusters:
 {{- /* BEGIN endpoints cluster definition */}}

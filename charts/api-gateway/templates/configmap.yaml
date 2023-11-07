@@ -10,6 +10,10 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   envoy.yaml: |- {{ include "config.app" . | indent 4 }}
+{{- if (.Values.mesh.certmanager | default dict).enabled }}
+  tls_certificate_sds_secret.yaml: |-
+    {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 4 }}
+{{- end }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
@@ -39,7 +43,7 @@ metadata:
 data:
   nutcracker.yml: |- {{ include "nutcracker.config" . | indent 4 }}
 {{ end -}}
-{{- if .Values.mesh.enabled }}
+{{- if and .Values.mesh.enabled (not (.Values.mesh.certmanager | default dict).enabled) }}
 ---
 apiVersion: v1
 kind: ConfigMap
