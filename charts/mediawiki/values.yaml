@@ -44,6 +44,8 @@ monitoring:
   statsd: ~
   # If you want to enable prometheus-statsd-exporter in the pod, add the following:
   # statsd:
+  # # Needs to finish after envoy, so it's set to mesh.prestop_sleep + 1
+  #   prestop_sleep: 8
   #   requests:
   #     memory: 100M
   #     cpu: 100m
