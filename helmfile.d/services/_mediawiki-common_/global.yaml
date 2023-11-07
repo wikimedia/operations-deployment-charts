@@ -202,7 +202,17 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      # swift is covered by envoy even if still not used in mediawiki.
+      # swift, used by ThumbnailRenderer
+      # ms-fe.svc.eqiad.wmnet.
+      - cidr: 10.2.2.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # ms-fe.svc.codfw.wmnet.
+      - cidr: 10.2.1.27/32
+        ports:
+          - protocol: TCP
+            port: 443
       # url-downloader is covered by the default egress rules
       # Common defs
       #IRC - TODO: define the port range once we upgrade k8s
