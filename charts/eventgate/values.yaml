@@ -118,6 +118,11 @@ main_app:
     # Mapping of stream names to allowed schemas
     stream_config_uri: /etc/eventgate/stream-config.yaml
 
+    # When fetching stream configs, retry this many times before giving up.
+    # Making the chart default 3 (code default is 1).
+    # This will likely only be relevant if stream_config_uri is a remote URI.
+    stream_config_retries: 3
+
     # This field in each event will be used to extract a
     # (possibly relative) schema uri.  The default is $schema.
     # An array of field names will cause EventGate to search for
