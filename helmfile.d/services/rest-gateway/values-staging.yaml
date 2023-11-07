@@ -50,6 +50,8 @@ main_app:
     - wiktionary.org
     - wmfusercontent.org
     - wikipedia.org
+    # required for service mesh
+    - "localhost:6033"
 
   access_log:
     debug: true
