@@ -1,0 +1,30 @@
+templates:
+  default: &default
+    namespace: kube-system
+    chart: wmf-stable/kube-state-metrics
+    {{- $version := .Values.chartVersions | get "wmf-stable/kube-state-metrics" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    needs:
+      - kube-system/coredns
+    # installedTemplate is true by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kube_state_metrics\" }}{{ .Environment.Values.install_kube_state_metrics }}{{ else }}{{ false }}{{end}}`}}"
+    missingFileHandler: Warn
+    values:
+      # Generic default values for all environments
+      - "values/common.yaml"
+      # Default values for this cluster group
+      - "values/{{ .Values.cluster_group }}.yaml"
+      # Environment specific defaults
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # Release specific overrides
+      - "{{`{{ .Release.Name }}`}}/values.yaml"
+      # Overrides specific to release in environment
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+      # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
+
+releases:
+  - name: kube-state-metrics
+    <<: *default

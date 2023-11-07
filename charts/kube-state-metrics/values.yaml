@@ -1,10 +1,9 @@
 # Default values for kube-state-metrics.
 prometheusScrape: true
 image:
-  registry: registry.k8s.io
-  repository: kube-state-metrics/kube-state-metrics
-  # If unset use v + .Charts.appVersion
-  tag: ""
+  registry: docker-registry.wikimedia.org
+  repository: kube-state-metrics
+  tag: "2.10.0-1"
   sha: ""
   pullPolicy: IfNotPresent
 

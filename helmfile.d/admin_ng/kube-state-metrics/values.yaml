@@ -1,0 +1,34 @@
+prometheusScrape: false
+image:
+  registry: docker-registry.discovery.wmnet
+  repository: kube-state-metrics
+  pullPolicy: IfNotPresent
+
+prometheus:
+  monitor:
+    enabled: false
+
+networkPolicy:
+  enabled: true
+  flavor: kubernetes
+
+  # egress is cluster-specific, set in admin_ng/values/<environment>
+
+  # FIXME the default ingress policy allows unrestricted access to the metrics and self-metrics
+  # ports, should be prometheus only
+
+# The chart uses `namespaces` to configure namespaces to be enabled for collecting resources. We
+# need to set this here to override the global variable set in admin_ng/values/<environment>. Empty
+# string => all namespaces.
+namespaces: ""
+
+resources:
+  limits:
+   cpu: 200m
+   memory: 256Mi
+  requests:
+   cpu: 10m
+   memory: 32Mi
+
+selfMonitor:
+  enabled: false
