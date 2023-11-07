@@ -19,6 +19,9 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
 - name: statsd-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.statsd.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- with .Values.monitoring.statsd.prestop_sleep }}
+  {{ include "base.helper.prestop" . | nindent 2}}
+  {{- end }}
   resources:
     requests:
     {{- with .Values.monitoring.statsd.requests }}
