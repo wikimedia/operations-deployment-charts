@@ -1,3 +1,6 @@
+## statsd 1.0.1
+- Add prestop sleep helper
+
 ## statsd 1.0.0
 - Add templates to add prometheus-statsd-exporter to a pod
 

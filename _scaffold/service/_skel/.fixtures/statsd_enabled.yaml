@@ -2,6 +2,7 @@ monitoring:
   enabled: true
   named_ports: true
   statsd:
+    prestop_sleep: 2
     requests:
       memory: 100M
       cpu: 100m
