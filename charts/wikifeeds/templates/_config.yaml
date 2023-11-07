@@ -22,7 +22,7 @@ worker_heartbeat_timeout: 15000
 
 # Logger info
 logging:
-  level: warn
+  level: {{ .Values.main_app.log_level }}
   name: wikifeeds
   streams:
     - type: stdout
@@ -111,4 +111,7 @@ services:
           host: {{ "'{{" }}request.params.domain{{ "}}'" }}
           accept-language: {{ "'{{" }}accept-language{{ "}}'" }}
       usecorepagehtml: {{ .Values.main_app.usecorepagehtml }}
+      {{- if .Values.main_app.debug }}
+      debug: true
+      {{- end }}
 {{- end -}}
