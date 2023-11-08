@@ -1,27 +1,26 @@
 ingress:
   staging: true
 cronjobs:
-  crons:
-    testing-crons:
-      enabled: true
-      command:
-        - sleep
-        - "3600"
-      schedule: "0 0 1 11 *"  # 1st of Nov every year
-      concurrency: Forbid
-      backoffLimit: 2
-      volumeMounts:
-        - mountPath: "/tmp/ipoid"
-          name: tmp-ipoid-memory
-      resources:
-        requests:
-          cpu: 500m
-          memory: 800M
-        limits:
-          cpu: 500m
-          memory: 800M
-      volumes:
-        - name: tmp-ipoid-memory
-          emptyDir:
-            medium: Memory
-            sizeLimit: "100m"
+  testing-crons:
+    enabled: true
+    command:
+      - sleep
+      - "3600"
+    schedule: "0 0 1 11 *"  # 1st of Nov every year
+    concurrency: Forbid
+    backoffLimit: 2
+    volumeMounts:
+      - mountPath: "/tmp/ipoid"
+        name: tmp-ipoid-memory
+    resources:
+      requests:
+        cpu: 500m
+        memory: 800M
+      limits:
+        cpu: 500m
+        memory: 800M
+    volumes:
+      - name: tmp-ipoid-memory
+        emptyDir:
+          medium: Memory
+          sizeLimit: "100m"
