@@ -163,11 +163,11 @@ main_app:
           in: '/wikimedia.org/v1/metrics/edits/(.+)'
           out: '/metrics/edits/\1'
         - name: bytes_difference
-          in: '/wikimedia.org/v1/metrics/bytes_difference/(.+)'
-          out: '/metrics/bytes_difference/\1'
+          in: '/wikimedia.org/v1/metrics/bytes-difference/(.+)'
+          out: '/metrics/bytes-difference/\1'
         - name: edited_pages
-          in: '/wikimedia.org/v1/metrics/edited_pages/(.+)'
-          out: '/metrics/edited_pages/\1'
+          in: '/wikimedia.org/v1/metrics/edited-pages/(.+)'
+          out: '/metrics/edited-pages/\1'
 
     - name: editor-analytics
       timeout: 5s
@@ -180,8 +180,8 @@ main_app:
           in: '/wikimedia.org/v1/metrics/editors/(.+)'
           out: '/metrics/editors/\1'
         - name: registered
-          in: '/wikimedia.org/v1/metrics/registered_users/(.+)'
-          out: '/metrics/registered_users/\1'
+          in: '/wikimedia.org/v1/metrics/registered-users/(.+)'
+          out: '/metrics/registered-users/\1'
 
     - name: page-analytics
       timeout: 5s
