@@ -96,6 +96,15 @@ namespaces:
         limits:
           cpu: "20"
           memory: "34Gi"
+  eventgate-analytics:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "20"
+          memory: "10Gi"
+        limits:
+          cpu: "20"
+          memory: "10Gi"
 
 kubernetesMasters:
   cidrs:

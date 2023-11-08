@@ -55,7 +55,15 @@ namespaces:
   echostore: {}
   edit-analytics: {}
   editor-analytics: {}
-  eventgate-analytics: {}
+  eventgate-analytics:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "90"
+          memory: "100Gi"
+        limits:
+          cpu: "100"
+          memory: "100Gi"
   eventgate-analytics-external: {}
   eventgate-logging-external: {}
   eventgate-main: {}
