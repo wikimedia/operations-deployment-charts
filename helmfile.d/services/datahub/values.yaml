@@ -36,15 +36,15 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      - cidr: 10.64.21.104/32                 # an-coord1001
-      - cidr: 2620:0:861:105:10:64:21:104/128 # an-coord1001
-      - cidr: 10.64.36.107/32                 # an-coord1002
-      - cidr: 2620:0:861:106:10:64:36:107/128 # an-coord1002
-      - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-      - cidr: 10.64.0.24/32                   # karapace1001
-      - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
-      - cidr: 10.64.0.207/32                  # conf1007
-      - cidr: 2620:0:861:101:10:64:0:207/128  # conf1007
+      - cidr: 10.64.138.8/32                 # an-mariadb1001
+      - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
+      - cidr: 10.64.142.7/32                 # an-mariadb1002
+      - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
+      - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
+      - cidr: 10.64.0.24/32                  # karapace1001
+      - cidr: 2620:0:861:101:10:64:0:24/128  # karapace1001
+      - cidr: 10.64.0.207/32                 # conf1007
+      - cidr: 2620:0:861:101:10:64:0:207/128 # conf1007
 
 # Kafka brokers also enable additional networkpolicy templates
 kafka: &kafka
@@ -105,13 +105,13 @@ datahub-gms:
   networkpolicy:
     egress:
       dst_nets:
-        - cidr: 10.64.21.104/32                 # an-coord1001
-        - cidr: 2620:0:861:105:10:64:21:104/128 # an-coord1001
-        - cidr: 10.64.36.107/32                 # an-coord1002
-        - cidr: 2620:0:861:106:10:64:36:107/128 # an-coord1002
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.24/32                   # karapace1001
-        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+        - cidr: 10.64.138.8/32                 # an-mariadb1001
+        - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
+        - cidr: 10.64.142.7/32                 # an-mariadb1002
+        - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
+        - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.64.0.24/32                  # karapace1001
+        - cidr: 2620:0:861:101:10:64:0:24/128  # karapace1001
 
 datahub-mce-consumer:
   main_app:
@@ -123,13 +123,13 @@ datahub-mce-consumer:
   networkpolicy:
     egress:
       dst_nets:
-        - cidr: 10.64.21.104/32                 # an-coord1001
-        - cidr: 2620:0:861:105:10:64:21:104/128 # an-coord1001
-        - cidr: 10.64.36.107/32                 # an-coord1002
-        - cidr: 2620:0:861:106:10:64:36:107/128 # an-coord1002
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.24/32                   # karapace1001
-        - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
+        - cidr: 10.64.138.8/32                 # an-mariadb1001
+        - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
+        - cidr: 10.64.142.7/32                 # an-mariadb1002
+        - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
+        - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
+        - cidr: 10.64.0.24/32                  # karapace1001
+        - cidr: 2620:0:861:101:10:64:0:24/128  # karapace1001
 
 datahub-mae-consumer:
   main_app:
@@ -167,9 +167,9 @@ global:
       url: "http://karapace1001.eqiad.wmnet:8081"
   sql:
     datasource:
-      host: "an-coord1001.eqiad.wmnet:3306"
-      hostForMysqlClient: "an-coord1001.eqiad.wmnet"
+      host: "an-mariadb1001.eqiad.wmnet:3306"
+      hostForMysqlClient: "an-mariadb1001.eqiad.wmnet"
       port: "3306"
-      url: "jdbc:mysql://an-coord1001.eqiad.wmnet:3306/datahub?verifyServerCertificate=true&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2"
+      url: "jdbc:mysql://an-mariadb1001.eqiad.wmnet:3306/datahub?verifyServerCertificate=true&useSSL=true&useUnicode=yes&characterEncoding=UTF-8&enabledTLSProtocols=TLSv1.2"
       driver: "com.mysql.cj.jdbc.Driver"
       username: "datahub"
