@@ -96,6 +96,15 @@ namespaces:
         limits:
           cpu: "20"
           memory: "34Gi"
+  rdf-streaming-updater:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "20"
+          memory: "30Gi"
+        limits:
+          cpu: "20"
+          memory: "30Gi"
 
 kubernetesMasters:
   cidrs:
