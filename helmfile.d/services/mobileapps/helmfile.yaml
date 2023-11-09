@@ -52,6 +52,9 @@ hooks:
 releases:
   - name: production
     <<: *default
+  # Not really a canary for now, used to transition to mw-on k8s
+  - name: canary
+    <<: *default
   - name: staging
     <<: *default
 environments:
@@ -62,11 +65,11 @@ environments:
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [production]
+      - releases: [production, canary]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [production]
+      - releases: [production, canary]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
