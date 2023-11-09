@@ -96,15 +96,36 @@ namespaces:
         limits:
           cpu: "20"
           memory: "34Gi"
-  rdf-streaming-updater:
+  eventgate-analytics:
     resourcequota:
       compute:
         requests:
           cpu: "20"
-          memory: "30Gi"
+          memory: "10Gi"
         limits:
           cpu: "20"
-          memory: "30Gi"
+          memory: "10Gi"
+  ipoid:
+    limitranges:
+      container:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "3Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
 
 kubernetesMasters:
   cidrs:
