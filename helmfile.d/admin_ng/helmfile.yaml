@@ -8,6 +8,8 @@ environments:
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
       - install_cert_manager: true
+      # kube-state-metrics experiment
+      - install_kube_state_metrics: true
       # Create default service certificates
       - namespace_certificates: true
       - install_flink_operator: true
