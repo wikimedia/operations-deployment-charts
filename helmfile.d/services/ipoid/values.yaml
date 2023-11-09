@@ -31,7 +31,7 @@ cronjobs:
   daily-updates:
     enabled: false
     command:
-      - SPUR_API_KEY=$FEED_API_KEY ./main.sh
+      - ./main.sh
       - "--updatedb"
       - "true"
       - "--debug"
@@ -57,7 +57,7 @@ cronjobs:
   initial-import:
     enabled: false
     command:
-      - SPUR_API_KEY=$FEED_API_KEY ./main.sh
+      - ./main.sh
       - "--init"
       - "true"
       - "--debug"
