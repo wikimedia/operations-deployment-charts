@@ -1,3 +1,4 @@
+{{ if not (hasSuffix "canary" .Release.Name) }}
 {{ include "mesh.service" . }}
 {{ if not .Values.mesh.enabled }}
 ---
@@ -46,4 +47,5 @@ spec:
       targetPort: {{ $port }}
       port: {{ $port }}
     {{- end }}
+{{- end }}
 {{- end }}

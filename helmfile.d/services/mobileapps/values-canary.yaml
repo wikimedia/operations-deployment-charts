@@ -2,9 +2,5 @@
 # route canary access through the main release
 routed_via: main
 
-service:
-  # Don't deploy a k8s Service for this canary release
-  deployment: none
-
 resources:
   replicas: 2
