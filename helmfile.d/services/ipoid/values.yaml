@@ -28,7 +28,7 @@ config:
     TMPDIR: "/tmp/ipoid"
   private: {}
 cronjobs:
-  dailyUpdates:
+  daily-updates:
     enabled: false
     command:
       - ./main.sh
@@ -54,7 +54,7 @@ cronjobs:
         emptyDir:
           medium: Memory
           sizeLimit: "10Gi"
-  initialImport:
+  initial-import:
     enabled: false
     command:
       - ./main.sh
