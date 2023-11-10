@@ -39,21 +39,13 @@ cronjobs:
     schedule: "0 0 1 11 *"  # 1st of Nov every year
     concurrency: Forbid
     backoffLimit: 2
-    volumeMounts:
-      - mountPath: "/tmp/ipoid"
-        name: tmp-ipoid-memory
     resources:
       requests:
         cpu: 500m
-        memory: 24Gi
+        memory: 2Gi
       limits:
         cpu: 1
-        memory: 24Gi
-    volumes:
-      - name: tmp-ipoid-memory
-        emptyDir:
-          medium: Memory
-          sizeLimit: "22Gi"
+        memory: 8Gi
   initial-import:
     enabled: false
     command:
@@ -65,21 +57,13 @@ cronjobs:
     schedule: "0 0 1 11 *" # 1st of Nov every year
     concurrency: Forbid
     backoffLimit: 1
-    volumeMounts:
-      - mountPath: "/tmp/ipoid"
-        name: tmp-ipoid-memory
     resources:
       requests:
         cpu: 500m
-        memory: 24Gi
+        memory: 2Gi
       limits:
         cpu: 1
-        memory: 24Gi
-    volumes:
-      - name: tmp-ipoid-memory
-        emptyDir:
-          medium: Memory
-          sizeLimit: "22Gi"
+        memory: 8Gi
 networkpolicy:
   egress:
     enabled: true
