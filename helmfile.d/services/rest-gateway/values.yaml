@@ -95,17 +95,12 @@ main_app:
     - name: citoid
       timeout: 120s
       urls:
-        - name: citoid_slash
-          # We ignore the sitename (first matching group)
-          # it is assumed the URL will be properly encoded here - ie / replaced by %2F
-          in: '(.+)/v1/data/citation/(.+)/(.+)'
-          out: '/api?format=\2&search=\3'
-        - name: citoid_query_api
-          in: '(.+)/v1/data/citation/api?format=(.+)&search=(.+)'
-          out: '/api?format=\2&search=\3'
+          # We ignore the sitename (first matching group).
+          # It is assumed the URL will be properly encoded here - ie /
+          # replaced by %2F if needs be
         - name: citoid_query
-          in: '(.+)/v1/data/citation?format=(.+)&search=(.+)'
-          out: '/api?format=\2&search=\3'
+          in: '(.+)/v1/data/citation/(.+)/(.+)'
+          out: '/\2/\3'
 
     - name: wikifeeds
       timeout: 15s

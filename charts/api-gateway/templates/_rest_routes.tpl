@@ -70,6 +70,13 @@
                 {{- end }}
                 {{- end }}
 
+                  {{- if $endpoint.params}}
+                  query_parameters:
+                  {{- range $param := $endpoint.params }}
+                  - name: $param
+                    present_match: true
+                  {{- end }}
+                  {{- end }}
                 route:
                   regex_rewrite:
                     pattern:

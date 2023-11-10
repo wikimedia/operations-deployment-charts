@@ -46,17 +46,26 @@ main_app:
         - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
+    - name: citoid
+      timeout: 120s
+      urls:
+        - name: citoid_query
+          in: '(.+)/v1/data/citation/(.+)/(.+)'
+          out: '/\2/\3'
 
   discovery_endpoints:
     mobileapps:
       tls: false
-      port: 8888 #4102
+      port: 8888
       internal_host: localhost
-      timeout: 30s
+      host: localhost
+    citoid:
+      tls: false
+      port: 8888
+      internal_host: localhost
       host: localhost
     proton:
       tls: false
-      port: 8888 #4102
+      port: 8888
       internal_host: localhost
-      timeout: 30s
       host: localhost
