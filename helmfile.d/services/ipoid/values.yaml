@@ -45,15 +45,15 @@ cronjobs:
     resources:
       requests:
         cpu: 500m
-        memory: 11Gi
+        memory: 24Gi
       limits:
         cpu: 1
-        memory: 12Gi
+        memory: 24Gi
     volumes:
       - name: tmp-ipoid-memory
         emptyDir:
           medium: Memory
-          sizeLimit: "10Gi"
+          sizeLimit: "22Gi"
   initial-import:
     enabled: false
     command:
@@ -61,7 +61,7 @@ cronjobs:
       - "--init"
       - "true"
       - "--debug"
-      - "true"
+      - "false"
     schedule: "0 0 1 11 *" # 1st of Nov every year
     concurrency: Forbid
     backoffLimit: 1
@@ -71,15 +71,15 @@ cronjobs:
     resources:
       requests:
         cpu: 500m
-        memory: 11Gi
+        memory: 24Gi
       limits:
         cpu: 1
-        memory: 12Gi
+        memory: 24Gi
     volumes:
       - name: tmp-ipoid-memory
         emptyDir:
           medium: Memory
-          sizeLimit: "10Gi"
+          sizeLimit: "22Gi"
 networkpolicy:
   egress:
     enabled: true
