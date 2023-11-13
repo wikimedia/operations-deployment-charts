@@ -14,7 +14,7 @@ discovery:
   # List of listeners. These should match service mesh endpoint names
   # (defined in https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml)
   listeners:
-    - mw-api-int-async # used for EventStreamConfig API endpoint.
+    - mw-api-int-async-ro # used for EventStreamConfig API endpoint.
     - schema      # schema.discovery.wmnet
 
 kafka:
