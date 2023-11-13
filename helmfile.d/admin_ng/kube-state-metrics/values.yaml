@@ -4,6 +4,29 @@ image:
   repository: kube-state-metrics
   pullPolicy: IfNotPresent
 
+collectors:
+  - cronjobs
+  - daemonsets
+  - deployments
+  - jobs
+  - leases
+  - mutatingwebhookconfigurations
+  - namespaces
+  - nodes
+  - poddisruptionbudgets
+  - pods
+  - replicasets
+  - replicationcontrollers
+  - statefulsets
+  - validatingwebhookconfigurations
+
+# Metrics to be disabled. Exact metric names and/or regex patterns.
+# The allowlist and denylist are mutually exclusive.
+metricDenylist:
+  - kube_pod_status_qos_class
+  - kube_pod_ips
+  - kube_pod_tolerations
+
 prometheus:
   monitor:
     enabled: false
@@ -27,8 +50,8 @@ resources:
    cpu: 200m
    memory: 256Mi
   requests:
-   cpu: 10m
-   memory: 32Mi
+   cpu: 50m
+   memory: 128Mi
 
 selfMonitor:
   enabled: false
