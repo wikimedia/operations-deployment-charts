@@ -7,7 +7,7 @@ resources:
 main_app:
   # We use envoy-future here for more recent versions of envoy than
   # are used widely across WMF infrastructure.
-  image: envoy-future
+  image: envoy
   version: latest
   port: 8087
   command: ["/usr/bin/envoy"]
