@@ -29,14 +29,15 @@ config:
   private: {}
 cronjobs:
   daily-updates:
-    enabled: false
+    timeZone: "Etc/UTC"
+    enabled: true
     command:
       - ./main.sh
       - "--updatedb"
       - "true"
       - "--debug"
       - "false"
-    schedule: "0 0 1 11 *"  # 1st of Nov every year
+    schedule: "8 11 * * *"  # At 11:08 each day.
     concurrency: Forbid
     backoffLimit: 2
     resources:
