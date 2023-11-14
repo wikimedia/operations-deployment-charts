@@ -32,12 +32,7 @@ podAnnotations:
 
 networkPolicy:
   enabled: true
-  flavor: kubernetes
-
-  # egress is cluster-specific, set in admin_ng/values/<environment>
-
-  # FIXME the default ingress policy allows unrestricted access to the metrics and self-metrics
-  # ports, should be prometheus only
+  flavor: wmf
 
 # The chart uses `namespaces` to configure namespaces to be enabled for collecting resources. We
 # need to set this here to override the global variable set in admin_ng/values/<environment>. Empty

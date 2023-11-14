@@ -1,0 +1,39 @@
+{{- if and .Values.networkPolicy.enabled (eq .Values.networkPolicy.flavor "wmf") }}
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  {{- if .Values.annotations }}
+  annotations:
+    {{ toYaml .Values.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "kube-state-metrics.labels" . | indent 4 }}
+  name: {{ template "kube-state-metrics.fullname" . }}-calico
+  namespace: {{ template "kube-state-metrics.namespace" . }}
+spec:
+  types:
+    - Ingress
+    - Egress
+  selector: app.kubernetes.io/name == "{{ include "kube-state-metrics.name" . }}" && app.kubernetes.io/instance == "{{ .Release.Name }}"
+
+  # Allow querying the K8s API.
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+
+  # Allow ingress on default ports by default
+  # FIXME this should allow only Prometheus
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - {{ .Values.service.port | default 8080 }}
+          {{- if .Values.selfMonitor.enabled }}
+          {{- $telemetryPort := ternary 9091 (.Values.selfMonitor.telemetryPort | default 8081) .Values.kubeRBACProxy.enabled}}
+          - {{ $telemetryPort }}
+          {{- end }}
+{{- end }}
