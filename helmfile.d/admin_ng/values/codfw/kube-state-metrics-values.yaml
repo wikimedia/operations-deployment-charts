@@ -1,0 +1,13 @@
+networkPolicy:
+  egress:
+    # Allow talking to the Kubernetes masters
+    - to:
+        - ipBlock: { cidr: "10.192.0.56/32" }
+        - ipBlock: { cidr: "2620:0:860:101:10:192:0:56/128" }
+        - ipBlock: { cidr: "10.192.16.48/32" }
+        - ipBlock: { cidr: "2620:0:860:102:10:192:16:48/128" }
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
