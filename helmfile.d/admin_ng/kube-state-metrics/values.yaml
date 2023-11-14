@@ -27,9 +27,8 @@ metricDenylist:
   - kube_pod_ips
   - kube_pod_tolerations
 
-prometheus:
-  monitor:
-    enabled: false
+podAnnotations:
+  prometheus.io/scrape: "true"
 
 networkPolicy:
   enabled: true
@@ -54,4 +53,4 @@ resources:
    memory: 128Mi
 
 selfMonitor:
-  enabled: false
+  enabled: true
