@@ -12,6 +12,10 @@ main_app:
     tcpSocket:
       port: 7200
 
+  kafka:
+    max_bytes: 4194304
+    compression_codec: snappy
+
   jobqueue:
     jobrunner_uri: https://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
     videoscaler_uri: https://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
