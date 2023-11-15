@@ -1,2 +1,2 @@
 version=2
-rule=:[%date:char-to:]%] %syslogseverity-text:char-to::%: [pool %pool:char-to:]%] %message:rest%
+rule=:[%date:char-to:]%] PHP %syslogseverity-text:char-to::%:%-:whitespace%%message:rest%
