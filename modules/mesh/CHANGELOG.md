@@ -1,3 +1,7 @@
+## configuration 1.5.0 / networkpolicy 1.2.0
+- Allow traffic splitting to a mesh listener.
+  This should mostly be a noop unless split are defined in the listeners
+
 ## configuration 1.4.3
 - Rename parameter uses_sni to the correct sets_sni
 ## configuration 1.4.2

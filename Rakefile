@@ -343,9 +343,23 @@ task :refresh_fixtures do
       'ips' => ['127.0.0.1/32', '169.254.0.1/32'],
       'address' => 'mock.discovery.wmnet',
       'port' => 443,
-      'encryption' => true
+      'encryption' => true,
+      'keepalive'  => '4.5s',
     }
-    data = hiera['profile::services_proxy::envoy::listeners'].map { |x| x['upstream'] = upstream_mock; [x.delete('name'), x] }.to_h
+    data = hiera['profile::services_proxy::envoy::listeners'].map do |x|
+      x['upstream'] = upstream_mock
+      if x['split']
+        x['split'] = {
+          'percentage' => 10,
+          'ips' => ['127.0.0.2/32', '169.254.0.2/32'],
+          'address' => 'othermock.discovery.wmnet',
+          'port' => 1443,
+          'encryption' => true,
+          'keepalive'  => '5.5s'
+        }
+      end
+      [x.delete('name'), x]
+    end.to_h
 
     File.open(LISTENERS_FIXTURE, 'w') do |out|
       service_proxy = { 'services_proxy' => data }

@@ -40,7 +40,6 @@ discovery:
     - eventgate-analytics
 services_proxy:
   parsoid-php:
-    keepalive: 4s
     port: 6002
     timeout: 8s
     retry_policy:
@@ -54,6 +53,17 @@ services_proxy:
       address: parsoid-php.discovery.wmnet
       port: 443
       encryption: true
+      sets_sni: true
+      keepalive: 4s
+    split:
+      percentage: 55
+      address: mw-api-int.discovery.wmnet
+      port: 4448
+      encryption: true
+      keepalive: "5s"
+      ips:
+        - 3.2.1.1/32
+        - 1.1.2.3/32
   mathoid:
     port: 6003
     timeout: 3s
@@ -65,13 +75,13 @@ services_proxy:
       port: 10042
       encryption: false
   eventgate-analytics:
-    keepalive: 4.5s
     port: 6004
     timeout: 10s
     retry_policy:
       retry_on: 5xx
       num_retries: 1
     upstream:
+      keepalive: 4.5s
       ips:
         - 100.2.1.1/32
         - 200.3.1.1/32
