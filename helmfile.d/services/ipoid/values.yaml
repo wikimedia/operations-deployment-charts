@@ -29,7 +29,7 @@ config:
   private: {}
 cronjobs:
   daily-updates:
-    enabled: true
+    enabled: false
     command:
       - ./main.sh
       - "--updatedb"
@@ -54,7 +54,7 @@ cronjobs:
       - "true"
       - "--debug"
       - "false"
-    schedule: "0 0 1 11 *" # 1st of Nov every year
+    schedule: "8 11 17 11 *" # 1st of Nov every year
     concurrency: Forbid
     backoffLimit: 1
     resources:
