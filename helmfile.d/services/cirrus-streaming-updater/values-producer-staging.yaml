@@ -8,7 +8,6 @@ app:
       kafka-source-config.group.id: cirrus-streaming-updater-producer-staging
       # Read prod events, outputs still flow to test cluster
       kafka-source-config.bootstrap.servers: kafka-main1001.eqiad.wmnet:9093,kafka-main1002.eqiad.wmnet:9093,kafka-main1003.eqiad.wmnet:9093,kafka-main1004.eqiad.wmnet:9093,kafka-main1005.eqiad.wmnet:9093
-      wikiids: testwiki;frwiki;itwiki
 
 kafka:
   allowed_clusters: [main-eqiad, test-eqiad]

@@ -2,7 +2,7 @@
 # Please put overrides for production in other values files.
 
 app:
-  version: v20231114184956-9ec152d
+  version: v20231116195743-00be6e0
   flinkVersion: v1_17
 
   job:
@@ -17,8 +17,6 @@ app:
     app.config.properties:
       event-stream-config-url: https://meta.wikimedia.org/w/api.php/
       event-stream-json-schema-urls: https://schema.wikimedia.org/repositories/primary/jsonschema; https://schema.wikimedia.org/repositories/secondary/jsonschema
-      # Intent is for initial deployment to be limited to testwiki
-      wikiids: testwiki
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
