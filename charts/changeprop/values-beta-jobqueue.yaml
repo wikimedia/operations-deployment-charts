@@ -22,7 +22,7 @@ main_app:
         # All the jobs of this kind are delayed exactly 48 hours, so we don't want
         # the reenqueue feature to kick in.
         reenqueue_delay: 259200
-     notificationGetStartedJob:
+      notificationGetStartedJob:
         enabled: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
@@ -51,7 +51,3 @@ main_app:
       enabled: true
       concurrency: 10
 
-metrics:
-  name: cpjobqueue
-  host: prometheus-labmon.eqiad.wmnet
-  port: 8125
