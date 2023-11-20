@@ -10,7 +10,7 @@ main_app:
     memory: 400Mi
   mt:
     Apertium:
-      api: http://localhost:6019
+      api: http://127.0.0.1:6019
       languages: config/Apertium.yaml
     Elia:
       api: https://mt-api.elhuyar.eus/translate_string
@@ -27,7 +27,7 @@ main_app:
       #key:
       languages: config/LingoCloud.yaml
     MinT:
-      api: http://localhost:6504/api/translate
+      api: http://127.0.0.1:6504/api/translate
       languages: config/MinT.yaml
     TestClient:
       languages: config/TestClient.yaml
@@ -44,18 +44,18 @@ main_app:
     user: cxserver
     # password:
     # host:
-  mwapi_uri: http://localhost:6500/w/api.php
+  mwapi_uri: http://127.0.0.1:6500/w/api.php
   no_proxy_list:
     - eqiad.wmnet
     - codfw.wmnet
     - discovery.wmnet
-    - localhost
+    - 127.0.0.1,localhost
   ratelimiter_key: x-client-ip
   ratelimiter_rate: 10
   requests:
     cpu: 100m
     memory: 100Mi
-  restbase_host: localhost:6503
+  restbase_host: 127.0.0.1:6503
   version: 2023-11-06-060744-production
 monitoring:
   enabled: true
