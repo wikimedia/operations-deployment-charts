@@ -64,7 +64,7 @@ def main():
 
     # note - we load all here as helm puts multiple yaml documents in a
     # file
-    configmap = yaml.load_all(stdout)
+    configmap = yaml.safe_load_all(stdout)
     for doc in configmap:
         if doc and "data" in doc:
             configdata = doc["data"]["config.yaml"]
