@@ -3,7 +3,7 @@ app:
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.producer.ProducerApplication
   config_files:
-    app.config.properties:
+    app.config.yaml:
       page-change-stream: mediawiki.page_change.v1
       article-topic-stream: mediawiki.page_outlink_topic_prediction_change.v1
       draft-topic-stream: mediawiki.revision_score_drafttopic

@@ -48,7 +48,7 @@ app:
     kubernetes.operator.savepoint.history.max.age: 24h
 
   config_files:
-    app.config.properties:
+    app.config.yaml:
       # mw-api-int-async-ro
       http-routes.99-mwapi: .*=http://localhost:6500
       event-stream-http-routes.schema: https://schema.wikimedia.org=http://localhost:6023

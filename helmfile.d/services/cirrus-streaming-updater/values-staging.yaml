@@ -3,7 +3,7 @@
 #
 app:
   config_files:
-    app.config.properties:
+    app.config.yaml:
       # Both are specified here so overwriting `source` in the producer doesn't also override the sink
       kafka-source-config.bootstrap.servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
       kafka-source-config.security.protocol: SSL

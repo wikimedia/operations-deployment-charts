@@ -2,7 +2,7 @@
 # Please put overrides for production in other values files.
 
 app:
-  version: v20231116195743-00be6e0
+  version: v20231120174102-2f2ce70
   flinkVersion: v1_17
 
   job:
@@ -11,10 +11,10 @@ app:
     state: running
     jarURI: local:///opt/flink/usrlib/app-with-dependencies.jar
     args:
-      - /srv/app/conf/app.config.properties
+      - /srv/app/conf/app.config.yaml
 
   config_files:
-    app.config.properties:
+    app.config.yaml:
       event-stream-config-url: https://meta.wikimedia.org/w/api.php/
       event-stream-json-schema-urls: https://schema.wikimedia.org/repositories/primary/jsonschema; https://schema.wikimedia.org/repositories/secondary/jsonschema
 

@@ -1,6 +1,6 @@
 app:
   config_files:
-    app.config.properties:
+    app.config.yaml:
       pipeline.name: cirrus-streaming-updater-producer-staging
       # While staging lives in eqiad, only codfw has events right now. Ideally we want staging
       # in all datacenters, but for now we have to manually update this to follow mediawiki.
