@@ -3,9 +3,4 @@
 routed_via: production
 
 resources:
-  replicas: 8
-
-discovery:
-  listeners:
-    - mw-api-int-async # TODO: change to a more stringent timeout
-    - restbase-for-services
+  replicas: 4

@@ -1,7 +1,7 @@
 docker:
   registry: docker-registry.discovery.wmnet
 resources:
-  replicas: 72
+  replicas: 76
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
   version: 2023-06-29-111942-production
@@ -25,7 +25,7 @@ mesh:
 
 discovery:
   listeners:
-    - mwapi-async # TODO: change to a more stringent timeout
+    - mw-api-async-transition # TODO: change to a more stringent timeout
     - restbase-for-services
 
 networkpolicy:
