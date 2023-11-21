@@ -20,3 +20,22 @@ inference_services:
           requests:
             cpu: "2"
             memory: 4Gi
+  article-descriptions:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-article-descriptions"
+      image_version: "2023-11-20-153747-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "article-descriptions"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/article-descriptions/"
+        - name: WIKI_URL
+          value: "http://api-ro.discovery.wmnet"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
