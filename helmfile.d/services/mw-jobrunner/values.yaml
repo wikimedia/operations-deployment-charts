@@ -13,7 +13,7 @@ mw:
       <Virtualhost *:8080>
         Servername mw-jobrunner.discovery.wmnet
         ServerAlias mw-jobrunner.svc.codfw.wmnet mw-jobrunner.svc.eqiad.wmnet
-        # MediaWiki has a timeout of 20 minutes, add 2 seconds here to let 
+        # MediaWiki has a timeout of 20 minutes, add 2 seconds here to let
         # mediawiki handle timeouts in most cases.
         Timeout 1202
         DocumentRoot "/srv/mediawiki"
@@ -26,10 +26,9 @@ mw:
         RewriteRule ^ - [R=404,L]
 
         <FilesMatch "\.php$">
-          SetHandler "unix:/run/shared/fpm-www.sock|fcgi://localhost"
+          SetHandler "proxy:unix:/run/shared/fpm-www.sock|fcgi://localhost"
         </FilesMatch>
 
         ErrorLog /dev/stderr
         CustomLog /dev/stdout wmfjson "expr=%{REQUEST_STATUS} != 200"
       </VirtualHost>
-
