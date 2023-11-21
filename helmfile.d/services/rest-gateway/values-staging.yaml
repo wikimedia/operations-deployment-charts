@@ -3,7 +3,7 @@ resources:
 
 main_app:
   # enable debug logging in staging
-  args: ["-c", "/etc/api-gateway/config.yaml", "-l", "debug"]
+  args: ["-l", "debug"]
   domains:
     - staging.svc.eqiad.wmnet:*
     - staging.svc.eqiad.wmnet
