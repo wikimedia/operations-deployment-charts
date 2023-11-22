@@ -105,7 +105,7 @@ spec:
 {{ toYaml .Values.main_app.limits | indent 14 }}
           volumeMounts:
             - name: {{ .Release.Name }}-base-config
-              mountPath: /etc/api-gateway/
+              mountPath: /etc/envoy/
 {{- if .Values.main_app.jwt.enabled }}
             - name: {{ .Release.Name }}-jwt-config
               mountPath: /etc/jwks/
