@@ -10,8 +10,10 @@ main_app:
   image: envoy
   version: latest
   port: 8087
-  command: ["/usr/bin/envoy"]
-  args: ["-c", "/etc/api-gateway/config.yaml"]
+  # change this in values files if you want to avoid running the
+  # default envoy image entrypoint
+  command: ~
+  args: []
   requests:
     cpu: 500m
     memory: 500Mi

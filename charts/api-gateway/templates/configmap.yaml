@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-  config.yaml: |- {{ include "config.app" . | indent 4 }}
+  envoy.yaml: |- {{ include "config.app" . | indent 4 }}
 {{- if .Values.monitoring.enabled }}
 ---
 apiVersion: v1
