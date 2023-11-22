@@ -33,7 +33,7 @@ inference_services:
       autoscaling.knative.dev/target: "50"
     predictor:
       image: "machinelearning-liftwing-inference-services-langid"
-      image_version: "2023-10-16-162753-publish"
+      image_version: "2023-11-21-111453-publish"
       config:
         minReplicas: 1
         maxReplicas: 3
@@ -51,7 +51,7 @@ inference_services:
   nllb-200:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-10-25-083615-publish"
+      image_version: "2023-11-21-111453-publish"
       custom_env:
         - name: MODEL_NAME
           value: "nllb-200-distilled-600M"
@@ -70,7 +70,7 @@ inference_services:
   nllb-200-gpu:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-10-25-083615-publish"
+      image_version: "2023-11-21-111453-publish"
       custom_env:
         - name: MODEL_NAME
           value: "nllb-200-distilled-600M"
