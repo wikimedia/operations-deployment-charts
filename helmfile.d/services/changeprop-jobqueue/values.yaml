@@ -145,6 +145,11 @@ main_app:
       parsoidCachePrewarm:
         enabled: true
         concurrency: 150
+      # this isn't a high traffic job but we include it here for testing purposes
+      updateBetaFeaturesUserCounts:
+        concurrency: 10
+        k8s: true
+        enabled: true
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
