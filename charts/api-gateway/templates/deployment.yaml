@@ -85,8 +85,10 @@ spec:
           {{- toYaml .Values.main_app.readiness_probe | nindent 12 }}
           {{- end }}
           env:
-            - name: SERVICE_IDENTIFIER
-              value: {{ template "base.name.release" . }}
+            - name: SERVICE_NAME
+              value: {{ .Release.Name }}
+            - name: SERVICE_ZONE
+              value: "default"
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
