@@ -4,7 +4,7 @@ resources:
   replicas: 76
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
-  version: 2023-06-29-111942-production
+  version: 2023-11-27-144728-production
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
   restbase_uri: http://localhost:6503
@@ -25,8 +25,8 @@ mesh:
 
 discovery:
   listeners:
-    - mw-api-async-transition # TODO: change to a more stringent timeout
-    - restbase-for-services
+  - mw-api-async-transition   # TODO: change to a more stringent timeout
+  - restbase-for-services
 
 networkpolicy:
   egress:
