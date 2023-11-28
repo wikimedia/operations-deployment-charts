@@ -33,6 +33,7 @@ main_app:
         concurrency: 10
       categoryMembershipChange:
         enabled: true
+        k8s: true
         concurrency: 200
       # CNDPurge is quite low-volume, but it uses delayed execution,
       # so avoid putting it together with other low-volume jobs so that it doesn't
@@ -54,6 +55,7 @@ main_app:
         concurrency: 20
       constraintsRunCheck:
         enabled: true
+        k8s: true
         concurrency: 30
       fetchGoogleCloudVisionAnnotations:
         enabled: true
