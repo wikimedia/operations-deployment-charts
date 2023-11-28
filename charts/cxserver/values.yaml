@@ -14,7 +14,7 @@ main_app:
   kademlia_port: 3051
   proxy: null
   mwapi_uri: http://mediawiki.svc.cluster.local/w/api.php # api-rw.discovery.wmnet in production
-  restbase_host: restbase.svc.cluster.local # restbase.discovery.wmnet:7231 in production
+  mwapi_int_async_host: restbase.svc.cluster.local # mw-api-int.discovery.wmnet in production
   no_proxy_list: []
   jwt_secret: null
   ratelimiter_key: X-Forwarded-For # In production this is going to be X-Client-IP

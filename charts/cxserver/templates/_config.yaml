@@ -50,13 +50,13 @@ services:
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
         method: post
         uri: {{ .Values.main_app.mwapi_uri }}
-      # the template used for contacting RESTBase
+      # the template used for contacting MediaWiki API host
       restbase_req:
         method: {{ "'{{" }}request.method{{ "}}'" }}
         query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
         headers: {{ "'{{" }} request.headers {{ "}}'" }}
         body: {{ "'{{" }} request.body {{ "}}'" }}
-        uri: http://{{ .Values.main_app.restbase_host }}/{{ "{{" }}domain{{ "}}"}}/v1/{+path}
+        uri: http://{{ .Values.main_app.mwapi_int_async_host }}/w/rest.php/v1/{+path}
       {{ if .Values.main_app.proxy -}}
       proxy: {{ .Values.main_app.proxy }}
       {{ end -}}
