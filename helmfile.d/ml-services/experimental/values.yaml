@@ -31,6 +31,14 @@ networkpolicy:
         ports:
         - port: 4492
           protocol: tcp
+      - cidr: 10.2.1.82/32 # rest-gateway.svc.codfw.wmnet
+        ports:
+        - port: 4113
+          protocol: tcp
+      - cidr: 10.2.2.82/32 # rest-gateway.svc.eqiad.wmnet
+        ports:
+        - port: 4113
+          protocol: tcp
 
 monitoring:
   enabled: true
