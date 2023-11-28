@@ -1,0 +1,250 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  # Defined in https://gitlab.wikimedia.org/repos/data-engineering/spark/-/blob/main/history-server/blubber.yaml
+  image:  repos/data-engineering/spark/spark3.4-history
+  version: latest # we use latest everywhere in the defaults.
+
+  port: 18080 # application port
+  command: ["/opt/entrypoint.sh"]
+  args: ["history"]
+  requests:
+    cpu: 4 # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 4Gi # Just some sample, edit these
+  limits:
+    cpu: 8 # Just some sample, edit these
+    memory: 8Gi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 18080
+    initialDelaySeconds: 15  # We wait a bit to let the app start first, which takes a while
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 18080
+    initialDelaySeconds: 15 # We wait a bit to let the app start first, which takes a while
+  # We inject all spark configuration keys into the environment as this is how they are then
+  # passed to the java process.
+  # See https://github.com/wikimedia/operations-docker-images-production-images/blob/master/images/spark/3.1/entrypoint.sh#L27
+  env_from:
+  - configMapRef:
+      name: spark-history-config
+  volumes:
+  # This volume contains the hdfs-site.xml and core-site.xml config files
+  - name: spark-history-hadoop-sites-config-volume
+    configMap:
+      name: spark-history-hadoop-sites-config
+  # This volume contains the krb5.conf Kerberos configuration file
+  - name: spark-history-kerberos-client-config-volume
+    configMap:
+      name: spark-history-kerberos-client-config
+  # This volume contains the Kerberos keytab file
+  - name: spark-history-kerberos-keytab-volume
+    secret:
+      secretName: spark-history-kerberos-keytab
+  # This volume contains the TGT that will be obtained from the kerberos server
+  - name: spark-history-kerberos-tgt-cache-volume
+    emptyDir: {}
+  volumeMounts:
+  - name: spark-history-hadoop-sites-config-volume
+    mountPath: /etc/hadoop/conf
+  - name: spark-history-kerberos-client-config-volume
+    mountPath: /etc/krb5.conf
+    subPath: krb5.conf
+  - name: spark-history-kerberos-keytab-volume
+    mountPath: /etc/spark/kerberos/keytabs
+  - name: spark-history-kerberos-tgt-cache-volume
+    mountPath: /etc/spark/kerberos/tgt
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: true
+
+
+config:
+  # The environment variables exported in each container of the pod
+  public:
+    SPARK_DAEMON_MEMORY: 2g # used for both -Xms and -Xmx
+    HADOOP_CONF_DIR: /etc/hadoop/conf
+    KRB5CCNAME: DIR:/etc/spark/kerberos/tgt/  # the directory in which kerbertos will store its TGT
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+  # The spark configuration overrides
+  spark:
+    spark.history.ui.port: 18080
+    spark.history.fs.logDirectory: hdfs:///var/log/spark
+    spark.history.fs.cleaner.enabled: true
+    spark.history.fs.cleaner.maxAge: 14d
+    spark.history.fs.numReplayThreads: 2
+    spark.history.kerberos.enabled: true
+    spark.history.kerberos.keytab: /etc/spark/kerberos/keytabs/spark-history.keytab
+
+  # The HDFS configuration that will be rendered in the hdfs-site.xml config file
+  # NOTE: while the PR is a WIP, feel free to mention anything that shouldn't be here.
+  # I have taken the hdfs-site.xml file from stat1004 and turned its format into this.
+  hdfs:
+    dfs.data.transfer.protection: privacy
+    dfs.encrypt.data.transfer: true
+    dfs.encrypt.data.transfer.cipher.key.bitlength: 128
+    dfs.encrypt.data.transfer.cipher.suites: AES/CTR/NoPadding
+    dfs.http.policy: HTTPS_ONLY
+    dfs.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
+    dfs.namenode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
+    dfs.permissions.superusergroup: hadoop
+    dfs.secondary.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
+    dfs.secondary.namenode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
+
+
+  # The hadoop configuration that will be rendered in the core-site.xml config file
+  hadoop:
+    fs.permissions.umask-mode: '027'
+    fs.trash.checkpoint.interval: 1440
+    fs.trash.interval: 43200
+    hadoop.rpc.protection: privacy
+    hadoop.security.authentication: kerberos
+    hadoop.ssl.enabled.protocols: TLSv1.2
+    io.file.buffer.size: 131072
+    fs.defaultFS: override_me
+
+kerberos:
+  # The keytab comes from the puppet secrets module, which is then injected into
+  # /etc/helmfile-defaults/ on the deploy server.
+  image:
+    name: repos/data-engineering/kerberos-kinit
+    version: latest
+  ticket_renewal_interval_minutes: 60
+  keytab: override_me
+
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets: []
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+
+# Cronjob definitions
+# Here you can define your cronjobs
+cronjobs: []
+# Example of a job:
+# - name: my-cron-hourly
+#   enabled: true
+#   command:
+#      - /bin/cowsay
+#      - "hello"
+#   schedule: "@hourly" (defaults to @daily)
+#   concurrency: Replace (defaults to "Forbid")
+#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
+#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
+
+
+# Allow external traffic to reach this service via a (cluster provided) ingress controller.
+# https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
+ingress:
+  enabled: true
+  # By default, enabling ingress will switch the charts services from type NodePort to
+  # ClusterIP. While that is fine for new services it may not be desired during transition
+  # of existing ones from dedicated LVS to Ingress.
+  # By setting keepNodePort to true, the services will stay of type NodePort.
+  keepNodePort: false
+  # Setting staging to true will use the staging domain to generate the default gateway
+  # hosts. It will also ensure that default staging cergen certificates are be trusted.
+  staging: false
+  # gatewayHosts settings configure the hostnames this service will be reachable on.
+  # By default, this will be a list like:
+  # - {{ gatewayHosts.default }}.discovery.wmnet
+  # - {{ gatewayHosts.default }}.svc.codfw.wmnet
+  # - {{ gatewayHosts.default }}.svc.eqiad.wmnet
+  #
+  # And in case .Values.ingress.staging is true:
+  # - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
+  gatewayHosts:
+    # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
+    default: "override_me"
+    # disableDefaultHosts may be set to true if the service should not be reachable via
+    # the gateway hosts generated by default (see above).
+    disableDefaultHosts: false
+    # extraFQDNs ist a list of extra FQDNs this service should be reachable on.
+    # It can be used to extend the gateway hosts that are generated by default.
+    extraFQDNs: []
+  # If you want to attach routes of this release to an existing Gateway, provide the name
+  # of that gateway here in the format: <namespace>/<gateway-name>
+  # This is useful if you wish to make multiple releases available from the same hostname.
+  existingGatewayName: ""
+  # routeHosts is a list of FQDNs the httproutes should attach to.
+  # If existingGatewayName not set, this list might be empty and will default to the gateway
+  # host generated according to how .Values.gatewayHosts.* is configured.
+  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
+  routeHosts: []
+  # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
+  # the service without modification.
+  # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
+  httproutes: []
+  # Base CORS HTTP headers for the general use case.
+  base_cors_policy: false
+  # Add a custom CORS policy, injecting an Istio CorsPolicy config:
+  # https://istio.io/latest/docs/reference/config/networking/virtual-service/#CorsPolicy
+  # Takes precedence over base_cors_policy.
+  custom_cors_policy: {}
+
+# Basic mesh-related data.
+mesh:
+  enabled: true
+  admin: {port: 1666 }
+  image_version: latest
+  certmanager:
+    enabled: true
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to by the envoy sidecar in the application pod, that will terminate the TLS
+  # traffic and forward the HTTP traffic to the application pod
+  public_port: 18081
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi

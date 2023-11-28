@@ -1,0 +1,54 @@
+---
+{{/*
+  This deployment is in charge of running the Spark history server.
+
+  We run the spark history server alongside a sidecar running k5start, in charge
+  of initializing and renewing the Kerberos ticket. That ticket is stored in a
+  volume shared between containers, allowing the Spark history server to make
+  authenticated calls against HDFS.
+
+*/}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        {{- include "app.generic.container" . | indent 8 }}
+        - name: renew-kerberos-token
+          image: "{{ $.Values.docker.registry }}/{{ $.Values.kerberos.image.name }}:{{ $.Values.kerberos.image.version }}"
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          env:
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
+          command:
+            {{/* Renew the ticket every 60 minutes */}}
+            - k5start
+            - -a   {{/* Renew on each wakeup when running as a daemon */}}
+            - -K   {{/* Run as daemon, check ticket every <interval> minutes */}}
+            - '{{ $.Values.kerberos.ticket_renewal_interval_minutes }}'
+            - -f   {{/* Use <keytab> for authentication rather than password */}}
+            - {{ get $.Values.config.spark "spark.history.kerberos.keytab" }}
+            - -U   {{/* Use the first principal in the keytab as the client principal and don't look for a principal on the command line */}}
+            - -v   {{/* Verbose */}}
+          volumeMounts:
+            {{- toYaml $.Values.app.volumeMounts | nindent 12 }}
+        {{- include "mesh.deployment.container" . | indent 8 }}
+      volumes:
+        {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "mesh.deployment.volume" . | indent 8 }}

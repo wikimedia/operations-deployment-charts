@@ -1,0 +1,82 @@
+---
+{{/*
+  This configmap is used to assign the spark configuration key/values to
+  environment variables that will be injected into the pod.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-history-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+    {{- range $k, $v := .Values.config.spark }}
+    SPARK_JAVA_OPT_{{ upper $k }}: -D{{ $k }}={{ $v }}
+    {{- end }}
+
+---
+{{/*
+  This configmap is used to define the Hadoop and HDFS configuration
+  files, to be mounted in the pod.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-history-hadoop-sites-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  core-site.xml: |
+    <configuration>
+    {{- range $k, $v := .Values.config.hadoop }}
+    <property>
+      <name>{{ $k }}</name>
+      <value>{{ $v }}</value>
+    </property>
+    {{- end -}}
+    </configuration>
+
+  hdfs-site.xml: |
+    <configuration>
+    {{- range $k, $v := .Values.config.hdfs }}
+    <property>
+      <name>{{ $k }}</name>
+      <value>{{ $v }}</value>
+    </property>
+    {{- end -}}
+    </configuration>
+
+---
+{{/*
+  This configmap is used to define the kerberos client configuration.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-history-kerberos-client-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  krb5.conf: |
+    [libdefaults]
+      default_realm = WIKIMEDIA
+      kdc_timesync = 1
+      ccache_type = 4
+      forwardable = true
+      proxiable = true
+      ticket_lifetime = 2d
+      renew_lifetime = 14d
+      dns_canonicalize_hostname = true
+      rdns = false
+
+    [realms]
+      WIKIMEDIA = {
+        kdc = krb1001.eqiad.wmnet
+        kdc = krb1002.codfw.wmnet
+        admin_server = krb1001.eqiad.wmnet
+      }
+    [domain_realm]
+      .wikimedia = WIKIMEDIA
+      wikimedia = WIKIMEDIA
+---
+{{ include "mesh.configuration.configmap" . }}

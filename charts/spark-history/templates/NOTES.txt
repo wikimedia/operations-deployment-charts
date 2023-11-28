@@ -1,0 +1,8 @@
+Thank you for installing {{ template "base.name.chart" . }}.
+
+Your release is named {{ template "base.name.release" . }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ template "base.name.release" . }}
+  $ helm get {{ template "base.name.release" . }}
