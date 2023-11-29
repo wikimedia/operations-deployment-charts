@@ -65,18 +65,21 @@ main_app:
         reenqueue_delay: 259200
       notificationGetStartedJob:
         enabled: true
+        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
         # by setting the reenqueue delay to 72 hours
         reenqueue_delay: 259200
       notificationKeepGoingJob:
         enabled: true
+        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
         # by setting the reenqueue delay to 72 hours
         reenqueue_delay: 259200
       newcomerTasksCacheRefreshJob:
         enabled: true
+        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 144 hours (6 days), avoid reenqueueing them
         # by setting the reenqueue delay to 7 days
@@ -132,9 +135,11 @@ main_app:
       # improve editing experience for users T267520
       UpdateTranslatablePageJob:
         enabled: true
+        k8s: true
         concurrency: 3
       RenderTranslationPageJob:
         enabled: true
+        k8s: true
         concurrency: 3
       DispatchChanges:
         enabled: true
