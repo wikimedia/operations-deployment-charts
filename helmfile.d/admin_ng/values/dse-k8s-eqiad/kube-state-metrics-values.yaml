@@ -1,0 +1,13 @@
+networkPolicy:
+  egress:
+    # Allow talking to the Kubernetes masters
+    - to:
+        - ipBlock: { cidr: "10.64.0.228/32" }                  # dse-k8s-ctrl1001
+        - ipBlock: { cidr: "2620:0:861:101:10:64:0:228/128" }  # dse-k8s-ctrl1001
+        - ipBlock: { cidr: "10.64.16.237/32" }                 # dse-k8s-ctrl1002
+        - ipBlock: { cidr: "2620:0:861:102:10:64:16:237/128" } # dse-k8s-ctrl1002
+      ports:
+        - port: 443
+          protocol: TCP
+        - port: 6443
+          protocol: TCP
