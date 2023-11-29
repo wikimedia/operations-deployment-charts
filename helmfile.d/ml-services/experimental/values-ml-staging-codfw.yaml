@@ -23,7 +23,7 @@ inference_services:
   article-descriptions:
     predictor:
       image: "machinelearning-liftwing-inference-services-article-descriptions"
-      image_version: "2023-11-27-161728-publish"
+      image_version: "2023-11-29-100652-publish"
       custom_env:
         - name: MODEL_NAME
           value: "article-descriptions"
@@ -31,6 +31,8 @@ inference_services:
           value: "s3://wmf-ml-models/article-descriptions/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
+        - name: REST_GATEWAY_ENDPOINT
+          value: "http://rest-gateway.discovery.wmnet:4111"
       container:
         resources:
           limits:
