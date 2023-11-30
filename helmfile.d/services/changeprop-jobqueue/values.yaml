@@ -101,6 +101,7 @@ main_app:
         concurrency: 5
       cirrusSearchDeletePages:
         enabled: true
+        k8s: true
         retry_limit: 0
         concurrency: 5
       cirrusSearchIncomingLinkCount:
@@ -113,10 +114,12 @@ main_app:
         concurrency: 300
       cirrusSearchLinksUpdatePrioritized:
         enabled: true
+        k8s: true
         retry_limit: 0
         concurrency: 150
       cirrusSearchOtherIndex:
         enabled: true
+        k8s: true
         retry_limit: 0
         concurrency: 5
       processMediaModeration:
@@ -149,6 +152,7 @@ main_app:
         concurrency: 29
       wikibase-InjectRCRecords:
         enabled: true
+        k8s: true
         concurrency: 7
       parsoidCachePrewarm:
         enabled: true
