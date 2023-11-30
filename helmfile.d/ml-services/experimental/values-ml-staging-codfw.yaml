@@ -33,6 +33,8 @@ inference_services:
           value: "http://api-ro.discovery.wmnet"
         - name: REST_GATEWAY_ENDPOINT
           value: "http://rest-gateway.discovery.wmnet:4111"
+        - name: OMP_NUM_THREADS
+          value: "1"
       container:
         resources:
           limits:
