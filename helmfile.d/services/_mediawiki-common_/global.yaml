@@ -318,10 +318,19 @@ networkpolicy:
           - protocol: UDP
             port: 8420
       # redis_lock
+      # TODO: Remove rdb1009 once migration is complete. T326171
       # rdb1009 B8
       - cidr: 10.64.16.76/32
       # rdb1011 A1
       - cidr: 10.64.0.36/32
+      # rdb1012 D1
+      - cidr: 10.64.48.49/32
+      # rdb1013 B6
+      - cidr: 10.64.16.18/32
+      - cidr: 2620:0:861:102:10:64:16:18/128
+      # rdb1014 D3
+      - cidr: 10.64.48.42/32
+      - cidr: 2620:0:861:107:10:64:48:42/128
       # wiki-mail-eqiad
       - cidr: 208.80.154.91/32
         ports:
