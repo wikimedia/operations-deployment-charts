@@ -71,13 +71,15 @@ environments:
   ## deployment is to be limited to staging. Retained here to explain all the
   ## extra unreferenced values files.
 
-  # eqiad:
-  #   values:
-  #     - releases: [producer, consumer-search, consumer-cloudelastic]
-  #     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-  #   missingFileHandler: Warn
-  # codfw:
-  #   values:
-  #     - releases: [producer, consumer-search]
-  #     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-  #   missingFileHandler: Warn
+  eqiad:
+    values:
+      # Add consumer-search once we are ready for a wider rollout
+      - releases: [producer, consumer-cloudelastic]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      # Add consumer-search once we are ready for a wider rollout
+      - releases: [producer]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
