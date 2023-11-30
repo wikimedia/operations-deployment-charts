@@ -1,0 +1,163 @@
+
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: mcrouter
+  version: latest # we use latest everywhere in the defaults.
+  port: 4442 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: []
+  args: []
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 4442
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 4442
+  # add here any volumes to mount onto the pod. Example:
+  #volumes:
+  #- name: scratchdir
+  #  emptyDir: {}
+  # add here any mounted volumes to make accessible to the container. Example:
+  #volumeMounts:
+  #   - name: scratchdir # the name from your volume above
+  #     mountPath: /scratch/ # where it should live in your container
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 4442 # the number or name of the exposed port on the container
+    port: 4442 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+common_images:
+  mcrouter:
+    mcrouter: latest
+    exporter: latest
+cache:
+  mcrouter:
+    enabled: true
+    port: 4442
+    # This is the route prefix that will be added by default
+    # to all requests whose key doesn't begin with /
+    route_prefix: /default
+    cross_region_timeout: 250
+    cross_cluster_timeout: 100
+    num_proxies: 3
+    probe_timeout: 6000
+    timeouts_until_tko: 3
+    zone: foo
+    resources:
+      requests:
+        cpu: 250m
+        memory: 200M
+      limits:
+        cpu: 250m
+        memory: 200M
+    pools:
+      - name: foo-pool
+        servers:
+          - 192.168.1.1
+          - 192.168.1.2
+        failover:
+          - 192.168.1.54
+          - 192.168.1.53
+        zone: foo
+      - name: bar-pool
+        servers:
+          - 192.168.2.1
+          - 192.168.2.2
+        failover:
+          - 192.168.2.54
+          - 192.168.2.53
+    routes:
+      # Route 1: simple standalone
+      - route: /default
+        pool: foo-pool
+        failover_time: 0
+      # Route 2: "replica"
+      # Actually generates two routes,
+      # * /replica/foo that reads and writes to the foo pools
+      # * /replica/bar that reads from foo and writes to bar
+      # Applications can write to both using /replica/*/ as a
+      # prefix.
+      - route: /replica/foo
+        pool: foo-pool
+        failover_time: 10
+        replica:
+          route: /replica/bar
+          pool: bar-pool
+      # Route 3: "warmup"
+      # This route will try reading a key from the local pool, and
+      # if it doesn't find it, it will contact the bar pool and store
+      # the resulting key for the ttl time
+      - route: /multilayer
+        pool: bar-pool
+        failover_time: 10
+        warmup:
+          pool: foo-pool
+          ttl: 60
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+networkpolicy:
+  egress:
+    enabled: false
+mariadb: {}
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+# Cronjob definitions
+# Here you can define your cronjobs
+cronjobs: []
+# Example of a job:
+# - name: my-cron-hourly
+#   enabled: true
+#   command:
+#      - /bin/cowsay
+#      - "hello"
+#   schedule: "@hourly" (defaults to @daily)
+#   concurrency: Replace (defaults to "Forbid")
+#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
+#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
