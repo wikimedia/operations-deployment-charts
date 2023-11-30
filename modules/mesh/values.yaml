@@ -7,10 +7,7 @@ mesh:
   error_page: ~
   image_name: envoy
   image_version: latest
-  # Set certmanager to true to use auto-issued certs
-  # instead of cergen.
   certmanager:
-    enabled: true
     # Override the hostname used for certificates. By default .Release.Namespace will be used.
     # Together with mesh.certmanager.domains this generates a list of FQDNs used in the
     # certificates SAN (in for of {{ default_host }}.{{ domain }}).
@@ -31,10 +28,6 @@ mesh:
     # If disableDefaultHosts is true, these will be the only FQDNs in SAN.
     extraFQDNs:
       - some.extra.domain
-  # With certmanager.enabled: true, the cert: map is unused
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
   # http keepalive timeout for incoming requests
   idle_timeout: "4.5s"
   # Port to listen to

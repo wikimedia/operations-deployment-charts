@@ -1,3 +1,10 @@
+## configuration 1.6.0 / certificate 1.1.0 / deployment 1.3.0 / name 1.1.0
+- Remove cergen support from the modules
+- Enable cert-manager certificates by default
+  On upgrade you may drop the following keys from values.yaml files:
+  - .Values.mesh.certs
+  - .Values.mesh.certmanager.enabled
+
 ## configuration 1.5.0 / networkpolicy 1.2.0
 - Allow traffic splitting to a mesh listener.
   This should mostly be a noop unless split are defined in the listeners

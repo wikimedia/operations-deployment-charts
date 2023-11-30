@@ -8,19 +8,6 @@
 
 {{- define "mesh.configuration.configmap" }}
 {{- if .Values.mesh.enabled }}
-{{/* Only render the certs configmap if public_port is configured but certmanager is disabled. */}}
-{{- if and (.Values.mesh.public_port) (not (.Values.mesh.certmanager | default dict).enabled) }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  {{- include "base.meta.metadata" (dict "Root" . "Name" "tls-proxy-certs") | indent 2 }}
-data:
-  service.crt: |-
-{{ .Values.mesh.certs.cert | indent 4 }}
-  service.key: |-
-{{ .Values.mesh.certs.key | indent 4 }}
-{{ end -}}{{- /* end if .Values.mesh.public_port */ -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -41,7 +28,7 @@ config changes).
 {{- define "mesh.configuration.full" -}}
 envoy.yaml: |-
   {{- include "mesh.configuration.envoy" . | nindent 2 }}
-{{- if and (.Values.mesh.certmanager | default dict).enabled .Values.mesh.public_port }}
+{{- if .Values.mesh.public_port }}
 tls_certificate_sds_secret.yaml: |-
   {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 2 }}
 {{- end }}
@@ -243,7 +230,6 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
         common_tls_context:
-          {{- if (.Values.mesh.certmanager | default dict).enabled }}
           {{- /*
           Configure envoy to read certificates from static SDS config.
           This will enable an inotify watcher and hot-reloading on certificate changes.
@@ -254,11 +240,6 @@ static_resources:
               path_config_source:
                 path: /etc/envoy/tls_certificate_sds_secret.yaml
               resource_api_version: V3
-          {{- else }}
-          tls_certificates:
-            - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
-              private_key: {filename: /etc/envoy/ssl/service.key}
-          {{- end }}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
     typed_config:
