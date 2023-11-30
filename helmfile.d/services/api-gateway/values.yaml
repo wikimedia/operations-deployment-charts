@@ -437,11 +437,6 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
-    # TODO: Remove rdb1009 once the migration is complete
-    - cidr: 10.64.16.76/32 # rdb1009
-      ports:
-      - protocol: tcp
-        port: 6379
     - cidr: 2620:0:861:102:10:64:16:18/64 # rdb1013
       ports:
       - protocol: tcp

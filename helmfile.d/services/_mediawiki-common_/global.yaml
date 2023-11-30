@@ -318,9 +318,6 @@ networkpolicy:
           - protocol: UDP
             port: 8420
       # redis_lock
-      # TODO: Remove rdb1009 once migration is complete. T326171
-      # rdb1009 B8
-      - cidr: 10.64.16.76/32
       # rdb1011 A1
       - cidr: 10.64.0.36/32
       # rdb1012 D1
