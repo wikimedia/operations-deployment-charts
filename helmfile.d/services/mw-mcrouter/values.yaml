@@ -1,0 +1,14 @@
+cache:
+  mcrouter:
+    enabled: true
+    resources:
+      requests:
+        cpu: 4
+        memory: 2048Mi
+      limits:
+        cpu: 8
+        memory: 4096Mi
+
+networkpolicy:
+  egress:
+    enabled: true

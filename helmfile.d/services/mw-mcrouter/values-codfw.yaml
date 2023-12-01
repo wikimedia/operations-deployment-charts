@@ -1,0 +1,20 @@
+# mw site-specific configurations
+cache:
+  mcrouter:
+    route_prefix: codfw/mw
+    zone: codfw
+    routes:
+      - route: /eqiad/mw
+        pool: eqiad-servers
+        failover_time: 600
+      - route: /codfw/mw
+        pool: codfw-servers
+        failover_time: 600
+      - route: /codfw/mw-wan
+        pool: codfw-servers
+        failover_time: 600
+        replica:
+          route: /eqiad/mw-wan
+          pool: eqiad-servers
+        # No failover for wikifunction
+        failover_time: 0
