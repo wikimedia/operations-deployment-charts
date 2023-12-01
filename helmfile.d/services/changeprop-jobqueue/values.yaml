@@ -43,6 +43,7 @@ main_app:
         concurrency: 40
       ORESFetchScoreJob:
         enabled: true
+        k8s: true
         concurrency: 30
       # RecordLinks is normally low-volume, but could have big spikes
       # when maintenance scripts are run. Elevated concurrency
