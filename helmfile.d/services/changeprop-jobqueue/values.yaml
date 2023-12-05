@@ -90,6 +90,7 @@ main_app:
       refreshUserImpactJob:
         enabled: true
         concurrency: 10
+        k8s: true
       # For cirrus search jobs the retries are built into the job itself,
       # so disable the retries by change-prop. We need special rules for cirrus
       # jobs because they need special configuration.
@@ -98,6 +99,7 @@ main_app:
         disable_delayed_execution: true #T198462
         retry_limit: 0
         concurrency: 30
+        k8s: true
       cirrusSearchDeleteArchive:
         enabled: true
         retry_limit: 0
