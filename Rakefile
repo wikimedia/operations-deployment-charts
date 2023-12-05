@@ -198,14 +198,18 @@ task validate_envoy_config: %i[check_dep refresh_fixtures] do
 
   FileUtils.cp_r('.fixtures/ssl/', "#{dest}/")
 
-  # Some envoy options do require service-node and service-cluster to be set
-  # and we do so at runtimne in the procution images. Reproduce that here.
-  envoy_args = "--service-node validate --service-cluster validate --mode validate"
   if use_local_envoy
+    # Some envoy options do require service-node and service-cluster to be set
+    # and we do so in the entypoint of the procution images. Reproduce that here.
+    envoy_args = "--service-node validate --service-cluster validate --mode validate"
     cmd = "envoy #{envoy_args} -c #{dest}/envoy.yaml"
   else
+    envoy_image = "docker-registry.wikimedia.org/envoy:latest"
+    # SERVICE_NAME will be used as value for the --service-cluster argument by the entrypoint
+    envoy_envs = "-e SERVICE_NODE=validate -e SERVICE_NAME=validate"
+    envoy_args = "--mode validate"
     path = File.realpath dest
-    cmd = "docker run --pull always --rm -v #{path}:/etc/envoy docker-registry.wikimedia.org/envoy:latest envoy #{envoy_args} -c /etc/envoy/envoy.yaml"
+    cmd = "docker run --pull always --rm -v #{path}:/etc/envoy #{envoy_envs} #{envoy_image} #{envoy_args}"
   end
   res, out = _exec cmd
   if !res
