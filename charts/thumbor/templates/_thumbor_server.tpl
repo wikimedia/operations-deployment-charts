@@ -184,6 +184,7 @@ POOLCOUNTER_CONFIG_PER_ORIGINAL = {
     'timeout': 8
 }
 
+{{ if .Values.main_app.poolcounter.config.expensive }}
 # An absolute maximum of "workers" expensive thumbnails can be processed at the same time,
 # queueing up to "maxqueue" other expensive thumbnails
 POOLCOUNTER_CONFIG_EXPENSIVE = {
@@ -192,6 +193,7 @@ POOLCOUNTER_CONFIG_EXPENSIVE = {
     'timeout': {{ .Values.main_app.poolcounter.config.expensive.timeout }},
     'extensions': ['xcf', 'djvu', 'pdf', 'tiff', 'stl']
 }
+{{ end }}
 
 # Thumbnails that fail for a given xkey more than 4 times per hour aren't
 # worth re-attempting that often
