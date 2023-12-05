@@ -114,4 +114,6 @@ services:
       {{- if .Values.main_app.debug }}
       debug: true
       {{- end }}
+      http_client:
+        use_service_mesh: {{ .Values.main_app.use_service_mesh }}
 {{- end -}}
