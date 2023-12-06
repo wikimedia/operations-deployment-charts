@@ -47,6 +47,8 @@ production are not kept here.
 The `_scaffold/` directory is used by the `create_new_service.sh` script, it's
 best to leave it alone.
 
+Further documenation can be found on [Wikitech](https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts)
+
 Updating a Chart
 ----------------
 
