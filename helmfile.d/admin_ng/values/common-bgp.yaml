@@ -51,3 +51,64 @@ BGPPeers:
     ipv4: 10.64.136.1
     ipv6: 2620:0:861:10f::1
     nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-f3')
+  lsw1-a1-codfw:
+    ipv4: 10.192.4.1
+    ipv6: 2620:0:860:105::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a1')
+  lsw1-a2-codfw:
+    ipv4: 10.192.23.1
+    ipv6: 2620:0:860:113::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a2')
+  lsw1-a3-codfw:
+    ipv4: 10.192.5.1
+    ipv6: 2620:0:860:106::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a3')
+  lsw1-a4-codfw:
+    ipv4: 10.192.6.1
+    ipv6: 2620:0:860:107::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a4')
+  lsw1-a5-codfw:
+    ipv4: 10.192.7.1
+    ipv6: 2620:0:860:108::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a5')
+  lsw1-a6-codfw:
+    ipv4: 10.192.8.1
+    ipv6: 2620:0:860:109::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a6')
+  lsw1-a7-codfw:
+    ipv4: 10.192.9.1
+    ipv6: 2620:0:860:10a::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a7')
+  lsw1-a8-codfw:
+    ipv4: 10.192.10.1
+    ipv6: 2620:0:860:10b::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-a8')
+  # B1 is dedicated to WMCS
+  lsw1-b2-codfw:
+    ipv4: 10.192.11.1
+    ipv6: 2620:0:860:10c::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b2')
+  lsw1-b3-codfw:
+    ipv4: 10.192.12.1
+    ipv6: 2620:0:860:10d::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b3')
+  lsw1-b4-codfw:
+    ipv4: 10.192.13.1
+    ipv6: 2620:0:860:10e::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b4')
+  lsw1-b5-codfw:
+    ipv4: 10.192.14.1
+    ipv6: 2620:0:860:10f::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b5')
+  lsw1-b6-codfw:
+    ipv4: 10.192.15.1
+    ipv6: 2620:0:860:110::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b6')
+  lsw1-b7-codfw:
+    ipv4: 10.192.21.1
+    ipv6: 2620:0:860:111::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b7')
+  lsw1-b8-codfw:
+    ipv4: 10.192.22.1
+    ipv6: 2620:0:860:112::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-b8')
