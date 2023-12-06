@@ -238,6 +238,7 @@ main_app:
     # So a significantly higher concurrency is needed to account for that.
     low_traffic_jobs:
       enabled: true
+      k8s: true
       concurrency: 50
 
 monitoring:
