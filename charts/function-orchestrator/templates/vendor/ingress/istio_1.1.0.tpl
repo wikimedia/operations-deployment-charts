@@ -31,28 +31,18 @@ By default, this will be a list like:
 - {{ gatewayHosts.default }}.svc.codfw.wmnet
 - {{ gatewayHosts.default }}.svc.eqiad.wmnet
 
-And in case .Values.ingress.staging is true:
-- {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
-
-Or in case .Values.ingress.mlstaging is true:
-- {{ gatewayHosts.default }}.k8s-ml-staging.discovery.wmnet
-
 If disableDefaultHosts is true, the above is skipped and only the list of
 extraFQDNs is returned (if not empty).
 */}}
 {{- define "ingress.istio.gatewayHosts" -}}
 {{- if not .Values.ingress.gatewayHosts.disableDefaultHosts -}}
 {{- $host := .Values.ingress.gatewayHosts.default | default .Release.Namespace -}}
-{{- $domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" -}}
-{{ if $.Values.ingress.staging -}}
-- {{ $host }}.k8s-staging.discovery.wmnet
-{{ else if $.Values.ingress.mlstaging -}}
-- {{ $host }}.k8s-ml-staging.discovery.wmnet
-{{ else -}}
+{{- $fallback_domains := list "discovery.wmnet" "svc.codfw.wmnet" "svc.eqiad.wmnet" -}}
+{{- $certmanager_domains := (.Values.mesh.certmanager | default dict).domains -}}
+{{- $domains := .Values.ingress.gatewayHosts.domains | default $certmanager_domains | default $fallback_domains -}}
 {{- range $domains -}}
 - {{ $host }}.{{ . }}
 {{ end -}} {{/* end range */}}
-{{- end -}} {{/* end if $.Values.ingress.staging*/}}
 {{- end -}}
 {{ if .Values.ingress.gatewayHosts.extraFQDNs -}}
 {{ .Values.ingress.gatewayHosts.extraFQDNs | toYaml }}
@@ -192,38 +182,9 @@ spec:
       {{- /*
       The ingressgateway will verify that the upstreams certificate SAN matches one of(!)
       the subjectAltNames provided here.
-
-      Unfortunately out cergen certificates do not include {{ template "mesh.name.servicefqdn" . }}
-      right now. To not have to refresh them, trust {{ .Release.Namespace }}.discovery.wmnet
-      (that's what cergen certs should have in SAN in production) as well as
-      default-staging-certificate.wmnet (which is the generic cert we use in staging)
-      by default. Also trust gatewaysHosts and routeHosts provided by the user.
-      This might lead to duplicate entries in the subjectAltNames list, but that is not a problem
-      for istio/envoy.
-      Note: We use the same approach for ML staging to keep the two clusters as close
-      as possible.
-
-      TODO: When cergen certs have been replaced with cert-manager ones, it should be safe to
-      only trust {{ template "mesh.name.servicefqdn" . }}.
       */}}
       subjectAltNames:
-      {{- if .Values.ingress.staging }}
-      # Default staging certificates (cergen)
-      - staging.svc.eqiad.wmnet
-      - staging.svc.codfw.wmnet
-      {{- else if .Values.ingress.mlstaging }}
-      # Default ML staging certificates (cergen)
-      - ml-staging.svc.eqiad.wmnet
-      - ml-staging.svc.codfw.wmnet
-      {{- else }}
-      # Discovery certificate (cergen)
-      - {{ .Release.Namespace }}.discovery.wmnet
-      {{- end }}
-      # Default tls-service certificates (tls.servicefqdn)
+      # Default tls-service certificates
       - {{ template "mesh.name.fqdn" . }}
-      # Gateway hosts
-      {{- include "ingress.istio.gatewayHosts" . | nindent 6 }}
-      # Route hosts (in case existing Gateway is used)
-      {{- include "ingress.istio.routeHosts" . | nindent 6 }}
 {{- end -}}{{/* Values.ingress.enabled */}}
 {{- end -}}{{/* define */}}
