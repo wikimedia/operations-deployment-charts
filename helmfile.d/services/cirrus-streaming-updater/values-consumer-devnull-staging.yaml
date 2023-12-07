@@ -4,12 +4,6 @@ app:
       pipeline.name: cirrus-streaming-updater-consumer-search-staging
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
-      # We are using the null sink, so we want to define the cluster groups but dont
-      # expect any elasticsearch sink to be created.
-      use-null-sink: true
-      elasticsearch-urls.chi: https://dev.null/
-      elasticsearch-urls.omega: https://dev.null/
-      elasticsearch-urls.psi: https://dev.null/
       # The normal .*= route ends up catching the elasticsearch urls above.
       # Define a relforge route that doesn't change anything to avoid that.
       http-routes.99-mwapi: .*=http://localhost:6500
