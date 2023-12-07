@@ -507,3 +507,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4972
+    - cidr: 10.2.1.84 # k8s-ingress-ml-serve.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4972
+    - cidr: 10.2.2.84 # k8s-ingress-ml-serve.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4972
