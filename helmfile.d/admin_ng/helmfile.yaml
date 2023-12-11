@@ -12,6 +12,7 @@ environments:
       # Create default service certificates
       - namespace_certificates: true
       - install_flink_operator: true
+      - install_sidecar_job_controller: true
   codfw:
     values:
       - "values/common.yaml"
@@ -25,6 +26,7 @@ environments:
       # Create default service certificates
       - namespace_certificates: true
       - install_flink_operator: true
+      - install_sidecar_job_controller: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -38,6 +40,7 @@ environments:
       # Create default service certificates
       - namespace_certificates: true
       - install_flink_operator: true
+      - install_sidecar_job_controller: true
   staging-codfw:
     values:
       - "values/common.yaml"
@@ -51,6 +54,7 @@ environments:
       # Create default service certificates
       - namespace_certificates: true
       - install_flink_operator: true
+      - install_sidecar_job_controller: true
   # Machine Learning clusters
   ml-serve-eqiad:
     values:

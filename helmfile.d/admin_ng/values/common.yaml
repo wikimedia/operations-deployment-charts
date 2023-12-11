@@ -50,6 +50,11 @@
 #     Default: false when the systemNamespace flag or the isBuiltinNamespace one
 #     is true, and true in all the other cases.
 #     Whether or not to deploy the default TLS certificate to the istio-system namespace.
+#   enableJobSidecarController:
+#     Default: false
+#     Whether or not to enable the sidecar controller (which terminates Jobs when the
+#     application container is completed, leaving only sidecar containers).
+#     No effect yet, work in progress - T348284
 namespaces: {}
 GlobalNetworkPolicies: {}
 

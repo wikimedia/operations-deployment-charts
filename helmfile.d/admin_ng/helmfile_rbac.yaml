@@ -94,6 +94,20 @@ releases:
               resources: ["flinkdeployments"]
               verbs: ["*"]
             {{- end }}
+        {{- if hasKey .Environment.Values "install_sidecar_job_controller" }}
+        ## Used by k8s-sidecar-controller
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: sidecar-job-controller
+          rules:
+            - apiGroups: [""]
+              resources: ["pods"]
+              verbs: ["get", "list", "watch"]
+            - apiGroups: [""]
+              resources: ["pods/exec"]
+              verbs: ["create", "get"]
+        {{- end }}
       {{- range .Environment.Values.deployExtraClusterRoles }}
       {{- if eq . "flink" }}
         ## Used by deploy users
