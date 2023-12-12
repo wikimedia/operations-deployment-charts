@@ -20,6 +20,7 @@ spec:
   ingress:
     - ports:
       {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
+      {{- include "mesh.networkpolicy.ingress" . | nindent 6 }}
 {{- if .Values.monitoring.enabled }}
       # Prometheus port. Must match value of metrics.reporter.prometheus.port in flink-conf.yaml.
       - port: 9999
