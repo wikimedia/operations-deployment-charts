@@ -8,7 +8,7 @@ app:
   limits:
     cpu: 1
     memory: 400Mi
-  version: 2023-11-15-130018-production
+  version: 2023-12-12-094921-production
   image: repos/mediawiki/services/ipoid
 monitoring:
   enabled: false
@@ -48,7 +48,7 @@ cronjobs:
         cpu: 1
         memory: 8Gi
   initial-import:
-    enabled: false
+    enabled: true
     command:
       - ./main.sh
       - "--init"
