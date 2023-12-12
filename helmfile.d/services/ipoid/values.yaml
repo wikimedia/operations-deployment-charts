@@ -30,6 +30,7 @@ config:
   private: {}
 cronjobs:
   daily-updates:
+    # n.b. toggle this flag in values-eqiad.yaml, not here.
     enabled: false
     command:
       - ./main.sh
@@ -48,7 +49,8 @@ cronjobs:
         cpu: 1
         memory: 8Gi
   initial-import:
-    enabled: true
+    # n.b. toggle this flag in values-eqiad.yaml, not here.
+    enabled: false
     command:
       - ./main.sh
       - "--init"
