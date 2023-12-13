@@ -2,7 +2,7 @@
 # Please put overrides for production in other values files.
 
 app:
-  version: v20231213103843-c54aafc
+  version: v20231213152659-3d4e58c
   flinkVersion: v1_17
 
   job:
@@ -26,14 +26,6 @@ app:
     replicas: 1
     resource:
       memory: 1000m
-
-  taskManager:
-    # NOTE: taskManager.replicas takes precedence over job.parellism.
-    # To increase default job parellism, we can increase this
-    # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
-    replicas: 1
-    resource:
-      memory: 2000m
 
   env:
     # Disable use of jemalloc, we've mostly seen it just cause more memory use

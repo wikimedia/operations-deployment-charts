@@ -9,3 +9,12 @@ app:
       article-topic-stream: mediawiki.page_outlink_topic_prediction_change.v1
       draft-topic-stream: mediawiki.revision_score_drafttopic
       recommendation-create-stream: mediawiki.revision-recommendation-create
+
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # To increase default job parellism, we can increase this
+    # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
+    replicas: 1
+    resource:
+      memory: 2000m
+
