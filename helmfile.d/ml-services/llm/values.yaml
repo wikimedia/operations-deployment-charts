@@ -48,43 +48,39 @@ inference_services:
             memory: 2Gi
           requests:
             memory: 2Gi
-  nllb-200:
+  nllb-200-cpu:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-11-21-111453-publish"
+      image_version: "2023-12-12-171246-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "nllb-200-distilled-600M"
+          value: "nllb-200"
         - name: LLM_CLASS
-          value: "nllb.NLLB"
+          value: "llm.NLLBCTranslate"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M/"
+          value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M-ctranslate2-int8/"
       container:
         resources:
           limits:
-            cpu: "4"
-            memory: 6Gi
+            memory: 2Gi
           requests:
-            cpu: "4"
-            memory: 6Gi
+            memory: 2Gi
   nllb-200-gpu:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2023-11-21-111453-publish"
+      image_version: "2023-12-12-171246-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "nllb-200-distilled-600M"
+          value: "nllb-200"
         - name: LLM_CLASS
-          value: "nllb.NLLB"
+          value: "llm.NLLB"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M/"
       container:
         resources:
           limits:
-            cpu: "4"
             memory: 6Gi
             amd.com/gpu: 1
           requests:
-            cpu: "4"
             memory: 6Gi
             amd.com/gpu: 1
