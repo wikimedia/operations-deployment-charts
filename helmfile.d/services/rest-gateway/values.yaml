@@ -205,14 +205,13 @@ main_app:
 
     - name: device-analytics
       timeout: 15s
-      domain: "wikimedia.org"
       urls:
         - name: api-spec
           in: '/wikimedia.org/v1/metrics/unique-devices/api-spec.json'
           out: '/device-analytics/api-spec.json'
         - name: unique-devices
           in: '/wikimedia.org/v1/metrics/unique-devices/(.+)'
-          out: '/metrics/unique-devices/\2'
+          out: '/metrics/unique-devices/\1'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
