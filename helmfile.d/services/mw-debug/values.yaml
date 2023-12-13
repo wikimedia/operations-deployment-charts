@@ -158,9 +158,11 @@ php:
   workers: 8
   servergroup: kube-mw-debug
   fcgi_mode: FCGI_UNIX
-  exporter_version: 0.0.3
+  exporter:
+    version: 0.0.3
   httpd:
-    exporter_version: 0.0.3
+    exporter:
+      version: 0.0.3
     requests:
       cpu: 200m
       memory: 200Mi
