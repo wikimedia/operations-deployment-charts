@@ -189,6 +189,9 @@ limitranges:
     # Allow containers such as spark to request more memory than the common limit (3GB)
     max:
       memory: "8Gi"
+  pod:
+    max:
+      memory: "10Gi"
 
 
 # Override from default config (see ./common.yaml) to allow deployments of
