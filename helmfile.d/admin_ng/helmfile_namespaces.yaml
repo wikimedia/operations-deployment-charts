@@ -200,10 +200,16 @@ releases:
             subjects:
               - kind: ServiceAccount
                 name: sidecar-job-controller
-                namespace: sidecar-controller
+                namespace: {{ $namespace }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
               name: sidecar-job-controller
+          - |
+            apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: sidecar-job-controller
+              namespace: {{ $namespace }}
         {{- end }}
       {{- end }}{{- /* end range namespaces */}}
