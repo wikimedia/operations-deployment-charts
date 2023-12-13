@@ -1,0 +1,22 @@
+config:
+  hdfs:
+    dfs.nameservices: analytics-test-hadoop
+    dfs.internal.nameservices: analytics-test-hadoop
+    dfs.client.failover.proxy.provider.analytics-test-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+    dfs.ha.namenodes.analytics-test-hadoop: an-test-master1001-eqiad-wmnet,an-test-master1002-eqiad-wmnet
+    dfs.namenode.servicerpc-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8040
+    dfs.namenode.servicerpc-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8040
+    dfs.namenode.rpc-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8020
+    dfs.namenode.rpc-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8020
+    dfs.namenode.http-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:50070
+    dfs.namenode.http-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:50070
+
+  spark:
+    spark.history.kerberos.principal: spark/spark-history-test.svc.eqiad.wmnet
+
+  hadoop:
+    fs.defaultFS: hdfs://analytics-test-hadoop/
+
+ingress:
+  gatewayHosts:
+    default: "spark-history-test"

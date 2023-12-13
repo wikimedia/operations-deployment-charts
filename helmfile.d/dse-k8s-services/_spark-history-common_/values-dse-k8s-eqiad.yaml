@@ -1,0 +1,56 @@
+# YAML anchors, to avoid repetitions
+_haddop_egress_ports: &hadoop_egress_ports
+  ports:
+  - port: 50010  # Datanode data transfer port
+    protocol: tcp
+  - port: 50020 # Datanode metadata operations
+    protocol: tcp
+  - port: 8020  # HDFS NameNode communications
+    protocol: tcp
+
+_kerb_egress_ports: &kerberos_egress_ports
+  ports:
+  - port: 88
+    protocol: tcp
+  - port: 88
+    protocol: udp
+
+networkpolicy:
+  egress:
+    dst_nets:
+    # It also needs to reach out to the kerberos servers, which happens on port 88
+    # using both UDP and TCP, cf https://uit.stanford.edu/service/kerberos/firewalls
+    - cidr: 10.64.0.112/32 # krb1001
+      <<: *kerberos_egress_ports
+    - cidr: 2620:0:861:101:10:64:0:112/128 # krb1001
+      <<: *kerberos_egress_ports
+    - cidr: 10.192.48.190/32 # krb2002
+      <<: *kerberos_egress_ports
+    - cidr: 2620:0:860:104:10:192:48:190/128 # krb2002
+      <<: *kerberos_egress_ports
+
+    # The spark history server needs to be able to talk to the hadoop namenodes RPC interface,
+    # as well as the hadoop workers API
+    # Because we have about 90 hadoop worker hosts, it would take a lot of maintenance to list
+    # and maintain each IP in there. We thought it would be easier to maintain to allow egress
+    # on the analytics subnets.
+    - cidr: "10.64.138.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.139.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.140.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.142.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.143.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.144.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.21.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.36.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.5.0/24"
+      <<: *hadoop_egress_ports
+    - cidr: "10.64.53.0/24"
+      <<: *hadoop_egress_ports

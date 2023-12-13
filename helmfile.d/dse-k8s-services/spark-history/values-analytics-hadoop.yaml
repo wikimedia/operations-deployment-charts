@@ -1,0 +1,22 @@
+config:
+  hdfs:
+    dfs.nameservices: analytics-hadoop
+    dfs.internal.nameservices: analytics-hadoop
+    dfs.client.failover.proxy.provider.analytics-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+    dfs.ha.namenodes.analytics-hadoop: an-master1001-eqiad-wmnet,an-master1002-eqiad-wmnet
+    dfs.namenode.servicerpc-address.analytics-hadoop.an-master1001-eqiad-wmnet: an-master1001.eqiad.wmnet:8040
+    dfs.namenode.servicerpc-address.analytics-hadoop.an-master1002-eqiad-wmnet: an-master1002.eqiad.wmnet:8040
+    dfs.namenode.rpc-address.analytics-hadoop.an-master1001-eqiad-wmnet: an-master1001.eqiad.wmnet:8020
+    dfs.namenode.rpc-address.analytics-hadoop.an-master1002-eqiad-wmnet: an-master1002.eqiad.wmnet:8020
+    dfs.namenode.http-address.analytics-hadoop.an-master1001-eqiad-wmnet: an-master1001.eqiad.wmnet:50070
+    dfs.namenode.http-address.analytics-hadoop.an-master1002-eqiad-wmnet: an-master1002.eqiad.wmnet:50070
+
+  spark:
+    spark.history.kerberos.principal: spark/spark-history.svc.eqiad.wmnet
+
+  hadoop:
+    fs.defaultFS: hdfs://analytics-hadoop/
+
+ingress:
+  gatewayHosts:
+    default: "spark-history"
