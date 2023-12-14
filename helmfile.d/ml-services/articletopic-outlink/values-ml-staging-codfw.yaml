@@ -3,6 +3,8 @@ monitoring:
 
 inference:
   predictor:
+    image: "machinelearning-liftwing-inference-services-outlink"
+    version: "2023-12-13-161550-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -12,6 +14,9 @@ inference:
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
         value: "mediawiki.page_outlink_topic_prediction_change.v1"
+  transformer:
+    image: "machinelearning-liftwing-inference-services-outlink-transformer"
+    version: "2023-12-14-124100-publish"
 
 inference_services:
   outlink-topic-model:
