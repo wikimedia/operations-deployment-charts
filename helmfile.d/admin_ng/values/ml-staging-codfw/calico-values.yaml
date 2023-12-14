@@ -7,3 +7,9 @@ IPPools:
     cidr: "10.194.61.0/24"
   ipv6:
     cidr: "2620:0:860:302::/64"
+# It's recommended to run a minimum of 3 typha replicas as long as the number of nodes is >3.
+# TODO(klausman): While staging currently (2023-12) has only two worker nodes,
+# it will soon be expanded. Uncomment the replicaCount statement below when the
+# addtional nodes have been added to the cluster.
+#typha:
+#  replicaCount: 3
