@@ -62,8 +62,10 @@ inference_services:
       container:
         resources:
           limits:
+            cpu: "4"
             memory: 2Gi
           requests:
+            cpu: "4"
             memory: 2Gi
   nllb-200-gpu:
     predictor:
@@ -79,8 +81,10 @@ inference_services:
       container:
         resources:
           limits:
+            cpu: "4"
             memory: 6Gi
             amd.com/gpu: 1
           requests:
+            cpu: "4"
             memory: 6Gi
             amd.com/gpu: 1
