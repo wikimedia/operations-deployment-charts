@@ -20,12 +20,19 @@ logging:
       named_levels: true
 
 {{- if .Values.monitoring.enabled }}
-# Statsd metrics reporter
 metrics:
+{{- if .Values.monitoring.prometheus }}
+  # Use Native Prometheus metrics from Service Runner
+  - name: recommendation-api
+    port: 9102
+    type: prometheus
+{{- else }}
+  # Statsd metrics reporter
   name: recommendation-api
   host: localhost
   port: 9125
   type: statsd
+{{- end }}
 {{- end }}
 
 services:

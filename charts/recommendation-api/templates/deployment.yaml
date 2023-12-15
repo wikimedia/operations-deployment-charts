@@ -22,7 +22,7 @@ spec:
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{ if .Values.monitoring.enabled -}}
+        {{ if and .Values.monitoring.enabled (eq .Values.monitoring.prometheus false) }}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
         prometheus.io/port: "9102"
@@ -88,7 +88,7 @@ spec:
 {{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
 {{- end }}
-{{- if .Values.monitoring.enabled }}
+{{- if and (.Values.monitoring.enabled) (eq .Values.monitoring.prometheus false) }}
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}

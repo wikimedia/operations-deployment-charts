@@ -1,4 +1,4 @@
-{{- if .Values.monitoring.enabled }}
+{{- if and .Values.monitoring.enabled (eq .Values.monitoring.prometheus false) }}
 ---
 apiVersion: v1
 kind: ConfigMap
