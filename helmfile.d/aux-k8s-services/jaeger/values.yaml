@@ -38,6 +38,32 @@ query:
     # jaeger-query is listening on 16686 by default so we can as well use that as
     # service port to make it less confusing.
     port: 16686
+  oAuthSidecar:
+    enabled: true
+    image: docker-registry.discovery.wmnet/oauth2-proxy
+    extraEnv:
+      - name: OAUTH2_PROXY_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: oauth2-proxy
+            key: client-secret-key
+      - name: OAUTH2_PROXY_COOKIE_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: oauth2-proxy
+            key: cookie-secret-key
+    config: |-
+      provider = "oidc"
+      https_address = ":4180"
+      upstreams = ["http://localhost:16686"]
+      client_id = "jaeger-ui"
+      redirect_url = "https://trace.wikimedia.org/oauth2/callback"
+      cookie_domains = "trace.wikimedia.org"
+      oidc_issuer_url = "https://idp.wikimedia.org/oidc"
+      cookie_secure = "true"
+      email_domains = "wikimedia.org"
+      skip_provider_button = "true"
+      code_challenge_method = "plain"
   networkPolicy:
     enabled: true
     ingressRules:
