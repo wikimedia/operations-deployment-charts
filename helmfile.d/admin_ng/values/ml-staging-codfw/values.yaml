@@ -54,3 +54,81 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
         - 8081
+
+net_istio:
+  mesh:
+    service_entries:
+    - name: mediawiki-api-ro
+      spec:
+        hosts:
+        - api-ro.discovery.wmnet
+        ports:
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 80
+          protocol: HTTP
+          targetPort: 443
+        - name: https-port
+          number: 443
+          protocol: HTTPS
+        resolution: DNS
+    # This is a test for T353622
+    # The goal is to enable a more "transparent"
+    # proxy mesh config for the isvc pods.
+    # The domains below, for the moment, will need
+    # to be kept in sync with the correspondent Virtual Service
+    # rule. Once/if this test will reach production, we'll be able
+    # to have only one list (replicated everywhere with Yaml anchors
+    # in ml-serve.yaml).
+    # This list is needed to instruct the Istio sidecar that
+    # HTTP connections related to these domains on port 80 shouldn't
+    # be forwarded to their real upstreams, but handled via
+    # the virtual service config.
+    - name: mediawiki-api-proxied-domains
+      spec:
+        hosts:
+        - '*.wikipedia.org'
+        - 'wikipedia.org'
+        - '*.wiktionary.org'
+        - 'wiktionary.org'
+        - '*.wikidata.org'
+        - 'wikidata.org'
+        - '*.wikiquote.org'
+        - 'wikiquote.org'
+        - '*.wikibooks.org'
+        - 'wikibooks.org'
+        - '*.wikisource.org'
+        - 'wikisource.org'
+        ports:
+        - name: http-port
+          number: 80
+          protocol: HTTP
+        resolution: NONE
+    - name: eventgate-main-se
+      spec:
+        hosts:
+        - eventgate-main.discovery.wmnet
+        ports:
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 4480
+          protocol: HTTP
+          targetPort: 4492
+        - name: https-port
+          number: 4492
+          protocol: HTTPS
+        resolution: DNS
+    - name: rest-gateway
+      spec:
+        hosts:
+        - rest-gateway.discovery.wmnet
+        ports:
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 4111
+          protocol: HTTP
+          targetPort: 4113
+        - name: https-port
+          number: 4113
+          protocol: HTTPS
+        resolution: DNS
