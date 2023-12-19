@@ -13,6 +13,8 @@ config:
 
   spark:
     spark.history.kerberos.principal: spark/spark-history.svc.eqiad.wmnet
+    spark.ui.proxyRedirectUri: https://yarn.wikimedia.org/
+    spark.ui.proxyBase: /spark-history
 
   hadoop:
     fs.defaultFS: hdfs://analytics-hadoop/
