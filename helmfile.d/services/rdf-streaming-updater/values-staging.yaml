@@ -9,6 +9,7 @@ app:
     replicas: 1
     resource:
       memory: 1600m
+      cpu: 0.5  # TODO(kamila) remove me once staging isn't starved for CPU
   taskManager:
     replicas: 1
     resource:

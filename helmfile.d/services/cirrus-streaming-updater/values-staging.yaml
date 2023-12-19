@@ -12,6 +12,11 @@ app:
       update-topic: eqiad.cirrussearch.update_pipeline.update.rc0
       wikiids: testwiki
 
+  # TODO(kamila) remove me once staging isn't starved for CPU
+  jobManager:
+    resource:
+      cpu: 0.5
+
 flink:
   object_store:
     swift_bucket: cirrus-streaming-updater.wikikube-staging

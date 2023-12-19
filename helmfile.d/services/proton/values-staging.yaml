@@ -1,2 +1,7 @@
 resources:
   replicas: 1
+
+# TODO(kamila) remove me once staging isn't starved for CPU
+main_app:
+  requests:
+    cpu: 1
