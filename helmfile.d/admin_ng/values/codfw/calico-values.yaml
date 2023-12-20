@@ -8,6 +8,14 @@ IPPools:
   ipv6:
     cidr: "2620:0:860:cabe::/64"
 
+calicoNode:
+  resources:
+    requests:
+      cpu: 350m
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+
 typha:
   replicaCount: 3
   resources:
