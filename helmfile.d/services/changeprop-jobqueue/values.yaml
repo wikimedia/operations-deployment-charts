@@ -176,10 +176,14 @@ main_app:
         # k8s: false - high traffic job
         enabled: true
         concurrency: 150
-      # T352515 - use metal jobrunners until handlers use shellbox
+      # BEGIN T352515 - use metal jobrunners until handlers use shellbox
       AssembleUploadChunks:
         enabled: true
         concurrency: 5
+      PublishStashedFile:
+        enabled: true
+        concurrency: 5
+      # END T352515
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
