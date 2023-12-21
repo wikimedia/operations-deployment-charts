@@ -2,7 +2,7 @@ app:
   config_files:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-consumer-devnull-staging
-      kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
+      kafka-source-config.group.id: cirrus-streaming-updater-consumer-devnull-staging
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
       # The normal .*= route ends up catching the elasticsearch urls above.
       # Define a relforge route that doesn't change anything to avoid that.
