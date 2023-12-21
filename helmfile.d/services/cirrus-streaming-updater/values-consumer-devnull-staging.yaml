@@ -7,6 +7,10 @@ app:
       # The normal .*= route ends up catching the elasticsearch urls above.
       # Define a relforge route that doesn't change anything to avoid that.
       http-routes.99-mwapi: .*=http://localhost:6500
+      # Suspect this is not only retries, but also events that skip fetch. Provide
+      # enough capacity that the async operator, as reported by pending_requests
+      # guage, stays fully occupied while backfilling.
+      fetch-retry-queue-capacity: 100
       wikiids: testwiki;frwiki;itwiki;commonswiki;wikidatawiki
 
 discovery:
