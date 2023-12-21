@@ -1,0 +1,57 @@
+{{/*
+  This template defines a Service and an Endpoints resource per
+  external datastore defined in the per-site general values files.
+
+  These services can then be referenced by Calico NetworkPolicy objects,
+  to enable egress to all the underlying IP/Ports. If an IP is added or removed
+  from the cluster endpoints, the egress rules will be updated for everyone at the
+  same time, without having to redeploy every single application.
+*/}}
+{{- $services_data := get $.Values "external_services_definitions" }}
+{{- if $services_data }}
+{{- range $service_name, $service_data := $services_data }}
+{{- $service_meta := get $service_data "_meta"}}
+{{- $service_instances := get $service_data "instances"}}
+{{- range $instance_name, $instance_ips := $service_instances }}
+{{- if $instance_ips }}
+{{- $instance_name := replace "_" "-" $instance_name }}
+{{- $service_ports := get $service_meta "ports" }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-{{ $instance_name }}
+  namespace: external-services
+  {{- include "base.meta.labels" $ | indent 2 }}
+spec:
+  clusterIP: "None" {{/* headless service */}}
+  selector: {} {{/* this makes the service not select any pods as endpoints */}}
+  ports:
+  {{- range $service_port := $service_ports }}
+    - name: {{ $service_name }}-{{ get $service_port "name" }}
+      protocol: {{ get $service_port "protocol" | default "TCP" | upper }}
+      port: {{ get $service_port "port" }}
+      targetPort: {{ get $service_port "port" }}
+  {{- end }}
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-{{ $instance_name }}
+  namespace: external-services
+  {{- include "base.meta.labels" $ | indent 2 }}
+subsets:
+  - addresses:
+    {{- range $cluster_ip := $instance_ips }}
+    - ip: {{ splitList "/" $cluster_ip | first }} {{/* Remove CIDR network suffix, if any, as Endpoints work with IP */}}
+    {{- end }}
+    ports:
+    {{- range $service_port := $service_ports }}
+    - port: {{ get $service_port "port" }}
+      name: {{ $service_name }}-{{ get $service_port "name" }}
+      protocol: {{ get $service_port "protocol" | default "TCP" | upper }}
+  {{- end }}
+---
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
