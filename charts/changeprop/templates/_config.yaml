@@ -122,6 +122,9 @@ spec: &spec
                 - 'User:MJ180MJ180/sandbox'
               test.wikipedia.org:
                 - 'T274359'
+              commons.wikimedia.org:
+                # T353876
+                - '/File:Brezina_-_Brunelli/'
             templates:
 {{ if .Values.main_app.changeprop.features.summary_definition_rerender }}
               summary_definition_rerender: &summary_definition_rerender_spec
