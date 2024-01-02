@@ -81,8 +81,6 @@ config:
     spark.history.kerberos.keytab: /etc/spark/kerberos/keytabs/spark-history.keytab
 
   # The HDFS configuration that will be rendered in the hdfs-site.xml config file
-  # NOTE: while the PR is a WIP, feel free to mention anything that shouldn't be here.
-  # I have taken the hdfs-site.xml file from stat1004 and turned its format into this.
   hdfs:
     dfs.data.transfer.protection: privacy
     dfs.encrypt.data.transfer: true
