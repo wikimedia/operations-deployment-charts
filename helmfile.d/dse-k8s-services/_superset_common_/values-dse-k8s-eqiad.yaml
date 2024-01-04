@@ -1,0 +1,127 @@
+common_images:
+  memcached:
+    version: 1.6.6-1-20240128
+  kerberos:
+    version: 45377f59c5bdf8bae1b967c49ee29a144c5cba44-production
+
+
+_kerb_egress_ports: &kerberos_egress_ports
+  ports:
+  - port: 88
+    protocol: tcp
+  - port: 88
+    protocol: udp
+
+_dbstore_egress_ports: &dbstore_egress_ports
+  ports:
+  - port: 3320
+    protocol: tcp
+  - port: 3350
+    protocol: tcp
+
+_mariadb_egress_ports: &mariadb_egress_ports
+  ports:
+  - port: 3306
+    protocol: tcp
+
+_an_coord_presto_egress_ports: &an_coord_presto_egress_ports
+  ports:
+  - port: 8281
+    protocol: tcp
+
+_druid_egress_ports: &druid_egress_ports
+  ports:
+  - port: 8082
+    protocol: tcp
+
+networkpolicy:
+  egress:
+    dst_nets:
+    # It also needs to reach out to the kerberos servers, which happens on port 88
+    # using both UDP and TCP, cf https://uit.stanford.edu/service/kerberos/firewalls
+    - cidr: 10.64.0.112/32                   # krb1001
+      <<: *kerberos_egress_ports
+    - cidr: 2620:0:861:101:10:64:0:112/128   # krb1001
+      <<: *kerberos_egress_ports
+    - cidr: 10.192.48.190/32                 # krb2002
+      <<: *kerberos_egress_ports
+    - cidr: 2620:0:860:104:10:192:48:190/128 # krb2002
+      <<: *kerberos_egress_ports
+
+    # dbstore1009.eqiad.wmnet / mariadb / wikishared
+    - cidr: 10.64.135.22/32
+      <<: *dbstore_egress_ports
+    - cidr: 2620:0:861:10e:10:64:135:22/128
+      <<: *dbstore_egress_ports
+
+    # an-mariadb100[1-2].eqiad.wmnet / mariadb / superset
+    - cidr: 10.64.138.8/32                  # an-mariadb1001
+      <<: *mariadb_egress_ports
+    - cidr: 2620:0:861:100:10:64:138:8/128  # an-mariadb1001
+      <<: *mariadb_egress_ports
+    - cidr: 10.64.142.7/32                  # an-mariadb1002
+      <<: *mariadb_egress_ports
+    - cidr: 2620:0:861:114:10:64:142:7/128  # an-mariadb1002
+      <<: *mariadb_egress_ports
+
+    # an-coord100[1, 3-4].eqiad.wmnet / presto_hive_analytics
+    - cidr: 10.64.21.104/32                 # an-coord1001
+      <<: *an_coord_presto_egress_ports
+    - cidr: 2620:0:861:105:10:64:21:104/128 # an-coord1001
+      <<: *an_coord_presto_egress_ports
+    - cidr: 10.64.138.7/32                  # an-coord1003
+      <<: *an_coord_presto_egress_ports
+    - cidr: 2620:0:861:100:10:64:138:7/128  # an-coord1003.
+      <<: *an_coord_presto_egress_ports
+    - cidr: 10.64.142.6/32                  # an-coord1004
+      <<: *an_coord_presto_egress_ports
+    - cidr: 2620:0:861:114:10:64:142:6/128  # an-coord1004
+      <<: *an_coord_presto_egress_ports
+
+    # druid[1007-1011].eqiad.wmnet / druid
+    - cidr: 10.64.16.171/32                  # druid1007
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:102:10:64:16:171/128  # druid1007
+      <<: *druid_egress_ports
+    - cidr: 10.64.48.227/32                  # druid1008
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:107:10:64:48:227/128  # druid1008
+      <<: *druid_egress_ports
+    - cidr: 10.64.131.9/32                   # druid1009
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:10a:10:64:131:9/128   # druid1007
+      <<: *druid_egress_ports
+    - cidr: 10.64.132.12/32                  # druid1010
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:10b:10:64:132:12/128  # druid1010
+      <<: *druid_egress_ports
+    - cidr: 10.64.135.9/32                   # druid1011
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:10e:10:64:135:9/128   # druid1010
+      <<: *druid_egress_ports
+
+    # an-druid100[1-5].eqiad.wmnet / analytics druid
+    - cidr: 10.64.5.36/32                    # an-druid1001
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:104:10:64:5:36/128    # an-druid1001
+      <<: *druid_egress_ports
+    - cidr: 10.64.36.101/32                  # an-druid1002
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:106:10:64:36:101/128  # an-druid1002
+      <<: *druid_egress_ports
+    - cidr: 10.64.5.17/32                    # an-druid1003
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:104:10:64:5:17/128    # an-druid1003
+      <<: *druid_egress_ports
+    - cidr: 10.64.21.11/32                   # an-druid1004
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:105:10:64:21:11/128   # an-druid1004
+      <<: *druid_egress_ports
+    - cidr: 10.64.53.13/32                   # an-druid1005
+      <<: *druid_egress_ports
+    - cidr: 2620:0:861:108:10:64:53:13/128   # an-druid1005
+      <<: *druid_egress_ports
+
+    # staging-db-analytics / mariadb
+    - cidr: 10.64.135.22/32
+      <<: *dbstore_egress_ports
