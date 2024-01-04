@@ -1,0 +1,136 @@
+---
+{{/*
+  This configmap is used to define the kerberos client configuration.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: superset-kerberos-client-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  krb5.conf: |
+    [libdefaults]
+      default_realm = WIKIMEDIA
+      kdc_timesync = 1
+      ccache_type = 4
+      forwardable = true
+      proxiable = true
+      ticket_lifetime = 2d
+      renew_lifetime = 14d
+      dns_canonicalize_hostname = true
+      rdns = false
+
+    [realms]
+      WIKIMEDIA = {
+        kdc = krb1001.eqiad.wmnet
+        kdc = krb1002.codfw.wmnet
+        admin_server = krb1001.eqiad.wmnet
+      }
+    [domain_realm]
+      .wikimedia = WIKIMEDIA
+      wikimedia = WIKIMEDIA
+---
+{{/*
+  This configmap is used to define the gunicorn and superset configuration
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: superset-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  gunicorn_config.py: |
+    bind = '0.0.0.0:{{ $.Values.app.port }}'
+    {{- range $k, $v := .Values.config.gunicorn }}
+    {{ $k }} = {{ template "toPython" (dict "value" $v) }}
+    {{- end }}
+
+  superset_config.py: |
+    {{- with $.Values.config.superset }}
+    import datetime
+    from flask_appbuilder.security.manager import AUTH_REMOTE_USER
+
+    #---------------------------------------------------------
+    # Flask App Builder configuration
+    #---------------------------------------------------------
+    # Your App secret key
+    SECRET_KEY = {{ template "toPython" (dict "value" .secret_key) }}
+
+    # The SQLAlchemy connection string to your database backend
+    # This connection defines the path to the database that stores your
+    # superset metadata (slices, connections, tables, dashboards, ...).
+    # Note that the connection information to connect to the datasources
+    # you want to explore are managed directly in the web UI
+    SQLALCHEMY_DATABASE_URI = '{{ .sqlalchemy_database_uri | replace "<PASSWORD>" .sqlalchemy_database_password }}?ssl_ca=/etc/ssl/certs/wmf-ca-certificates.crt'
+
+    {{- if $.Values.localmemcached.enabled }}
+    CACHE_URL = "{{ template "base.meta.name" (dict "Root" $ ) }}-memcached:{{ $.Values.localmemcached.port }}"
+    {{- end }}
+    wikimedia_superset_timeout = datetime.timedelta(minutes={{ .wikimedia_superset_timeout_minutes }}).seconds
+
+    SQLLAB_TIMEOUT = wikimedia_superset_timeout
+    SUPERSET_WEBSERVER_TIMEOUT = wikimedia_superset_timeout
+
+    # Uploaded files will temporarily be stored in this directory.
+    # This is used to support superset CSV uploads.
+    UPLOAD_FOLDER = {{ template "toPython" (dict "value" .upload_folder) }}
+
+    # We explicitly disable the old Druid interface to define datasources to favor
+    # the Druid tables (via SQLAlchemy), since the latter are the only supported
+    # ones by upstream.
+    DRUID_IS_ACTIVE = {{ template "toPython" (dict "value" .druid_is_active) }}
+
+    AUTH_TYPE = AUTH_REMOTE_USER
+    ENABLE_PROXY_FIX = {{ template "toPython" (dict "value" .enable_proxy_fix) }}
+
+    AUTH_USER_REGISTRATION = {{ template "toPython" (dict "value" .auth_user_registration) }}
+    AUTH_USER_REGISTRATION_ROLE = {{ template "toPython" (dict "value" .auth_user_registration_role) }}
+
+    password_mapping = {
+        {{- range $dbUri, $password := .password_mapping }}
+        {{ $dbUri | quote }}: {{ $password | quote }},
+        {{- end}}
+    }
+
+    {{- if $.Values.localmemcached.enabled }}
+    CACHE_CONFIG = {
+        {{- range $config, $value := .cache_config }}
+        {{ $config | upper | quote }}: {{ template "toPython" (dict "value" $value) }},
+        {{- end }}
+        "CACHE_MEMCACHED_SERVERS": [CACHE_URL],
+    }
+
+    FILTER_STATE_CACHE_CONFIG = {
+        {{- range $config, $value := .filter_state_cache_config }}
+        {{ $config | upper | quote }}: {{ template "toPython" (dict "value" $value) }},
+        {{- end}}
+        "CACHE_MEMCACHED_SERVERS": [CACHE_URL],
+    }
+    EXPLORE_FORM_DATA_CACHE_CONFIG = {
+        {{- range $config, $value := .explore_form_data_cache_config }}
+        {{ $config | upper | quote }}: {{ template "toPython" (dict "value" $value) }},
+        {{- end}}
+        "CACHE_MEMCACHED_SERVERS": [CACHE_URL],
+    }
+    RATELIMIT_STORAGE_URI = "memcached://" + CACHE_URL
+    {{- end }}
+
+    FEATURE_FLAGS = {
+        {{- range $featureFlag := .feature_flags }}
+        {{ $featureFlag | quote }}: True,
+        {{- end }}
+    }
+
+    {{- range $key, $value := .extra_configuration }}
+    {{ $key }} = {{ template "toPython" (dict "value" $value) }}
+    {{- end }}
+
+    {{- $.Files.Get "files/superset_config_extra.py" | nindent 4 }}
+
+  {{- end }}
+
+
+{{ include "mesh.configuration.configmap" . }}
+{{- include "base.statsd.configmap" . }}

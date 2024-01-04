@@ -1,0 +1,10 @@
+app:
+  version: sometag-production
+
+config:
+  superset:
+    sqlalchemy_database_uri:  mysql://superset-debug:<PASSWORD>@an-mariadb1001.eqiad.wmnet:3306/superset_debug
+
+ingress:
+  gatewayHosts:
+    default: "superset-debug"

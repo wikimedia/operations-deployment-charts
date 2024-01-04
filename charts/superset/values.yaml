@@ -1,0 +1,305 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: repos/data-engineering/superset
+  version: latest # we use latest everywhere in the defaults.
+  port: &app_port 8080 # port exposed as a Service, also used by service-checker.
+  command: ["gunicorn"]
+  args:
+  - "--config"
+  - "/etc/superset/gunicorn_config.py"
+  - "superset.app:create_app()"
+  replicas: 1
+  requests:
+    cpu: 4
+    memory: 8Gi
+  limits:
+    cpu: 5
+    memory: 10Gi
+  liveness_probe:
+    httpGet:
+      path: /health
+      port: *app_port
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+    failureThreshold: 60
+    periodSeconds: 5
+    successThreshold: 1
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: *app_port
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+    failureThreshold: 60
+    periodSeconds: 5
+    successThreshold: 1
+
+  volumes:
+  # This volume contains the Superset / gunicorn configuration
+  - name: superset-config-volume
+    configMap:
+      name: superset-config
+  # This volume contains the Kerberos client configuration
+  - name: superset-kerberos-client-config-volume
+    configMap:
+      name: superset-kerberos-client-config
+  # This volume contains the Kerberos keytab file
+  - name: superset-kerberos-keytab-volume
+    secret:
+      secretName: superset-kerberos-keytab
+  # This volume contains the TGT that will be obtained from the kerberos server
+  - name: superset-kerberos-tgt-cache-volume
+    emptyDir: {}
+  # This volume contains the user uploaded files
+  - name: superset-upload-dir-volume
+    emptyDir: {}
+
+  volumeMounts:
+  - name: superset-kerberos-client-config-volume
+    mountPath: /etc/krb5.conf
+    subPath: krb5.conf
+  - name: superset-kerberos-keytab-volume
+    mountPath: /etc/kerberos/keytabs
+  - name: superset-kerberos-tgt-cache-volume
+    mountPath: /etc/kerberos/tgt
+  - name: superset-upload-dir-volume
+    mountPath: &upload_dir /tmp/superset_uploads
+  - name: superset-config-volume
+    mountPath: /etc/superset
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort:  *app_port # the number or name of the exposed port on the container
+    port:  *app_port # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public: # Add here all the keys that can be publicly available as a ConfigMap
+    KRB5CCNAME: DIR:/etc/kerberos/tgt/  # the directory in which kerbertos will store its TGT
+    LANG: 'C.UTF-8'
+    LC_ALL: 'C.UTF-8'
+    SUPERSET_ENV: 'production'
+    FLASK_APP: 'superset.app:create_app()'
+    PYTHONPATH: '/app:/home/superset/.local/lib/python3.9/site-packages/:/etc/superset'
+    SUPERSET_HOME: '/home/runuser'
+    SUPERSET_PORT: *app_port
+
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+  gunicorn:
+    workers: 8
+    worker_class: gevent
+    timeout: 185
+
+  superset:
+    secret_key: override_me
+    sqlalchemy_database_uri: override_me
+    sqlalchemy_database_password: override_me
+    password_mapping: {}  # to override
+    wikimedia_superset_timeout_minutes: 3
+    upload_folder: *upload_dir
+    druid_is_active: false
+    enable_proxy_fix: true
+    auth_user_registration: true
+    auth_user_registration_role: 'WMF Analyst'
+    cache_config:
+      cache_type: memcached
+      cache_default_timeout: 43200 # 12 hours (in secs)
+      cache_key_prefix: superset_metadata
+    filter_state_cache_config:
+      cache_type: memcached
+      cache_default_timeout: 43200 # 12 hours (in secs)
+      cache_key_prefix: superset_filter_state
+    explore_form_data_cache_config:
+      cache_type: memcached
+      cache_default_timeout: 43200 # 12 hours (in secs)
+      cache_key_prefix: superset_explore_form_data
+    feature_flags:
+    - ENABLE_TEMPLATE_PROCESSING
+    - DASHBOARD_NATIVE_FILTERS
+    - ENABLE_FILTER_BOX_MIGRATION
+    - PRESTO_EXPAND_DATA
+    extra_configuration: {}
+
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+# Basic mesh-related data.
+mesh:
+  enabled: true
+  certmanager:
+    enabled: true
+  admin:
+    port: 1666
+  image_version: latest
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 9081
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "185s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners
+  listeners: []
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+# Allow external traffic to reach this service via a (cluster provided) ingress controller.
+# https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
+ingress:
+  enabled: true
+  # By default, enabling ingress will switch the charts services from type NodePort to
+  # ClusterIP. While that is fine for new services it may not be desired during transition
+  # of existing ones from dedicated LVS to Ingress.
+  # By setting keepNodePort to true, the services will stay of type NodePort.
+  keepNodePort: false
+  # gatewayHosts settings configure the hostnames this service will be reachable on.
+  # By default, this will be a list like:
+  # - {{ gatewayHosts.default }}.{{ domain }}
+  # For all domains listed in .gatewayHosts.domains (specified by SRE for each environment)
+  gatewayHosts:
+    # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
+    default: "override_me"
+    # disableDefaultHosts may be set to true if the service should not be reachable via
+    # the gateway hosts generated by default (see above).
+    disableDefaultHosts: false
+    # extraFQDNs ist a list of extra FQDNs this service should be reachable on.
+    # It can be used to extend the gateway hosts that are generated by default.
+    extraFQDNs: []
+  # If you want to attach routes of this release to an existing Gateway, provide the name
+  # of that gateway here in the format: <namespace>/<gateway-name>
+  # This is useful if you wish to make multiple releases available from the same hostname.
+  existingGatewayName: ""
+  # routeHosts is a list of FQDNs the httproutes should attach to.
+  # If existingGatewayName not set, this list might be empty and will default to the gateway
+  # host generated according to how .Values.gatewayHosts.* is configured.
+  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
+  routeHosts: []
+  # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
+  # the service without modification.
+  # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
+  httproutes: []
+  # Base CORS HTTP headers for the general use case.
+  base_cors_policy: false
+  # Add a custom CORS policy, injecting an Istio CorsPolicy config:
+  # https://istio.io/latest/docs/reference/config/networking/virtual-service/#CorsPolicy
+  # Takes precedence over base_cors_policy.
+  custom_cors_policy: {}
+
+common_images:
+  statsd:
+    image: prometheus-statsd-exporter
+    version: latest
+  memcached:
+    image: memcached
+    version: latest
+  kerberos:
+    image: repos/data-engineering/kerberos-kinit
+    version: latest
+
+localmemcached:
+  enabled: true
+  port: 11212
+  resources:
+    replicas: 1
+    requests:
+      cpu: 1
+      memory: 2Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+
+kerberos:
+  enabled: true
+  ticket_renewal_interval_minutes: 60
+  keytab: override_me
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: true
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+
+# Cronjob definitions
+# Here you can define your cronjobs
+cronjobs: []
+# Example of a job:
+# - name: my-cron-hourly
+#   enabled: true
+#   command:
+#      - /bin/cowsay
+#      - "hello"
+#   schedule: "@hourly" (defaults to @daily)
+#   concurrency: Replace (defaults to "Forbid")
+#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
+#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
