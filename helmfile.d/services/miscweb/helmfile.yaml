@@ -65,6 +65,12 @@ releases:
     <<: *default
   - name: static-codereview
     <<: *default
+  - name: design-blog
+    <<: *default
+  - name: design-landing-page
+    <<: *default
+  - name: design-strategy
+    <<: *default
 
 environments:
   staging: &default_values
@@ -78,6 +84,9 @@ environments:
         - research-landing-page
         - wikiworkshop
         - static-codereview
+        - design-blog
+        - design-landing-page
+        - design-strategy
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:

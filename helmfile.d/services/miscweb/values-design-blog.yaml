@@ -1,0 +1,35 @@
+main_app:
+  image: repos/sre/miscweb/design-blog
+  version: 2024-01-03-112327
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  # blog returns 404 on /, so use another path for probe
+  readiness_probe:
+    httpGet:
+      path: /blog
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+# map design.wikipedia.org/blog to this release
+# according to https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#More_complex_setups
+ingress:
+  enabled: true
+  existingGatewayName: "miscweb/design-landing-page"
+  routeHosts:
+  - miscweb-design-landing-page-tls-service.discovery.wmnet
+  - design.wikipedia.org
+  httproutes:
+  - match:
+    - uri:
+        prefix: /blog
+    route:
+    - destination:
+        host: miscweb-design-blog-tls-service.miscweb.svc.cluster.local
+        port:
+          number: 4111
