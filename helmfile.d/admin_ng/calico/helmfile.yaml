@@ -8,6 +8,10 @@ releases:
     {{- end }}
     missingFileHandler: Warn
   - name: calico
+    # Normally we go for 10m (300s), but at 70 nodes, we apparently need at least
+    # twice that and the time needed scales linearly with the number of nodes. So
+    # to be able to support ~150 let's go for 1H (3600s)
+    timeout: 3600
     namespace: kube-system
     chart: wmf-stable/calico
     {{- $version := .Values.chartVersions | get "wmf-stable/calico" "" }}
