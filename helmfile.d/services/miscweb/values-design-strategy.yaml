@@ -16,14 +16,14 @@ mesh:
   enabled: true
   public_port: 4111
 
-# map design.wikipedia.org/strategy to this release
+# map design.wikimedia.org/strategy to this release
 # according to https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#More_complex_setups
 ingress:
   enabled: true
   existingGatewayName: "miscweb/design-landing-page"
   routeHosts:
   - miscweb-design-landing-page-tls-service.discovery.wmnet
-  - design.wikipedia.org
+  - design.wikimedia.org
   httproutes:
   - match:
     - uri:
