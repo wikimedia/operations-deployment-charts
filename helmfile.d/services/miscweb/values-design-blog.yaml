@@ -20,9 +20,8 @@ mesh:
 # according to https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#More_complex_setups
 ingress:
   enabled: true
-  existingGatewayName: "miscweb/design-landing-page"
+  existingGatewayName: "miscweb/miscweb-design-landing-page"
   routeHosts:
-  - miscweb-design-landing-page-tls-service.discovery.wmnet
   - design.wikimedia.org
   httproutes:
   - match:
