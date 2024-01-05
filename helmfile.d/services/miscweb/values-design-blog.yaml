@@ -10,7 +10,7 @@ main_app:
   # blog returns 404 on /, so use another path for probe
   readiness_probe:
     httpGet:
-      path: /blog
+      path: /blog/
 
 mesh:
   enabled: true

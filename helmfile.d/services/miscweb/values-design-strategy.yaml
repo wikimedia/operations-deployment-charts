@@ -10,7 +10,7 @@ main_app:
   # strategy returns 404 on /, so use another path for probe
   readiness_probe:
     httpGet:
-      path: /strategy
+      path: /strategy/
 
 mesh:
   enabled: true
@@ -29,6 +29,6 @@ ingress:
         prefix: /strategy
     route:
     - destination:
-        host: miscweb-design-blog-tls-service.miscweb.svc.cluster.local
+        host: miscweb-design-strategy-tls-service.miscweb.svc.cluster.local
         port:
           number: 4111
