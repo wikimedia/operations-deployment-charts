@@ -19,3 +19,12 @@ ingress:
   gatewayHosts:
     extraFQDNs:
     - design.wikimedia.org
+  httproutes:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: miscweb-design-landing-page-tls-service.miscweb.svc.cluster.local
+        port:
+          number: 4111
