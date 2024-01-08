@@ -10,8 +10,8 @@ app:
       # Suspect this is not only retries, but also events that skip fetch. Provide
       # enough capacity that the async operator, as reported by pending_requests
       # guage, stays fully occupied while backfilling.
-      fetch-retry-queue-capacity: 300
-      wikiids: testwiki;frwiki;itwiki;commonswiki;wikidatawiki;dewiki;frwiktionary;kuwiktionary
+      fetch-retry-queue-capacity: 250
+      wikiids: testwiki;frwiki;itwiki;commonswiki;wikidatawiki;dewiki;frwiktionary;kuwiktionary;arwiki;eswiki;trwiki;ruwiktionary;bewiki;plwiki;zhwiki;ruwiki;cawiki;metawiki;viwiki;nlwiki;huwiki;thwiktionary;ruwikinews;shwiki;fawiki;jawiki;cebwiki
 
 discovery:
   listeners:
