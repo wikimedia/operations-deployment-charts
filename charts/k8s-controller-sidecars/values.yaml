@@ -1,0 +1,41 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: k8s-controller-sidecars
+  version: 0.0.3
+  # We don't use this but base.name.baseurl can't be defined without it.
+  port: 0
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  requests:
+    cpu: 200m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+replicas: 1
+
+mesh:
+  enabled: false
+
+# See helmfile.d/admin_ng/values/common.yaml for the full structure. This chart looks for:
+# namespaces:
+#   <namespace-name>:
+#     enableJobSidecarController: true  # Pass this namespace to the controller args and create RoleBinding
+#   <another-namespace-name>:
+#     enableJobSidecarController: false  # (default) But not this namespace
+namespaces: {}
