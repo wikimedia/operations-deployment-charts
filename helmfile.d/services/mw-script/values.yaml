@@ -1,0 +1,14 @@
+mesh:
+  public_port: null
+
+mwscript:
+  enabled: true
+  # These are overwritten by the Python wrapper script, which passes a value on the helmfile command
+  # line.
+  args: []
+  labels: {}
+
+# Don't start the exporter sidecars. At this time there's no support for Prometheus monitoring of
+# mwscript jobs.
+monitoring:
+  enabled: false
