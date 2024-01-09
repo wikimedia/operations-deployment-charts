@@ -247,9 +247,18 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      # swift is covered by envoy even if still not used in mediawiki.
+      # swift, used by ThumbnailRenderer
+      # ms-fe.svc.eqiad.wmnet.
+      - cidr: 10.2.2.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # ms-fe.svc.codfw.wmnet.
+      - cidr: 10.2.1.27/32
+        ports:
+          - protocol: TCP
+            port: 443
       # url-downloader is covered by the default egress rules
-      # redis_lock is covered by the nutcracker-originated rules for redis
       # Common defs
       #IRC - TODO: define the port range once we upgrade k8s
       # irc1001
@@ -317,7 +326,26 @@ networkpolicy:
         ports:
           - protocol: UDP
             port: 8420
-
+      # redis_lock
+      # rdb1011 A1
+      - cidr: 10.64.0.36/32
+      # rdb1012 D1
+      - cidr: 10.64.48.49/32
+      # rdb1013 B6
+      - cidr: 10.64.16.18/32
+      - cidr: 2620:0:861:102:10:64:16:18/128
+      # rdb1014 D3
+      - cidr: 10.64.48.42/32
+      - cidr: 2620:0:861:107:10:64:48:42/128
+      # wiki-mail-eqiad
+      - cidr: 208.80.154.91/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:861:3:208:80:154:91/128
+        ports:
+          - protocol: TCP
+            port: 25
       ## Codfw
       # Poolcounter
       # poolcounter2003
@@ -336,6 +364,20 @@ networkpolicy:
         ports:
           - protocol: UDP
             port: 8420
+      # redis_lock
+      # rdb2007 A5
+      - cidr: 10.192.0.198/32
+      # rdb2009 C3
+      - cidr: 10.192.32.8/32
+      # wiki-mail-codfw
+      - cidr: 208.80.153.46/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:860:2:208:80:153:46/128
+        ports:
+          - protocol: TCP
+            port: 25
 
 # Only deploy to nodes without spinning disks T288345
 affinity:
