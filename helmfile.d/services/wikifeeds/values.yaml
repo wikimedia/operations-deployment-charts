@@ -12,6 +12,8 @@ main_app:
   mwrest_uri: http://localhost:6500/w/rest.php
   restbase_uri: http://localhost:6503
   rest_gateway_uri: http://localhost:6033
+  usecorepagehtml: true
+  use_service_mesh: true
   # Use command and args below to override the entrypoint
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # ex: command: '["node"]' args: '["bin/server.js"]'
@@ -48,6 +50,3 @@ discovery:
 networkpolicy:
   egress:
     enabled: true
-main_app:
-  usecorepagehtml: true
-  use_service_mesh: true
