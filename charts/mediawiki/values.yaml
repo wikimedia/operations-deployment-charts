@@ -400,3 +400,9 @@ ingress:
   # the service without modification.
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
+
+# This is for maintenance scripts. When it's enabled, the normal MediaWiki Deployment is turned
+# off, and instead a Job runs the provided script.
+mwscript:
+  enabled: false
+  args: []

@@ -1,5 +1,6 @@
 {{ define "lamp.deployment" }}
 {{ $release := include "base.name.release" . }}
+{{- if not .Values.mwscript.enabled }}
 ### The apache httpd container
 # TODO: set up logging. See T265876
 # TODO: fix virtualhosts in puppet so that the port is set to APACHE_RUN_PORT
@@ -75,10 +76,16 @@
     mountPath: /etc/apache2/conf-enabled/00-aaa.conf
     subPath: 00-aaa.conf
   {{- end }}
+{{- end }}
 ### The MediaWiki container
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.mwscript.enabled }}
+  command: ["/usr/bin/php"]
+  args:
+{{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
+  {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:
     capabilities:

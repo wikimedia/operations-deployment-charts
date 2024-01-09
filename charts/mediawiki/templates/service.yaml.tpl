@@ -1,4 +1,4 @@
-{{ if not (hasSuffix "canary" .Release.Name) }}
+{{ if not (or (hasSuffix "canary" .Release.Name) (.Values.mwscript.enabled)) }}
 {{ include "mesh.service" . }}
 {{ if or .Values.service.expose_http (not .Values.mesh.enabled) }}
 ---

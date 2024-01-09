@@ -1,3 +1,4 @@
+{{ if not .Values.mwscript.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,3 +53,4 @@ spec:
       volumes:
       {{- include "mw.volumes" . | indent 8}}
       {{- include "base.statsd.volume" . | indent 8 }}
+{{- end }}
