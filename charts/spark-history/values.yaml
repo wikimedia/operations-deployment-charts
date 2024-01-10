@@ -43,6 +43,9 @@ app:
   - name: spark-history-kerberos-keytab-volume
     secret:
       secretName: spark-history-kerberos-keytab
+  - name: spark-config-volume
+    configMap:
+      name: spark-config
   # This volume contains the TGT that will be obtained from the kerberos server
   - name: spark-history-kerberos-tgt-cache-volume
     emptyDir: {}
@@ -56,6 +59,8 @@ app:
     mountPath: /etc/spark/kerberos/keytabs
   - name: spark-history-kerberos-tgt-cache-volume
     mountPath: /etc/spark/kerberos/tgt
+  - name: spark-config-volume
+    mountPath: /etc/spark/conf/
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -67,8 +72,16 @@ config:
   public:
     SPARK_DAEMON_MEMORY: 2g # used for both -Xms and -Xmx
     HADOOP_CONF_DIR: /etc/hadoop/conf
+    SPARK_CONF_DIR: /etc/spark/conf
     KRB5CCNAME: DIR:/etc/spark/kerberos/tgt/  # the directory in which kerbertos will store its TGT
   private: {} # Add here all the keys that should be private but still available as env variables
+
+  logging:
+    root:
+      level: info
+
+  sparkEnv:
+    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
   # The spark configuration overrides
   spark:
