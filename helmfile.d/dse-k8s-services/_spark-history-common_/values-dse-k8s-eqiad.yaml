@@ -15,6 +15,13 @@ _kerb_egress_ports: &kerberos_egress_ports
   - port: 88
     protocol: udp
 
+app:
+  version: f814b48489b7d53e8220d014c3595ab73e6be3b6-production
+
+kerberos:
+  image:
+    version: 45377f59c5bdf8bae1b967c49ee29a144c5cba44-production
+
 networkpolicy:
   egress:
     dst_nets:
