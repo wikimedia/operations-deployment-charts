@@ -10,11 +10,11 @@ app:
   command: ["/opt/entrypoint.sh"]
   args: ["history"]
   requests:
-    cpu: 4 # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 4Gi # Just some sample, edit these
+    cpu: 4
+    memory: 6Gi
   limits:
-    cpu: 8 # Just some sample, edit these
-    memory: 8Gi # Just some sample, edit these
+    cpu: 8
+    memory: 8Gi
   liveness_probe:
     tcpSocket:
       port: 18080
@@ -70,7 +70,6 @@ monitoring:
 config:
   # The environment variables exported in each container of the pod
   public:
-    SPARK_DAEMON_MEMORY: 2g # used for both -Xms and -Xmx
     HADOOP_CONF_DIR: /etc/hadoop/conf
     SPARK_CONF_DIR: /etc/spark/conf
     KRB5CCNAME: DIR:/etc/spark/kerberos/tgt/  # the directory in which kerbertos will store its TGT

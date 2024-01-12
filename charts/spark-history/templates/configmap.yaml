@@ -13,6 +13,7 @@ data:
     {{- range $k, $v := .Values.config.spark }}
     SPARK_JAVA_OPT_{{ upper $k }}: -D{{ $k }}={{ $v }}
     {{- end }}
+    SPARK_DAEMON_MEMORY: {{ atoi (trimSuffix "Gi" $.Values.app.requests.memory) }}g {{/* used for both -Xms and -Xmx */}}
 
 ---
 {{/*
