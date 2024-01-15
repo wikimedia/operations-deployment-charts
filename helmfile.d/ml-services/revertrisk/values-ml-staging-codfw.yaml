@@ -16,10 +16,10 @@ inference_services:
         maxReplicas: 1
         timeout: 60
         batcher:
-          maxBatchSize: 32
-          maxLatency: 500
+          maxBatchSize: 8
+          maxLatency: 100
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2023-12-09-122113-publish"
+      image_version: "2024-01-11-170658-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-language-agnostic"
