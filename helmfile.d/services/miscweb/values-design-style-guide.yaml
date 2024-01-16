@@ -1,0 +1,34 @@
+main_app:
+  image: repos/sre/miscweb/design-style-guide
+  version: 2024-01-16-115820
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  # style-guide returns 404 on /, so use another path for probe
+  readiness_probe:
+    httpGet:
+      path: /style-guide/
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+# map design.wikimedia.org/style-guide to this release
+# according to https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#More_complex_setups
+ingress:
+  enabled: true
+  existingGatewayName: "miscweb/miscweb-design-landing-page"
+  routeHosts:
+  - design.wikimedia.org
+  httproutes:
+  - match:
+    - uri:
+        prefix: /style-guide
+    route:
+    - destination:
+        host: miscweb-design-style-guide-tls-service.miscweb.svc.cluster.local
+        port:
+          number: 4111

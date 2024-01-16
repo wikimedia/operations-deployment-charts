@@ -71,6 +71,8 @@ releases:
     <<: *default
   - name: design-strategy
     <<: *default
+  - name: design-style-guide
+    <<: *default
 
 environments:
   staging: &default_values
@@ -87,6 +89,7 @@ environments:
         - design-blog
         - design-landing-page
         - design-strategy
+        - design-style-guide
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
