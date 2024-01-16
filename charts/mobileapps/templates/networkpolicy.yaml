@@ -35,4 +35,5 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
+    {{- include "datastore.cassandra_client.egress" . | indent 4 }}
 {{- end }}

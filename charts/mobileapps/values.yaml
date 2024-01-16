@@ -83,6 +83,19 @@ mesh:
 #    cert: "your cert here"
 #    key: "your key here"
 
+datastore:
+  cassandra_client:
+    enabled: false
+    port: 9042
+    consistency: localQuorum
+    hosts: []
+    local_dc: eqiad
+    authentication:
+      username: cassandra
+      password: foobarbaz
+    tls:
+      ca: /etc/ssl/certs/wmf-ca-certificates.crt
+
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
   enabled: false

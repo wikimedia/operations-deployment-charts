@@ -1,0 +1,20 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.123.123.123/24
+
+datastore:
+  cassandra_client:
+    enabled: true
+    port: 9042
+    consistency: localQuorum
+    hosts:
+      - 192.168.1.1
+      - 192.168.1.2
+    local_dc: somedc
+    authentication:
+      username: cassandra
+      password: foobarbaz
+    tls:
+      ca: /etc/ssl/certs/wmf-ca-certificates.crt

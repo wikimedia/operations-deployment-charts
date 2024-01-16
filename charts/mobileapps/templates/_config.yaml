@@ -121,4 +121,7 @@ services:
       restbase_compatibility:
         security_headers: false
       use_coreparsoid_endpoint: {{ .Values.main_app.use_coreparsoid_endpoint }}
+{{ if .Values.datastore.cassandra_client.enabled -}}
+{{ include "datastore.cassandra_client.config" . | indent 6 }}
+{{- end -}}
 {{- end -}}
