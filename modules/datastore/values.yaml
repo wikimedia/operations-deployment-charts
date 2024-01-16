@@ -1,0 +1,23 @@
+datastore:
+  cassandra_client:
+    enabled: false
+    port: 9042
+    # consistency level for reads/writes to Cassandra
+    # https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html
+    # please consult with Data Persistence if you're unsure about this value
+    consistency: localQuorum
+    # The IP addresses of the Cassandra hosts to connect to
+    hosts:
+      - 192.168.1.1
+      - 192.168.1.2
+    # datacentre to use from a cassandra point of view - should
+    # usually be the datacentre the service is running in
+    local_dc: somedc
+    authentication:
+      username: cassandra
+      # This will be provided by puppet private
+      password: foobarbaz
+    # This value is required for most clients to connect to our
+    # servers over TLS.
+    tls:
+      ca: /etc/ssl/certs/wmf-ca-certificates.crt
