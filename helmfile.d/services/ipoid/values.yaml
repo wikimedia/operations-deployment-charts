@@ -8,7 +8,7 @@ app:
   limits:
     cpu: 1
     memory: 400Mi
-  version: 2024-01-12-123153-production
+  version: 2024-01-17-204649-production
   image: repos/mediawiki/services/ipoid
 monitoring:
   enabled: false
@@ -38,8 +38,17 @@ cronjobs:
       - "true"
       - "--debug"
       - "false"
-    schedule: "8 11 * * *"  # At 11:08 each day.
+    # At 8 AM, 1PM and 6PM each day.
+    # We schedule multiple runs, because if one job fails,
+    # we want to allow the next one to repair the incomplete state
+    # of the previous job, ideally while still on the same date.
+    # If the second job has repaired the first, we want the third
+    # job to run the full import for the current day.
+    schedule: "0 8,13,18 * * *"
     concurrency: Forbid
+    # In practice, this seems to result in a single retry attempt.
+    # Keep this, so that we can try to fix a failed import as soon
+    # as possible.
     backoffLimit: 2
     resources:
       requests:
