@@ -1,3 +1,16 @@
+# If mcrouter is a sidecar, please remove the following block. 
+#
+# This should only be used if we are exposing a mcrouter service
+# (which is very rare)
+# service:
+#  deployment: minikube # valid values are "production" and "minikube"
+#  port:
+#    name: mcrouter
+#    targetPort: 4442 # the number or name of the exposed port on the container
+#    port: 4442
+#  nodePort: 0
+#  use_node_local_endpoints: true
+
 common_images:
   mcrouter:
     mcrouter: latest
@@ -6,6 +19,7 @@ cache:
   mcrouter:
     # This is the route prefix that will be added by default
     # to all requests whose key doesn't begin with /
+    port: 11213
     route_prefix: /default
     cross_region_timeout: 250
     cross_cluster_timeout: 100
