@@ -32,7 +32,7 @@ main_app:
     high_traffic_jobs_config:
       ThumbnailRender:
         enabled: true
-        k8s: false # Temporarily reverted due to issues calling convert
+        k8s: true
         concurrency: 5
       categoryMembershipChange:
         enabled: true
