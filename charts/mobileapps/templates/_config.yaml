@@ -85,7 +85,7 @@ services:
         body: '{{ `{{ default(request.query, {}) }}` }}'
       corepagehtml_req:
         method: get
-        uri: '{{ .Values.main_app.mwapi_uri }}/w/rest.php/v1/page/{{ `{{title}}` }}/with_html'
+        uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/page/{{ `{{title}}` }}/with_html'
         headers:
           host: '{{ `{{request.params.domain}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
