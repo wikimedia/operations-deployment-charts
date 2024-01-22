@@ -83,6 +83,12 @@ services:
           user-agent: '{{ `{{user-agent}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
         body: '{{ `{{ default(request.query, {}) }}` }}'
+      corepagehtml_req:
+        method: get
+        uri: '{{ .Values.main_app.mwapi_uri }}/w/rest.php/v1/page/{{ `{{title}}` }}/with_html'
+        headers:
+          host: '{{ `{{request.params.domain}}` }}'
+          accept-language: '{{ `{{accept-language}}` }}'
       # the template used for contacting RESTBase
       restbase_req:
         method: '{{ `{{request.method}}` }}'
