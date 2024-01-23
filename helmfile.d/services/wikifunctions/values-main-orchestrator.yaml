@@ -11,7 +11,7 @@ ingress:
 config:
   public:
     # Envoy service proxy access URL for all production wikis
-    WIKI_API_URL: http://localhost:6501/w/api.php
+    WIKI_API_URL: http://127.0.0.1:6501/w/api.php
     # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
     # Top-level request timeout at the orchestrator level (in milliseconds)
