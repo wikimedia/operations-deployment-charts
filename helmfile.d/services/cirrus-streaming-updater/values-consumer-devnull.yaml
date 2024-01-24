@@ -2,6 +2,8 @@ app:
   image: docker-registry.discovery.wmnet/repos/search-platform/cirrus-streaming-updater/consumer
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
+  taskManager:
+    replicas: 2
   config_files:
     app.config.yaml:
       # We are using the null sink, so we want to define the cluster groups but dont
@@ -10,3 +12,12 @@ app:
       elasticsearch-urls.chi: https://dev.null/
       elasticsearch-urls.omega: https://dev.null/
       elasticsearch-urls.psi: https://dev.null/
+
+mesh:
+  resources:
+    # We can have hundreds of requests per second, and have seen throttling
+    # without expanding the envoy limits.
+    requests:
+      cpu: 1
+    limits:
+      cpu: 1
