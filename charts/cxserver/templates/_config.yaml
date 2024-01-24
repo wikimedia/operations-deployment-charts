@@ -25,15 +25,6 @@ metrics:
   type: prometheus
 {{- end }}
 
-# TODO: Figure this out in production
-{{- if eq .Values.service.deployment "minikube" }}
-ratelimiter:
-  type: kademlia
-  seeds: [{{ template "base.name.release" . }}-kademlia.default.svc.cluster.local]
-  listen:
-    port: {{ .Values.main_app.kademlia_port }}
-{{- end }}
-
 services:
   - name: cxserver
     module: app.js

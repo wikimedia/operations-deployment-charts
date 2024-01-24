@@ -11,7 +11,6 @@ main_app:
   image: wikimedia/mediawiki-services-cxserver
   version: latest # we use latest everywhere in the defaults.
   port: 8080
-  kademlia_port: 3051
   proxy: null
   mwapi_uri: http://mediawiki.svc.cluster.local/w/api.php # api-rw.discovery.wmnet in production
   mwapi_int_async_host: restbase.svc.cluster.local # mw-api-int.discovery.wmnet in production

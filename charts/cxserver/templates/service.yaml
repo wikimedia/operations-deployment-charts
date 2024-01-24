@@ -25,23 +25,3 @@ spec:
     nodePort:  {{ .Values.service.port }}
     {{- end }}
 {{- end }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "base.name.release" . }}-kademlia
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: ClusterIP
-  clusterIP: None
-  selector:
-    app: {{ template "base.name.chart" . }}
-    release: {{ .Release.Name }}
-  ports:
-  - name: kademlia
-    protocol: UDP
-    port: {{ .Values.main_app.kademlia_port }}
