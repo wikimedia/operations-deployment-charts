@@ -4,9 +4,12 @@ app:
       pipeline.name: cirrus-streaming-updater-consumer-search-codfw
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-codfw
       fetch-error-topic: codfw.cirrussearch.update_pipeline.fetch_error
-      elasticsearch-urls.chi: http://localhost:6202
-      elasticsearch-urls.omega: http://localhost:6203
-      elasticsearch-urls.psi: http://localhost:6204
+      elasticsearch-urls.chi: https://search.svc.codfw.wmnet:9243
+      elasticsearch-urls.omega: https://search.svc.codfw.wmnet:9443
+      elasticsearch-urls.psi: https://search.svc.codfw.wmnet:9643
+      http-routes.50-chi: https://search.svc.codfw.wmnet:9243=http://localhost:6202
+      http-routes.50-omega: https://search.svc.codfw.wmnet:9443=http://localhost:6203
+      http-routes.50-psi: https://search.svc.codfw.wmnet:9643=http://localhost:6204
 
 discovery:
   listeners:

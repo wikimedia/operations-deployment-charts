@@ -4,9 +4,12 @@ app:
       pipeline.name: cirrus-streaming-updater-consumer-cloudelastic-eqiad
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-cloudelastic-eqiad
       fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error.rc0
-      elasticsearch-urls.chi: http://localhost:6105
-      elasticsearch-urls.omega: http://localhost:6106
-      elasticsearch-urls.psi: http://localhost:6107
+      elasticsearch-urls.chi: https://cloudelastic.wikimedia.org:9243
+      elasticsearch-urls.omega: https://cloudelastic.wikimedia.org:9443
+      elasticsearch-urls.psi: https://cloudelastic.wikimedia.org:9643
+      http-routes.50-chi: https://cloudelastic.wikimedia.org:9243=http://localhost:6105
+      http-routes.50-omega: https://cloudelastic.wikimedia.org:9443=http://localhost:6106
+      http-routes.50-psi: https://cloudelastic.wikimedia.org:9643=http://localhost:6107
 
 discovery:
   listeners:
