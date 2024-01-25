@@ -18,6 +18,9 @@ app:
       event-stream-config-url: https://meta.wikimedia.org/w/api.php/
       event-stream-json-schema-urls: https://schema.wikimedia.org/repositories/primary/jsonschema; https://schema.wikimedia.org/repositories/secondary/jsonschema
       kafka-source-config.partition.discovery.interval.ms: 10000
+      kafka-source-config.security.protocol: SSL
+      kafka-sink-config.security.protocol: SSL
+      wikiids: mediawikiwiki,testwiki
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
