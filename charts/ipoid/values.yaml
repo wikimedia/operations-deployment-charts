@@ -4,7 +4,7 @@
 app:
   image: repos/mediawiki/services/ipoid
   version: latest # we use latest everywhere in the defaults.
-  port: 8888 # port exposed as a Service, also used by service-checker.
+  port: 6927 # port exposed as a Service, also used by service-checker.
   command: []
   args: []
   requests:
@@ -35,7 +35,7 @@ service:
   port:
     name: http
     targetPort: 6927
-    port: 4250
+    port: 6927
     nodePort: null
 config:
   public: {}
