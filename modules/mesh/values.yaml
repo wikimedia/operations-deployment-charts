@@ -63,6 +63,7 @@ mesh:
   # When enabled, all outbound requests will be traced
   tracing:
     enabled: false
+    # sampling: 100. Percentage of requests to sample. Defaults to 100%
     # host: hostname to talk to. default main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local
     # port: grpc port to use. default 4317
     # otel_collector_namespace: the namespace where the collector daemonset is running. default opentelemetry-collector
