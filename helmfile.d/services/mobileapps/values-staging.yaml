@@ -1,2 +1,16 @@
 resources:
   replicas: 1
+
+datastore:
+  cassandra_client:
+    enabled: true
+    local_dc: eqiad
+    hosts:
+      - 10.192.16.14/32  # cassandra-dev2001-a.codfw.wmnet
+      - 10.192.16.15/32  # cassandra-dev2001-b.codfw.wmnet
+      - 10.192.32.84/32  # cassandra-dev2002-a.codfw.wmnet
+      - 10.192.32.85/32  # cassandra-dev2002-b.codfw.wmnet
+      - 10.192.48.54/32  # cassandra-dev2003-a.codfw.wmnet
+      - 10.192.48.55/32  # cassandra-dev2003-b.codfw.wmnet
+    authentication:
+      username: mediawiki_services_mobileapps
