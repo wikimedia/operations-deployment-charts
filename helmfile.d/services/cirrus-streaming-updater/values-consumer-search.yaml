@@ -7,16 +7,16 @@ app:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
     # To increase default job parellism, we can increase this
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
-    replicas: 1
-    resource:
-      memory: 3000m
-      cpu: 2
+    replicas: 2
+
+  config_files:
+    app.config.yaml:
+      fetch-retry-queue-capacity: 250
 
 mesh:
+  concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
   resources:
     requests:
-      cpu: 500m
-      memory: 150Mi
+      cpu: 1
     limits:
       cpu: 1
-      memory: 500Mi

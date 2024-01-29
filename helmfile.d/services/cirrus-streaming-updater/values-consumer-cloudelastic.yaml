@@ -2,6 +2,22 @@ app:
   image: docker-registry.discovery.wmnet/repos/search-platform/cirrus-streaming-updater/consumer
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
+
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # To increase default job parellism, we can increase this
+    # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
+    replicas: 2
+
   config_files:
     app.config.yaml:
+      fetch-retry-queue-capacity: 250
       wikiids: commonswiki;frwiki;itwiki;mediawikiwiki;testwiki;wikidatawiki
+
+mesh:
+  concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
+  resources:
+    requests:
+      cpu: 1
+    limits:
+      cpu: 1

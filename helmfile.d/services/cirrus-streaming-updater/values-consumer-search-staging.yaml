@@ -1,4 +1,8 @@
 app:
+  taskManager:
+    # staging only processes a limited set of wikis, request less
+    replicas: 1
+
   config_files:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-consumer-search-staging
@@ -17,6 +21,13 @@ app:
       # enough capacity that the async operator, as reported by pending_requests
       # guage, stays fully occupied while backfilling.
       fetch-retry-queue-capacity: 100
+
+mesh:
+  concurrency: 1
+  resources:
+    # staging only processes a limited set of wikis, request less
+    requests:
+      cpu: 500m
 
 discovery:
   listeners:
