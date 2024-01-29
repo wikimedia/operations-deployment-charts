@@ -2,3 +2,6 @@ app:
   image: docker-registry.discovery.wmnet/repos/search-platform/cirrus-streaming-updater/consumer
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
+  config_files:
+    app.config.yaml:
+      wikiids: commonswiki;frwiki;itwiki;mediawikiwiki;testwiki;wikidatawiki
