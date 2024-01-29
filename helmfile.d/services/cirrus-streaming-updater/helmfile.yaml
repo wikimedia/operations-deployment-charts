@@ -56,13 +56,11 @@ releases:
     <<: *default
   - name: consumer-cloudelastic
     <<: *default
-  - name: consumer-devnull
-    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [producer, consumer-search, consumer-devnull]
+      - releases: [producer, consumer-search]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
