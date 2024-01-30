@@ -89,6 +89,12 @@ services:
         headers:
           host: '{{ `{{request.params.domain}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
+      corerevisionhtml_tpl:
+        method: get
+        uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/revision/{{ `{{revision}}` }}/with_html'
+        headers:
+          host: '{{ `{{request.params.domain}}` }}'
+          accept-language: '{{ `{{accept-language}}` }}'
       # the template used for contacting RESTBase
       restbase_req:
         method: '{{ `{{request.method}}` }}'
