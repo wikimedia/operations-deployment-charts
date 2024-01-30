@@ -8,19 +8,6 @@
 
 {{- define "mesh.configuration.configmap" }}
 {{- if .Values.mesh.enabled }}
-{{/* Only render the certs configmap if public_port is configured but certmanager is disabled. */}}
-{{- if and (.Values.mesh.public_port) (not (.Values.mesh.certmanager | default dict).enabled) }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  {{- include "base.meta.metadata" (dict "Root" . "Name" "tls-proxy-certs") | indent 2 }}
-data:
-  service.crt: |-
-{{ .Values.mesh.certs.cert | indent 4 }}
-  service.key: |-
-{{ .Values.mesh.certs.key | indent 4 }}
-{{ end -}}{{- /* end if .Values.mesh.public_port */ -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -41,7 +28,7 @@ config changes).
 {{- define "mesh.configuration.full" -}}
 envoy.yaml: |-
   {{- include "mesh.configuration.envoy" . | nindent 2 }}
-{{- if and (.Values.mesh.certmanager | default dict).enabled .Values.mesh.public_port }}
+{{- if .Values.mesh.public_port }}
 tls_certificate_sds_secret.yaml: |-
   {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 2 }}
 {{- end }}
@@ -99,8 +86,17 @@ static_resources:
   {{- include "mesh.configuration._admin_cluster" . | indent 2 }}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
-      {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) -}}
+      {{- $listener := (index $.Values.services_proxy $name) }}
+      {{- if not $listener }}
+      {{-  fail (printf "Listener %s not found in the proxies" $name) }}
+      {{-  end }}
+      {{- $values := dict "Name" $name "Upstream" $listener.upstream -}}
       {{- include "mesh.configuration._cluster" $values | indent 2 }}
+      {{- if $listener.split -}}
+      {{ $split_name := printf "%s-split" $name }}
+      {{- $values := dict "Name" $split_name "Upstream" $listener.split -}}
+      {{- include "mesh.configuration._cluster" $values | indent 2 }}
+      {{- end }}
     {{- end }}
   {{- end }}
   {{- if .Values.tcp_proxy| default false -}}
@@ -226,6 +222,21 @@ static_resources:
                 cluster: local_service
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
+        {{- if (.Values.mesh.tracing | default dict).enabled }}
+        tracing:
+          {{- if (.Values.mesh.tracing | default dict).sampling }}
+          random_sampling:
+            value: {{ .Values.mesh.tracing.sampling }}
+          {{- end }}
+          provider:
+            name: envoy.tracers.opentelemetry
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.trace.v3.OpenTelemetryConfig
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: otel_collector
+                timeout: 0.250s
+        {{- end }}
         stat_prefix: ingress_https_{{ .Release.Name }}
         server_name: {{ .Release.Name }}-tls
         server_header_transformation: APPEND_IF_ABSENT
@@ -234,7 +245,6 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
         common_tls_context:
-          {{- if (.Values.mesh.certmanager | default dict).enabled }}
           {{- /*
           Configure envoy to read certificates from static SDS config.
           This will enable an inotify watcher and hot-reloading on certificate changes.
@@ -245,11 +255,6 @@ static_resources:
               path_config_source:
                 path: /etc/envoy/tls_certificate_sds_secret.yaml
               resource_api_version: V3
-          {{- else }}
-          tls_certificates:
-            - certificate_chain: {filename: /etc/envoy/ssl/service.crt}
-              private_key: {filename: /etc/envoy/ssl/service.key}
-          {{- end }}
   listener_filters:
   - name: envoy.filters.listener.tls_inspector
     typed_config:
@@ -280,8 +285,22 @@ static_resources:
         retry_on: 5xx
       upstream:
         address: svcA.discovery.wmnet
-        port: 10100  # this is the prot on the remote system
+        port: 10100  # this is the port on the remote system
         encryption: false
+        ips:
+        - 1.2.3.4
+      # If you have a split section, traffic will be split between the main address and this one
+      # based on the percentage indicated.
+      split:
+        address: svcB.discovery.wmnet
+        port: 10200
+        encryption: true
+        percentage: 10
+        keepalive: "6s"
+        sets_sni: true
+        ips:
+          - 1.2.3.3
+
 
 For TCP load balancer, we define the TCP service, and then we add upstreams as a list
 under 'tcp_services_proxy'.
@@ -300,9 +319,6 @@ under 'tcp_services_proxy'.
            port: 10100
 */}}
 {{- define "mesh.configuration._listener" }}
-{{- if not .Listener }}
-{{-  fail (printf "Listener %s not found in the proxies" .Name) }}
-{{-  end }}
 - address:
     socket_address:
       protocol: TCP
@@ -326,6 +342,10 @@ under 'tcp_services_proxy'.
             path: "/dev/stdout"
         {{- if and (.Root.Values.mesh.tracing | default dict).enabled (.Listener.tracing_enabled | default true) }}
         tracing:
+          {{- if (.Root.Values.mesh.tracing | default dict).sampling }}
+          random_sampling:
+            value: {{ .Root.Values.mesh.tracing.sampling }}
+          {{- end }}
           provider:
             name: envoy.tracers.opentelemetry
             typed_config:
@@ -354,13 +374,37 @@ under 'tcp_services_proxy'.
           - name: {{ .Name }}
             domains: ["*"]
             routes:
+            {{- if .Listener.split }}
+            - match:
+                prefix: "/"
+                runtime_fraction:
+                  default_value:
+                    numerator: {{ .Listener.split.percentage }}
+                    denominator: HUNDRED
+                  runtime_key: routing.traffic_shift.{{ .Name }}
+              route:
+                {{- if .Listener.http_host }}
+                host_rewrite_literal: {{ .Listener.http_host }}
+                {{- end }}
+                {{- if and .Listener.split.sets_sni (not .Listener.http_host) }}
+                auto_host_rewrite: true
+                {{- end }}
+                cluster: {{ .Name }}-split
+                timeout: {{ .Listener.timeout }}
+                {{- if .Listener.retry_policy }}
+                retry_policy:
+                {{- range $k, $v :=  .Listener.retry_policy }}
+                  {{ $k }}: {{ $v }}
+                {{- end -}}
+                {{- end }}
+            {{- end }}
             - match:
                 prefix: "/"
               route:
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.sets_sni (not .Listener.http_host) }}
+                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}
@@ -373,19 +417,15 @@ under 'tcp_services_proxy'.
                 {{- end }}
 {{- end }}
 
-
 {{- define "mesh.configuration._cluster" }}
-{{- if not .Listener }}
-{{-  fail (printf "Listener %s not found in the proxies" .Name) }}
-{{-  end }}
 - name: {{ .Name }}
   connect_timeout: 0.25s
-  {{- if .Listener.keepalive }}
+  {{- if .Upstream.keepalive }}
   typed_extension_protocol_options:
     envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
       "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
       common_http_protocol_options:
-        idle_timeout: {{ .Listener.keepalive }}
+        idle_timeout: {{ .Upstream.keepalive }}
         # Given we go through a load-balancer, we want to keep the number of requests that go through a single connection pool small
         max_requests_per_connection: 1000
       # This allows switching on protocol based on what protocol the downstream connection used.
@@ -401,15 +441,15 @@ under 'tcp_services_proxy'.
       - endpoint:
           address:
             socket_address:
-              address: {{ .Listener.upstream.address }}
-              port_value: {{ .Listener.upstream.port }}
-  {{- if .Listener.upstream.encryption }}
+              address: {{ .Upstream.address }}
+              port_value: {{ .Upstream.port }}
+  {{- if .Upstream.encryption }}
   transport_socket:
     name: envoy.transport_sockets.tls
     typed_config:
       "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-      {{- if .Listener.uses_ingress }}
-      sni: {{ .Listener.upstream.address }}
+      {{- if .Upstream.sets_sni }}
+      sni: {{ .Upstream.address }}
       {{- end }}
       common_tls_context:
         tls_params:
