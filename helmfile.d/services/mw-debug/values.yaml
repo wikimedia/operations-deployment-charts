@@ -17,6 +17,9 @@ service:
     nodePort: 8444
 
 mesh:
+  tracing:
+    enabled: true
+    sampling: 100
   enabled: true
   certmanager:
     enabled: true
