@@ -392,7 +392,7 @@ namespaces:
   tegola-vector-tiles: {}
   termbox: {}
   thumbor:
-    # Bump max memory limit to 10Gi, otherwise use the defaults
+    # Bump max memory limit, otherwise use the defaults
     limitranges:
       container:
         min:
@@ -412,7 +412,7 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
         max:
-          memory: "20Gi"
+          memory: "35Gi"
           cpu: "18"
     resourcequota:
       compute:
