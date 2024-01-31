@@ -100,30 +100,6 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      - cidr: 10.64.0.141/32 # sessionstore1001
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.0.144/32 # sessionstore1001-a
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.32.78/32 # sessionstore1002
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.32.85/32 # sessionstore1002-a
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.175/32 # sessionstore1003
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.178/32 # sessionstore1003-a
-        ports:
-          - protocol: tcp
-            port: 9042
       - cidr: 10.64.0.32/32 # sessionstore1004
         ports:
           - protocol: tcp
