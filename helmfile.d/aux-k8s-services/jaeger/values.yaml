@@ -97,6 +97,19 @@ query:
         ports:
         - protocol: TCP
           port: 443
+      # Allow egress to idp
+      - to:
+        - ipBlock:
+            cidr: 208.80.153.108/32 # idp2002
+        - ipBlock:
+            cidr: 2620:0:860:4:208:80:153:108/128 # idp2002
+        - ipBlock:
+            cidr: 208.80.154.146/32 # idp1002
+        - ipBlock:
+            cidr: 2620:0:861:2:208:80:154:146/128 # idp1002
+        ports:
+        - protocol: TCP
+          port: 443
   extraSecretMounts:
     - name: jaeger-tls
       mountPath: /tls
