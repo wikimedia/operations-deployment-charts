@@ -115,8 +115,50 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
-  superset: {}
-  superset-next: {}
+  superset:
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+  superset-next:
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
   flink-operator:
     systemNamespace: true
     labels:
