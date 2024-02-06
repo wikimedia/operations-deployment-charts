@@ -55,7 +55,7 @@ query:
     config: |-
       provider = "oidc"
       https_address = ":4180"
-      upstreams = ["http://localhost:16686"]
+      upstreams = ["https://localhost:16686"]
       client_id = "jaeger-ui"
       redirect_url = "https://trace.wikimedia.org/oauth2/callback"
       cookie_domains = "trace.wikimedia.org"
@@ -266,6 +266,7 @@ extraObjects:
           - jaeger-query.discovery.wmnet
           - jaeger-query.svc.codfw.wmnet
           - jaeger-query.svc.eqiad.wmnet
+          - trace.wikimedia.org
           - jaeger-collector-http.discovery.wmnet
           - jaeger-collector-http.svc.codfw.wmnet
           - jaeger-collector-http.svc.eqiad.wmnet
@@ -291,6 +292,7 @@ extraObjects:
         - jaeger-query.discovery.wmnet
         - jaeger-query.svc.codfw.wmnet
         - jaeger-query.svc.eqiad.wmnet
+        - trace.wikimedia.org
       http:
       - name: default-route
         route:
