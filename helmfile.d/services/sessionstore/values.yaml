@@ -148,6 +148,30 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+      - cidr: 10.192.16.246/32 # sessionstore2004
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.16.247/32 # sessionstore2004-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.32.236/32 # sessionstore2005
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.32.237/32 # sessionstore2005-a
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.241/32 # sessionstore2006
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.242/32 # sessionstore2006-a
+        ports:
+          - protocol: tcp
+            port: 9042
       - cidr: 10.192.16.13/32 # cassandra-dev2001
         ports:
           - protocol: tcp
