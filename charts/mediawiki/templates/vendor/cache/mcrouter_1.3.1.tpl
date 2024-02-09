@@ -1,3 +1,93 @@
+{{- define "cache.mcrouter.container" -}}
+{{- if .Values.cache.mcrouter.enabled }}
+# TODO: understand how to make mcrouter use the
+# application CA when connecting to memcached via TLS
+- name: {{ template "base.name.release" . }}-mcrouter
+  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.mcrouter }}
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- with .Values.cache.mcrouter }}
+  env:
+    - name: PORT
+      value: "{{ .port | default 11213 }}"
+    - name: CONFIG
+      value: "file:/etc/mcrouter/config.json"
+    - name: ROUTE_PREFIX
+      value: "{{ .route_prefix }}"
+    - name: CROSS_REGION_TO
+      value: "{{ .cross_region_timeout }}"
+    - name: CROSS_CLUSTER_TO
+      value: "{{ .cross_cluster_timeout }}"
+    - name: NUM_PROXIES
+      value: "{{ .num_proxies }}"
+    - name: PROBE_TIMEOUT
+      value: "{{ .probe_timeout }}"
+    - name: TIMEOUTS_UNTIL_TKO
+      value: "{{ .timeouts_until_tko }}"
+    # We don't want to listen to TLS here.
+    # TODO: check if it can connect with TLS without the TLS settings.
+    - name: USE_SSL
+      value: "no"
+  ports:
+  # Please note: this port is not exposed outside of the pod.
+    - name: mcrouter
+      containerPort: {{ .port | default 11213 }}
+  livenessProbe:
+    tcpSocket:
+      port: mcrouter
+  readinessProbe:
+    exec:
+      command:
+        - /bin/healthz
+  {{- end }}
+{{- if .Values.cache.mcrouter.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
+{{- end }}
+  volumeMounts:
+    - name: {{ template "base.name.release" . }}-mcrouter
+      mountPath: /etc/mcrouter
+  {{- with .Values.cache.mcrouter.resources }}
+  resources:
+    requests:
+{{ toYaml .requests | indent 6 }}
+    limits:
+{{ toYaml .limits | indent 6 }}
+  {{- end }}
+{{- if .Values.monitoring.enabled }}
+- name: {{ template "base.name.release" . }}-mcrouter-exporter
+  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  args: ["--mcrouter.address", "127.0.0.1:{{ .Values.cache.mcrouter.port }}", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]
+  ports:
+  # Port names are limited to 15 characters.
+  - name: mcr-metrics
+    containerPort: 9151
+  livenessProbe:
+    tcpSocket:
+      port: mcr-metrics
+  {{- with .Values.cache.mcrouter.exporter.resources }}
+  resources:
+    requests:
+{{ toYaml .requests | indent 6 }}
+    limits:
+{{ toYaml .limits | indent 6 }}
+  {{- end }}
+{{- if .Values.cache.mcrouter.prestop_sleep }}
+{{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
+{{- end }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{ define "cache.mcrouter.volume" }}
+{{- if .Values.cache.mcrouter.enabled }}
+# Mcrouter configuration
+- name: {{ template "base.name.release" . }}-mcrouter
+  configMap:
+    name: {{ template "base.name.release" . }}-mcrouter-config
+{{- end }}
+{{- end }}
+
+{{/* Begin of code for compatibility with 1.2 */}}
 {{- define "cache.mcrouter.deployment" -}}
 {{- if .Values.cache.mcrouter.enabled }}
 # TODO: understand how to make mcrouter use the
@@ -77,15 +167,7 @@
 {{- end -}}
 {{- end -}}
 {{- end -}}
-
-{{ define "cache.mcrouter.volume" }}
-{{- if .Values.cache.mcrouter.enabled }}
-# Mcrouter configuration
-- name: {{ template "base.name.release" . }}-mcrouter
-  configMap:
-    name: {{ template "base.name.release" . }}-mcrouter-config
-{{- end }}
-{{- end }}
+{{/* End of code for compatibility with 1.2 */}}
 
 {{/* Networkpolicy egress */}}
 {{- define "cache.mcrouter.egress" -}}
