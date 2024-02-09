@@ -1,3 +1,7 @@
+## configuration 1.7.0
+
+- Listen unconditionally on IPv6/IPv4
+
 ## configuration 1.2.2 / configuration 1.3.4 / configuration 1.4.4 / configuration 1.5.1 / configuration 1.6.1
 - Switch from wmf-ca-certificates to ca-certificates to allow the service mesh
   to talk to endpoints with Let's encrypt issued certificates

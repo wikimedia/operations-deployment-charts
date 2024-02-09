@@ -106,19 +106,32 @@ static_resources:
     {{- end }}
   {{- end }}
   listeners:
-  {{- include "mesh.configuration._admin_listener" . | indent 2}}
+  {{- $af_aware_dot := . -}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
+  {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
+  {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
   {{- if .Values.mesh.public_port -}}
-  {{- include "mesh.configuration._local_listener" . | indent 2}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
   {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
       {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) "Root" $ -}}
+      {{- $values = set $values "listen_address" "::" }}
+      {{- include "mesh.configuration._listener" $values | indent 2 }}
+      {{- $values = set $values "listen_address" "0.0.0.0" }}
       {{- include "mesh.configuration._listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
   {{- if .Values.tcp_proxy| default false -}}
     {{- range $name := .Values.tcp_proxy.listeners }}
       {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) "Root" $ }}
+      {{- $values = set $values "listen_address" "::" }}
+      {{- include "mesh.configuration._tcp_listener" $values | indent 2 }}
+      {{- $values = set $values "listen_address" "0.0.0.0" }}
       {{- include "mesh.configuration._tcp_listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
@@ -180,7 +193,9 @@ static_resources:
 */}}
 {{- define "mesh.configuration._local_listener" }}
 - address:
-    socket_address: {address: 0.0.0.0, port_value: {{ .Values.mesh.public_port }} }
+    socket_address:
+      address: "{{ .listen_address | default "0.0.0.0" }}"
+      port_value: {{ .Values.mesh.public_port }}
   filter_chains:
   - filters:
     - name: envoy.filters.network.http_connection_manager
@@ -322,7 +337,7 @@ under 'tcp_services_proxy'.
 - address:
     socket_address:
       protocol: TCP
-      address: 0.0.0.0
+      address: "{{ .listen_address | default "0.0.0.0" }}"
       port_value: {{ .Listener.port }}
   filter_chains:
   - filters:
@@ -464,7 +479,7 @@ under 'tcp_services_proxy'.
 {{- define "mesh.configuration._tcp_listener" }}
 - address:
     socket_address:
-      address: 0.0.0.0
+      address: "{{ .listen_address | default "0.0.0.0" }}"
       port_value: {{ .Listener.port }}
   filter_chains:
   - filters:
@@ -501,7 +516,7 @@ under 'tcp_services_proxy'.
 {{- define "mesh.configuration._admin_listener" }}
 - address:
     socket_address:
-      address: 0.0.0.0
+      address: "{{ .listen_address | default "0.0.0.0" }}"
       port_value: {{ .Values.mesh.telemetry.port | default 1667 }}
   filter_chains:
   - filters:
