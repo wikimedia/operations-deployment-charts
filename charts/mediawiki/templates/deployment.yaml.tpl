@@ -9,6 +9,10 @@ spec:
       app: {{ template "base.name.chart" . }}
       release: {{ .Release.Name }}
   replicas: {{ .Values.resources.replicas }}
+  {{- if .Values.strategy }}
+  strategy:
+  {{- toYaml .Values.strategy | nindent 6 }}
+  {{- end }}
   template:
     metadata:
       labels:
