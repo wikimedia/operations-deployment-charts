@@ -8,4 +8,5 @@ service:
   deployment: none
 
 resources:
-  replicas: 2
+  # 3% of main replicas, rounded up.
+  replicas: 5
