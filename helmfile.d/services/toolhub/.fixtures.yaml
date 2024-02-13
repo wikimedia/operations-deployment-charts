@@ -1,27 +1,4 @@
 ---
-# Fake /etc/helmfile-defaults/general-eqiad.yaml data
-services_proxy:
-  search-chi-eqiad:
-    port: 6102
-    timeout: 50s
-    upstream:
-      ips:
-        - 10.2.1.30/32
-        - 10.2.2.30/32
-      address: search.svc.eqiad.wmnet
-      port: 9243
-      encryption: true
-  search-chi-codfw:
-    port: 6202
-    timeout: 50s
-    upstream:
-      ips:
-        - 10.2.1.30/32
-        - 10.2.2.30/32
-      address: search.svc.codfw.wmnet
-      port: 9243
-      encryption: true
-
 # Fake /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml data
 cache:
   mcrouter:
