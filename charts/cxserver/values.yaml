@@ -22,7 +22,7 @@ main_app:
     TestClient:
       languages: config/TestClient.yaml
     #Apertium:
-    #  api: "http://127.0.0.1:6019"
+    #  api: "http://apertium.svc.cluster.local:2737"
     #  languages: config/Apertium.wikimedia.yaml
     #Elia:
     #  api: https://mt-api.elhuyar.eus/translate_string
@@ -39,7 +39,7 @@ main_app:
     #  account: "dummyaccount"
     #  languages: config/LingoCloud.yaml
     #MinT:
-    #  api: http://127.0.0.1:6504/api/translate
+    #  api: http://localhost:6504/api/translate
     #  languages: config/MinT.yaml
     #Yandex:
     #  api: https://translate.yandex.net
@@ -49,7 +49,7 @@ main_app:
   sectionmapping:
     # Default sectionmapping database, an sqlite file. MySQL is also supported
     database: config/cx-section-titles-aligned.db
-    # host: 127.0.0.1
+    # host: localhost
     # type: mysql
     # database: cxserverdb
     # user: cxserver
