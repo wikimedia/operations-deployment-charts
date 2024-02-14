@@ -1,0 +1,38 @@
+main_app:
+  requests:
+    cpu: 8  # equal to FFmpegThreads
+    memory: 4Gi  # TranscodeBackgroundMemoryLimit
+  limits:
+    cpu: 8  # equal to FFmpegThreads
+    memory: 6G
+
+  # Use a local-disk tmp to improve performance for
+  # large files. T292322
+
+  # Care should be taken here as failed videoscaler jobs could eat up
+  # a lot of disk
+  volumes:
+    - name: local-disk-tmp
+      emptyDir: {}
+  volumeMounts:
+    - name: local-disk-tmp
+      mountPath: /tmp
+
+shellbox:
+  flavour: video
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 4080
+
+php:
+  # One worker per pod to make resource management a little easier
+  # given how hungry ffmpeg can be
+  workers: 1
+  timeout: 86400
+
+resources:
+  replicas: 8
