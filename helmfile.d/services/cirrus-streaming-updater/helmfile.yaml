@@ -13,6 +13,19 @@ helmDefaults:
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/cirrus-streaming-updater-deploy-%s.config" .Environment.Name) }}
 
 templates:
+  backfill:
+    # Copy of the normal values files list, but adding values-backfill.yaml at the end.
+    values: &backfill_values
+        - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+        - "values.yaml" # non-env-specific values, in this repository
+        - "values-main.yaml" # prod-specific overrides
+        - "/etc/helmfile-defaults/private/main_services/cirrus-streaming-updater/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+        - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+        - "values-{{ `{{ .Release.Name }}` }}.yaml" # release-specific overrides
+        - "values-{{ `{{ .Release.Name }}` }}-{{ .Environment.Name }}.yaml" # env-and-release-specific overrides
+        - "values-backfill.yaml"
+        - environmentName: "{{ .Environment.Name }}"
+
   default: &default
     namespace: cirrus-streaming-updater
     chart: wmf-stable/flink-app
@@ -54,13 +67,19 @@ releases:
     <<: *default
   - name: consumer-search
     <<: *default
+  - name: consumer-search-backfill
+    <<: *default
+    values: *backfill_values
   - name: consumer-cloudelastic
     <<: *default
+  - name: consumer-cloudelastic-backfill
+    <<: *default
+    values: *backfill_values
 
 environments:
   staging:
     values:
-      - releases: [producer, consumer-search]
+      - releases: [producer, consumer-search, consumer-search-backfill]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -71,13 +90,13 @@ environments:
 
   eqiad:
     values:
-      # Add consumer-search once we are ready for a wider rollout
-      - releases: [producer, consumer-cloudelastic]
+      # Add consumer-search and backfill once we are ready for a wider rollout
+      - releases: [producer, consumer-cloudelastic, consumer-cloudelastic-backfill]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      # Add consumer-search once we are ready for a wider rollout
+      # Add consumer-search and backfill once we are ready for a wider rollout
       - releases: [producer]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
