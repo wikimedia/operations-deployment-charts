@@ -12,6 +12,7 @@ strategy:
   type: RollingUpdate
   rollingUpdate:
     maxUnavailable: 10%
+    maxSurge: 10%
 main_app:
   image: placeholder-for-mediawiki-image-name
   version: latest # we use latest everywhere in the defaults.
