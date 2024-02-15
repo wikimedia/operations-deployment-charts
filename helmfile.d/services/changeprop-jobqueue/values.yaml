@@ -121,7 +121,7 @@ main_app:
         retry_limit: 0
         concurrency: 15
       cirrusSearchLinksUpdate:
-        # k8s: false - high traffic job
+        k8s: true
         enabled: true
         retry_limit: 0
         concurrency: 300
