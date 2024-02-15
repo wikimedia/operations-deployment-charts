@@ -1,10 +1,11 @@
 app:
-  version: c79fda25c98d10154793ff020a82c24775131a3e-production
+  version: 7c9c23d2459a6950907249039dec4a62a16ae226-production
 
 config:
   superset:
     sqlalchemy_database_uri: mysql://superset:<PASSWORD>@an-mariadb1001.eqiad.wmnet:3306/superset_production
-
+  oidc:
+    client_id: superset_k8s
 ingress:
   gatewayHosts:
     default: "superset"

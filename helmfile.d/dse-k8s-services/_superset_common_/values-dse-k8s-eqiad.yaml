@@ -34,6 +34,11 @@ _druid_egress_ports: &druid_egress_ports
   - port: 8082
     protocol: tcp
 
+_idp_egress_ports: &idp_egress_ports
+  ports:
+  - port: 443
+    protocol: TCP
+
 networkpolicy:
   egress:
     dst_nets:
@@ -125,3 +130,12 @@ networkpolicy:
     # staging-db-analytics / mariadb
     - cidr: 10.64.135.22/32
       <<: *dbstore_egress_ports
+
+    - cidr: 208.80.154.146/32               # idp1002.wikimedia.org
+      <<: *idp_egress_ports
+    - cidr: 2620:0:861:2:208:80:154:146/128 # idp1002.wikimedia.org
+      <<: *idp_egress_ports
+    - cidr: 208.80.153.108/32               # idp2002.wikimedia.org
+      <<: *idp_egress_ports
+    - cidr: 2620:0:860:4:208:80:153:108/128 # idp2002.wikimedia.org
+      <<: *idp_egress_ports

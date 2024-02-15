@@ -130,6 +130,11 @@ config:
     - PRESTO_EXPAND_DATA
     extra_configuration: {}
 
+  oidc:
+    idp_server: idp.wikimedia.org
+    client_id: override_me
+    client_secret: override_me
+
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

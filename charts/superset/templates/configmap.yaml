@@ -50,7 +50,7 @@ data:
   superset_config.py: |
     {{- with $.Values.config.superset }}
     import datetime
-    from flask_appbuilder.security.manager import AUTH_REMOTE_USER
+    from flask_appbuilder.security.manager import AUTH_OAUTH
 
     #---------------------------------------------------------
     # Flask App Builder configuration
@@ -82,7 +82,23 @@ data:
     # ones by upstream.
     DRUID_IS_ACTIVE = {{ template "toPython" (dict "value" .druid_is_active) }}
 
-    AUTH_TYPE = AUTH_REMOTE_USER
+    AUTH_TYPE = AUTH_OAUTH
+    OAUTH_PROVIDERS = [
+        {
+            "name": "CAS",
+            "icon": "fa-openid",
+            'token_key':'access_token',
+            "remote_app": {
+                "client_id": "{{ $.Values.config.oidc.client_id }}",
+                "client_secret": "{{ $.Values.config.oidc.client_secret }}",
+                "server_metadata_url": "https://{{ $.Values.config.oidc.idp_server }}/oidc/.well-known",
+                'client_kwargs':{
+                    'scope': 'openid email profile'
+                },
+            },
+        }
+    ]
+
     ENABLE_PROXY_FIX = {{ template "toPython" (dict "value" .enable_proxy_fix) }}
 
     AUTH_USER_REGISTRATION = {{ template "toPython" (dict "value" .auth_user_registration) }}
@@ -127,7 +143,12 @@ data:
     {{ $key }} = {{ template "toPython" (dict "value" $value) }}
     {{- end }}
 
-    {{- $.Files.Get "files/superset_config_extra.py" | nindent 4 }}
+    {{- range $path, $_ :=  $.Files.Glob "files/**.py"}}
+    {{ $.Files.Get $path | nindent 4 }}
+    {{- end }}
+
+    ADDITIONAL_MIDDLEWARE = []
+    CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
 
   {{- end }}
 
