@@ -3,6 +3,7 @@ app:
     app.config.yaml:
         # These should be set when submitting the job via command line,
         # the default values ensure if started it will immediately
-        # enter the finished state.
-        kafka-source-start-time: 2000-01-01 00:00:00
-        kafka-source-end-time: 2000-01-01 00:00:00
+        # enter the finished state. They also serve as a local reference
+        # of the expected timestamp format.
+        kafka-source-start-time: 2000-01-01T00:00:00Z
+        kafka-source-end-time: 2000-01-01T00:00:00Z
