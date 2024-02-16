@@ -193,7 +193,7 @@ main_app:
     partitioned_jobs_config:
       refreshLinks:
         enabled: true
-        # k8s: false - EXTREMELY high traffic job
+        k8s: true
         # Partition jobs by mediawiki database cluster (s1, s2, etc.)
         partitioner_kind: mediawiki_database
         # This is the concurrency for the partitioner
