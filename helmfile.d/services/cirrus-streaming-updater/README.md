@@ -15,7 +15,7 @@ See:
 
 ### Override Values
 
-Use `--set "FULLY.QUALIFIED.KEY=VALUE"` (with quotes) syntax to override properties present in the `values` files. 
+Use `--set "FULLY.QUALIFIED.KEY=VALUE"` (with quotes) syntax to override properties present in the `values` files.
 
 To override app-specific config options, they must be merged in the `app.config.yaml` file that is created by the chart an passed a first (and sole) argument to either application:
 Use `--set "app.config_files.app\.config\.yaml.CONFIG_KEY=VALUE"` (with quotes) to add/override config properties.
@@ -23,20 +23,18 @@ Keep in mind, that changing config properties inline is neither transparent nor 
 
 ### Backfill Batch
 
-To catch up a specific range of kafka record offsets (as quickly as possible), deploy a release with the following overrides:
+To catch up a specific range of kafka record offsets (as quickly as possible), invoke a backfill release
+for the appropriate consumer. These will use additional values from values-backfill.yaml
 
-```properties
-# UTC date/time to start from, will be mapped to offset, use kafka-source-start-offset alternatively
-app.config_files.app\.config\.yaml.kafka-source-start-time=
-# UTC date/time to stop at, will be mapped to offset, use kafka-source-end-offset alternatively
-app.config_files.app\.config\.yaml.kafka-source-end-time=
-# Force fresh start
-app.job.upgradeMode=stateless
-# Optional, only in case it already runs
-app.restartNonce=2
-# Set to the highest number of partitions of all topics consumed, to achieve optimal distribution
-# However, keep in mind that may also increase the number of fetch and sink operators.
-# This causes increased pressure on MW APIs and ElasticSearch, respectively.
-# You may reduce that load by shrinking `fetch-retry-queue-capacity` at the same time.
-app.taskManager.replicas=5
+TODO: automation should startup the backfill, monitor for completion, and destroy
+
+```sh
+helmfile
+    --environment eqiad
+    --selector name=consumer-cloudelastic-backfill
+    apply
+    --context 5 \
+    --set "backfill=true" \
+    --set "app.config_files.app\.config\.yaml.kafka-source-start-time=2024-02-01T01:23:45Z" \
+    --set "app.config_files.app\.config\.yaml.kafka-source-end-time=2024-02-01T02:34:56Z"
 ```

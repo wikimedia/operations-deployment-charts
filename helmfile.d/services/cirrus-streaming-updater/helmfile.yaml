@@ -77,10 +77,18 @@ releases:
     <<: *default
     values: *backfill_values
 
+values:
+  # Defaults to false. Set to true from helmfile commandline to invoke the
+  # -backfill consumers. They are conditional so normal deployments don't
+  # attempt to interact with them.
+  - backfill: false
+
 environments:
   staging:
     values:
-      - releases: [producer, consumer-search, consumer-search-backfill]
+      - releases:
+        - producer
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -92,7 +100,9 @@ environments:
   eqiad:
     values:
       # Add consumer-search and backfill once we are ready for a wider rollout
-      - releases: [producer, consumer-cloudelastic, consumer-cloudelastic-backfill]
+      - releases:
+        - producer
+        - "consumer-cloudelastic{{ if .Values.backfill }}-backfill{{ end }}"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:

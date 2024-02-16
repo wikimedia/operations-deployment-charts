@@ -1,4 +1,10 @@
 app:
+  job:
+    # Force fresh start
+    upgradeMode: stateless
+  taskManager:
+    # Can be tuned along with fetch-retry-queue-capacity to control throughput
+    replicas: 2
   config_files:
     app.config.yaml:
         # These should be set when submitting the job via command line,
