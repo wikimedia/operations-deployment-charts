@@ -110,7 +110,7 @@ mesh:
   enabled: true
 
 # Enable mwapi-async envoy service proxy.
-# This will forward requests to https://localhost:6500 to mwapi-rw.discovery.wmnet.
+# This will forward requests to https://localhost:6500 to mw-api-int.discovery.wmnet.
 discovery:
   listeners:
-    - mwapi-async
+    - mw-api-int-async
