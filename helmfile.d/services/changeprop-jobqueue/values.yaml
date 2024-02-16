@@ -20,8 +20,7 @@ main_app:
         # more messages rather than keep sending small ones.
         # T338357
         linger.ms: 20
-    jobrunner_uri: https://jobrunner.discovery.wmnet/rpc/RunSingleJob.php
-    k8s_jobrunner_uri: https://mw-jobrunner.discovery.wmnet:4448/rpc/RunSingleJob.php
+    jobrunner_uri: https://mw-jobrunner.discovery.wmnet:4448/rpc/RunSingleJob.php
     videoscaler_uri: https://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
 
     partitioners: true
@@ -32,11 +31,9 @@ main_app:
     high_traffic_jobs_config:
       ThumbnailRender:
         enabled: true
-        k8s: true
         concurrency: 5
       categoryMembershipChange:
         enabled: true
-        k8s: true
         concurrency: 200
       # CNDPurge is quite low-volume, but it uses delayed execution,
       # so avoid putting it together with other low-volume jobs so that it doesn't
@@ -44,50 +41,41 @@ main_app:
       cdnPurge:
         enabled: true
         concurrency: 40
-        k8s: true
       ORESFetchScoreJob:
         enabled: true
-        k8s: true
         concurrency: 30
       # RecordLinks is normally low-volume, but could have big spikes
       # when maintenance scripts are run. Elevated concurrency
       RecordLintJob:
         enabled: true
-        k8s: true
         concurrency: 100
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
         enabled: true
-        k8s: true
         concurrency: 20
       constraintsRunCheck:
         enabled: true
-        k8s: true
         concurrency: 30
       fetchGoogleCloudVisionAnnotations:
         enabled: true
-        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, so we don't want
         # the reenqueue feature to kick in.
         reenqueue_delay: 259200
       notificationGetStartedJob:
         enabled: true
-        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
         # by setting the reenqueue delay to 72 hours
         reenqueue_delay: 259200
       notificationKeepGoingJob:
         enabled: true
-        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 48 hours, avoid reenqueueing them
         # by setting the reenqueue delay to 72 hours
         reenqueue_delay: 259200
       newcomerTasksCacheRefreshJob:
         enabled: true
-        k8s: true
         concurrency: 10
         # All the jobs of this kind are delayed exactly 144 hours (6 days), avoid reenqueueing them
         # by setting the reenqueue delay to 7 days
@@ -95,7 +83,6 @@ main_app:
       refreshUserImpactJob:
         enabled: true
         concurrency: 10
-        k8s: true
       # For cirrus search jobs the retries are built into the job itself,
       # so disable the retries by change-prop. We need special rules for cirrus
       # jobs because they need special configuration.
@@ -104,41 +91,33 @@ main_app:
         disable_delayed_execution: true #T198462
         retry_limit: 0
         concurrency: 30
-        k8s: true
       cirrusSearchDeleteArchive:
-        k8s: true
         enabled: true
         retry_limit: 0
         concurrency: 5
       cirrusSearchDeletePages:
         enabled: true
-        k8s: true
         retry_limit: 0
         concurrency: 5
       cirrusSearchIncomingLinkCount:
         enabled: true
-        k8s: true
         retry_limit: 0
         concurrency: 15
       cirrusSearchLinksUpdate:
-        k8s: true
         enabled: true
         retry_limit: 0
         concurrency: 300
       cirrusSearchLinksUpdatePrioritized:
         enabled: true
-        k8s: true
         retry_limit: 0
         concurrency: 150
       cirrusSearchOtherIndex:
         enabled: true
-        k8s: true
         retry_limit: 0
         concurrency: 5
       processMediaModeration:
         # unclear as to whether this job is in use
         enabled: true
-        k8s: true
         # The job calls out to external PhotoDNA service, that has 5 req/s limit.
         # The job takes 0.5s on average, so we would end up making 3.5 req/s on average.
         # In case some of the jobs get rate limited, they will be retried.
@@ -147,33 +126,26 @@ main_app:
         # This job is prone to large spikes, so having it on the low_traffic_jobs queue
         # blocks other jobs.
         enabled: true
-        k8s: true
         concurrency: 25
       # Translation jobs tend to be low traffic but are being delayed when other
       # low traffic jobs have a large spike. It is being moved to its own queue to
       # improve editing experience for users T267520
       UpdateTranslatablePageJob:
         enabled: true
-        k8s: true
         concurrency: 3
       RenderTranslationPageJob:
         enabled: true
-        k8s: true
         concurrency: 3
       DispatchChanges:
         enabled: true
-        k8s: true
         concurrency: 15
       EntityChangeNotification:
         enabled: true
-        k8s: true
         concurrency: 29
       wikibase-InjectRCRecords:
         enabled: true
-        k8s: true
         concurrency: 7
       parsoidCachePrewarm:
-        k8s: true
         enabled: true
         concurrency: 150
 
@@ -193,7 +165,6 @@ main_app:
     partitioned_jobs_config:
       refreshLinks:
         enabled: true
-        k8s: true
         # Partition jobs by mediawiki database cluster (s1, s2, etc.)
         partitioner_kind: mediawiki_database
         # This is the concurrency for the partitioner
@@ -208,7 +179,6 @@ main_app:
           root_claim_ttl: 604800
       htmlCacheUpdate:
         enabled: true
-        k8s: true
         # Partition jobs by mediawiki database cluster (s1, s2, etc.)
         partitioner_kind: mediawiki_database
         partitioner_concurrency: 50
@@ -221,7 +191,6 @@ main_app:
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       cirrusSearchElasticaWrite:
-        k8s: true
         enabled: true
         partitioner_kind: cirrussearch_cluster
         partitioner_concurrency: 50
@@ -241,7 +210,6 @@ main_app:
     # So a significantly higher concurrency is needed to account for that.
     low_traffic_jobs:
       enabled: true
-      k8s: true
       concurrency: 50
 
 monitoring:

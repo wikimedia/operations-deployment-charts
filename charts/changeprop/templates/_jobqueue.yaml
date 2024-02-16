@@ -1,6 +1,5 @@
 {{- define "jobqueue.app" }}
 {{- $jobrunner_uri  := .Values.main_app.jobqueue.jobrunner_uri -}}
-{{- $k8s_jobrunner_uri  := .Values.main_app.jobqueue.k8s_jobrunner_uri | default .Values.main_app.jobqueue.jobrunner_uri -}}
 {{- $videoscaler_uri := .Values.main_app.jobqueue.videoscaler_uri -}}
 
 # service-runner jobqueue app config.yaml.
@@ -144,7 +143,7 @@ spec: &spec
                 {{- end }}
                 exec:
                   method: post
-                  uri: {{ if $topic_config.k8s }}'{{ $k8s_jobrunner_uri }}'{{ else }}'{{ $jobrunner_uri }}'{{ end }}
+                  uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
@@ -175,7 +174,7 @@ spec: &spec
                 {{- end }}
                 exec:
                   method: post
-                  uri: {{ if $part_options.k8s }}'{{ $k8s_jobrunner_uri }}'{{ else }}'{{ $jobrunner_uri }}'{{ end }}
+                  uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
@@ -227,7 +226,7 @@ spec: &spec
                 {{- end }}
                 exec:
                   method: post
-                  uri: {{ if .Values.main_app.jobqueue.low_traffic_jobs.k8s }}'{{ $k8s_jobrunner_uri }}'{{ else }}'{{ $jobrunner_uri }}'{{ end }}
+                  uri: '{{ $jobrunner_uri }}'
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'

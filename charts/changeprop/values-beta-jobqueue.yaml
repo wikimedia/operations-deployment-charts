@@ -14,7 +14,6 @@ main_app:
   jobqueue:
     enabled: true
     jobrunner_uri: http://deployment-jobrunner04.deployment-prep.eqiad1.wikimedia.cloud:9006/rpc/RunSingleJob.php
-    # explicitly do not set a k8s_jobrunner_uri
 
     partitioners: false
 
