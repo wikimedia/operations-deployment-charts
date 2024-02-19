@@ -30,10 +30,8 @@ main_app:
   endpoints:
     appserver_cluster:
       debug_hosts:
-        mwdebug1001.eqiad.wmnet: 443
-        mwdebug1002.eqiad.wmnet: 443
-        mwdebug2001.codfw.wmnet: 443
-        mwdebug2002.codfw.wmnet: 443
+        mwdebug.svc.eqiad.wmnet: 4444
+        mwdebug.svc.codfw.wmnet: 4444
     restbase_cluster:
       type: LOGICAL_DNS
       tls: true
@@ -41,10 +39,8 @@ main_app:
         restbase.discovery.wmnet: 7443
     mwapi_cluster:
       debug_hosts:
-        mwdebug1001.eqiad.wmnet: 443
-        mwdebug1002.eqiad.wmnet: 443
-        mwdebug2001.codfw.wmnet: 443
-        mwdebug2002.codfw.wmnet: 443
+        mwdebug.svc.eqiad.wmnet: 4444
+        mwdebug.svc.codfw.wmnet: 4444
     mobileapps_cluster:
       type: LOGICAL_DNS
       tls: true
@@ -517,3 +513,19 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 31443
+    - cidr: 10.2.1.59/32 # mwdebug.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4444
+    - cidr: 10.2.2.59/32 # mwdebug.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4444
+    - cidr: 10.2.1.75/32 # mw-web.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4450
+    - cidr: 10.2.2.75/32 # mw-web.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4450
