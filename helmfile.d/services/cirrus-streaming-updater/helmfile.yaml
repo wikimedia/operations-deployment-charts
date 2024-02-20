@@ -13,20 +13,6 @@ helmDefaults:
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/cirrus-streaming-updater-deploy-%s.config" .Environment.Name) }}
 
 templates:
-  backfill:
-    # Copy of the normal values files list, but strip -backfill from release name
-    # to import the non-backfill options, and add values-backfill.yaml at the end.
-    values: &backfill_values
-        - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
-        - "values.yaml" # non-env-specific values, in this repository
-        - "values-main.yaml" # prod-specific overrides
-        - "/etc/helmfile-defaults/private/main_services/cirrus-streaming-updater/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
-        - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
-        - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}.yaml' # release-specific overrides
-        - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}-{{ .Environment.Name }}.yaml' # env-and-release-specific overrides
-        - "values-backfill.yaml"
-        - environmentName: "{{ .Environment.Name }}"
-
   default: &default
     namespace: cirrus-streaming-updater
     chart: wmf-stable/flink-app
@@ -45,6 +31,21 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ `{{ .Release.Name }}` }}.yaml" # release-specific overrides
       - "values-{{ `{{ .Release.Name }}` }}-{{ .Environment.Name }}.yaml" # env-and-release-specific overrides
+      - environmentName: "{{ .Environment.Name }}"
+
+  backfill: &backfill
+    <<: *default
+    # Copy of the normal values files list, but strip -backfill from release name
+    # to import the non-backfill options, and add values-backfill.yaml at the end.
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values.yaml" # non-env-specific values, in this repository
+      - "values-main.yaml" # prod-specific overrides
+      - "/etc/helmfile-defaults/private/main_services/cirrus-streaming-updater/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}.yaml' # release-specific overrides
+      - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}-{{ .Environment.Name }}.yaml' # env-and-release-specific overrides
+      - "values-backfill.yaml"
       - environmentName: "{{ .Environment.Name }}"
 
 hooks:
@@ -66,16 +67,17 @@ hooks:
 releases:
   - name: producer
     <<: *default
+  {{ if not .Values.backfill }}
   - name: consumer-search
     <<: *default
-  - name: consumer-search-backfill
-    <<: *default
-    values: *backfill_values
   - name: consumer-cloudelastic
     <<: *default
+  {{ else }}
+  - name: consumer-search-backfill
+    <<: *backfill
   - name: consumer-cloudelastic-backfill
-    <<: *default
-    values: *backfill_values
+    <<: *backfill
+  {{ end }}
 
 values:
   # Defaults to false. Set to true from helmfile commandline to invoke the
