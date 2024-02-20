@@ -72,7 +72,7 @@ query:
       code_challenge_method = "plain"
       tls_cert_file = "/tls/tls.crt"
       tls_key_file = "/tls/tls.key"
-      ssl_insecure_skip_verify = true
+      ssl_upstream_insecure_skip_verify = true
   networkPolicy:
     enabled: true
     ingressRules:
