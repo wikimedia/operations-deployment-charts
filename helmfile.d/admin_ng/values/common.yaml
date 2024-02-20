@@ -46,6 +46,7 @@
 #     Default: []
 #     A list of additional names to be added to the SANs of the default TLS certificate that will be used by
 #     Istio-Ingressgateway.
+#     This is useful for names that don't match the tlsHostnames schema, like foo.wikimedia.org.
 #   deployTLSCertificate:
 #     Default: false when the systemNamespace flag or the isBuiltinNamespace one
 #     is true, and true in all the other cases.
