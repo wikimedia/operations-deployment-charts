@@ -87,6 +87,8 @@ query:
           ports:
             - port: 16686
               protocol: TCP
+            - port: 4180
+              protocol: TCP
         # Allow ingress from everywhere to the admin port
         # FIXME: This should be limited to prometheus nodes and kubelets
         # FIXME: admin port sounds evil, I could not find docs
