@@ -28,6 +28,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: sidecar-job-controller
+    namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
