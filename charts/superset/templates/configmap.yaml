@@ -42,7 +42,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   gunicorn_config.py: |
-    bind = '0.0.0.0:{{ $.Values.app.port }}'
+    bind = '0.0.0.0:{{ $.Values.app.gunicorn_port }}'
     {{- range $k, $v := .Values.config.gunicorn }}
     {{ $k }} = {{ template "toPython" (dict "value" $v) }}
     {{- end }}
@@ -150,7 +150,45 @@ data:
     ADDITIONAL_MIDDLEWARE = []
     CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
 
-  {{- end }}
+    {{- end }}
+---
+{{/*
+  This configmap is used to configure nginx to serve the static assets
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  nginx.conf: |
+    worker_processes  1;
+    events {
+      worker_connections  10240;
+    }
+    error_log /dev/stdout info;
+    http {
+      server {
+          access_log /dev/stdout;
+          listen       {{ .Values.app.port }};
+          location / {
+            root       /app/superset;
+            # Tune slightly for serving static content.
+            sendfile   on;
+            tcp_nopush on;
+            try_files $uri @proxy_to_app;
+          }
+          location @proxy_to_app {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_pass http://127.0.0.1:{{ .Values.app.gunicorn_port }};
+          }
+        }
+      }
+    }
 
 
 {{ include "mesh.configuration.configmap" . }}

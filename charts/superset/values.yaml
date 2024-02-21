@@ -2,10 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
-  image: repos/data-engineering/superset
+  image: repos/data-engineering/superset/superset-backend
   version: latest # we use latest everywhere in the defaults.
-  port: &app_port 8080 # port exposed as a Service, also used by service-checker.
+  port: &app_port 8080 # This port will be the nginx reverse proxy
   command: ["gunicorn"]
+  gunicorn_port: &gunicorn_port 8090 # This will be the actual application port
   args:
   - "--config"
   - "/etc/superset/gunicorn_config.py"
@@ -20,7 +21,7 @@ app:
   liveness_probe:
     httpGet:
       path: /health
-      port: *app_port
+      port: *gunicorn_port
     initialDelaySeconds: 15
     timeoutSeconds: 1
     failureThreshold: 60
@@ -29,7 +30,7 @@ app:
   readiness_probe:
     httpGet:
       path: /health
-      port: *app_port
+      port: *gunicorn_port
     initialDelaySeconds: 15
     timeoutSeconds: 1
     failureThreshold: 60
@@ -68,6 +69,47 @@ app:
     mountPath: &upload_dir /tmp/superset_uploads
   - name: superset-config-volume
     mountPath: /etc/superset
+
+# The assets sidecar serves Superset's static asset files from a simple nginx container, without authentication.
+assets:
+  image: repos/data-engineering/superset/superset-frontend
+  version: latest
+  replicas: 1
+  liveness_probe:
+    httpGet:
+      path: /static/assets/manifest.json
+      port: *app_port # This is the nginx port that is exposed to the service
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+    failureThreshold: 60
+    periodSeconds: 5
+    successThreshold: 1
+  readiness_probe:
+    httpGet:
+      path: /static/assets/manifest.json
+      port: *app_port # This is the nginx port that is exposed to the service
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+    failureThreshold: 60
+    periodSeconds: 5
+    successThreshold: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+
+  volumes:
+  - name: nginx-config-volume
+    configMap:
+      name: nginx-config
+
+  volumeMounts:
+  - name: nginx-config-volume
+    mountPath: /etc/nginx/nginx.conf
+    subPath: nginx.conf
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
