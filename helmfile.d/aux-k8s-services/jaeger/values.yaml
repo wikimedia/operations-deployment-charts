@@ -26,6 +26,10 @@ query:
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
+  resources:
+    limits:
+      cpu: 2
+      memory: 1Gi
   agentSidecar:
     enabled: false
   serviceAccount:
@@ -150,6 +154,10 @@ collector:
     collector.otlp.grpc.tls.enabled: true
     collector.otlp.grpc.tls.key: /tls/tls.key
     collector.otlp.grpc.tls.cert: /tls/tls.crt
+  resources:
+    limits:
+      cpu: 2
+      memory: 1Gi
   serviceAccount:
     create: false
   podAnnotations:
