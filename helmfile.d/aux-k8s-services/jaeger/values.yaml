@@ -44,6 +44,9 @@ query:
     port: 16686
   oAuthSidecar:
     enabled: true
+    resources:
+      limits:
+        cpu: 1
     image: docker-registry.discovery.wmnet/oauth2-proxy:7.5.1-1-20240201
     extraSecretMounts:
       - name: tls
