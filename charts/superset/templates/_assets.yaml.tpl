@@ -7,6 +7,14 @@
   - containerPort: {{ .Values.app.port }}
     protocol: TCP
   {{- include "base.helper.resources" .Values.assets.resources | indent 2 }}
+  {{- if .Values.assets.liveness_probe }}
+  livenessProbe:
+  {{- toYaml .Values.assets.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- if .Values.assets.readiness_probe }}
+  readinessProbe:
+  {{- toYaml .Values.assets.readiness_probe | nindent 4 }}
+  {{- end }}
   volumeMounts:
     {{- toYaml .Values.assets.volumeMounts | nindent 4 }}
 {{- end }}

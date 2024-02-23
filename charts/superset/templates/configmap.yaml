@@ -168,10 +168,21 @@ data:
       worker_connections  10240;
     }
     error_log /dev/stdout info;
+    pid /tmp/nginx.pid;
     http {
+      include mime.types;
+      upstream superset {
+        server 127.0.0.1:{{ .Values.app.gunicorn_port }};
+        keepalive 64;
+      }
       server {
         access_log /dev/stdout;
         listen       {{ .Values.app.port }};
+        proxy_temp_path /tmp/proxy_temp;
+        client_body_temp_path /tmp/client_temp;
+        fastcgi_temp_path /tmp/fastcgi_temp;
+        uwsgi_temp_path /tmp/uwsgi_temp;
+        scgi_temp_path /tmp/scgi_temp;
         location / {
           root       /app/superset;
           # Tune slightly for serving static content.
@@ -179,12 +190,18 @@ data:
           tcp_nopush on;
           try_files $uri @proxy_to_app;
         }
+        location /health {
+          return 200 "healthy\n";
+        }
         location @proxy_to_app {
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
           proxy_set_header Host $http_host;
+          proxy_ignore_client_abort on;
           proxy_redirect off;
-          proxy_pass http://127.0.0.1:{{ .Values.app.gunicorn_port }};
+          proxy_pass http://superset;
+          proxy_set_header Connection "";
+          proxy_http_version 1.1;
         }
       }
     }

@@ -23,7 +23,7 @@ app:
       path: /health
       port: *gunicorn_port
     initialDelaySeconds: 15
-    timeoutSeconds: 1
+    timeoutSeconds: 5
     failureThreshold: 60
     periodSeconds: 5
     successThreshold: 1
@@ -32,7 +32,7 @@ app:
       path: /health
       port: *gunicorn_port
     initialDelaySeconds: 15
-    timeoutSeconds: 1
+    timeoutSeconds: 5
     failureThreshold: 60
     periodSeconds: 5
     successThreshold: 1
@@ -133,7 +133,7 @@ config:
     FLASK_APP: 'superset.app:create_app()'
     PYTHONPATH: '/app:/home/superset/.local/lib/python3.9/site-packages/:/etc/superset'
     SUPERSET_HOME: '/home/runuser'
-    SUPERSET_PORT: *app_port
+    SUPERSET_PORT: *gunicorn_port
 
   private: {} # Add here all the keys that should be private but still available as env variables
 
