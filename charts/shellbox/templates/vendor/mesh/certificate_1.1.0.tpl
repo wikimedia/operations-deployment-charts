@@ -1,4 +1,4 @@
-{{- if and .Values.mesh.enabled .Values.mesh.public_port (.Values.mesh.certmanager | default dict).enabled }}
+{{- if and .Values.mesh.enabled .Values.mesh.public_port }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
