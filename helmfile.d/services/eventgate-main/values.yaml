@@ -31,6 +31,7 @@ main_app:
   version: 2023-10-25-155509-production
   limits:
     memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
+  worker_heap_limit_mb: 500
   prestop_sleep: 63
   conf:
     kafka:
