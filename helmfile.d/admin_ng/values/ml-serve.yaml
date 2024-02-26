@@ -106,6 +106,7 @@ namespaces:
       - '*.revscoring-articletopic.wikimedia.org'
       - '*.experimental.wikimedia.org'
       - '*.articletopic-outlink.wikimedia.org'
+      - '*.article-descriptions.wikimedia.org'
       - '*.revertrisk.wikimedia.org'
       - '*.llm.wikimedia.org'
     labels:
@@ -197,6 +198,11 @@ namespaces:
     labels:
       istio-injection: enabled
   readability:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
+  article-descriptions:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
     labels:
