@@ -46,6 +46,7 @@ templates:
       - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}.yaml' # release-specific overrides
       - 'values-{{ `{{ trimSuffix "-backfill" .Release.Name }}` }}-{{ .Environment.Name }}.yaml' # env-and-release-specific overrides
       - "values-backfill.yaml"
+      - 'values-{{ `{{ .Release.Name }}` }}-{{ .Environment.Name }}.yaml' # env-and-release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
 
 hooks:
