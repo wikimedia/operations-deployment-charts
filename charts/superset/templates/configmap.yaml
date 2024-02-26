@@ -93,19 +93,24 @@ data:
                 "client_secret": "{{ $.Values.config.oidc.client_secret }}",
                 "server_metadata_url": "https://{{ $.Values.config.oidc.idp_server }}/oidc/.well-known",
                 'client_kwargs':{
-                    'scope': 'openid email profile'
+                    'scope': 'openid email profile groups'
                 },
             },
         }
     ]
-
-    ENABLE_PROXY_FIX = {{ template "toPython" (dict "value" .enable_proxy_fix) }}
-
+    AUTH_ROLES_MAPPING = {
+      {{- range $ldapGroup, $supersetRole := .auth_role_mappings }}
+      "cn={{ $ldapGroup }},ou=groups,dc=wikimedia,dc=org": {{ template "toPython" (dict "value" $supersetRole) }},
+      {{- end }}
+    }
+    AUTH_ROLES_SYNC_AT_LOGIN = {{ template "toPython" (dict "value" .auth_roles_sync_at_login) }}
+    AUTH_ROLE_ADMIN = {{ template "toPython" (dict "value" .auth_role_admin) }}
     AUTH_USER_REGISTRATION = {{ template "toPython" (dict "value" .auth_user_registration) }}
     AUTH_USER_REGISTRATION_ROLE = {{ template "toPython" (dict "value" .auth_user_registration_role) }}
 
     LOG_LEVEL = {{ template "toPython" (dict "value" .log_level) }}
 
+    ENABLE_PROXY_FIX = {{ template "toPython" (dict "value" .enable_proxy_fix) }}
     password_mapping = {
         {{- range $dbUri, $password := .password_mapping }}
         {{ $dbUri | quote }}: {{ $password | quote }},
@@ -197,7 +202,7 @@ data:
         }
         location @proxy_to_app {
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Proto https;
           proxy_set_header Host $http_host;
           proxy_ignore_client_abort on;
           proxy_redirect off;

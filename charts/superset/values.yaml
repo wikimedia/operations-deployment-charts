@@ -151,9 +151,15 @@ config:
     upload_folder: *upload_dir
     druid_is_active: false
     enable_proxy_fix: true
+    log_level: INFO
     auth_user_registration: true
-    auth_user_registration_role: 'WMF Analyst'
-    log_level: info
+    auth_user_registration_role: Alpha
+    auth_role_admin: Admin
+    auth_role_mappings:
+      nda: [sql_lab]
+      ops: [Admin, sql_lab]
+      wmf: [sql_lab]
+    auth_roles_sync_at_login: true
     cache_config:
       cache_type: memcached
       cache_default_timeout: 43200 # 12 hours (in secs)
