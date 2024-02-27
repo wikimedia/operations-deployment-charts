@@ -104,6 +104,8 @@ data:
     AUTH_USER_REGISTRATION = {{ template "toPython" (dict "value" .auth_user_registration) }}
     AUTH_USER_REGISTRATION_ROLE = {{ template "toPython" (dict "value" .auth_user_registration_role) }}
 
+    LOG_LEVEL = {{ template "toPython" (dict "value" .log_level) }}
+
     password_mapping = {
         {{- range $dbUri, $password := .password_mapping }}
         {{ $dbUri | quote }}: {{ $password | quote }},
