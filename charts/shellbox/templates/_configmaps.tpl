@@ -1,4 +1,4 @@
-{{ define "shellbox.secret" }}
+{{ define "shellbox.httpdconf" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -12,4 +12,5 @@ metadata:
 data:
   90-shellbox.conf: |-
     SetEnvIf Request_URI . SHELLBOX_SECRET_KEY={{ .Values.shellbox.secret_key }}
+    TimeOut {{ add .Values.php.timeout 3 }}
 {{end}}

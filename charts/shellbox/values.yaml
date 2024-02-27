@@ -93,6 +93,9 @@ php:
   workers: 2
   # Disable php-fpm's slowlog, useless plus needs ptrace capability (T288315)
   slowlog_timeout: 0
+  # IMPORTANT: This is the PHP timeout, but it does not affect Shellbox's child processes.
+  # Therefore, the timeout set here must be the same as $wgMaxShellWallClockTime in MediaWiki
+  # config, otherwise the shell commands will keep running after request termination.
   timeout: 60
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.

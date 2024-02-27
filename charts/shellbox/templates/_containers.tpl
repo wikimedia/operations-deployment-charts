@@ -71,8 +71,12 @@ resources:
     value: "{{ .Values.php.opcache.nofiles }}"
   - name: FPM__request_slowlog_timeout
     value: "{{ .Values.php.slowlog_timeout }}"
+  - name: FPM__process_control_timeout
+    value: "{{ .Values.php.timeout }}"
   - name: FPM__request_terminate_timeout
     value: "{{ .Values.php.timeout }}"
+  - name: PHP__max_execution_time
+    value: "{{ add .Values.php.timeout 2 }}"
   - name: PHP__apc__shm_size
     value: "{{ .Values.php.apc.size }}"
   - name: FPM__pm__max_children

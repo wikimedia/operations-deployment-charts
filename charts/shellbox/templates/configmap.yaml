@@ -27,5 +27,5 @@ data:
   config.json: |-
 {{ .Files.Get "config/shellbox-config.json" | indent 4 }}
 
-{{ include "shellbox.secret" . }}
+{{ include "shellbox.httpdconf" . }}
 {{ include "mesh.configuration.configmap" . }}
