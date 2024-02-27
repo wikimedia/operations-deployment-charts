@@ -21,6 +21,7 @@ spec:
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
         checksum/apache: {{ include (print $.Template.BasePath "/_configmaps.tpl") . | sha256sum }}
     spec:
       {{- if .Values.affinity }}
