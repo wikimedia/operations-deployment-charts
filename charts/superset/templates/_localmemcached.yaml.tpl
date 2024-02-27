@@ -59,6 +59,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
+    app: memcached
     release: {{ .Release.Name }}
     routed_via: {{ .Values.routed_via | default .Release.Name }}
   ports:
