@@ -33,6 +33,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: sidecar-job-controller-viewer
+{{ $controller_namespace := .Release.Namespace }}
 {{ range $namespace, $values := .Values.namespaces }}
 {{- if $values.enableJobSidecarController }}
 ---
@@ -44,6 +45,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: sidecar-job-controller
+    namespace: {{ $controller_namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
