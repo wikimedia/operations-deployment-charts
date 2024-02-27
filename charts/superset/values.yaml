@@ -105,11 +105,16 @@ assets:
   - name: nginx-config-volume
     configMap:
       name: nginx-config
+  - name: requestctl-generator-page-volume
+    configMap:
+      name: requestctl-generator-page
 
   volumeMounts:
   - name: nginx-config-volume
     mountPath: /etc/nginx/nginx.conf
     subPath: nginx.conf
+  - name: requestctl-generator-page-volume
+    mountPath: /app/superset/requestctl-generator
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.

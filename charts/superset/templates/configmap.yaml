@@ -190,6 +190,19 @@ data:
         fastcgi_temp_path /tmp/fastcgi_temp;
         uwsgi_temp_path /tmp/uwsgi_temp;
         scgi_temp_path /tmp/scgi_temp;
+
+        # Serve the requestctl-generator.html static page with the Content-Type: text/html
+        # response header when hitting the /requestctl-generator endpoint
+        location /requestctl-generator {
+          default_type text/html;
+          alias /app/superset/requestctl-generator/requestctl-generator.html;
+          try_files $uri $uri/ =404;
+        }
+
+        location /health {
+          return 200 "healthy\n";
+        }
+
         location / {
           root       /app/superset;
           # Tune slightly for serving static content.
@@ -197,9 +210,7 @@ data:
           tcp_nopush on;
           try_files $uri @proxy_to_app;
         }
-        location /health {
-          return 200 "healthy\n";
-        }
+
         location @proxy_to_app {
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto https;
@@ -213,6 +224,19 @@ data:
       }
     }
 
+---
+{{/*
+  This configmap is used to serve the requestctl-generator.html page from nginx
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: requestctl-generator-page
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  requestctl-generator.html: |
+    {{ $.Files.Get "files/requestctl-generator.html" | nindent 4 }}
 
 {{ include "mesh.configuration.configmap" . }}
 {{- include "base.statsd.configmap" . }}
