@@ -4,7 +4,7 @@ resources:
   replicas: 76
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
-  version: 2024-01-25-122101-production
+  version: 2024-02-26-121831-production
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
   mwrestapi_uri: http://localhost:6500/w/rest.php
@@ -12,6 +12,7 @@ main_app:
   mw_resource_loader_uri: http://localhost:6500/w/load.php
   limits:
     cpu: 2
+  use_coreparsoid_endpoint: true
 
 monitoring:
   enabled: true
