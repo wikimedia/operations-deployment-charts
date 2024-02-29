@@ -137,11 +137,22 @@ data:
         {{- end}}
         "CACHE_MEMCACHED_SERVERS": [CACHE_URL],
     }
+    {{- if .data_cache_config }}
+    DATA_CACHE_CONFIG = {
+      {{- range $config, $value := .data_cache_config }}
+      {{ $config | upper | quote }}: {{ template "toPython" (dict "value" $value) }},
+      {{- end}}
+      "CACHE_MEMCACHED_SERVERS": [CACHE_URL],
+    }
+    {{- end }}
     RATELIMIT_STORAGE_URI = "memcached://" + CACHE_URL
     {{- end }}
 
     FEATURE_FLAGS = {
         {{- range $featureFlag := .feature_flags }}
+        {{ $featureFlag | quote }}: True,
+        {{- end }}
+        {{- range $featureFlag := .extra_feature_flags }}
         {{ $featureFlag | quote }}: True,
         {{- end }}
     }
