@@ -12,6 +12,10 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        checksum/superset-config: {{ include "configmap.superset" . | sha256sum }}
+        checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
+        checksum/nginx-config: {{ include "configmap.nginx" . | sha256sum }}
+        checksum/requestctl-generator-config: {{ include "configmap.requestctl-generator" . | sha256sum }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
