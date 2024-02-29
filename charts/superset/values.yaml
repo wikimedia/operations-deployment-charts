@@ -116,10 +116,6 @@ assets:
   - name: requestctl-generator-page-volume
     mountPath: /app/superset/requestctl-generator
 
-monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
-
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:
@@ -288,8 +284,7 @@ ingress:
 
 common_images:
   statsd:
-    image: prometheus-statsd-exporter
-    version: latest
+    exporter: prometheus-statsd-exporter
   memcached:
     image: memcached
     version: latest
@@ -327,7 +322,37 @@ docker:
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+  enabled: true
+  statsd:
+    port: 9102
+    prestop_sleep: 0
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    # from https://github.com/blueswen/gunicorn-monitoring
+    config: |-
+      mappings:
+      - match: "*.gunicorn.request.status.*"
+        help: "gunicorn response code"
+        name: "gunicorn_response_code"
+        labels:
+          app: "$1"
+          status: "$2"
+      - match: "*.gunicorn.workers"
+        name: "gunicorn_workers"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.requests"
+        name: "gunicorn_requests"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.request.duration"
+        name: "gunicorn_request_duration"
+        labels:
+          app: "$1"
 
 networkpolicy:
   egress:

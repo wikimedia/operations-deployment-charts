@@ -16,6 +16,12 @@ spec:
         checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
         checksum/nginx-config: {{ include "configmap.nginx" . | sha256sum }}
         checksum/requestctl-generator-config: {{ include "configmap.requestctl-generator" . | sha256sum }}
+        {{- if $.Values.monitoring.enabled }}
+        {{- if $.Values.monitoring.statsd }}
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: {{ $.Values.monitoring.statsd.port | quote }}
+        {{- end }}
+        {{- end }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
