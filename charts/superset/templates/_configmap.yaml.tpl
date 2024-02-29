@@ -51,6 +51,12 @@ data:
     {{- range $k, $v := .Values.config.gunicorn }}
     {{ $k }} = {{ template "toPython" (dict "value" $v) }}
     {{- end }}
+    {{- if $.Values.monitoring.enabled }}
+    {{- if $.Values.monitoring.statsd }}
+    statsd_host = "localhost:9125"
+    statsd_prefix = "superset"
+    {{- end }}
+    {{- end }}
 
   superset_config.py: |
     {{- with $.Values.config.superset }}
