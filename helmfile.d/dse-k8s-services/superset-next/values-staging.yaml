@@ -1,11 +1,17 @@
 app:
   version: e9b6fabd9453001721cbd0ecb872fe256d4cbb32-production-backend
+
 assets:
   version: e9b6fabd9453001721cbd0ecb872fe256d4cbb32-production-frontend
 
 config:
   superset:
     sqlalchemy_database_uri: mysql://superset_staging:<PASSWORD>@an-mariadb1001.eqiad.wmnet:3306/superset_staging
+    data_cache_config:
+      cache_type: memcached
+      cache_default_timeout: 3600 # 1 hour (in secs)
+      cache_key_prefix: superset_results
+
   oidc:
     client_id: superset_next_k8s
 
