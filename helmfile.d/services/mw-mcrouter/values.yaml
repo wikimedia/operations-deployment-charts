@@ -1,5 +1,12 @@
 service:
   deployment: production
+  port:
+    name: mcrouter
+    targetPort: 4442
+    port: 4442
+  nodePort: 0
+  use_node_local_endpoints: true
+
 cache:
   mcrouter:
     enabled: true
