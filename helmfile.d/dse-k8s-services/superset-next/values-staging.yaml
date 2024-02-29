@@ -11,6 +11,9 @@ config:
       cache_type: memcached
       cache_default_timeout: 3600 # 1 hour (in secs)
       cache_key_prefix: superset_results
+    extra_feature_flags:
+    - CACHE_IMPERSONATION
+    - CACHE_QUERY_BY_USER
 
   oidc:
     client_id: superset_next_k8s
