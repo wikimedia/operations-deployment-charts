@@ -27,9 +27,7 @@ templates:
     values:
       - /etc/helmfile-defaults/mediawiki/mcrouter_pools.yaml # mcrouter pools, puppet generated
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - "global.yaml" # common values for all mediawiki deployments
       - "values.yaml" # non-env-specific values, in this repository
-      - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
 
 hooks:
@@ -49,7 +47,6 @@ hooks:
 
       ]
 
-
 releases:
   - name: main
     <<: *default
@@ -57,7 +54,7 @@ releases:
 environments:
   staging:
     values:
-      - releases: [staging]
+      - releases: [main]
   eqiad:
     values:
       - releases: [main]
