@@ -20982,7 +20982,7 @@ data:
         "memoryRequest": {{ $.Values.kserve.storage_initializer.resources.requests.memory | quote }},
         "memoryLimit": {{ $.Values.kserve.storage_initializer.resources.limits.memory | quote }},
         "cpuRequest": {{ $.Values.kserve.storage_initializer.resources.requests.cpu | quote }},
-        "cpuLimit": {{ $.Values.kserve.storage_initializer.resources.limits.cpu | quote }}
+        "cpuLimit": {{ $.Values.kserve.storage_initializer.resources.limits.cpu | quote }},
         "enableDirectPvcVolumeMount": false
     }
 kind: ConfigMap
