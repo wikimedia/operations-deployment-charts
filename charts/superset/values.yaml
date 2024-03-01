@@ -173,12 +173,17 @@ config:
       cache_type: memcached
       cache_default_timeout: 43200 # 12 hours (in secs)
       cache_key_prefix: superset_explore_form_data
-    data_cache_config: {}
+    data_cache_config:
+      cache_type: memcached
+      cache_default_timeout: 3600 # 1 hour (in secs)
+      cache_key_prefix: superset_results
+    extra_feature_flags:
     feature_flags:
     - ENABLE_TEMPLATE_PROCESSING
     - DASHBOARD_NATIVE_FILTERS
     - ENABLE_FILTER_BOX_MIGRATION
     - PRESTO_EXPAND_DATA
+    - CACHE_QUERY_BY_USER
     extra_feature_flags: []
     extra_configuration: {}
 
