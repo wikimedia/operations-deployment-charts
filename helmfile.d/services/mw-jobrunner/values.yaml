@@ -6,6 +6,8 @@ resources:
 
 mesh:
   public_port: 4448
+  # Slightly above apache timeout
+  upstream_timeout: "1202.5s"
 
 # Only one website needed here.
 mw:
