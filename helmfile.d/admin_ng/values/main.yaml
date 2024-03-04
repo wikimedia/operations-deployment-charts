@@ -127,8 +127,16 @@ namespaces:
           cpu: "90"
           memory: "150Gi"
   mathoid: {}
-  mw-mcrouter: 
+  mw-mcrouter:
     deployTLSCertificate: false
+    resourcequota:
+      compute:
+        requests:
+          cpu: "130"
+          memory: "163Gi"
+        limits:
+          cpu: "261"
+          memory: "261Gi"
   media-analytics: {}
   mw-page-content-change-enrich: {}
   miscweb:
