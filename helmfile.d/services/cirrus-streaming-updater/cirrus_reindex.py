@@ -8,6 +8,7 @@ import os
 import shlex
 import subprocess
 import sys
+from textwrap import dedent
 import time
 from typing import Dict, List, Mapping, Optional, Set
 
@@ -83,7 +84,8 @@ def flink_status(release: Release) -> str:
     if len(output['items']) > 1:
         raise ValueError(f"More than one flinkdeployment for {release}")
     item = output['items'][0]
-    return item['status']['jobStatus']['state']
+    # afaik UNKNOWN can only happen very early in the deploy while it's initializing.
+    return item['status']['jobStatus'].get('state', 'UNKNOWN')
 
 
 def wait_for_flink_status(release: Release, allowed: Set[str]) -> str:
@@ -136,28 +138,35 @@ def helmfile(
         **kwargs)
 
 
-def backfill(release: Release, wiki: str, start: datetime, end: datetime) -> bool:
-    print(f'Starting backfill on {wiki} for {start.isoformat()} to {end.isoformat()}')
+def require_backfill_not_deployed(release: Release) -> bool:
     # We could accept FINISHED or FAILED here, but if we are expecting
     # those statuses to result in a `helmfile destroy` then our deploy could
     # race with with destroy.
-    # TODO: Add support in chart for custom labels, set backfill_id=abc123,
-    # then only destroy matching label.
     initial_status = flink_status(release)
-    if initial_status != 'NOT_DEPLOYED':
-        print('ERROR: backfill release is already deployed. Cannot backfill.')
-        print(f'Current status is: {initial_status}')
-        print('')
-        print('To wait for a still running backfill:')
-        print('')
-        print(f'    kube_env {release.namespace} {release.cluster}')
-        print(f"    watch -n 30 'kubectl get -o json --selector release={release.name} flinkdeployment | jq .items[0].status.jobStatus.state'")
-        print('')
-        print('To manually destroy the backfill:')
-        print('')
-        print(f'    cd /srv/deployment/helmfile.d/services/cirrus-streaming-updater')
-        print(f'    kube_env {release.namespace} {release.cluster}')
-        print(f'    helmfile -i -e {release.cluster} --selector name={release.name} --state-values-set backfill=true destroy')
+    if initial_status == 'NOT_DEPLOYED':
+        return True
+
+    print(dedent(f"""
+        ERROR: backfill release is already deployed. Cannot backfill.
+        Current status is: {initial_status}
+
+        To wait for a still running backfill:
+
+            kube_env {release.namespace} {release.cluster}
+            kubectl get -o json --selector release={release.name} flinkdeployment | jq .items[0].status.jobStatus.state'
+
+        To manually destroy the backfill:
+
+            cd /srv/deployment/helmfile.d/services/cirrus-streaming-updater
+            kube_env {release.namespace} {release.cluster}
+            helmfile -i -e {release.cluster} --selector name={release.name} --state-values-set backfill=true destroy
+    """))
+    return False
+
+
+def backfill(release: Release, wiki: str, start: datetime, end: datetime) -> bool:
+    print(f'Starting backfill on {wiki} for {start.isoformat()} to {end.isoformat()}')
+    if not require_backfill_not_deployed(release):
         return False
 
     # Format expected by java Instant.parse
@@ -206,6 +215,9 @@ def main(
             "cirrus-streaming-updater",
             cirrus_cluster,
             "consumer-search-backfill")
+
+    if not require_backfill_not_deployed(release):
+        return 1
 
     if command == "reindex":
         start = datetime.now()
