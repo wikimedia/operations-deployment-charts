@@ -170,7 +170,7 @@ static_resources:
               "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
               domain: wikimedia
               stage: 0
-              timeout: 0.25s
+              timeout: {{ .Values.main_app.ratelimiter.envoy_timeout }}s
               enable_x_ratelimit_headers: DRAFT_VERSION_03
               rate_limit_service:
                 transport_api_version: V3

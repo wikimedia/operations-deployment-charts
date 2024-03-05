@@ -64,6 +64,8 @@ main_app:
       - prefix: "/wiki/"
       - prefix: "/w/"
       - path: "/"
+    # timeout for connecting from envoy to ratelimit service in seconds
+    envoy_timeout: 0.25
 
   # Type of access logging
   # - false to turn off access logging
