@@ -23,3 +23,5 @@ spec:
     {{- include "base.networkpolicy.egress.zookeeper" . | indent 4 }}
 # replace: NetworkpolicyEgress; indent: 4
 {{- end }}
+
+{{ template "base.networkpolicy.egress.external-services" . }}
