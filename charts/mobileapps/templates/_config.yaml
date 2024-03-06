@@ -84,13 +84,13 @@ services:
           accept-language: '{{ `{{accept-language}}` }}'
         body: '{{ `{{ default(request.query, {}) }}` }}'
       corepagehtml_req:
-        method: get
+        method: GET
         uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/page/{{ `{{title}}` }}/with_html'
         headers:
           host: '{{ `{{request.params.domain}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
       corerevisionhtml_req:
-        method: get
+        method: GET
         uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/revision/{{ `{{revision}}` }}/with_html'
         headers:
           host: '{{ `{{request.params.domain}}` }}'
