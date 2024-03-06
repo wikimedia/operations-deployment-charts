@@ -31,3 +31,5 @@ spec:
 {{- if $.Values.localmemcached.enabled }}
 {{- include "localmemcached.networkpolicy" . }}
 {{- end }}
+
+{{ template "base.networkpolicy.egress.external-services" . }}
