@@ -13,8 +13,8 @@ spec:
         release: {{ .Release.Name }}
         deployment: {{ .Release.Namespace }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
-        # The wrapper script adds "username" and "script" labels.
         {{- if .Values.mwscript.labels }}
+        # The wrapper script adds "username" and "script" labels.
         {{- toYaml .Values.mwscript.labels | nindent 8 }}
         {{- end }}
       annotations:

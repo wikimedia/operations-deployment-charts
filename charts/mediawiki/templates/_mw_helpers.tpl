@@ -14,6 +14,10 @@ labels:
   chart: {{ template "base.name.chartid" . }}
   release: {{ .Release.Name }}
   heritage: {{ .Release.Service }}
+{{- if and .Values.mwscript.enabled .Values.mwscript.labels }}
+  # The mwscript-k8s wrapper script adds "username" and "script" labels.
+{{- toYaml .Values.mwscript.labels | nindent 2 }}
+{{- end }}
 {{ end }}
 
 {{/*
