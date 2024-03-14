@@ -39,7 +39,7 @@ services:
         headers:
           host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
-        method: post
+        method: {{ "'{{" }}request.method{{ "}}'" }}
         uri: {{ .Values.main_app.mwapi_uri }}
       # the template used for contacting MediaWiki API host
       restbase_req:
