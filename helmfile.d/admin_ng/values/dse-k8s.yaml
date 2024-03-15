@@ -118,7 +118,6 @@ namespaces:
   superset:
     tlsExtraSANs:
       - superset.wikimedia.org
-      - superset-k8s.wikimedia.org  # Temporary, while superset.wikimedia.org is still running outside of k8s
     limitranges:
       container:
         min:
@@ -143,7 +142,6 @@ namespaces:
   superset-next:
     tlsExtraSANs:
       - superset-next.wikimedia.org
-      - superset-next-k8s.wikimedia.org  # Temporary, while superset-next.wikimedia.org is still running outside of k8s
     limitranges:
       container:
         min:
