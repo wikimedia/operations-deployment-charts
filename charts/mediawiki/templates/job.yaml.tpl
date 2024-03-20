@@ -5,6 +5,10 @@ metadata:
   # The release name includes a randomly generated token for each job, so names are unique.
   name: {{ template "mw.name.namespace.env.release" . }}
   {{- include "mw.labels" . | indent 2 }}
+  {{- if .Values.mwscript.comment }}
+  annotations:
+    comment: {{ .Values.mwscript.comment | quote }}
+  {{- end }}
 spec:
   template:
     metadata:
@@ -25,6 +29,9 @@ spec:
           {{ include "base.name.release" . }}-mcrouter,\
           {{ include "base.name.release" . }}-tls-proxy,\
           {{ include "base.name.release" . }}-rsyslog"
+        {{- if .Values.mwscript.comment }}
+        comment: {{ .Values.mwscript.comment | quote }}
+        {{- end }}
     spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
