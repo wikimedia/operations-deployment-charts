@@ -31,7 +31,20 @@ namespaces:
   api-gateway: {}
   blubberoid: {}
   benthos-cache-invalidator: {}
-  changeprop: {}
+  changeprop:
+    container:
+      min:
+        memory: "50Mi"
+        cpu: "100m"
+      max:
+        memory: "5Gi"
+        cpu: "8"
+      defaultRequest:
+        memory: "100Mi"
+        cpu: "100m"
+      default:
+        memory: "100Mi"
+        cpu: "100m"
   changeprop-jobqueue:
     resourcequota:
       compute:
