@@ -32,19 +32,27 @@ namespaces:
   blubberoid: {}
   benthos-cache-invalidator: {}
   changeprop:
-    container:
-      min:
-        memory: "50Mi"
-        cpu: "100m"
-      max:
-        memory: "5Gi"
-        cpu: "8"
-      defaultRequest:
-        memory: "100Mi"
-        cpu: "100m"
-      default:
-        memory: "100Mi"
-        cpu: "100m"
+    limitranges:
+      container:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "10"
   changeprop-jobqueue:
     resourcequota:
       compute:
