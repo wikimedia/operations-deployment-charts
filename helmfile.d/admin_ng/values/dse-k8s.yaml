@@ -62,6 +62,12 @@ deployExtraClusterRoles:
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
+  # The following namespace is used by the external-services chart,
+  # and shouldn't be deployed to by another chart
+  external-services:
+    systemNamespace: true
+    deployTLSCertificate: false
+
   kube-system:
     systemNamespace: true
     allowCriticalPods: true
