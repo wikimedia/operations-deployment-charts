@@ -48,26 +48,3 @@ inference_services:
             memory: 2Gi
           requests:
             memory: 2Gi
-  nllb-200-cpu:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2024-03-21-072005-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "nllb-200"
-        - name: LLM_CLASS
-          value: "llm.NLLBCTranslate"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M-ctranslate2-int8/"
-        - name: CT2_INTER_THREADS
-          value: "1"
-        - name: CT2_INTRA_THREADS
-          value: "4"
-      container:
-        resources:
-          limits:
-            cpu: "4"
-            memory: 2Gi
-          requests:
-            cpu: "4"
-            memory: 2Gi
