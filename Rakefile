@@ -401,6 +401,58 @@ task :refresh_fixtures do
     common_clusters['kafka_brokers'] = kafka_brokers
   end
 
+  # Mock the data structure created for the external-services chart in
+  # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+  external_services_definitions = {
+    'external_services_definitions' => {
+      'kafka' => {
+        '_meta' => {
+          'ports' => [
+            {
+              'name' => 'plaintext',
+              'port' => 9092
+            },
+            {
+              'name' => 'tls',
+              'port' => 9093
+            }
+          ]
+        },
+        'instances' => {
+          'main-eqiad' => [
+            '1.2.3.4/32',
+            'fe80::ffff:ffff:ffff:ffff/128',
+          ],
+          'main-codfw' => [
+            '1.2.3.4/32',
+            'fe80::ffff:ffff:ffff:ffff/128',
+          ]
+        }
+      },
+      'kerberos' => {
+        '_meta' => {
+          'ports' => [
+            {
+              'name' => 'ticket',
+              'port' => 88,
+              'protocol' => 'UDP'
+            },
+            {
+              'name' => 'ticket-large',
+              'port' => 88
+            }
+          ]
+        },
+        'instances' => {
+          'kdc' => [
+            '1.2.3.4',
+            'fe80::ffff:ffff:ffff:ffff',
+          ]
+        }
+      },
+    }
+  }
+
   # Fetch general settings for all environment, similar to
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
   URI.open(DEPLOYMENT_SERVER_HIERA_URL) do |res|
@@ -415,7 +467,8 @@ task :refresh_fixtures do
           cluster_values,
           service_proxy,
           mariadb_sections,
-          common_clusters
+          common_clusters,
+          external_services_definitions,
         ].reduce { |acc, h| deep_merge(h, acc) }
         YAML.dump(res, out)
       end
