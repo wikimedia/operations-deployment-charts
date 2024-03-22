@@ -1,0 +1,25 @@
+templates:
+  default: &default
+    namespace: external-services
+    missingFileHandler: Warn
+    # installedTemplate is true by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_external_services\" }}{{ .Environment.Values.install_external_services }}{{ else }}{{ true }}{{end}}`}}"
+
+releases:
+  - name: external-services
+    chart: wmf-stable/external-services
+    {{- $version := .Values.chartVersions | get "wmf-stable/external-services" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/namespaces
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
