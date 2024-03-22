@@ -15,8 +15,6 @@ main_app:
       - kafka-main1005.eqiad.wmnet:9093
 
   changeprop:
-    # Move changeprop-staging to use mw-api-int T360767
-    mwapi_uri: https://mw-api-int.discovery.wmnet:4446/w/api.php
     # This is the endpoint for the staging instance of eventgate
     event_service_uri: http://staging.svc.eqiad.wmnet:34192/v1/events
 

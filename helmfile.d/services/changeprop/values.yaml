@@ -8,7 +8,8 @@ main_app:
     port: 6379
 
   changeprop:
-    mwapi_uri: https://api-rw.discovery.wmnet/w/api.php
+    # Move all of changeprop to use mw-api-int T360767
+    mwapi_uri: https://mw-api-int.discovery.wmnet:4446/w/api.php
 
     restbase_uri: https://restbase-async.discovery.wmnet:7443
 
