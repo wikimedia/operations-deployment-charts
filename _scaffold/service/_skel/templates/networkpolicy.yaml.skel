@@ -24,4 +24,4 @@ spec:
 # replace: NetworkpolicyEgress; indent: 4
 {{- end }}
 
-{{ template "base.networkpolicy.egress.external-services" . }}
+{{ include "base.networkpolicy.egress.external-services" . }}
