@@ -37,6 +37,9 @@ releases:
               resources: ["*"]
               verbs: ["get", "list", "watch"]
             {{- end }}
+            - apiGroups: ["crd.projectcalico.org"]
+              resources: ["networkpolicies"]
+              verbs: ["get", "list", "watch"]
         # We use the default system:monitoring for access to
         # /metrics. However, this isn't enough and we also need a ClusterRole to
         # allow listing/getting/watching various cluster resources
@@ -94,6 +97,9 @@ releases:
               resources: ["flinkdeployments"]
               verbs: ["*"]
             {{- end }}
+            - apiGroups: ["crd.projectcalico.org"]
+              resources: ["networkpolicies"]
+              verbs: ["*"]
       {{- range .Environment.Values.deployExtraClusterRoles }}
       {{- if eq . "flink" }}
         ## Used by deploy users
