@@ -13,6 +13,7 @@ environments:
       - namespace_certificates: true
       - install_flink_operator: true
       - install_sidecar_job_controller: true
+      - install_external_services: true
   codfw:
     values:
       - "values/common.yaml"
@@ -27,6 +28,7 @@ environments:
       - namespace_certificates: true
       - install_flink_operator: true
       - install_sidecar_job_controller: true
+      - install_external_services: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -41,6 +43,7 @@ environments:
       - namespace_certificates: true
       - install_flink_operator: true
       - install_sidecar_job_controller: true
+      - install_external_services: true
   staging-codfw:
     values:
       - "values/common.yaml"
