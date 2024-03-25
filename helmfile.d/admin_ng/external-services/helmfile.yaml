@@ -3,7 +3,7 @@ templates:
     namespace: external-services
     missingFileHandler: Warn
     # installedTemplate is true by default
-    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_external_services\" }}{{ .Environment.Values.install_external_services }}{{ else }}{{ true }}{{end}}`}}"
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_external_services\" }}{{ .Environment.Values.install_external_services }}{{ else }}{{ false }}{{end}}`}}"
 
 releases:
   - name: external-services
