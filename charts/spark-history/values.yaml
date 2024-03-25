@@ -105,6 +105,12 @@ config:
     dfs.secondary.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
     dfs.secondary.namenode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
 
+    # We set the namenode kerberos principal pattern to '*' as a way to circumvent the
+    # fact that the namenode IP resolves to a kubernetes service name, due to this chart
+    # using external-services. By setting the pattern to '*', we tell Kerberos not to freak
+    # out it if namenode IP does not resolve to what the namenode sees as its hostname.
+    dfs.namenode.kerberos.principal.pattern: '*'
+
 
   # The hadoop configuration that will be rendered in the core-site.xml config file
   hadoop:
