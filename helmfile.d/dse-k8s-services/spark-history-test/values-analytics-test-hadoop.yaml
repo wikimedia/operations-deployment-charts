@@ -20,3 +20,9 @@ config:
 ingress:
   gatewayHosts:
     default: "spark-history-test"
+
+external_services:
+  hadoop-master:
+  - analytics-test
+  hadoop-worker:
+  - analytics-test
