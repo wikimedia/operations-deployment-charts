@@ -1,18 +1,24 @@
 # You can include multiple releases in your helmfile, but you can't specify environments
 # as they are defined in the parent helmfile.
 #
-# Each defined release will be installed into every environment.
+# Each defined release will be installed into every environment that has install_RELEASE_NAME set to true.
 #
 # Be sure to include your new helmfile into the "bases:" array in the parent helmfile.
+
+templates:
+  default: &default
+    namespace: RELEASE_NAMESPACE
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ .Environment.Values | get \"install_RELEASE_NAME\" false }}`}}"
+
 releases:
   - name: RELEASE_NAME
-    namespace: kube-system
     chart: wmf-stable/_EXAMPLE_
     {{- $version := .Values.chartVersions | get "wmf-stable/_EXAMPLE_" "" }}
     {{- if $version }}
     version: {{ $version }}
     {{- end }}
-    missingFileHandler: Warn
+    <<: *default
     needs:
       # This is to ensure this helmfile is processed after networking and DNS is set up properly
       # If you are sure you don't depend on that, remove the "needs".
