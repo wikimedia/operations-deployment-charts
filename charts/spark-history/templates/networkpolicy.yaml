@@ -24,3 +24,5 @@ spec:
     {{- include "base.networkpolicy.egress.zookeeper" . | indent 4 }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
 {{- end }}
+
+{{ include "base.networkpolicy.egress.external-services" . }}
