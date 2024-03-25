@@ -32,4 +32,4 @@ spec:
 {{- include "localmemcached.networkpolicy" . }}
 {{- end }}
 
-{{ template "base.networkpolicy.egress.external-services" . }}
+{{ include "base.networkpolicy.egress.external-services" . }}
