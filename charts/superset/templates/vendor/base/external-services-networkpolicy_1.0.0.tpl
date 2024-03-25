@@ -20,7 +20,7 @@ metadata:
   {{- include "base.meta.labels" $ | indent 2 }}
   namespace: {{ $.Release.Namespace }}
 spec:
-  selector: name == '{{ template "base.meta.name" (dict "Root" $) }}'
+  selector: "app == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}'"
   types:
   - Egress
   egress:
