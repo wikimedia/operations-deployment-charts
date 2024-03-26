@@ -224,10 +224,6 @@ data:
           try_files $uri $uri/ =404;
         }
 
-        location /health {
-          return 200 "healthy\n";
-        }
-
         location / {
           root       /app/superset;
           # Tune slightly for serving static content.
