@@ -9,11 +9,13 @@
 */}}
 {{- $services_data := get $.Values "external_services_definitions" }}
 {{- if $services_data }}
-{{- range $service_name, $service_data := $services_data }}
-{{- $service_meta := get $service_data "_meta"}}
-{{- $service_instances := get $service_data "instances"}}
+{{- range $service_name := keys $services_data | sortAlpha }}
+{{- $service_data := get $services_data $service_name }}
+{{- $service_meta := get $service_data "_meta" }}
+{{- $service_instances := get $service_data "instances" }}
 {{- range $instance_name, $instance_ips := $service_instances }}
 {{- if $instance_ips }}
+{{- $sorted_instances_ips := $instance_ips | sortAlpha }} {{/* We sort the IPs to ensure rendering idempotence */}}
 {{- $instance_name := replace "_" "-" $instance_name }}
 {{- $service_ports := get $service_meta "ports" }}
 kind: Service
@@ -41,7 +43,7 @@ metadata:
   {{- include "base.meta.labels" $ | indent 2 }}
 subsets:
   - addresses:
-    {{- range $cluster_ip := $instance_ips }}
+    {{- range $cluster_ip := $sorted_instances_ips }}
     - ip: {{ splitList "/" $cluster_ip | first }} {{/* Remove CIDR network suffix, if any, as Endpoints work with IP */}}
     {{- end }}
     ports:
