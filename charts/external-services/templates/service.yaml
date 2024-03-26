@@ -29,7 +29,7 @@ spec:
   selector: {} {{/* this makes the service not select any pods as endpoints */}}
   ports:
   {{- range $service_port := $service_ports }}
-    - name: {{ $service_name }}-{{ get $service_port "name" }}
+    - name: {{ get $service_port "name" }}
       protocol: {{ get $service_port "protocol" | default "TCP" | upper }}
       port: {{ get $service_port "port" }}
       targetPort: {{ get $service_port "port" }}
@@ -49,7 +49,7 @@ subsets:
     ports:
     {{- range $service_port := $service_ports }}
     - port: {{ get $service_port "port" }}
-      name: {{ $service_name }}-{{ get $service_port "name" }}
+      name: {{ get $service_port "name" }}
       protocol: {{ get $service_port "protocol" | default "TCP" | upper }}
   {{- end }}
 ---
