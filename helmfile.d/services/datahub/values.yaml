@@ -81,11 +81,9 @@ datahub-frontend:
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
         - cidr: 208.80.154.252/32               # ldap-ro.eqiad.wikimedia.org
         - cidr: 208.80.153.252/32               # ldap-ro.codfw.wikimedia.org
-        - cidr: 208.80.154.146/32               # idp1002.wikimedia.org
-        - cidr: 2620:0:861:2:208:80:154:146/128 # idp1002.wikimedia.org
-        - cidr: 208.80.153.108/32               # idp2002.wikimedia.org
-        - cidr: 2620:0:860:4:208:80:153:108/128 # idp2002.wikimedia.org
-
+  external_services:
+    cas:
+    - idp
 datahub-gms:
   main_app:
     version: *version

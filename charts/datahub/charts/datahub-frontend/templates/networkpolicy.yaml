@@ -39,3 +39,5 @@ spec:
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
+
+{{ template "base.networkpolicy.egress.external-services" . }}
