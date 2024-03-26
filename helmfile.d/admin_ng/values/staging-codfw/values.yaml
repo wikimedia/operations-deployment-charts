@@ -17,12 +17,6 @@ resourcequota:
       memory: "10Gi"
 
 namespaces:
-  # The following namespace is used by the external-services chart,
-  # and shouldn't be deployed to by another chart
-  external-services:
-    systemNamespace: true
-    deployTLSCertificate: false
-
   ci:
     deployUser: jenkins
     deployClusterRole: deploy-flink
