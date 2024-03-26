@@ -52,6 +52,13 @@ def kube_env(release: Release) -> Dict[str, str]:
     }
 
 
+def kube_deploy_env(release: Release) -> Dict[str, str]:
+    return {
+        'K8S_CLUSTER': release.cluster,
+        'KUBECONFIG': f'/etc/kubernetes/{release.namespace}-deploy-{release.cluster}.config',
+    }
+
+
 def debug_print_completed_process(result: subprocess.CompletedProcess) -> None:
     print('Args: ' + ' '.join(shlex.quote(x) for x in result.args))
     print(f'Return Code: {result.returncode}')
@@ -63,7 +70,7 @@ def debug_print_completed_process(result: subprocess.CompletedProcess) -> None:
         print(result.stderr)
 
 
-def flink_status(release: Release) -> str:
+def flink_status_via_kubectl(release: Release) -> str:
     """Fetch the status of a flink release from kubernetes"""
     result = subprocess.run([
             'kubectl',
@@ -77,7 +84,7 @@ def flink_status(release: Release) -> str:
 
     if result.returncode != 0:
         debug_print_completed_process(result)
-        raise Exception('kubectl invocation failed.')
+        raise Exception('kubectl get invocation failed.')
     output = json.loads(result.stdout.decode('utf8'))
     if not output['items']:
         return 'NOT_DEPLOYED'
@@ -86,6 +93,61 @@ def flink_status(release: Release) -> str:
     item = output['items'][0]
     # afaik UNKNOWN can only happen very early in the deploy while it's initializing.
     return item['status']['jobStatus'].get('state', 'UNKNOWN')
+
+
+def find_pod(release: Release) -> str:
+    result = subprocess.run([
+            'kubectl',
+            'get',
+            '-o', 'json',
+            'pods'
+        ],
+        capture_output=True,
+        env=kube_env(release))
+    if result.returncode != 0:
+        debug_print_completed_process(result)
+        raise Exception('kubectl get invocation failed.')
+    output = json.loads(result.stdout.decode('utf8'))
+    if not output['items']:
+        raise Exception('Unexpected kubectl get response')
+    for item in output['items']:
+        if item['metadata']['labels']['release'] == release.name:
+            return item['metadata']['name']
+    raise ValueError('release not found in list of pods')
+
+
+def flink_status_via_rest(release: Release) -> str:
+    """Fetch the status of a flink release from flink rest api"""
+    result = subprocess.run([
+            'kubectl',
+            'exec',
+            find_pod(release),
+            '-c', 'flink-main-container',
+            '--',
+            'python3',
+            '-c',
+            'import urllib.request; print(urllib.request.urlopen("http://localhost:8081/v1/jobs").read().decode("utf8"))'
+        ],
+        capture_output=True,
+        env=kube_deploy_env(release))
+    if result.returncode != 0:
+        # TODO: This is probably not that rare
+        debug_print_completed_process(result)
+        raise Exception('kubectl exec invocation failed')
+    output = json.loads(result.stdout.decode('utf8'))
+    if 'jobs' not in output:
+        # Probably also not that rare
+        raise Exception('Bad api response from kubectl exec')
+    return output['jobs'][0]['status']
+
+
+def flink_status(release: Release) -> str:
+    # Querying via kubectl is generally more reliable for a wide variety
+    # of circumstances. Unfortunately it will, in rare cases, fail to update
+    # from RUNNING to FINISHED. So we have to query the rest api to know when
+    # it's actually done.
+    status = flink_status_via_kubectl(release)
+    return flink_status_via_rest(release) if status == 'RUNNING' else status
 
 
 def wait_for_flink_status(release: Release, allowed: Set[str]) -> str:
@@ -186,7 +248,10 @@ def backfill(release: Release, wiki: str, start: datetime, end: datetime) -> boo
         debug_print_completed_process(result)
         return False
 
-    final_status = wait_for_flink_status(release, {'FAILED', 'FINISHED'})
+    # NOT_DEPLOYED happens when an operator deletes the release.
+    # Not sure when CANCELED happens, but it probably means stop.
+    final_status = wait_for_flink_status(
+        release, {'CANCELED', 'NOT_DEPLOYED', 'FAILED', 'FINISHED'})
     print(f'Final backfill status: {final_status}')
 
     result = helmfile(release, 'destroy')
@@ -194,6 +259,11 @@ def backfill(release: Release, wiki: str, start: datetime, end: datetime) -> boo
         print('WARNING: Failed to destroy backfill release')
         debug_print_completed_process(result)
         return False
+
+    # Wait for the release to fully undeploy, so the next reindex doesn't
+    # have opportunity to think something is running as long as it waits
+    # for this script to exit.
+    wait_for_flink_status(release, {'NOT_DEPLOYED'})
 
     return final_status == "FINISHED"
 
