@@ -74,6 +74,7 @@ environments:
       - istio_gateways: true
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
+      - install_external_services: true
   ml-serve-codfw:
     values:
       - "values/common.yaml"
@@ -88,6 +89,7 @@ environments:
       - istio_gateways: true
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
+      - install_external_services: true
   ml-staging-codfw:
     values:
       - "values/common.yaml"
@@ -102,6 +104,7 @@ environments:
       - istio_gateways: true
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
+      - install_external_services: true
   dse-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -131,6 +134,7 @@ environments:
       # Create default service certificates
       - namespace_certificates: true
       - install_kube_state_metrics: true
+      - install_external_services: true
 
 ---
 bases:
