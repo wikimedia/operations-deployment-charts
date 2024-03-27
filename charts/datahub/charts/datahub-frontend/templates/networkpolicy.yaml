@@ -40,4 +40,4 @@ spec:
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
 {{- end }}
 
-{{ template "base.networkpolicy.egress.external-services" . }}
+{{ include "base.networkpolicy.egress.external-services" . }}
