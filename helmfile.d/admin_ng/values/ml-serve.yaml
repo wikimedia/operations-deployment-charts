@@ -125,6 +125,9 @@ namespaces:
     labels:
       istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
+  external-services:
+    systemNamespace: true
+    deployTLSCertificate: false
   revscoring-editquality-goodfaith:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false

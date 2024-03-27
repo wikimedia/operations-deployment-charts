@@ -54,6 +54,9 @@ GlobalNetworkPolicies:
 # List all namespaces that should be created in every aux-k8s cluster.
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
+  external-services:
+    systemNamespace: true
+    deployTLSCertificate: false
   kube-system:
     systemNamespace: true
     allowCriticalPods: true
