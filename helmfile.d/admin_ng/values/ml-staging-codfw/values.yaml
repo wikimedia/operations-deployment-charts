@@ -148,20 +148,3 @@ net_istio:
           number: 4113
           protocol: HTTPS
         resolution: DNS
-    - name: ml-cassandra
-      spec:
-        hosts:
-        # Allow access to both clusters, in case we ever need to use the
-        # non-prod cluster to cover a prod cluster outage (once this policy
-        # is applied beyond staging).
-        - ml-cache1001.eqiad.wmnet
-        - ml-cache1002.eqiad.wmnet
-        - ml-cache1003.eqiad.wmnet
-        - ml-cache2001.codfw.wmnet
-        - ml-cache2002.codfw.wmnet
-        - ml-cache2003.codfw.wmnet
-        ports:
-        - name: cassandra-client
-          number: 9042
-          protocol: TCP
-        resolution: DNS
