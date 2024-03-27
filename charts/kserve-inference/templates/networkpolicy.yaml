@@ -40,5 +40,7 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" $.Values }}
 {{- end }}
+
+{{ template "base.networkpolicy.egress.external-services" $ }}
 ---
 {{- end }}

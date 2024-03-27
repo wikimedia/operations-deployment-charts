@@ -43,3 +43,8 @@ inference_services:
             cpu: "16"
             memory: 4Gi
             amd.com/gpu: 1
+
+external_services_app_label_selector: wmf-app
+external_services:
+  cassandra:
+  - ml-cassandra
