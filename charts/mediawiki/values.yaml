@@ -227,6 +227,8 @@ mw:
       limits:
         cpu: 200m
         memory: 80Mi
+  # Uncomment this to override the default value for MW__MCROUTER_SERVER
+  # mcrouter_server: 127.0.0.1:11213
   sites:
     - name: wikipedia.local
       priority: 1

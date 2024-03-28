@@ -1,0 +1,42 @@
+mesh:
+  enabled: true
+  image_version: 1.13.1-2
+  public_port: 4666 # the port where TLS will be exposed
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+# A couple configurations
+mw:
+  wmerrors:
+    file1.php: |-
+      <?php
+      echo 'Hello, world!';
+    file2.php: |-
+      <?php
+      die("test");
+  mcrouter_server: koko.lala.org:11213
+monitoring:
+  enabled: true
+cache:
+  mcrouter:
+    enabled: true
+discovery:
+  listeners:
+    - parsoid-php
+    - mathoid
+    - eventgate-analytics
+    - eventgate-analytics-external
+    - eventgate-main
+    - sessionstore
+    - echostore
+    - termbox
+    - push-notifications
+    - wdqs-internal
+    - restbase
+    - cxserver
+    - shellbox
+    - shellbox-constraints
+    - shellbox-media
+    - shellbox-syntaxhighlight
+    - shellbox-timeline

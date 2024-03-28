@@ -143,6 +143,10 @@
   {{- else }}
     value: "{{ .Values.php.error_log }}"
   {{- end }}
+  {{- if .Values.mw.mcrouter_server }}
+  - name: MW__MCROUTER_SERVER
+    value: "{{ .Values.mw.mcrouter_server }}"
+  {{- end }}
   - name: FCGI_ALLOW
     value: "127.0.0.1"
   {{- if .Values.mw.logging.rsyslog }}
