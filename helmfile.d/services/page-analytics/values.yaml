@@ -2,7 +2,7 @@ main_app:
   image: wikimedia/generated-data-platform-aqs-page-analytics
   version: 2023-11-13-220207-production
   command: ["./page-analytics"]
-  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: page-analytics
   consistency: localQuorum
   # use eqiad for all DCs here until we get AQS hosts in codfw
