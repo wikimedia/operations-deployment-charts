@@ -27,8 +27,6 @@ releases:
                 {{ $k }}: {{ $v | quote }}
               {{- end }}
               {{- end }}
-              annotations:
-                net.beta.kubernetes.io/network-policy: '{"ingress":{"isolation":"DefaultDeny"}}'
         {{- end }}
         {{- if eq $isSystemNamespace false }}
           - |
