@@ -2,7 +2,7 @@ main_app:
   image: wikimedia/generated-data-platform-aqs-geo-analytics
   version: 2023-12-11-103801-production
   command: ["./geo-analytics"]
-  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: geo-analytics
   consistency: localQuorum
   # use eqiad for all DCs here until we get AQS hosts in codfw
