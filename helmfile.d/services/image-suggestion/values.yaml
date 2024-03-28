@@ -2,7 +2,7 @@ main_app:
   image: wikimedia/generated-data-platform-datasets-image-suggestions
   version: 2022-08-31-134532-production
   command: ["./image-suggestions"]
-  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: image-suggestions
   consistency: localQuorum
   # use eqiad for all DCs here until we get AQS hosts in codfw
