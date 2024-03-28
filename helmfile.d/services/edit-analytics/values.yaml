@@ -2,7 +2,7 @@ main_app:
   image: wikimedia/generated-data-platform-aqs-edit-analytics
   version: 2024-01-05-132629-production
   command: ["./edit-analytics"]
-  args: ["-config", "/etc/druid-http-gateway/config.yaml"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: edit-analytics
 
   druid:
