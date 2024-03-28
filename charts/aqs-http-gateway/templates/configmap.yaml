@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aqs-http-gateway-base-config
+  {{- include "base.meta.labels" . | indent 2 }}
+data:
+  config.yaml: |- {{ include "config.app" . | indent 4 }}
+{{- include "mesh.configuration.configmap" . }}
