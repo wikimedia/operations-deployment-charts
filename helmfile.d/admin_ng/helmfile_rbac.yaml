@@ -139,6 +139,9 @@ releases:
             - apiGroups: ["serving.kserve.io"]
               resources: ["inferenceservices"]
               verbs: ["*"]
+            - apiGroups: ["crd.projectcalico.org"]
+              resources: ["networkpolicies"]
+              verbs: ["*"]
       {{- end }}
       {{- if eq . "liftwing-debugging" }}
         ## Used by ml-team to manage/debug pods in experimental namespace
