@@ -121,6 +121,14 @@ services:
       restbase_compatibility:
         security_headers: false
       use_coreparsoid_endpoint: {{ .Values.main_app.use_coreparsoid_endpoint }}
+      {{- if .Values.main_app.caching.enabled }}
+      caching:
+        enabled: {{ .Values.main_app.caching.enabled }}
+        ttl: {{ .Values.main_app.caching.ttl }}
+        cassandra:
+          keyspace: {{ .Values.main_app.caching.cassandra.keyspace }}
+          storageTable: {{ .Values.main_app.caching.cassandra.storageTable }}
+      {{- end }}
 {{ if .Values.datastore.cassandra_client.enabled -}}
 {{ include "datastore.cassandra_client.config" . | indent 6 }}
 {{- end -}}

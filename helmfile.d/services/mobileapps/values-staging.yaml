@@ -14,3 +14,11 @@ datastore:
     - 10.192.48.55    # cassandra-dev2003-b.codfw.wmnet
     authentication:
       username: mediawiki_services_mobileapps
+
+main_app:
+  caching:
+    enabled: true
+    ttl: 300          # Expire objects in 5 mins for testing purposes
+    cassandra:
+      keyspace: pregenerated_cache
+      storageTable: mobile_html
