@@ -14,12 +14,6 @@ main_app:
     restbase_uri: https://restbase-async.discovery.wmnet:7443
 
     features:
-      # ORES is being deprecated
-      ores_cache: false
-    ores:
-      uris:
-        - https://ores.svc.eqiad.wmnet:443
-        - https://ores.svc.codfw.wmnet:443
     kafka:
       producer:
         # The default value is 5ms, and we want Changeprop to batch
@@ -47,18 +41,6 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 10.2.2.10/32 # ores.svc.eqiad.wmnet
-      ports:
-      - protocol: tcp
-        port: 8081
-      - protocol: tcp
-        port: 443
-    - cidr: 10.2.1.10/32 # ores.svc.codfw.wmnet
-      ports:
-      - protocol: tcp
-        port: 8081
-      - protocol: tcp
-        port: 443
     - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
       ports:
       - protocol: tcp

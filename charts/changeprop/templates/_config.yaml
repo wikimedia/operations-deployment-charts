@@ -50,15 +50,6 @@ spec: &spec
                   host: '{{ `{{message.meta.domain}}` }}'
                 body:
                   formatversion: 2
-    /sys/ores:
-      x-modules:
-        - path: sys/ores_updates.js
-          options:
-            ores_precache_uris:
-{{- range .Values.main_app.changeprop.ores.uris }}
-              - {{ . -}}/v3/precache
-{{- end  }}
-            event_service_uri: {{ .Values.main_app.changeprop.event_service_uri }}
     /{api:sys}/queue:
       x-modules:
         - path: sys/kafka.js
@@ -711,21 +702,6 @@ spec: &spec
                       method: post
                       uri: '/sys/links/backlinks/{message.original_event.page_title}'
                       body: '{{ `{{globals.message}}` }}'
-{{ end -}}
-{{ if .Values.main_app.changeprop.features.ores_cache }}
-              # ORES caching updates
-              ores_cache:
-                topic: mediawiki.revision-create
-                concurrency: 25
-                ignore:
-                  status:
-                    - 503
-                exec:
-                  method: post
-                  uri: '/sys/ores/'
-                  query:
-                    postevent: true
-                  body: '{{ `{{globals.message}}` }}'
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.wikidata_description_on_edit }}
               wikidata_description_on_edit:

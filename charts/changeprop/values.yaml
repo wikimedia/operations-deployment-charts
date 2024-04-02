@@ -69,11 +69,6 @@ main_app:
       # Replace the Restbase URI with the correct K8s URI
       uri: http://localhost:30443
 
-    # Ores pre-caching URIs
-    ores:
-      uris:
-        - http://localhost
-
     features:
       # null edit uses features of mw_purge - also includes on_wikidata_description_change
       mw_purge_null_edit: true
@@ -87,7 +82,6 @@ main_app:
       on_transclusion_update: true
       page_create: true
       on_backlinks_update: true
-      ores_cache: true
       wikidata_description_on_edit: true
       wikidata_description_on_undelete: true
       page_images_summary: true
