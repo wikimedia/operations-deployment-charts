@@ -7,11 +7,14 @@ app:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
     # To increase default job parellism, we can increase this
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
-    replicas: 2
+    replicas: 5
 
   config_files:
     app.config.yaml:
-      fetch-retry-queue-capacity: 250
+      fetch-retry-queue-capacity: 120
+      elasticsearch-bulk-flush-max-size: 26214400 # ~26mb, default (100mb) causes OOM
+      elasticsearch-bulk-flush-max-actions: 2560 # max-size / avg action size
+      rev-based-fetch-retry-queue-capacity-ratio: 0.333333 # more room for blocking retries
 
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
