@@ -1,0 +1,37 @@
+main_app:
+  image: repos/generated-data-platform/aqs/commons-impact-analytics
+  version: v1.0.0
+  command: ["./commons-impact-analytics"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
+  service_name: commons-impact-analytics
+
+  consistency: localQuorum
+
+  # note the "_"
+  cassandra_user: "commons_impact_analytics"
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+  log_level: debug
+
+resources:
+  replicas: 4
+
+mesh:
+  enabled: true
+  public_port: 4973
+
+ingress:
+  enabled: true
+
+service:
+  deployment: production
+  port:
+    nodePort: 4973
+
+monitoring:
+  enabled: true
