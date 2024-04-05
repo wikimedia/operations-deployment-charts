@@ -2,7 +2,7 @@ inference_services:
   revertrisk-wikidata:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
-      image_version: "2023-12-22-100022-publish"
+      image_version: "2024-04-04-093923-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-wikidata"
@@ -10,8 +10,6 @@ inference_services:
           value: "s3://wmf-ml-models/experimental/revertrisk-wikidata/20230512162400/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
-        - name: OMP_NUM_THREADS
-          value: "1"
       container:
         resources:
           limits:

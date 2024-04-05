@@ -68,7 +68,7 @@ inference_services:
         minReplicas: 5
         maxReplicas: 15
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2024-02-09-074804-publish"
+      image_version: "2024-04-04-093923-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
@@ -76,10 +76,6 @@ inference_services:
           value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
         - name: WIKI_URL
           value: "http://api-ro.discovery.wmnet"
-        - name: OMP_NUM_THREADS
-          value: "1"
-        - name: OMP_THREAD_LIMIT
-          value: "1"
       container:
         resources:
           limits:
