@@ -26,7 +26,7 @@ inference:
       - name: WIKI_URL
         value: "https://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
-        value: "/usr/share/ca-certificates/wikimedia/Puppet_Internal_CA.crt"
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
 revscoring_inference_services:
   - wiki: "enwiki"
     version: "202105140814"
