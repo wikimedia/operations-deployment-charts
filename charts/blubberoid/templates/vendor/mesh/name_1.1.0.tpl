@@ -26,23 +26,20 @@
 {{- $certmanager := (.Values.mesh.certmanager | default dict) }}
 {{- $default_host := $certmanager.default_host | default .Release.Namespace -}}
 {{- if not $certmanager.disableDefaultHosts -}}
-{{- range .Values.mesh.certmanager.domains -}}
+{{- range $certmanager.domains -}}
 - {{ $default_host }}.{{ . }}
 {{ end -}} {{- /* end range $domains */ -}}
 {{- end }} {{- /* if not $certmanager.disableDefaultHosts */ -}}
 {{- /* Unconditionally add the cluster local name and extraFQDNs */ -}}
 - {{ template "mesh.name.fqdn" . }}
-{{ if .Values.mesh.certmanager.extraFQDNs -}}
-{{ .Values.mesh.certmanager.extraFQDNs | toYaml }}
+{{ if $certmanager.extraFQDNs -}}
+{{ $certmanager.extraFQDNs | toYaml }}
 {{- end -}}
 {{- end -}} {{- /* define */ -}}
 
 {{- define "mesh.name.annotations" -}}
 {{- if .Values.mesh.enabled }}
 checksum/tls-config: {{ include "mesh.configuration.full" . | sha256sum }}
-{{- if not .Values.mesh.certmanager }}
-checksum/tls-certs: {{ printf "%v" (values .Values.mesh.certs | sortAlpha) | sha256sum }}
-{{- end }}
 {{- if .Values.mesh.telemetry.enabled }}
 envoyproxy.io/scrape: "true"
 envoyproxy.io/port: "{{ .Values.mesh.telemetry.port }}"
