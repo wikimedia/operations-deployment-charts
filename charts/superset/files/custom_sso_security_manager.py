@@ -27,11 +27,22 @@ class CustomSsoSecurityManager(SupersetSecurityManager):
     def oauth_user_info(self, provider: str, response=None) -> Dict:
         if provider == "CAS":
             me = self.appbuilder.sm.oauth_remotes[provider].userinfo()
+
+            # We need to make sure that role_keys is a list of strings,
+            # as CAS sends back a string in the case of a user belonging
+            # to a single role, which breaks the LDAP group to Superset role
+            # mapping. Indeed, in the case of a single string, the mapping
+            # method iterates over the characters in that string when it should
+            # be iterating over a list of a single string.
+            role_keys = me.get("memberOf", [])
+            if isinstance(role_keys, str):
+                role_keys = [role_keys]
+
             userinfo = {
                 "id": me["id"],
                 "username": me.get("preferred_username", me["id"]),
                 "name": me.get("name", me["id"]),
                 "email": me.get("email", f"{me['id']}@email.notfound"),
-                "role_keys": me.get("memberOf", []),
+                "role_keys": role_keys,
             }
             return userinfo
