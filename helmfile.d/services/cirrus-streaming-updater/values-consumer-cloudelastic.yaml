@@ -9,11 +9,13 @@ app:
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
     replicas: 5
     resource:
-      memory: 3Gb
+      cpu: 2
+
   config_files:
     app.config.yaml:
-      elasticsearch-bulk-flush-max-size: 26214400 # ~26mb, default (100mb) causes OOM
-      elasticsearch-bulk-flush-max-actions: 2560 # max-size / avg action size
+      elasticsearch-bulk-max-action-size: 9mb # 2 * 4mb + overhead
+      elasticsearch-bulk-flush-max-size: 16mb # default (100mb) causes OOM
+      elasticsearch-bulk-flush-max-actions: 800 # based on metrics for max-size
 
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
