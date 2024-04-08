@@ -38,10 +38,26 @@ inference_services:
           limits:
             cpu: "16"
             memory: 4Gi
-            amd.com/gpu: 1
           requests:
             cpu: "16"
             memory: 4Gi
+  falcon-7b-instruct-gpu:
+      predictor:
+        image: "machinelearning-liftwing-inference-services-huggingface"
+        image_version: "2024-04-08-110759-publish"
+        custom_env:
+          - name: MODEL_NAME
+            value: "falcon-7b-instruct"
+          - name: STORAGE_URI
+            value: "s3://wmf-ml-models/llm/falcon-7b-instruct/"
+        resources:
+          limits:
+            cpu: "8"
+            memory: 20Gi
+            amd.com/gpu: 1
+          requests:
+            cpu: "8"
+            memory: 20Gi
             amd.com/gpu: 1
 
 external_services_app_label_selector: app-wmf
