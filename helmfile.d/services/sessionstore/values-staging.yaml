@@ -3,6 +3,7 @@ resources:
 affinity: {}
 tolerations: {}
 main_app:
+  version: v1.0.13
   # All of this needs to be overriden in production
   certs:
     cassandra:
@@ -38,6 +39,8 @@ main_app:
       - cassandra-dev2002-b.codfw.wmnet
       - cassandra-dev2003-a.codfw.wmnet
       - cassandra-dev2003-b.codfw.wmnet
+  tls:
+    enable_host_verification: false
   requests:
     cpu: 2500m
     memory: 100Mi
