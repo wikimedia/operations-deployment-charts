@@ -101,6 +101,30 @@ releases:
               resources: ["networkpolicies"]
               verbs: ["*"]
       {{- range .Environment.Values.deployExtraClusterRoles }}
+      {{- if eq . "flink" }}
+        ## Used by deploy users
+        ## Flink deploy users need permissions to add roles and role bindings
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-flink
+          rules:
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+            - apiGroups: ["rbac.authorization.k8s.io"]
+              resources: ["roles", "rolebindings"]
+              verbs: ["*"]
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["*"]
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
+              verbs: ["*"]
+            - apiGroups: ["flink.apache.org"]
+              resources: ["flinkdeployments"]
+              verbs: ["*"]
+      {{- end }}
       {{- if eq . "kserve" }}
         ## Used by deploy users
         ## Kubeflow Kfserving/Kserve deploy users need extra permissions.
