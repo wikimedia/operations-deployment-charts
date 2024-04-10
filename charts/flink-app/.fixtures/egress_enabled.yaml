@@ -24,13 +24,13 @@ mesh:
     port: 9361
 discovery:
   listeners:
-    - parsoid-php
+    - mw-parsoid
     - mathoid
     - eventgate-analytics
 services_proxy:
-  parsoid-php:
+  mw-parsoid:
     keepalive: 4s
-    port: 6002
+    port: 6505
     timeout: 8s
     retry_policy:
       retry_on: 5xx
@@ -40,8 +40,8 @@ services_proxy:
       ips:
         - 1.2.1.1/32
         - 2.3.1.1/32
-      address: parsoid-php.discovery.wmnet
-      port: 443
+      address: mw-parsoid.discovery.wmnet
+      port: 4452
       encryption: true
   mathoid:
     port: 6003
