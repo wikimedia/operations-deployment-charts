@@ -27,15 +27,16 @@ inference_services:
             value: "mistral-7b-instruct"
           - name: STORAGE_URI
             value: "s3://wmf-ml-models/llm/Mistral-7B-Instruct-v0.2/"
-        resources:
-          limits:
-            cpu: "8"
-            memory: 20Gi
-            amd.com/gpu: 1
-          requests:
-            cpu: "8"
-            memory: 20Gi
-            amd.com/gpu: 1
+        container:
+          resources:
+            limits:
+              cpu: "8"
+              memory: 35Gi
+              amd.com/gpu: 1
+            requests:
+              cpu: "8"
+              memory: 35Gi
+              amd.com/gpu: 1
 
   bert:
       predictor:
@@ -46,11 +47,12 @@ inference_services:
             value: "bert"
           - name: STORAGE_URI
             value: "s3://wmf-ml-models/llm/bert-base-uncased/"
-        resources:
-          limits:
-            memory: 2Gi
-          requests:
-            memory: 2Gi
+        container:
+          resources:
+            limits:
+              memory: 2Gi
+            requests:
+              memory: 2Gi
 
 external_services_app_label_selector: app-wmf
 external_services:
