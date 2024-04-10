@@ -70,6 +70,8 @@ main_app:
       # key: |-
   base_uri: echoseen/v1
   cassandra:
+    tls:
+      ca: /etc/cassandra-certs/ca.crt
     authentication:
       # password:
       username: restb

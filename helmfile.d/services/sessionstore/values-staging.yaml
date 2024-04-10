@@ -29,6 +29,8 @@ main_app:
         NHNq7uXqpFosQptQHiHvN4E9zk1X73Bk7VY4aTE/HtESCT3jxLQDup2p0+v966A=
         -----END CERTIFICATE-----
   cassandra:
+    tls:
+      enable_host_verification: false
     authentication:
       #     password: # needs to be defined on private/secrets.yaml
       username: restb
@@ -39,8 +41,6 @@ main_app:
       - cassandra-dev2002-b.codfw.wmnet
       - cassandra-dev2003-a.codfw.wmnet
       - cassandra-dev2003-b.codfw.wmnet
-  tls:
-    enable_host_verification: false
   requests:
     cpu: 2500m
     memory: 100Mi
