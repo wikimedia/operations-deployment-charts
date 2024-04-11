@@ -13,12 +13,16 @@ If Ingress is enabled, this returns ClusterIP unless ingress.keepNodePort is tru
 */}}
 {{- define "base.helper.serviceType" -}}
 {{/* Fail safe lookups to not break compatibility if ingress is not at all defined */}}
-{{- with .Values.ingress | default (dict "enabled" false) -}}
-{{- if and (.enabled | default false) (not (.keepNodePort | default false)) -}}
+{{- $ingress := .Values.ingress | default (dict "enabled" false) -}}
+{{- if and ($ingress.enabled | default false) (not ($ingress.keepNodePort | default false)) -}}
+ClusterIP
+{{- else if not (dig "nodePort" true .Values.service) -}}
+{{- /* Duplicate but easier to read:
+Use ClusterIP if service.nodePort is false
+Also use "dig" instead of "default" above as `(false | default true) == true` */ -}}
 ClusterIP
 {{- else -}}
 NodePort
-{{- end -}}
 {{- end -}}
 {{- end -}}
 
