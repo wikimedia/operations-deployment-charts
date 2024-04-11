@@ -59,6 +59,12 @@
 namespaces: {}
 GlobalNetworkPolicies: {}
 
+# Configure the default PodSecurityStandard settings
+# Currently this is only used to enable audit annotations on namespaces
+# using the allow-resticted-psp.
+PodSecurityStandard:
+  enabled: false
+
 IPAMConfig:
   # Prohibit nodes from borrowing IPs out of other nodes IPAM blocks (T296303)
   strictAffinity: true

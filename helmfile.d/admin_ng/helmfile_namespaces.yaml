@@ -20,6 +20,9 @@ releases:
             metadata:
               name: {{ $namespace }}
               {{- $labels := $values | get "labels" dict }}
+              {{- if and (eq $pspClusterRole "allow-restricted-psp") $.Environment.Values.PodSecurityStandard.enabled -}}
+              {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
+              {{- end }}
               {{- with $labels }}
               labels:
               {{- range $k, $v := . }}
