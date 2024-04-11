@@ -336,6 +336,20 @@ net_istio:
           number: 443
           protocol: HTTPS
         resolution: DNS
+    - name: mw-api-int-ro
+      spec:
+        hosts:
+        - mw-api-int-ro.discovery.wmnet
+        ports:
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 4680
+          protocol: HTTP
+          targetPort: 4446
+        - name: https-port
+          number: 4446
+          protocol: HTTPS
+        resolution: DNS
     - name: eventgate-main-se
       spec:
         hosts:
@@ -376,6 +390,30 @@ net_istio:
           portLevelSettings:
           - port:
               number: 80
+            tls:
+              mode: SIMPLE
+          connectionPool:
+            tcp:
+              maxConnections: 100
+              connectTimeout: 30s
+            http:
+              # Rationale (may need to be revisited after upgrading Istio):
+              # https://phabricator.wikimedia.org/T320374#8338627
+              idleTimeout: 5s
+              maxRequestsPerConnection: 1000
+              # See retries implemented in the Virtual Service settings
+              maxRetries: 0
+    - name: https-mw-api-int-ro
+      spec:
+        host: mw-api-int-ro.discovery.wmnet
+        trafficPolicy:
+          # The configuration is related to TLS egress origination.
+          # See https://istio.io/v1.9/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic
+          # The TLS settings will force istio-proxy to pick up the HTTPS port
+          # set in the related ServiceEntry.
+          portLevelSettings:
+          - port:
+              number: 4680
             tls:
               mode: SIMPLE
           connectionPool:

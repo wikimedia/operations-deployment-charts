@@ -88,6 +88,20 @@ net_istio:
           number: 443
           protocol: HTTPS
         resolution: DNS
+    - name: mw-api-int-ro
+      spec:
+        hosts:
+        - mw-api-int-ro.discovery.wmnet
+        ports:
+        - name: http-port
+          # This port is used by the Destination Rule for TLS egress origination
+          number: 4680
+          protocol: HTTP
+          targetPort: 4446
+        - name: https-port
+          number: 4446
+          protocol: HTTPS
+        resolution: DNS
     # This is a test for T353622
     # The goal is to enable a more "transparent"
     # proxy mesh config for the isvc pods.
