@@ -1,0 +1,9 @@
+{{ include "mesh.configuration.configmap" . }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-{{ .Release.Name }}
+data:
+  # service-runner-specific config variables
+  config.yaml: |- {{ include "config.app" . | nindent 4  }}

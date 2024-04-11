@@ -1,0 +1,48 @@
+# service-runner datasets-config app config.yaml.
+# datasets-config (v0.0.4) currently uses service-runner, with the objective to switch to service-utils.
+# Planned steps for migration:
+# 1. Deploy service with service-runner so we know the service works fundamentally
+# 2. Rewrite the service using service-utils and remove all references to service-runner
+# 3. Replace this file with a service-utils config file
+# 4. Redeploy service
+{{- define "config.app" -}}
+
+# Number of worker processes to spawn.
+# Set to 0 to run everything in a single process without clustering.
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: {{ .Values.app.num_workers | default 0 }}
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: {{ .Values.app.worker_heap_limit_mb | default 750 }}
+
+# Logger info
+logging:
+  level:  {{ .Values.app.log_level | default "info" }}
+  streams:
+    - type: stdout
+      named_levels: true
+
+{{- if .Values.monitoring.enabled }}
+metrics:
+  - type: prometheus
+    port: {{ .Values.monitoring.port }}
+{{- end }}
+
+{{- if .Values.app.extra_service_runner_conf }}
+{{ toYaml .Values.app.extra_service_runner_conf | indent 0 }}
+{{- end }}
+
+services:
+  - name: {{ .Values.app.name }}
+    module: app.js
+    conf:
+      port: {{ .Values.app.port }}
+      cors: '*'
+      csp: "default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src *; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'"
+      user_agent: "datasets-config/WMF"
+
+      # datasets-config app settings
+{{ toYaml .Values.app.conf | indent 6 }}
+
+{{- end }}
