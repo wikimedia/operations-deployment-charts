@@ -60,8 +60,6 @@ inference:
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2024-04-24-153759-publish"
     base_env:
-      - name: WIKI_URL
-        value: "http://api-ro.discovery.wmnet"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
       - name: EVENTGATE_URL
@@ -77,7 +75,7 @@ revscoring_inference_services:
   - wiki: "elwiki"
     version: "20220214192140"
   - wiki: "enwiktionary"
-    host: en.wiktionary.org
+    host: "en.wiktionary.org"
     version: "20220214192146"
   - wiki: "glwiki"
     version: "20220214192210"
