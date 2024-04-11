@@ -162,3 +162,95 @@ net_istio:
           number: 4113
           protocol: HTTPS
         resolution: DNS
+    virtual_services:
+    # Override mediawiki-api-vs to mw-api-int-ro T362316
+    - name: mediawiki-api-vs
+      spec:
+        gateways:
+        - mesh
+        hosts:
+        - '*.wikipedia.org'
+        - 'wikipedia.org'
+        - '*.wiktionary.org'
+        - 'wiktionary.org'
+        - '*.wikidata.org'
+        - 'wikidata.org'
+        - '*.wikiquote.org'
+        - 'wikiquote.org'
+        - '*.wikibooks.org'
+        - 'wikibooks.org'
+        - '*.wikisource.org'
+        - 'wikisource.org'
+        http:
+        - match:
+          - port: 4680
+          route:
+          - destination:
+              host: mw-api-int-ro.discovery.wmnet
+          retries:
+            # Rationale (may need to be revisited after upgrading Istio):
+            # https://phabricator.wikimedia.org/T320374#8338627
+            attempts: 3
+            retryOn: connect-failure,refused-stream,reset,503
+          headers:
+            request:
+              set:
+                # The TLS egress origination settings (see the related destination
+                # rule's comment) have the side effect of presenting
+                # a 'x-forwarded-proto: http' header to the target API, that in turn
+                # may return a warning in every response. To circumvent this problem,
+                # let's explicitly set the header.
+                x-forwarded-proto: https
+    - name: eventgate-main-vs
+      spec:
+        gateways:
+        - mesh
+        hosts:
+        - 'eventgate-main.discovery.wmnet'
+        http:
+        - match:
+          - port: 4480
+          route:
+          - destination:
+              host: eventgate-main.discovery.wmnet
+          retries:
+            # Rationale (may need to be revisited after upgrading Istio):
+            # https://phabricator.wikimedia.org/T320374#8338627
+            attempts: 3
+            retryOn: connect-failure,refused-stream,reset,503
+          headers:
+            request:
+              set:
+                # The TLS egress origination settings (see the related destination
+                # rule's comment) have the side effect of presenting
+                # a 'x-forwarded-proto: http' header to the target API, that in turn
+                # may return a warning in every response. To circumvent this problem,
+                # let's explicitly set the header.
+                x-forwarded-proto: https
+    - name: restgw-vs
+      spec:
+        gateways:
+        - mesh
+        hosts:
+        - '*.wikipedia.org'
+        - 'wikipedia.org'
+        http:
+        - match:
+          - port: 4111
+          route:
+          - destination:
+              host: rest-gateway.discovery.wmnet
+          retries:
+            # Rationale (may need to be revisited after upgrading Istio):
+            # https://phabricator.wikimedia.org/T320374#8338627
+            attempts: 3
+            retryOn: connect-failure,refused-stream,reset,503
+          headers:
+            request:
+              set:
+                # The TLS egress origination settings (see the related destination
+                # rule's comment) have the side effect of presenting
+                # a 'x-forwarded-proto: http' header to the target API, that in turn
+                # may return a warning in every response. To circumvent this problem,
+                # let's explicitly set the header.
+                x-forwarded-proto: https
