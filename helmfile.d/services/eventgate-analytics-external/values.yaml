@@ -20,9 +20,8 @@ discovery:
     - mw-api-int-async-ro # used for EventStreamConfig API endpoint.
     - schema      # schema.discovery.wmnet
 
-kafka:
-  allowed_clusters:
-    - jumbo-eqiad
+external_services:
+  kafka: [jumbo-eqiad]
 
 resources:
   replicas: 24
