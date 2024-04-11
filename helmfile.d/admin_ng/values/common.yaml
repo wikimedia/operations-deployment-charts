@@ -70,12 +70,6 @@ IPAMConfig:
 # of the extra cluster roles to deploy without the common 'deploy-' prefix.
 deployExtraClusterRoles: []
 
-# Feature only available in Kubernetes 1.21+, but since we control all namespaces
-# we implemented the feature.
-# If set to true, it adds the label kubernetes.io/metadata.name=$namespace to
-# all namespaces defined via helmfile.
-NamespaceDefaultLabelName: true
-
 limitranges:
   # check out documentation to understand this well
   # https://v1-23.docs.kubernetes.io/docs/concepts/policy/limit-range/
