@@ -155,10 +155,10 @@ main_app:
       webVideoTranscode:
         enabled: true
         timeout: 86400000
-        concurrency: 1
+        concurrency: 2
       webVideoTranscodePrioritized:
         enabled: true
-        concurrency: 1
+        concurrency: 2
         timeout: 86400000
 
     # Some jobs require partitioning according to MariaDB shards.
