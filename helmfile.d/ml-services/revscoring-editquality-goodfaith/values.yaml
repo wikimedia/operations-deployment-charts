@@ -23,6 +23,14 @@ networkpolicy:
         ports:
         - port: 443
           protocol: tcp
+      - cidr: 10.2.1.81/32 # mw-api-int-ro.svc.codfw.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
+      - cidr: 10.2.2.81/32 # mw-api-int-ro.svc.eqiad.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
       - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
         ports:
         - port: 4492
