@@ -11,6 +11,8 @@ releases:
         {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
         {{/* All builtin namespaces are system namespaces */}}
         {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
+        {{/* Fetch the PSP cluster role to be used for this namespace, default to "allow-restricted-psp" */}}
+        {{ $pspClusterRole := $values | get "pspClusterRole" "allow-restricted-psp" }}
         {{- if eq $isBuiltinNamespace false }}
           - |
             apiVersion: v1
@@ -62,7 +64,6 @@ releases:
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
-            {{- $pspClusterRole := $values | getOrNil "pspClusterRole" | default "allow-restricted-psp"}}
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
@@ -155,7 +156,6 @@ releases:
           - |
             # Bind all service account of this namespace to the desired clusterrole.
             # See helmfile_psp.yaml
-            {{- $pspClusterRole := $values | get "pspClusterRole" "allow-restricted-psp" }}
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
