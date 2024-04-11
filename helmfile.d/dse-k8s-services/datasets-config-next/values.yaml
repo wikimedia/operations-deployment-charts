@@ -1,0 +1,31 @@
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - datasets-config-next.wikimedia.org
+
+mesh:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 208.80.153.8/32 # gitlab.wikimedia.org
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 2620:0:860:1:208:80:153:8/128 # gitlab.wikimedia.org
+        ports:
+          - port: 443
+            protocol: tcp
+
+app:
+  version: v0.6.0
+  # TODO: Define this in helm chart along with service-utils config file
+  # once fully migrated away from service-runner
+  args: ["/srv/service/.output/server/index.mjs", "-c", "/srv/service/"]
+
+config:
+  public:
+    NITRO_PORT: 8000

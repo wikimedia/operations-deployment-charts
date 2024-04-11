@@ -1,0 +1,24 @@
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - datasets-config.wikimedia.org
+
+mesh:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 208.80.153.8/32 # gitlab.wikimedia.org
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 2620:0:860:1:208:80:153:8/128 # gitlab.wikimedia.org
+        ports:
+          - port: 443
+            protocol: tcp
+
+app:
+  version: v0.4.0
