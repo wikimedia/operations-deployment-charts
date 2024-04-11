@@ -4,3 +4,13 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+      custom_env:
+        - name: MODEL_NAME
+          value: "article-descriptions"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/article-descriptions/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        - name: REST_GATEWAY_ENDPOINT
+          value: "http://rest-gateway.discovery.wmnet:4111"
+
