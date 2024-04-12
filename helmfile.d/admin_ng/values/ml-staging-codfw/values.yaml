@@ -115,6 +115,7 @@ net_istio:
     # be forwarded to their real upstreams, but handled via
     # the virtual service config.
     - name: mediawiki-api-proxied-domains
+      # Override mediawiki-api-vs to mw-api-int-ro T362316
       spec:
         hosts:
         - '*.wikipedia.org'
@@ -130,6 +131,9 @@ net_istio:
         - '*.wikisource.org'
         - 'wikisource.org'
         ports:
+        - name: http-port-k8s
+          number: 4680
+          protocol: HTTP
         - name: http-port
           number: 80
           protocol: HTTP
