@@ -59,11 +59,12 @@
 namespaces: {}
 GlobalNetworkPolicies: {}
 
-# Configure the default PodSecurityStandard settings
-# Currently this is only used to enable audit annotations on namespaces
-# using the allow-resticted-psp.
+# Configure the default PodSecurityStandard settings, see: T273507
 PodSecurityStandard:
   enabled: true
+  # disablePSPMutations: true # Disable PSP mutations
+  # enforce: true # Enforce the PodSecurityStandard profile "restricted"
+  # disablePSP: true # Disable PSP binding for the restricted PSP as last step during the PSP migration
 
 IPAMConfig:
   # Prohibit nodes from borrowing IPs out of other nodes IPAM blocks (T296303)

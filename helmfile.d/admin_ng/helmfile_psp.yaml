@@ -34,10 +34,18 @@ releases:
           metadata:
             name: restricted
             annotations:
-              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
+              {{- if not ($.Environment.Values.PodSecurityStandard | get "disablePSPMutations" false) }}
               apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default,localhost/wikifunctions-orchestrator,localhost/wikifunctions-evaluator'
               seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
               apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+              {{- else }}
+              # During migration we need to allow all seccomp profiles as the PSP can not
+              # properly validate the securityContext.seccompProfile.type field.
+              # Disabling the validation (e.g. not setting this annotation) will cause the PSP
+              # to reject pods with a seccomp profile set.
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+              {{- end }}
           spec:
             privileged: false
             # Required to prevent escalations to root.
@@ -83,10 +91,18 @@ releases:
           metadata:
             name: mediawiki
             annotations:
+              {{- if not ($.Environment.Values.PodSecurityStandard | get "disablePSPMutations" false) }}
               seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
               apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
               seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
               apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
+              {{- else }}
+              # During migration we need to allow all seccomp profiles as the PSP can not
+              # properly validate the securityContext.seccompProfile.type field.
+              # Disabling the validation (e.g. not setting this annotation) will cause the PSP
+              # to reject pods with a seccomp profile set.
+              seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+              {{- end }}
           spec:
             privileged: false
             # Required to prevent escalations to root.
