@@ -12,6 +12,11 @@ mesh:
 php:
   max_execution_time: 1200
   timeout: 86400
+  apc:
+    size: 4096
+  opcache:
+    interned_strings_buffer: 96
+    size: 1024
 
 # Only one website needed here.
 mw:
