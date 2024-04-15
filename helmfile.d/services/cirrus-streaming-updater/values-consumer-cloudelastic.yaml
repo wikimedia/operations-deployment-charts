@@ -15,6 +15,11 @@ app:
   config_files:
     app.config.yaml:
       elasticsearch-bulk-flush-interval: 30s
+      saneitize: true
+      saneitize-capacity: 100
+      saneitize-loop-duration: P14D
+      saneitize-private-wikis: false
+      saneitize-rerender-frequency: 8
 
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962

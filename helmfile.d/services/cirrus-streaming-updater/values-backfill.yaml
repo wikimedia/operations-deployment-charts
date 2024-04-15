@@ -13,3 +13,5 @@ app:
         # of the expected timestamp format.
         kafka-source-start-time: 2000-01-01T00:00:00Z
         kafka-source-end-time: 2000-01-01T00:00:00Z
+        # The saneitizer must not run during backfills
+        saneitize: false
