@@ -17,9 +17,10 @@ app:
       elasticsearch-bulk-flush-interval: 30s
       saneitize: true
       saneitize-capacity: 100
-      saneitize-loop-duration: P14D
+      saneitize-loop-duration: 14D
       saneitize-private-wikis: false
       saneitize-rerender-frequency: 8
+      saneitize-cluster-group: cloudelastic
 
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
