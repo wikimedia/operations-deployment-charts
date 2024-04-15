@@ -7,11 +7,16 @@ app:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
     # To increase default job parellism, we can increase this
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
-    replicas: 5
+    replicas: 2
+    resource:
+      cpu: 2
+      memory: 3Gb
 
   config_files:
     app.config.yaml:
-      elasticsearch-bulk-flush-interval: 30s
+      elasticsearch-bulk-max-action-size: 9mb # 2 * 4mb + overhead
+      elasticsearch-bulk-flush-max-size: 16mb # default (100mb) causes OOM
+      elasticsearch-bulk-flush-max-actions: 800 # based on metrics for max-size
 
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962

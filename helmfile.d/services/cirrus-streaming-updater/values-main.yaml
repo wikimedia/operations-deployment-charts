@@ -26,15 +26,11 @@ app:
     # in each cluster's  helmfile.
     state.backend.type: hashmap
     state.checkpoints.num-retained: "10"
-    # Since we don't have much operational experience yet, fixed-delay seems like a fine default.
-    # We might want to re-assess in the future. With this policy, the application will try a number of
-    # `attempts` with a `delay` (seconds) between each try.
-    restart-strategy.type: fixed-delay
-    # delay * attempts should be higher than the usual downtime we see.
-    # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
-    # to err on the side of caution.
-    restart-strategy.fixed-delay.attempts: "10"
-    restart-strategy.fixed-delay.delay: "180"
+    # Enable automatic restarts
+    restart-strategy.type: failure-rate
+    restart-strategy.failure-rate.delay: "1 min"
+    restart-strategy.failure-rate.failure-rate-interval: "2 min"
+    restart-strategy.failure-rate.max-failures-per-interval: "10"
     # When HA is disabled we need to set an interval in order to trigger checkpointing.
     # TODO: after gaining some operational experience, set this value to something
     # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable

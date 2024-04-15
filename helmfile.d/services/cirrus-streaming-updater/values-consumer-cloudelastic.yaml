@@ -7,7 +7,10 @@ app:
     # NOTE: taskManager.replicas takes precedence over job.parallelism.
     # To increase default job parellism, we can increase this
     # and/or flinkConfiguration.taskmanager.numberOfTaskSlots accordingly.
-    replicas: 5
+    replicas: 2
+    resource:
+      cpu: 2
+      memory: 3Gb
 
   config_files:
     app.config.yaml:
