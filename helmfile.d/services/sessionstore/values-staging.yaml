@@ -3,11 +3,10 @@ resources:
 affinity: {}
 tolerations: {}
 main_app:
-  version: v1.0.14
+  version: v1.0.13
   # All of this needs to be overriden in production
   certs:
     cassandra:
-      # Unused (see main_app.cassandra.tls.ca below)
       ca: |-
         -----BEGIN CERTIFICATE-----
         MIIDWzCCAkOgAwIBAgIJAMDw6wy4LHx5MA0GCSqGSIb3DQEBCwUAMEMxDzANBgNV
@@ -31,8 +30,7 @@ main_app:
         -----END CERTIFICATE-----
   cassandra:
     tls:
-      ca: /etc/ssl/certs/wmf-ca-certificates.crt
-      enable_host_verification: true
+      enable_host_verification: false
     authentication:
       #     password: # needs to be defined on private/secrets.yaml
       username: restb
