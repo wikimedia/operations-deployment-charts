@@ -1,5 +1,5 @@
 main_app:
-  version: v1.0.13
+  version: v1.0.14
   requests:
     cpu: 2500m # T220401 and T229697
     memory: 100Mi
@@ -8,6 +8,7 @@ main_app:
     memory: 100Mi
   cassandra:
     tls:
+      ca: /etc/ssl/certs/wmf-ca-certificates.crt
       enable_host_verification: false
     hosts:
       - cassandra-dev2001-a.codfw.wmnet
