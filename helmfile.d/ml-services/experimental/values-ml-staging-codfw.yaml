@@ -18,6 +18,23 @@ inference_services:
           requests:
             cpu: "2"
             memory: 4Gi
+  logo-detection:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-logo-detection"
+      image_version: "2024-04-17-115310-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "logo-detection"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/logo-detection/20240417132942/"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
   mistral-7b-instruct-gpu:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
