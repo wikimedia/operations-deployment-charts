@@ -1,4 +1,8 @@
 replicaCount: 6
 
+resources:
+  limits:
+    memory: 500Mi
+
 service:
   clusterIP: 10.192.72.3
