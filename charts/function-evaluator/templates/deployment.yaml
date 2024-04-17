@@ -7,8 +7,6 @@ metadata:
     chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    container.apparmor.security.beta.kubernetes.io/{{ template "base.name.release" . }}: localhost/wikifunctions-evaluator
 spec:
   selector:
     matchLabels:
@@ -22,6 +20,7 @@ spec:
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
+        container.apparmor.security.beta.kubernetes.io/{{ template "base.name.release" . }}: localhost/wikifunctions-evaluator
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
