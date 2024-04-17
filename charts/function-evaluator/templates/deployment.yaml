@@ -23,6 +23,7 @@ spec:
         container.apparmor.security.beta.kubernetes.io/{{ template "base.name.release" . }}: localhost/wikifunctions-evaluator
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- if .Values.monitoring.enabled }}
+        prometheus.io/port: "9090"
         prometheus.io/scrape: "true"
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
