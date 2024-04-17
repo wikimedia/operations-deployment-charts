@@ -18,28 +18,28 @@
 #    on some logic. For egress we don't really need it but we have to specify
 #    a basic entry to make everything working.
 #
-{{- range .service_entries }}
+{{- range $k,$v := .service_entries }}
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: {{ .name }}
-spec: {{ .spec | toYaml | nindent 2 }}
+  name: {{ $k }}
+spec: {{ $v.spec | toYaml | nindent 2 }}
 ---
 {{- end }}
-{{- range .virtual_services }}
+{{- range $k,$v := .virtual_services }}
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ .name }}
-spec: {{ .spec | toYaml | nindent 2 }}
+  name: {{ $k }}
+spec: {{ $v.spec | toYaml | nindent 2 }}
 ---
 {{- end }}
-{{- range .destination_rules }}
+{{- range $k,$v :=  .destination_rules }}
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: {{ .name }}
-spec: {{ .spec | toYaml | nindent 2 }}
+  name: {{ $k }}
+spec: {{ $v.spec | toYaml | nindent 2 }}
 ---
 {{- end }}
 {{- end }}
