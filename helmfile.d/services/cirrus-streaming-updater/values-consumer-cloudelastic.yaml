@@ -22,6 +22,9 @@ app:
       saneitize-rerender-frequency: 8
       saneitize-cluster-group: cloudelastic
 
+    flinkConfiguration:
+      taskmanager.memory.jvm-metaspace.size: 512mb
+
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
   resources:

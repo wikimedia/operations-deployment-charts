@@ -18,6 +18,9 @@ app:
       elasticsearch-bulk-flush-max-size: 16mb # default (100mb) causes OOM
       elasticsearch-bulk-flush-max-actions: 800 # based on metrics for max-size
 
+    flinkConfiguration:
+      taskmanager.memory.jvm-metaspace.size: 512mb
+
 mesh:
   concurrency: 2 # https://phabricator.wikimedia.org/T353460#9437962
   resources:
