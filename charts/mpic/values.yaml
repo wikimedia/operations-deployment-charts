@@ -4,27 +4,27 @@
 app:
   image: repos/data-engineering/mpic
   version: latest # we use latest everywhere in the defaults.
-  port: 8000 # port exposed as a Service, also used by service-checker.
+  port: 8080 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
-  command: []
-  args: []
+  command: ["node"]
+  args: ["server.js", "--config", "/etc/mpic/config.yaml"]
   requests:
-    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
     memory: 200Mi # Just some sample, edit these
   limits:
     cpu: 1 # Just some sample, edit these
     memory: 400Mi # Just some sample, edit these
   liveness_probe:
     tcpSocket:
-      port: 8000
+      port: 8080
   readiness_probe:
     httpGet:
       path: /
-      port: 8000
+      port: 8080
   # add here any volumes to mount onto the pod. Example:
   #volumes:
   #- name: scratchdir
@@ -33,6 +33,36 @@ app:
   #volumeMounts:
   #   - name: scratchdir # the name from your volume above
   #     mountPath: /scratch/ # where it should live in your container
+
+  volumes:
+    - name: config-volume
+      configMap:
+        name: mpic-base-config
+  volumeMounts:
+    - name: config-volume
+      mountPath: /etc/mpic/
+
+  logging:
+    level: trace
+
+  service:
+    name: mpic
+    port: 8080
+    cors: '*'
+    max_body_size: 100kb
+
+  database:
+    engine: mysql
+    host: localhost
+    database: mpic
+    username: mpic
+    port: 3306
+
+  idp:
+    oidc_url: https://idp-test.wikimedia.org/oidc
+    client_id: mpic
+    redirect_url: http://mpic-next.wikimedia.org/login/callback
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
@@ -42,13 +72,16 @@ service:
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 8000 # the number or name of the exposed port on the container
-    port: 8000 # the number of the port desired to be exposed to the cluster
+    targetPort: 8080 # the number or name of the exposed port on the container
+    port: 8080 # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
 config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
-  private: {} # Add here all the keys that should be private but still available as env variables
+  private:  # Add here all the keys that should be private but still available as env variables
+    database_password: "dbpassvalue"
+    sal_password: "salpassvalue"
+    idp_client_secret: 'idpclientsecret'
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -59,7 +92,7 @@ debug:
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
-  enabled: false
+  enabled: true
   # By default, enabling ingress will switch the charts services from type NodePort to
   # ClusterIP. While that is fine for new services it may not be desired during transition
   # of existing ones from dedicated LVS to Ingress.
@@ -100,7 +133,7 @@ ingress:
 
 # Basic mesh-related data.
 mesh:
-  enabled: false
+  enabled: true
   admin: {port: 1666 }
   image_version: latest
   # http keepalive timeout for incoming requests
@@ -151,9 +184,19 @@ monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
+# enable egress traffic to the database
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
+    dst_nets:
+      - cidr: 10.64.138.8/32  # an-mariadb1001.eqiad.wmnet
+        ports:
+        - protocol: TCP
+          port: 3306
+      - cidr: 10.64.142.7/32  # an-mariadb1002.eqiad.wmnet
+        ports:
+        - protocol: TCP
+          port: 3306
 
 # Add here the list of kafka-clusters (by name) that the service will need to reach.
 kafka:

@@ -1,0 +1,23 @@
+{{- define "config.app" }}
+logging:
+  level: {{ .Values.app.logging.level }}
+
+service:
+  name: {{ .Values.app.service.name }}
+  port: {{ .Values.app.service.port }}
+  cors: {{ .Values.app.service.cors }}
+  max_body_size: {{ .Values.app.service.max_body_size }}
+
+database:
+  engine: {{ .Values.app.database.engine }}
+  host: {{ .Values.app.database.host }}
+  database: {{ .Values.app.database.database }}
+  username: {{ .Values.app.database.username }}
+  port: {{ .Values.app.database.port }}
+
+idp:
+  oidc_url: {{ .Values.app.idp.oidc_url}}
+  client_id: {{ .Values.app.idp.client_id }}
+  redirect_uri: {{ .Values.app.idp.redirect_uri }}
+
+{{- end }}

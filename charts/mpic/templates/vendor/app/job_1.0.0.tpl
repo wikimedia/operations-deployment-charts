@@ -26,10 +26,10 @@ concurrencyPolicy: {{ .concurrency | default "Forbid" }}
   {{- end }}
   {{- range $k, $v := .Root.Values.config.private }}
   - name: {{ $k }}
-      valueFrom:
+    valueFrom:
       secretKeyRef:
-          name: {{ template "base.name.release" $ }}-secret-config
-          key: {{ $k }}
+        name: {{ template "base.name.release" $.Root }}-secret-config
+        key: {{ $k }}
   {{- end }}
   command:
 {{ toYaml .Job.command | indent 4 }}
