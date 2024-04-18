@@ -54,18 +54,3 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
         - 8081
-
-# Override for T353622
-coredns:
-  rewrite_actions:
-    # Measure to deal with https://phabricator.wikimedia.org/T318814
-    # By default Kubernetes DNS records have 5s TTL, and in a Service Mesh
-    # like Istio this means causing a lot of DNS queries from Envoy to refresh
-    # every TTL seconds all the Clusters with STRICT_DNS settings.
-    continue:
-    - 'ttl exact knative-local-gateway.istio-system.svc.cluster.local. 30'
-    - 'ttl regex (.*).discovery.wmnet 30'
-    - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
-    # Avoid IPv6 lookups, see T353622
-    stop:
-    - 'type AAAA A'

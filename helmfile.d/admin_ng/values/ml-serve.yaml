@@ -322,28 +322,58 @@ net_istio:
         credentialName: knative-serving-tls-certificate
   mesh:
     service_entries:
-      mediawiki-api-ro:
+      mediawiki-api-proxied-domains:
         spec:
-          hosts:
-          - api-ro.discovery.wmnet
+        # This list is needed to instruct the Istio sidecar that
+        # HTTP connections related to these domains on port X shouldn't
+        # be forwarded to their real upstreams, but handled via
+        # the virtual service config.
+        # As of April 2024 we connect from our model servers to
+        # the MediaWiki API in the following way:
+        # 1) We create a TCP connection to the discovery endpoint.
+        # 2) We set the right HTTP Host header
+        # Due to how Istio HTTP routing works, all the domains listed in
+        # the Host headers need to be allowed by ServiceEntry settings.
+        # In case we'll use the Istio dns-proxy, we'll not need to
+        # resolve and DNS query about these, hence the NONE setting below.
+        # More info: https://istio.io/latest/docs/ops/configuration/traffic-management/traffic-routing/
+          hosts: &mediawiki_api_domains
+          - '*.wikipedia.org'
+          - 'wikipedia.org'
+          - '*.wiktionary.org'
+          - 'wiktionary.org'
+          - '*.wikidata.org'
+          - 'wikidata.org'
+          - '*.wikiquote.org'
+          - 'wikiquote.org'
+          - '*.wikibooks.org'
+          - 'wikibooks.org'
+          - '*.wikisource.org'
+          - 'wikisource.org'
           ports:
+          # We need to keep two ports since we support services explicitly
+          # setting a proxy (like a discovery endpoint and port) or simply
+          # the upstream domain directly (like en.wikipedia.org)
           - name: http-port
-            # This port is used by the Destination Rule for TLS egress origination
+            number: 4680
+            protocol: HTTP
+          - name: http-port
             number: 80
             protocol: HTTP
-            targetPort: 443
-          - name: https-port
-            number: 443
-            protocol: HTTPS
-          resolution: DNS
+          resolution: NONE
       mw-api-int-ro:
         spec:
           hosts:
           - mw-api-int-ro.discovery.wmnet
           ports:
-          - name: http-port
+          - name: http-port-k8s
             # This port is used by the Destination Rule for TLS egress origination
             number: 4680
+            protocol: HTTP
+            targetPort: 4446
+          - name: http-port
+            # This port is used by the Destination Rule for TLS egress origination
+            number: 80
             protocol: HTTP
             targetPort: 4446
           - name: https-port
@@ -379,30 +409,6 @@ net_istio:
             protocol: HTTPS
           resolution: DNS
     destination_rules:
-      https-api-ro:
-        spec:
-          host: api-ro.discovery.wmnet
-          trafficPolicy:
-            # The configuration is related to TLS egress origination.
-            # See https://istio.io/v1.9/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic
-            # The TLS settings will force istio-proxy to pick up the HTTPS port
-            # set in the related ServiceEntry.
-            portLevelSettings:
-            - port:
-                number: 80
-              tls:
-                mode: SIMPLE
-            connectionPool:
-              tcp:
-                maxConnections: 100
-                connectTimeout: 30s
-              http:
-                # Rationale (may need to be revisited after upgrading Istio):
-                # https://phabricator.wikimedia.org/T320374#8338627
-                idleTimeout: 5s
-                maxRequestsPerConnection: 1000
-                # See retries implemented in the Virtual Service settings
-                maxRetries: 0
       https-mw-api-int-ro:
         spec:
           host: mw-api-int-ro.discovery.wmnet
@@ -412,8 +418,15 @@ net_istio:
             # The TLS settings will force istio-proxy to pick up the HTTPS port
             # set in the related ServiceEntry.
             portLevelSettings:
+            # We need to keep two ports since we support services explicitly
+            # setting a proxy (like a discovery endpoint and port) or simply
+            # the upstream domain directly (like en.wikipedia.org)
             - port:
                 number: 4680
+              tls:
+                mode: SIMPLE
+            - port:
+                number: 80
               tls:
                 mode: SIMPLE
             connectionPool:
@@ -477,28 +490,49 @@ net_istio:
                 maxRetries: 0
     virtual_services:
       mediawiki-api-vs:
+        # NOTE: Please keep mediawiki-api-vs and mediawiki-api-vs-transparent-proxy
+        # in sync.
         spec:
           gateways:
           - mesh
-          hosts:
-          - '*.wikipedia.org'
-          - 'wikipedia.org'
-          - '*.wiktionary.org'
-          - 'wiktionary.org'
-          - '*.wikidata.org'
-          - 'wikidata.org'
-          - '*.wikiquote.org'
-          - 'wikiquote.org'
-          - '*.wikibooks.org'
-          - 'wikibooks.org'
-          - '*.wikisource.org'
-          - 'wikisource.org'
+          hosts: *mediawiki_api_domains
+          http:
+          - match:
+            - port: 4680
+            route:
+            - destination:
+                host: mw-api-int-ro.discovery.wmnet
+            retries:
+              # Rationale (may need to be revisited after upgrading Istio):
+              # https://phabricator.wikimedia.org/T320374#8338627
+              attempts: 3
+              retryOn: connect-failure,refused-stream,reset,503
+            headers:
+              request:
+                set:
+                  # The TLS egress origination settings (see the related destination
+                  # rule's comment) have the side effect of presenting
+                  # a 'x-forwarded-proto: http' header to the target API, that in turn
+                  # may return a warning in every response. To circumvent this problem,
+                  # let's explicitly set the header.
+                  x-forwarded-proto: https
+      mediawiki-api-vs-transparent-proxy:
+        # NOTE: Please keep mediawiki-api-vs and mediawiki-api-vs-transparent-proxy
+        # in sync.
+        # This VS is aimed to support "transparent" proxy use cases for
+        # calls to the MediaWiki API (for example, http://en.wikipedia.org)
+        # We cannot use mediawiki-api-vs since the HTTP Route spec allow only
+        # one port, so for the time being we need to duplicate it.
+        spec:
+          gateways:
+          - mesh
+          hosts: *mediawiki_api_domains
           http:
           - match:
             - port: 80
             route:
             - destination:
-                host: api-ro.discovery.wmnet
+                host: mw-api-int-ro.discovery.wmnet
             retries:
               # Rationale (may need to be revisited after upgrading Istio):
               # https://phabricator.wikimedia.org/T320374#8338627
@@ -638,6 +672,13 @@ coredns:
     - 'ttl exact knative-local-gateway.istio-system.svc.cluster.local. 30'
     - 'ttl regex (.*).discovery.wmnet 30'
     - 'ttl regex (.*)-(predictor|transformer)-default-(.*) 30'
+    # Avoid IPv6 lookups
+    # Due to an Istio bug, every connection made to an IPv6 address
+    # on the current version (1.15.7, April 2024) will end up in a TCP SYN
+    # handing until timeout.
+    # More info: T353622#9415171
+    stop:
+    - 'type AAAA A'
 
 kserve:
   ingress:
