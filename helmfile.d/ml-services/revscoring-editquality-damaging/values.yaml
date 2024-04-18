@@ -58,7 +58,7 @@ inference:
       minReplicas: 1
       maxReplicas: 4
     image: "machinelearning-liftwing-inference-services-revscoring"
-    version: "2023-11-22-141624-publish"
+    version: "2024-04-18-041336-publish"
     base_env:
       - name: WIKI_URL
         value: "http://api-ro.discovery.wmnet"
@@ -68,6 +68,8 @@ inference:
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
         value: "mediawiki.revision_score_damaging"
+      - name: LOG_JSON_PAYLOAD
+        value: "True"
 
 revscoring_inference_services:
   - wiki: "arwiki"
@@ -129,6 +131,10 @@ revscoring_inference_services:
     version: "20220214192250"
   - wiki: "ruwiki"
     version: "20220214192252"
+    predictor:
+      config:
+        minReplicas: 4
+        maxReplicas: 6
   - wiki: "simplewiki"
     version: "202105260914"
     use_model_from_wiki: "enwiki"
