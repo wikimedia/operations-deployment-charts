@@ -101,6 +101,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- if .Values.wmfdebug_container_enabled | default false }}
         - name: {{ .Values.main_app.name }}-wmfdebug
           image: {{ .Values.docker.registry }}/wmfdebug:latest
