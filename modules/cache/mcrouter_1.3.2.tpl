@@ -52,6 +52,7 @@
     limits:
 {{ toYaml .limits | indent 6 }}
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).exporter | default "prometheus-mcrouter-exporter:latest" }}
@@ -74,8 +75,9 @@
 {{- if .Values.cache.mcrouter.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
 {{- end }}
-{{- end -}}
-{{- end -}}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end -}} {{/* end if .Values.monitoring.enabled */}}
+{{- end -}} {{/* end if .Values.cache.mcrouter.enabled */}}
 {{- end -}}
 
 {{ define "cache.mcrouter.volume" }}
@@ -142,6 +144,7 @@
     limits:
 {{ toYaml .limits | indent 6 }}
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).exporter | default "prometheus-mcrouter-exporter:latest" }}
@@ -164,8 +167,9 @@
 {{- if .Values.cache.mcrouter.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
 {{- end }}
-{{- end -}}
-{{- end -}}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end -}} {{/* end if .Values.monitoring.enabled */}}
+{{- end -}} {{/* end if .Values.cache.mcrouter.enabled */}}
 {{- end -}}
 {{/* End of code for compatibility with 1.2 */}}
 

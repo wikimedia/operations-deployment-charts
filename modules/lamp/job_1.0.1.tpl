@@ -45,4 +45,5 @@
     - name: {{ template "base.name.release" .Root }}-app-config
       mountPath: "/srv/app/config"
       readOnly: true
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
