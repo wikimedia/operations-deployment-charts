@@ -1,0 +1,31 @@
+# In this fixture we test the capability of the template to automatically
+# set some environment variables in case the Istio mesh is used as
+# transparent proxy.
+docker:
+  registry: docker-registry.wikimedia.org/wikimedia
+  imagePullPolicy: IfNotPresent
+inference:
+  swift_s3_secret_name: "swift-s3-credentials"
+  s3_storage_base_uri: "s3://wmf-ml-models"
+  model: goodfaith
+  annotations:
+    sidecar.istio.io/inject: "false"
+  labels:
+    controller-tools.k8s.io: "1.0"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2021-09-01-140944-production"
+    container:
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi
+        requests:
+          cpu: "1"
+          memory: 2Gi
+    base_env:
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+revscoring_inference_services:
+  - wiki: "enwiki"
+    version: "202105140814"

@@ -24,7 +24,7 @@ monitoring:
   enabled: false
 
 # All the models are wrapped in a KServer python runtime (provided by KServe),
-# that uses Tornado behind the scenes. By default we use port 8080.
+# that uses asyncio behind the scenes. By default we use port 8080.
 # Knative-serving adds a container called 'queue-proxy' to every InferenceService
 # pod, that is responsible to assess if traffic can reach the KServe container.
 # To simplify our settings, we assume that if transformers are used, they will
@@ -37,6 +37,7 @@ main_app:
     revision_metrics_port: 9091
   istio_sidecar:
     metrics_port: 15020
+
 app:
   port: 8080
 
