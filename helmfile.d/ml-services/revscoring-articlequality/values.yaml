@@ -55,7 +55,7 @@ inference:
   model: "articlequality"
   predictor:
     image: "machinelearning-liftwing-inference-services-revscoring"
-    version: "2024-04-18-100317-publish"
+    version: "2024-04-19-131244-publish"
     config:
       minReplicas: 1
       maxReplicas: 4
@@ -68,6 +68,8 @@ inference:
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
         value: "mediawiki.revision_score_articlequality"
+      - name: LOG_JSON_PAYLOAD
+        value: "True"
 
 revscoring_inference_services:
   - wiki: "enwiki"
