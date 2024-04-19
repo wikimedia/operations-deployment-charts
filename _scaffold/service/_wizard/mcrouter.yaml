@@ -13,12 +13,9 @@ templates:
   NetworkpolicyEgress: |
     {{- include "cache.mcrouter.egress" . }}
 values: |
-  common_images:
-    mcrouter:
-      mcrouter: latest
-      exporter: latest
   cache:
     mcrouter:
+      enabled: true
       # This is the route prefix that will be added by default
       # to all requests whose key doesn't begin with /
       port: 11213
@@ -52,30 +49,38 @@ values: |
           failover:
             - 192.168.2.54
             - 192.168.2.53
-          routes:
-            # Route 1: simple standalone
-            - route: /default
-              pool: foo-pool
-              failover_time: 0
-            # Route 2: "replica"
-            # Actually generates two routes,
-            # * /replica/foo that reads and writes to the foo pools
-            # * /replica/bar that reads from foo and writes to bar
-            # Applications can write to both using /replica/*/ as a
-            # prefix.
-            - route: /replica/foo
-              pool: foo-pool
-              failover_time: 10
-              replica:
-                route: /replica/bar
-                pool: bar-pool
-            # Route 3: "warmup"
-            # This route will try reading a key from the local pool, and
-            # if it doesn't find it, it will contact the bar pool and store
-            # the resulting key for the ttl time
-            - route: /multilayer
-              pool: bar-pool
-              failover_time: 10
-              warmup:
-                pool: foo-pool
-                ttl: 60
+      routes:
+        # Route 1: simple standalone
+        - route: /default
+          pool: foo-pool
+          failover_time: 0
+        # Route 2: "replica"
+        # Actually generates two routes,
+        # * /replica/foo that reads and writes to the foo pools
+        # * /replica/bar that reads from foo and writes to bar
+        # Applications can write to both using /replica/*/ as a
+        # prefix.
+        - route: /replica/foo
+          pool: foo-pool
+          failover_time: 10
+          replica:
+            route: /replica/bar
+            pool: bar-pool
+        # Route 3: "warmup"
+        # This route will try reading a key from the local pool, and
+        # if it doesn't find it, it will contact the bar pool and store
+        # the resulting key for the ttl time
+        - route: /multilayer
+          pool: bar-pool
+          failover_time: 10
+          warmup:
+            pool: foo-pool
+            ttl: 60
+      exporter:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi
