@@ -7,8 +7,6 @@ inference:
       minReplicas: 1
       maxReplicas: 1
     base_env:
-      - name: WIKI_URL
-        value: "http://mw-api-int-ro.discovery.wmnet:4680"
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
       - name: EVENTGATE_URL
