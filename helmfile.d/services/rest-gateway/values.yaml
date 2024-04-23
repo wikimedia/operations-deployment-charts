@@ -213,6 +213,17 @@ main_app:
           in: '/wikimedia.org/v1/metrics/unique-devices/(.+)'
           out: '/metrics/unique-devices/\1'
 
+    - name: commons-impact-analytics
+      timeout: 15s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/wikimedia.org/v1/metrics/commons-impact/api-spec.json'
+          out: '/commons-impact-analytics/api-spec.json'
+        - name: commons-analytics
+          in: '/wikimedia.org/v1/metrics/commons-impact/(.+)'
+          out: '/metrics/commons-analytics/\1'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -250,6 +261,10 @@ main_app:
       port: 30443 # ingress
       tls: true
     editor-analytics:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+    commons-impact-analytics:
       ingress: true
       port: 30443 # ingress
       tls: true
