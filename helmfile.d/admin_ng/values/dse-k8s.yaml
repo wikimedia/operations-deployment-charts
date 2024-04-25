@@ -181,6 +181,13 @@ namespaces:
       istio-injection: disabled
   datasets-config: {}
   datasets-config-next: {}
+  datahub:
+    tlsHostnames:
+      - datahub-frontend
+      - datahub-gms
+    tlsExtraSANs:
+      - datahub.wikimedia.org
+  datahub-next: {}
   rdf-streaming-updater:
     deployTLSCertificate: false
     labels:
