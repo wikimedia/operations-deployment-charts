@@ -354,7 +354,7 @@ net_istio:
           # We need to keep two ports since we support services explicitly
           # setting a proxy (like a discovery endpoint and port) or simply
           # the upstream domain directly (like en.wikipedia.org)
-          - name: http-port
+          - name: http-port-k8s
             number: 4680
             protocol: HTTP
           - name: http-port
