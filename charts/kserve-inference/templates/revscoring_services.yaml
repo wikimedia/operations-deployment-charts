@@ -59,7 +59,7 @@ spec:
       {{- $sanitized_host := (printf "%s.wikipedia.org" (regexReplaceAll "wiki$" .wiki "")) }}
       {{- if not $wiki_url_set }}
       - name: WIKI_URL
-        value: "{{ $.Values.transparent_proxy_protocol | default "http" }}://{{ $sanitized_host }}:{{ $.Values.transparent_proxy_port | default "80"}}"
+        value: "{{ $.Values.transparent_proxy_protocol | default "http" }}://{{ .host | default $sanitized_host }}:{{ $.Values.transparent_proxy_port | default "80"}}"
       {{- end }}
       - name: WIKI_HOST
         value: {{ .host | default $sanitized_host }}
