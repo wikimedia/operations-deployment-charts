@@ -15,3 +15,6 @@ app:
         kafka-source-end-time: 2000-01-01T00:00:00Z
         # The saneitizer must not run during backfills
         saneitize: false
+        # app should probably do this itself, but for now we need to force the
+        # saneitizer to be bounded or the backfill job wont end.
+        saneitize-max-runtime: 1
