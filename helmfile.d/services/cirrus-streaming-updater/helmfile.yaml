@@ -111,6 +111,8 @@ environments:
   codfw:
     values:
       # Add consumer-search and backfill once we are ready for a wider rollout
-      - releases: [producer]
+      - releases:
+        - producer
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
