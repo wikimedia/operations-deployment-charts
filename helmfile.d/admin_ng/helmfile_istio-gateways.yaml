@@ -7,7 +7,6 @@
 #
 templates:
   {{- $istio_gateways := .Environment.Values | get "istio.gateways" dict }}
-  {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
   istio-gateways-networkpolicies: &istio-gateways-networkpolicies
     name: istio-gateways-networkpolicies
     chart: wmf-stable/raw
@@ -15,51 +14,51 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_gateways\" }}{{ .Environment.Values.istio_gateways }}{{ else }}{{ false }}{{end}}`}}"
     values:
       - resources:
-        {{- if $kubeapi_cidrs }}
-          - apiVersion: networking.k8s.io/v1
+        # Allow all pods in this namespace to contact the Kubernetes API
+          - apiVersion: crd.projectcalico.org/v1
             kind: NetworkPolicy
             metadata:
-              name: istiod
-              namespace: istio-system
+              name: istiod-calico
             spec:
-              podSelector:
-                matchLabels:
-                  istio: pilot
+              types:
+                - Egress
+                - Ingress
+              selector: "istio == 'pilot'"
               egress:
-                # Allow the istiod pods to contact the Kubernetes API
-                - to:
-                    {{- range $kubeapi_cidrs }}
-                    - ipBlock:
-                        cidr: {{ . }}
-                    {{- end }}
-                  ports:
-                    - port: 6443
-                      protocol: TCP
+              # Allow the istiod pods to contact the Kubernetes API
+                - action: Allow
+                  destination:
+                    services:
+                      name: kubernetes
+                      namespace: default
               ingress:
-                # Allow prometheus to scrape
-                - ports:
-                  - port: 15014
-                    protocol: TCP
-                # Allow Istio Gateways to talk to istiod
-                - from:
-                    {{- range $istio_gateway, $settings := $istio_gateways }}
-                    - podSelector:
-                        matchLabels:
-                          istio: {{ $istio_gateway }}
-                    {{- end }}
-                  ports:
-                    - port: 15012
-                      protocol: TCP
-                # Allow apiservers to call webhooks served by istiod
-                - from:
-                    {{- range $kubeapi_cidrs }}
-                    - ipBlock:
-                        cidr: {{ . }}
-                    {{- end }}
-                  ports:
-                    - port: 15017
-                      protocol: TCP
-          {{- end }}
+              # Allow prometheus to scrape
+                - action: Allow
+                  protocol: TCP
+                  destination:
+                    ports:
+                      - 15014
+              # Allow Istio Gateways to talk to istiod
+              {{- range $istio_gateway, $settings := $istio_gateways }}
+                - action: Allow
+                  protocol: TCP
+                  source:
+                    selector: "istio == '{{ $istio_gateway }}'"
+                  destination:
+                    ports:
+                      - 15012
+               {{- end }}
+              # Allow kubernetes apiservers to call webhooks served by istiod
+                - action: Allow
+                  protocol: TCP
+                  source:
+                    services:
+                      name: kubernetes
+                      namespace: default
+                  destination:
+                    ports:
+                      - 15017
+
           {{- range $istio_gateway, $settings := $istio_gateways }}
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
