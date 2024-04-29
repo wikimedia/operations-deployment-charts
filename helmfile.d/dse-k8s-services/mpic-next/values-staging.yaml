@@ -1,0 +1,16 @@
+app:
+  version: v0.0.1
+
+  database:
+    database: mpic_staging
+    username: mpic_staging
+
+  idp:
+    oidc_url: https://idp.wikimedia.org/oidc
+    client_id: mpic_next
+    redirect_url: https://mpic-next.wikimedia.org/login/callback
+
+ingress:
+  gatewayHosts:
+    extraFQDNs:
+    - mpic-next.wikimedia.org

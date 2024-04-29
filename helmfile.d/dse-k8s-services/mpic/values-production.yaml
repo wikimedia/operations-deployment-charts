@@ -1,0 +1,16 @@
+app:
+  version: v0.0.1
+
+  database:
+    database: mpic_production
+    username: mpic_production
+
+  idp:
+    oidc_url: https://idp.wikimedia.org/oidc
+    client_id: mpic
+    redirect_url: https://mpic.wikimedia.org/login/callback
+
+ingress:
+  gatewayHosts:
+    extraFQDNs:
+    - mpic.wikimedia.org
