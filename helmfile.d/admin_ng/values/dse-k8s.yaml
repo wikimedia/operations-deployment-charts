@@ -169,8 +169,12 @@ namespaces:
         max:
           memory: "16Gi"
           cpu: "8"
-  mpic: {}
-  mpic-next: {}
+  mpic:
+    tlsExtraSANs:
+      - mpic.wikimedia.org
+  mpic-next:
+    tlsExtraSANs:
+      - mpic-next.wikimedia.org
   flink-operator:
     systemNamespace: true
     labels:
