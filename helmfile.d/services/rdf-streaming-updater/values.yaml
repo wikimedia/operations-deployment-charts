@@ -60,8 +60,6 @@ app:
     # which will be resolved correctly depending on which DC we are deploying to.
     "s3.endpoint": thanos-swift.discovery.wmnet
     "s3.path.style.access": "true"
-    # Default is 5s and might not be enough in some conditions (T362508)
-    "s3.socket-timeout": "30s"
     "state.backend.rocksdb.metrics.estimate-num-keys": "true"
     "state.backend.rocksdb.metrics.estimate-live-data-size": "true"
     "state.backend.rocksdb.metrics.cur-size-active-mem-table": "true"
