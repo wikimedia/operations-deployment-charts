@@ -61,38 +61,43 @@ releases:
       - kube-system/namespaces
     values:
       - resources:
-        # Allow all pods in this namespace to contact the Kubernetes API
-        - apiVersion: crd.projectcalico.org/v1
+        {{- $kubeapi_cidrs := .Environment.Values | get "kubernetesMasters.cidrs" list}}
+        {{- if $kubeapi_cidrs }}
+        - apiVersion: networking.k8s.io/v1
           kind: NetworkPolicy
           metadata:
-            name: cert-manager-kubeapi-calico
+            name: cert-manager
           spec:
-            types:
-              - Egress
-            selector: all()
+            podSelector: {}
             egress:
-              - action: Allow
-                destination:
-                  services:
-                    name: kubernetes
-                    namespace: default
-        # Allow ingress from masters to webhook
-        - apiVersion: crd.projectcalico.org/v1
+              # Allow all pods in this namespace to contact the Kubernetes API
+              - to:
+                  {{- range $kubeapi_cidrs }}
+                  - ipBlock:
+                      cidr: {{ . }}
+                  {{- end }}
+                ports:
+                  - port: 6443
+                    protocol: TCP
+        - apiVersion: networking.k8s.io/v1
           kind: NetworkPolicy
           metadata:
-            name: cert-manager-webhook-calico
+            name: cert-manager-webhook
           spec:
-            types:
-              - Ingress
-            selector: "app.kubernetes.io/name == 'webhook'"
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: webhook
             ingress:
-              - action: Allow
-                source:
-                  services:
-                    name: kubernetes
-                    namespace: default
-                  ports:
-                    - 10250
+              # Allow ingress from masters to webhook
+              - from:
+                  {{- range $kubeapi_cidrs }}
+                  - ipBlock:
+                      cidr: {{ . }}
+                  {{- end }}
+                ports:
+                  - port: 10250
+                    protocol: TCP
+        {{- end }}
         - apiVersion: networking.k8s.io/v1
           kind: NetworkPolicy
           metadata:
