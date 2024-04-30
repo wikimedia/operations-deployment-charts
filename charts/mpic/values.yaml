@@ -61,7 +61,7 @@ app:
   idp:
     oidc_url: https://idp-test.wikimedia.org/oidc
     client_id: mpic
-    redirect_url: http://mpic-next.wikimedia.org/login/callback
+    redirect_uri: http://mpic-next.wikimedia.org/login/callback
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -80,7 +80,6 @@ config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private:  # Add here all the keys that should be private but still available as env variables
     database_password: "dbpassvalue"
-    sal_password: "salpassvalue"
     idp_client_secret: 'idpclientsecret'
 
 # Additional resources if we want to add a port for a debugger to connect to.
