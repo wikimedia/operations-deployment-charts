@@ -48,7 +48,7 @@ app:
   service:
     name: mpic
     port: 8080
-    cors: '*'
+    cors: "*"
     max_body_size: 100kb
 
   database:
@@ -80,7 +80,7 @@ config:
   public: {} # Add here all the keys that can be publicly available as a ConfigMap
   private:  # Add here all the keys that should be private but still available as env variables
     database_password: "dbpassvalue"
-    idp_client_secret: 'idpclientsecret'
+    idp_client_secret: "idpclientsecret"
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

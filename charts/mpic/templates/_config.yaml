@@ -5,7 +5,7 @@ logging:
 service:
   name: {{ .Values.app.service.name }}
   port: {{ .Values.app.service.port }}
-  cors: {{ .Values.app.service.cors }}
+  cors: {{ .Values.app.service.cors | quote }}
   max_body_size: {{ .Values.app.service.max_body_size }}
 
 database:
