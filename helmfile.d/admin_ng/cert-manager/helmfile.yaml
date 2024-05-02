@@ -79,7 +79,6 @@ releases:
         # Allow ingress from masters to webhook
         - apiVersion: crd.projectcalico.org/v1
           kind: NetworkPolicy
-          protocol: TCP
           metadata:
             name: cert-manager-webhook-calico
           spec:
@@ -88,6 +87,7 @@ releases:
             selector: "app.kubernetes.io/name == 'webhook'"
             ingress:
               - action: Allow
+                protocol: TCP
                 source:
                   services:
                     name: kubernetes
