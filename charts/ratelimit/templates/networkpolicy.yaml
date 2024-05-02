@@ -14,7 +14,9 @@ spec:
     - Ingress
   ingress:
     - ports:
-      {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
+      {{- include "app.generic.networkpolicy_ingress" . | indent 6 }}
+      - port: 9102
+        protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}

@@ -12,16 +12,85 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
-        {{- include "mesh.name.annotations" . | indent 8 }}
+        prometheus.io/port: "9102"
+        {{- include "base.statsd.deployment_annotations" . | indent 8 }}
+        checksum/nutcracker: {{ include "nutcracker.config" . | sha256sum }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
-        {{- include "app.generic.container" . | indent 8 }}
+        - name: {{ template "base.name.release" . }}
+          image: {{ template "app.generic._image" . }}
+          # Override the entrypoint to skip ratelimit_config_check
+          # which breaks with configmap volume mounts of multiple files
+          command: ["/usr/bin/ratelimit"]
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - name: grpc
+              containerPort: 8081
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+          env:
+          {{- range $k, $v := .Values.config.public }}
+            - name: {{ $k | upper }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{- range $k, $v := .Values.config.private }}
+            - name: {{ $k | upper }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "base.name.release" $ }}-secret-config
+                  key: {{ $k }}
+          {{- end }}
+          {{- include "base.helper.resources" .Values.app | indent 10 }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
+          volumeMounts:
+            - name: ratelimit-config
+              mountPath: /etc/ratelimit/config
+              readOnly: true
+            - name: ratelimit-tls-certs
+              mountPath: /etc/ratelimit/ssl
+              readOnly: true
+            - name: nutcracker-socket
+              mountPath: /var/run/nutcracker
+        - name: {{ .Release.Name }}-nutcracker
+          image: {{ .Values.docker.registry }}/{{ .Values.common_images.nutcracker.nutcracker }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          args:
+            - "-o"
+            - "/dev/stdout"
+          {{- include "base.helper.resources" .Values.nutcracker | indent 10 }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
+          ports:
+            - containerPort: {{ .Values.nutcracker.port | default 6379 }}
+          volumeMounts:
+            - name: nutcracker-config
+              mountPath: /etc/nutcracker
+              readOnly: true
+            - name: nutcracker-socket
+              mountPath: /var/run/nutcracker
         {{- include "base.statsd.container" . | indent 8 }}
       volumes:
-        {{- include "app.generic.volume" . | indent 8 }}
+        - name: ratelimit-config
+          configMap:
+            name: {{ template "base.name.release" . }}-ratelimit-config
+        - name: ratelimit-tls-certs
+          secret:
+            secretName: {{ include "base.meta.name" (dict "Root" . "Name" "grpc") }}
+        - name: nutcracker-config
+          configMap:
+            name: {{ template "base.name.release" . }}-nutcracker-config
+        - name: nutcracker-socket
+          emptyDir: {}
         {{- include "base.statsd.volume" . | indent 8 }}
 
 

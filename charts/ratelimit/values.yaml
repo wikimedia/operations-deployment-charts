@@ -1,114 +1,89 @@
-# Default values.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+resources:
+  replicas: 1
+
 app:
   image: ratelimit
-  version: latest # we use latest everywhere in the defaults.
-  port: 8081 # port exposed as a Service, also used by service-checker.
-  # Use command and args below to override the entrypoint. Type is arrays
-  # Not necessary unless you want to change the entrypoint defined in the docker image
-  # Example:
-  # command: ["node"]
-  # args: ["bin/server.js", "--param1", "arg1"]
-  command: []
-  args: []
+  version: latest
+  # This will only allow ingress via the gRPC port (the HTTP port does not support TLS)
+  port: 8081
   requests:
-    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 200Mi # Just some sample, edit these
+    cpu: 200m
+    memory: 200Mi
   limits:
-    cpu: 1 # Just some sample, edit these
-    memory: 400Mi # Just some sample, edit these
-  liveness_probe:
-    tcpSocket:
-      port: 8081
-  readiness_probe:
-    httpGet:
-      path: /
-      port: 8081
-  # add here any volumes to mount onto the pod. Example:
-  #volumes:
-  #- name: scratchdir
-  #  emptyDir: {}
-  # add here any mounted volumes to make accessible to the container. Example:
-  #volumeMounts:
-  #   - name: scratchdir # the name from your volume above
-  #     mountPath: /scratch/ # where it should live in your container
-monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+    cpu: 500m
+    memory: 500Mi
+  # ratelimit configuration
+  # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
+  # Array keys are ratelimit domains (they need to be unique), the value
+  # needs is one or many descriptors.
+  configuration:
+    mw-api-int:
+      - key: user-agent
+        rate_limit:
+          unit: second
+          requests_per_unit: 1
 
-service:
-  deployment: minikube # valid values are "production" and "minikube"
-  port:
-    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
-    targetPort: 8081 # the number or name of the exposed port on the container
-    port: 8081 # the number of the port desired to be exposed to the cluster
-    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+nutcracker:
+  requests:
+    memory: 100Mi
+    cpu: 100m
+  limits:
+    memory: 200Mi
+    cpu: 200m
+  servers: []
 
+# Configuration for the ratelimit container
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
-  private: {} # Add here all the keys that should be private but still available as env variables
+  public:
+    LOG_LEVEL: debug
+    LOG_FORMAT: json
+    # Configuration files are loaded from RUNTIME_ROOT/RUNTIME_SUBDIRECTORY/config/*.yaml
+    RUNTIME_ROOT: /etc
+    RUNTIME_SUBDIRECTORY: ratelimit
+    RUNTIME_IGNOREDOTFILES: true
+    # The ConfigMap volume updates files directly, no need to watch the root
+    RUNTIME_WATCH_ROOT: false
+    # Start in an unhealthy state and become healthy when at least one config is loaded
+    HEALTHY_WITH_AT_LEAST_ONE_CONFIG_LOADED: true
+    # Stores the over-the-limit cache keys to avoid reading the redis cache again for the already over-the-limit keys
+    LOCAL_CACHE_SIZE_IN_BYTES: 1000000
+    GRPC_SERVER_USE_TLS: true
+    GRPC_SERVER_TLS_CERT: /etc/ratelimit/ssl/tls.crt
+    GRPC_SERVER_TLS_KEY: /etc/ratelimit/ssl/tls.key
+    USE_STATSD: true
+    STATSD_HOST: localhost
+    STATSD_PORT: 9125
+  private: {}
+    # REDIS_AUTH: "snakeoil"
 
-# Additional resources if we want to add a port for a debugger to connect to.
-debug:
-  enabled: false
-  # Define here any port that you want to expose for debugging purposes
-  ports: []
+certificates:
+  - name: grpc
 
 common_images:
   statsd:
-    image: prometheus-statsd-exporter
-    version: latest
-# WARNING: If you want to enable the module,
-# you will need to add a "statsd" stanza to monitoring
-# see modules/base/values.yaml for reference.
+    exporter: prometheus-statsd-exporter:latest
+  nutcracker:
+    nutcracker: "nutcracker:latest"
 
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
-resources:
-  replicas: 1
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+  enabled: true
+  statsd:
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    filename: config/prometheus-statsd.conf
 
 networkpolicy:
   egress:
-    enabled: false
-
-# Add here the list of kafka-clusters (by name) that the service will need to reach.
-kafka:
-  allowed_clusters: []
-
-# Optional affinity settings
-affinity: {}
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: some-key
-#                operator: In
-#                values:
-#                  - some-value
-#  nodeSelector:
-#    node.kubernetes.io/some-key: some-value
-
-# Cronjob definitions
-# Here you can define your cronjobs
-cronjobs: []
-# Example of a job:
-# - name: my-cron-hourly
-#   enabled: true
-#   command:
-#      - /bin/cowsay
-#      - "hello"
-#   schedule: "@hourly" (defaults to @daily)
-#   concurrency: Replace (defaults to "Forbid")
-#   image_versioned: my-app:1.1.1 (defaults to the app used in the main application definition)
-#   resources: (optional list of requests/limits for our cronjob; if not present will default to the application ones.)
+    enabled: true
 
 # The set of external services to allow egress to
 # Example:
@@ -120,4 +95,15 @@ cronjobs: []
 #
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
-external_services: {}
+external_services:
+  redis-6380: [misc]
+
+# Optional affinity settings
+affinity: {}
+mesh:
+  enabled: false
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []

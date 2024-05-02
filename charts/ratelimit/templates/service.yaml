@@ -1,8 +1,18 @@
-{{ if not (hasSuffix "canary" .Release.Name) }}
-{{ if not .Values.mesh.enabled }}
-  {{- template "app.generic.service" . }}
-{{- end }}
-{{- if .Values.debug.enabled }}
-  {{- template "app.generic.debug_service" . }}
-{{- end }}
-{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{/* we don't select over the release name, so we also select canaries. */}}
+    app: {{ template "base.name.chart" . }}
+    routed_via: {{ .Release.Name }}
+  ports:
+    - name: grpc
+      targetPort: 8081
+      port: 8081
+    - name: http
+      targetPort: 8080
+      port: 8080
