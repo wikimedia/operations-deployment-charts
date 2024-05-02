@@ -29,7 +29,7 @@ spec:
         protocol: TCP
       {{- end }}{{- end }}
       {{- if .Values.monitoring.enabled }}
-      - port: 9102
+      - port: 9090
         protocol: TCP
       {{- end }}
       {{- include "mesh.networkpolicy.ingress" . | indent 6}}
