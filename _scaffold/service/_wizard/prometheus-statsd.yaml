@@ -13,8 +13,7 @@ templates:
 values: |
   common_images:
     statsd:
-      image: prometheus-statsd-exporter
-      version: latest
+      exporter: prometheus-statsd-exporter:latest
   # WARNING: If you want to enable the module,
   # you will need to add a "statsd" stanza to monitoring
   # see modules/base/values.yaml for reference.
