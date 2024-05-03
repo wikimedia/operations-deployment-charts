@@ -1,3 +1,13 @@
+## certificate 2.0.0
+
+WARNING: Backwards incompatible change!
+certificate 1.0.0 used to include the certificates objects name into the SAN's of the certificate which made it
+require manual configuration to work with default scaffolding and modules. This version aligns SAN's so that
+they are compatible with default scaffolding and modules by default.
+
+- Make the certificate module compatible to module standard (in terms of service and object names, annotations etc.)
+- Align the certificate module with the mesh.certificate modules API
+
 ## meta 2.0.0
 
 WARNING: Backwards incompatible change added. Chart maintainers that use the
