@@ -15,6 +15,14 @@ inference:
         options:
           - name: ndots
             value: "2"
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+       drop:
+       - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
 
 networkpolicy:
   egress:
@@ -37,6 +45,7 @@ main_app:
     revision_metrics_port: 9091
   istio_sidecar:
     metrics_port: 15020
+
 
 app:
   port: 8080
