@@ -47,7 +47,7 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
-    autoscaling.knative.dev/target: "15"
+    autoscaling.knative.dev/target: "10"
     prometheus.kserve.io/scrape: "true"
     prometheus.kserve.io/port: "8080"
     prometheus.kserve.io/path: "/metrics"
@@ -56,7 +56,7 @@ inference:
   predictor:
     config:
       minReplicas: 1
-      maxReplicas: 2
+      maxReplicas: 4
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2024-04-24-153759-publish"
     base_env:
