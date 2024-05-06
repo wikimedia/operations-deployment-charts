@@ -24,13 +24,16 @@ discovery:
     - schema
 
 resources:
-  replicas: 8
+  replicas: 10
 
 main_app:
   name: eventgate-main
   version: 2023-10-25-155509-production
+  requests:
+    cpu: 400m
+    memory: 300Mi
   limits:
-    memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
+    memory: 1Gi # https://phabricator.wikimedia.org/T249745#6689046
   worker_heap_limit_mb: 500
   prestop_sleep: 63
   conf:

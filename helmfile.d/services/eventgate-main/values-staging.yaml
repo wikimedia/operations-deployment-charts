@@ -5,6 +5,11 @@ resources:
   replicas: 1
 
 main_app:
+  requests:
+    cpu: 200m
+    memory: 150Mi
+  limits:
+    memory: 600Mi # https://phabricator.wikimedia.org/T249745#6689046
   conf:
     kafka:
       conf:
