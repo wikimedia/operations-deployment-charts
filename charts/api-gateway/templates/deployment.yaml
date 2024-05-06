@@ -126,6 +126,7 @@ spec:
 {{- with .Values.main_app.volumeMounts }}
 {{ toYaml . | indent 12 }}
 {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
@@ -133,6 +134,7 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker
@@ -147,6 +149,7 @@ spec:
             - name: {{ .Release.Name }}-nutcracker-config
               mountPath: /etc/nutcracker
               readOnly: true
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.main_app.http_https_echo }}
         - name: {{ .Release.Name }}-http-https-echo
@@ -157,6 +160,7 @@ spec:
           env:
             - name: HTTP_PORT
               value: "8888"
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.main_app.dev_redis }}
         - name: {{ .Release.Name }}-redis
@@ -164,6 +168,7 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: 6379
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.main_app.ratelimiter.enabled }}
 {{- if not .Values.nutcracker.enabled }}
@@ -209,6 +214,7 @@ spec:
 {{ toYaml .Values.main_app.ratelimiter.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.ratelimiter.limits | indent 14 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.main_app.access_log }}
 {{- if eq .Values.main_app.access_log.type "eventgate" }}
@@ -223,6 +229,7 @@ spec:
             - name: {{ .Release.Name }}-fluent-bit-config
               mountPath: /etc/td-agent-bit
               readOnly: true
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- end }}
       volumes:
