@@ -1,0 +1,57 @@
+# The git commit SHA is used for this service
+# The reason being that we build several containers from the same commit
+# and they were generated with different timestamps using the default method
+version: &version "13c850e86f9a64265358f33915efdd7d6541932b-production"
+
+docker: &docker
+  registry: "docker-registry.discovery.wmnet"
+
+mesh:
+  enabled: true
+
+setupjobs: &setupjobs
+  enabled: true
+  docker: *docker
+  image:
+    tag: *version
+
+elasticsearchSetupJob: *setupjobs
+
+mysqlSetupJob: *setupjobs
+
+kafkaSetupJob:
+  enabled: false
+
+datahubUpgrade:
+  enabled: true
+  docker: *docker
+  image:
+    tag: *version
+datahubSystemUpdate:
+  docker: *docker
+  image:
+    tag: *version
+
+networkpolicy:
+  egress:
+    enabled: true
+
+datahub-frontend:
+  main_app:
+    version: *version
+  docker: *docker
+
+datahub-gms:
+  main_app:
+    version: *version
+  docker: *docker
+
+datahub-mce-consumer:
+  main_app:
+    version: *version
+  docker: *docker
+
+datahub-mae-consumer:
+  main_app:
+    version: *version
+  docker: *docker
