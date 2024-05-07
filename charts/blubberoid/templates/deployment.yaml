@@ -58,6 +58,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       {{- if or .Values.main_app.policy.enabled .Values.mesh.enabled }}
       volumes:
