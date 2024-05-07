@@ -51,9 +51,15 @@ networkpolicy:
   egress:
     enabled: false
 
-# Add here the list of kafka-clusters (by name) that the service will need to reach.
-kafka:
-  allowed_clusters: []
+# The set of external services to allow egress to. For example, add the list of
+# kafka clusters that the service will need to reach, e.g.
+# kafka:
+# - main-codfw
+# - main-eqiad
+# See
+# https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services.
+external_services: {}
 
 # Optional affinity settings
 affinity: {}

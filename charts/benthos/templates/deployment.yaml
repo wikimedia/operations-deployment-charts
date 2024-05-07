@@ -38,6 +38,7 @@ spec:
             - name: {{ template "base.name.release" . }}-benthos-config
               mountPath: /etc/benthos
               readOnly: true
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
       volumes:
         - name: {{ template "base.name.release" . }}-benthos-config
           configMap:

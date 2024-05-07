@@ -14,6 +14,5 @@ app:
   limits:
     memory: 1Gi  # this is a random guess; will need changing after tuning batching
 
-kafka:
-  allowed_clusters:
-    - main-eqiad
+external_services:
+  kafka: [main-eqiad]
