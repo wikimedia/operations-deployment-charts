@@ -410,6 +410,20 @@ net_istio:
             number: 4113
             protocol: HTTPS
           resolution: DNS
+      ml-cache:
+        spec:
+          hosts: &ml_cache_cassandra_ips
+          - 'ml-cache1001-a.eqiad.wmnet'
+          - 'ml-cache1002-a.eqiad.wmnet'
+          - 'ml-cache1003-a.eqiad.wmnet'
+          - 'ml-cache2001-a.codfw.wmnet'
+          - 'ml-cache2002-a.codfw.wmnet'
+          - 'ml-cache2003-a.codfw.wmnet'
+          ports:
+          - name: cassandra-client-port
+            number: 9042
+            protocol: TCP
+          resolution: DNS
     destination_rules:
       https-mw-api-int-ro:
         spec:
@@ -602,6 +616,17 @@ net_istio:
                   # may return a warning in every response. To circumvent this problem,
                   # let's explicitly set the header.
                   x-forwarded-proto: https
+      ml-cache-vs:
+        spec:
+          hosts: *ml_cache_cassandra_ips
+          gateways:
+          - mesh
+          tcp:
+          - match:
+            - port: 9042
+            route:
+            - destination:
+                host: ml-cache
 
 core:
   config_features:
