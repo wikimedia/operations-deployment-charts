@@ -15,10 +15,12 @@ rules:
     resources: ["nodes"]
     verbs: ["get"]
 {{- end }}
+{{- if .Values.storageClass.encrypted }}
   # allow to read Vault Token and connection options from the Tenants namespace
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get"]
+{{- end }}
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["get"]
@@ -31,7 +33,9 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["volumeattachments"]
     verbs: ["list", "get"]
+{{- if .Values.storageClass.encrypted }}
   - apiGroups: [""]
     resources: ["serviceaccounts/token"]
     verbs: ["create"]
+{{- end }}
 {{- end -}}

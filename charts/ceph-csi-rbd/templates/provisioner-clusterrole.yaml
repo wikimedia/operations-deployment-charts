@@ -10,9 +10,11 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
+{{- if .Values.storageClass.encrypted }}
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "list", "watch"]
+{{- end }}
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
@@ -36,6 +38,7 @@ rules:
     resources: ["volumeattachments/status"]
     verbs: ["patch"]
 {{- end }}
+{{- if .Values.provisioner.snapshotter.enabled }}
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshots"]
     verbs: ["get", "list", "patch"]
@@ -51,6 +54,7 @@ rules:
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents/status"]
     verbs: ["update", "patch"]
+{{- end }}
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["get"]
@@ -70,8 +74,10 @@ rules:
     resources: ["csinodes"]
     verbs: ["get", "list", "watch"]
 {{- end }}
+{{- if .Values.storageClass.encrypted }}
   - apiGroups: [""]
     resources: ["serviceaccounts/token"]
     verbs: ["create"]
+{{- end }}
 
 {{- end -}}

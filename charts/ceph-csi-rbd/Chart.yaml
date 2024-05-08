@@ -1,10 +1,10 @@
 ---
 apiVersion: v1
-appVersion: canary
+appVersion: 3.7.2
 description: "Container Storage Interface (CSI) driver,
 provisioner, snapshotter, resizer and attacher for Ceph RBD"
 name: ceph-csi-rbd
-version: 3-canary
+version: 0.1.0
 keywords:
   - ceph
   - rbd
@@ -13,3 +13,6 @@ home: https://github.com/ceph/ceph-csi
 sources:
   - https://github.com/ceph/ceph-csi/tree/devel/charts/ceph-csi-rbd
 icon: https://raw.githubusercontent.com/ceph/ceph-csi/devel/assets/ceph-logo.png
+annotations:
+  # This chart is based on upstream version v3.7.2
+  wmf/upstreamVersion: v3.7.2
