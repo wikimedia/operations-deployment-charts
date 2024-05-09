@@ -1,3 +1,7 @@
+## configuration 1.6.3 / configuration 1.7.1
+- Make hardcoded `local_service` cluster name instead incorporate a service name.
+  The prefix `LOCAL_` is also added to preserve ease of use in grafana.
+
 ## configuration 1.7.0
 
 - Listen unconditionally on IPv6/IPv4
