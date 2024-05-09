@@ -34,10 +34,7 @@ spec:
       serviceAccountName: {{ include "jaeger.ingester.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.ingester.podSecurityContext | nindent 8 }}
-      {{- with .Values.ingester.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- include "ingester.imagePullSecrets" . | nindent 6 }}
       {{- with .Values.ingester.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -50,12 +47,16 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.ingester.initContainers }}
+      initContainers:
+      {{- toYaml .Values.ingester.initContainers | nindent 8 }}
+      {{- end}}
       containers:
       - name: {{ include "jaeger.fullname" . }}-ingester
         securityContext:
           {{- toYaml .Values.ingester.securityContext | nindent 10 }}
-        image: {{ .Values.ingester.image }}:{{- include "jaeger.image.tag" . }}
-        imagePullPolicy: {{ .Values.ingester.pullPolicy }}
+        image: {{ include "ingester.image" . }}
+        imagePullPolicy: {{ .Values.ingester.image.pullPolicy }}
         args:
           {{ include "extra.cmdArgs" ( dict "cmdlineParams" .Values.ingester.cmdlineParams ) | nindent 10  }}
           {{- include "storage.cmdArgs" . | nindent 10 }}
@@ -66,12 +67,21 @@ spec:
           - name: SPAN_STORAGE_TYPE
             value: {{ .Values.storage.type }}
           {{- include "storage.env" . | nindent 10 }}
+          {{ if .Values.storage.kafka.brokers }}
           - name: KAFKA_CONSUMER_BROKERS
             value: {{ tpl (include "helm-toolkit.utils.joinListWithComma" .Values.storage.kafka.brokers) . }}
+          {{- end }}
+          {{ if .Values.storage.kafka.topic }}
           - name: KAFKA_CONSUMER_TOPIC
             value: {{ .Values.storage.kafka.topic }}
+          {{- end }}
+          {{ if .Values.storage.kafka.authentication }}
           - name: KAFKA_CONSUMER_AUTHENTICATION
             value: {{ .Values.storage.kafka.authentication }}
+          {{- end }}
+      {{- with .Values.ingester.envFrom }}
+        envFrom: {{- toYaml . | nindent 10 }}
+      {{- end }}
         ports:
         - containerPort: 14270
           name: admin

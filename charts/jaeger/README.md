@@ -56,7 +56,7 @@ helm show values incubator/cassandra
 ```
 
 ```console
-helm repo add bitnami
+helm repo add bitnami https://charts.bitnami.com/bitnami
 helm show values bitnami/kafka
 ```
 
@@ -311,7 +311,7 @@ query:
   enabled: false
 ```
 
-It's possible to specify resources and extra environment variables for the all in one deployment:
+It's possible to specify resources, extra environment variables, and extra secrets for the all in one deployment:
 
 ```yaml
 allInOne:
@@ -325,6 +325,12 @@ allInOne:
     requests:
       cpu: 256m
       memory: 128Mi
+  extraSecretMounts:
+    - name: jaeger-tls
+      mountPath: /tls
+      subPath: ""
+      secretName: jaeger-tls
+      readOnly: true
 ```
 
 ```bash
@@ -345,7 +351,11 @@ query:
   enabled: true
   oAuthSidecar:
     enabled: true
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.3.0
+    resources: {}
+    image:
+      registry: quay.io
+      repository: oauth2-proxy/oauth2-proxy
+      tag: v7.6.0
     pullPolicy: IfNotPresent
     containerPort: 4180
     args:
@@ -398,3 +408,45 @@ extraObjects:
       - kind: ServiceAccount
         name: "{{ include \"jaeger.esLookback.serviceAccountName\" . }}"
 ```
+
+## Configuring the hotrod example application to send traces to the OpenTelemetry collector
+
+If the `hotrod` example application is enabled it will export traces to Jaeger
+via the Jaeger exporter. To switch this to another collector and/or protocol,
+such as an OpenTelemetry OTLP Collector, see the example below.
+
+The primary use case of sending the traces to the collector instead of directly
+to Jaeger is to verify traces can get back to Jaeger or another distributed
+tracing store and verify that pipeline with the pre-instrumented hotrod
+application.
+
+**NOTE: This will not install or setup the OpenTelemetry collector. To setup an example OpenTelemetry Collector, see the [OpenTelemetry helm
+charts](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-collector).**
+
+Content of the `jaeger-values.yaml` file:
+
+```YAML
+hotrod:
+  enabled: true
+  # Switch from the jaeger protocol to OTLP
+  extraArgs:
+    - --otel-exporter=otlp
+  # Set the address of the OpenTelemetry collector endpoint
+  extraEnv:
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: http://my-otel-collector-opentelemetry-collector:4318
+```
+
+## Updating to Kafka to Kraft Mode
+
+In the Kafka Helm Chart version 24.0.0 major refactors were done to support Kraft mode. More information can be found [here](https://github.com/bitnami/charts/tree/main/bitnami/kafka#to-2400).
+
+#### Upgrading from Kraft mode
+
+If you are upgrading from Kraft mode, follow the instructions [here](https://github.com/bitnami/charts/tree/main/bitnami/kafka#upgrading-from-zookeeper-mode).
+
+#### Upgrading from Zookeeper mode
+
+If you are upgrading from Zookeeper mode, follow the instructions [here](https://github.com/bitnami/charts/tree/main/bitnami/kafka#upgrading-from-zookeeper-mode).
+
+After you complete the steps above, follow the instructions [here](https://github.com/bitnami/charts/tree/main/bitnami/kafka#migrating-from-zookeeper-early-access) to finally migrate from Zookeeper.

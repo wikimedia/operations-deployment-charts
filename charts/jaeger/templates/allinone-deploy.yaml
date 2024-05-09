@@ -9,7 +9,9 @@ metadata:
     prometheus.io/port: "14269"
     prometheus.io/scrape: "true"
 spec:
-  replicas: 1
+  {{- if hasKey .Values.allInOne "replicas" }}
+  replicas: {{ .Values.allInOne.replicas }}
+  {{- end }}
   strategy:
     type: Recreate
   selector:
@@ -28,13 +30,15 @@ spec:
         prometheus.io/port: "14269"
         prometheus.io/scrape: "true"
     spec:
+      {{- include "allInOne.imagePullSecrets" . | nindent 6 }}  
       containers:
         - env:
           {{- if .Values.allInOne.extraEnv }}
             {{- toYaml .Values.allInOne.extraEnv | nindent 12 }}
           {{- end }}
             - name: SPAN_STORAGE_TYPE
-              value: memory
+              value: {{ include "allInOne.storage.type" . | required "Invalid storage type provided. Use either badger or memory for allInOne" }}
+            {{- include "storage.env" . | nindent 12 }}
             - name: COLLECTOR_ZIPKIN_HOST_PORT
               value: :9411
             - name: JAEGER_DISABLED
@@ -45,8 +49,11 @@ spec:
             - name: SAMPLING_STRATEGIES_FILE
               value: /etc/conf/strategies.json
             {{- end }}
-          image: {{ .Values.allInOne.image }}:{{- .Values.allInOne.tag | default (include "jaeger.image.tag" .) }}
-          imagePullPolicy: {{ .Values.allInOne.pullPolicy }}
+        {{- with .Values.allInOne.envFrom }}
+          envFrom: {{- toYaml . | nindent 12 }}
+        {{- end }}
+          image: {{ include "allInOne.image" . }}
+          imagePullPolicy: {{ .Values.allInOne.image.pullPolicy }}
           name: jaeger
           args:
             {{- range $arg := .Values.allInOne.args }}
@@ -95,18 +102,41 @@ spec:
           resources:
         {{- toYaml . | nindent 12 }}
       {{- end }}
-
-        {{- if .Values.allInOne.samplingConfig}}
           volumeMounts:
+        {{- if not .Values.storage.badger.ephemeral }}
+            - name: badger-data
+              mountPath: {{ .Values.storage.badger.persistence.mountPath }}
+        {{- end }}
+        {{- if .Values.allInOne.samplingConfig}}
             - name: strategies
               mountPath: /etc/conf/
         {{- end }}
+        {{- range .Values.allInOne.extraSecretMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              subPath: {{ .subPath }}
+              readOnly: {{ .readOnly }}
+        {{- end }}
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
       serviceAccountName: {{ template "jaeger.fullname" . }}
-    {{- if .Values.allInOne.samplingConfig}}
       volumes:
+    {{- if not .Values.storage.badger.ephemeral }}
+        - name: badger-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.badger.persistence.useExistingPvcName | required "Using badger persistence it is required to set an existing PVC"  }}
+    {{- end }}
+    {{- if .Values.allInOne.samplingConfig}}
         - name: strategies
           configMap:
             name: {{ include "jaeger.fullname" . }}-sampling-strategies
+    {{- end }}
+    {{- range .Values.allInOne.extraSecretMounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
     {{- end }}
     {{- with .Values.allInOne.nodeSelector }}
       nodeSelector:
