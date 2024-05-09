@@ -1,21 +1,3 @@
-{{/*
-egress rule template allowing access to kubernetesMasters.cidrs
-*/}}
-{{- define "flink-operator.k8s-egress-rule" }}
-{{- if .Values.kubernetesMasters -}}
-- to:
-  {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-  - ipBlock:
-      cidr: {{ $cidr }}
-  {{- end }}
-  ports:
-    - port: 443
-      protocol: TCP
-    - port: 6443
-      protocol: TCP
-{{- end }}
-{{- end }}
-
 {{- if or .Values.metrics.port .Values.operatorHealth }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -70,51 +52,54 @@ spec:
     - Egress
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
-{{- end }}
+    {{- include "base.networkpolicy.egress.zookeeper" $ | nindent 4 }}
 
-{{- if .Values.kubernetesMasters }}
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "flink-operator.name" . }}-k8s-api
+  name: {{ include "flink-operator.name" . }}-k8s-api-calico
   labels:
     {{- include "flink-operator.labels" . | nindent 4 }}
 spec:
-  podSelector:
-    matchLabels:
-      {{- include "flink-operator.selectorLabels" . | nindent 6 }}
-  policyTypes:
+  types:
     - Egress
+  selector: app.kubernetes.io/name = "{{ include "flink-operator.name" . }}"
   egress:
-    {{- include "flink-operator.k8s-egress-rule" $ | nindent 4 }}
-    {{- include "base.networkpolicy.egress.zookeeper" $ | nindent 4 }}
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+{{- end }}
+
 
 {{- if and .Values.webhook.create }}
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "flink-operator.name" . }}-webhook
+  name: {{ include "flink-operator.name" . }}-webhook-calico
   labels:
     {{- include "flink-operator.labels" . | nindent 4 }}
 spec:
-  podSelector:
-    matchLabels:
-      {{- include "flink-operator.selectorLabels" . | nindent 6 }}
-  policyTypes:
+  types:
     - Ingress
+  selector: app.kubernetes.io/name = "{{ include "flink-operator.name" . }}"
   ingress:
     # The webhook port needs to be reachable by Kubernetes Master IPs
-    - from:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 9443 # webhook port
-          protocol: TCP
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - 9443  # webhook port
 {{- end }}
+
+
 
 {{- if .Values.watchNamespaces }}
 {{/*
@@ -125,7 +110,7 @@ Create a NetworkPolicy allowing flink pods in each of watchNamespaces to talk to
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: flink-pod-k8s-api
+  name: flink-pod-zookeeper
   namespace: {{ . }}
   labels:
     {{- include "flink-operator.labels" $ | nindent 4 }}
@@ -145,12 +130,26 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # Allow flink-app pods to query the K8s API.
-    {{- include "flink-operator.k8s-egress-rule" $ | nindent 4 }}
     {{- include "base.networkpolicy.egress.zookeeper" $ | nindent 4 }}
 
-{{- end }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: flink-pod-k8s-api-calico
+  namespace: {{ . }}
+  labels:
+    {{- include "flink-operator.labels" $ | nindent 4 }}
+spec:
+  types:
+    - Egress
+  selector: component in  {'jobmanager', 'taskmanager'}
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
 
 {{- end }}
-
 {{- end }}

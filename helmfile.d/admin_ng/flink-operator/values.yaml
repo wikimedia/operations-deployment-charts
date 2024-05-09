@@ -126,3 +126,7 @@ podSecurityContext:
 # https://phabricator.wikimedia.org/T324576#8456935
 webhook:
   create: false
+
+networkpolicy:
+  egress:
+    enabled: true
