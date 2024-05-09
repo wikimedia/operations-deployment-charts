@@ -29,6 +29,7 @@ tileCaching:
   config:
     basepath: "staging-v0.0.1"
     bucket: "tegola-swift-staging-container"
+    endpoint: "localhost:6022"
 
 config:
   public:
@@ -42,3 +43,7 @@ tilePregeneration:
 kafka:
   allowed_clusters:
     - test-eqiad
+
+discovery:
+  listeners:
+  - thanos-swift
