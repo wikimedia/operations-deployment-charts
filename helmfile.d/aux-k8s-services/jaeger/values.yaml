@@ -1,7 +1,8 @@
-tag: '1.56-1'
+tag: &tag '1.56-1'
 provisionDataStore:
   cassandra: false
   elasticsearch: false
+  kafka: false
 agent:
   enabled: false
 spark:
@@ -17,7 +18,10 @@ networkPolicy:
   enabled: true
 
 query:
-  image: docker-registry.discovery.wmnet/jaeger-query
+  image:
+    registry: docker-registry.discovery.wmnet
+    repository: jaeger-query
+    tag: *tag
   cmdlineParams:
     es.tls.enabled: true
     es.index-date-separator: '.'
@@ -48,7 +52,10 @@ query:
     resources:
       limits:
         cpu: 1
-    image: docker-registry.discovery.wmnet/oauth2-proxy:7.5.1-1-20240201
+    image:
+      registry: docker-registry.discovery.wmnet
+      repository: oauth2-proxy
+      tag: 7.5.1-1-20240201
     extraSecretMounts:
       - name: tls
         mountPath: /tls
@@ -144,7 +151,10 @@ query:
       readOnly: true
 
 collector:
-  image: docker-registry.discovery.wmnet/jaeger-collector
+  image:
+    registry: docker-registry.discovery.wmnet
+    repository: jaeger-collector
+    tag: *tag
   cmdlineParams:
     es.tls.enabled: true
     es.index-date-separator: '.'
@@ -228,7 +238,10 @@ collector:
 
 esIndexCleaner:
   enabled: false
-  image: docker-registry.discovery.wmnet/jaeger-es-index-cleaner
+  image:
+    registry: docker-registry.discovery.wmnet
+    repository: jaeger-es-index-cleaner
+    tag: *tag
   serviceAccount:
     create: false
   # Number of days to keep trace data, before deleting
