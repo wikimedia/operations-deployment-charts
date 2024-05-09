@@ -123,6 +123,7 @@ environments:
       - istio_sidecar_proxy: true
       - install_spark_operator: true
       - install_external_services: true
+      - install_ceph_csi_rbd: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -158,6 +159,7 @@ bases:
   - k8s-controller-sidecars/helmfile.yaml
   - external-services/helmfile.yaml
   - opentelemetry-collector/helmfile.yaml
+  - ceph-csi-rbd/helmfile.yaml
 
 hooks:
   - events: ["prepare"]

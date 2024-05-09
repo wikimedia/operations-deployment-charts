@@ -1,0 +1,47 @@
+templates:
+  default: &default
+    namespace: kube-system
+    missingFileHandler: Warn
+    # installedTemplate is true by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_ceph_csi_rbd\" }}{{ .Environment.Values.install_ceph_csi_rbd }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: ceph-csi-rbd
+    chart: wmf-stable/ceph-csi-rbd
+    {{- $version := .Values.chartVersions | get "wmf-stable/ceph-csi-rbd" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/namespaces
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
+  - name: ceph-csi-rbd-networkpolicies
+    chart: wmf-stable/raw
+    <<: *default
+    needs:
+      - kube-system/namespaces
+    values:
+      - resources:
+        # Allow all pods in the provisioner deployment to contact the Kubernetes API
+        - apiVersion: crd.projectcalico.org/v1
+          kind: NetworkPolicy
+          metadata:
+            name: ceph-csi-rbd-provisioner-kubeapi-calico
+          spec:
+            types:
+              - Egress
+            selector: "app.kubernetes.io/component == 'provisioner' && app.kubernetes.io/chart == 'ceph-csi-rbd'"
+            egress:
+              - action: Allow
+                destination:
+                  services:
+                    name: kubernetes
+                    namespace: default
