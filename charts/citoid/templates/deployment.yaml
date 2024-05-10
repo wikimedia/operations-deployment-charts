@@ -60,6 +60,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{/* This is split from the above on purpose to indicate they are different logical blocks */}}
