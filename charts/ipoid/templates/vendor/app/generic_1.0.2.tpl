@@ -35,7 +35,8 @@
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
-{{ include "base.helper.resources" .Values.app | indent 2}}
+{{ include "base.helper.resources" .Values.app | indent 2 }}
+{{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- with .Values.app.volumeMounts }}
   volumeMounts:
 {{ toYaml . | indent 4 }}
@@ -132,7 +133,7 @@ command:
 {{- if .Values.app.args }}
 args:
   {{- range .Values.app.args }}
-  - {{ . }}
+  - {{ . | quote }}
   {{- end }}
 {{- end }}
 {{- end -}}

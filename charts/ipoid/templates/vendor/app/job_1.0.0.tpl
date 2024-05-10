@@ -40,4 +40,8 @@ concurrencyPolicy: {{ .concurrency | default "Forbid" }}
   {{- else }}
   {{- include "base.helper.resources" .Root.Values.app | indent 2 }}
   {{- end }}
+{{/*
+Added to work around out-of-band changes to this module. See T365224.
+*/}}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
