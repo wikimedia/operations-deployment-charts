@@ -12,6 +12,41 @@ config:
       endpoint: jaeger-collector-grpc.svc.eqiad.wmnet:30443
       tls:
         ca_file: /etc/ssl/certs/wmf-ca-certificates.crt
+  processors:
+    # Rewrite service.name to something meaningful, as our Envoys don't
+    # currently provide this.  https://phabricator.wikimedia.org/T363407
+    # Do this using the transformprocessor:
+    # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor
+    transform/service_from_upstream_cluster_or_nodeid:
+      error_mode: ignore
+      trace_statements:
+        # Although we're ultimately editing the resource-level attributes,
+        # we must run in the span context to have access to the per-span attributes (like upstream_cluster.name).
+        - context: span
+          statements:
+            # If we have a node_id that looks pod-name-esque, try to parse out
+            # something we can use as a service name from the first part.
+            # (Really it will be the k8s namespace.)
+            - set(attributes["_k8s_namespace"], attributes["node_id"])
+                where (attributes["node_id"] != nil) and (attributes["node_id"] != "")
+            # Yes, unfortunately, you do need to escape $ as $$, because otelcol performs
+            # environment variable substitution in its parsed configuration.
+            # Also remember to write \\ to get a single backslash as output of the YAML parser.
+            - replace_pattern(attributes["_k8s_namespace"], "^([^.]+)\\..*$$", "$$1")
+            # Remove any "LOCAL_" prefix from the upstream cluster name...
+            - replace_pattern(attributes["upstream_cluster.name"], "^LOCAL_", "")
+            # ...and potentially use the rest as the service name, if we don't have a good one already.
+            - set(resource.attributes["service.name"], attributes["upstream_cluster.name"])
+                where ((resource.attributes["service.name"] == nil)
+                       or (resource.attributes["service.name"] == "")
+                       or (resource.attributes["service.name"] == "OTLPResourceNoServiceName"))
+                and (attributes["upstream_cluster.name"] != "local_service")
+            # Failing that, use the node_id-derived service name.
+            - set(resource.attributes["service.name"], attributes["_k8s_namespace"])
+                where ((resource.attributes["service.name"] == nil)
+                       or (resource.attributes["service.name"] == "")
+                       or (resource.attributes["service.name"] == "OTLPResourceNoServiceName"))
+                and (attributes["_k8s_namespace"] != nil) and (attributes["_k8s_namespace"] != "")
   service:
     pipelines:
       metrics:
@@ -20,6 +55,8 @@ config:
       traces:
         receivers:
           - otlp
+        processors:
+          - transform/service_from_upstream_cluster_or_nodeid
         exporters:
           - otlp
 
