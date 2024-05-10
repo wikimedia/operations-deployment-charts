@@ -60,7 +60,8 @@
       cpu: 500m
       memory: 500Mi
 {{- end }}
-{{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end }}{{/* end if .Values.mesh.enabled */}}
 {{- end -}}
 
 {{- define "mesh.deployment.volume" }}
