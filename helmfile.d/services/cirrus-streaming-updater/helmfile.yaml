@@ -102,15 +102,14 @@ environments:
 
   eqiad:
     values:
-      # Add consumer-search and backfill once we are ready for a wider rollout
       - releases:
         - producer
         - "consumer-cloudelastic{{ if .Values.backfill }}-backfill{{ end }}"
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      # Add consumer-search and backfill once we are ready for a wider rollout
       - releases:
         - producer
         - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
