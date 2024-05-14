@@ -60,9 +60,9 @@ config:
         receivers:
           - otlp
         processors:
+          - transform/service_from_upstream_cluster_or_nodeid
           - memory_limiter
           - batch
-          - transform/service_from_upstream_cluster_or_nodeid
         exporters:
           - otlp
 
