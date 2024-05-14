@@ -1,5 +1,9 @@
 mode: daemonset
 
+rollout:
+  rollingUpdate:
+    maxUnavailable: 3
+
 config:
   # Disable all receivers except OTLP
   receivers:
