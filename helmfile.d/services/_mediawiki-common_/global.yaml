@@ -1,5 +1,10 @@
 docker:
   registry: docker-registry.discovery.wmnet
+
+strategy:
+  rollingUpdate:
+    maxUnavailable: 6%
+
 main_app:
   requests:
     auto_compute: true
