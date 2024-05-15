@@ -56,9 +56,9 @@ config:
                        or (attributes["service.name"] == "OTLPResourceNoServiceName"))
                 and (attributes["_k8s_namespace"] != nil) and (attributes["_k8s_namespace"] != "")
       # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
-      groupbyattrs/service_name:
-        keys:
-          - service.name
+    groupbyattrs/service_name:
+      keys:
+        - service.name
   service:
     pipelines:
       metrics:
