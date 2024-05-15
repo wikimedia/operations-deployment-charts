@@ -26,18 +26,7 @@ job:
 kafka:
   allowed_clusters:
     - main-eqiad
+
 networkpolicy:
   egress:
     enabled: true
-    dst_nets:
-    - cidr: 10.64.16.203/32   # kubestagemaster1001.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.192.48.10/32   # kubestagemaster2001.codfw.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-zookeeper:
-  allowed_clusters:
-    - flink-eqiad
