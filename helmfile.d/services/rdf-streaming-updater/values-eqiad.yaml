@@ -15,18 +15,3 @@ flink:
 kafka:
   allowed_clusters:
     - main-eqiad
-networkpolicy:
-  egress:
-    enabled: true
-    dst_nets:
-    - cidr: 10.64.0.117/32   # kubemaster1001.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-    - cidr: 10.64.32.116/32   # kubemaster1002.eqiad.wmnet
-      ports:
-      - port: 6443
-        protocol: tcp
-zookeeper:
-  allowed_clusters:
-    - flink-eqiad
