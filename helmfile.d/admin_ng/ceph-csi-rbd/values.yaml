@@ -1,0 +1,50 @@
+---
+csiConfig:
+  - clusterID: &clusterid "6d4278e1-ea45-4d29-86fe-85b44c150813"
+    monitors:
+      - "cephosd1001:6789"
+      - "cephosd1002:6789"
+      - "cephosd1003:6789"
+      - "cephosd1004:6789"
+      - "cephosd1005:6789"
+
+nodeplugin:
+  registrar:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar
+      tag: &csi-commit-tag e2518f15cbf38339e48f76e6493f9b2ce79c3378-production
+  plugin:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
+      tag: 8aa668a497bd9acba1b8f28e27587adbed3dc28c-production
+
+provisioner:
+  provisioner:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner
+      tag: *csi-commit-tag
+  attacher:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-attacher
+      tag: *csi-commit-tag
+  resizer:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer
+      tag: *csi-commit-tag
+  snapshotter:
+    enabled: false
+
+selinuxMount: false
+
+storageClass:
+  create: true
+  name: ceph-rbd-ssd
+  clusterID: *clusterid
+  pool: dse-k8s-csi-ssd
+
+secret:
+  create: true
+  userID: dse-k8s-csi
+  # userKey: # This value has been added helmfile via the private repo
+  encryptionPassphrase: '' # We are not using volume encryption, so we can set this to an empty string
+
