@@ -242,7 +242,7 @@ def backfill(release: Release, wiki: str, start: datetime, end: datetime) -> boo
         '--context', '5',
         '--set', f'{app_config}.kafka-source-start-time={start_instant}',
         '--set', f'{app_config}.kafka-source-end-time={end_instant}',
-        '--set', f'{app_config}.wikis={wiki}')
+        '--set', f'{app_config}.wikiids={wiki}')
     if result.returncode != 0:
         print('WARNING: Failed to apply backfill release')
         debug_print_completed_process(result)
