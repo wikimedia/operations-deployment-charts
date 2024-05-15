@@ -68,7 +68,7 @@ config:
         receivers:
           - otlp
         processors:
-          - transform/service_from_upstream_cluster_or_nodeid
+          - transform/span_service_from_upstream_cluster_or_nodeid
           - groupbyattrs/service_name
           - memory_limiter
           - batch
