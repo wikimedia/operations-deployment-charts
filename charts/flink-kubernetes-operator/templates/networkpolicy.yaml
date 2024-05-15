@@ -64,7 +64,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: app.kubernetes.io/name = "{{ include "flink-operator.name" . }}"
+  selector: "app.kubernetes.io/name == '{{ include "flink-operator.name" . }}'"
   egress:
     - action: Allow
       destination:
@@ -85,7 +85,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: app.kubernetes.io/name = "{{ include "flink-operator.name" . }}"
+  selector: "app.kubernetes.io/name == '{{ include "flink-operator.name" . }}'"
   ingress:
     # The webhook port needs to be reachable by Kubernetes Master IPs
     - action: Allow
