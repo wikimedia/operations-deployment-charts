@@ -21,13 +21,17 @@ config:
     # currently provide this.  https://phabricator.wikimedia.org/T363407
     # Do this using the transformprocessor:
     # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor
+    #
+    # In this step, because of https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32080#issuecomment-2112490125
+    # we will only mutate the per-span `service.name` attribute, not the resource-level one.
+    # Later we will use groupbyattrs to aggregate these into the Resource's service.name correctly.
     transform/service_from_upstream_cluster_or_nodeid:
       error_mode: ignore
       trace_statements:
-        # Although we're ultimately editing the resource-level attributes,
-        # we must run in the span context to have access to the per-span attributes (like upstream_cluster.name).
         - context: span
           statements:
+            # Begin by duplicating any resource service.name into the span-level attributes.
+            - set(attributes["service.name"], resource.attributes["service.name"])
             # If we have a node_id that looks pod-name-esque, try to parse out
             # something we can use as a service name from the first part.
             # (Really it will be the k8s namespace.)
@@ -40,17 +44,21 @@ config:
             # Remove any "LOCAL_" prefix from the upstream cluster name...
             - replace_pattern(attributes["upstream_cluster.name"], "^LOCAL_", "")
             # ...and potentially use the rest as the service name, if we don't have a good one already.
-            - set(resource.attributes["service.name"], attributes["upstream_cluster.name"])
-                where ((resource.attributes["service.name"] == nil)
-                       or (resource.attributes["service.name"] == "")
-                       or (resource.attributes["service.name"] == "OTLPResourceNoServiceName"))
+            - set(attributes["service.name"], attributes["upstream_cluster.name"])
+                where ((attributes["service.name"] == nil)
+                       or (attributes["service.name"] == "")
+                       or (attributes["service.name"] == "OTLPResourceNoServiceName"))
                 and (attributes["upstream_cluster.name"] != "local_service")
             # Failing that, use the node_id-derived service name.
-            - set(resource.attributes["service.name"], attributes["_k8s_namespace"])
-                where ((resource.attributes["service.name"] == nil)
-                       or (resource.attributes["service.name"] == "")
-                       or (resource.attributes["service.name"] == "OTLPResourceNoServiceName"))
+            - set(attributes["service.name"], attributes["_k8s_namespace"])
+                where ((attributes["service.name"] == nil)
+                       or (attributes["service.name"] == "")
+                       or (attributes["service.name"] == "OTLPResourceNoServiceName"))
                 and (attributes["_k8s_namespace"] != nil) and (attributes["_k8s_namespace"] != "")
+      # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
+      groupbyattrs/service_name:
+        keys:
+          - service.name
   service:
     pipelines:
       metrics:
@@ -61,6 +69,7 @@ config:
           - otlp
         processors:
           - transform/service_from_upstream_cluster_or_nodeid
+          - groupbyattrs/service_name
           - memory_limiter
           - batch
         exporters:
