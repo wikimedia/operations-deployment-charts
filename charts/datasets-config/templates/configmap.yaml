@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: config-{{ .Release.Name }}
+  name: datasets-config-base-config-{{ .Release.Name }}
+  {{- include "base.meta.labels" . | indent 2 }}
 data:
-  # service-runner-specific config variables
-  config.yaml: |- {{ include "config.app" . | nindent 4  }}
+  service-utils.config.yaml: |- {{ include "config.app" . | nindent 4 }}

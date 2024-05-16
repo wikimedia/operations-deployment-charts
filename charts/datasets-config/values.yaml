@@ -2,6 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
+  name: datasets-config
   image: repos/data-engineering/dataset-config-store-service
   version: latest # we use latest everywhere in the defaults.
   port: 8000 # port exposed as a Service, also used by service-checker.
@@ -11,7 +12,7 @@ app:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
   command: ["node"]
-  args: ["/srv/service/server.js", "-c", "/etc/datasets-config/config.yaml"]
+  args: ["/srv/service/.output/server/index.mjs", "-c", "/srv/service/"]
   requests:
     cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
     memory: 200Mi # Just some sample, edit these
@@ -23,8 +24,9 @@ app:
       port: 8000
   readiness_probe:
     httpGet:
-      path: /
+      path: /api/_info
       port: 8000
+  log_level: info
   # Folder where the pulled config store repo should live
   volumes:
     - name: config-store
@@ -51,6 +53,8 @@ config:
     # Nitro-specific runtime configuration
     # Folder where the pulled config store repo should live
     NITRO_CONFIG_STORE_GIT_PARENT_DIRECTORY: /config-store/
+    # Port that the service listens to
+    NITRO_PORT: 8000
   private: {} # Add here all the keys that should be private but still available as env variables
 
 # Additional resources if we want to add a port for a debugger to connect to.
