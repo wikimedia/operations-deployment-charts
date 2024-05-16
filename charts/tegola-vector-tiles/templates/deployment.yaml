@@ -81,6 +81,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/tegola
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
         {{- include "mesh.deployment.volume" . | indent 8}}
