@@ -57,6 +57,7 @@ resources:
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 
 {{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
 - name: {{ .Release.Name }}-metrics-exporter
@@ -68,6 +69,7 @@ resources:
   volumeMounts:
     - name: {{ .Release.Name }}-metrics-exporter
       mountPath: /etc/monitoring
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{- end }}
 
@@ -83,5 +85,6 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9117
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{ end -}}
 {{/* end httpd-exporter */}}
