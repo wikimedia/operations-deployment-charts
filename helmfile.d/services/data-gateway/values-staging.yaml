@@ -1,0 +1,10 @@
+main_app:
+  log_level: debug
+  # While staging is in eqiad, Cassandra staging is in codfw.
+  datacentre: codfw
+
+resources:
+  replicas: 1
+
+ingress:
+  staging: true

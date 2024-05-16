@@ -1,0 +1,29 @@
+main_app:
+  image: repos/sre/data-gateway
+  version: v1.0.3
+  command: ["./data-gateway"]
+  args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
+  service_name: data-gateway
+  consistency: localQuorum
+
+  # note the "_"
+  cassandra_user: "data_gateway"
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+
+resources:
+  replicas: 4
+
+mesh:
+  enabled: true
+
+ingress:
+  enabled: true
+
+monitoring:
+  enabled: true
