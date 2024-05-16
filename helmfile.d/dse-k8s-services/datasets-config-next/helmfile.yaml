@@ -49,13 +49,13 @@ hooks:
 
 
 releases:
-  - name: production
+  - name: staging
     namespace: datasets-config-next
     <<: *default
 
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [production]
+      - releases: [staging]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
