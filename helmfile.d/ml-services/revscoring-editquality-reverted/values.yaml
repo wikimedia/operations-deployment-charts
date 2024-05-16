@@ -56,7 +56,7 @@ inference:
   predictor:
     config:
       minReplicas: 1
-      maxReplicas: 4
+      maxReplicas: 6
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2024-04-24-153759-publish"
     base_env:
@@ -89,3 +89,6 @@ revscoring_inference_services:
     version: "20220214192304"
   - wiki: "viwiki"
     version: "20220214192315"
+    predictor:
+      config:
+        maxReplicas: 8
