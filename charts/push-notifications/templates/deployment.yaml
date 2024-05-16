@@ -82,6 +82,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/push-notifications
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
         {{- include "mesh.deployment.volume" . | indent 8}}
