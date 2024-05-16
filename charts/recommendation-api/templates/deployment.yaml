@@ -82,6 +82,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/recommendation-api
@@ -95,6 +96,7 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
         {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
