@@ -86,6 +86,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/mobileapps
@@ -93,6 +94,7 @@ spec:
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
