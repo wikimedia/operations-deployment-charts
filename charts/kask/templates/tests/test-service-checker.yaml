@@ -11,5 +11,6 @@ spec:
     image: "{{ .Values.docker.registry }}/service-checker"
     imagePullPolicy: {{ .Values.docker.pull_policy }}
     args: ["-t", "5", "-s", "/openapi", '$({{ include "base.name.release" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "base.name.baseurl" . }}']
+    {{- include "base.helper.restrictedSecurityContext" . | indent 4 }}
   dnsPolicy: ClusterFirst
   restartPolicy: Never
