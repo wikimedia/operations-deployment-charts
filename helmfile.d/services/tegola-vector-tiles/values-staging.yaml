@@ -50,3 +50,4 @@ discovery:
 
 main_app:
   version: 2024-05-21-142801-publish
+  args: ["serve", "--logger", "zap" ,"--config", "/etc/tegola/config.toml", "--log-level", "TRACE"]
