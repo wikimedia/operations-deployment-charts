@@ -34,6 +34,8 @@ app:
   volumeMounts:
     - name: config-store
       mountPath: /config-store/
+    - name: config-volume
+      mountPath: /etc/datasets-config/
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: true
