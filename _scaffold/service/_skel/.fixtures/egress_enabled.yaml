@@ -25,6 +25,11 @@ discovery:
     - parsoid-php
     - mathoid
     - eventgate-analytics
+  ratelimit_listeners:
+    mathoid: {}
+    parsoid-php:
+      domain: parsoid
+      by: user-agent
 services_proxy:
   parsoid-php:
     port: 6002
