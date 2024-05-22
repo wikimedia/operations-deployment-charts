@@ -104,6 +104,30 @@ namespaces:
     allowCriticalPods: true
     labels:
       istio-injection: disabled
+  airflow-analytics-test:
+    tlsExtraSANs:
+      - airflow-analytics-test.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "8Gi"
+          cpu: "4"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "8Gi"
+          cpu: "4"
   echoserver: {}
   spark:
     deployClusterRole: deploy-sparkapplications
