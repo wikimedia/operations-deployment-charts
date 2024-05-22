@@ -14,6 +14,7 @@ environments:
       - install_flink_operator: true
       - install_sidecar_job_controller: true
       - install_external_services: true
+      - install_opentelemetry_collector: true
   codfw:
     values:
       - "values/common.yaml"
@@ -29,6 +30,7 @@ environments:
       - install_flink_operator: true
       - install_sidecar_job_controller: true
       - install_external_services: true
+      - install_opentelemetry_collector: true
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -155,6 +157,7 @@ bases:
   - spark-operator/helmfile.yaml
   - k8s-controller-sidecars/helmfile.yaml
   - external-services/helmfile.yaml
+  - opentelemetry-collector/helmfile.yaml
 
 hooks:
   - events: ["prepare"]
