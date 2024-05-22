@@ -48,4 +48,5 @@ prometheus.io/scrape_by_name: "true"
 prometheus.io/scrape: "true"
 {{- end }}
 {{- end }}
+{{- include "mesh.name.annotations" . }}
 {{- end }}
