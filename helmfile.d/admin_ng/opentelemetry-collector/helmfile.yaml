@@ -1,13 +1,12 @@
-templates:
-  default: &default
+releases:
+  # This funny name is needed for backwards compatibility with the old deployment,
+  # whose DNS name is referenced in mesh module configurations.
+  # see also https://phabricator.wikimedia.org/T365626#9827448
+  - name: main-opentelemetry-collector
     namespace: opentelemetry-collector
     chart: wmf-stable/opentelemetry-collector
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
-    # This template gets applied for every release, all of which are applied in every environment
-    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
-    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
-    installedTemplate: "{{`{{ .Environment.Values | get \"install_opentelemetry_collector\" false }}`}}"
     missingFileHandler: Warn
     needs:
       - kube-system/coredns
@@ -18,13 +17,11 @@ templates:
       - "values/{{ .Values.cluster_group }}.yaml"
       # Environment specific defaults
       - "values/{{ .Environment.Name }}/values.yaml"
-      # Release specific overrides
-      - "{{`{{ .Release.Name }}`}}/values.yaml"
-      # Overrides specific to release in environment
-      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
-      # Secrets (from private puppet repo)
-      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"
+      # Release specific overrides -- because of T365626#9827448 we use Release.Namespace here
+      - "{{`{{ .Release.Namespace }}`}}/values.yaml"
+      # Overrides specific to release in environment -- because of T365626#9827448 we use Release.Namespace here
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Namespace }}`}}-values.yaml"
+      # Secrets (from private puppet repo) -- because of T365626#9827448 we use Release.Namespace here
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Namespace }}`}}/{{ .Environment.Name }}.yaml"
 
-releases:
-  - name: opentelemetry-collector
-    <<: *default
+    installedTemplate: "{{`{{ .Environment.Values | get \"install_opentelemetry_collector\" false }}`}}"
