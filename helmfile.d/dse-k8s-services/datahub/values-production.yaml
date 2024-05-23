@@ -97,17 +97,6 @@ datahub-mae-consumer:
         - cidr: 2620:0:861:101:10:64:0:24/128   # karapace1001
 
 global:
-  datahub_analytics_enabled: false
-  datahub_standalone_consumers_enabled: true
-  datahub:
-    gms:
-      port: 8501
-      useSSL: true
-    systemUpdate:
-      enabled: true
-  elasticsearch:
-    host: "datahubsearch.svc.eqiad.wmnet"
-    port: "9200"
   kafka:
     bootstrap:
       server: "kafka-jumbo-eqiad.external-services:9092"

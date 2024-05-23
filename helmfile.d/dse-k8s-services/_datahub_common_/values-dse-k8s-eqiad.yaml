@@ -55,3 +55,16 @@ datahub-mae-consumer:
   main_app:
     version: *version
   docker: *docker
+
+global:
+  datahub_analytics_enabled: false
+  datahub_standalone_consumers_enabled: true
+  datahub:
+    gms:
+      port: 8501
+      useSSL: true
+    systemUpdate:
+      enabled: true
+  elasticsearch:
+    host: "datahubsearch.svc.eqiad.wmnet"
+    port: "9200"
