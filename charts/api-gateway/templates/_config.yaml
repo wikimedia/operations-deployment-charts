@@ -113,6 +113,9 @@ static_resources:
                   route: "%ROUTE_NAME%"
 {{- end }}
           use_remote_address: true
+{{- if .Values.main_app.normalise_paths }}
+          normalize_path: true
+{{- end }}
           local_reply_config:
             # Override the empty %LOCAL_REPLY_BODY% for 404 to "Not Found"
             mappers:

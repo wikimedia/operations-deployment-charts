@@ -82,6 +82,11 @@ main_app:
     # if set, sample access log results
     #sample_percentage: 2
 
+  # by default, envoy does not normalise URLs paths at present. keep
+  # in mind that the docs hint that in future this default will
+  # change.
+  normalise_paths: false
+
   # Explicitly strip cookies from API route requests and responses -
   # don't strip cookies from /wiki/ and other endpoints.
   strip_api_cookies: false
