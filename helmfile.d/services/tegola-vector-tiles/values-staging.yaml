@@ -30,7 +30,7 @@ tileCaching:
     basepath: "staging-v0.0.1"
     bucket: "tegola-swift-staging-container"
     endpoint: "http://localhost:6022"
-    proxy_host: "thanos-swift.discovery.wmnet"
+    req_signing_host: "thanos-swift.discovery.wmnet"
 config:
   public:
     TEGOLA_BROKER_URL: "kafka://10.64.16.146:9092" # kafka-test1006.eqiad.wmnet
@@ -49,5 +49,4 @@ discovery:
   - thanos-swift
 
 main_app:
-  version: 2024-05-21-142801-publish
-  args: ["serve", "--logger", "zap" ,"--config", "/etc/tegola/config.toml", "--log-level", "TRACE"]
+  version: 2024-05-23-144011-publish
