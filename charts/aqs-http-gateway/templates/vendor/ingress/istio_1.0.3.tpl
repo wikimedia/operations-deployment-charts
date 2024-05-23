@@ -148,6 +148,19 @@ spec:
   {{/* Default: Route everything to default destination */ -}}
   {{ include "ingress.istio._default_httproute_destination" . | indent 2 | trim }}
   {{- end }}
+  {{- if .Values.ingress.custom_cors_policy }}
+    corsPolicy: {{ .Values.ingress.custom_cors_policy | toYaml | nindent 6 }}
+  {{- else if .Values.ingress.base_cors_policy }}
+    corsPolicy:
+      allowCredentials: false
+      allowHeaders:
+      - Api-User-Agent
+      allowMethods:
+      - POST
+      - GET
+      allowOrigins:
+      - exact: '*'
+  {{- end }}
 {{- end -}}{{/* Values.ingress.enabled */}}
 {{- end -}}{{/* define */}}
 
