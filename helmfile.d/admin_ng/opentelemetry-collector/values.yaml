@@ -4,6 +4,14 @@ rollout:
   rollingUpdate:
     maxUnavailable: 3
 
+# The Kubernetes Attributes Processor automatically discovers Kubernetes pods, extracts their metadata,
+# and adds the extracted metadata to spans, metrics, and logs as resource attributes.
+# https://opentelemetry.io/docs/kubernetes/collector/components/#kubernetes-attributes-processor
+# https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor/README.md
+presets:
+  kubernetesAttributes:
+    enabled: true
+
 config:
   # Disable all receivers except OTLP
   receivers:
@@ -78,7 +86,7 @@ config:
 resources:
   limits:
     cpu: 256m
-    memory: 256Mi
+    memory: 512Mi
 
 # Use the WMF Docker registry, not Docker Hub, and specify our most recent build (overriding the
 # appVersion from Chart.yaml).
@@ -122,6 +130,33 @@ networkPolicy:
       ports:
         - port: 30443
           protocol: TCP
+    # TODO: Here, in order to support the k8sattributes processor, we hardcode the IPs of the
+    # k8s API endpoints.  This is not ideal, but it's the best we can do until we have a better
+    # way -- probably either creating a wrapper chart that also creates a Calico NetworkPolicy
+    # object that allows the k8s API endpoints, or, creating an otelcol chart of our own.
+    # https://phabricator.wikimedia.org/T365855
+    # kubectl get endpoints kubernetes -oyaml | yq -c '.subsets[].addresses[] | {"ipBlock": {"cidr": (.ip + "/32")}}' - | jq -s | yq -y
+    - to:
+        # eqiad k8s API endpoint IPs
+        - ipBlock:
+            cidr: 10.64.0.117/32
+        - ipBlock:
+            cidr: 10.64.32.116/32
+        # codfw k8s API endpoint IPs
+        - ipBlock:
+            cidr: 10.192.0.56/32
+        - ipBlock:
+            cidr: 10.192.15.6/32
+        - ipBlock:
+            cidr: 10.192.16.48/32
+        - ipBlock:
+            cidr: 10.192.32.105/32
+        - ipBlock:
+            cidr: 10.192.5.10/32
+      ports:
+        - port: 6443
+          protocol: TCP
+
   extraIngressRules:
     - ports:
       - port: 8888
