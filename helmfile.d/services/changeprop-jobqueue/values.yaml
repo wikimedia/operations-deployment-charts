@@ -86,38 +86,6 @@ main_app:
       refreshUserImpactJob:
         enabled: true
         concurrency: 10
-      # For cirrus search jobs the retries are built into the job itself,
-      # so disable the retries by change-prop. We need special rules for cirrus
-      # jobs because they need special configuration.
-      cirrusSearchCheckerJob:
-        enabled: true
-        disable_delayed_execution: true #T198462
-        retry_limit: 0
-        concurrency: 30
-      cirrusSearchDeleteArchive:
-        enabled: true
-        retry_limit: 0
-        concurrency: 5
-      cirrusSearchDeletePages:
-        enabled: true
-        retry_limit: 0
-        concurrency: 5
-      cirrusSearchIncomingLinkCount:
-        enabled: true
-        retry_limit: 0
-        concurrency: 15
-      cirrusSearchLinksUpdate:
-        enabled: true
-        retry_limit: 0
-        concurrency: 300
-      cirrusSearchLinksUpdatePrioritized:
-        enabled: true
-        retry_limit: 0
-        concurrency: 150
-      cirrusSearchOtherIndex:
-        enabled: true
-        retry_limit: 0
-        concurrency: 5
       processMediaModeration:
         # unclear as to whether this job is in use
         enabled: true
@@ -181,16 +149,6 @@ main_app:
           concurrency: 4
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
-      cirrusSearchElasticaWrite:
-        enabled: true
-        partitioner_kind: cirrussearch_cluster
-        partitioner_concurrency: 50
-        partition:
-          # This is the concurrency of the individual partitions, so overall concurrency
-          # is 150 * 3 = 450
-          concurrency: 150
-          reenqueue_delay: 3600
-          retry_limit: 0
 
     # Similar to the high_traffic_jobs_config, all jobs listed here get their
     # own rule, and thus a dedicated consumer.
