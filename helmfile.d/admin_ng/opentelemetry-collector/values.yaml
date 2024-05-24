@@ -40,15 +40,6 @@ config:
           statements:
             # Begin by duplicating any resource service.name into the span-level attributes.
             - set(attributes["service.name"], resource.attributes["service.name"])
-            # If we have a node_id that looks pod-name-esque, try to parse out
-            # something we can use as a service name from the first part.
-            # (Really it will be the k8s namespace.)
-            - set(attributes["_k8s_namespace"], attributes["node_id"])
-                where (attributes["node_id"] != nil) and (attributes["node_id"] != "")
-            # Yes, unfortunately, you do need to escape $ as $$, because otelcol performs
-            # environment variable substitution in its parsed configuration.
-            # Also remember to write \\ to get a single backslash as output of the YAML parser.
-            - replace_pattern(attributes["_k8s_namespace"], "^([^.]+)\\..*$$", "$$1")
             # Remove any "LOCAL_" prefix from the upstream cluster name...
             - replace_pattern(attributes["upstream_cluster.name"], "^LOCAL_", "")
             # ...and potentially use the rest as the service name, if we don't have a good one already.
@@ -57,12 +48,12 @@ config:
                        or (attributes["service.name"] == "")
                        or (attributes["service.name"] == "OTLPResourceNoServiceName"))
                 and (attributes["upstream_cluster.name"] != "local_service")
-            # Failing that, use the node_id-derived service name.
-            - set(attributes["service.name"], attributes["_k8s_namespace"])
+            # Failing that, use the k8s-namespace-derived service name.
+            - set(attributes["service.name"], resource.attributes["k8s.namespace.name"])
                 where ((attributes["service.name"] == nil)
                        or (attributes["service.name"] == "")
                        or (attributes["service.name"] == "OTLPResourceNoServiceName"))
-                and (attributes["_k8s_namespace"] != nil) and (attributes["_k8s_namespace"] != "")
+                and (resource.attributes["k8s.namespace.name"] != nil) and (resource.attributes["k8s.namespace.name"] != "")
       # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
     groupbyattrs/service_name:
       keys:
