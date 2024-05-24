@@ -46,7 +46,6 @@ checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha2
 prometheus.io/scrape_by_name: "true"
 {{- else }}
 prometheus.io/scrape: "true"
-prometheus.io/port: {{ $.Values.monitoring.port | quote }}
 {{- end }}
 {{- end }}
 {{- end }}
