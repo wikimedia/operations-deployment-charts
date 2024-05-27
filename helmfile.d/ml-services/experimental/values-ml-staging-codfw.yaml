@@ -35,56 +35,39 @@ inference_services:
           requests:
             cpu: "2"
             memory: 2Gi
+
   mistral-7b-instruct-gpu:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
-        image_version: "2024-05-07-134910-publish"
+        image_version: "2024-05-23-145141-publish"
         custom_env:
           - name: MODEL_NAME
             value: "mistral-7b-instruct"
           - name: STORAGE_URI
             value: "s3://wmf-ml-models/llm/Mistral-7B-Instruct-v0.2/"
         container:
+          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "mistral-7b-instruct", "--backend", "huggingface" ]
           resources:
             limits:
               cpu: "8"
               memory: 35Gi
+              amd.com/gpu: "1"
             requests:
               cpu: "8"
               memory: 35Gi
-
-  nllb-200-gpu:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2024-05-13-143943-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "nllb-200"
-        - name: LLM_CLASS
-          value: "llm.NLLB"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/nllb-200-distilled-600M/"
-      container:
-        resources:
-          limits:
-            cpu: "4"
-            memory: 6Gi
-            amd.com/gpu: 1
-          requests:
-            cpu: "4"
-            memory: 6Gi
-            amd.com/gpu: 1
+              amd.com/gpu: "1"
 
   bert:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
-        image_version: "2024-04-08-110759-publish"
+        image_version: "2024-05-23-145141-publish"
         custom_env:
           - name: MODEL_NAME
             value: "bert"
           - name: STORAGE_URI
             value: "s3://wmf-ml-models/llm/bert-base-uncased/"
         container:
+          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "bert"]
           resources:
             limits:
               memory: 2Gi
