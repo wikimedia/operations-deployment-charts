@@ -1,14 +1,23 @@
 main_app:
   image: wikimedia/generated-data-platform-aqs-editor-analytics
-  version: 2023-11-09-120505-production
+  version: 2024-04-17-144808-production
   command: ["./editor-analytics"]
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: editor-analytics
 
+  liveness_probe:
+    initialDelaySeconds: 30 # setting some extra time to be able to connect to both datastores (cassandra and druid)
+
+  config_table: aqs.config
+  # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+
+  # note the "_"
+  cassandra_user: "editor_analytics"
+
   druid:
     host: http://druid-public-broker.svc.eqiad.wmnet
     port: 8082
-    datasource: mediawiki_history_reduced_2024_04
 
   requests:
     cpu: 200m
