@@ -1,9 +1,13 @@
 main_app:
   image: wikimedia/generated-data-platform-aqs-page-analytics
-  version: 2023-11-13-220207-production
+  version: 2024-04-17-133814-production
   command: ["./page-analytics"]
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: page-analytics
+
+  liveness_probe:
+    initialDelaySeconds: 30 # setting some extra time to be able to connect to the datastore
+
   consistency: localQuorum
   # use eqiad for all DCs here until we get AQS hosts in codfw
   datacentre: eqiad
