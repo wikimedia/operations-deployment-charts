@@ -32,6 +32,14 @@ datahub-frontend:
     <<: *config
     public:
       AUTH_JAAS_ENABLED: false
+  mesh:
+    enabled: true
+  ingress:
+    enabled: true
+    gatewayHosts:
+      default: "datahub-frontend-next"
+      extraFQDNs:
+        - datahub-next.wikimedia.org
   networkpolicy:
     egress:
       dst_nets:
@@ -42,8 +50,12 @@ datahub-frontend:
 
 datahub-gms:
   kafka: *kafka
+  mesh:
+    enabled: true
   ingress:
-    staging: true
+    enabled: true
+    gatewayHosts:
+      default: "datahub-gms-next"
   networkpolicy:
     egress:
       dst_nets:
