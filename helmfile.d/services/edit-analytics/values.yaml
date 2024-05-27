@@ -1,14 +1,19 @@
 main_app:
   image: wikimedia/generated-data-platform-aqs-edit-analytics
-  version: 2024-01-05-132629-production
+  version: 2024-04-17-144819-production
   command: ["./edit-analytics"]
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: edit-analytics
 
+   # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+
+  # note the "_"
+  cassandra_user: "edit_analytics"
+
   druid:
     host: http://druid-public-broker.svc.eqiad.wmnet
     port: 8082
-    datasource: mediawiki_history_reduced_2024_04
 
   requests:
     cpu: 200m
