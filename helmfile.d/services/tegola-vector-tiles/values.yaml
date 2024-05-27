@@ -9,7 +9,7 @@ resources:
 
 main_app:
   image: wikimedia/operations-software-tegola
-  version:  2023-12-05-092249-publish
+  version:  2024-05-23-144011-publish
   requests:
     cpu: 200m
     memory: 512Mi
@@ -37,7 +37,8 @@ tileCaching:
   enabled: true
   config:
     type: "s3"  # S3 compatible API on swift
-    endpoint: "thanos-swift.discovery.wmnet"
+    endpoint: "http://localhost:6022"
+    req_signing_host: "thanos-swift.discovery.wmnet"
 
 tilePregeneration:
   cronJobEnabled: true
@@ -55,13 +56,16 @@ tcp_services_proxy:
     port: 5432
     connect_timeout: "60s"
 
+
+discovery:
+  listeners:
+  - thanos-swift
+
+
 networkpolicy:
   egress:
     enabled: true
     # Allow connection to postgress masters/secondary instances running on maps* hosts
-    # We tried to use envoy's thanos-swift listener, but we run into issues with the
-    # s3 client, so we are keeping it simple for now, by allowing direct connections
-    # to thanos-swift
     dst_nets:
       - cidr: 10.64.0.12/32 # maps1005.eqiad.wmnet
         ports:
@@ -110,12 +114,4 @@ networkpolicy:
       - cidr: 10.192.48.166/32 # maps2010.codfw.wmnet
         ports:
         - port: 5432
-          protocol: tcp
-      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
-        ports:
-        - port: 443
-          protocol: tcp
-      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
-        ports:
-        - port: 443
           protocol: tcp

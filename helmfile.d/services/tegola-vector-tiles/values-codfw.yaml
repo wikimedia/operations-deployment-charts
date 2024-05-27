@@ -34,8 +34,6 @@ tileCaching:
   config:
     bucket: tegola-swift-codfw-v002
     basepath: "shared-cache"
-    endpoint: "http://localhost:6022"
-    req_signing_host: "thanos-swift.discovery.wmnet"
 
 kafka:
   allowed_clusters:
@@ -43,10 +41,3 @@ kafka:
 
 tilePregeneration:
   cronJobEnabled: true
-
-discovery:
-  listeners:
-  - thanos-swift
-
-main_app:
-  version: 2024-05-23-144011-publish
