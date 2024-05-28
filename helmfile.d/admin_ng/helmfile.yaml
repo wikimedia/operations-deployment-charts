@@ -14,7 +14,7 @@ environments:
       - install_flink_operator: true
       - install_sidecar_job_controller: true
       - install_external_services: true
-      - install_opentelemetry_collector: true
+      - install_opentelemetry_collector: false  # https://phabricator.wikimedia.org/T366094
   codfw:
     values:
       - "values/common.yaml"
