@@ -191,7 +191,12 @@ namespaces:
       - datahub-gms
     tlsExtraSANs:
       - datahub.wikimedia.org
-  datahub-next: {}
+  datahub-next:
+    tlsHostnames:
+      - datahub-frontend-next
+      - datahub-gms-next
+    tlsExtraSANs:
+      - datahub-next.wikimedia.org
   rdf-streaming-updater:
     deployTLSCertificate: false
     labels:
