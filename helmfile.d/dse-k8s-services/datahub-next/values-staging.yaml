@@ -50,6 +50,10 @@ datahub-frontend:
 
 datahub-gms:
   kafka: *kafka
+  config:
+    public:
+      AUTH_RESOURCES_DIR: "/datahub/datahub-gms/plugins/auth/resources"
+      BOOTSTRAP_SYSTEM_UPDATE_WAIT_FOR_SYSTEM_UPDATE: false
   mesh:
     enabled: true
   ingress:
