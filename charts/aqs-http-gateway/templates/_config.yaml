@@ -26,6 +26,7 @@ cassandra:
 {{- range $cassandra_host := .Values.main_app.cassandra_hosts }}
     - {{ $cassandra_host }}
 {{- end }}
+  config_table: {{ .Values.main_app.config_table }}
   local_dc: {{ .Values.main_app.datacentre }}
   authentication:
     username: {{ .Values.main_app.cassandra_user }}

@@ -5,7 +5,10 @@ main_app:
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: edit-analytics
 
-  consistency: localQuorum
+  liveness_probe:
+    initialDelaySeconds: 30 # setting some extra time to be able to connect to both datastores (cassandra and druid)
+
+  config_table: aqs.config
    # use eqiad for all DCs here until we get AQS hosts in codfw
   datacentre: eqiad
 
