@@ -60,9 +60,8 @@ config:
         - service.name
   service:
     pipelines:
-      metrics:
-        receivers:
-          - otlp
+      metrics: ~
+      logs: ~
       traces:
         receivers:
           - otlp
