@@ -90,6 +90,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/wikifeeds
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- if .Values.monitoring.enabled }}
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
@@ -97,6 +98,7 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
               mountPath: /etc/monitoring
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
         {{- include "mesh.deployment.container" . | nindent 8 }}
       volumes:
