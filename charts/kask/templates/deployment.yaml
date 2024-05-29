@@ -39,6 +39,7 @@ spec:
             - sh
             - -c
             - echo "CREATE KEYSPACE IF NOT EXISTS kask WITH REPLICATION = { 'class':'SimpleStrategy', 'replication_factor':1}; CREATE TABLE IF NOT EXISTS kask.values (key text PRIMARY KEY, value blob);" | cqlsh {{ $hostname }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
       {{ end }}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -79,6 +80,7 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
       volumes:
         - name: config-volume
           configMap:

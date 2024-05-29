@@ -24,9 +24,12 @@ in particular for egress.
 {{- range $port := $cidr.ports }}
       - protocol: {{ $port.protocol | upper }}
         port: {{ $port.port }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end }}{{/* end range $port := $cidr.ports */}}
+{{- end }}{{/* end if $cidr.ports */}}
+{{- end }}{{/* end range $cidr := .networkpolicy.egress.dst_nets */}}
+{{- if .networkpolicy.egress.extraRules }}
+{{- toYaml .networkpolicy.egress.extraRules | nindent 4}}
+{{- end }}{{/* end if .networkpolicy.egress.extraRules */}}
 {{- end -}}
 
 {{/* Auto-generate egress networkpolicies for kafka brokers */}}
