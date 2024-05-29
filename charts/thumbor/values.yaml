@@ -285,6 +285,14 @@ cache:
       - route: /local/thumbor
         failover_time: 600
         pool: test-pool
+    exporter:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+        limits:
+          cpu: 500m
+          memory: 200Mi
 
 
 networkpolicy:

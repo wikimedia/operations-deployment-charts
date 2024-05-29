@@ -49,6 +49,7 @@ resources:
   volumeMounts:
     - name: haproxy-config
       mountPath: /etc/haproxy/haproxy.d
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 
 # Thumbor worker containers
@@ -95,6 +96,7 @@ resources:
     - name: tmp-dir
       mountPath: /tmp/
     {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 
 {{- if .Values.monitoring.enabled }}
@@ -112,5 +114,6 @@ resources:
   livenessProbe:
     tcpSocket:
       port: statsd-metrics
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{- end }}
