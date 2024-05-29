@@ -57,6 +57,7 @@ resources:
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 
 {{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
 - name: {{ .Release.Name }}-metrics-exporter
@@ -68,6 +69,7 @@ resources:
   volumeMounts:
     - name: {{ .Release.Name }}-metrics-exporter
       mountPath: /etc/monitoring
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{- end }}
 
@@ -109,6 +111,7 @@ resources:
   - name: shared-socket
     mountPath: /run/shared
   {{- end -}}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ template "base.name.release" . }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -154,6 +157,7 @@ resources:
     {{- toYaml . | indent 4 }}
     {{- end }}
   {{ end -}}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{ if .Values.monitoring.enabled }}
 # Add the following exporters:
 # php-fpm exporter
@@ -168,6 +172,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9117
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ template "base.name.release" . }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", --addr="0.0.0.0:9118"]
@@ -177,6 +182,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9118
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{ end -}}
 {{/* end php.containers */}}

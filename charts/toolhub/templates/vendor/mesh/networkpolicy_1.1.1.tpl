@@ -16,6 +16,22 @@
     {{- end }} {{/* end with upstream */}}
   {{- end }} {{/* end range listeners */}}
 {{- end }}
+{{- if (.Values.mesh.tracing | default dict).enabled }}
+- to:
+  - namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: {{ .Values.mesh.tracing.otel_collector_namespace | default "opentelemetry-collector" }}
+    podSelector:
+      matchLabels:
+      {{- if .Values.mesh.tracing.otel_pod_selector }}
+        {{ .Values.mesh.tracing.otel_pod_selector | toYaml | nindent 8 }}
+      {{- else }}
+        component: agent-collector
+      {{- end }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.mesh.tracing.port | default 4317 }}
+{{- end -}}
 {{- end -}}
 
 

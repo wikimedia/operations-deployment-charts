@@ -222,6 +222,7 @@ All these routes can either include a failover pool or not.
 {{ toYaml .Values.mcrouter.resources.requests | indent 6 }}
     limits:
 {{ toYaml .Values.mcrouter.resources.limits | indent 6 }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
@@ -235,6 +236,7 @@ All these routes can either include a failover pool or not.
     tcpSocket:
       port: mcr-metrics
   resources: {}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end -}}
 {{- end }}
 {{- end -}}{{/* "mcrouter.container" */}}
