@@ -137,7 +137,7 @@ networkPolicy:
     # way -- probably either creating a wrapper chart that also creates a Calico NetworkPolicy
     # object that allows the k8s API endpoints, or, creating an otelcol chart of our own.
     # https://phabricator.wikimedia.org/T365855
-    # kubectl get endpoints kubernetes -oyaml | yq -c '.subsets[].addresses[] | {"ipBlock": {"cidr": (.ip + "/32")}}' - | jq -s | yq -y
+    # kubectl get endpoints -n default kubernetes -oyaml | yq -c '.subsets[].addresses[] | {"ipBlock": {"cidr": (.ip + "/32")}}' - | jq -s | yq -y
     - to:
         # eqiad k8s API endpoint IPs
         - ipBlock:
