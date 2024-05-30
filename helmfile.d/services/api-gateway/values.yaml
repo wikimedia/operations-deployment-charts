@@ -73,11 +73,15 @@ main_app:
     # The regex `\w+` refers to typical wiki language prefixes, like `en`
     # in enwiki. Some wikis have longer names, with `eswikiquote` being the
     # longest.
+    #
+    # The (:|%3A|%3a) regex is used to work around restrictions with
+    # Envoy's URL normalisation patterns, currently handling only
+    # alphanumeric urlencodes
     lw_inference_articletopic:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)topic:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)topic(:|%3A|%3a)predict'
       host_rewrite_path: '\1wiki-\2topic.revscoring-articletopic.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -93,7 +97,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/outlink-topic-model:predict'
+      path: 'lw/inference/v1/models/outlink-topic-model(:|%3A|%3a)predict'
       host: 'outlink-topic-model.articletopic-outlink.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -107,7 +111,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)quality:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-(article|item)quality(:|%3A|%3a)predict'
       host_rewrite_path: '\1wiki-\2quality.revscoring-articlequality.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -121,7 +125,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-drafttopic:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-drafttopic(:|%3A|%3a)predict'
       host_rewrite_path: '\1wiki-drafttopic.revscoring-drafttopic.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -135,7 +139,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)wiki-draftquality:predict'
+      path: 'lw/inference/v1/models/(\w+)wiki-draftquality(:|%3A|%3a)predict'
       host_rewrite_path: '\1wiki-draftquality.revscoring-draftquality.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -149,7 +153,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-damaging:predict'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-damaging(:|%3A|%3a)predict'
       host_rewrite_path: '\1\2-damaging.revscoring-editquality-damaging.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -163,7 +167,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-goodfaith:predict'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote)-goodfaith(:|%3A|%3a)predict'
       host_rewrite_path: '\1\2-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -177,7 +181,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote|wiktionary)-reverted:predict'
+      path: 'lw/inference/v1/models/(\w+)(wiki|wikibooks|wikiquote|wiktionary)-reverted(:|%3A|%3a)predict'
       host_rewrite_path: '\1\2-reverted.revscoring-editquality-reverted.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -191,7 +195,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/revertrisk-([\w-]+):predict'
+      path: 'lw/inference/v1/models/revertrisk-([\w-]+)(:|%3A|%3a)predict'
       host_rewrite_path: 'revertrisk-\1.revertrisk.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -205,7 +209,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/readability:predict'
+      path: 'lw/inference/v1/models/readability(:|%3A|%3a)predict'
       host: 'readability.readability.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -219,7 +223,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/langid:predict'
+      path: 'lw/inference/v1/models/langid(:|%3A|%3a)predict'
       host: 'langid.llm.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
@@ -233,7 +237,7 @@ main_app:
       tls: true
       port: 30443
       timeout: 30s
-      path: 'lw/inference/v1/models/article-descriptions:predict'
+      path: 'lw/inference/v1/models/article-descriptions(:|%3A|%3a)predict'
       host: 'article-descriptions.article-descriptions.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
       internal_host: inference.discovery.wmnet
