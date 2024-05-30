@@ -26,15 +26,14 @@ Keep in mind, that changing config properties inline is neither transparent nor 
 To catch up a specific range of kafka record offsets (as quickly as possible), invoke a backfill release
 for the appropriate consumer. These will use additional values from values-backfill.yaml
 
-TODO: automation should startup the backfill, monitor for completion, and destroy
+For a more complete orchestration of reindex and backfill see https://gitlab.wikimedia.org/repos/search-platform/cirrus-reindex-orchestrator/
 
 ```sh
-helmfile
-    --environment eqiad
-    --selector name=consumer-cloudelastic-backfill
-    apply
-    --context 5 \
-    --set "backfill=true" \
-    --set "app.config_files.app\.config\.yaml.kafka-source-start-time=2024-02-01T01:23:45Z" \
-    --set "app.config_files.app\.config\.yaml.kafka-source-end-time=2024-02-01T02:34:56Z"
-```
+    helmfile
+        --environment eqiad
+        --selector name=consumer-cloudelastic-backfill
+        apply
+        --context 5 \
+        --set "backfill=true" \
+        --set "app.config_files.app\.config\.yaml.kafka-source-start-time=2024-02-01T01:23:45Z" \
+        --set "app.config_files.app\.config\.yaml.kafka-source-end-time=2024-02-01T02:34:56Z"
