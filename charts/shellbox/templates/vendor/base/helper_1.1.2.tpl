@@ -6,6 +6,7 @@ This is a generic collection of helpers.
  - base.helper.serviceType: returns what type of service to use if you're using ingress or not.
  - base.helper.resources: returns a resources definition based on .requests and .limits passed to it.
  - base.helper.prestop: returns a preStop hook definition for a simple sleep
+ - base.helper.restrictedSecurityContext: returns a securityContext definition compatible with the restricted PSS profile.
 */}}
 
 {{/* Return Service.spec.type that should be used for services.
@@ -44,4 +45,15 @@ lifecycle:
       - "-c"
       - "sleep {{ . | default 0 }}"
 {{- end -}}
+{{- end -}}
+
+{{- define "base.helper.restrictedSecurityContext" }}
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+     drop:
+     - ALL
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 {{- end -}}

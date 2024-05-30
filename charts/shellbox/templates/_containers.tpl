@@ -57,6 +57,7 @@ resources:
   - name: shared-socket
     mountPath: /run/shared
   {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ template "base.name.release" . }}-app
   image: {{ .Values.docker.registry }}/wikimedia/mediawiki-libs-shellbox:{{ if .Values.shellbox.version }}{{ .Values.shellbox.version }}-{{ end }}{{ .Values.shellbox.flavour }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -116,6 +117,7 @@ resources:
     - name: shared-socket
       mountPath: /run/shared
   {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 
 {{ if .Values.monitoring.enabled }}
 # Add the following exporters:
@@ -131,6 +133,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9117
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ template "base.name.release" . }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter_version }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", "--addr=0.0.0.0:9118"]
@@ -140,6 +143,7 @@ resources:
   livenessProbe:
     tcpSocket:
       port: 9118
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{ end -}}
 {{/* end php.containers */}}
