@@ -5,24 +5,24 @@ inference_services:
         minReplicas: 1
         maxReplicas: 1
       custom_env:
-        - name: WIKI_URL
-          value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: MODEL_NAME
           value: "revertrisk-language-agnostic"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/language-agnostic/20231117132654/"
+        - name: FORCE_HTTP
+          value: "true"
   revertrisk-multilingual:
     predictor:
       config:
         minReplicas: 1
         maxReplicas: 1
       custom_env:
-        - name: WIKI_URL
-          value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
+        - name: FORCE_HTTP
+          value: "true"
   revertrisk-language-agnostic-batcher:
     predictor:
       config:
