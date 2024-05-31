@@ -1,0 +1,62 @@
+templates:
+  default: &default
+    namespace: cloudnative-pg-operator
+    missingFileHandler: Warn
+    # installedTemplate is false by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_cloudnative_pg_operator\" }}{{ .Environment.Values.install_cloudnative_pg_operator }}{{ else }}{{ false }}{{ end }}`}}"
+releases:
+
+  # Install first the CRDs, then the operator.
+  - name: cloudnative-pg-operator-crds
+    chart: wmf-stable/cloudnative-pg-operator-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg-operator-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/namespaces
+
+  - name: cloudnative-pg-operator-networkpolicies
+    chart: wmf-stable/raw
+    <<: *default
+    needs:
+      - kube-system/namespaces
+    values:
+    - resources:
+      # Allow the cloudnative-pg-operator pod to contact the Kubernetes API
+      - apiVersion: crd.projectcalico.org/v1
+        kind: NetworkPolicy
+        metadata:
+          name: cloudnative-pg-operator-kubeapi-calico
+        spec:
+          types:
+            - Egress
+          selector: "app.kubernetes.io/name == 'cloudnative-pg'"
+          egress:
+            - action: Allow
+              destination:
+                services:
+                  name: kubernetes
+                  namespace: default
+
+  - name: cloudnative-pg-operator
+    chart: wmf-stable/cloudnative-pg-operator
+    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg-operator" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/namespaces
+      - kube-system/coredns
+      # WMF maintains cloudnative-pg-operator-crds as separate chart and release
+      - cloudnative-pg-operator/cloudnative-pg-operator-crds
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)

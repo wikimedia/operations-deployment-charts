@@ -124,6 +124,7 @@ environments:
       - install_spark_operator: true
       - install_external_services: true
       - install_ceph_csi_rbd: true
+      - install_cloudnative_pg_operator: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -160,6 +161,7 @@ bases:
   - external-services/helmfile.yaml
   - opentelemetry-collector/helmfile.yaml
   - ceph-csi-rbd/helmfile.yaml
+  - cloudnative-pg-operator/helmfile.yaml
 
 hooks:
   - events: ["prepare"]
