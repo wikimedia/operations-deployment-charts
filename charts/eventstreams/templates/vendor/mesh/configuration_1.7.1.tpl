@@ -142,8 +142,10 @@ static_resources:
 
 {{/* Private functions */}}
 {{/* TLS termination for the local service */}}
-{{- define "mesh.configuration._local_cluster" }}
-- name: local_service
+{{- define "mesh.configuration._local_cluster_name" -}}
+LOCAL_{{ template "base.name.release" . }}
+{{- end }}{{- define "mesh.configuration._local_cluster" }}
+- name: {{ template "mesh.configuration._local_cluster_name" . }}
   typed_extension_protocol_options:
     envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
       "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
@@ -154,7 +156,7 @@ static_resources:
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
-    cluster_name: local_service
+    cluster_name: {{ template "mesh.configuration._local_cluster_name" . }}
     endpoints:
     - lb_endpoints:
       - endpoint:
@@ -234,7 +236,7 @@ static_resources:
             routes:
             - match: {prefix: /}
               route:
-                cluster: local_service
+                cluster: {{ template "mesh.configuration._local_cluster_name" . }}
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}

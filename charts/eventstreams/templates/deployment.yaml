@@ -99,6 +99,7 @@ spec:
           volumeMounts:
             - name: {{ .Values.main_app.name }}-config-volume
               mountPath: /etc/eventstreams
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
         {{- if .Values.debug.enabled | default false }}
         - name: {{ .Values.main_app.name }}-wmfdebug
