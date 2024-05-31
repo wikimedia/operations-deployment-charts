@@ -106,3 +106,7 @@ global:
       driver: "com.mysql.cj.jdbc.Driver"
       username: "datahub"
 
+datahubSystemUpdate:
+  extraEnvs:
+    - name: SPRING_KAFKA_PROPERTIES_AUTO_REGISTER_SCHEMAS
+      value: "true"
