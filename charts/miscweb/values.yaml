@@ -10,8 +10,8 @@ resources:
 main_app:
   # Application type.
   type: "default"
-  image: operations-container-miscweb:production
-  version: latest # we use latest everywhere in the defaults.
+  image: sre/miscweb/statictendril
+  version: main
   port: 8080 # port exposed as a Service, also used by service-checker.
   command: []
   args: []
