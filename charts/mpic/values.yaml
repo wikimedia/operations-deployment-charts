@@ -81,6 +81,8 @@ config:
   private:  # Add here all the keys that should be private but still available as env variables
     database_password: "dbpassvalue"
     idp_client_secret: "idpclientsecret"
+    session_secret: "sessionsecret"
+    csrf_secret: "csrfsecret"
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
