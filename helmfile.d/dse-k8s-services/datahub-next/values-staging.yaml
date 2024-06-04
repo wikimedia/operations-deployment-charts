@@ -4,8 +4,6 @@ networkpolicy:
       - cidr: 10.64.53.41/32                  # an-test-coord1001
       - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
       - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-      - cidr: 10.64.0.5/32                    # karapace1002
-      - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
       - cidr: 10.64.16.145/32                 # zookeeper-test1002
       - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
 
@@ -66,8 +64,6 @@ datahub-gms:
         - cidr: 10.64.53.41/32                  # an-test-coord1001
         - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.5/32                    # karapace1002
-        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 datahub-mce-consumer:
   kafka: *kafka
@@ -77,8 +73,6 @@ datahub-mce-consumer:
         - cidr: 10.64.53.41/32                  # an-test-coord1001
         - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.5/32                    # karapace1002
-        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 datahub-mae-consumer:
   kafka: *kafka
@@ -86,8 +80,6 @@ datahub-mae-consumer:
     egress:
       dst_nets:
         - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 10.64.0.5/32                    # karapace1002
-        - cidr: 2620:0:861:101:10:64:0:5/128    # karapace1002
 
 global:
   kafka:
@@ -106,7 +98,3 @@ global:
       driver: "com.mysql.cj.jdbc.Driver"
       username: "datahub"
 
-datahubSystemUpdate:
-  extraEnvs:
-    - name: SPRING_KAFKA_PROPERTIES_AUTO_REGISTER_SCHEMAS
-      value: "true"

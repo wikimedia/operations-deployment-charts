@@ -68,3 +68,11 @@ global:
   elasticsearch:
     host: "datahubsearch.svc.eqiad.wmnet"
     port: "9200"
+  kafka:
+    schemaregistry:
+      type: "INTERNAL"
+
+datahubSystemUpdate:
+  extraEnvs:
+    - name: SPRING_KAFKA_PROPERTIES_AUTO_REGISTER_SCHEMAS
+      value: "true"
