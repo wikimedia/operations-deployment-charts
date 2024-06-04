@@ -8,7 +8,7 @@ be needed.
 
 */}}
 {{- define "cache.service" -}}
-{{ if .Values.cache.mcrouter.public_service }}
+{{ if .Values.cache.mcrouter.service.enabled | default false }}
 ---
 apiVersion: v1
 kind: Service
@@ -16,6 +16,9 @@ metadata:
 {{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
 spec:
   type: ClusterIP
+  {{- if .Values.cache.mcrouter.service.clusterIP }}
+  clusterIP: {{ .Values.cache.mcrouter.service.clusterIP }}
+  {{- end }}
   selector:
     app: {{ template "base.name.chart" . }}
   ports:
