@@ -3,6 +3,7 @@ monitoring:
 
 inference:
   predictor:
+    version: "2024-06-05-124903-publish"
     base_env:
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
@@ -16,3 +17,19 @@ inference:
 revscoring_inference_services:
   - wiki: "viwiki"
     version: "20220214192315"
+    predictor:
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 2
+        - name: PREPROCESS_MP
+          value: "True"
+        - name: INFERENCE_MP
+          value: "False"
+      container:
+        resources:
+          limits:
+            cpu: "3"
+          requests:
+            cpu: "3"
