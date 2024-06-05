@@ -1,0 +1,48 @@
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+monitoring:
+  enabled: true
+  statsd:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 200m
+      memory: 400Mi
+    config: |-
+      defaults:
+        timer_type: histogram
+        buckets:
+        - 0.005
+        - 0.01
+        - 0.025
+        - 0.05
+        - 0.1
+        - 0.25
+        - 0.5
+        - 1
+        - 2.5
+        - 5
+        - 10
+        - 30
+        - 60
+        quantiles:
+        - quantile: 0.99
+          error: 0.001
+        - quantile: 0.95
+          error: 0.001
+        - quantile: 0.75
+          error: 0.001
+        - quantile: 0.5
+          error: 0.005
+      mappings: []
+common_images:
+  statsd:
+    exporter: prometheus-statsd-exporter:latest
+
+service: {}
+#  if you want to use a fixed IP address for the service, set it here
+#  ipaddr: "340.0.0.1" <- yes this is a troll, Alex
