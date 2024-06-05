@@ -21,12 +21,13 @@ spec:
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/config: {{ include "config.app" . | sha256sum }}
-        checksum/tls-certs: {{ printf "%v" (values .Values.main_app.certs | sortAlpha) | sha256sum }}
         prometheus.io/port: {{ .Values.app.port | quote }}
         prometheus.io/scrape: "true"
         {{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.kask }}
+        checksum/tls-certs: {{ printf "%v" (values .Values.main_app.certs | sortAlpha) | sha256sum }}
         prometheus.io/scheme: https
         {{- end }}{{ end }}
+        {{- include "mesh.name.annotations" . | nindent 8 }}
     spec:
       {{ if .Values.subcharts.cassandra }}
       {{- $hostname := printf "%s-%s.%s.%s" .Release.Name "cassandra" .Release.Namespace "svc.cluster.local" -}}
@@ -67,6 +68,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/kask
+            {{- if .Values.main_app.certs }}
             {{- with .Values.main_app.certs }}{{ if .cassandra }}
             - name: cassandra-certs-volume
               mountPath: /etc/cassandra-certs
@@ -75,23 +77,27 @@ spec:
             - name: kask-certs-volume
               mountPath: /etc/kask-certs
             {{- end }}{{ end }}
+            {{- end }}
           resources:
             requests:
 {{ toYaml .Values.main_app.requests | indent 14 }}
             limits:
 {{ toYaml .Values.main_app.limits | indent 14 }}
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
+        {{- include "mesh.deployment.container" . | nindent 8 }}
       volumes:
         - name: config-volume
           configMap:
             name: config-{{ .Release.Name }}
-        {{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.cassandra }}
+        {{- if .Values.main_app.certs }}
+        {{- if .Values.main_app.certs.cassandra }}
         - name: cassandra-certs-volume
           configMap:
             name: cassandra-certs-{{ .Release.Name }}
-        {{- end }}{{ end }}
-        {{- if .Values.main_app.certs }}{{ if .Values.main_app.certs.kask }}
+        {{- end }}
+        {{- if .Values.main_app.certs.kask }}
         - name: kask-certs-volume
           configMap:
             name: kask-certs-{{ .Release.Name }}
         {{- end }}{{ end }}
+        {{- include "mesh.deployment.volume" . | nindent 8 }}

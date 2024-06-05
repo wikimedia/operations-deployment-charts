@@ -4,6 +4,8 @@ affinity: {}
 tolerations: {}
 main_app:
   version: v1.0.14
+  # disable native TLS serving
+  certs: {}
   cassandra:
     tls:
       ca: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -24,3 +26,14 @@ main_app:
   limits:
     cpu: 2500m
     memory: 100Mi
+
+mesh:
+  enabled: true
+  public_port: 8081 # reserved port for sessionstore
+  resources:
+    requests:
+      cpu: 500m
+      memory: 150Mi
+    limits:
+      cpu: 1
+      memory: 500Mi

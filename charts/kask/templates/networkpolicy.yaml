@@ -21,7 +21,11 @@ spec:
     - ports:
       - port: {{ .Values.app.port }}
         protocol: TCP
+      {{- include "mesh.networkpolicy.ingress" . | nindent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- if .Values.mesh.enabled }}
+    {{- include "mesh.networkpolicy.egress" . | nindent 4 }}
+    {{- end }}
 {{- end }}
