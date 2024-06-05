@@ -69,6 +69,13 @@ config:
     groupbyattrs/service_name:
       keys:
         - service.name
+    filter/healthchecks:
+      error_mode: ignore
+      traces:
+        span:
+          # Filter out spans that match any of these conditions.
+          - IsMatch(attributes["http.url"], "/wiki/Special:BlankPage$$")
+          - IsMatch(attributes["http.url"], "/healthz$$")
     transform/scrub:
       error_mode: ignore
       trace_statements:
@@ -92,6 +99,7 @@ config:
           - k8sattributes
           - transform/service_from_upstream_cluster_or_nodeid
           - groupbyattrs/service_name
+          - filter/healthchecks
           - transform/scrub
           - memory_limiter
           - batch
