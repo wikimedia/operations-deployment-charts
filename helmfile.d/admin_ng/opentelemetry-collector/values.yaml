@@ -69,6 +69,18 @@ config:
     groupbyattrs/service_name:
       keys:
         - service.name
+    transform/scrub:
+      error_mode: ignore
+      trace_statements:
+        - context: span
+          # For sessionstore, scrub out the actual session ID from the URL.  It's PII.
+          conditions:
+            - resource.attributes["service.name"] == "sessionstore"
+          statements:
+            - replace_pattern(attributes["http.url"], "/sessions/v1/([^%]+)%3[Aa]([^%]+)%3[Aa].+", "/sessions/v1/$$1%3A$$2%3A{token}")
+            # Note that when using OTTL within the collector's configuration file, $ must be escaped
+            # to $$ to bypass environment variable substitution logic.
+        # Define your additional trace-data-scrubbing rules here, beginning with `- context: span`
   service:
     pipelines:
       metrics: ~
@@ -80,6 +92,7 @@ config:
           - k8sattributes
           - transform/service_from_upstream_cluster_or_nodeid
           - groupbyattrs/service_name
+          - transform/scrub
           - memory_limiter
           - batch
         exporters:
