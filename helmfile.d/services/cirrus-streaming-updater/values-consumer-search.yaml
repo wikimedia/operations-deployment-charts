@@ -16,7 +16,7 @@ app:
     app.config.yaml:
       fetch-request-timeout: 30s
       elasticsearch-bulk-flush-interval: 30s
-      saneitize: true
+      # saneitize: true must be set per environment
       saneitize-capacity: 20
       saneitize-loop-duration: 14D
       saneitize-private-wikis: false
