@@ -58,4 +58,9 @@
   hostPath:
     path: /usr/share/GeoIPInfo
 {{- end }}
+{{- if .Values.php.envvars }}
+- name: {{ $release }}-php-envvars
+  configMap:
+    name: {{ $release }}-php-envvars
+{{- end }}
 {{ end }}

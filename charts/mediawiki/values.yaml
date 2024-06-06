@@ -197,7 +197,12 @@ php:
   devel_mode: false # If true, enables opcache revalidation and catch_workers_output
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above (if the variable name is all
-# uppercase)
+# uppercase).
+# If you want to pass an environment variable to the php-fpm daemon, you can
+# use the following dictionary. If you want to make a variable available to php-fpm
+# without defining it in the chart (for example, an env variable provided by kubernetes)
+# you can add it to the envvars dictionary providing a false/null value.
+envvars: {}
 
 mw:
   # The datacenter. To be overridden in deployments.

@@ -153,6 +153,14 @@
   - name: FPM__slowlog
     value: /var/log/php-fpm/slowlog.log
   {{- end }}
+  # Variables that will be made available to php-fpm and cli scripts.
+  {{- range $k, $v := .Values.php.envvars }}
+  {{- if  $v}}
+  - name: {{ $k | upper }}
+    value: {{ $v | quote }}
+  {{- end }}
+  {{- end }}
+  # Variables that will be avaliable only to cli scripts
   {{- range $k, $v := .Values.config.public }}
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
@@ -239,6 +247,12 @@
     readOnly: true
   - name: {{ $release }}-geoipinfo
     mountPath: /usr/share/GeoIPInfo/
+    readOnly: true
+  {{- end -}}
+  {{- if .Values.php.envvars }}
+  # PHP environment variables
+  - name: {{ $release }}-php-envvars
+    mountPath: /etc/php/7.4/fpm/env
     readOnly: true
   {{- end -}}
 

@@ -56,4 +56,16 @@ data:
     from wiki@wikimedia.org
     timeout 1
 {{- end }}
-{{- end -}}
+{{- if .Values.php.envvars }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-php-envvars
+data:
+  envvars.inc: |-
+  {{- range $k := keys .Values.php.envvars }}
+    env['{{ $k }}'] = ${{ "{" }}{{ $k }}{{ "}" }}
+  {{- end -}}
+{{- end }}
+{{- end }}
