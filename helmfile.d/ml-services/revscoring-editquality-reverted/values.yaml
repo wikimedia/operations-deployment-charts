@@ -58,7 +58,7 @@ inference:
       minReplicas: 1
       maxReplicas: 6
     image: "machinelearning-liftwing-inference-services-revscoring"
-    version: "2024-04-24-153759-publish"
+    version: "2024-06-05-124903-publish"
     base_env:
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
@@ -92,3 +92,18 @@ revscoring_inference_services:
     predictor:
       config:
         maxReplicas: 8
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 2
+        - name: PREPROCESS_MP
+          value: "True"
+        - name: INFERENCE_MP
+          value: "False"
+      container:
+        resources:
+          limits:
+            cpu: "3"
+          requests:
+            cpu: "3"
