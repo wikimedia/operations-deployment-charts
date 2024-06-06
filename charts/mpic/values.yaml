@@ -60,8 +60,9 @@ app:
 
   idp:
     oidc_url: https://idp-test.wikimedia.org/oidc
-    client_id: mpic
+    client_id: mpic_next
     redirect_uri: http://mpic-next.wikimedia.org/login/callback
+    response_type: code
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
