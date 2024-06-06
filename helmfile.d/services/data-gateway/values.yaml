@@ -6,6 +6,11 @@ main_app:
   service_name: data-gateway
   consistency: localQuorum
 
+  # Since cassandra client init happens before serving, and the former can take
+  # time, give the service some extra time before starting liveness probes.
+  liveness_probe:
+    initialDelaySeconds: 30
+
   # note the "_"
   cassandra_user: "data_gateway"
 
