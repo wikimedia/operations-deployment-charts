@@ -19,5 +19,6 @@ idp:
   oidc_url: {{ .Values.app.idp.oidc_url}}
   client_id: {{ .Values.app.idp.client_id }}
   redirect_uri: {{ .Values.app.idp.redirect_uri }}
+  response_tye: {{ .Values.app.idp.response_type }}
 
 {{- end }}
