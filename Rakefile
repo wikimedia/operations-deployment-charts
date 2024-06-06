@@ -350,17 +350,23 @@ task :refresh_fixtures do
       'encryption' => true,
       'keepalive'  => '4.5s',
     }
+    split_mock = {
+      'percentage' => 10,
+      'ips' => ['127.0.0.2/32', '169.254.0.2/32'],
+      'address' => 'splitmock.discovery.wmnet',
+      'port' => 1443,
+      'encryption' => true,
+      'keepalive'  => '5.5s'
+    }
     data = hiera['profile::services_proxy::envoy::listeners'].map do |x|
-      x['upstream'] = upstream_mock
+      # Duplicate upstream_mock and to avoid modifying the original
+      x['upstream'] = upstream_mock.dup
+      if x['sets_sni']
+        # If the listener has sets_sni, the upstream needs to set it to
+        x['upstream']['sets_sni'] = x['sets_sni']
+      end
       if x['split']
-        x['split'] = {
-          'percentage' => 10,
-          'ips' => ['127.0.0.2/32', '169.254.0.2/32'],
-          'address' => 'othermock.discovery.wmnet',
-          'port' => 1443,
-          'encryption' => true,
-          'keepalive'  => '5.5s'
-        }
+        x['split'] = split_mock
       end
       [x.delete('name'), x]
     end.to_h
