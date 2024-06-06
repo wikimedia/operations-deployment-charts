@@ -14,6 +14,7 @@ app:
 
   config_files:
     app.config.yaml:
+      fetch-request-timeout: 30s
       elasticsearch-bulk-flush-interval: 30s
       saneitize: true
       saneitize-capacity: 20
