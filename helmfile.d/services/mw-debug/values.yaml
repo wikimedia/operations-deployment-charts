@@ -173,8 +173,6 @@ php:
 mw:
   domain_suffix: "org"
   httpd:
-    # TODO: Remove image_tag overriden by deploy-mwdebug.py
-    image_tag: "restricted/mediawiki-webserver:2021-07-26-084018-webserver"
     additional_config: |-
       LoadModule remoteip_module /usr/lib/apache2/modules/mod_remoteip.so
       RemoteIPHeader X-Client-IP
