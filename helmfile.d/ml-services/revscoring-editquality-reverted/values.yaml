@@ -90,8 +90,6 @@ revscoring_inference_services:
   - wiki: "viwiki"
     version: "20220214192315"
     predictor:
-      config:
-        maxReplicas: 8
       custom_env:
         - name: ASYNCIO_USE_PROCESS_POOL
           value: "True"
