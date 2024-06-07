@@ -3,6 +3,8 @@ image:
   registry: docker-registry.discovery.wmnet
   repository: kube-state-metrics
   pullPolicy: IfNotPresent
+  # See T356252
+  tag: 2.10.0-1-20240602
 
 collectors:
   - cronjobs
