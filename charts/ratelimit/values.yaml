@@ -46,7 +46,7 @@ config:
     # Start in an unhealthy state and become healthy when at least one config is loaded
     HEALTHY_WITH_AT_LEAST_ONE_CONFIG_LOADED: true
     # Stores the over-the-limit cache keys to avoid reading the redis cache again for the already over-the-limit keys
-    LOCAL_CACHE_SIZE_IN_BYTES: 1000000
+    LOCAL_CACHE_SIZE_IN_BYTES: "1000000"
     GRPC_SERVER_USE_TLS: true
     GRPC_SERVER_TLS_CERT: /etc/ratelimit/ssl/tls.crt
     GRPC_SERVER_TLS_KEY: /etc/ratelimit/ssl/tls.key
