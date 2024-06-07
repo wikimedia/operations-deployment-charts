@@ -66,6 +66,9 @@ mesh:
 # Note that this is overridden for each consumer instance to add
 # in the appropriate elasticsearch clusters
 discovery:
+  ratelimit_listeners:
+    mw-api-int-async-ro:
+      domain: mw-api-int
   listeners:
     - mw-api-int-async-ro
     - schema
