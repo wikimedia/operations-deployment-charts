@@ -1,0 +1,17 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+
+resources:
+  replicas: 3
+
+app:
+  # ratelimit configuration
+  # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
+  # Array keys are ratelimit domains (they need to be unique), the value
+  # needs is one or many descriptors.
+  configuration:
+    mw-api-int:
+      - key: user-agent
+        rate_limit:
+          unit: second
+          requests_per_unit: 1000
