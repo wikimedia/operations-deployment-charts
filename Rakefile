@@ -299,6 +299,10 @@ end
 desc 'Run other tasks locally within the CI docker images'
 task :run_locally, [:cmdargs] do |_t, args|
   check_docker
+  # If ROOTLESS_PODMAN is set to 1, we will assume the user is using podman
+  # TODO: maybe use the output of "docker version" to determine if we are using podman
+  # and some trickery to detect rootless podman too?
+  is_rootless_podman = (ENV['ROOTLESS_PODMAN'] == '1')
   cmdargs = if args.nil? || args.count.zero?
               ''
             else
@@ -316,13 +320,18 @@ task :run_locally, [:cmdargs] do |_t, args|
         g.add(all: true)
         g.commit('running_diffs')
       end
+
+      # In rootless podman, the root user is the current user
+      # so we want to run as root!
+      user = is_rootless_podman ? 0 : Process.uid
+
       puts 'Now running in docker'
       cmd = [
         'docker',
         'run',
         '--pull always',
         '--rm',
-        "--user #{Process.uid}",
+        "--user #{user}",
         "-v #{dir}:/src:rw",
         '-v /etc/passwd:/etc/passwd:ro',
         '-v /etc/group:/etc/group:ro',
