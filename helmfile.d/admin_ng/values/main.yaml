@@ -401,7 +401,15 @@ namespaces:
           cpu: "100m"
   opentelemetry-collector: {}
   page-analytics: {}
-  proton: {}
+  proton:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "120"
+          memory: "100Gi"
+        limits:
+          cpu: "120"
+          memory: "100Gi"
   push-notifications: {}
   ratelimit:
     deployTLSCertificate: false
