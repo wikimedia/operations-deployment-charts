@@ -9,8 +9,6 @@ main_app:
     initialDelaySeconds: 30 # setting some extra time to be able to connect to the datastore
 
   consistency: localQuorum
-  # use eqiad for all DCs here until we get AQS hosts in codfw
-  datacentre: eqiad
 
   # note the "_"
   cassandra_user: "geo_analytics"

@@ -8,9 +8,9 @@ main_app:
   liveness_probe:
     initialDelaySeconds: 30 # setting some extra time to be able to connect to both datastores (cassandra and druid)
 
+  consistency: localQuorum
+
   config_table: aqs.config
-   # use eqiad for all DCs here until we get AQS hosts in codfw
-  datacentre: eqiad
 
   # note the "_"
   cassandra_user: "edit_analytics"
