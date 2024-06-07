@@ -7,6 +7,7 @@ service:
   port: {{ .Values.app.service.port }}
   cors: {{ .Values.app.service.cors | quote }}
   max_body_size: {{ .Values.app.service.max_body_size }}
+  secure_cookie: {{ .Values.app.service.secure_cookie }}
 
 database:
   engine: {{ .Values.app.database.engine }}
