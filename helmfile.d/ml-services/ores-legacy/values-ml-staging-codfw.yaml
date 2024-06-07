@@ -13,6 +13,10 @@ resources:
 ingress:
   mlstaging: true
 
+discovery:
+  listeners:
+  - inference-staging
+
 config:
   public:
-    LIFTWING_URL: "https://inference-staging.svc.codfw.wmnet:30443"
+    LIFTWING_URL: "http://localhost:6205"
