@@ -146,7 +146,6 @@ monitoring:
           error: 0.005
       mappings: []
 
-
 debug:
   enabled: false
   ports: []
@@ -156,6 +155,12 @@ debug:
       ini_get: |-
         <?php
         var_dump(ini_get($_GET['value']));
+      env: |-
+        <?php
+        var_dump(getenv($_GET['value']));
+      globals: |-
+        <?php
+        var_dump($_SERVER[$_GET['value']]);
 
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
