@@ -43,6 +43,7 @@ spec:
               {{- toYaml $.Values.localmemcached.resources.requests | nindent 14 }}
             limits:
               {{- toYaml $.Values.localmemcached.resources.limits | nindent 14 }}
+          {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
 {{- end }}
 
 {{- define "localmemcached.service" }}

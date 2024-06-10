@@ -18,6 +18,7 @@
     - -U   {{/* Use the first principal in the keytab as the client principal and don't look for a principal on the command line */}}
     - -v   {{/* Verbose */}}
   {{- include "base.helper.resources" $.Values.kerberos.resources | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" . | nindent 2 }}
   volumeMounts:
 {{- toYaml $.Values.app.volumeMounts | nindent 4 }}
 {{- end }}

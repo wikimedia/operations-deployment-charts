@@ -17,6 +17,7 @@
   {{- end }}
   volumeMounts:
     {{- toYaml .Values.assets.volumeMounts | nindent 4 }}
+  {{- include "base.helper.restrictedSecurityContext" . | nindent 2 }}
 {{- end }}
 
 {{- define "assets.volume" }}
