@@ -116,11 +116,22 @@ defaultConfiguration:
     logger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline
     logger.netty.level = OFF
 
-podSecurityContext:
+# Container (operator) security context. This will override podSecurityContext.
+operatorSecurityContext:
   # These should match the uid/gid values in WMF's Flink image.
   # https://gerrit.wikimedia.org/r/c/operations/docker-images/production-images/+/858356/9/config.yaml#13
   runAsUser: 186
   runAsGroup: 186
+  # All containers need to set a securityContext compatible with restricted PSS
+  # https://phabricator.wikimedia.org/T362978
+  allowPrivilegeEscalation: false
+  capabilities:
+     drop:
+     - ALL
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
 
 # WMF does not use the Flink Kubernetes Webhook.
 # https://phabricator.wikimedia.org/T324576#8456935
