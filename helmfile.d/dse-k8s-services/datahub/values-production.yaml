@@ -1,25 +1,17 @@
-networkpolicy:
-  egress:
-    dst_nets:
-      - cidr: 10.64.138.8/32                 # an-mariadb1001
-      - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
-      - cidr: 10.64.142.7/32                 # an-mariadb1002
-      - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
-      - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
-      - cidr: 10.64.0.207/32                 # conf1007
-      - cidr: 2620:0:861:101:10:64:0:207/128 # conf1007
-
-# Kafka brokers also enable additional networkpolicy templates
-kafka: &kafka
-  allowed_clusters:
-    - jumbo-eqiad
-
 config: &config
   public: {}
 
+external_services:
+  mariadb: [analytics-meta]
+  zookeeper: [main-eqiad]
+  kafka: [jumbo-eqiad]
+
+networkpolicy: &networkpolicies
+  egress:
+    dst_nets:
+      - cidr: 10.2.2.71/32  # datahubsearch.svc.eqiad.wmnet
 
 datahub-frontend:
-  kafka: *kafka
   auth:
     ldap:
       enabled: false
@@ -35,17 +27,17 @@ datahub-frontend:
       default: "datahub-frontend"
       extraFQDNs:
         - datahub.wikimedia.org
+  external_services:
+    kafka: [jumbo-eqiad]
+    cas: [idp]
   networkpolicy:
     egress:
       dst_nets:
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-        - cidr: 208.80.154.252/32               # ldap-ro.eqiad.wikimedia.org
-        - cidr: 208.80.153.252/32               # ldap-ro.codfw.wikimedia.org
-  external_services:
-    cas:
-    - idp
+        - cidr: 10.2.2.71/32       # datahubsearch.svc.eqiad.wmnet
+        - cidr: 208.80.154.252/32  # ldap-ro.eqiad.wikimedia.org
+        - cidr: 208.80.153.252/32  # ldap-ro.codfw.wikimedia.org
+
 datahub-gms:
-  kafka: *kafka
   config:
     <<: *config
     public:
@@ -57,36 +49,31 @@ datahub-gms:
     enabled: true
     gatewayHosts:
       default: "datahub-gms"
+  external_services:
+    mariadb: [analytics-meta]
+    kafka: [jumbo-eqiad]
   networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.64.138.8/32                 # an-mariadb1001
-        - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
-        - cidr: 10.64.142.7/32                 # an-mariadb1002
-        - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
-        - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
+    <<: *networkpolicies
 
 datahub-mce-consumer:
-  kafka: *kafka
   config:
     <<: *config
+  external_services:
+    mariadb: [analytics-meta]
+    kafka: [jumbo-eqiad]
   networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.64.138.8/32                 # an-mariadb1001
-        - cidr: 2620:0:861:100:10:64:138:8/128 # an-mariadb1001
-        - cidr: 10.64.142.7/32                 # an-mariadb1002
-        - cidr: 2620:0:861:114:10:64:142:7/128 # an-mariadb1002
-        - cidr: 10.2.2.71/32                   # datahubsearch.svc.eqiad.wmnet
+    <<: *networkpolicies
+
 
 datahub-mae-consumer:
-  kafka: *kafka
   config:
     <<: *config
+  external_services:
+    mariadb: [analytics-meta]
+    kafka: [jumbo-eqiad]
   networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+    <<: *networkpolicies
+
 
 global:
   kafka:
