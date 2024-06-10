@@ -1,22 +1,15 @@
-networkpolicy:
-  egress:
-    dst_nets:
-      - cidr: 10.64.53.41/32                  # an-test-coord1001
-      - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
-      - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
-      - cidr: 10.64.16.145/32                 # zookeeper-test1002
-      - cidr: 2620:0:861:102:10:64:16:145/128 # zookeeper-test1002
-
 # Kafka brokers also enable additional networkpolicy templates
-kafka: &kafka
-  allowed_clusters:
-    - test-eqiad
+external_services:
+  opensearch: [datahubsearch]
+  mariadb: [analytics-test-meta]
+  zookeeper: [test-eqiad]
+  kafka: [test-eqiad]
+
 
 config: &config
   public: {}
 
 datahub-frontend:
-  kafka: *kafka
   ingress:
     staging: true
   auth:
@@ -38,16 +31,12 @@ datahub-frontend:
       default: "datahub-frontend-next"
       extraFQDNs:
         - datahub-next.wikimedia.org
-  networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
   external_services:
-    cas:
-    - idp-test
+    opensearch: [datahubsearch]
+    cas: [idp-test]
+    kafka: [test-eqiad]
 
 datahub-gms:
-  kafka: *kafka
   config:
     public:
       AUTH_RESOURCES_DIR: "/datahub/datahub-gms/plugins/auth/resources"
@@ -58,28 +47,20 @@ datahub-gms:
     enabled: true
     gatewayHosts:
       default: "datahub-gms-next"
-  networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.64.53.41/32                  # an-test-coord1001
-        - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+  external_services:
+    mariadb: [analytics-test-meta]
+    opensearch: [datahubsearch]
+    kafka: [test-eqiad]
 
 datahub-mce-consumer:
-  kafka: *kafka
-  networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.64.53.41/32                  # an-test-coord1001
-        - cidr: 2620:0:861:108:10:64:53:41/128  # an-test-coord1001
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+  external_services:
+    mariadb: [analytics-test-meta]
+    opensearch: [datahubsearch]
 
 datahub-mae-consumer:
-  kafka: *kafka
-  networkpolicy:
-    egress:
-      dst_nets:
-        - cidr: 10.2.2.71/32                    # datahubsearch.svc.eqiad.wmnet
+  external_services:
+    opensearch: [datahubsearch]
+    kafka: [test-eqiad]
 
 global:
   kafka:
