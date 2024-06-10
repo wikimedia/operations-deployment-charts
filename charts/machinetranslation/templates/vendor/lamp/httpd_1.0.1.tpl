@@ -54,6 +54,7 @@
   - name: shared-socket
     mountPath: /run/shared
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end -}}
 
 {{- define "lamp.httpd.exporter" }}
@@ -67,6 +68,7 @@
   livenessProbe:
     tcpSocket:
       port: 9117
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 
 

@@ -58,6 +58,7 @@
     - name: shared-socket
       mountPath: /run/shared
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 
 {{- define "lamp.phpfpm.exporter" }}
@@ -70,6 +71,7 @@
   livenessProbe:
     tcpSocket:
       port: 9118
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 
 
