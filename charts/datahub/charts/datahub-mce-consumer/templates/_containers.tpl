@@ -181,5 +181,6 @@ resources:
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | nindent 2 }}
 
 {{ end }}

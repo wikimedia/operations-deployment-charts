@@ -78,8 +78,7 @@ spec:
               {{- with .Values.datahubUpgrade.extraEnvs }}
                 {{- toYaml . | nindent 16 }}
               {{- end }}
-              securityContext:
-                {{- toYaml .Values.datahubUpgrade.securityContext | nindent 16 }}
+              {{- include "base.helper.restrictedSecurityContext" . | nindent 14 }}
               volumeMounts:
               {{- with .Values.global.credentialsAndCertsSecrets }}
                 - name: datahub-certs-dir

@@ -162,6 +162,7 @@ resources:
       readOnly: true
   {{- end }}
 {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | nindent 2 }}
 
 {{- end }}
 

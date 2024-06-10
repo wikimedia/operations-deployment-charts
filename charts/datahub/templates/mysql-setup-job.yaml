@@ -71,6 +71,7 @@ spec:
             requests:
               cpu: 300m
               memory: 256Mi
+          {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
       {{- with .Values.mysqlSetupJob.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
