@@ -49,4 +49,5 @@ spec:
 {{ toYaml .Values.main_app.requests | indent 16 }}
               limits:
 {{ toYaml .Values.main_app.limits | indent 16 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 12 }}
 {{- end }}
