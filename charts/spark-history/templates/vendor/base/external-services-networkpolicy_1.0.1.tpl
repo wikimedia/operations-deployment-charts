@@ -20,7 +20,7 @@ metadata:
   {{- include "base.meta.labels" $ | indent 2 }}
   namespace: {{ $.Release.Namespace }}
 spec:
-  selector: "app == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}'"
+  selector: "{{ $.Values.external_services_app_label_selector | default "app" }} == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}'"
   types:
   - Egress
   egress:

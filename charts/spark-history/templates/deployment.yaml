@@ -36,6 +36,7 @@ spec:
             - name: {{ $k | upper }}
               value: {{ $v | quote }}
           {{- end }}
+          {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
           command:
             {{/* Renew the ticket every 60 minutes */}}
             - k5start
