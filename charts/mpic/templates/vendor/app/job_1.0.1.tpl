@@ -38,4 +38,5 @@ concurrencyPolicy: {{ .concurrency | default "Forbid" }}
   {{- else }}
   {{- include "base.helper.resources" .Root.Values.app | indent 2 }}
   {{- end }}
+{{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
