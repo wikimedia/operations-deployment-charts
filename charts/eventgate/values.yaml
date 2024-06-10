@@ -89,7 +89,7 @@ main_app:
   name: eventgate
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
-  image: docker-registry.wikimedia.org/wikimedia/eventgate-wikimedia
+  image: docker-registry.wikimedia.org/repos/data-engineering/eventgate-wikimedia
   version: latest # we use latest in the defaults.
   port: 8192
 

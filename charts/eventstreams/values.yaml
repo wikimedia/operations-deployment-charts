@@ -57,7 +57,7 @@ main_app:
   name: eventstreams
   # Don't use docker.registry value for main_app image so we can override
   # and use locally built and cached images via --set main_app.image during development.
-  image: docker-registry.wikimedia.org/wikimedia/mediawiki-services-eventstreams
+  image: docker-registry.wikimedia.org/repos/data-engineering/eventstreams
   version: latest
   port: 8092
   command: ["nodejs"]
