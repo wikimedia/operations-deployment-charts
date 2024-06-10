@@ -12,6 +12,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
