@@ -82,6 +82,7 @@ spec:
           volumeMounts:
 {{ toYaml . | indent 12 }}
 {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- include "mesh.deployment.container" . | indent 8}}
 {{- if or .Values.main_app.volumes .Values.mesh.enabled }}
       volumes:
