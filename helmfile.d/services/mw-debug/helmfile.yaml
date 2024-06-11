@@ -47,6 +47,7 @@ templates:
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/statsd-exporter/values.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "values-statsd-{{ .Environment.Name }}.yaml" # dc-specific overrides
       - "values-statsd.yaml"
 
