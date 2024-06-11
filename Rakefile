@@ -348,27 +348,35 @@ task :refresh_fixtures do
       'address' => 'mock.discovery.wmnet',
       'port' => 443,
       'encryption' => true,
-      'keepalive'  => '4.5s',
     }
-    split_mock = {
-      'percentage' => 10,
-      'ips' => ['127.0.0.2/32', '169.254.0.2/32'],
-      'address' => 'splitmock.discovery.wmnet',
-      'port' => 1443,
-      'encryption' => true,
-      'keepalive'  => '5.5s'
-    }
+    # List of keys to keep in the listeners definition, assembles what we do in
+    # modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+    listener_keys_to_keep = %w(port http_host timeout retry_policy xfp upstream split)
     data = hiera['profile::services_proxy::envoy::listeners'].map do |x|
-      # Duplicate upstream_mock and to avoid modifying the original
-      x['upstream'] = upstream_mock.dup
-      if x['sets_sni']
-        # If the listener has sets_sni, the upstream needs to set it to
-        x['upstream']['sets_sni'] = x['sets_sni']
+      name = x['name']
+      upstream = upstream_mock.dup
+      if x['sets_sni'] == true
+        upstream['sets_sni'] = true
       end
+      if x['keepalive']
+        upstream['keepalive'] = x['keepalive']
+      end
+      x['upstream'] = upstream_mock
+
       if x['split']
-        x['split'] = split_mock
+        x['split']['address'] = x['split']['upstream']
+        # Override ips, port and encryption with mock data
+        x['split']['ips'] = ['127.0.0.2/32', '169.254.0.2/32']
+        x['split']['port'] = 1443
+        x['split']['encryption'] = true
       end
-      [x.delete('name'), x]
+
+      # Filter keys and nil values to produce the same structure as global_config.pp
+      y = x.filter do |key, value|
+        listener_keys_to_keep.include?(key) && !value.nil?
+      end
+
+      [ name, y ]
     end.to_h
 
     File.open(LISTENERS_FIXTURE, 'w') do |out|
