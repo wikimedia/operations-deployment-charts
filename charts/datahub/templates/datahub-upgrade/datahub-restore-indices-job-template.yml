@@ -29,6 +29,7 @@ spec:
             {{- range $key, $value := . }}
             {{ $key }}: {{ $value | quote }}
             {{- end }}
+            release: {{ include "base.name.release" $ }}
         {{- end }}
         {{- end }}
         spec:
