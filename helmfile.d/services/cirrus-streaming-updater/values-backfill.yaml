@@ -7,14 +7,15 @@ app:
     replicas: 2
   config_files:
     app.config.yaml:
-        # These should be set when submitting the job via command line,
-        # the default values ensure if started it will immediately
-        # enter the finished state. They also serve as a local reference
-        # of the expected timestamp format.
-        kafka-source-start-time: 2000-01-01T00:00:00Z
-        kafka-source-end-time: 2000-01-01T00:00:00Z
-        # The saneitizer must not run during backfills
-        saneitize: false
-        # app should probably do this itself, but for now we need to force the
-        # saneitizer to be bounded or the backfill job wont end.
-        saneitize-max-runtime: 1
+      # These should be set when submitting the job via command line,
+      # the default values ensure if started it will immediately
+      # enter the finished state. They also serve as a local reference
+      # of the expected timestamp format.
+      kafka-source-start-time: 2000-01-01T00:00:00Z
+      kafka-source-end-time: 2000-01-01T00:00:00Z
+      # The saneitizer must not run during backfills
+      saneitize: false
+      # app should probably do this itself, but for now we need to force the
+      # saneitizer to be bounded or the backfill job wont end.
+      saneitize-max-runtime: 1
+      http-user-agent: WMF/cirrus-streaming-updater-backfill

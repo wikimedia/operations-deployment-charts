@@ -2,7 +2,7 @@
 # Please put overrides for production in other values files.
 
 app:
-  version: v20240610221419-6a2365e
+  version: v20240611173011-2f48206
   flinkVersion: v1_17
 
   job:
@@ -20,6 +20,7 @@ app:
       kafka-source-config.partition.discovery.interval.ms: 10000
       kafka-source-config.security.protocol: SSL
       kafka-sink-config.security.protocol: SSL
+      http-user-agent: WMF/cirrus-streaming-updater
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
