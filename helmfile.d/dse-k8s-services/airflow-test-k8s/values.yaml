@@ -1,0 +1,13 @@
+app:
+  # docker image version
+  version: 6dc1c493688e677480ae18b730d9b9b72cbcd51c-production
+service:
+  deployment: production
+config:
+  airflow:
+    dbHost: 'an-db1001.eqiad.wmnet'
+    dbName: 'airflow-test-k8s'
+    dbUser: 'airflow-test-k8s'
+external_services:
+  postgresql: [analytics]
+  kerberos: [kdc]
