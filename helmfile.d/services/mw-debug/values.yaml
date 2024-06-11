@@ -117,14 +117,32 @@ debug:
   php:
     enabled: true
     contents:
+      # these files will be located under /srv/mediawiki/w/debug/
+      # and will be accessible via /w/debug/<file.php>
+      common: |-
+        <?php
+        require_once __DIR__ . '/../../private/FatalErrorSettings.php';
+        function checkCredentials() {
+          global $fatalErrorPassword;
+          $password = $_GET['password'] ?? '';
+          if ( !hash_equals( $fatalErrorPassword, $password ) ) {
+            die("Invalid password");
+          }
+        }
       ini_get: |-
         <?php
+        require_once __DIR__ . '/common.php';
+        checkCredentials();
         var_dump(ini_get($_GET['value']));
       env: |-
         <?php
+        require_once __DIR__ . '/common.php';
+        checkCredentials();
         var_dump(getenv($_GET['value']));
       globals: |-
         <?php
+        require_once __DIR__ . '/common.php';
+        checkCredentials();
         var_dump($_SERVER[$_GET['value']]);
 
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
