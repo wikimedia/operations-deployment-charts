@@ -23,8 +23,3 @@ cache:
         pool: wf-codfw
         # No failover for wikifunction
         failover_time: 0
-php:
-  envvars:
-    MCROUTER_SERVER: 'mcrouter-main.mw-mcrouter.svc.cluster.local:4442'
-    # This is provided by k8s to the pod.
-    STATSD_EXPORTER_PROMETHEUS_HOST: ~
