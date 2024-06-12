@@ -400,14 +400,15 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   opentelemetry-collector:
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "120"
-          memory: "200Gi"
+          cpu: ~
+          memory: ~
         limits:
-          cpu: "120"
-          memory: "200Gi"
+          cpu: ~
+          memory: ~
   page-analytics: {}
   proton:
     resourcequota:
