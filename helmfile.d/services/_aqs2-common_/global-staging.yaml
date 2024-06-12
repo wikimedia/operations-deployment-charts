@@ -1,5 +1,4 @@
 main_app:
-  datacentre: codfw
   cassandra_hosts:
     - cassandra-dev2001-a.codfw.wmnet
     - cassandra-dev2001-b.codfw.wmnet
@@ -10,6 +9,5 @@ main_app:
 
 external_services:
   cassandra:
-    # The cassandra-dev cluster is only in codfw.
     - cassandra-dev-a-codfw
     - cassandra-dev-b-codfw

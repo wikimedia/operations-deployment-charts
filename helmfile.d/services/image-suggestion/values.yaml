@@ -5,6 +5,9 @@ main_app:
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: image-suggestions
   consistency: localQuorum
+  # use eqiad for all DCs here until we get AQS hosts in codfw
+  datacentre: eqiad
+
 
   # note the "s" and "_"
   cassandra_user: "image_suggestions"
