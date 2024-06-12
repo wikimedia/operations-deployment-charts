@@ -16,6 +16,6 @@ spec:
     release: {{ .Release.Name }}
   ports:
   - name: statsd
-    protocol: TCP
-    port: {{ .Values.service.port | default 9102 }}
-    targetPort: 9102
+    protocol: UDP
+    port: {{ .Values.service.port | default 9125 }}
+    targetPort: 9125

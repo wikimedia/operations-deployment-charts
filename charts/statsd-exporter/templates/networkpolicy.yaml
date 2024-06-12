@@ -10,7 +10,8 @@ spec:
   policyTypes:
     - Ingress
   ingress:
+    # Allow prometheus to scrape the statsd-exporter
     - ports:
-      - port: {{ .Values.service.port | default 9102 }}
+      - port: 9102
         protocol: TCP
 
