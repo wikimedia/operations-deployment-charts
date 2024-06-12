@@ -2,7 +2,7 @@ mode: daemonset
 
 rollout:
   rollingUpdate:
-    maxUnavailable: 3
+    maxUnavailable: 9
 
 # The Kubernetes Attributes Processor automatically discovers Kubernetes pods, extracts their metadata,
 # and adds the extracted metadata to spans, metrics, and logs as resource attributes.
