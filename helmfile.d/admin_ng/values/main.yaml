@@ -399,7 +399,15 @@ namespaces:
         min:
           memory: "50Mi"
           cpu: "100m"
-  opentelemetry-collector: {}
+  opentelemetry-collector:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "120"
+          memory: "200Gi"
+        limits:
+          cpu: "120"
+          memory: "200Gi"
   page-analytics: {}
   proton:
     resourcequota:
