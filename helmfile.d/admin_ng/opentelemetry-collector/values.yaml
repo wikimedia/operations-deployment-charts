@@ -42,7 +42,8 @@ config:
     # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor
     #
     # In this step, because of https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32080#issuecomment-2112490125
-    # we will only mutate the per-span `service.name` attribute, not the resource-level one.
+    # we only mutate the per-span `service.name` attribute, not the resource-level one.
+    # This is because the resource-level container likely has children spans that need to be split up first.
     # Later we will use groupbyattrs to aggregate these into the Resource's service.name correctly.
     transform/service_from_upstream_cluster_or_nodeid:
       error_mode: ignore
@@ -65,7 +66,8 @@ config:
                        or (attributes["service.name"] == "")
                        or (attributes["service.name"] == "OTLPResourceNoServiceName"))
                 and (resource.attributes["k8s.namespace.name"] != nil) and (resource.attributes["k8s.namespace.name"] != "")
-      # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
+    # Re-group spans by their per-span service.name attribute we computed above.
+    # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
     groupbyattrs/service_name:
       keys:
         - service.name
@@ -76,6 +78,8 @@ config:
           # Filter out spans that match any of these conditions.
           - IsMatch(attributes["http.url"], "/wiki/Special:BlankPage$$")
           - IsMatch(attributes["http.url"], "/healthz$$")
+
+    # Sometimes traces have PII or other sensitive information in them.  Scrub it out.
     transform/scrub:
       error_mode: ignore
       trace_statements:
@@ -87,7 +91,33 @@ config:
             - replace_pattern(attributes["http.url"], "/sessions/v1/([^%]+)%3[Aa]([^%]+)%3[Aa].+", "/sessions/v1/$$1%3A$$2%3A{token}")
             # Note that when using OTTL within the collector's configuration file, $ must be escaped
             # to $$ to bypass environment variable substitution logic.
-        # Define your additional trace-data-scrubbing rules here, beginning with `- context: span`
+        # 👋 Hello service owner and/or SRE friends!
+        # If you have sensitive data in your spans, you can scrub it out here.
+        # Make sure to condition on your service name.
+        # Remember that the `conditions:` block is a list which is all OR'd together.
+        # Define your additional trace-data-scrubbing rules here👇, beginning with `- context: span`
+
+    # The only span name we get from Envoy is 'ingress'. Let's try to make it more useful.
+    transform/operation_name:
+      error_mode: ignore
+      trace_statements:
+        - context: span
+          conditions:  # list of conditions is all OR'd together
+            # If we have a URL, but not a useful operation name ...
+            - attributes["http.url"] != nil and attributes["operation.name"] == nil
+            - attributes["http.url"] != nil and attributes["operation.name"] == "ingress"
+          statements:
+            # ... let's generate one.  Combining the method and URL is a good start.
+            #
+            # If the URL begins with http://localhost, it's an internal request made via the mesh.
+            # Strip out that part.
+            # Otherwise, this is likely a wiki user request, or the first ingress for something user-facing.
+            # In that case, leave the hostname, it's meaningful.
+            #
+            # TODO: Stop using regexes for URLs.  https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/32433
+            - set(cache["url"], attributes["http.url"])  # cache[] is a free scratch space for OTTL transforms
+            - replace_pattern(cache["url"], "^http://localhost[^/]*(/.*)", "$$1")
+            - set(name, Concat([attributes["http.method"], cache["url"]], " "))
   service:
     pipelines:
       metrics: ~
@@ -101,6 +131,7 @@ config:
           - groupbyattrs/service_name
           - filter/healthchecks
           - transform/scrub
+          - transform/operation_name
           - memory_limiter
           - batch
         exporters:
