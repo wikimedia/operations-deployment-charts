@@ -17,5 +17,5 @@ spec:
   ports:
   - name: statsd
     protocol: TCP
-    port: 9102
+    port: {{ .Values.service.port | default 9102 }}
     targetPort: 9102
