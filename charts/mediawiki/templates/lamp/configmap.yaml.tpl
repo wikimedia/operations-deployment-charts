@@ -1,3 +1,17 @@
+{{ define "mw.lamp.envvars"}}
+{{- if .Values.php.envvars }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-php-envvars
+data:
+  envvars.inc: |-
+  {{- range $k := (keys .Values.php.envvars | sortAlpha)  }}
+    env['{{ $k }}'] = ${{ "{" }}{{ $k }}{{ "}" }}
+  {{- end -}}
+{{- end }}
+{{- end }}
 {{ define "mw.lamp.configmap" }}
 ---
 apiVersion: v1
@@ -56,16 +70,7 @@ data:
     from wiki@wikimedia.org
     timeout 1
 {{- end }}
-{{- if .Values.php.envvars }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-php-envvars
-data:
-  envvars.inc: |-
-  {{- range $k := keys .Values.php.envvars }}
-    env['{{ $k }}'] = ${{ "{" }}{{ $k }}{{ "}" }}
-  {{- end -}}
+{{ include "mw.lamp.envvars" . }}
 {{- end }}
-{{- end }}
+
+

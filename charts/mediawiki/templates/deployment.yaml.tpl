@@ -23,6 +23,11 @@ spec:
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
         checksum/sites: {{ include "mw.web-sites" . | sha256sum }}
+        {{- if  .Values.php.envvars}}
+        # we need to restart the deployment when we add/remove external
+        # env variables, not just the ones we explicitly declare here.
+        checksum/environment: {{ include "mw.lamp.envvars" . | sha256sum }}
+        {{- end }}
         {{- include "mw.rsyslog.annotations" . | indent 8 }}
 {{/* please note: we don't use the base.meta module as mediawiki has no secrets whatsoever */}}
         {{- if .Values.monitoring.enabled }}
