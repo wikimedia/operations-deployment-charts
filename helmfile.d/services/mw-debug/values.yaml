@@ -121,7 +121,7 @@ debug:
       # and will be accessible via /w/debug/<file.php>
       common: |-
         <?php
-        require_once __DIR__ . '/../../private/FatalErrorSettings.php';
+        require_once '/srv/mediawiki/private/FatalErrorSettings.php';
         function checkCredentials() {
           global $fatalErrorPassword;
           $password = $_GET['password'] ?? '';
