@@ -1,4 +1,5 @@
 main_app:
+  datacentre: codfw
   cassandra_hosts:
     - aqs2001-a.codfw.wmnet
     - aqs2001-b.codfw.wmnet
@@ -27,5 +28,8 @@ main_app:
 
 external_services:
   cassandra:
+    # Allow egress to the entire cluster (both sites).
     - analytics-query-service-storage-a-codfw
     - analytics-query-service-storage-b-codfw
+    - analytics-query-service-storage-a-eqiad
+    - analytics-query-service-storage-b-eqiad
