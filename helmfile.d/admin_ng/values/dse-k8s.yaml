@@ -104,9 +104,9 @@ namespaces:
     allowCriticalPods: true
     labels:
       istio-injection: disabled
-  airflow-analytics-test:
+  airflow-test-k8s:
     tlsExtraSANs:
-      - airflow-analytics-test.wikimedia.org
+      - airflow-test-k8s.wikimedia.org
     limitranges:
       container:
         min:
