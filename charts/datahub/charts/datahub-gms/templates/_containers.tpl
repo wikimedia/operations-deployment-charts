@@ -197,6 +197,10 @@ resources:
       value: {{ .Values.global.datahub.alwaysEmitChangeLog | quote }}
     - name: GRAPH_SERVICE_DIFF_MODE_ENABLED
       value: {{ .Values.global.datahub.enableGraphDiffMode | quote }}
+    {{- if .Values.global.datahub.monitoring.enablePrometheus }}
+    - name: ENABLE_PROMETHEUS
+      value: "true"
+    {{- end }}
 {{ include "limits.gms" . | indent 2}}
 {{- with .Values.main_app.volumeMounts }}
   volumeMounts:
