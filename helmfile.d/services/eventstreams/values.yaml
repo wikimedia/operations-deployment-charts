@@ -15,6 +15,9 @@ mesh:
       - stream.wikimedia.org
   telemetry:
     enabled: true
+  tracing:
+    enabled: true
+    sampling: 10
 
 discovery:
   # List of listeners. These should match service mesh endpoint names
