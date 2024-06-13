@@ -13,6 +13,9 @@ service:
 mesh:
   enabled: true
   public_port: 4014
+  tracing:
+    enabled: true
+    sampling: 10
 
 php:
   workers: 6

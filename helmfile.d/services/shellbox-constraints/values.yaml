@@ -7,6 +7,9 @@ service:
 mesh:
   enabled: true
   public_port: 4010
+  tracing:
+    enabled: true
+    sampling: 10
 
 resources:
   replicas: 10
