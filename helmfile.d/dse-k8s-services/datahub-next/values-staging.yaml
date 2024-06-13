@@ -1,10 +1,13 @@
 # Kafka brokers also enable additional networkpolicy templates
 external_services:
-  opensearch: [datahubsearch]
   mariadb: [analytics-test-meta]
   zookeeper: [test-eqiad]
   kafka: [test-eqiad]
 
+networkpolicy: &networkpolicies
+  egress:
+    dst_nets:
+      - cidr: 10.2.2.71/32  # datahubsearch.svc.eqiad.wmnet
 
 config: &config
   public: {}
@@ -32,9 +35,10 @@ datahub-frontend:
       extraFQDNs:
         - datahub-next.wikimedia.org
   external_services:
-    opensearch: [datahubsearch]
     cas: [idp-test]
     kafka: [test-eqiad]
+  networkpolicy:
+    <<: *networkpolicies
 
 datahub-gms:
   config:
@@ -51,6 +55,8 @@ datahub-gms:
     mariadb: [analytics-test-meta]
     opensearch: [datahubsearch]
     kafka: [test-eqiad]
+  networkpolicy:
+    <<: *networkpolicies
 
 datahub-mce-consumer:
   external_services:
@@ -59,8 +65,9 @@ datahub-mce-consumer:
 
 datahub-mae-consumer:
   external_services:
-    opensearch: [datahubsearch]
     kafka: [test-eqiad]
+  networkpolicy:
+    <<: *networkpolicies
 
 global:
   kafka:
