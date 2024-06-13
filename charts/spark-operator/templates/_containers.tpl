@@ -96,4 +96,5 @@ resources:
   {{- with .Values.volumeMounts }}
   {{- toYaml . | nindent 10 }}
   {{- end }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
