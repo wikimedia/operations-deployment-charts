@@ -15,9 +15,13 @@ common_images:
 monitoring:
   enabled: false
   named_ports: false
-# If you want the prometheus-statsd-exporter sidecar, you
-# need the following
+  # If you want the prometheus-statsd-exporter sidecar, you
+  # need the following
   statsd:
+    # If you have to expose the statsd collector as a service,
+    # you need to force the exporter to listen on ipv4, or it will bind
+    # to the ipv6 address and the service will not work.
+    ipv4: false
     requests:
       memory: 100M
       cpu: 100m
