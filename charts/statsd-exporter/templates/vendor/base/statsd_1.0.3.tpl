@@ -20,7 +20,7 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.statsd.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.monitoring.statsd.ipv4 }}
-  args: ['--statsd.listen-udp="0.0.0.0:9125"', '--statsd.listen-tcp="0.0.0.0:9125"']
+  args: ['--statsd.listen-udp=0.0.0.0:9125', '--statsd.listen-tcp=0.0.0.0:9125']
   {{- end }}
   {{- with .Values.monitoring.statsd.prestop_sleep }}
   {{ include "base.helper.prestop" . | nindent 2}}
