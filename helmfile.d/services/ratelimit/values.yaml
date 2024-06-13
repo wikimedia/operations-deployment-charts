@@ -4,8 +4,14 @@ docker:
 resources:
   replicas: 3
 
+config:
+  public:
+    GOMAXPROCS: 1 # Align with CPU limit to avoid throttling
+
 app:
   version: 9.0.2-20240503.3fcc360-20240602
+  limits:
+    cpu: 1000m
   # ratelimit configuration
   # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
   # Array keys are ratelimit domains (they need to be unique), the value

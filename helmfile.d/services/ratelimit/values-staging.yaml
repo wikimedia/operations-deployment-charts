@@ -1,15 +1,9 @@
 resources:
   replicas: 1
 
-app:
-  limits:
-    cpu: 1000m
-    memory: 500Mi
-
 config:
   public:
     LOG_LEVEL: info
-    GOMAXPROCS: 1 # Align with CPU limit to avoid throttling
 
 nutcracker:
   servers:
