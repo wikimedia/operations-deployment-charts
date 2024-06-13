@@ -3,7 +3,7 @@
 # TODO: understand how to make mcrouter use the
 # application CA when connecting to memcached via TLS
 - name: {{ template "base.name.release" . }}-mcrouter
-  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.mcrouter }}
+  image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).mcrouter | default "mcrouter:latest"}}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- with .Values.cache.mcrouter }}
   env:
@@ -52,9 +52,10 @@
     limits:
 {{ toYaml .limits | indent 6 }}
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
-  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
+  image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).exporter | default "prometheus-mcrouter-exporter:latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["--mcrouter.address", "127.0.0.1:{{ .Values.cache.mcrouter.port }}", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]
   ports:
@@ -74,8 +75,9 @@
 {{- if .Values.cache.mcrouter.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
 {{- end }}
-{{- end -}}
-{{- end -}}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end -}} {{/* end if .Values.monitoring.enabled */}}
+{{- end -}} {{/* end if .Values.cache.mcrouter.enabled */}}
 {{- end -}}
 
 {{ define "cache.mcrouter.volume" }}
@@ -93,7 +95,7 @@
 # TODO: understand how to make mcrouter use the
 # application CA when connecting to memcached via TLS
 - name: {{ template "base.name.release" . }}-mcrouter
-  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.mcrouter }}
+  image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).mcrouter | default "mcrouter:latest"}}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- with .Values.cache.mcrouter }}
   env:
@@ -142,9 +144,10 @@
     limits:
 {{ toYaml .limits | indent 6 }}
   {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- if .Values.monitoring.enabled }}
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
-  image: {{ .Values.docker.registry }}/{{ .Values.common_images.mcrouter.exporter }}
+  image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).exporter | default "prometheus-mcrouter-exporter:latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   args: ["--mcrouter.address", "127.0.0.1:11213", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]
   ports:
@@ -164,8 +167,9 @@
 {{- if .Values.cache.mcrouter.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.cache.mcrouter.prestop_sleep | nindent 2}}
 {{- end }}
-{{- end -}}
-{{- end -}}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end -}} {{/* end if .Values.monitoring.enabled */}}
+{{- end -}} {{/* end if .Values.cache.mcrouter.enabled */}}
 {{- end -}}
 {{/* End of code for compatibility with 1.2 */}}
 
