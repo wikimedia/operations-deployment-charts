@@ -47,10 +47,10 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
   ports:
   - name: statsd-metrics
     containerPort: 9102
-  - name: statsd-collector-udp
+  - name: statsd-udp
     containerPort: 9125
     protocol: UDP
-  - name: statsd-collector-tcp
+  - name: statsd-tcp
     containerPort: 9125
     protocol: TCP
   livenessProbe:
