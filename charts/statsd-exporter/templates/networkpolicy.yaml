@@ -14,4 +14,10 @@ spec:
     - ports:
       - port: 9102
         protocol: TCP
-
+    # Allow other pods to send statsd metrics via udp
+    - ports:
+      - port: 9125
+        protocol: UDP
+    - ports:
+      - port: 9125
+        protocol: TCP

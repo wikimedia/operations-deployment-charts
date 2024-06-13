@@ -19,3 +19,7 @@ spec:
     protocol: UDP
     port: {{ .Values.service.port | default 9125 }}
     targetPort: 9125
+  - name: statsd-tcp
+    protocol: TCP
+    port: {{ .Values.service.port | default 9125 }}
+    targetPort: 9125
