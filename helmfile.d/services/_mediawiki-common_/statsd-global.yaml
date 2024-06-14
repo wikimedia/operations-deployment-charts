@@ -1,0 +1,12 @@
+service:
+  port: 9125
+monitoring:
+  enabled: true
+  statsd:
+    ipv4: true
+    requests:
+      cpu: 200m
+      memory: 800Mi
+    limits:
+      cpu: 400m
+      memory: 2Gi
