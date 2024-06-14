@@ -1,8 +1,18 @@
 resources:
-# When ramping up replicas in the main release, please remember
-# to raise the number of canary replicas as well.
-# We aim for ~3% of the deployment for canaries, rounding up.
+  # When ramping up replicas in the main release, please remember
+  # to raise the number of canary replicas as well.
+  # We aim for ~3% of the deployment for canaries, rounding up.
   replicas: 141
 
 mesh:
   public_port: 4452
+
+php:
+  envvars:
+    MCROUTER_SERVER: "127.0.0.1:11213"
+    # Set to false as we don't declare this env variable, we just get it
+    # from k8s
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
+
+monitoring:
+  statsd: ~
