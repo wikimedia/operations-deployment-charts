@@ -36,6 +36,7 @@ From this directory:
 | `main_app.xdebug.enabled` | Whether to enable xdebug | `false` |
 | `main_app.xdebug.remoteHost` | The host that will be listening for xdebug | `''` |
 | `main_app.xhprof.enabled` | Whether to enable xhprof | `false` |
+| `main_app.restrictedSecurityContext.enabled` | Whether to apply a production-like `securityContext` on all containers where possible. | `false` |
 | `monitoring.enabled` | Whether to enable monitoring | `false` |
 | `monitoring.image_version` | The monitoring image tag | `latest` |
 | `service.deployment` | production or minikube | `minikube` |

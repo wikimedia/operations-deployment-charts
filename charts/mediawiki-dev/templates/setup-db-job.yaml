@@ -13,4 +13,7 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
 {{ include "mediawiki-env" . | indent 10 }}
 {{ include "mediawiki-volumeMounts" . | indent 10 }}
+{{- if .Values.main_app.restrictedSecurityContext.enabled }}
+{{ include "base.helper.restrictedSecurityContext" . | indent 10 }}
+{{- end }}
 {{ include "mediawiki-volumes" . | indent 6 }}
