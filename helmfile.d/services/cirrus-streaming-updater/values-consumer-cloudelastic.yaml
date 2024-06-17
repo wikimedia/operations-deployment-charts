@@ -14,6 +14,7 @@ app:
 
   config_files:
     app.config.yaml:
+      http-user-agent: WMF/cirrus-streaming-updater-consumer-cloudelastic
       fetch-request-timeout: 30s
       elasticsearch-bulk-flush-interval: 30s
       saneitize: true
