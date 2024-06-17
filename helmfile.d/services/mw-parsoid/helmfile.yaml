@@ -78,9 +78,6 @@ hooks:
 releases:
   - name: main
     <<: *default
-    # TODO: remove to add securityContext to all containers
-    chart: wmf-stable/mediawiki
-    version: 0.6.33
   - name: canary
     <<: *default
   - name: prometheus
