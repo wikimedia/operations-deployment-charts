@@ -74,6 +74,21 @@ inference_services:
             requests:
               memory: 2Gi
 
+  articlequality:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-articlequality"
+      image_version: "2024-06-14-140832-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "articlequality"
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 1Gi
+
+
+
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:
