@@ -22,3 +22,9 @@ cache:
         pool: wf-eqiad
         # No failover for wikifunction
         failover_time: 0
+php:
+  envvars:
+    # Set to false as we don't declare this env variable, we just get it
+    # from k8s
+    MCROUTER_SERVER: 10.64.72.12:4442
+
