@@ -1,6 +1,9 @@
 # mw site-specific configurations
 cache:
   mcrouter:
+    service:
+      enabled: true
+      clusterIP: 10.192.72.12
     route_prefix: codfw/mw
     zone: codfw
     routes:
