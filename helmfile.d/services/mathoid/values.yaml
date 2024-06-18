@@ -7,13 +7,13 @@ docker:
 helm_scaffold_version: 0.2
 main_app:
   image: repos/mediawiki/services/mathoid
+  version: 2024-06-18-233457-production
   limits:
     cpu: 1
     memory: 1G
   requests:
     cpu: 100m
     memory: 200Mi
-  version: 2023-11-03-103402-production
 monitoring:
   enabled: true
 resources:
