@@ -36,17 +36,17 @@ inference_services:
             cpu: "2"
             memory: 2Gi
 
-  mistral-7b-instruct-gpu:
+  llama3:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
-        image_version: "2024-05-23-145141-publish"
+        image_version: "2024-06-14-101426-publish"
         custom_env:
           - name: MODEL_NAME
-            value: "mistral-7b-instruct"
+            value: "llama3"
           - name: STORAGE_URI
-            value: "s3://wmf-ml-models/llm/Mistral-7B-Instruct-v0.2/"
+            value: "s3://wmf-ml-models/llm/llama3/"
         container:
-          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "mistral-7b-instruct", "--backend", "huggingface" ]
+          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "llama3", "--backend", "huggingface" ]
           resources:
             limits:
               cpu: "8"
