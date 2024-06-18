@@ -453,7 +453,36 @@ namespaces:
   shellbox-media: {}
   shellbox-syntaxhighlight: {}
   shellbox-timeline: {}
-  shellbox-video: {}
+  shellbox-video:
+    limitranges:
+      container:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "6.5Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "7Gi"
+          cpu: "10"
+    resourcequota:
+      compute:
+        requests:
+          cpu: "80"
+          memory: "40Gi"
+        limits:
+          cpu: "80"
+          memory: "50Gi"
   tegola-vector-tiles: {}
   termbox: {}
   thumbor:
