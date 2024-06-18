@@ -90,3 +90,8 @@ environments:
   codfw:
     values:
       - releases: [main,canary,prometheus]
+  # This is a non-production development environment used for testing
+  # scap and related deployment tooling.
+  traindev:
+    values:
+      - releases: [main,canary]
