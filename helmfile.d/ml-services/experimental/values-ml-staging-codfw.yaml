@@ -44,7 +44,7 @@ inference_services:
           - name: MODEL_NAME
             value: "llama3"
           - name: STORAGE_URI
-            value: "s3://wmf-ml-models/llm/llama3/"
+            value: "s3://wmf-ml-models/llm/llama3-8B-instruct/"
         container:
           command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "llama3", "--backend", "huggingface" ]
           resources:
