@@ -16,6 +16,7 @@ app:
     app.config.yaml:
       http-user-agent: WMF/cirrus-streaming-updater-consumer-search
       fetch-request-timeout: 30s
+      elasticsearch-bulk-max-action-size: 12mb
       elasticsearch-bulk-flush-interval: 30s
       # saneitize: true must be set per environment
       saneitize-capacity: 20
