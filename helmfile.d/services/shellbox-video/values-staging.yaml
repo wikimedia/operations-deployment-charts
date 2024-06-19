@@ -1,2 +1,11 @@
+main_app:
+  # lower resource usage in staging in general
+  requests:
+    cpu:
+    memory: 2Gi
+  limits:
+    cpu: 2
+    memory: 4G
+
 resources:
   replicas: 1
