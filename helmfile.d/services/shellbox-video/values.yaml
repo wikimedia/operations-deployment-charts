@@ -32,7 +32,8 @@ php:
   # One worker per pod to make resource management a little easier
   # given how hungry ffmpeg can be
   workers: 1
-  timeout: 86400
+  # Set timeout to just short of 1d as we want to let other parts further up the stack handle the timeouts
+  timeout: 86390
 
 resources:
   replicas: 2
