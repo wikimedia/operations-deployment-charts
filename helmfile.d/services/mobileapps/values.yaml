@@ -29,6 +29,7 @@ discovery:
   listeners:
   - mw-api-int-async   # TODO: change to a more stringent timeout
   - restbase-for-services
+  - eventgate-main
 
 networkpolicy:
   egress:
@@ -60,3 +61,12 @@ networkpolicy:
         port: 7231
       - protocol: tcp
         port: 7443
+    # eventgate-main
+    - cidr: 10.2.1.45/32
+      ports:
+        - protocol: tcp
+          port: 4492
+    - cidr: 10.2.2.45/32
+      ports:
+        - protocol: tcp
+          port: 4492
