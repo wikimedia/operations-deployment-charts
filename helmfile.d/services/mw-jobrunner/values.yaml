@@ -8,6 +8,9 @@ mesh:
   public_port: 4448
   # Slightly above apache timeout
   upstream_timeout: "1202.5s"
+  tracing:
+    enabled: true
+    sampling: 0.1
 
 php:
   max_execution_time: 1200
