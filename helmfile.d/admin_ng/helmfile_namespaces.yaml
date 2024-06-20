@@ -24,6 +24,7 @@ releases:
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
                 {{- if ($.Environment.Values.PodSecurityStandard | get "enforce" false) -}}
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/enforce" "restricted") }}
+                {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/warn" "restricted") }}
                 {{- end }}
               {{- end }}
               {{- with $labels }}
@@ -65,7 +66,7 @@ releases:
                 kind: User
                 name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
           {{/* Disable PSP binding for the restricted PSP as last step during the PSP migration */}}
-          {{- if or (not (eq $pspClusterRole "allow-restricted-psp")) (not ($.Environment.Values.PodSecurityStandard | get "disablePSP" false)) -}}
+          {{- if or (not (eq $pspClusterRole "allow-restricted-psp")) (not ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false)) -}}
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
@@ -160,7 +161,7 @@ releases:
           {{- end }}
         {{- else }}{{- /* else if eq $isSystemNamespace false */}}
           {{/* Disable PSP binding for the restricted PSP as last step during the PSP migration */}}
-          {{- if or (not (eq $pspClusterRole "allow-restricted-psp")) (not ($.Environment.Values.PodSecurityStandard | get "disablePSP" false)) -}}
+          {{- if or (not (eq $pspClusterRole "allow-restricted-psp")) (not ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false)) -}}
           - |
             # Bind all service account of this namespace to the desired clusterrole.
             # See helmfile_psp.yaml
