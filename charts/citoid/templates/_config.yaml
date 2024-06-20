@@ -15,6 +15,7 @@ worker_heartbeat_timeout: 7500
 # Logger info
 logging:
   name: citoid
+  level: {{ .Values.main_app.log_level | default "info" }}
   streams:
     - type: stdout
       named_levels: true
