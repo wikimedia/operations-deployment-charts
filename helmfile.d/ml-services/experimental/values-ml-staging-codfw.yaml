@@ -77,10 +77,12 @@ inference_services:
   articlequality:
     predictor:
       image: "machinelearning-liftwing-inference-services-articlequality"
-      image_version: "2024-06-14-140832-publish"
+      image_version: "2024-06-21-132841-publish"
       custom_env:
         - name: MODEL_NAME
           value: "articlequality"
+        - name: FORCE_HTTP
+          value: "True"
       resources:
         limits:
           memory: 1Gi
