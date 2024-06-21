@@ -8,7 +8,7 @@ chartVersions:
 PodSecurityStandard:
   disablePSPMutations: true
   enforce: true # Enforce the PodSecurityStandard profile "restricted"
-  # disableRestrictedPSP: true # Disable PSP binding for the restricted PSP as last step during the PSP migration
+  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP as last step during the PSP migration
 
 # check out documentation to understand this well
 # https://v1-12.docs.kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/
