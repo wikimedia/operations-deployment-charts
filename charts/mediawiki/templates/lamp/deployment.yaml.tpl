@@ -76,7 +76,6 @@
     mountPath: /etc/apache2/conf-enabled/00-aaa.conf
     subPath: 00-aaa.conf
   {{- end }}
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 ### The MediaWiki container
 - name: {{ $release }}-app
@@ -89,19 +88,8 @@
   {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:
-    # NOTE: PSS does not allow hostPath volumes under any profile other than
-    # privileged. As such, securityContext has no ability to allow-list them,
-    # unlike PSP (where it was only validating anyway). Same goes for allowed
-    # volume types.
-    allowPrivilegeEscalation: false
     capabilities:
-      drop: ["ALL"]
       add: ["SYS_PTRACE"] # This is needed to produce a slow log
-    runAsNonRoot: true
-    seccompProfile:
-      type: RuntimeDefault
-  {{- else }}
-  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
   {{- end }}
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
@@ -290,7 +278,6 @@
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ $release }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -309,6 +296,5 @@
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{ end }}

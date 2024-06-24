@@ -47,7 +47,6 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
   livenessProbe:
     tcpSocket:
       port: statsd-metrics
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{- end -}}
 

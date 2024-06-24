@@ -84,70 +84,41 @@ static_resources:
   {{- include "mesh.configuration._tracing_cluster" . | indent 2}}
   {{- end -}}
   {{- include "mesh.configuration._admin_cluster" . | indent 2 }}
-  {{- /* $ratelimit.enabled will be set to true below if any listener has rate limits configured */ -}}
-  {{- $ratelimit := dict "enabled" false -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
       {{- $listener := (index $.Values.services_proxy $name) }}
       {{- if not $listener }}
-        {{- fail (printf "Listener %s not found in the proxies" $name) }}
-      {{- end }}
+      {{-  fail (printf "Listener %s not found in the proxies" $name) }}
+      {{-  end }}
       {{- $values := dict "Name" $name "Upstream" $listener.upstream -}}
       {{- include "mesh.configuration._cluster" $values | indent 2 }}
       {{- if $listener.split -}}
-        {{ $split_name := printf "%s-split" $name }}
-        {{- $values := dict "Name" $split_name "Upstream" $listener.split -}}
-        {{- include "mesh.configuration._cluster" $values | indent 2 }}
+      {{ $split_name := printf "%s-split" $name }}
+      {{- $values := dict "Name" $split_name "Upstream" $listener.split -}}
+      {{- include "mesh.configuration._cluster" $values | indent 2 }}
       {{- end }}
-      {{- /* Figure out if a rate limit is configured for this listener */ -}}
-      {{- if or (hasKey $listener "ratelimit") (hasKey ($.Values.discovery.ratelimit_listeners | default dict) $name) -}}
-        {{- $ratelimit := set $ratelimit "enabled" true -}}
-      {{- end }}
-    {{- end }}
-    {{- if $ratelimit.enabled }}
-      {{- include "mesh.configuration._ratelimit_cluster" . | indent 2 }}
     {{- end }}
   {{- end }}
   {{- if .Values.tcp_proxy| default false -}}
     {{- range $name := .Values.tcp_proxy.listeners }}
-      {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) }}
+    {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) }}
       {{- include "mesh.configuration._tcp_cluster" $values | indent 2 }}
     {{- end }}
   {{- end }}
   listeners:
-  {{- $af_aware_dot := . -}}
-  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
-  {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
-  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
-  {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
+  {{- include "mesh.configuration._admin_listener" . | indent 2}}
   {{- if .Values.mesh.public_port -}}
-  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
-  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
-  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
-  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- include "mesh.configuration._local_listener" . | indent 2}}
   {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
-      {{- /* Fetch the listener configuration from global services_proxy structure */ -}}
-      {{- $listener := index $.Values.services_proxy $name -}}
-      {{- /* If a rate limit is configured "client side", override the global rate limit settings with those */ -}}
-      {{- if hasKey ($.Values.discovery.ratelimit_listeners | default dict) $name -}}
-        {{- $merged := deepCopy ($listener.ratelimit | default dict) | merge (get $.Values.discovery.ratelimit_listeners $name) -}}
-        {{- $listener := set $listener "ratelimit" $merged -}}
-      {{- end -}}
-      {{- $values := dict "Name" $name "Listener" $listener "Root" $ -}}
-      {{- $values = set $values "listen_address" "::" }}
-      {{- include "mesh.configuration._listener" $values | indent 2 }}
-      {{- $values = set $values "listen_address" "0.0.0.0" }}
+      {{- $values := dict "Name" $name "Listener" (index $.Values.services_proxy $name) "Root" $ -}}
       {{- include "mesh.configuration._listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
   {{- if .Values.tcp_proxy| default false -}}
     {{- range $name := .Values.tcp_proxy.listeners }}
       {{- $values := dict "Name" $name "Listener" (index $.Values.tcp_services_proxy $name) "Root" $ }}
-      {{- $values = set $values "listen_address" "::" }}
-      {{- include "mesh.configuration._tcp_listener" $values | indent 2 }}
-      {{- $values = set $values "listen_address" "0.0.0.0" }}
       {{- include "mesh.configuration._tcp_listener" $values | indent 2 }}
     {{- end -}}
   {{- end -}}
@@ -158,10 +129,8 @@ static_resources:
 
 {{/* Private functions */}}
 {{/* TLS termination for the local service */}}
-{{- define "mesh.configuration._local_cluster_name" -}}
-LOCAL_{{ template "base.name.release" . }}
-{{- end }}{{- define "mesh.configuration._local_cluster" }}
-- name: {{ template "mesh.configuration._local_cluster_name" . }}
+{{- define "mesh.configuration._local_cluster" }}
+- name: local_service
   typed_extension_protocol_options:
     envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
       "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
@@ -172,7 +141,7 @@ LOCAL_{{ template "base.name.release" . }}
   connect_timeout: 1.0s
   lb_policy: round_robin
   load_assignment:
-    cluster_name: {{ template "mesh.configuration._local_cluster_name" . }}
+    cluster_name: local_service
     endpoints:
     - lb_endpoints:
       - endpoint:
@@ -211,9 +180,7 @@ LOCAL_{{ template "base.name.release" . }}
 */}}
 {{- define "mesh.configuration._local_listener" }}
 - address:
-    socket_address:
-      address: "{{ .listen_address | default "0.0.0.0" }}"
-      port_value: {{ .Values.mesh.public_port }}
+    socket_address: {address: 0.0.0.0, port_value: {{ .Values.mesh.public_port }} }
   filter_chains:
   - filters:
     - name: envoy.filters.network.http_connection_manager
@@ -252,7 +219,7 @@ LOCAL_{{ template "base.name.release" . }}
             routes:
             - match: {prefix: /}
               route:
-                cluster: {{ template "mesh.configuration._local_cluster_name" . }}
+                cluster: local_service
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
@@ -355,7 +322,7 @@ under 'tcp_services_proxy'.
 - address:
     socket_address:
       protocol: TCP
-      address: "{{ .listen_address | default "0.0.0.0" }}"
+      address: 0.0.0.0
       port_value: {{ .Listener.port }}
   filter_chains:
   - filters:
@@ -390,34 +357,6 @@ under 'tcp_services_proxy'.
         {{- end }}
         stat_prefix: {{ .Name }}_egress
         http_filters:
-        {{- if hasKey .Listener "ratelimit" }}
-        # The ratelimit filter checks with the ratelimit service to perform global rate limiting.
-        # https://www.envoyproxy.io/docs/envoy/v1.23.3/api-v3/extensions/filters/http/ratelimit/v3/rate_limit.proto#envoy-v3-api-msg-extensions-filters-http-ratelimit-v3-ratelimit
-        - name: envoy.filters.http.ratelimit
-          typed_config:
-            "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-            # The domain must match a configured domain in the ratelimit service.
-            domain: {{ .Listener.ratelimit.domain | default .Name }}
-            # By default, the Rate Limit filter in Envoy translates a 429 HTTP response code to UNAVAILABLE as
-            # specified in the gRPC mapping document. Translate to RESOURCE_EXHAUSTED instead to provide more
-            # context to the client.
-            rate_limited_as_resource_exhausted: true
-            # The timeout for the rate limit service RPC, defaults to 20ms
-            timeout: {{ (.Root.Values.mesh.ratelimit).timeout | default "0.02s" }}
-            # Indicate whether a failure in the ratelimit service should result in requests being denied.
-            failure_mode_deny: false
-            # Enable X-RateLimit headers in the response.
-            # https://www.envoyproxy.io/docs/envoy/v1.23.3/api-v3/extensions/filters/http/ratelimit/v3/rate_limit.proto#envoy-v3-api-enum-extensions-filters-http-ratelimit-v3-ratelimit-xratelimitheadersrfcversion
-            # Format ratelimit headers using the IETF draft format:
-            # https://datatracker.ietf.org/doc/id/draft-polli-ratelimit-headers-03.html
-            enable_x_ratelimit_headers: DRAFT_VERSION_03
-            # Specify where to find the ratelimit service (a cluster defined in this config).
-            rate_limit_service:
-              transport_api_version: V3
-              grpc_service:
-                envoy_grpc:
-                  cluster_name: ratelimit
-        {{- end }}
         - name: envoy.filters.http.router
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -434,21 +373,6 @@ under 'tcp_services_proxy'.
           virtual_hosts:
           - name: {{ .Name }}
             domains: ["*"]
-            {{- if hasKey .Listener "ratelimit" }}
-            {{- /* Rate limit by user agent by default */ -}}
-            {{- if eq (.Listener.ratelimit.by | default "user-agent") "user-agent" }}
-            # Perform rate-limit related actions on the request.
-            rate_limits:
-            - actions:
-              # Read a request header and use its value to set the value of a descriptor entry.
-              # https://www.envoyproxy.io/docs/envoy/v1.23.3/api-v3/config/route/v3/route_components.proto#envoy-v3-api-msg-config-route-v3-ratelimit-action-requestheaders
-              - request_headers:
-                  header_name: user-agent
-                  descriptor_key: user-agent
-            {{- else }}
-            {{- fail "Only user-agent ratelimiting is supported" }}
-            {{- end }}
-            {{- end }}
             routes:
             {{- if .Listener.split }}
             - match:
@@ -520,15 +444,27 @@ under 'tcp_services_proxy'.
               address: {{ .Upstream.address }}
               port_value: {{ .Upstream.port }}
   {{- if .Upstream.encryption }}
-  {{- include "mesh.configuration._transport_socket_tls" (dict "Upstream" .Upstream) | indent 2 }}
-  {{- end }}
+  transport_socket:
+    name: envoy.transport_sockets.tls
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+      {{- if .Upstream.sets_sni }}
+      sni: {{ .Upstream.address }}
+      {{- end }}
+      common_tls_context:
+        tls_params:
+          cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+        validation_context:
+          trusted_ca:
+            filename: /etc/ssl/certs/ca-certificates.crt
+  {{- end -}}
 {{- end }}
 
 {{/* TCP proxy cluster and listener */}}
 {{- define "mesh.configuration._tcp_listener" }}
 - address:
     socket_address:
-      address: "{{ .listen_address | default "0.0.0.0" }}"
+      address: 0.0.0.0
       port_value: {{ .Listener.port }}
   filter_chains:
   - filters:
@@ -557,11 +493,15 @@ under 'tcp_services_proxy'.
     {{- end }}
 {{- end }}
 
-{{/* Admin listener. Only allows access to /stats and a static /healthz url */}}
+{{/* Admin interface */}}
+
+  {{- /*
+    Admin listener. Only allows access to /stats and a static /healthz url
+  */}}
 {{- define "mesh.configuration._admin_listener" }}
 - address:
     socket_address:
-      address: "{{ .listen_address | default "0.0.0.0" }}"
+      address: 0.0.0.0
       port_value: {{ .Values.mesh.telemetry.port | default 1667 }}
   filter_chains:
   - filters:
@@ -607,33 +547,12 @@ under 'tcp_services_proxy'.
             {{- include "mesh.configuration.envoy_admin_address" . | indent 12 }}
 {{- end }}
 
+
 {{/*
-  Rate limit cluster.
 
-  This cluster is used to contact the ratelimit service. It is used by the
-  rate_limit http filter to check if a request should be allowed or not.
-  Uses gRPC with TLS.
+Error page handling
+
 */}}
-{{- define "mesh.configuration._ratelimit_cluster" }}
-- name: ratelimit
-  type: STRICT_DNS
-  connect_timeout: 0.25s
-  lb_policy: ROUND_ROBIN
-  protocol_selection: USE_CONFIGURED_PROTOCOL
-  http2_protocol_options: {}
-  load_assignment:
-    cluster_name: ratelimit
-    endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: {{ (.Values.mesh.ratelimit).host | default "ratelimit-main.ratelimit.svc.cluster.local." }}
-                port_value: {{ (.Values.mesh.ratelimit).port | default "8081" }}
-  {{- include "mesh.configuration._transport_socket_tls" dict | indent 2 }}
-{{- end }}
-
-{{/* Error page handling */}}
 {{- define "mesh.configuration._error_page" }}
 {{- if .Values.mesh.error_page }}
 local_reply_config:
@@ -655,6 +574,7 @@ local_reply_config:
 {{- end }}
 {{- end }}
 
+
 {{/*
 
 Create a SDS config for TLS secrets to have the certificate and key files
@@ -670,21 +590,4 @@ resources:
       filename: /etc/envoy/ssl/tls.crt
     private_key:
       filename: /etc/envoy/ssl/tls.key
-{{- end -}}
-
-{{/* transport socket configuration for upstream TLS connections */}}
-{{- define "mesh.configuration._transport_socket_tls" }}
-transport_socket:
-  name: envoy.transport_sockets.tls
-  typed_config:
-    "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-    {{- if (get (.Upstream) "sets_sni") }}
-    sni: {{ .Upstream.address }}
-    {{- end }}
-    common_tls_context:
-      tls_params:
-        cipher_suites: ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384
-      validation_context:
-        trusted_ca:
-          filename: /etc/ssl/certs/ca-certificates.crt
 {{- end -}}
