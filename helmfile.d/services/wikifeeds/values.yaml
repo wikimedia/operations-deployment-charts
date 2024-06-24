@@ -35,6 +35,8 @@ config:
 mesh:
   enabled: true
   public_port: 4101
+  # More info: T368238
+  concurrency: 12
   resources:
     requests:
       cpu: 500m
