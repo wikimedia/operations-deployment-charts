@@ -24,6 +24,8 @@ main_app:
   version: "2024-06-10-150109-production"
   thumbor_workers: 7
 
+  log_level: "error"
+
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
     cpu: 2
