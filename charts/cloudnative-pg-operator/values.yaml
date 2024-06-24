@@ -20,10 +20,10 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/cloudnative-pg/cloudnative-pg
+  repository: docker-registry.wikimedia.org/repos/data-engineering/postgresql-kubernetes/cloudnative-pg
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "override_me"
 
 imagePullSecrets: []
 nameOverride: ""
