@@ -84,3 +84,10 @@ cache:
       - name: wf-codfw
         zone: codfw
         servers: [10.5.0.1, 10.5.0.2]
+mw:
+  logging:
+    udp2log_hostport: udplog:8420
+    rsyslog: true
+common_images:
+  rsyslogd: rsyslogd:latest
+

@@ -86,7 +86,16 @@ input(type="imudp" port="10514" address="{{ .Values.mw.logging.allowed_address }
 # Emulate MediaWiki's wfDebugLog / wfErrorLog format
 template(name="MediaWiki" type="string" string="%programname% %timegenerated% %HOSTNAME%: %msg%\n")
 if ($programname startswith 'php7.')  then {
-    @{{ .Values.mw.logging.udp2log_hostport }};MediaWiki
+    action(type="omfwd"
+            Target={{ (splitList ":" .Values.mw.logging.udp2log_hostport) | first | quote }}
+            Port={{ (splitList ":" .Values.mw.logging.udp2log_hostport) | last | quote }}
+            Protocol="udp"
+            Name="MediaWiki"
+            {{- if .Values.mw.logging.udp2log_ratelimit_interval }}
+            RateLimit.Interval={{ .Values.mw.logging.udp2log_ratelimit_interval | default 1 | quote }}
+            RateLimit.Burst={{ .Values.mw.logging.udp2log_ratelimit_burst | default 100 | quote }}
+            {{- end }}
+    )
 }
 {{ end -}}
 {{- define "mw.rsyslog.annotations" -}}
