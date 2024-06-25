@@ -111,6 +111,14 @@ services:
           host: '{{ `{{request.params.domain}}` }}'
           user-agent: '{{ `{{user-agent}}` }}'
         body: '{{ `{{ default(request.query, {}) }}` }}'
+      # the template used for outgoing eventgate requests for sending resource changes
+      eventgate_req:
+        method: POST
+        uri: '{{ .Values.main_app.eventgate_uri }}'
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: '{{ `{{request.body}}` }}'
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
       mobile_html_local_rest_api_base_uri_template: //{{ `{{domain}}` }}/api/rest_v1/
@@ -128,6 +136,10 @@ services:
         cassandra:
           keyspace: {{ .Values.main_app.caching.cassandra.keyspace }}
           storageTable: {{ .Values.main_app.caching.cassandra.storageTable }}
+        event:
+          stream:
+            change: {{ .Values.main_app.caching.event.stream.change }}
+            purge: {{ .Values.main_app.caching.event.stream.purge }}
       {{- end }}
 {{ if .Values.datastore.cassandra_client.enabled -}}
 {{ include "datastore.cassandra_client.config" . | indent 6 }}

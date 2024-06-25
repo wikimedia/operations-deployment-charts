@@ -36,6 +36,7 @@ main_app:
   mwrestapi_uri: https://api-rw.discovery.wmnet/w/rest.php
   restbase_uri: https://restbase.discovery.wmnet:7443
   mw_resource_loader_uri: https://api-rw.discovery.wmnet/w/load.php
+  eventgate_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
   mobile_html_rest_api_base_uri: //meta.wikimedia.org/api/rest_v1/
   mobile_html_csp: "default-src 'none';
     connect-src app://*.wikipedia.org https://*.wikipedia.org;
@@ -49,6 +50,10 @@ main_app:
   use_coreparsoid_endpoint: false
   caching:
     enabled: false
+    event:
+      stream:
+        change: resource_change
+        purge: resource_purge
 
 logging:
   level: warn
