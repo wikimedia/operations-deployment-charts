@@ -1,12 +1,17 @@
 {{/*
 == configuration of jobs for a LAMP stack
 
-- lamp.job.container(.lamp, .job): the definition of a job container for a LAMP application.
-  typical usage: {{ include "lamp.job.container" (dict "Root" . .Job $cronjob) }}
-
+- lamp.cron_properties(.job): Definitions of the scheduling properties of a cronjob
+- lamp.container(.app, .job): the definition of a job container for a generic application.
+  typical usage: {{ include "app.job.container" (dict "Root" . "Name" $cronjob  "Job" $cron_opts) }}
 */}}
+{{- define "lamp.job.cron_properties" }}
+schedule: "{{ .schedule | default "@daily" }}"
+concurrencyPolicy: {{ .concurrency | default "Forbid" }}
+{{- end }}
+
 {{- define "lamp.job.container" }}
-- name: {{ template "base.name.release" .Root }}-{{ .Job.name }}
+- name: {{ template "base.name.release" .Root }}-{{ .Name }}
   {{- if .Job.image_versioned }}
   image: "{{ .Root.Values.docker.registry }}/{{ .Job.image_versioned }}"
   {{- else }}
@@ -45,5 +50,15 @@
     - name: {{ template "base.name.release" .Root }}-app-config
       mountPath: "/srv/app/config"
       readOnly: true
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+  {{- if .Job.volumeMounts }}
+  {{- toYaml .Job.volumeMounts | nindent 4 }}
+  {{- end }}
+{{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end }}
+
+{{- define "lamp.job.volume" }}
+{{- if .Job.volumeMounts }}
+volumes:
+{{- toYaml  .Job.volumes  | nindent 2 }}
+{{- end }}
 {{- end }}

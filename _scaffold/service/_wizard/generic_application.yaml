@@ -2,7 +2,7 @@ name: generic-application
 description: Basic component for generic (non-LAMP) applications
 modules:
   - "app.generic:1.0"
-  - "app.job:1.0"
+  - "app.job:2.0"
 priority: 1
 conflicts:
   - LAMP
@@ -21,7 +21,9 @@ templates:
   NetworkpolicyIngress: |
     {{- include "app.generic.networkpolicy_ingress" . -}}
   cronjob: |
-    {{- include "app.job.container" (dict "Root" $root "Job" $cronjob) }}
+    {{- include "app.job.container" (dict "Root" $root  "Name" $cronjob  "Job" $cron_opts )}}
+    {{- include "app.job.volume" (dict "Root" $root "Name" $cronjob  "Job" $cron_opts) }}
+
 values: |
   app:
     image: __image_name__
@@ -78,6 +80,31 @@ values: |
     # Define here any port that you want to expose for debugging purposes
     ports: []
 
+  cronjobs: {}
+  #    my-cron-hourly:
+  #      name: my-cron-hourly
+  #      enabled: true
+  #      command:
+  #        - /bin/cowsay
+  #        - "hello"
+  #      schedule: "@hourly"
+  #      concurrency: Replace
+  #      image_versioned: my-app:1.1.1
+  #      resources:
+  #        requests:
+  #          cpu: 500m
+  #           memory: 200M
+  #        limits:
+  #          cpu: 500m
+  #          memory: 200M
+  #      volumeMounts:
+  #        - mountPath: "/tmp/acow"
+  #          name: tmp-cow-memory
+  #      volumes:
+  #        - name: tmp-cow-memory
+  #          emptyDir:
+  #            medium: Memory
+  #            sizeLimit: "10Gi"
 questions:
   - image_name
   - port
