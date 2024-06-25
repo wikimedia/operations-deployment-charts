@@ -179,9 +179,7 @@ mw:
       RemoteIPInternalProxy 10.0.0.0/8
       RemoteIPInternalProxy 127.0.0.1/32
   logging:
-    # Test rate limiting
-    udp2log_ratelimit_interval: 1
-    udp2log_ratelimit_burst: 100
+    udp2log_ratelimit_interval: 0 # Disable rate limiting for mw-debug
     resources:
       requests:
         cpu: 100m
