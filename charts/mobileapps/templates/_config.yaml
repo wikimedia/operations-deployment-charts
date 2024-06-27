@@ -115,9 +115,8 @@ services:
       eventgate_req:
         method: POST
         uri: '{{ .Values.main_app.eventgate_uri }}'
-        headers: {
-          'content-type': 'application/json'
-        },
+        headers:
+          content-type: 'application/json'
         body: '{{ `{{request.body}}` }}'
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
