@@ -36,4 +36,9 @@ php:
   timeout: 86390
 
 resources:
-  replicas: 2
+  # Keep resource limits in mind! For example JUST for the shellbox
+  # containers, not including sidecars, 16 replicas is:
+  # 128 CPUs requested/limit
+  # 64GB memory requested
+  # 96GB memory limit
+  replicas: 16
