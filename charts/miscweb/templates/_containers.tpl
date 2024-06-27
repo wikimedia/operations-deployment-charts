@@ -78,7 +78,7 @@ resources:
 - name: {{ template "base.name.release" . }}-httpd-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.httpd.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  args: ["-scrape_uri=http://127.0.0.1:9181/server-status"]
+  args: ["--scrape_uri=http://127.0.0.1:9181/server-status"]
   ports:
     - name: httpd-metrics
       containerPort: 9117

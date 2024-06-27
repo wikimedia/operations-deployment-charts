@@ -157,7 +157,7 @@ resources:
 - name: {{ template "base.name.release" . }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  args: ["-scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
+  args: ["--scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
   ports:
     - name: httpd-metrics
       containerPort: 9117
