@@ -9,6 +9,8 @@ csiConfig:
       - "cephosd1005:6789"
 
 nodeplugin:
+  httpMetrics:
+    enabled: false
   registrar:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar
@@ -33,6 +35,8 @@ provisioner:
       tag: *csi-commit-tag
   snapshotter:
     enabled: false
+  httpMetrics:
+    enabled: false
 
 selinuxMount: false
 
@@ -47,10 +51,4 @@ secret:
   userID: dse-k8s-csi
   # userKey: # This value has been added helmfile via the private repo
 
-nodeplugin:
-  httpMetrics:
-    enabled: false
-provisioner:
-  httpMetrics:
-    enabled: false
 
