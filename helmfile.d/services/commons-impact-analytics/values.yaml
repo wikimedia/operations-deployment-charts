@@ -1,7 +1,8 @@
 main_app:
   image: repos/generated-data-platform/aqs/commons-impact-analytics
   version: v1.0.0
-  command: ["./commons-impact-analytics"]
+  # note the binary is 'common-impact-analytics' (not commons)
+  command: ["./common-impact-analytics"]
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: commons-impact-analytics
 
