@@ -203,7 +203,7 @@ FAILURE_THROTTLING_DURATION = 3600
 FAILURE_THROTTLING_PREFIX = 'thumbor-failure-'
 
 {{ if .Values.main_app.stl_support -}}
-THREED2PNG_PATH = '/opt/lib/python/site-packages/bin/3d2png'
+THREED2PNG_PATH = '/opt/lib/venv/bin/3d2png'
 {{- end -}}
 
 # Animated GIFs greater than 100MP render as the first frame only
