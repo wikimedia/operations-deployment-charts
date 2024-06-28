@@ -16,7 +16,7 @@ nodeplugin:
   plugin:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
-      tag: 8aa668a497bd9acba1b8f28e27587adbed3dc28c-production
+      tag: 2024-06-27-150139
 
 provisioner:
   provisioner:
@@ -46,5 +46,4 @@ secret:
   create: true
   userID: dse-k8s-csi
   # userKey: # This value has been added helmfile via the private repo
-  encryptionPassphrase: '' # We are not using volume encryption, so we can set this to an empty string
 
