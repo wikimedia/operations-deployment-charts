@@ -10,3 +10,8 @@ service:
 # We only need one replica in the canary release.
 resources:
   replicas: 1
+
+# We are temporarily increasing the log verbosity of the canary for
+# troubleshooting #T368495 - This will be reverted afterwards.
+main_app:
+  log_level: trace
