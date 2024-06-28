@@ -31,8 +31,6 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
     spec:
-      securityContext:
-        fsGroup: 900
 {{- if gt (int .Values.provisioner.replicaCount) 1 }}
       affinity:
         podAntiAffinity:
