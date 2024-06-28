@@ -35,6 +35,11 @@ spec:
       # to use e.g. Rook orchestrated cluster, and mons' FQDN is
       # resolved through k8s service, set dns policy to cluster first
       dnsPolicy: ClusterFirstWithHostNet
+      # We wish all mount points for this pod to be owned by the runuser
+      # in order that the driver can create a socket and the node-registrar
+      # can read/write to it.
+      securityContext:
+        fsGroup: 900
       containers:
         - name: driver-registrar
 {{- if .Values.selinuxMount }}
@@ -103,7 +108,6 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-            runAsUser: 0
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
