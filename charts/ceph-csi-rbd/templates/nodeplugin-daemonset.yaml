@@ -103,6 +103,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
+            runAsUser: 0
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
