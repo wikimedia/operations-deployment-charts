@@ -86,6 +86,9 @@
   command: ["/usr/bin/php"]
   args:
 {{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
+  tty: {{ .Values.mwscript.tty }}
+  stdin: {{ .Values.mwscript.stdin }}
+  stdinOnce: {{ .Values.mwscript.stdin }}
   {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:
