@@ -108,6 +108,7 @@ spec:
           - name: flink-app-config-volume
             mountPath: /srv/app/conf
           {{- end }} # end volumeMounts
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- end }} # end flink-main-container
         {{- include "mesh.deployment.container" . | indent 8 }}
 
