@@ -104,6 +104,8 @@ spec:
             - name: CSI_ADDONS_ENDPOINT
               value: "unix:///csi/csi-addons.sock"
           securityContext:
+            runAsUser: 0
+            runAsGroup: 900
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
