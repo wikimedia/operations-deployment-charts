@@ -1,3 +1,6 @@
+## configuration 1.8.0
+- Add opt-in support for ratelimiting of incoming traffic
+
 ## configuration 1.6.3 / configuration 1.7.1
 - Make hardcoded `local_service` cluster name instead incorporate a service name.
   The prefix `LOCAL_` is also added to preserve ease of use in grafana.
