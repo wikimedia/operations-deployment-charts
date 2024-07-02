@@ -7,12 +7,5 @@ mesh:
     enabled: true
     sampling: 10
 
-php:
-  envvars:
-    MCROUTER_SERVER: "127.0.0.1:11213"
-    # Set to false as we don't declare this env variable, we just get it
-    # from k8s
-    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
-
 monitoring:
   statsd: ~

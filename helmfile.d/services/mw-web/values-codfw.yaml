@@ -1,7 +1,1 @@
 # mw site-specific configurations
-php:
-  envvars:
-    MCROUTER_SERVER: "mcrouter-main.mw-mcrouter.svc.cluster.local.:4442"
-    # Set to false as we don't declare this env variable, we just get it
-    # from k8s
-    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false

@@ -3,6 +3,13 @@ mw:
   datacenter: codfw
   mail_host: mx-out2001.wikimedia.org
   mcrouter_server: '10.192.72.12:4442'
+# mw site-specific configurations
+php:
+  envvars:
+    MCROUTER_SERVER: "10.192.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
+    # Set to false as we don't declare this env variable, we just get it
+    # from k8s
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
 cache:
   mcrouter:
     route_prefix: codfw/mw
