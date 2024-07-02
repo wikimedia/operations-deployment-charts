@@ -21,6 +21,10 @@ app:
       kafka-source-config.security.protocol: SSL
       kafka-sink-config.security.protocol: SSL
       http-user-agent: WMF/cirrus-streaming-updater
+      # All instances sharing the same http-user-agent are capped at 1000 req/s via envoy, see discovery.ratelimit_listeners.
+      # However, using >600 here still results in 429, since the clients are not synced in any way.
+      # 600 appears enough to avoid 429 responses and still get enough throughput.
+      http-rate-limit-per-second: 600
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
