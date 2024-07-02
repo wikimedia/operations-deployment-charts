@@ -130,8 +130,8 @@ static_resources:
 {{/* Private functions */}}
 {{/* TLS termination for the local service */}}
 {{- define "mesh.configuration._local_cluster_name" -}}
-LOCAL_{{ template "base.name.release" . }}
-{{- end }}
+LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.Namespace }}
+{{- end -}}
 {{- define "mesh.configuration._local_cluster" }}
 - name: {{ template "mesh.configuration._local_cluster_name" . }}
   typed_extension_protocol_options:

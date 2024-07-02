@@ -1,3 +1,7 @@
+## configuration 1.6.4 / configuration 1.7.2 / configuration 1.8.1
+- Use the namespace by default for tracing service names.
+  Also support overriding it in values.
+
 ## configuration 1.8.0
 - Add opt-in support for ratelimiting of incoming traffic
 

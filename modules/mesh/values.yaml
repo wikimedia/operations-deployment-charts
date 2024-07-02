@@ -63,6 +63,16 @@ mesh:
   # When enabled, all outbound requests will be traced
   tracing:
     enabled: false
+    # Service name to use for distributed traces.
+    # This is the top-level field by which traces are searchable, so it should be broadly meaningful.
+    # By default, it is just the Kubernetes namespace name of the service.
+    # This is a good default as most users have one logical service per namespace,
+    # and namespaces usually have a terse but meaningful name.
+    # For services that have distinct logical services in one namespace, or for services that
+    # distinguish between logical services by some other means like release names,
+    # you should override this field.
+    # (see also https://phabricator.wikimedia.org/T363407)
+    service_name: ~
     # sampling: 100. Percentage of requests to sample. Defaults to 100%
     # host: hostname to talk to. default main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local
     # port: grpc port to use. default 4317
