@@ -36,7 +36,7 @@ inference_services:
             cpu: "2"
             memory: 2Gi
 
-  llama3:
+  gemma2-27b-it:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
         image_version: "2024-06-14-101426-publish"
@@ -44,9 +44,9 @@ inference_services:
           - name: MODEL_NAME
             value: "llama3"
           - name: STORAGE_URI
-            value: "s3://wmf-ml-models/llm/llama3-8B-instruct/"
+            value: "s3://wmf-ml-models/llm/gemma2-27b-it/"
         container:
-          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "llama3", "--backend", "huggingface" ]
+          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "llama3", "--backend", "huggingface", "--dtype", "bfloat16" ]
           resources:
             limits:
               cpu: "8"
