@@ -202,26 +202,18 @@ networkPolicy:
     - to:
         # eqiad k8s API endpoint IPs
         - ipBlock:
-            cidr: 10.64.0.117/32
-        - ipBlock:
-            cidr: 10.64.32.116/32
-        - ipBlock:
-            cidr: 10.64.16.93/32
-        - ipBlock:
-            cidr: 10.64.48.45/32
+            cidr: 10.64.16.16/32
         - ipBlock:
             cidr: 10.64.32.37/32
+        - ipBlock:
+            cidr: 10.64.48.45/32
         # codfw k8s API endpoint IPs
         - ipBlock:
-            cidr: 10.192.0.56/32
+            cidr: 10.192.21.10/32
         - ipBlock:
-            cidr: 10.192.15.6/32
+            cidr: 10.192.23.10/32
         - ipBlock:
-            cidr: 10.192.16.48/32
-        - ipBlock:
-            cidr: 10.192.32.105/32
-        - ipBlock:
-            cidr: 10.192.5.10/32
+            cidr: 10.192.32.76/32
       ports:
         - port: 6443
           protocol: TCP
