@@ -12,6 +12,15 @@ presets:
   kubernetesAttributes:
     enabled: true
 
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+     drop:
+     - ALL
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
 config:
   # Disable all receivers except OTLP
   receivers:
