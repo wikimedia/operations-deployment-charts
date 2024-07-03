@@ -85,6 +85,8 @@ inference_services:
           value: "s3://wmf-ml-models/articlequality/language-agnostic/"
         - name: FORCE_HTTP
           value: "True"
+        - name: MAX_FEATURE_VALS
+          value: "/srv/articlequality/data/max-values-html-dumps-ar-en-fr-hu-tr-zh.tsv"
       resources:
         limits:
           memory: 1Gi
