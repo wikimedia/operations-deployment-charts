@@ -1,6 +1,7 @@
 # mw site-specific configurations
 cache:
   mcrouter:
+    num_proxies: 6
     service:
       enabled: true
       clusterIP: 10.192.72.12
@@ -19,3 +20,4 @@ cache:
         replica:
           route: /eqiad/mw-wan
           pool: eqiad-servers
+
