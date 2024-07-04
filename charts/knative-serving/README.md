@@ -101,3 +101,6 @@ Deployment resource:
 ```
 The problem seems to be https://github.com/knative/serving/pull/9661, but
 the upstream values are not enough for our use case.
+
+Due to [this bug](https://github.com/knative/serving/issues/8211) we removed
+the `_example` settings shipped by the upstream yaml resources.
