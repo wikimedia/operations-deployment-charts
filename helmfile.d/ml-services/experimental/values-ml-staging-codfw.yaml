@@ -77,7 +77,7 @@ inference_services:
   articlequality:
     predictor:
       image: "machinelearning-liftwing-inference-services-articlequality"
-      image_version: "2024-07-02-125854-publish"
+      image_version: "2024-07-04-112615-publish"
       custom_env:
         - name: MODEL_NAME
           value: "articlequality"
@@ -86,7 +86,7 @@ inference_services:
         - name: FORCE_HTTP
           value: "True"
         - name: MAX_FEATURE_VALS
-          value: "/srv/articlequality/data/max-values-html-dumps-ar-en-fr-hu-tr-zh.tsv"
+          value: "/srv/articlequality/data/max-vals-html-dumps-ar-en-fr-hu-tr-zh.tsv"
       resources:
         limits:
           memory: 1Gi
