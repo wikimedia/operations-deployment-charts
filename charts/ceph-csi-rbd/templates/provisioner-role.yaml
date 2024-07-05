@@ -17,6 +17,12 @@ rules:
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create"]
+{{- if .Values.secret.create }}
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "watch", "list"]
+    resourceNames: ["{{ .Values.secret.name }}"]
+{{- end -}}
 {{- if .Values.provisioner.podSecurityPolicy.enabled }}
   - apiGroups: ['policy']
     resources: ['podsecuritypolicies']
