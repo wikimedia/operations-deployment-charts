@@ -88,20 +88,3 @@ metadata:
 data:
   jwks.json: |- {{ include "jwks.config" . | indent 4 }}
 {{ end -}}
-{{- if .Values.main_app.access_log }}
-{{- if eq .Values.main_app.access_log.type "eventgate" }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-fluent-bit-config
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  td-agent-bit.conf: |- {{ include "fluent-bit.config" . | indent 4 }}
-  td-agent-parsers.conf: |- {{ include "fluent-bit-parsers.config" . | indent 4 }}
-{{ end -}}
-{{ end -}}

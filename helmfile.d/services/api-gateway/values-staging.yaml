@@ -12,11 +12,6 @@ main_app:
 
   access_log:
     debug: true
-    tls: true
-    event_service:
-      host: staging.svc.eqiad.wmnet
-      port: 4592
-      path: /v1/events?hasty=true
 
   ratelimiter:
     anon_limit:

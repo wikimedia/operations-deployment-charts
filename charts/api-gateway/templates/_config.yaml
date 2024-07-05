@@ -84,13 +84,7 @@ static_resources:
 {{- end }}
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
-{{- if eq .Values.main_app.access_log.type "stdout" }}
               path: /dev/stdout
-{{- else if eq .Values.main_app.access_log.type "eventgate" }}
-              path: /var/log/access.log
-{{- else }}
-{{ fail "Invalid access_log.type" }}
-{{- end }}
               log_format:
                 omit_empty_values: true
                 json_format:
