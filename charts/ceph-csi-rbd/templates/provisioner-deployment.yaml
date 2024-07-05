@@ -254,6 +254,8 @@ spec:
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
+            - name: ceph-config
+              mountPath: /etc/ceph/
           resources:
 {{ toYaml .Values.nodeplugin.plugin.resources | indent 12 }}
 {{- end }}
