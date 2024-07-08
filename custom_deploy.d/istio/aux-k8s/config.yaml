@@ -14,6 +14,11 @@ spec:
       enabled: true
     pilot:
       enabled: true
+      k8s:
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
     cni:
       enabled: false
     egressGateways:
@@ -23,6 +28,10 @@ spec:
       - enabled: true
         name: istio-ingressgateway
         k8s:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           overlays:
           - apiVersion: apps/v1
             kind: Deployment
