@@ -78,6 +78,10 @@ mesh:
     # port: grpc port to use. default 4317
     # otel_collector_namespace: the namespace where the collector daemonset is running. default opentelemetry-collector
     # otel_pod_selector: the pod selector for otel collector egress. default component=agent-collector
+  faultinjection:
+    enabled: false
+    # http_status: 503
+    # pct: 0
 
 # Mesh-related discovery
 # TODO: move under mesh.* once we can
