@@ -41,4 +41,5 @@ resources:
   # 128 CPUs requested/limit
   # 64GB memory requested
   # 96GB memory limit
-  replicas: 16
+  # Including the sidecars, the limit is effectively 160 for CPU alone
+  replicas: 12
