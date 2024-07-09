@@ -218,10 +218,10 @@ main_app:
       ingress: true
       urls:
         - name: api-spec
-          in: '/wikimedia.org/v1/metrics/commons-impact/api-spec.json'
+          in: '/wikimedia.org/v1/metrics/commons-analytics/api-spec.json'
           out: '/commons-impact-analytics/api-spec.json'
         - name: commons-analytics
-          in: '/wikimedia.org/v1/metrics/commons-impact/(.+)'
+          in: '/wikimedia.org/v1/metrics/commons-analytics/(.+)'
           out: '/metrics/commons-analytics/\1'
 
   discovery_endpoints:
