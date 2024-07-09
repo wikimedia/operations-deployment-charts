@@ -22,3 +22,7 @@ cache:
         pool: wf-eqiad
         # No failover for wikifunction
         failover_time: 0
+#mw-site specific configuration
+php:
+  envvars:
+    MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
