@@ -1,3 +1,7 @@
+## configuration 1.9.0
+
+- Add support for Envoy's fault injection filter.
+
 ## configuration 1.6.4 / configuration 1.7.2 / configuration 1.8.1
 - Use the namespace by default for tracing service names.
   Also support overriding it in values.
