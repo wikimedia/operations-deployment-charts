@@ -10,7 +10,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: control-plane=kserve-controller-manager
+  selector: control-plane=="kserve-controller-manager"
   ingress:
     - action: Allow
       protocol: TCP
@@ -34,7 +34,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: control-plane=kserve-controller-manager
+  selector: control-plane=="kserve-controller-manager"
   egress:
     - action: Allow
       destination:
