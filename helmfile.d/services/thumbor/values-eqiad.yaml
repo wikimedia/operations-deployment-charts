@@ -1,4 +1,5 @@
 main_app:
+  failure_throttling_memcache: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
   swift:
     # swift-eqiad service proxy - enable when mesh is
     #host: 'http://localhost:6101'
@@ -6,3 +7,19 @@ main_app:
   poolcounter:
     enabled: true
     server: "poolcounter1004.eqiad.wmnet"
+
+cache:
+  mcrouter:
+    route_prefix: eqiad/thumbor
+    zone: eqiad
+    routes:
+      - route: /eqiad/thumbor
+        pool: eqiad-servers
+        failover_time: 600
+    resources:
+      requests:
+        cpu: 200m
+        memory: 150Mi
+      limits:
+        cpu: 300m
+        memory: 250Mi

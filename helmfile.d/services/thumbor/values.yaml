@@ -59,22 +59,11 @@ service:
     # thumbor nodes.
     nodePort: 8800
 
+# While we are using the mw-mcrouter daemonset by default
+# we can switch to the in-pod mcrouter for debugging purposes
 cache:
   mcrouter:
-    enabled: true
-    route_prefix: eqiad/thumbor
-    zone: eqiad
-    routes:
-      - route: /eqiad/thumbor
-        pool: eqiad-servers
-        failover_time: 600
-    resources:
-      requests:
-        cpu: 200m
-        memory: 150Mi
-      limits:
-        cpu: 300m
-        memory: 250Mi
+    enabled: false
 
 networkpolicy:
   egress:
