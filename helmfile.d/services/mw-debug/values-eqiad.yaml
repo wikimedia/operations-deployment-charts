@@ -1,8 +1,12 @@
 mw:
   datacenter: eqiad
   mail_host: mx-out1001.wikimedia.org
+
+# While we are using the mw-mcrouter daemonset by default
+# we can switch to the in-pod mcrouter for debugging purposes
 cache:
   mcrouter:
+    enabled: false
     route_prefix: eqiad/mw
     zone: eqiad
     routes:
@@ -26,3 +30,4 @@ php:
   envvars:
     MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
     STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
+

@@ -2,15 +2,12 @@
 mw:
   datacenter: codfw
   mail_host: mx-out2001.wikimedia.org
-# mw site-specific configurations
-php:
-  envvars:
-    MCROUTER_SERVER: "10.192.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
-    # Set to false as we don't declare this env variable, we just get it
-    # from k8s
-    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
+
+# While we are using the mw-mcrouter daemonset by default
+# we can switch to the in-pod mcrouter for debugging purposes
 cache:
   mcrouter:
+    enabled: false
     route_prefix: codfw/mw
     zone: codfw
     routes:
@@ -30,3 +27,6 @@ cache:
         pool: wf-codfw
         # No failover for wikifunction
         failover_time: 0
+php:
+  envvars:
+    MCROUTER_SERVER: "10.192.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local

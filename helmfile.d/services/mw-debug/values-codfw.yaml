@@ -1,8 +1,12 @@
 mw:
   datacenter: codfw
   mail_host: mx-out2001.wikimedia.org
+
+# While we are using the mw-mcrouter daemonset by default
+# we can switch to the in-pod mcrouter for debugging purposes
 cache:
   mcrouter:
+    enabled: false
     route_prefix: codfw/mw
     zone: codfw
     routes:
@@ -26,3 +30,4 @@ cache:
 php:
   envvars:
     MCROUTER_SERVER: "10.192.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
