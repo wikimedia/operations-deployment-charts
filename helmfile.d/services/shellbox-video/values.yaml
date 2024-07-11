@@ -36,6 +36,10 @@ php:
   # Set timeout to just short of 1d as we want to let other parts further up the stack handle the timeouts
   timeout: 86390
 
+config:
+  public:
+   FPM__log_level: debug
+
 resources:
   # Keep resource limits in mind! For example JUST for the shellbox
   # containers, not including sidecars, 16 replicas is:

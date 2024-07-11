@@ -87,7 +87,7 @@ resources:
   - name: FCGI_ALLOW
     value: "127.0.0.1"
   {{- range $k, $v := .Values.config.public }}
-  - name: {{ $k | upper }}
+  - name: {{ $k }}
     value: {{ $v | quote }}
   {{- end }}
   livenessProbe:
