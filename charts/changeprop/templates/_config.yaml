@@ -126,7 +126,9 @@ spec: &spec
                 cases:
                   - match:
                       meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^\/]+)$/'
+                      tags:
+                        - restbase
                     match_not:
                       - meta:
                           domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
@@ -134,22 +136,28 @@ spec: &spec
                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     exec:
                       method: get
-                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{decode(match.meta.uri.title)}}` }}'
+                      # Don't encode title since it should be already encoded
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri[1]}}` }}'
                       query:
                         redirect: false
                       headers:
                         cache-control: no-cache
                   - match:
                       meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        # These URIs are coming from RESTBase, so we know that article titles will be normalized
+                        # and main namespace articles will not have : (uri-encoded, so %3a or %3A)
+                        uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/((?:(?!%3a|%3A|\/).)+)$/'
                         domain: '/^en\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
+                      tags:
+                        - restbase
                     exec:
                       method: post
                       uri: '/sys/queue/events'
                       body:
                         - $schema: '/resource_change/1.0.0'
                           meta:
-                            uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{{ `{{decode(match.meta.uri.title)}}` }}'
+                            # Don't encode title since it should be already encoded
+                            uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{{ `{{match.meta.uri[1]}}` }}'
                             stream: '{{ $purge_stream }}'
                             domain: '{{`{{message.meta.domain}}`}}'
                             dt: '{{`{{message.meta.dt}}`}}'
@@ -166,11 +174,14 @@ spec: &spec
                 topic: 'resource_change'
                 match:
                   meta:
-                    uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                    uri: '/^https?:\/\/[^\/]+\/api\/rest_v1\/page\/html\/([^/]+)$/'
                     domain: '/\.(wikipedia|wikivoyage|wiktionary)\.{{ $.Values.main_app.changeprop.domain_zone }}$/'
+                  tags:
+                    - restbase
                 exec:
                   method: get
-                  uri: '{{ $.Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{{ `{{decode(match.meta.uri.title)}}` }}'
+                  # Don't encode title since it should be already encoded
+                  uri: '{{ $.Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{{ `{{match.meta.uri[1]}}` }}'
                   query:
                     redirect: false
                   headers:
@@ -227,6 +238,17 @@ spec: &spec
                         - purge
                     exec: &mw_purge_wikipedia_rerender
                       - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+                        query:
+                          redirect: false
+                        # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
+                        # content, so let's purge them as well just in case. The rate is low.
+                      - method: get
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
@@ -236,6 +258,22 @@ spec: &spec
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/mobile-sections/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
+                        query:
+                          redirect: false
+                  - match:
+                      meta:
+                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
+                      tags:
+                        - purge
+                    exec: &mw_purge_wiktionary_rerender
+                      - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                   - match:
@@ -255,6 +293,17 @@ spec: &spec
                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                         page_namespace: 120
                     exec: &mw_purge_others_rerender
+                      - method: get
+                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
+                        # Re-encode the title in standard `encodeURIComponent` encoding.
+                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
+                        headers:
+                          cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+                        query:
+                          redirect: false
+                        # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
+                        # content, so let's purge them as well just in case. The rate is low.
                       - method: get
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
@@ -277,6 +326,13 @@ spec: &spec
                       tags:
                         - null_edit
                     exec: *mw_purge_wikipedia_rerender
+                  - match:
+                      meta:
+                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
+                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
+                      tags:
+                        - null_edit
+                    exec: *mw_purge_wiktionary_rerender
                   - match:
                       meta:
                         uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
@@ -358,6 +414,14 @@ spec: &spec
                       domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                     page_namespace: 828
                 exec:
+                  - method: get
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                    headers:
+                      cache-control: no-cache
+                      x-restbase-parentrevision: '{{ `{{message.rev_parent_id}}` }}'
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+                    query:
+                      redirect: false
                   - method: post
                     uri: '/sys/links/transcludes/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
@@ -391,6 +455,12 @@ spec: &spec
                   - method: 'post'
                     uri: '/sys/queue/events'
                     body:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                          stream: '{{ $purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
+                          dt: '{{`{{message.meta.dt}}`}}'
                       - $schema: '/resource_change/1.0.0'
                         meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/mobile-sections-lead/{message.page_title}/{{ `{{message.rev_id}}` }}'
@@ -447,6 +517,18 @@ spec: &spec
                   - method: post
                     uri: '/sys/queue/events'
                     body:
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}'
+                          stream: '{{ $purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
+                          dt: '{{`{{message.meta.dt}}`}}'
+                      - $schema: '/resource_change/1.0.0'
+                        meta:
+                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                          stream: '{{ $purge_stream }}'
+                          domain: '{{`{{message.meta.domain}}`}}'
+                          dt: '{{`{{message.meta.dt}}`}}'
                       - $schema: '/resource_change/1.0.0'
                         meta:
                           uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/summary/{message.page_title}'
@@ -522,6 +604,13 @@ spec: &spec
                     page_namespace: 120
                 exec:
                   - method: get
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                    headers:
+                      cache-control: no-cache
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+                    query:
+                      redirect: false
+                  - method: get
                     uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.prior_state.page_title}'
                     headers:
                       cache-control: no-cache
@@ -535,6 +624,23 @@ spec: &spec
                 limiters:
                   blacklist: 'html:{message.meta.uri}'
                 cases:
+                  - match:
+                      $schema: '/^\/resource_change\/.*/'
+                      meta:
+                        uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+                      tags: [ 'transcludes' ]
+                    exec:
+                      method: get
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
+                      headers:
+                        cache-control: no-cache
+                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
+                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
+                      query:
+                        redirect: false
+                    match_not:
+                      meta:
+                        domain: ceb.wikipedia.org
                   - match:
                       $schema: '/^\/change-prop\/continue\/.*/'
                     match_not:
@@ -576,6 +682,20 @@ spec: &spec
                 limiters:
                   blacklist: 'html:{message.meta.uri}'
                 cases:
+                  - match:
+                      $schema: '/^\/resource_change\/.*/'
+                      meta:
+                        uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
+                      tags: [ 'backlinks' ]
+                    exec:
+                      method: get
+                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
+                      headers:
+                        cache-control: no-cache
+                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
+                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
+                      query:
+                        redirect: false
                   - match:
                       $schema: '/^\/change-prop\/continue\/.*/'
                     exec:
