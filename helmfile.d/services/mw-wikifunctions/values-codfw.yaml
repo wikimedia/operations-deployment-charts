@@ -2,3 +2,10 @@
 cache:
   mcrouter:
     enabled: true
+    route_prefix: local/wf
+    zone: codfw
+    routes:
+      - route: /local/wf
+        pool: wf-codfw
+        # No failover for wikifunction
+        failover_time: 0

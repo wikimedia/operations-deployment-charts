@@ -2,3 +2,10 @@
 cache:
   mcrouter:
     enabled: true
+    route_prefix: local/wf
+    zone: eqiad
+    routes:
+      - route: /local/wf
+        pool: wf-eqiad
+        # No failover for wikifunction
+        failover_time: 0
