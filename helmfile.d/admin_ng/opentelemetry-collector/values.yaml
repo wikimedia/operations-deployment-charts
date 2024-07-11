@@ -186,36 +186,13 @@ service:
 
 networkPolicy:
   enabled: true
+  enableWmfKubemasterPolicy: true
   egressRules:
     - to:
         - ipBlock:
             cidr: 10.2.2.78/32 # jaeger-collector-grpc.svc.eqiad.wmnet
       ports:
         - port: 30443
-          protocol: TCP
-    # TODO: Here, in order to support the k8sattributes processor, we hardcode the IPs of the
-    # k8s API endpoints.  This is not ideal, but it's the best we can do until we have a better
-    # way -- probably either creating a wrapper chart that also creates a Calico NetworkPolicy
-    # object that allows the k8s API endpoints, or, creating an otelcol chart of our own.
-    # https://phabricator.wikimedia.org/T365855
-    # kubectl get endpoints -n default kubernetes -oyaml | yq -c '.subsets[].addresses[] | {"ipBlock": {"cidr": (.ip + "/32")}}' - | jq -s | yq -y
-    - to:
-        # eqiad k8s API endpoint IPs
-        - ipBlock:
-            cidr: 10.64.16.16/32
-        - ipBlock:
-            cidr: 10.64.32.37/32
-        - ipBlock:
-            cidr: 10.64.48.45/32
-        # codfw k8s API endpoint IPs
-        - ipBlock:
-            cidr: 10.192.21.10/32
-        - ipBlock:
-            cidr: 10.192.23.10/32
-        - ipBlock:
-            cidr: 10.192.32.76/32
-      ports:
-        - port: 6443
           protocol: TCP
 
   extraIngressRules:

@@ -908,6 +908,10 @@
               "items": {
                 "type": "object"
               }
+            },
+            "enableWmfKubemasterPolicy": {
+              "description": "WMF-specific override to generate a Calico NetworkPolicy to allow egress to kubernetes API",
+              "type": "boolean"
             }
         }
     }

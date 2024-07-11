@@ -1,0 +1,26 @@
+{{- if .Values.networkPolicy.enableWmfKubemasterPolicy }}
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "opentelemetry-collector.fullname" . }}-allow-k8s-apiserver
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "opentelemetry-collector.labels" . | nindent 4 }}
+  {{- if .Values.networkPolicy.annotations }}
+  annotations:
+    {{- range $key, $value := .Values.networkPolicy.annotations }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  types:
+    - Egress
+  selector: app.kubernetes.io/name={{ include "opentelemetry-collector.name" . }} && app.kubernetes.io/instance={{ .Release.Name }}
+
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+{{- end }}

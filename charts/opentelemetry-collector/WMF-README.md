@@ -37,3 +37,8 @@ Changes from upstream:
   schema, and then updating it every time we change something in the defaults, wouldn't be
   practical.) As a result, use extra caution when modifying `values.yaml` -- a typo in a field name
   will *not* be caught by the schema validation.
+
+* We also add a wmfnetworkpolicy.yaml template, to create a Calico NetworkPolicy that allows egress
+  to the kubemaster API.
+
+* We add a property enableWmfKubemasterPolicy to the NetworkPolicy schema in values.schema.json.
