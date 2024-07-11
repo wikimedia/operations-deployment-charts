@@ -9,6 +9,9 @@ service:
   max_body_size: {{ .Values.app.service.max_body_size }}
   secure_cookie: {{ .Values.app.service.secure_cookie }}
 
+listeners:
+  action_api_basepath: {{ .Values.app.listeners.action_api_basepath }}
+
 database:
   engine: {{ .Values.app.database.engine }}
   host: {{ .Values.app.database.host }}
