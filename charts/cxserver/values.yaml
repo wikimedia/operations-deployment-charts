@@ -12,8 +12,8 @@ main_app:
   version: latest # we use latest everywhere in the defaults.
   port: 8080
   proxy: null
-  mwapi_uri: http://mediawiki.svc.cluster.local/w/api.php # api-rw.discovery.wmnet in production
-  mwapi_int_async_host: restbase.svc.cluster.local # mw-api-int.discovery.wmnet in production
+  mwapi_uri: http://mediawiki.svc.cluster.local/w/api.php # mw-api-int via service mesh production
+  mwapi_int_async_host: restbase.svc.cluster.local # mw-api-int via service mesh production
   no_proxy_list: []
   jwt_secret: null
   ratelimiter_key: X-Forwarded-For # In production this is going to be X-Client-IP
