@@ -3,7 +3,6 @@
 # with local development.
 
 app:
-  version: flink-1.17.1-rdf-0.3.144
   config_files:
     rdf-streaming-updater-config.properties:
       brokers: kafka-main1001.eqiad.wmnet:9092
@@ -13,37 +12,6 @@ app:
       output_topic: eqiad.rdf-streaming-updater.mutation-staging
       reconciliation_topic: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
       wikidata_concept_uri: http://test.wikidata.org
-      subgraph_definitions: file:///srv/app/conf/subgraph-definitions.yaml
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "eqiad.rdf-streaming-updater.mutation-main-staging"
-    subgraph-definitions.yaml:
-      prefixes:
-        wdt: http://test.wikidata.org/prop/direct/
-        wd: http://test.wikidata.org/entity/
-        wdsubgraph: https://query.test.wikidata.org/subgraph/
-      bindings:
-        scholarly_type:
-          - wd:Q227265
-      subgraphs:
-        - name: scholarly_articles
-          stream: rdf-streaming-updater.mutation-scholarly
-          subgraph_uri: wdsubgraph:scholarly_articles
-          default: block
-          rules:
-            - pass ?entity wdt:P82 ?scholarly_type
-          stubs_source: true
-        - name: wikidata_main
-          stream: rdf-streaming-updater.mutation-main
-          subgraph_uri: wdsubgraph:wikidata_main
-          default: pass
-          rules:
-            - block ?entity wdt:P82 ?scholarly_type
-          stubs_source: true
-        - name: wikidata_full
-          stream: rdf-streaming-updater.mutation
-          default: pass
-          stubs_source: false
-
   job:
   # Savepoint TBD, will fill in during operations work as described at
     initialSavepointPath: s3://rdf-streaming-updater-staging/wikidata/checkpoints/5bb76cd4d0165a21cc098c2dc6080557/chk-2182564
