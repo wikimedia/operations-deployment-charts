@@ -5,6 +5,9 @@ app:
     database: mpic_staging
     username: mpic_staging
 
+  listeners:
+    action_api_basepath: http://127.0.0.1:6500
+
   idp:
     oidc_url: https://idp.wikimedia.org/oidc
     client_id: mpic_next
