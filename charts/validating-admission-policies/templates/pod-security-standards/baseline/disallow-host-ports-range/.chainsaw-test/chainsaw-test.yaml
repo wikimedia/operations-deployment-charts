@@ -1,0 +1,23 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-host-ports-range
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.wmf.org/profile: baseline
+  steps:
+  - name: prepare_host-port-range
+    try:
+    - apply:
+        file: ../disallow-host-ports-range-host-port-range.yaml
+  - name: bad
+    try:
+    - apply:
+        file: pod-good.yaml
+    - apply:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true

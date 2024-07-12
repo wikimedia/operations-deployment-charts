@@ -1,0 +1,61 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-privileged-containers
+  annotations:
+    kyverno_policy_name: disallow-privileged-containers
+    kyverno_rule_name: privileged-containers
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.privileged) ||
+      container.securityContext.privileged ==
+      false)
+    message: >-
+      Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+      must be unset or set to `false`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.privileged) ||
+      container.securityContext.privileged == false)
+    message: >-
+      Privileged mode is disallowed. The fields spec.initContainers[*].securityContext.privileged
+      must be unset or set to `false`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.privileged) ||
+      container.securityContext.privileged == false)
+    message: >-
+      Privileged mode is disallowed. The fields spec.ephemeralContainers[*].securityContext.privileged
+      must be unset or set to `false`.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-privileged-containers
+spec:
+  policyName: disallow-privileged-containers
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-privileged-containers
+        operator: NotIn
+        values:
+        - exclude

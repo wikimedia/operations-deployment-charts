@@ -1,0 +1,83 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-selinux-type
+  annotations:
+    kyverno_policy_name: disallow-selinux
+    kyverno_rule_name: selinux-type
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      !has(object.spec.securityContext) ||
+      !has(object.spec.securityContext.seLinuxOptions) ||
+      !has(object.spec.securityContext.seLinuxOptions.type) ||
+      object.spec.securityContext.seLinuxOptions.type == 'container_t' ||
+      object.spec.securityContext.seLinuxOptions.type == 'container_init_t' ||
+      object.spec.securityContext.seLinuxOptions.type == 'container_kvm_t'
+    message: >-
+      Setting the SELinux type is restricted. The field spec.securityContext.seLinuxOptions.type  must
+      either be unset or set to one of the allowed values (container_t, container_init_t,
+      or container_kvm_t).
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      !has(container.securityContext.seLinuxOptions.type) ||
+      container.securityContext.seLinuxOptions.type == 'container_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_init_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_kvm_t')
+    message: >-
+      Setting the SELinux type is restricted. The field spec.containers[*].securityContext.seLinuxOptions.type  must
+      either be unset or set to one of the allowed values (container_t, container_init_t,
+      or container_kvm_t).
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      !has(container.securityContext.seLinuxOptions.type) ||
+      container.securityContext.seLinuxOptions.type == 'container_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_init_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_kvm_t')
+    message: >-
+      Setting the SELinux type is restricted. The field spec.initContainers[*].securityContext.seLinuxOptions.type  must
+      either be unset or set to one of the allowed values (container_t, container_init_t,
+      or container_kvm_t).
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      !has(container.securityContext.seLinuxOptions.type) ||
+      container.securityContext.seLinuxOptions.type == 'container_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_init_t' ||
+      container.securityContext.seLinuxOptions.type == 'container_kvm_t')
+    message: >-
+      Setting the SELinux type is restricted. The field spec.ephemeralContainers[*].securityContext.seLinuxOptions.type  must
+      either be unset or set to one of the allowed values (container_t, container_init_t,
+      or container_kvm_t).
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-selinux-type
+spec:
+  policyName: disallow-selinux-type
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-selinux-type
+        operator: NotIn
+        values:
+        - exclude

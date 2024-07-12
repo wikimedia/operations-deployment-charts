@@ -1,0 +1,63 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-host-process-containers
+  annotations:
+    kyverno_policy_name: disallow-host-process
+    kyverno_rule_name: host-process-containers
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.windowsOptions) ||
+      !has(container.securityContext.windowsOptions.hostProcess) ||
+      container.securityContext.windowsOptions.hostProcess == false)
+    message: >-
+      HostProcess containers are disallowed. The field spec.containers[*].securityContext.windowsOptions.hostProcess
+      must either be undefined or set to `false`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.windowsOptions) ||
+      !has(container.securityContext.windowsOptions.hostProcess) ||
+      container.securityContext.windowsOptions.hostProcess == false)
+    message: >-
+      HostProcess containers are disallowed. The field spec.initContainers[*].securityContext.windowsOptions.hostProcess
+      must either be undefined or set to `false`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.windowsOptions) ||
+      !has(container.securityContext.windowsOptions.hostProcess) ||
+      container.securityContext.windowsOptions.hostProcess == false)
+    message: >-
+      HostProcess containers are disallowed. The field spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess
+      must either be undefined or set to `false`.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-host-process-containers
+spec:
+  policyName: disallow-host-process-containers
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-host-process-containers
+        operator: NotIn
+        values:
+        - exclude

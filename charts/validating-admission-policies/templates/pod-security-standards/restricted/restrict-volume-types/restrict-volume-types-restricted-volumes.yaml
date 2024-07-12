@@ -1,0 +1,47 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: restrict-volume-types-restricted-volumes
+  annotations:
+    kyverno_policy_name: restrict-volume-types
+    kyverno_rule_name: restricted-volumes
+    psa_profile: restricted
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      !has(object.spec.volumes) ||
+      object.spec.volumes.all(vol, has(vol.configMap) ||
+      has(vol.csi) ||
+      has(vol.downwardAPI) ||
+      has(vol.emptyDir) ||
+      has(vol.ephemeral) ||
+      has(vol.persistentVolumeClaim) ||
+      has(vol.projected) ||
+      has(vol.secret))
+    message: >-
+      Only the following types of volumes may be used: configMap, csi, downwardAPI,
+      emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: restrict-volume-types-restricted-volumes
+spec:
+  policyName: restrict-volume-types-restricted-volumes
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - restricted
+      - key: pod-security.wmf.org/restrict-volume-types-restricted-volumes
+        operator: NotIn
+        values:
+        - exclude

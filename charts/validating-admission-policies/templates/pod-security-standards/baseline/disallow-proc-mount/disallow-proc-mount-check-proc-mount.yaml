@@ -1,0 +1,61 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-proc-mount-check-proc-mount
+  annotations:
+    kyverno_policy_name: disallow-proc-mount
+    kyverno_rule_name: check-proc-mount
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.procMount) ||
+      container.securityContext.procMount ==
+      'Default')
+    message: >-
+      Changing the proc mount from the default is not allowed. The field spec.containers[*].securityContext.procMount
+      must be unset or set to `Default`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.procMount) ||
+      container.securityContext.procMount == 'Default')
+    message: >-
+      Changing the proc mount from the default is not allowed. The field spec.initContainers[*].securityContext.procMount
+      must be unset or set to `Default`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.procMount) ||
+      container.securityContext.procMount == 'Default')
+    message: >-
+      Changing the proc mount from the default is not allowed. The field spec.ephemeralContainers[*].securityContext.procMount
+      must be unset or set to `Default`.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-proc-mount-check-proc-mount
+spec:
+  policyName: disallow-proc-mount-check-proc-mount
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-proc-mount-check-proc-mount
+        operator: NotIn
+        values:
+        - exclude

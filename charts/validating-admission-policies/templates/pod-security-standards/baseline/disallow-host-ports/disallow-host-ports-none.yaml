@@ -1,0 +1,63 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-host-ports-none
+  annotations:
+    kyverno_policy_name: disallow-host-ports
+    kyverno_rule_name: host-ports-none
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, !has(container.ports) ||
+       container.ports.all(port,
+      !has(port.hostPort) ||
+      port.hostPort == 0))
+    message: >-
+      Use of host ports is disallowed. The field spec.containers[*].ports[*].hostPort
+      must either be unset or set to `0`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+       object.spec.initContainers.all(container,
+      !has(container.ports) ||
+       container.ports.all(port, !has(port.hostPort) ||
+      port.hostPort
+      == 0))
+    message: >-
+      Use of host ports is disallowed. The field spec.initContainers[*].ports[*].hostPort
+      must either be unset or set to `0`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.ports) ||
+      container.ports.all(port, !has(port.hostPort) ||
+      port.hostPort ==
+      0))
+    message: >-
+      Use of host ports is disallowed. The field spec.ephemeralContainers[*].ports[*].hostPort
+      must either be unset or set to `0`.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-host-ports-none
+spec:
+  policyName: disallow-host-ports-none
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-host-ports-none
+        operator: NotIn
+        values:
+        - exclude

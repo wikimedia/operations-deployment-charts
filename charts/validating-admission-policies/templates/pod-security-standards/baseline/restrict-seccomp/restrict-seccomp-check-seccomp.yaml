@@ -1,0 +1,75 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: restrict-seccomp-check-seccomp
+  annotations:
+    kyverno_policy_name: restrict-seccomp
+    kyverno_rule_name: check-seccomp
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      !has(object.spec.securityContext) ||
+      !has(object.spec.securityContext.seccompProfile) ||
+      !has(object.spec.securityContext.seccompProfile.type) ||
+      object.spec.securityContext.seccompProfile.type == 'RuntimeDefault' ||
+      object.spec.securityContext.seccompProfile.type == 'Localhost'
+    message: >-
+      Use of custom Seccomp profiles is disallowed. The field spec.securityContext.seccompProfile.type
+      must be unset or set to `RuntimeDefault` or `Localhost`.
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.seccompProfile) ||
+      !has(container.securityContext.seccompProfile.type) ||
+      container.securityContext.seccompProfile.type == 'RuntimeDefault' ||
+      container.securityContext.seccompProfile.type == 'Localhost')
+    message: >-
+      Use of custom Seccomp profiles is disallowed. The field spec.containers[*].securityContext.seccompProfile.type
+      must be unset or set to `RuntimeDefault` or `Localhost`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seccompProfile) ||
+      !has(container.securityContext.seccompProfile.type) ||
+      container.securityContext.seccompProfile.type == 'RuntimeDefault' ||
+      container.securityContext.seccompProfile.type == 'Localhost')
+    message: >-
+      Use of custom Seccomp profiles is disallowed. The field spec.initContainers[*].securityContext.seccompProfile.type
+      must be unset or set to `RuntimeDefault` or `Localhost`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seccompProfile) ||
+      !has(container.securityContext.seccompProfile.type) ||
+      container.securityContext.seccompProfile.type == 'RuntimeDefault' ||
+      container.securityContext.seccompProfile.type == 'Localhost')
+    message: >-
+      Use of custom Seccomp profiles is disallowed. The field spec.ephemeralContainers[*].securityContext.seccompProfile.type
+      must be unset or set to `RuntimeDefault` or `Localhost`.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: restrict-seccomp-check-seccomp
+spec:
+  policyName: restrict-seccomp-check-seccomp
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/restrict-seccomp-check-seccomp
+        operator: NotIn
+        values:
+        - exclude

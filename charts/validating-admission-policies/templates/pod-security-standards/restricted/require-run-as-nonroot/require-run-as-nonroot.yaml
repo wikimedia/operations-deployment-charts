@@ -1,0 +1,72 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: require-run-as-nonroot
+  annotations:
+    kyverno_policy_name: require-run-as-nonroot
+    kyverno_rule_name: run-as-nonroot
+    psa_profile: restricted
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      (
+          (
+            has(object.spec.securityContext) &&
+      has(object.spec.securityContext.runAsNonRoot) &&
+      object.spec.securityContext.runAsNonRoot == true
+          ) &&
+      (
+            (
+      object.spec.containers +
+                (has(object.spec.initContainers) ?
+      object.spec.initContainers : []) +
+                (has(object.spec.ephemeralContainers) ?
+      object.spec.ephemeralContainers : [])
+            ).all(container,
+      !has(container.securityContext) ||
+                !has(container.securityContext.runAsNonRoot)
+      ||
+                container.securityContext.runAsNonRoot == true)
+          )
+      ) ||
+      (
+          (
+      object.spec.containers +
+              (has(object.spec.initContainers) ?
+      object.spec.initContainers : []) +
+              (has(object.spec.ephemeralContainers) ?
+      object.spec.ephemeralContainers : [])
+          ).all(container,
+      has(container.securityContext) &&
+              has(container.securityContext.runAsNonRoot) &&
+      container.securityContext.runAsNonRoot == true)
+      )
+    message: >-
+      Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot
+      or all of spec.containers[*].securityContext.runAsNonRoot, spec.initContainers[*].securityContext.runAsNonRoot
+      and spec.ephemeralContainers[*].securityContext.runAsNonRoot, must be set to
+      true.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: require-run-as-nonroot
+spec:
+  policyName: require-run-as-nonroot
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - restricted
+      - key: pod-security.wmf.org/require-run-as-nonroot
+        operator: NotIn
+        values:
+        - exclude

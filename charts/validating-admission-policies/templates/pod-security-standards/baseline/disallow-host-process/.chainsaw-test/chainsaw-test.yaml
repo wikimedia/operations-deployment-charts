@@ -1,0 +1,23 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-host-process
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.wmf.org/profile: baseline
+  steps:
+  - name: prepare_host-process-containers
+    try:
+    - apply:
+        file: ../disallow-host-process-containers.yaml
+  - name: bad
+    try:
+    - apply:
+        file: pod-good.yaml
+    - apply:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true

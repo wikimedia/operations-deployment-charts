@@ -1,0 +1,62 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-privilege-escalation
+  annotations:
+    kyverno_policy_name: disallow-privilege-escalation
+    kyverno_rule_name: privilege-escalation
+    psa_profile: restricted
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, has(container.securityContext) &&
+      has(container.securityContext.allowPrivilegeEscalation) &&
+      container.securityContext.allowPrivilegeEscalation == false)
+    message: >-
+      Privilege escalation is disallowed. The field spec.containers[*].securityContext.allowPrivilegeEscalation
+      must be set to `false`.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      has(container.securityContext) &&
+      has(container.securityContext.allowPrivilegeEscalation)
+      &&
+      container.securityContext.allowPrivilegeEscalation == false)
+    message: >-
+      Privilege escalation is disallowed. The field spec.initContainers[*].securityContext.allowPrivilegeEscalation
+      must be set to `false`.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      has(container.securityContext) &&
+      has(container.securityContext.allowPrivilegeEscalation)
+      &&
+      container.securityContext.allowPrivilegeEscalation == false)
+    message: >-
+      Privilege escalation is disallowed. The field spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
+      must be set to `false`.
+         
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-privilege-escalation
+spec:
+  policyName: disallow-privilege-escalation
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - restricted
+      - key: pod-security.wmf.org/disallow-privilege-escalation
+        operator: NotIn
+        values:
+        - exclude

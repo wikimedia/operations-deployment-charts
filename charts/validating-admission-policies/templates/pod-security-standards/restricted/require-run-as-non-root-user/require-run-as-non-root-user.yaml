@@ -1,0 +1,66 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: require-run-as-non-root-user
+  annotations:
+    kyverno_policy_name: require-run-as-non-root-user
+    kyverno_rule_name: run-as-non-root-user
+    psa_profile: restricted
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      !has(object.spec.securityContext) ||
+      !has(object.spec.securityContext.runAsUser) ||
+      object.spec.securityContext.runAsUser > 0
+    message: >-
+      Running as root is not allowed. The field spec.securityContext.runAsUser must
+      be unset or set to a number greater than zero.
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.runAsUser) ||
+      container.securityContext.runAsUser > 0)
+    message: >-
+      Running as root is not allowed. The field spec.containers[*].securityContext.runAsUser
+      must be unset or set to a number greater than zero
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.runAsUser) ||
+      container.securityContext.runAsUser > 0)
+    message: >-
+      Running as root is not allowed. The field spec.initContainers[*].securityContext.runAsUser
+      must be unset or set to a number greater than zero
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.runAsUser) ||
+      container.securityContext.runAsUser > 0)
+    message: >-
+      Running as root is not allowed. The field spec.ephemeralContainers[*].securityContext.runAsUser
+      must be unset or set to a number greater than zero
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: require-run-as-non-root-user
+spec:
+  policyName: require-run-as-non-root-user
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - restricted
+      - key: pod-security.wmf.org/require-run-as-non-root-user
+        operator: NotIn
+        values:
+        - exclude

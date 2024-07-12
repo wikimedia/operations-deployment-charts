@@ -1,0 +1,27 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-capabilities-strict
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.wmf.org/profile: restricted
+  steps:
+  - name: prepare_require-drop-all
+    try:
+    - apply:
+        file: ../disallow-capabilities-strict-require-drop-all.yaml
+  - name: prepare_adding-capabilities-strict
+    try:
+    - apply:
+        file: ../disallow-capabilities-strict-adding-capabilities-strict.yaml
+  - name: bad
+    try:
+    - apply:
+        file: pod-good.yaml
+    - apply:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true

@@ -1,0 +1,72 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-selinux-user-role
+  annotations:
+    kyverno_policy_name: disallow-selinux
+    kyverno_rule_name: selinux-user-role
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      !has(object.spec.securityContext) ||
+      !has(object.spec.securityContext.seLinuxOptions) ||
+      (!has(object.spec.securityContext.seLinuxOptions.user) &&
+      !has(object.spec.securityContext.seLinuxOptions.role))
+    message: >-
+      Setting the SELinux user or role is forbidden. The fields spec.securityContext.seLinuxOptions.user
+      and spec.securityContext.seLinuxOptions.role must be unset.
+  - expression: |-
+      object.spec.containers.all(container, !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      (!has(container.securityContext.seLinuxOptions.user) &&
+      !has(container.securityContext.seLinuxOptions.role)))
+    message: >-
+      Setting the SELinux user or role is forbidden. The fields spec.containers[*].securityContext.seLinuxOptions.user
+      and spec.containers[*].securityContext.seLinuxOptions.role must be unset.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      (!has(container.securityContext.seLinuxOptions.user) &&
+      !has(container.securityContext.seLinuxOptions.role)))
+    message: >-
+      Setting the SELinux user or role is forbidden. The fields spec.initContainers[*].securityContext.seLinuxOptions.user
+      and spec.initContainers[*].securityContext.seLinuxOptions.role must be unset.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      !has(container.securityContext) ||
+      !has(container.securityContext.seLinuxOptions) ||
+      (!has(container.securityContext.seLinuxOptions.user) &&
+      !has(container.securityContext.seLinuxOptions.role)))
+    message: >-
+      Setting the SELinux user or role is forbidden. The fields spec.ephemeralContainers[*].securityContext.seLinuxOptions.user
+      and spec.ephemeralContainers[*].securityContext.seLinuxOptions.role must be
+      unset.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-selinux-user-role
+spec:
+  policyName: disallow-selinux-user-role
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-selinux-user-role
+        operator: NotIn
+        values:
+        - exclude

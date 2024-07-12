@@ -1,0 +1,27 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-selinux
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.wmf.org/profile: baseline
+  steps:
+  - name: prepare_selinux-type
+    try:
+    - apply:
+        file: ../disallow-selinux-type.yaml
+  - name: prepare_selinux-user-role
+    try:
+    - apply:
+        file: ../disallow-selinux-user-role.yaml
+  - name: bad
+    try:
+    - apply:
+        file: pod-good.yaml
+    - apply:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true

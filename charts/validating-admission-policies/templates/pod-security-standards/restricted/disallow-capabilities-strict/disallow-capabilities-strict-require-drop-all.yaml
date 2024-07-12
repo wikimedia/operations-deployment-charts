@@ -1,0 +1,59 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-capabilities-strict-require-drop-all
+  annotations:
+    kyverno_policy_name: disallow-capabilities-strict
+    kyverno_rule_name: require-drop-all
+    psa_profile: restricted
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      object.spec.containers.all(container, has(container.securityContext) &&
+      has(container.securityContext.capabilities) &&
+      has(container.securityContext.capabilities.drop) &&
+      container.securityContext.capabilities.drop.exists_one(capability, capability == 'ALL'))
+    message: >-
+      Containers must drop `ALL` capabilities.
+  - expression: |-
+      !has(object.spec.initContainers) ||
+      object.spec.initContainers.all(container,
+      has(container.securityContext) &&
+      has(container.securityContext.capabilities) &&
+      has(container.securityContext.capabilities.drop) &&
+      container.securityContext.capabilities.drop.exists_one(capability, capability == 'ALL'))
+    message: >-
+      Containers must drop `ALL` capabilities.
+  - expression: |-
+      !has(object.spec.ephemeralContainers) ||
+      object.spec.ephemeralContainers.all(container,
+      has(container.securityContext) &&
+      has(container.securityContext.capabilities) &&
+      has(container.securityContext.capabilities.drop) &&
+      container.securityContext.capabilities.drop.exists_one(capability, capability == 'ALL'))
+    message: >-
+      Containers must drop `ALL` capabilities.
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-capabilities-strict-require-drop-all
+spec:
+  policyName: disallow-capabilities-strict-require-drop-all
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - restricted
+      - key: pod-security.wmf.org/disallow-capabilities-strict-require-drop-all
+        operator: NotIn
+        values:
+        - exclude
