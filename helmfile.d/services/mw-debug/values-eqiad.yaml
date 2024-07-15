@@ -26,11 +26,12 @@ cache:
         pool: wf-eqiad
         # No failover for wikifunction
         failover_time: 0
+
+# T368366
 common_images:
   mcrouter:
     mcrouter: mcrouter:2023.07.17.00-1-20240714
     exporter: prometheus-mcrouter-exporter:0.0.1-3-20240714
-
 php:
   envvars:
     MCROUTER_SERVER: "127.0.0.1:11213"

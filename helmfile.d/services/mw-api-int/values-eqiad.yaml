@@ -1,1 +1,32 @@
 #mw-site specific configuration
+cache:
+  mcrouter:
+    enabled: true
+    route_prefix: eqiad/mw
+    zone: eqiad
+    routes:
+      - route: /eqiad/mw
+        pool: eqiad-servers
+        failover_time: 600
+      - route: /codfw/mw
+        pool: codfw-servers
+        failover_time: 600
+      - route: /eqiad/mw-wan
+        pool: eqiad-servers
+        failover_time: 600
+        replica:
+          route: /codfw/mw-wan
+          pool: codfw-servers
+      - route: /local/wf
+        pool: wf-eqiad
+        # No failover for wikifunction
+        failover_time: 0
+
+# T368366
+common_images:
+  mcrouter:
+    mcrouter: mcrouter:2023.07.17.00-1-20240714
+    exporter: prometheus-mcrouter-exporter:0.0.1-3-20240714
+php:
+  envvars:
+    MCROUTER_SERVER: "127.0.0.1:11213"
