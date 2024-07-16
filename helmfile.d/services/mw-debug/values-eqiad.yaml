@@ -6,7 +6,7 @@ mw:
 # we can switch to the in-pod mcrouter for debugging purposes
 cache:
   mcrouter:
-    enabled: true
+    enabled: no
     route_prefix: eqiad/mw
     zone: eqiad
     routes:
@@ -34,7 +34,7 @@ common_images:
     exporter: prometheus-mcrouter-exporter:0.0.1-3-20240714
 php:
   envvars:
-    MCROUTER_SERVER: "127.0.0.1:11213"
-#   MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
+#    MCROUTER_SERVER: "127.0.0.1:11213"
+    MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
     STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
 
