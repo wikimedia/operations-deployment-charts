@@ -1,49 +1,51 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-activator
+  name: {{ template "wmf.releasename" . }}-activator-calico-ingress
+  namespace: knative-serving
   labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
 spec:
-  podSelector:
-    matchLabels:
-      app: activator
-      app-wmf: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
-      release: {{ .Release.Name }}
-  policyTypes:
+  types:
     - Ingress
-{{- if and (.Values.networkpolicy.egress.enabled) (.Values.kubernetesMasters)}}
-    - Egress
-  egress:
-    # Allow to query the K8s API.
-    - to:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 443
-          protocol: TCP
-        - port: 6443
-          protocol: TCP
-{{- end }}
+  selector: control-plane=="activator"
+  # The Activator pod can buffer requests when a pod is scaled down to zero.
+  # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
+  # To understand what ports do, check:
+  # kubectl describe service activator-service -n knative-serving
+  #
+  # TODO(klausman): what do we do here for what in k8s NP is:
+  # - podSelector:
+  #     matchLabels:
+  #       istio: cluster-local-gateway
   ingress:
-      # The Activator pod can buffer requests when a pod is scaled down to zero.
-      # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
-      # To understand what ports do, check:
-      # kubectl describe service activator-service -n knative-serving
-    - from:
-      - podSelector:
-          matchLabels:
-            istio: ingressgateway
-      - podSelector:
-          matchLabels:
-            istio: cluster-local-gateway
-    - ports:
-      - port: 8012
-        protocol: TCP
-      - port: 8013
-        protocol: TCP
+    - action: Allow
+      source:
+        selector: app=="istio-ingressgateway"
+      protocol: TCP
+      destination:
+        ports:
+        - 8012
+        - 8013
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-activator-calico-egress
+  namespace: knative-serving
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  types:
+    - Egress
+  selector: control-plane=="activator"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
