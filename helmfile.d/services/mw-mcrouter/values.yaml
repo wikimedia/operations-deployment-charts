@@ -10,13 +10,18 @@ service:
   nodePort: 0
   use_node_local_endpoints: true
 
+common_images:
+  mcrouter:
+    mcrouter: mcrouter:2023.07.17.00-1-20240714
+    exporter: prometheus-mcrouter-exporter:0.0.1-3-20240714
+
 cache:
   mcrouter:
     num_proxies: 8
     enabled: true
     resources:
       requests:
-        cpu: 200m
+        cpu: 600m
         memory: 256Mi
       limits:
         cpu: 2
