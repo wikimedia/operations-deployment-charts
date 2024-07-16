@@ -15,7 +15,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: app.kubernetes.io/name={{ include "opentelemetry-collector.name" . }} && app.kubernetes.io/instance={{ .Release.Name }}
+  selector: app.kubernetes.io/name=={{ include "opentelemetry-collector.name" . }} && app.kubernetes.io/instance=={{ .Release.Name }}
 
   egress:
     - action: Allow
