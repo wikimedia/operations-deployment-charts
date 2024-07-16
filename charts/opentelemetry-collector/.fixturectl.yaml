@@ -1,3 +1,7 @@
 # Don't insert a services_proxy in `values`, since it fails validation against the upstream chart's
 # values.schema.json.
 default_fixtures: []
+
+# Upstream puts their CI fixtures in a directory called "ci".
+# For ease of updating, use that rather than the WMF convention, .fixtures.
+fixtures_dir: ci
