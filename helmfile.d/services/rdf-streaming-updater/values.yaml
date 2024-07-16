@@ -23,7 +23,8 @@ app:
       use_new_flink_kafka_api: true
       wikibase_repo_thread_pool_size: 30
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.16.1-rdf-0.3.136
+  version: flink-1.17.1-rdf-0.3.145
+  flinkVersion: v1_17
   env:
     # disable JEMALLOC for testing
     - name: "DISABLE_JEMALLOC"

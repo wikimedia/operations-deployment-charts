@@ -10,6 +10,8 @@ app:
       # instead of copying it here?
       checkpoint_dir: s3://rdf-streaming-updater-codfw/wikidata/checkpoints
       output_topic: codfw.rdf-streaming-updater.mutation
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly: "codfw.rdf-streaming-updater.mutation-scholarly"
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "codfw.rdf-streaming-updater.mutation-main"
       reconciliation_topic: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@codfw]
   job:
     initialSavepointPath: s3://rdf-streaming-updater-codfw/wikidata/2023-11-29T162302/savepoint-f62514-fc06085c8727
