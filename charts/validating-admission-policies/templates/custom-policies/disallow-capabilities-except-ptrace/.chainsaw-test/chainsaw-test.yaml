@@ -1,0 +1,23 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-capabilities-but-ptrace
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.wmf.org/disallow-capabilities-but-ptrace: include
+  steps:
+  - name: prepare_but-ptrace
+    try:
+    - apply:
+        file: ../disallow-capabilities-but-ptrace.yaml
+  - name: test
+    try:
+    - create:
+        file: pod-good.yaml
+    - create:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true
