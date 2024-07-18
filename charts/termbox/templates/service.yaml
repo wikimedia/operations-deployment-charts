@@ -1,5 +1,5 @@
 {{ include "mesh.service" . }}
-{{ if not .Values.mesh.enabled }}
+{{ if or (not .Values.mesh.enabled) (.Values.mesh.keep_http_service | default false) }}
 ---
 apiVersion: v1
 kind: Service

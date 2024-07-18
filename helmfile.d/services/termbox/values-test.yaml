@@ -6,9 +6,8 @@ config:
     LANGUAGES_CACHE_MAX_AGE: 300000
     MEDIAWIKI_REQUEST_TIMEOUT: 3000
     MESSAGES_CACHE_MAX_AGE: 60000
-    # The port is the port of the mw-api-int deployment
-    WIKIBASE_REPO: https://test.wikidata.org:4446/w
-    WIKIBASE_REPO_HOSTNAME_ALIAS: mw-api-int-ro.discovery.wmnet
+    WIKIBASE_REPO: http://test.wikidata.org:6500/w
+    WIKIBASE_REPO_HOSTNAME_ALIAS: localhost
 main_app:
   liveness_probe:
     tcpSocket:
@@ -26,14 +25,6 @@ tolerations: {}
 app:
   port: 3031
 mesh:
-  enabled: false
-# We need an egress to reach mw-api-int-ro:4446
-networkpolicy:
-  egress:
-    dst_nets:
-      # mw-api-int-ro.eqiad
-      - cidr: 10.2.2.81/32
-        port: 4446
-      # mw-api-int-ro.codfw
-      - cidr: 10.2.1.81/32
-        port: 4446
+  enabled: true
+  public_port: 4018
+  keep_http_service: true
