@@ -2,7 +2,7 @@
 # Please put overrides for production in other values files.
 
 app:
-  version: v20240716143616-6e14a99
+  version: v20240718123425-ce91a7d
   flinkVersion: v1_17
 
   job:
@@ -25,7 +25,6 @@ app:
       # However, using >600 here still results in 429, since the clients are not synced in any way.
       # 600 appears enough to avoid 429 responses and still get enough throughput.
       http-rate-limit-per-second: 600
-      bypass-optimization-wikiids: wikidatawiki
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
