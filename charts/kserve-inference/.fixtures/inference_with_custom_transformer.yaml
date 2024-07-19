@@ -43,6 +43,8 @@ inference_services:
     transformer:
       image: "machinelearning-liftwing-inference-services-editquality-transformer-custom"
       image_version: "4224"
+      container:
+        command: ["python", "transformer.py"]
       config:
         serviceAccountName: "kserve-transformer-override"
         minReplicas: 2

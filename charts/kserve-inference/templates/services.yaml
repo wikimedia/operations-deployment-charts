@@ -67,6 +67,10 @@ spec:
       - name: {{ .name }}
         value: {{ .value | quote }}
       {{- end }}
+      {{- $transformer_container_config := merge ($custom_transformer.container | default dict) ($generic_transformer.container | default dict) }}
+      {{- if $transformer_container_config }}
+      {{- toYaml $transformer_container_config | nindent 6 }}
+      {{- end }}
       securityContext:
         {{- toYaml $.Values.inference.securityContext | nindent 8 }}
   {{- end }}
