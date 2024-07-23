@@ -59,6 +59,7 @@ ferretdb:
 
   config: # See https://docs.ferretdb.io/configuration/flags/
     # every config here will automatically be converted into an env var
+    listen_addr: "0.0.0.0:27017"
     mode: normal
     handler: pg
     log_level: info
