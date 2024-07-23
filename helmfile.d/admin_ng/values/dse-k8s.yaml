@@ -247,7 +247,10 @@ namespaces:
         max:
           memory: "5Gi"
           cpu: "9"
-  growthbook: {}
+  growthbook:
+    tlsHostnames:
+      - growthbook-frontend
+      - growthbook-backend
 
 
 istio:
