@@ -21,11 +21,11 @@ app:
       path: /
       port: *app_port
   volumes:
-  - name: growthbook-config-volume
+  - name: growthbook-backend-config-volume
     configMap:
-      name: growthbook-config
+      name: growthbook-backend-config
   volumeMounts:
-  - name: growthbook-config-volume
+  - name: growthbook-backend-config-volume
     mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
 
 ferretdb:
