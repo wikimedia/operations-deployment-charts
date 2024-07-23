@@ -1,12 +1,12 @@
 {{/*
   This configmap is used to define the gunicorn and superset configuration
 */}}
-{{- define "configmap.growthbook" }}
+{{- define "configmap.growthbook-backend" }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: growthbook-config
+  name: growthbook-backend-config
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:

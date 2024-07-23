@@ -1,0 +1,13 @@
+app:
+  version: xxxx-ci
+
+config:
+  public: # See https://docs.growthbook.io/self-host/env
+    APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
+    API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+    MONGODB_DBNAME: growthbook
+    MONGODB_USERNAME: growthbook
+
+ingress:
+  gatewayHosts:
+    default: "growthbook"

@@ -1,4 +1,9 @@
 apiVersion: v2
 description: A Helm chart for Kubernetes
 name: growthbook
-version: 0.0.5
+version: 0.0.6
+dependencies:
+  - name: growthbook-backend
+    version: ">=0.0.1"
+  - name: growthbook-frontend
+    version: ">=0.0.1"

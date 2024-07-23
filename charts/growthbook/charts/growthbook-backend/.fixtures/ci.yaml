@@ -1,0 +1,21 @@
+app:
+  version: xxxx-ci
+
+config:
+  public: # See https://docs.growthbook.io/self-host/env
+    APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
+    API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+    MONGODB_DBNAME: growthbook
+    MONGODB_USERNAME: growthbook
+
+ferretdb:
+  version: xxxx-ci
+  config:
+    postgresql_url: postgres://test1001.eqiad.wmnet:5432/growthbook
+
+external_services:
+  postgresql: [analytics]
+
+ingress:
+  gatewayHosts:
+    default: "growthbook-backend"

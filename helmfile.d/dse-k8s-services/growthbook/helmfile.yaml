@@ -29,6 +29,17 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
+      {{/*
+      The following is a hack to copy all environment values (so basically /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml,
+      see environments at the end of this file) into all of the subcharts .Values scopes.
+      It is needed so that the module helpers in those subcharts have access to the defaults and can function like they would normally.
+      */}}
+      {{- range $subchart := (list "growthbook-backend" "growthbook-frontend") }}
+      - {{ $subchart }}:
+      {{- range $k, $v := $.Environment.Values }}
+        {{- $k | nindent 10 }}: {{ $v | toYaml | nindent 12 }}
+      {{- end }}
+      {{- end }}
 
 hooks:
   - events: ["prepare"]

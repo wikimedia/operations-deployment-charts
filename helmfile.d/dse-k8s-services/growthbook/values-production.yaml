@@ -1,21 +1,38 @@
-app:
-  version: 1bf0cb03e0601319b92bd6822c90d5ca1a90b824-production
+version: &app_version 1bf0cb03e0601319b92bd6822c90d5ca1a90b824-production
 
-config:
-  public: # See https://docs.growthbook.io/self-host/env
-    APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
-    API_HOST: 'growthbook.discovery.wmnet:3100'
-    MONGODB_DBNAME: growthbook
-    MONGODB_USERNAME: growthbook
+growthbook-backend:
+  app:
+    version: *app_version
 
-ferretdb:
-  version: d5589697a8646723e731d0b20c921a212f401d76-production
   config:
-    postgresql_url: postgres://an-db1001.eqiad.wmnet:5432/growthbook
+    public: # See https://docs.growthbook.io/self-host/env
+      APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
+      API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+      MONGODB_DBNAME: growthbook
+      MONGODB_USERNAME: growthbook
 
-external_services:
-  postgresql: [analytics]
+  ferretdb:
+    version: d5589697a8646723e731d0b20c921a212f401d76-production
+    config:
+      postgresql_url: postgres://an-db1001.eqiad.wmnet:5432/growthbook
 
-ingress:
-  gatewayHosts:
-    default: "growthbook"
+  external_services:
+    postgresql: [analytics]
+
+  ingress:
+    gatewayHosts:
+      default: "growthbook-backend"
+
+
+growthbook-frontend:
+  app:
+    version:  *app_version
+
+  config:
+    public: # See https://docs.growthbook.io/self-host/env
+      APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
+      API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+
+  ingress:
+    gatewayHosts:
+      default: "growthbook"
