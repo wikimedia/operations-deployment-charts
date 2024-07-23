@@ -50,6 +50,12 @@ ferretdb:
   readiness_probe:
     tcpSocket:
       port: *ferret_port
+  volumes:
+  - name: ferretdb-state-volume
+    emptyDir: {}
+  volumeMounts:
+  - name: ferretdb-state-volume
+    mountPath: /opt/ferretdb/state/
 
   config: # See https://docs.ferretdb.io/configuration/flags/
     # every config here will automatically be converted into an env var
@@ -57,6 +63,8 @@ ferretdb:
     handler: pg
     log_level: info
     postgresql_url: override_me
+    state_dir: /opt/ferretdb/state/
+    replica_set_name: growthbook
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.

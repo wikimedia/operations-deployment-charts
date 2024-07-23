@@ -15,4 +15,5 @@
   {{- include "base.helper.resources" $.Values.ferretdb.resources | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | nindent 2 }}
   volumeMounts:
+    {{- toYaml $.Values.ferretdb.volumeMounts | nindent 4 }}
 {{- end }}

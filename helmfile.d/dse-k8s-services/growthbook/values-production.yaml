@@ -1,10 +1,12 @@
 app:
   version: 1bf0cb03e0601319b92bd6822c90d5ca1a90b824-production
+
 config:
   public: # See https://docs.growthbook.io/self-host/env
     APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
     API_HOST: 'growthbook.discovery.wmnet:3100'
-
+    MONGODB_DBNAME: growthbook
+    MONGODB_USERNAME: growthbook
 
 ferretdb:
   version: d5589697a8646723e731d0b20c921a212f401d76-production

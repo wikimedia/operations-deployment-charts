@@ -24,6 +24,4 @@ spec:
         {{- include "ferretdb.container" . | indent 8 }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
-
-
-
+        {{- toYaml $.Values.ferretdb.volumes | nindent 8 }}
