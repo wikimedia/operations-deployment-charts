@@ -48,7 +48,7 @@ main_app:
       # when maintenance scripts are run. Elevated concurrency
       RecordLintJob:
         enabled: true
-        concurrency: 100
+        concurrency: 50
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
         enabled: true
