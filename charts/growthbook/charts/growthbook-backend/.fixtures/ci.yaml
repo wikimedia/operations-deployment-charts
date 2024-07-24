@@ -8,13 +8,8 @@ config:
     MONGODB_DBNAME: growthbook
     MONGODB_USERNAME: growthbook
 
-ferretdb:
+mongodb:
   version: xxxx-ci
-  config:
-    postgresql_url: postgres://test1001.eqiad.wmnet:5432/growthbook
-
-external_services:
-  postgresql: [analytics]
 
 ingress:
   gatewayHosts:

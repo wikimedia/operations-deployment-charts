@@ -28,39 +28,43 @@ app:
   - name: growthbook-backend-config-volume
     mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
 
-ferretdb:
-  image: repos/data-engineering/ferretdb
+
+mongodb:
+  image: repos/data-engineering/growthbook
   version: latest
-  port: &ferret_port 27017
+  port: &mongodb_port 27017
   resources:
     requests:
-      cpu: 100m
-      memory: 200Mi
+      cpu: 1
+      memory: 1Gi
     limits:
-      cpu: 500m
-      memory: 400Mi
+      cpu: 1
+      memory: 1Gi
+    replicas: 1
   liveness_probe:
     tcpSocket:
-      port: *ferret_port
+      port: *mongodb_port
   readiness_probe:
     tcpSocket:
-      port: *ferret_port
+      port: *mongodb_port
   volumes:
-  - name: ferretdb-state-volume
+  - name: mongodb-config-volume
+    configMap:
+      name: mongodb-config
+  - name: mongodb-data
     emptyDir: {}
   volumeMounts:
-  - name: ferretdb-state-volume
-    mountPath: /opt/ferretdb/state/
+  - name: mongodb-config-volume
+    mountPath: /etc/mongodb/
+  - name: mongodb-data
+    mountPath: /data/db
 
-  config: # See https://docs.ferretdb.io/configuration/flags/
-    # every config here will automatically be converted into an env var
-    listen_addr: "0.0.0.0:27017"
-    mode: normal
-    handler: pg
-    log_level: info
-    postgresql_url: override_me
-    state_dir: /opt/ferretdb/state/
-    replica_set_name: growthbook
+  config: # See https://www.mongodb.com/docs/manual/reference/configuration-options/
+    net:
+      port: *mongodb_port
+      bindIpAll: true
+    storage:
+      dbPath: /data/db
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -87,7 +91,7 @@ config:
     APP_ORIGIN: override_me
     API_HOST: override_me
     MONGODB_USERNAME: override_me
-    MONGODB_HOST: localhost
+    MONGODB_HOST: override_me
     MONGODB_PORT: 27017
     MONGODB_DBNAME: override_me
     MONGODB_EXTRA_ARGS: "?authSource=admin&authMechanism=PLAIN"
