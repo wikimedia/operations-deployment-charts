@@ -35,6 +35,8 @@ mesh:
   request_headers_to_add: []
   # Timeout of a request to the local service
   upstream_timeout: "60s"
+  # timeout for an idle upstream connection - 300s is the envoy default
+  upstream_idle_timeout: "300s"
   # Enabling telemetry, telemetry port.
   telemetry:
     enabled: true

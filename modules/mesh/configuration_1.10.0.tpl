@@ -267,6 +267,9 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
               route:
                 cluster: {{ template "mesh.configuration._local_cluster_name" . }}
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
+                {{- if .Values.mesh.idle_upstream_timeout | default false }}
+                idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
+                {{- end }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
         tracing:
