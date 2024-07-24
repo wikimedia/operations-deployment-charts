@@ -39,14 +39,15 @@ inference_services:
   gemma2-27b-it:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
-        image_version: "2024-07-01-080002-publish"
+        image_version: "2024-07-24-102813-publish"
         custom_env:
           - name: MODEL_NAME
             value: "gemma2"
           - name: STORAGE_URI
             value: "s3://wmf-ml-models/llm/gemma2-27b-it/"
         container:
-          command: [ "python3", "-m", "huggingfaceserver", "--model_dir", "/mnt/models", "--model_name", "gemma2", "--backend", "huggingface", "--dtype", "bfloat16" ]
+          command: ["./entrypoint.sh"]
+          args: [ "--backend", "huggingface", "--dtype", "bfloat16" ]
           resources:
             limits:
               cpu: "8"
