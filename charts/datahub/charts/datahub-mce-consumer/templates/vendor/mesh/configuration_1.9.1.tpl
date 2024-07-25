@@ -235,7 +235,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
         http_filters:
         {{- if (.Values.mesh.faultinjection | default dict).enabled }}
         {{- /* Fault needs to be before any other filter */}}
-        - name: name: envoy.filters.http.fault
+        - name: envoy.filters.http.fault
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
             max_active_faults: 100

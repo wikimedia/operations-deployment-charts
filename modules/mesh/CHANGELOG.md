@@ -1,3 +1,7 @@
+## configuration 1.9.1
+
+- Fix a mistake in the fault injection filter that caused problematic
+  configuration stanzas. It should have been caught in CI and code review
 ## configuration 1.9.0
 
 - Add support for Envoy's fault injection filter.
