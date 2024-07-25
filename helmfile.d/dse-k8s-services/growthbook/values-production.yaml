@@ -7,7 +7,7 @@ growthbook-backend:
   config:
     public: # See https://docs.growthbook.io/self-host/env
       APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
-      API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+      API_HOST: 'growthbook-production-backend.discovery.wmnet:3100'
       MONGODB_HOST: growthbook-production-mongodb
       MONGODB_DBNAME: growthbook
       MONGODB_USERNAME: growthbook
@@ -17,7 +17,7 @@ growthbook-backend:
     # we don't correlate the growthbook version with the mongodb image
     # version, to avoid redeploying the DB at the slightest growthbook
     # image update.
-    version: e50b152c283d09285b4298cc6f4e1313fbe5b76f-production
+    version: 5038cb4eb9fa5e5c0625acfa50c43b43e697fa18-production
 
   ingress:
     gatewayHosts:
