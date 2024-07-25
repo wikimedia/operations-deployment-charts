@@ -52,13 +52,16 @@ mongodb:
     configMap:
       name: mongodb-config
   - name: mongodb-data
-    emptyDir: {}
+    persistentVolumeClaim:
+        claimName: mongodb-pvc
+        readOnly: false
   volumeMounts:
   - name: mongodb-config-volume
     mountPath: /etc/mongodb/
   - name: mongodb-data
     mountPath: /data/db
-
+  disk_size: 10Gi
+  storageclass_name: ceph-rbd-ssd
   config: # See https://www.mongodb.com/docs/manual/reference/configuration-options/
     net:
       port: *mongodb_port
