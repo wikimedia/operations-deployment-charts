@@ -15,6 +15,8 @@ spec:
       app: mongodb
       release: {{ .Release.Name }}
   replicas: {{ .Values.mongodb.resources.replicas }}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
