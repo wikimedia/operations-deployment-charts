@@ -35,6 +35,9 @@ spec:
           args:
           - --config
           - /etc/mongodb/mongod.conf
+          {{- if $.Values.mongodb.auth.enabled }}
+          - --auth
+          {{- end }}
           ports:
           - containerPort: {{ .Values.mongodb.port }}
             protocol: TCP

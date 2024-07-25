@@ -62,6 +62,8 @@ mongodb:
     mountPath: /data/db
   disk_size: 10Gi
   storageclass_name: ceph-rbd-ssd
+  auth:
+    enabled: false
   config: # See https://www.mongodb.com/docs/manual/reference/configuration-options/
     net:
       port: *mongodb_port

@@ -17,6 +17,8 @@ growthbook-backend:
     # we don't correlate the growthbook version with the mongodb image
     # version, to avoid redeploying the DB at the slightest growthbook
     # image update.
+    auth:
+      enabled: true
     version: 5038cb4eb9fa5e5c0625acfa50c43b43e697fa18-production
 
   ingress:
