@@ -1,13 +1,16 @@
 version: &app_version e50b152c283d09285b4298cc6f4e1313fbe5b76f-production
 
+app_origin: &app_origin https://growthbook.discovery.wmnet:3000
+api_host: &api_host https://growthbook-backend.discovery.wmnet:3100
+
 growthbook-backend:
   app:
     version: *app_version
 
   config:
     public: # See https://docs.growthbook.io/self-host/env
-      APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
-      API_HOST: 'growthbook-production-backend.discovery.wmnet:3100'
+      APP_ORIGIN: *app_origin
+      API_HOST: *api_host
       MONGODB_HOST: growthbook-backend-production-mongodb
       MONGODB_DBNAME: growthbook
       MONGODB_USERNAME: growthbook
@@ -32,8 +35,8 @@ growthbook-frontend:
 
   config:
     public: # See https://docs.growthbook.io/self-host/env
-      APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
-      API_HOST: 'growthbook-backend.discovery.wmnet:3100'
+      APP_ORIGIN: *app_origin
+      API_HOST: *api_host
 
   ingress:
     gatewayHosts:
