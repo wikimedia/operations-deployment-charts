@@ -36,15 +36,15 @@ inference_services:
             cpu: "2"
             memory: 2Gi
 
-  gemma2-27b-it:
+  aya23:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
         image_version: "2024-07-24-102813-publish"
         custom_env:
           - name: MODEL_NAME
-            value: "gemma2"
+            value: "aya23"
           - name: STORAGE_URI
-            value: "s3://wmf-ml-models/llm/gemma2-27b-it/"
+            value: "s3://wmf-ml-models/llm/aya-23-8B/"
         container:
           command: ["./entrypoint.sh"]
           args: [ "--backend", "huggingface", "--dtype", "bfloat16" ]
