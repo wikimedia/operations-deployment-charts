@@ -39,7 +39,6 @@ metadata:
     app: {{ template "wmf.chartname" . }}
     chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
-    app.kubernetes.io/component: activator
 spec:
   types:
     - Egress
