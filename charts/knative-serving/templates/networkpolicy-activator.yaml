@@ -42,7 +42,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: control-plane=="activator"
+  selector: app.kubernetes.io/component=="activator"
   egress:
     - action: Allow
       destination:
