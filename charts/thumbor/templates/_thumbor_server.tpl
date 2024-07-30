@@ -246,6 +246,9 @@ THUMBOR_LOG_CONFIG = {
         '404exclude': {
             '()': Http404Filter,
             'flag': 'exclude'
+        },
+        'error': {
+            '()': ErrorFilter,
         }
     },
     'handlers': {
@@ -253,10 +256,10 @@ THUMBOR_LOG_CONFIG = {
             'level': '{{ .Values.main_app.log_level | upper }}',
             'class': 'logging.StreamHandler',
             'formatter': 'default',
-            {{- if .Values.main_app.log_404 }}
-            'filters': ['context', '404exclude' ]
+            {{- if not .Values.main_app.log_404 }}
+            'filters': ['context', '404exclude', 'error' ]
             {{- else }}
-            'filters': ['context' ]
+            'filters': ['context', 'error' ]
             {{- end }}
         }
     },
