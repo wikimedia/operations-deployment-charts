@@ -1,0 +1,21 @@
+inference_services:
+  logo-detection:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+      image: "machinelearning-liftwing-inference-services-logo-detection"
+      image_version: "2024-07-08-163719-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "logo-detection"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/logo-detection/20240417132942/"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
