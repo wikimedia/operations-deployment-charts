@@ -29,6 +29,7 @@ mesh:
   public_port: 4080
   upstream_timeout: "86400.0s"  # 1 day
   idle_timeout: "86400.0s"  # 1 day
+  idle_upstream_timeout: "86400.0s"  # 1 day
 
 php:
   # One worker per pod to make resource management a little easier
