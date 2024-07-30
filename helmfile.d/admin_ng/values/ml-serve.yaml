@@ -109,6 +109,7 @@ namespaces:
       - '*.article-descriptions.wikimedia.org'
       - '*.revertrisk.wikimedia.org'
       - '*.llm.wikimedia.org'
+      - '*.logo-detection.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -231,6 +232,11 @@ namespaces:
         max:
           memory: "44Gi"
           cpu: "24"
+  logo-detection:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
   ores-legacy:
     deployClusterRole: deploy
     deployTLSCertificate: true
