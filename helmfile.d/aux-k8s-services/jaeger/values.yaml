@@ -136,13 +136,21 @@ query:
       # TODO: move to use the external-services chart
       - to:
         - ipBlock:
-            cidr: 208.80.153.12/32 # idp2003
+            cidr: 208.80.154.80/32
         - ipBlock:
-            cidr: 2620:0:860:4:208:80:153:12/128 # idp2003
+            cidr: 2620:0:861:3:208:80:154:80/128
         - ipBlock:
-            cidr: 208.80.154.80/32 # idp1003
+            cidr: 208.80.154.7/32
         - ipBlock:
-            cidr: 2620:0:861:3:208:80:154:80/128 # idp1003
+            cidr: 2620:0:861:1:208:80:154:7/128
+        - ipBlock:
+            cidr: 208.80.153.12/32
+        - ipBlock:
+            cidr: 2620:0:860:1:208:80:153:12/128
+        - ipBlock:
+            cidr: 208.80.153.40/32
+        - ipBlock:
+            cidr: 2620:0:860:2:208:80:153:40/128
         ports:
         - protocol: TCP
           port: 443
