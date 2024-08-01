@@ -34,6 +34,8 @@ resources:
 app:
   image: wikimedia/research-recommendation-api
   version: "2024-07-29-125914-production"
+  command: [ "poetry" ]
+  args: [ "run", "gunicorn" ]
   limits:
     cpu: 2
     memory: 1Gi
