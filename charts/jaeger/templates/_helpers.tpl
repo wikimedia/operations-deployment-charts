@@ -427,6 +427,13 @@ Cassandra, Elasticsearch, or grpc-plugin, badger, memory related environment var
 {{ include "cassandra.env" . }}
 {{- else if eq .Values.storage.type "elasticsearch" -}}
 {{ include "elasticsearch.env" . }}
+{{- if .Values.storage.elasticsearch.archive -}}
+{{ $env := (include "elasticsearch.env" . | fromYamlArray) }}
+{{- range $entry := $env -}}
+{{- $entry = mustMerge (dict "name" ($entry.name | replace "ES_" "ES_ARCHIVE_" )) $entry }}
+{{ list $entry | toYaml }}
+{{- end -}}
+{{- end -}}
 {{- else if eq .Values.storage.type "grpc-plugin" -}}
 {{ include "grpcPlugin.env" . }}
 {{- else if eq .Values.storage.type "badger" -}}
