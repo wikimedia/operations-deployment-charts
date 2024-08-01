@@ -252,6 +252,7 @@ spec: &spec
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                   - match:
@@ -302,6 +303,7 @@ spec: &spec
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{decode(match.meta.uri.title)}'
                         headers:
                           cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
               null_edit:
@@ -357,6 +359,7 @@ spec: &spec
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
                       - method: get
@@ -375,6 +378,7 @@ spec: &spec
                         uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{{ `{{match.meta.uri.title}}` }}'
                         headers:
                           cache-control: no-cache
+                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                         query:
                           redirect: false
 {{ end -}}
@@ -727,6 +731,7 @@ spec: &spec
                       uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
                       headers:
                         cache-control: no-cache
+                        if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                       query:
                         redirect: false
                   - match:
@@ -744,6 +749,7 @@ spec: &spec
                       uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
                       headers:
                         cache-control: no-cache
+                        if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
                       query:
                         redirect: false
 {{ end -}}
