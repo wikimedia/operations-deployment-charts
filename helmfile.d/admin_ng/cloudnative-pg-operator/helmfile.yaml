@@ -7,9 +7,9 @@ templates:
 releases:
 
   # Install first the CRDs, then the operator.
-  - name: cloudnative-pg-operator-crds
-    chart: wmf-stable/cloudnative-pg-operator-crds
-    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg-operator-crds" "" }}
+  - name: cloudnative-pg-crds
+    chart: wmf-stable/cloudnative-pg-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg-crds" "" }}
     {{- if $version }}
     version: {{ $version }}
     {{- end }}
@@ -40,9 +40,9 @@ releases:
                   name: kubernetes
                   namespace: default
 
-  - name: cloudnative-pg-operator
-    chart: wmf-stable/cloudnative-pg-operator
-    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg-operator" "" }}
+  - name: cloudnative-pg
+    chart: wmf-stable/cloudnative-pg
+    {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg" "" }}
     {{- if $version }}
     version: {{ $version }}
     {{- end }}
@@ -51,7 +51,7 @@ releases:
       - kube-system/namespaces
       - kube-system/coredns
       # WMF maintains cloudnative-pg-operator-crds as separate chart and release
-      - cloudnative-pg-operator/cloudnative-pg-operator-crds
+      - cloudnative-pg-operator/cloudnative-pg-crds
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
