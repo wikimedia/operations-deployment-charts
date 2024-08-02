@@ -14,6 +14,7 @@ storage:
     port: 443
     scheme: https
     user: 'jaeger-prod'
+    archive: true
 networkPolicy:
   enabled: true
 
@@ -22,7 +23,8 @@ query:
     registry: docker-registry.discovery.wmnet
     repository: jaeger-query
     tag: *tag
-  _config:
+  _ui_config:
+    archiveEnabled: true
     linkPatterns:
       - type: tags
         key: "guid:x-request-id"
@@ -30,13 +32,17 @@ query:
         # TODO: this might work if we can format the times correctly for kibana?
         # _g=(time:(from:'#{trace.startTime}||-1h',to:'#{trace.startTime}||+1h'))
         url: "https://logstash.wikimedia.org/app/dashboards#/view/x-debug?_g=(time:(from:now-1h,mode:quick,to:now))&_a=(query:(query_string:(query:%27reqId:%22#{guid:x-request-id}%22%27)))"
-  config: "{{ .Values.query._config | mustToPrettyJson }}"
+  config: "{{ .Values.query._ui_config | mustToPrettyJson }}"
   cmdlineParams:
     es.tls.enabled: true
     es.index-date-separator: '.'
     es.num-replicas: 2
     es.num-shards: 1
     es.max-span-age: 2200h0m0s  # about one quarter
+    es-archive.tls.enabled: true
+    es-archive.index-date-separator: '.'
+    es-archive.num-replicas: 2
+    es-archive.num-shards: 1
     query.http.tls.enabled: true
     query.http.tls.key: /tls/tls.key
     query.http.tls.cert: /tls/tls.crt
