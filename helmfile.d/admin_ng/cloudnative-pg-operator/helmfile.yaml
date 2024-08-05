@@ -17,29 +17,6 @@ releases:
     needs:
       - kube-system/namespaces
 
-  - name: cloudnative-pg-operator-networkpolicies
-    chart: wmf-stable/raw
-    <<: *default
-    needs:
-      - kube-system/namespaces
-    values:
-    - resources:
-      # Allow the cloudnative-pg-operator pod to contact the Kubernetes API
-      - apiVersion: crd.projectcalico.org/v1
-        kind: NetworkPolicy
-        metadata:
-          name: cloudnative-pg-operator-kubeapi-calico
-        spec:
-          types:
-            - Egress
-          selector: "app.kubernetes.io/name == 'cloudnative-pg'"
-          egress:
-            - action: Allow
-              destination:
-                services:
-                  name: kubernetes
-                  namespace: default
-
   - name: cloudnative-pg
     chart: wmf-stable/cloudnative-pg
     {{- $version := .Values.chartVersions | get "wmf-stable/cloudnative-pg" "" }}

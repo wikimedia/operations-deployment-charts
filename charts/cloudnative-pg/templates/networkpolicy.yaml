@@ -1,0 +1,63 @@
+{{/*
+  Allow the cloudnative-pg-operator pod to contact the Kubernetes API
+*/}}
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-operator-to-kubeapi
+spec:
+  types:
+    - Egress
+  selector: "app.kubernetes.io/name == '{{ $.Chart.Name }}'"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+
+{{/*
+  Allow the the Kubernetes API to contact the operator admission/mutation webook API endpoints
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-operator-mutating-webhook-from-kubeapi
+spec:
+  types:
+    - Ingress
+  selector: "app.kubernetes.io/name == '{{ $.Chart.Name }}'"
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        services:
+          name: {{ $.Values.service.name }}
+          namespace: {{ $.Release.Namespace }}
+{{/*
+Allow the operator to reach out to the PG instances, to enquire about their status/health
+*/}}
+{{- if $.Values.watchedNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-operator-to-postgres-instance-api
+spec:
+  types:
+    - Egress
+  selector: "app.kubernetes.io/name == 'cloudnative-pg'"
+  egress:
+  {{- range $cluster_namespace := $.Values.watchedNamespaces }}
+  - action: Allow
+    destination:
+      selector: "cnpg.io/podRole == 'instance'"
+      namespaceSelector: "projectcalico.org/name == '{{ $cluster_namespace }}'"
+      ports: [8000]
+   {{- end }}
+{{- end }}
