@@ -1,42 +1,30 @@
+# NOTE: net-istio-controller does not need an ingress policy
 {{- if .Values.networkpolicy.egress.enabled }}
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-net-istio-controller
+  name: {{ template "wmf.releasename" . }}-net-istio-controller-calico-egress
+  namespace: knative-serving
   labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
 spec:
-  podSelector:
-    matchLabels:
-      app: net-istio-controller
-      app-wmf: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
-      release: {{ .Release.Name }}
-  policyTypes:
+  types:
     - Egress
+  selector: app.kubernetes.io/component=="net-istio"
   egress:
-      # The Networking Istio pod needs to periodically probe all
-      # the InferenceService pods to make sure that the Istio routes are alive.
-    - to:
-      - podSelector:
-          matchLabels:
-            app-wmf: kserve-inference
-      ports:
-        - port: 8080
-          protocol: TCP
-{{- if (.Values.kubernetesMasters)}}
-    # Allow to query the K8s API.
-    - to:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 443
-          protocol: TCP
-        - port: 6443
-          protocol: TCP
-{{- end }}
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+    # The Networking Istio pod needs to periodically probe all
+    # the InferenceService pods to make sure that the Istio routes are alive.
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: app-wmf=="kserve-inference"
+        ports:
+          - 8080
 {{- end }}

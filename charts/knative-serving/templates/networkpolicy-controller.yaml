@@ -1,45 +1,31 @@
-{{- if and (.Values.networkpolicy.egress.enabled) (or (.Values.docker.registry_cidrs) (.Values.kubernetesMasters))}}
-apiVersion: networking.k8s.io/v1
+# NOTE: the controller does not need an ingress policy
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-controller
+  name: {{ template "wmf.releasename" . }}-controller-calico-egress
+  namespace: knative-serving
   labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
 spec:
-  podSelector:
-    matchLabels:
-      app: controller
-      app-wmf: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
-      release: {{ .Release.Name }}
-  policyTypes:
+  types:
     - Egress
+  selector: app.kubernetes.io/component=="controller"
   egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
 {{- if (.Values.docker.registry_cidrs)}}
-      # Allow the knative controller to resolve docker image tag-to-digest
-      # conversions using the docker registry.
-    - to:
-      {{- range $cidr := .Values.docker.registry_cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 443
-          protocol: TCP
-{{- end }}
-{{- if (.Values.kubernetesMasters)}}
-    # Allow to query the K8s API.
-    - to:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 443
-          protocol: TCP
-        - port: 6443
-          protocol: TCP
-{{- end }}
+    - action: Allow
+      protocol: TCP
+      destination:
+        nets:
+        {{- range $cidr := .Values.docker.registry_cidrs }}
+        - {{ $cidr }}
+        {{- end }}
+        ports:
+          - 443
 {{- end }}

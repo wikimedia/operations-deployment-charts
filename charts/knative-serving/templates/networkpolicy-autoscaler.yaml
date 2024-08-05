@@ -1,59 +1,52 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-autoscaler
+  name: {{ template "wmf.releasename" . }}-autoscaler-calico-ingress
+  namespace: knative-serving
   labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
 spec:
-  podSelector:
-    matchLabels:
-      app: autoscaler
-      app-wmf: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
-      release: {{ .Release.Name }}
-  policyTypes:
+  types:
     - Ingress
-{{- if .Values.networkpolicy.egress.enabled }}
-    - Egress
-  egress:
-      # The Autoscaler pod needs to be able to fetch Prometheus metrics from
-      # all InferenceService pods to apply scaling policies correctly.
-    - to:
-      - podSelector:
-          matchLabels:
-            app-wmf: kserve-inference
-      ports:
-        - port: 9090
-          protocol: TCP
-{{- if .Values.kubernetesMasters }}
-    # Allow to query the K8s API.
-    - to:
-      {{- range $cidr := .Values.kubernetesMasters.cidrs }}
-      - ipBlock:
-          cidr: {{ $cidr }}
-      {{- end }}
-      ports:
-        - port: 443
-          protocol: TCP
-        - port: 6443
-          protocol: TCP
-{{- end }}
-{{- end }}
+  selector: app.kubernetes.io/component=="autoscaler"
+  # The Activator pod reports metrics to the Autoscaler when buffering
+  # requests for scale-to-zero deployments.
+  # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
+  # For more info about how ports are used:
+  # kubectl describe service autoscaler -n knative-serving
   ingress:
-      # The Activator pod reports metrics to the Autoscaler when buffering
-      # requests for scale-to-zero deployments.
-      # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
-      # For more info about how ports are used:
-      # kubectl describe service autoscaler -n knative-serving
-    - from:
-      - podSelector:
-          matchLabels:
-            app: activator
-            app-wmf: {{ template "base.name.chart" . }}
-            chart: {{ template "base.name.chartid" . }}
-            release: {{ .Release.Name }}
-      ports:
-        - port: 8080
-          protocol: TCP
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+        - 8080
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-autoscaler-calico-egress
+  namespace: knative-serving
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  types:
+    - Egress
+  selector: app.kubernetes.io/component=="autoscaler"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+    # The Autoscaler pod needs to be able to fetch Prometheus metrics from
+    # all InferenceService pods to apply scaling policies correctly.
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: app-wmf=="kserve-inference"
+        ports:
+          - 9090

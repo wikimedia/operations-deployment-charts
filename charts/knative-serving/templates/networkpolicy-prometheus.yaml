@@ -1,23 +1,21 @@
 {{ if .Values.monitoring.enabled -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-prometheus
+  name: {{ template "wmf.releasename" . }}-prometheus-calico-ingress
+  namespace: knative-serving
   labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
     release: {{ .Release.Name }}
 spec:
-  podSelector:
-    matchLabels:
-      app-wmf: {{ template "base.name.chart" . }}
-      chart: {{ template "base.name.chartid" . }}
-      release: {{ .Release.Name }}
-  policyTypes:
+  types:
     - Ingress
+  # Prometheus metrics
   ingress:
-    - ports:
-      # Prometheus metrics
-      - port: 9090
-        protocol: TCP
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+        - 9090
 {{- end }}

@@ -10,7 +10,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: control-plane=="activator"
+  selector: app.kubernetes.io/component=="activator"
   # The Activator pod can buffer requests when a pod is scaled down to zero.
   # https://github.com/knative/serving/blob/main/docs/scaling/SYSTEM.md
   # To understand what ports do, check:
