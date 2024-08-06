@@ -56,5 +56,5 @@ spec:
       restartPolicy: Never
   # As above, we're not assuming idempotence; don't restart the entire pod, either.
   backoffLimit: 0
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 604800  # 7 days
 {{- end }}
