@@ -1,2 +1,6 @@
 resources:
   replicas: 3
+# TODO: T368366 - remove when lifted into global values
+common_images:
+  statsd:
+    exporter: prometheus-statsd-exporter:0.26.1-2-20240804
