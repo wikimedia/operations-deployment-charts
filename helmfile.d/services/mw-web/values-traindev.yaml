@@ -36,6 +36,8 @@ php:
     size: 200 # Megabytes. Probably needs a boost in production
     nofiles: "1000" # Number of files. Definitely needs a boost in production
     interned_strings_buffer: "10" # Megabytes. Memory used to store identical strings
+  envvars:
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: fake_statsd_exporter_prometheus_service_host
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 
