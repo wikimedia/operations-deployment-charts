@@ -1,0 +1,14 @@
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "cluster.fullname" . }}-to-kubapi
+spec:
+  types:
+    - Egress
+  selector: "cnpg.io/jobRole in { 'initdb', 'join' } || cnpg.io/podRole == 'instance'"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
