@@ -17,7 +17,7 @@ common_images:
 
 cache:
   mcrouter:
-    num_proxies: 8
+    num_proxies: 10
     enabled: true
     resources:
       requests:
@@ -27,6 +27,14 @@ cache:
         cpu: 2
         memory: 1024Mi
     public_service: true
+    exporter:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 50Mi
+        limits:
+          cpu: 120m
+          memory: 100Mi
 
 networkpolicy:
   egress:
