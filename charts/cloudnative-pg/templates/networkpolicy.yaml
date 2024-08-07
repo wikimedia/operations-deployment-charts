@@ -16,10 +16,10 @@ spec:
           name: kubernetes
           namespace: default
 
+---
 {{/*
   Allow the the Kubernetes API to contact the operator admission/mutation webook API endpoints
 */}}
----
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
@@ -39,11 +39,12 @@ spec:
         services:
           name: {{ $.Values.service.name }}
           namespace: {{ $.Release.Namespace }}
+
+---
 {{/*
 Allow the operator to reach out to the PG instances, to enquire about their status/health
 */}}
 {{- if $.Values.watchedNamespaces }}
----
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
@@ -61,3 +62,22 @@ spec:
       ports: [8000]
    {{- end }}
 {{- end }}
+
+---
+{{/*
+Allow ingress traffic to the monitoring port
+*/}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-operator-prometheus
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $.Chart.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+      - port: {{ get $.Values.podAnnotations "prometheus.io/port" }}
+        protocol: TCP

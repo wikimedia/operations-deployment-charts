@@ -68,7 +68,12 @@ additionalArgs: []
 #    value: "{{ .Release.Name }}"
 #  - name: MY_VAR
 #    value: "mySpecialKey"
-additionalEnv: []
+additionalEnv:
+# See https://cloudnative-pg.io/documentation/1.23/operator_conf/#defining-an-operator-config-map
+# This allows the Pods owned by a Cluster object to inherit all its annotations starting with
+# prometheus.io/, which will allow us to setup prometheus metrics collection on pods.
+- name: INHERITED_ANNOTATIONS
+  value: "prometheus.io/*"
 
 serviceAccount:
   # -- Specifies whether the service account should be created.
@@ -87,7 +92,13 @@ rbac:
 # -- Annotations to be added to all other resources.
 commonAnnotations: {}
 # -- Annotations to be added to the pod.
-podAnnotations: {}
+podAnnotations:
+  # See https://cloudnative-pg.io/documentation/1.23/monitoring/#monitoring-the-operator
+  prometheus.io/path: '/metrics'
+  prometheus.io/port: '8080'
+  # See https://wikitech.wikimedia.org/wiki/Kubernetes/Metrics
+  prometheus.io/scrape: "true"
+
 # -- Labels to be added to the pod.
 podLabels: {}
 
