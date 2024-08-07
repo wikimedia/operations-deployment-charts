@@ -1,2 +1,8 @@
 resources:
   replicas: 3
+monitoring:
+  statsd:
+    requests:
+      cpu: 2
+    limits:
+      cpu: 5
