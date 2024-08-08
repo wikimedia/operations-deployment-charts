@@ -188,7 +188,7 @@ cluster:
   annotations:
     # See https://cloudnative-pg.io/documentation/1.23/monitoring/#monitoring-instances
     prometheus.io/path: "/metrics"
-    prometheus.io/port: 9187
+    prometheus.io/port: "9187"
     # See https://wikitech.wikimedia.org/wiki/Kubernetes/Metrics
     prometheus.io/scrape: "true"
 
