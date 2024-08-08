@@ -7,3 +7,11 @@ mwscript:
   comment: comment
   tty: true
   stdin: true
+
+# These are enabled to check the pod.kubernetes.io/sidecars annotation
+cache:
+  mcrouter:
+    enabled: true
+mw:
+  logging:
+    rsyslog: true

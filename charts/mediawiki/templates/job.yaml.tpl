@@ -22,13 +22,24 @@ spec:
         {{- toYaml .Values.mwscript.labels | nindent 8 }}
         {{- end }}
       annotations:
-        # Shut down the pod (via k8s-controller-sidecars) when -app is the only container left.
+        # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
+        # if sidecars are still running.
         # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
         # with their sidecars running even after the main container completes.
-        pod.kubernetes.io/sidecars: "\
-          {{ include "base.name.release" . }}-mcrouter,\
-          {{ include "base.name.release" . }}-tls-proxy,\
-          {{ include "base.name.release" . }}-rsyslog"
+        {{- $release := include "base.name.release" . -}}
+        {{- $sidecars := list -}}
+        {{- if .Values.cache.mcrouter.enabled -}}
+          {{- $sidecars = print $release "-mcrouter" | append $sidecars -}}
+        {{- end -}}
+        {{- if .Values.mesh.enabled -}}
+          {{- $sidecars = print $release "-tls-proxy" | append $sidecars -}}
+        {{- end -}}
+        {{- if .Values.mw.logging.rsyslog -}}
+          {{- $sidecars = print $release "-rsyslog" | append $sidecars -}}
+        {{- end -}}
+        {{- if $sidecars }}
+        pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
+        {{- end -}}
         {{- if .Values.mwscript.comment }}
         comment: {{ .Values.mwscript.comment | quote }}
         {{- end }}
