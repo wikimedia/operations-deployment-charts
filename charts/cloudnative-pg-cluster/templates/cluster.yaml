@@ -13,7 +13,7 @@ metadata:
   {{- end }}
 spec:
   instances: {{ .Values.cluster.instances }}
-  imageName: {{ .Values.cluster.imageName }}:{{ .Values.cluster.imageTag }}
+  imageName: {{ include "cluster.imagename" . }}
   imagePullPolicy: {{ .Values.cluster.imagePullPolicy }}
   {{- with .Values.cluster.imagePullSecrets}}
   imagePullSecrets:
