@@ -71,13 +71,10 @@ cluster:
   # -- Number of instances
   instances: 3
 
-  # PG major version
-  version: 15
-
   # -- Name of the container image, supporting both tags (<image>:<tag>) and digests for deterministic and repeatable deployments:
   # <image>:<tag>@sha256:<digestValue>
   imageName: "docker-registry.discovery.wmnet/repos/data-engineering/postgresql-kubernetes/postgresql"
-  imageTag:
+  imageTag: override_me
 
   # -- Image pull policy. One of Always, Never or IfNotPresent. If not defined, it defaults to IfNotPresent. Cannot be updated.
   # More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
@@ -287,7 +284,3 @@ pooler:
       containers:
       - name: pgbouncer
         image: docker-registry.discovery.wmnet/repos/data-engineering/pgbouncer
-
-common_images:
-  postgresql:
-    "15": "override_me"
