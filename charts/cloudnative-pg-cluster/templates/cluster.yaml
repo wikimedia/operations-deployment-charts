@@ -13,7 +13,11 @@ metadata:
   {{- end }}
 spec:
   instances: {{ .Values.cluster.instances }}
-  imageName: {{ include "cluster.imagename" . }}
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: {{ include "cluster.imagecatalog.name" . }}
+    major: {{ .Values.cluster.version }}
   imagePullPolicy: {{ .Values.cluster.imagePullPolicy }}
   {{- with .Values.cluster.imagePullSecrets}}
   imagePullSecrets:

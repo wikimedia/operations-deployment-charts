@@ -51,6 +51,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/part-of: cloudnative-pg
 {{- end }}
 
-{{- define "cluster.imagename" -}}
-{{ $.Values.cluster.imageName}}:{{ get $.Values.common_images.postgresql (toString $.Values.cluster.version) }}
+{{- define "cluster.imagecatalog.name" -}}
+{{ include "cluster.fullname" . }}-catalog
 {{- end }}

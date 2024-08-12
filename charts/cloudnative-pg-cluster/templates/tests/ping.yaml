@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: database-ping-test
-          image: {{ include "cluster.imagename" . }}
+          image: {{ $.Values.cluster.imageName }}:{{ $.Values.cluster.version }}
           command: [ 'sh' ]
           env:
             - name: PGUSER

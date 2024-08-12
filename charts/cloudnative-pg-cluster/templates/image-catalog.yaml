@@ -1,0 +1,11 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ImageCatalog
+metadata:
+  name: {{ include "cluster.imagecatalog.name" . }}
+spec:
+  images:
+    {{- range $pgVersion, $imageTag := $.Values.common_images.postgresql }}
+    - major: {{ $pgVersion | int }}
+      image: {{ $.Values.cluster.imageName }}:{{ $imageTag }}
+    {{- end }}
