@@ -5,10 +5,25 @@ metadata:
 spec:
   types:
     - Egress
-  selector: "cnpg.io/jobRole in { 'initdb', 'join' } || cnpg.io/podRole == 'instance'"
+  selector: "cnpg.io/jobRole in { 'initdb', 'join' } || cnpg.io/podRole in { 'instance', 'pooler' }"
   egress:
     - action: Allow
       destination:
         services:
           name: kubernetes
           namespace: default
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "cluster.fullname" . }}-ingress-pooler
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/podRole: pooler
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+      - port: 5432
+        protocol: TCP
