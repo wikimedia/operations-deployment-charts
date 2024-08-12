@@ -20,6 +20,7 @@ main_app:
 
 shellbox:
   flavour: video
+  min_avail_workers: 1
 
 service:
   deployment: production
@@ -32,9 +33,11 @@ mesh:
   idle_upstream_timeout: "86400.0s"  # 1 day
 
 php:
-  # One worker per pod to make resource management a little easier
-  # given how hungry ffmpeg can be
-  workers: 1
+  # Two workers per pod - but effectively 1 left for encoding when
+  # used with min_avail_workers, 1 spare for healthchecks. We do this
+  # to make resource management a little easier given how hungry
+  # ffmpeg can be
+  workers: 2
   # Set timeout to just short of 1d as we want to let other parts further up the stack handle the timeouts
   timeout: 86390
 

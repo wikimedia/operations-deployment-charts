@@ -40,7 +40,11 @@ resources:
       port: {{ .Values.php.httpd.port }}
   readinessProbe:
     httpGet:
+{{- if .Values.shellbox.min_avail_workers }}
+      path: /healthz?min_avail_workers={{ .Values.shellbox.min_avail_workers }}
+{{- else }}
       path: /healthz
+{{- end }}
       port: php-metrics
   resources:
     requests:

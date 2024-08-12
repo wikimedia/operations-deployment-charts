@@ -44,6 +44,9 @@ shellbox:
   # global setting.
   version: ""
   flavour: score
+  # Require that at least $min_avail_workers be free in the pod for it
+  # to be seen as healthy.
+  min_avail_workers: ~
 mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.
