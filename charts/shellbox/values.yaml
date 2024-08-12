@@ -47,6 +47,11 @@ shellbox:
   # Require that at least $min_avail_workers be free in the pod for it
   # to be seen as healthy.
   min_avail_workers: ~
+  # parameters for the readiness check - if containing a value, these
+  # parameters will be passed to the readiness check. For example, use
+  # this check to set failureThreshold or periodSeconds.
+  readinessParams: ~
+
 mesh:
   enabled: false # Switch to true in production
   # image_version: 1.15.1-2 # image_version is defined globally by SRE. May be overridden here, though.

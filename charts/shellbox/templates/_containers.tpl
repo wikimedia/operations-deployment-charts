@@ -39,6 +39,9 @@ resources:
     tcpSocket:
       port: {{ .Values.php.httpd.port }}
   readinessProbe:
+{{- if .Values.shellbox.readinessParams }}
+{{ toYaml .Values.shellbox.readinessParams | indent 4 }}
+{{- end }}
     httpGet:
 {{- if .Values.shellbox.min_avail_workers }}
       path: /healthz?min_avail_workers={{ .Values.shellbox.min_avail_workers }}
