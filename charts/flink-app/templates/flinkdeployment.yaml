@@ -94,6 +94,9 @@ spec:
         {{- end }}
     {{- if or (or .Values.mesh.enabled .Values.app.env) .Values.app.config_files }}
     spec:
+      {{- if .Values.debug.enabled | default false }}
+      shareProcessNamespace: true
+      {{- end }}
       containers:
         {{- if or .Values.app.env .Values.app.config_files}}
         - name: flink-main-container
@@ -110,6 +113,18 @@ spec:
           {{- end }} # end volumeMounts
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
         {{- end }} # end flink-main-container
+        {{- if .Values.debug.enabled | default false }}
+        - name: flink-main-container-debug
+          image: {{ .Values.docker.registry }}/wmfdebug:latest
+          command: ["/bin/bash"]
+          args: ["-c", "echo 'Sleeping infinitely...'; sleep infinity;"]
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
+          stdin: true
+          tty: true
+        {{- end }} # end .Values.debug.enabled
         {{- include "mesh.deployment.container" . | indent 8 }}
 
       {{- if or .Values.mesh.enabled .Values.app.config_files }}
