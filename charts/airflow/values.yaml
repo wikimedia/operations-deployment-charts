@@ -81,6 +81,14 @@ config:
     dags_folder: '/opt/airflow/dags'
     executor: 'LocalExecutor'
 
+
+# Export the content of the postgresql app secret to environment variables
+postgresql:
+  cloudnative: true
+  secrets:
+    uri: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+
+
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
   enabled: false

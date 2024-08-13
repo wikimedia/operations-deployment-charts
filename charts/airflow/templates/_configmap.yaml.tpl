@@ -80,7 +80,9 @@ data:
 
     [database]
     load_default_connections = False
+    {{- if not $.Values.postgresql.cloudnative }}
     sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
+    {{- end }}
     {{- end }}
 
     [elasticsearch]
