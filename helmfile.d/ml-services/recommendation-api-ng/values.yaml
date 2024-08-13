@@ -8,30 +8,30 @@ monitoring:
 
 config:
   public:
-    # environment variables used by swift client to get embedding
+    # environment variables used by rec-api to access endpoints external to WMF k8s (see T348607)
     # Notes:
-    # - SWIFT_USER and SWIFT_SECRET_KEY env vars are stored in a private helm file by SRE
-    # - "http://localhost:6022/auth/v1.0" represents "https://thanos-swift.discovery.wmnet/auth/v1.0"
-    # - swift variables are required only if `related_articles=True` in recommendation_liftwing.ini
-    # - if related_articles is enabled, the memory limit should increase from 1Gi to 2Gi (see T339890#9162780 and T346218)
-    SWIFT_AUTHURL: "http://localhost:6022/auth/v1.0"
-    SWIFT_CONTAINER: "wmf-ml-models"
-    SWIFT_WIKIDATA_IDS_PATH: "recommendation_api/enwiki/20230915010659/wikidata_ids.npy"
-    SWIFT_DECODED_LINES_FLOAT32_PATH: "recommendation_api/enwiki/20230915011054/decoded_lines_float32.npy"
-    # Needed by swiftclient (since it uses requests behing the scenes)
-    # to properly validate TLS certificates.
-    REQUESTS_CA_BUNDLE: "/etc/ssl/certs/wmf-ca-certificates.crt"
-    MAX_CANDIDATES: 500
+    # - These variables were previously used in recommendation_liftwing.ini for the Flask based rec-api:
+    #   https://github.com/wikimedia/research-recommendation-api/blob/e50fd6f51291fb95ac907c8b0bebb9a7c657dd31/recommendation/data/recommendation_liftwing.ini#L1C1-L15C58
+    #   Now they are used in configuration.py for the FastAPI based rec-api:
+    #   https://github.com/wikimedia/research-recommendation-api/blob/ce8059a6da12c646c0504ec077470925676080f0/recommendation/utils/configuration.py#L16C5-L23C47
+    CXSERVER_URL: "http://localhost:6015"
+    CXSERVER_HEADER: "cxserver.wikimedia.org"
+    EVENT_LOGGER_API: "http://localhost:6004/v1/events?hasty=true"
+    EVENT_LOGGER_API_HEADER: "intake-analytics.wikimedia.org"
+    LANGUAGE_PAIRS_API: "http://localhost:6015/v1/languagepairs"
+    LANGUAGE_PAIRS_API_HEADER: "cxserver.wikimedia.org"
+    WIKIPEDIA_API: "http://localhost:6500/w/api.php"
+    WIKIPEDIA_API_HEADER: "{source}.wikipedia.org"
 
 resources:
   replicas: 5
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-01-09-121549-production"
+  version: "2024-08-12-061442-production"
   # override entrypoint defined in the docker image with k8s command and args
-  command: ["uwsgi"]
-  args: ["--http", ":8080", "--master", "--workers", "2", "--wsgi-file", "recommendation/data/recommendation.wsgi", "--harakiri", "15"]
+  command: [ "poetry" ]
+  args: [ "run", "gunicorn" ]
   limits:
     cpu: 2
     memory: 1Gi
@@ -40,7 +40,7 @@ app:
     memory: 1Gi
   readiness_probe:
     httpGet:
-      path: /api/spec
+      path: /docs
       port: 8080
     timeoutSeconds: 10
 
@@ -49,7 +49,6 @@ service:
 
 discovery:
   listeners:
-  - thanos-swift
   - mw-api-int-async-ro
   - cxserver
   - eventgate-analytics
