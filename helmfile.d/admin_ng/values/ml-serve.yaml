@@ -110,6 +110,7 @@ namespaces:
       - '*.revertrisk.wikimedia.org'
       - '*.llm.wikimedia.org'
       - '*.logo-detection.wikimedia.org'
+      - '*.article-models.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -232,6 +233,11 @@ namespaces:
         max:
           memory: "44Gi"
           cpu: "24"
+  article-models:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
   logo-detection:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
