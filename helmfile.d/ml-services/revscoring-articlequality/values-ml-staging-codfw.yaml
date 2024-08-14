@@ -3,6 +3,8 @@ monitoring:
 
 inference:
   predictor:
+    image: "machinelearning-liftwing-inference-services-revscoring"
+    version: "2024-08-14-095356-publish"
     config:
       maxReplicas: 1
     base_env:
