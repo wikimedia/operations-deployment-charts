@@ -53,7 +53,7 @@ templates:
     values:
       - "/etc/helmfile-defaults/statsd-exporter/values.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - "../_mediawiki-common_/statsd-global.yaml"
+      - "statsd-global.yaml"
       - "values-statsd-{{ .Environment.Name }}.yaml" # dc-specific overrides
       - "values-statsd.yaml"
 
