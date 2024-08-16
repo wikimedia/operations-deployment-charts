@@ -87,6 +87,9 @@ data:
 
 {{- end }}
 
+{{/*
+  This configmap is used to define the airflow webserver configuration
+*/}}
 {{- define "configmap.airflow-webserver-config" }}
 ---
 apiVersion: v1
@@ -98,17 +101,47 @@ metadata:
 data:
   # These are system-specified config overrides.
   webserver_config.py: |
-    """Default configuration for the Airflow webserver."""
-    from __future__ import annotations
-    import os
-    from flask_appbuilder.const import AUTH_DB
+    from airflow.www.fab_security.manager import AUTH_OAUTH
 
-    basedir = os.path.abspath(os.path.dirname(__file__))
+    AUTH_TYPE = AUTH_OAUTH
+    {{- with $.Values.config.oidc }}
+    OAUTH_PROVIDERS = [
+        {
+            "name": "CAS",
+            "icon": "fa-openid",
+            'token_key':'access_token',
+            "remote_app": {
+                "client_id": "{{ .client_id }}",
+                "client_secret": "{{ .client_secret }}",
+                "server_metadata_url": "https://{{ .idp_server }}/oidc/.well-known",
+                'client_kwargs':{
+                    'scope': 'openid email profile groups'
+                },
+            },
+        }
+    ]
+    {{- end }}
 
+    {{- with $.Values.config.airflow.auth }}
+    AUTH_ROLE_ADMIN = {{ template "toPythonValue" (dict "value" .role_admin) }}
+    AUTH_ROLES_SYNC_AT_LOGIN = {{ template "toPythonValue" (dict "value" .roles_sync_at_login) }}
+    AUTH_USER_REGISTRATION = {{ template "toPythonValue" (dict "value" .user_registration) }}
+    AUTH_USER_REGISTRATION_ROLE = {{ template "toPythonValue" (dict "value" .user_registration_role) }}
+
+    # Flask-WTF
     WTF_CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = None
+    AUTH_ROLES_MAPPING = {
+      {{- range $ldapGroup, $airflowRole := .role_mappings }}
+      "cn={{ $ldapGroup }},ou=groups,dc=wikimedia,dc=org": {{ template "toPythonValue" (dict "value" $airflowRole) }},
+      {{- end }}
+    }
+    {{- end }}
 
-    AUTH_TYPE = AUTH_DB
+    {{- range $path, $_ :=  $.Files.Glob "files/**.py"}}
+    {{ $.Files.Get $path | nindent 4 }}
+    {{- end }}
+
 {{- end }}
 
 {{- define "configmap.airflow-bash-executables" }}

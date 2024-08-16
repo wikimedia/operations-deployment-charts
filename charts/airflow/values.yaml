@@ -98,6 +98,17 @@ config:
     dags_folder: override_me
     instance_name: override_me
 
+    auth:
+      role_admin: Admin
+      roles_sync_at_login: true
+      user_registration: true
+      user_registration_role: Public
+      role_mappings:
+        nda: [User]
+        wmf: [User]
+        airflow-test-k8s-admins: [Admin]
+        ops: [Admin]
+
     config:
       core:
         colored_console_log: false
@@ -146,6 +157,10 @@ config:
       webserver:
         enable_proxy_fix: true
         rbac: true
+  oidc:
+    idp_server: override_me
+    client_id: override_me
+    client_secret: override_me
 
   connections:
     fs_local:

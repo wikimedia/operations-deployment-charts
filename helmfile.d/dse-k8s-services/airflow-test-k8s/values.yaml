@@ -22,10 +22,15 @@ config:
         connection:
           schema_registry_url: https://datahub-gms.discovery.wmnet:30443/schema-registry/api/
 
+  oidc:
+    idp_server: idp-test.wikimedia.org
+    client_id: airflow_test_k8s
+
 external_services:
   postgresql: [analytics]
   kerberos: [kdc]
   kafka: [jumbo-eqiad]
+  cas: [idp-test]
 
 postgresql:
   cloudnative: false
