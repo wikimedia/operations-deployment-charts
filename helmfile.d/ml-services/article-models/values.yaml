@@ -1,0 +1,75 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # These endpoints should be reachable by Istio proxy sidecars.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.22/32 # api-ro.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.22/32 # api-ro.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.81/32 # mw-api-int-ro.svc.codfw.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
+      - cidr: 10.2.2.81/32 # mw-api-int-ro.svc.eqiad.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+
+monitoring:
+  enabled: true
+
+inference:
+  annotations:
+    sidecar.istio.io/inject: "true"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "20"
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
+
+
+
+inference_services:
+  articlequality:
+    annotations:
+      autoscaling.knative.dev/target: "20"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-articlequality"
+      image_version: "2024-08-01-160129-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "articlequality"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
+        - name: FORCE_HTTP
+          value: "True"
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 1Gi
