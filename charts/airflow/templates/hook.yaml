@@ -16,6 +16,9 @@ spec:
     metadata:
       {{- include "base.meta.labels" . | indent 6 }}
     spec:
+      restartPolicy: "OnFailure"
+      volumes:
+        {{- include "app.generic.volume" . | indent 8 }}
       containers:
         - name: {{ template "base.name.release" . }}-initdb
           command: ["airflow"]
@@ -23,11 +26,9 @@ spec:
           image: {{ template "app.generic._image" . }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- include "app.airflow.env" . | indent 10 }}
-          resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 300m
-              memory: 256Mi
           {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
+          {{ include "base.helper.resources" .Values.app | indent 10 }}
+          {{- with .Values.app.volumeMounts }}
+          volumeMounts:
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
