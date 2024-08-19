@@ -130,6 +130,7 @@ services:
       use_coreparsoid_endpoint: {{ .Values.main_app.use_coreparsoid_endpoint }}
       {{- if .Values.main_app.caching.enabled }}
       caching:
+        excludedUserAgents: {{ .Values.main_app.caching.excludedUserAgents }}
         enabled: {{ .Values.main_app.caching.enabled }}
         ttl: {{ .Values.main_app.caching.ttl }}
         cassandra:
