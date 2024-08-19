@@ -23,35 +23,38 @@
   readinessProbe:
   {{- toYaml .Values.app.readiness_probe | nindent 4 }}
   {{- end }}
-  env:
-    - name: SERVICE_IDENTIFIER
-      value: {{ template "base.name.release" . }}
-  {{- range $k, $v := .Values.config.public }}
-    - name: {{ $k | upper }}
-      value: {{ $v | quote }}
-  {{- end }}
-  {{- range $k, $v := .Values.config.private }}
-    - name: {{ $k | upper }}
-      valueFrom:
-        secretKeyRef:
-          name: {{ template "base.name.release" $ }}-secret-config
-          key: {{ $k }}
-  {{- end }}
-  {{/* Start customization */}}
-  {{- if .Values.postgresql.cloudnative }}
-  {{- range $secret_data_name, $env_var := .Values.postgresql.secrets }}
-    - name: {{ $env_var }}
-      valueFrom:
-        secretKeyRef:
-          name: postgresql-{{ $.Release.Namespace }}-app
-          key: {{ $secret_data_name }}
-  {{- end }}
-  {{- end }}
-  {{/* End customization */}}
+  {{- include "app.airflow.env" . | indent 2 }}
 {{ include "base.helper.resources" .Values.app | indent 2 }}
 {{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- with .Values.app.volumeMounts }}
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
+{{- end }}
+
+
+{{ define "app.airflow.env" }}
+env:
+  - name: SERVICE_IDENTIFIER
+    value: {{ template "base.name.release" . }}
+  {{- range $k, $v := .Values.config.public }}
+  - name: {{ $k | upper }}
+    value: {{ $v | quote }}
+  {{- end }}
+  {{- range $k, $v := .Values.config.private }}
+  - name: {{ $k | upper }}
+    valueFrom:
+      secretKeyRef:
+        name: {{ template "base.name.release" $ }}-secret-config
+        key: {{ $k }}
+  {{- end }}
+  {{- if .Values.postgresql.cloudnative }}
+  {{- range $secret_data_name, $env_var := .Values.postgresql.secrets }}
+  - name: {{ $env_var }}
+    valueFrom:
+      secretKeyRef:
+        name: postgresql-{{ $.Release.Namespace }}-app
+        key: {{ $secret_data_name }}
+  {{- end }}
+  {{- end }}
 {{- end }}
