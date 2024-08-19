@@ -173,8 +173,8 @@ main_app:
         partitioner_concurrency: 200
         partition:
           # This is the concurrency of the individual partitions, so overall concurrency
-          # is 8 * 25 = 200
-          concurrency: 25
+          # is 8 * 30 = 240
+          concurrency: 30
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       htmlCacheUpdate:
