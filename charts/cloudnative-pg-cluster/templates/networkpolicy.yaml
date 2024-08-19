@@ -1,3 +1,6 @@
+{{/*
+  Allow all the jobs and pods to reach out to the kubernetes API
+*/}}
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
@@ -12,7 +15,11 @@ spec:
         services:
           name: kubernetes
           namespace: default
+
 ---
+{{/*
+  Allow the pooler (pgboucner) pods to be reached out to on port 5432
+*/}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -27,7 +34,12 @@ spec:
     - ports:
       - port: 5432
         protocol: TCP
+
 ---
+{{/*
+  Allow the PG pods to be reached out to on port 8000, which exposes an API
+  used by the operator to enquire about the pod status.
+*/}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -42,3 +54,24 @@ spec:
     - ports:
       - port: 8000 {{/* API port */}}
         protocol: TCP
+
+---
+{{/*
+  Allow the join job pods reach out to the PG pods themselves on port 5432,
+  to setup replication.
+*/}}
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "cluster.fullname" . }}-join-to-instance
+spec:
+  types:
+    - Ingress
+  selector: "cnpg.io/podRole == 'instance'"
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: "cnpg.io/jobRole == 'join'"
+      destination:
+        ports: [5432]
