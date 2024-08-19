@@ -14,6 +14,7 @@ config:
     #   https://github.com/wikimedia/research-recommendation-api/blob/e50fd6f51291fb95ac907c8b0bebb9a7c657dd31/recommendation/data/recommendation_liftwing.ini#L1C1-L15C58
     #   Now they are used in configuration.py for the FastAPI based rec-api:
     #   https://github.com/wikimedia/research-recommendation-api/blob/ce8059a6da12c646c0504ec077470925676080f0/recommendation/utils/configuration.py#L16C5-L23C47
+    API_PREFIX: "/service/lw/recommendation/api"
     CXSERVER_URL: "http://localhost:6015"
     CXSERVER_HEADER: "cxserver.wikimedia.org"
     EVENT_LOGGER_API: "http://localhost:6004/v1/events?hasty=true"
@@ -28,7 +29,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-08-12-061442-production"
+  version: "2024-08-19-070929-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: [ "poetry" ]
   args: [ "run", "gunicorn" ]

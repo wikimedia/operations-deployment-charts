@@ -19,6 +19,7 @@ config:
     #   https://github.com/wikimedia/research-recommendation-api/blob/e50fd6f51291fb95ac907c8b0bebb9a7c657dd31/recommendation/data/recommendation_liftwing.ini#L1C1-L15C58
     #   Now they are used in configuration.py for the FastAPI based rec-api:
     #   https://github.com/wikimedia/research-recommendation-api/blob/1463474a4e8d3f864144f9c99697f8231adce196/recommendation/utils/configuration.py#L16C5-L22C47
+    API_PREFIX: "/api"
     CXSERVER_URL: "http://localhost:6015"
     CXSERVER_HEADER: "cxserver.wikimedia.org"
     EVENT_LOGGER_API: "http://localhost:6004/v1/events?hasty=true"
@@ -33,7 +34,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-08-12-061442-production"
+  version: "2024-08-19-070929-production"
   command: [ "poetry" ]
   args: [ "run", "gunicorn" ]
   limits:
