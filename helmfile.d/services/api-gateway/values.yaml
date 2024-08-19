@@ -249,7 +249,13 @@ main_app:
       port: 31443
       timeout: 30s
       path: 'lw/recommendation'
-      full_path_trim: "/service/lw/recommendation/"
+      # This is a Hack: we want to make the API GW not drop anything from the
+      # path. With this setting, a request to:
+      # localhost:8087/service/lw/recommendation/abc
+      # will result in a path sent to the backend service as follows:
+      # "/service/lw/recommendation/abc"
+      # Note that the root slash is still intact, somewhat counterintuitively.
+      full_path_trim: "/"
       host: recommendation-api-ng.discovery.wmnet
       internal_host: recommendation-api-ng.discovery.wmnet
       ingress: true
