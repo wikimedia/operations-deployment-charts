@@ -20,6 +20,19 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      initContainers:
+      - name: {{ template "base.name.release" . }}-initdb
+        command: ["airflow"]
+        args: ["db", "migrate"]
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "app.airflow.env" . | indent 8 }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        {{ include "base.helper.resources" .Values.app | indent 8 }}
+        {{- with .Values.app.volumeMounts }}
+        volumeMounts:
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         {{- include "app.airflow.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
