@@ -72,6 +72,22 @@ inference:
 revscoring_inference_services:
   - wiki: "enwiki"
     version: "202107141649"
+    predictor:
+      custom_env:
+        - name: ASYNCIO_USE_PROCESS_POOL
+          value: "True"
+        - name: ASYNCIO_AUX_WORKERS
+          value: 2
+        - name: PREPROCESS_MP
+          value: "True"
+        - name: INFERENCE_MP
+          value: "False"
+      container:
+        resources:
+          limits:
+            cpu: "3"
+          requests:
+            cpu: "3"
   - wiki: "ptwiki"
     version: "20220616101517"
   - wiki: "simplewiki"
