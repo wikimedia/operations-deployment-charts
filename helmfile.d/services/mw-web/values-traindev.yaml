@@ -4,11 +4,11 @@
 main_app:
   requests:
     auto_compute: false
-    cpu: 1000m
+    cpu: 500m
     memory: 1000Mi
   limits:
     enforce: true
-    cpu: 2000m
+    cpu: 1000m
     memory: 2000Mi
 
 service:
@@ -38,6 +38,11 @@ php:
     interned_strings_buffer: "10" # Megabytes. Memory used to store identical strings
   envvars:
     STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: fake_statsd_exporter_prometheus_service_host
+  httpd:
+    requests:
+      cpu: 100m
+    limits:
+      cpu: 200m
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 
@@ -46,6 +51,11 @@ mw:
   datacenter: dev
   localmemcached:
     enabled: true
+    resources:
+      requests:
+        cpu: 100m
+      limits:
+        cpu: 100m
 cache:
   mcrouter:
     enabled: false
