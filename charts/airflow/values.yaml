@@ -36,6 +36,10 @@ app:
       name: airflow-webserver-config
   - name: logs
     emptyDir: {}
+  - name: airflow-bash-executables
+    configMap:
+      name: airflow-bash-executables
+      defaultMode: 0777
 # The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
 # commented out, as we are not yet using the Kubernetes Executor.
   # - name: pod-template-file-settings
@@ -51,6 +55,8 @@ app:
     subPath: webserver_config.py
   - name: logs
     mountPath: /opt/airflow/logs
+  - name: airflow-bash-executables
+    mountPath: /opt/airflow/usr/bin
   # - name: pod-template-file-settings
   #   mountPath: /opt/airflow/pod_templates/pod_template_file.yaml
 
@@ -86,7 +92,8 @@ config:
 postgresql:
   cloudnative: true
   secrets:
-    uri: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+    uri: PG_URI
+    host: PG_HOST
 
 
 # Additional resources if we want to add a port for a debugger to connect to.
@@ -283,3 +290,5 @@ cronjobs: []
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
 external_services: []
+
+pgServiceName: override_me

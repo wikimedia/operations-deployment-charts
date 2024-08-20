@@ -82,6 +82,9 @@ data:
     load_default_connections = False
     {{- if not $.Values.postgresql.cloudnative }}
     sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
+    {{- else }}
+    {{/* This allows us to give airflow a command to execute to populate the sql_alchemy_conn value */}}
+    sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
     {{- end }}
     {{- end }}
 
@@ -173,4 +176,19 @@ data:
     WTF_CSRF_TIME_LIMIT = None
 
     AUTH_TYPE = AUTH_DB
+{{- end }}
+
+{{- define "configmap.airflow-bash-executables" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-bash-executables
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  pg_pooler_uri: |
+    #!/bin/sh
+    printf ${PG_URI} | sed "s/$PG_HOST/$POOLER_NAME/"
+
 {{- end }}

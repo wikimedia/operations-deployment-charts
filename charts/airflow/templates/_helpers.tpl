@@ -53,8 +53,10 @@ env:
   - name: {{ $env_var }}
     valueFrom:
       secretKeyRef:
-        name: postgresql-{{ $.Release.Namespace }}-app
+        name: {{ $.Values.pgServiceName }}-app
         key: {{ $secret_data_name }}
   {{- end }}
+  - name: POOLER_NAME
+    value: {{ $.Values.pgServiceName }}-pooler-rw
   {{- end }}
 {{- end }}
