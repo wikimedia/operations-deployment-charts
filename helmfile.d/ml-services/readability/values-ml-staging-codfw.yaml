@@ -11,3 +11,10 @@ inference_services:
           value: "s3://wmf-ml-models/readability/multilingual/20240805140437/"
         - name: WIKI_URL
           value: "http://mw-api-int-ro.discovery.wmnet:4680"
+      container:
+        resources:
+          limits:
+            memory: 4Gi
+          requests:
+            memory: 4Gi
+
