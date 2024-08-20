@@ -64,6 +64,9 @@ main_app:
     # Replace the Restbase URI with the correct K8s URI
     restbase_uri: http://localhost:7231
 
+    # Replace the PCS URI (mobileapps) with the correct K8s URI
+    pcs_uri: http://localhost:4102
+
     liftwing:
       # Replace the Restbase URI with the correct K8s URI
       uri: http://localhost:30443
@@ -86,6 +89,7 @@ main_app:
       page_images_summary: true
       rerendered_pcs_endpoints: true
       liftwing_models: false
+      rerendered_pcs_endpoints_native: true
 
   jobqueue:
     # if jobqueue is true, then we'll configure our pod as a
