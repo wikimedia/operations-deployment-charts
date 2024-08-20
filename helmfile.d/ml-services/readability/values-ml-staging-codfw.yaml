@@ -17,4 +17,17 @@ inference_services:
             memory: 4Gi
           requests:
             memory: 4Gi
-
+  readability-old:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-readability"
+      image_version: "2024-07-11-081428-publish"
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+      custom_env:
+        - name: MODEL_NAME
+          value: "readability"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/readability/multilingual/20230824102026/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
