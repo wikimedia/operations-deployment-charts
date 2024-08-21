@@ -4,12 +4,12 @@
 main_app:
   requests:
     auto_compute: false
-    cpu: 500m
-    memory: 1000Mi
+    cpu: 100m
+    memory: 500Mi
   limits:
     enforce: true
-    cpu: 1000m
-    memory: 2000Mi
+    cpu: 500m
+    memory: 1000Mi
 
 service:
   deployment: minikube
