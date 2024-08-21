@@ -13,13 +13,12 @@ main_app:
   port: 6927
   command: []
   args: []
-  # TODO (T348681) Set appropriate values for these; will probably vary by language, so move to helmfile.d values files?
   requests:
-    cpu: 100m
-    memory: 200Mi
+    cpu: 400m
+    memory: 800Mi
   limits:
-    cpu: 200m
-    memory: 400Mi
+    cpu: 1
+    memory: 1Gi
   liveness_probe:
     tcpSocket:
       port: 6927
