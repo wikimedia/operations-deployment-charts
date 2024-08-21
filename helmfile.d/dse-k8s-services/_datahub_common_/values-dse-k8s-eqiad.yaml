@@ -1,36 +1,38 @@
-# The git commit SHA is used for this service
-# The reason being that we build several containers from the same commit
-# and they were generated with different timestamps using the default method
-version: &version "57490f664e22db2ae2905b9062ccbd20255a9600-production"
-
 docker: &docker
   registry: "docker-registry.discovery.wmnet"
 
 mesh:
   enabled: true
 
-setupjobs: &setupjobs
+
+datahubUpgradeJob: &datahubUpgradeJob
   enabled: true
   docker: *docker
   image:
-    tag: *version
+    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:7312a65a24bef6aa81e65ad27207d3def01277ff13667393285f095da5427a02"
 
-elasticsearchSetupJob: *setupjobs
 
-mysqlSetupJob: *setupjobs
+
+elasticsearchSetupJob:
+  enabled: true
+  docker: *docker
+  image:
+    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:c08ae86e58b125232b29520933d690589fb74f32982d52337c1cd05c344490f3"
+
+mysqlSetupJob:
+  enabled: true
+  docker: *docker
+  image:
+    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:c858620ca6f740db86ff838c565a080c50249f95d7e2c876befca03459caddbe"
 
 kafkaSetupJob:
   enabled: false
 
 datahubUpgrade:
-  enabled: true
-  docker: *docker
-  image:
-    tag: *version
+  <<: *datahubUpgradeJob
+
 datahubSystemUpdate:
-  docker: *docker
-  image:
-    tag: *version
+  <<: *datahubUpgradeJob
 
 networkpolicy:
   egress:
@@ -38,22 +40,22 @@ networkpolicy:
 
 datahub-frontend:
   main_app:
-    version: *version
+    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:0a0c0cdac51002f89579945ff19a856dc89889745191df75bdcb15adb07a4d85"
   docker: *docker
 
 datahub-gms:
   main_app:
-    version: *version
+    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:9100b7707326467631130b5eb9aae25ac0fa9c37b2e976af5b7abcbe9f1c1d13"
   docker: *docker
 
 datahub-mce-consumer:
   main_app:
-    version: *version
+    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:e053baedbc652d71ef3f2634ead3164230a66150c68f00b2eaf7d5be1c2d52ff"
   docker: *docker
 
 datahub-mae-consumer:
   main_app:
-    version: *version
+    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:a60074265a6fffff99e129f97591bbd6a64e2056eb7026867542d8976003b70b"
   docker: *docker
 
 global:
