@@ -14,7 +14,11 @@ spec:
       {{- .Values.pooler.parameters | toYaml | nindent 6 }}
   monitoring:
     enablePodMonitor: false  # We don't have the PodMonitor CRD installed
-  {{- with .Values.pooler.template }}
+  {{- $pooler_template := .Values.pooler.template }}
+  {{- $pgbouncer_container_spec := first .Values.pooler.template.spec.containers }}
+  {{- $pgbouncer_image_with_tag_and_digest := printf "%s:%s" .Values.pooler.imageName .Values.pooler.imageTag }}
+  {{- set $pgbouncer_container_spec "image" $pgbouncer_image_with_tag_and_digest }}
+  {{- with $pooler_template }}
   template:
     {{- . | toYaml | nindent 4 }}
   {{- end }}

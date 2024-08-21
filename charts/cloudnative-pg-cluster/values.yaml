@@ -268,6 +268,11 @@ pooler:
   poolMode: transaction
   # -- Number of PgBouncer instances
   instances: 3
+  # --- Custom: pgbouncer image tag
+  imageTag: override_me
+  # --- Custom: pgbouncer image name
+  imageName: docker-registry.discovery.wmnet/repos/data-engineering/pgbouncer
+
   # -- PgBouncer configuration parameters
   parameters:
     max_client_conn: "1000"
@@ -286,7 +291,7 @@ pooler:
     spec:
       containers:
       - name: pgbouncer
-        image: docker-registry.discovery.wmnet/repos/data-engineering/pgbouncer
+        image: automatically_overriden_at_rendering_time
 
 common_images:
   postgresql:
