@@ -5,3 +5,9 @@ service:
   deployment: production
 external_services:
   kerberos: [kdc]
+
+ingress:
+  gatewayHosts:
+    default: "airflow-test-k8s"
+    extraFQDNs:
+    - airflow-test-k8s.wikimedia.org
