@@ -2,7 +2,7 @@
 
 main_app:
   image: repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all
-  version: 2024-08-16-153209
+  version: 2024-08-20-132618
 
 config:
   public:
@@ -10,7 +10,8 @@ config:
     WASM_BINARY: /srv/service/programming-languages/wasmedge_quickjs.so
     PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
     WASMEDGE_HOME: /srv/service/programming-languages/wasmedge
-    ENABLE_WASMEDGE_LIMITS: "1"
+    EXECUTOR_PROCESS_POOL_SIZE: "5"
+    ENABLE_WASMEDGE_LIMITS: "0"
     WASMEDGE_GAS_LIMIT: "1000000"
     WASMEDGE_MEMORY_PAGE_LIMIT: "10000"
     WASMEDGE_TIMEOUT_MS: "11000"
