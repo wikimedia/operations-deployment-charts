@@ -6,18 +6,6 @@ main_app:
     cpu: 8  # equal to FFmpegThreads
     memory: 6G
 
-  # Use a local-disk tmp to improve performance for
-  # large files. T292322
-
-  # Care should be taken here as failed videoscaler jobs could eat up
-  # a lot of disk
-  volumes:
-    - name: local-disk-tmp
-      emptyDir: {}
-  volumeMounts:
-    - name: local-disk-tmp
-      mountPath: /tmp
-
 shellbox:
   flavour: video
   min_avail_workers: 1
