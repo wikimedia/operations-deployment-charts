@@ -14,25 +14,25 @@ nodeplugin:
   registrar:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar
-      tag: &csi-commit-tag e2518f15cbf38339e48f76e6493f9b2ce79c3378-production
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2ec5cc7339112097310d44a46e7855f413321490ceae9609ac1e2bbaf63b8e8c
   plugin:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
-      tag: 2024-07-08-211047
+      tag: 2024-08-22-120803-0bb1067553a2c10b7f19d5987e91d8a75a5419c5@sha256:cc74c35b85c81915f69c5966681047df3b000ee13516aa1e210d7c203daf75b1
 
 provisioner:
   provisioner:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner
-      tag: *csi-commit-tag
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2e3be4184503ba6b70ad26d4ef9f6d22624f72cbb9c57e5e778a2fb20356949d
   attacher:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-attacher
-      tag: *csi-commit-tag
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:0c19e6639d82980599bece800ddc03532c8e52f8e2c83ff2e36015ca4043309c
   resizer:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer
-      tag: *csi-commit-tag
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:255f17ae27ff06eae246d1ac8535e278069f1f3dabd8d315f5254470bd3fc164
   snapshotter:
     enabled: false
 
@@ -49,5 +49,3 @@ secret:
   create: true
   userID: dse-k8s-csi
   # userKey: # This value has been added helmfile via the private repo
-
-
