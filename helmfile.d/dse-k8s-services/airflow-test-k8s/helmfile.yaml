@@ -57,6 +57,7 @@ releases:
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - fullnameOverride: "postgresql-airflow-test-k8s"
