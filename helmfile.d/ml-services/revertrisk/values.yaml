@@ -92,3 +92,47 @@ inference_services:
           requests:
             cpu: "4"
             memory: 6Gi
+  revertrisk-language-agnostic-pre-save:
+    annotations:
+      autoscaling.knative.dev/target: "15"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 3
+      image: "machinelearning-liftwing-inference-services-revertrisk"
+      image_version: "2024-06-28-141228-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-language-agnostic"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/language-agnostic/20231117132654/"
+        - name: FORCE_HTTP
+          value: "true"
+        - name: ALLOW_REVISION_JSON_INPUT
+          value: "true"
+  revertrisk-multilingual-pre-save:
+    annotations:
+      autoscaling.knative.dev/target: "3"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 3
+      image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
+      image_version: "2024-06-28-141229-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-multilingual"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
+        - name: FORCE_HTTP
+          value: "true"
+        - name: ALLOW_REVISION_JSON_INPUT
+          value: "true"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 6Gi
+          requests:
+            cpu: "4"
+            memory: 6Gi
