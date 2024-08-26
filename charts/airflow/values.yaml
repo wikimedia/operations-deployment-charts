@@ -123,6 +123,13 @@ config:
       logging:
         colored_console_log: false
         remote_logging: false
+      metrics:
+        metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
+        statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
+        statsd_host: localhost
+        statsd_on: True
+        statsd_port: 9102
+        statsd_prefix: airflow
       scheduler:
         run_duration: 41460
         standalone_dag_processor: false
