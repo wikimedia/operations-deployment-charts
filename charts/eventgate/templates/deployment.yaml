@@ -82,6 +82,12 @@ spec:
               path: /v1/_test/events
               port: {{ .Values.app.port }}
             initialDelaySeconds: 2
+{{- else }}
+          readinessProbe:
+            httpGet:
+              path: /_info
+              port: {{ .Values.app.port }}
+            initialDelaySeconds: 2
 {{- end }}
 {{- if .Values.main_app.prestop_sleep | default false }}
           {{- include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 10 }}
