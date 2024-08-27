@@ -54,6 +54,8 @@ spec:
     - ports:
       - port: 8000 {{/* API port */}}
         protocol: TCP
+      - port: 9187 {{/* prometheus port */}}
+        protocol: TCP
 
 ---
 {{/*
