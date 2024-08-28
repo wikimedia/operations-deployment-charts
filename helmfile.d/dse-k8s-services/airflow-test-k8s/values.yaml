@@ -1,10 +1,22 @@
 app:
   # docker image version
   version: 2024-08-22-120955-12a3714636edf36d96a6206978de3e2467d5fea9@sha256:ff2686d1b8095b224bf3ec454e7041dc48b70ccce57a5c5af0a886e794746094
+
 service:
   deployment: production
+
+config:
+  airflow:
+    dbHost: 'an-db1001.eqiad.wmnet'
+    dbName: 'airflow-test-k8s'
+    dbUser: 'airflow-test-k8s'
+
 external_services:
+  postgresql: [analytics]
   kerberos: [kdc]
+
+cloudnative_pg:
+  enabled: false
 
 ingress:
   gatewayHosts:
