@@ -151,15 +151,20 @@ main_app:
 
     # Videoscaler jobs point to a different LVS, so they need special treatment
     # as well - thus special rules.
+    # We retry once - these are expensive jobs, so don't retry too
+    # often, but also account for k8s ephemerality that might
+    # abandon jobs for various reasons.
     videoscaler_jobs_config:
       webVideoTranscode:
         enabled: true
         timeout: 86400000
         concurrency: 5
+        retry_limit: 1
       webVideoTranscodePrioritized:
         enabled: true
         concurrency: 4
         timeout: 86400000
+        retry_limit: 1
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
