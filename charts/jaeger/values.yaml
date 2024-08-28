@@ -246,7 +246,14 @@ schema:
     name:
   podAnnotations: {}
   podLabels: {}
-  securityContext: {}
+  securityContext: &default_security_context
+    allowPrivilegeEscalation: false
+    capabilities:
+       drop:
+       - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   podSecurityContext: {}
   ## Deadline for cassandra schema creation job
   activeDeadlineSeconds: 300
@@ -303,7 +310,7 @@ elasticsearch: {}
 ingester:
   enabled: false
   podSecurityContext: {}
-  securityContext: {}
+  securityContext: *default_security_context
   annotations: {}
   image:
     registry: ""
@@ -365,7 +372,7 @@ ingester:
 
 agent:
   podSecurityContext: {}
-  securityContext: {}
+  securityContext: *default_security_context
   enabled: true
   annotations: {}
   image:
@@ -447,7 +454,7 @@ agent:
 
 collector:
   podSecurityContext: {}
-  securityContext: {}
+  securityContext: *default_security_context
   enabled: true
   annotations: {}
   image:
@@ -652,7 +659,7 @@ query:
   #   user_id_claim = "preferred_username"
   #   skip_provider_button = "true"
   podSecurityContext: {}
-  securityContext: {}
+  securityContext: *default_security_context
   agentSidecar:
     enabled: true
   #    resources:
@@ -817,8 +824,7 @@ spark:
 
 esIndexCleaner:
   enabled: false
-  securityContext:
-    runAsUser: 1000
+  securityContext: *default_security_context
   podSecurityContext:
     runAsUser: 1000
   annotations: {}
@@ -866,7 +872,7 @@ esIndexCleaner:
 
 esRollover:
   enabled: false
-  securityContext: {}
+  securityContext: *default_security_context
   podSecurityContext:
     runAsUser: 1000
   annotations: {}
@@ -920,7 +926,7 @@ esRollover:
 
 esLookback:
   enabled: false
-  securityContext: {}
+  securityContext: *default_security_context
   podSecurityContext:
     runAsUser: 1000
   annotations: {}
@@ -970,7 +976,7 @@ esLookback:
 hotrod:
   enabled: false
   podSecurityContext: {}
-  securityContext: {}
+  securityContext: *default_security_context
   replicaCount: 1
   # set the primary command(s) for the hotrod application
   args:
