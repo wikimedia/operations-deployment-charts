@@ -180,6 +180,7 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
+  {{- if not .Values.mwscript.enabled }}
   # See T276908
   livenessProbe:
   {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
@@ -195,6 +196,7 @@
   {{- end }}
     initialDelaySeconds: 1
     periodSeconds: 5
+  {{- end }}
   resources:
     requests:
     {{- if .Values.main_app.requests.auto_compute }}
