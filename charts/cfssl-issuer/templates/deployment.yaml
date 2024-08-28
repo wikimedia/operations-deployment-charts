@@ -53,6 +53,7 @@ spec:
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
+      serviceAccountName: controller-manager
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

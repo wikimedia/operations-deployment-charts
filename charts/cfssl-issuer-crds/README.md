@@ -10,6 +10,3 @@ Then split the file per resource using kubectl-slice:
 kubectl-slice -t "{{.metadata.name}}.yaml" --skip-non-k8s -f cfssl-issuer/build/install.yaml -o .
 
 kube-slice can be found at: https://github.com/patrickdappollonio/kubectl-slice
-
-"creationTimestamp: null" fields need to be removed from updated CRDs as those will trigger
-validation errors in kubeconform.
