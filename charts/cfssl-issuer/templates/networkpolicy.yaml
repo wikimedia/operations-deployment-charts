@@ -1,3 +1,4 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -18,3 +19,27 @@ spec:
       # Probes
       - port: 8081
         protocol: TCP
+
+{{- range $serviceType, $serviceNames := $.Values.external_services }}
+{{- if $serviceNames }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "cfssl-issuer.fullname" $ }}-egress-external-services-{{ $serviceType }}
+  labels:
+  {{- include "cfssl-issuer.labels" $ | nindent 4 }}
+spec:
+  selector: "app.kubernetes.io/name == '{{ include "cfssl-issuer.name" $ }}' && app.kubernetes.io/instance == {{ $.Release.Name }}"
+  types:
+  - Egress
+  egress:
+    {{- range $serviceName := $serviceNames }}
+    - action: Allow
+      destination:
+        services:
+          name: {{ $serviceType }}-{{ $serviceName }}
+          namespace: external-services
+    {{- end }}
+{{- end }}
+{{- end }}
