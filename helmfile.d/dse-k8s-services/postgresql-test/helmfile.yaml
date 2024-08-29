@@ -15,7 +15,7 @@ helmDefaults:
 
 releases:
   - name: postgresql-test
-    namespace: pgluster-test
+    namespace: postgresql-test
     chart: wmf-stable/cloudnative-pg-cluster
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
