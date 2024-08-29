@@ -30,4 +30,5 @@ spec:
             - {{ $controllerNamespaces | join "," }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
