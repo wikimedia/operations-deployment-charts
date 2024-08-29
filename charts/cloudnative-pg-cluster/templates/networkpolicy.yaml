@@ -59,13 +59,15 @@ spec:
 
 ---
 {{/*
-  Allow the join job pods reach out to the PG pods themselves on port 5432,
+  Allow the join job pods to reach out to the PG pods themselves on port 5432,
   to setup replication.
+  Allow the PG pods themselves to talk to each other, to maintain replication.
+  Allow the pooler pods to reach out to PG, to query the DB.
 */}}
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "cluster.fullname" . }}-join-to-instance
+  name: {{ include "cluster.fullname" . }}-to-instance
 spec:
   types:
     - Ingress
@@ -74,6 +76,6 @@ spec:
     - action: Allow
       protocol: TCP
       source:
-        selector: "cnpg.io/jobRole == 'join'"
+        selector: "cnpg.io/jobRole == 'join' || cnpg.io/podRole in { 'instance', 'pooler' }"
       destination:
         ports: [5432]
