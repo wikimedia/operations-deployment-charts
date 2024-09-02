@@ -15,7 +15,12 @@ spec:
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
-        checksum/airflow-config: {{ include (print .Template.BasePath "/_configmap.yaml.tpl") . | sha256sum }}
+        checksum/airflow-bash-executables: {{ include "configmap.airflow-bash-executables" . | sha256sum }}
+        checksum/airflow-config: {{ include "configmap.airflow-config" . | sha256sum }}
+        checksum/airflow-connections: {{ include "configmap.airflow-connections" . | sha256sum }}
+        checksum/airflow-webserver-config: {{ include "configmap.airflow-webserver-config" . | sha256sum }}
+        checksum/gitsync-sparse-checkout: {{ include "configmap.gitsync-sparse-checkout-file" . | sha256sum }}
+        checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
