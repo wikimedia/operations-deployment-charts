@@ -30,7 +30,7 @@ metadata:
   labels:
   {{- include "cfssl-issuer.labels" $ | nindent 4 }}
 spec:
-  selector: "app.kubernetes.io/name == '{{ include "cfssl-issuer.name" $ }}' && app.kubernetes.io/instance == {{ $.Release.Name }}"
+  selector: "app.kubernetes.io/name == '{{ include "cfssl-issuer.name" $ }}' && app.kubernetes.io/instance == '{{ $.Release.Name }}'"
   types:
   - Egress
   egress:
