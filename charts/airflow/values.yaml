@@ -43,6 +43,8 @@ app:
   - name: airflow-connections
     configMap:
       name: airflow-connections
+  - name: airflow-dags
+    emptyDir: {}
 # The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
 # commented out, as we are not yet using the Kubernetes Executor.
   # - name: pod-template-file-settings
@@ -63,6 +65,8 @@ app:
   - name: airflow-connections
     mountPath: /opt/airflow/connections.yaml
     subPath: connections.yaml
+  - name: airflow-dags
+    mountPath: &dags_root /opt/airflow/dags
   # - name: pod-template-file-settings
   #   mountPath: /opt/airflow/pod_templates/pod_template_file.yaml
 
@@ -90,7 +94,9 @@ config:
     dbHost: ''
     dbName: ''
     dbUser: ''
-    dags_folder: '/opt/airflow/dags'
+    dags_root: *dags_root
+    dags_folder: override_me
+    instance_name: override_me
     executor: 'LocalExecutor'
 
     config: {}
@@ -107,6 +113,12 @@ postgresql:
     uri: PG_URI
     host: PG_HOST
 
+gitsync:
+  image_name: repos/data-engineering/git-sync
+  image_tag: override_me
+  dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
+  root_dir: /dags
+  link_dir: airflow_dags
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -301,6 +313,7 @@ cronjobs: []
 #
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
-external_services: []
+external_services:
+  gitlab: [wikimedia]
 
 pgServiceName: override_me

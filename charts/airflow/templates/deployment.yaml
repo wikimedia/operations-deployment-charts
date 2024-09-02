@@ -27,23 +27,30 @@ spec:
         image: {{ template "app.generic._image" . }}
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "app.airflow.env" . | indent 8 }}
-        {{- if $.Values.postgresql.cloudnative }}
-        {{/*
-          According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
-          we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
-          This is done by setting `poolclass=NullPool` at the sqlalchemy level, which airflow does when you pass
-          AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED = False.
-          cf https://github.com/apache/airflow/blob/9af26368df3651b21c66ccefa6147158ecf2a8d7/airflow/settings.py#L523-L525
-        */}}
-          - name: AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED
-            value: "False"
-        {{- end }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" .Values.app | indent 8 }}
         {{- with .Values.app.volumeMounts }}
         volumeMounts:
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      - name: {{ template "base.name.release" . }}-git-sync
+        image: "{{ .Values.docker.registry }}/{{ .Values.gitsync.image_name }}:{{ .Values.gitsync.image_tag }}"
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        command: ["git-sync"]
+        args:
+        - "--repo={{ $.Values.gitsync.dags_repo }}"
+        - "--root={{ $.Values.gitsync.root_dir }}"
+        - "--link={{ $.Values.gitsync.link_dir }}"
+        - "--branch=main"
+        - "--depth=1" {{/* Performs a shallow clone */}}
+        - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
+        - "--one-time"
+        volumeMounts:
+        - name: airflow-dags
+          mountPath: "{{ $.Values.gitsync.root_dir }}"
+        - name: gitsync-sparse-checkout-config
+          mountPath: /etc/gitsync/sparse-checkout.conf
+          subPath: sparse-checkout.conf
       containers:
         {{- include "app.airflow.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
@@ -55,3 +62,6 @@ spec:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
         {{- include "base.statsd.volume" . | indent 8 }}
+        - name: gitsync-sparse-checkout-config
+          configMap:
+            name: gitsync-sparse-checkout-file

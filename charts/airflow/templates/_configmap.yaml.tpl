@@ -73,7 +73,7 @@ data:
     [core]
     colored_console_log = False
     {{- with $.Values.config.airflow }}
-    dags_folder = {{ .dags_folder }}
+    dags_folder = {{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ .dags_folder }}
     executor = {{ .executor }}
     load_examples = False
     remote_logging = False
@@ -212,5 +212,29 @@ metadata:
 data:
   connections.yaml: |
     {{- toYaml $.Values.config.connections | nindent 4 }}
+
+{{- end }}
+
+{{- define "configmap.gitsync-sparse-checkout-file" }}
+{{/*
+  This allows us to configure what directories get git pulled by git-sync.
+  By default, we sync wmf_airflow_common, and we also pull the directory containing
+  the dags and config for the specific airflow instance we're deploying.
+
+  See https://git-scm.com/docs/git-sparse-checkout and
+*/}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitsync-sparse-checkout-file
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  sparse-checkout.conf: |
+    !/*
+    !/*/
+    /{{ $.Values.config.airflow.dags_folder }}/
+    /wmf_airflow_common/
 
 {{- end }}

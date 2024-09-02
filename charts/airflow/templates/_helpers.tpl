@@ -59,6 +59,21 @@ env:
   - name: POOLER_NAME
     value: {{ $.Values.pgServiceName }}-pooler-rw
   {{- end }}
+  {{- if $.Values.postgresql.cloudnative }}
+  {{/*
+    According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
+    we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
+    This is done by setting `poolclass=NullPool` at the sqlalchemy level, which airflow does when you pass
+    AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED = False.
+    cf https://github.com/apache/airflow/blob/9af26368df3651b21c66ccefa6147158ecf2a8d7/airflow/settings.py#L523-L525
+  */}}
+  - name: AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED
+    value: "False"
+  {{- end }}
+  - name: PYTHONPATH
+    value: "/home/airflow/.local/lib/python3.11/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/"
+  - name: AIRFLOW_INSTANCE_NAME
+    value: {{ $.Values.config.airflow.instance_name }}
 {{- end }}
 
 
