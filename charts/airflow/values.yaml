@@ -40,6 +40,9 @@ app:
     configMap:
       name: airflow-bash-executables
       defaultMode: 0777
+  - name: airflow-connections
+    configMap:
+      name: airflow-connections
 # The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
 # commented out, as we are not yet using the Kubernetes Executor.
   # - name: pod-template-file-settings
@@ -57,6 +60,9 @@ app:
     mountPath: /opt/airflow/logs
   - name: airflow-bash-executables
     mountPath: /opt/airflow/usr/bin
+  - name: airflow-connections
+    mountPath: /opt/airflow/connections.yaml
+    subPath: connections.yaml
   # - name: pod-template-file-settings
   #   mountPath: /opt/airflow/pod_templates/pod_template_file.yaml
 
@@ -87,6 +93,12 @@ config:
     dags_folder: '/opt/airflow/dags'
     executor: 'LocalExecutor'
 
+    config: {}
+
+  connections:
+    fs_local:
+      conn_type: fs
+      description: Local filesystem on the Airflow Scheduler node
 
 # Export the content of the postgresql app secret to environment variables
 postgresql:

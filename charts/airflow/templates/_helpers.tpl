@@ -60,3 +60,13 @@ env:
     value: {{ $.Values.pgServiceName }}-pooler-rw
   {{- end }}
 {{- end }}
+
+
+{{/* Represents a Go variable as an INI value */}}
+{{- define "toIni" -}}
+{{- if kindIs "bool" .value -}}
+{{- .value | toString | camelcase }}
+{{- else -}}
+{{ .value }}
+{{- end -}}
+{{- end -}}

@@ -152,6 +152,14 @@ data:
     [webserver]
     enable_proxy_fix = True
     rbac = True
+
+    {{- range $config_section, $config := $.Values.config.airflow.config }}
+
+    [{{ $config_section }}]
+    {{- range $config_key, $config_value := $config }}
+    {{ $config_key }} = {{ template "toIni" (dict "value" $config_value)  }}
+    {{- end }}
+    {{- end }}
 {{- end }}
 
 {{- define "configmap.airflow-webserver-config" }}
@@ -190,5 +198,19 @@ data:
   pg_pooler_uri: |
     #!/bin/sh
     printf ${PG_URI} | sed "s/$PG_HOST/$POOLER_NAME/"
+
+{{- end }}
+
+{{- define "configmap.airflow-connections" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-connections
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  connections.yaml: |
+    {{- toYaml $.Values.config.connections | nindent 4 }}
 
 {{- end }}

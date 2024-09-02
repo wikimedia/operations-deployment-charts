@@ -2,18 +2,28 @@ app:
   # docker image version
   version: 2024-08-30-123009-7d746ae615eaf7c248e1e6ddeea0f77af2bff285@sha256:f9465341d224a3ba192e19f210dafdb086310690d229e1a44cce8f4f0b2b0d3a
 
-service:
-  deployment: production
-
 config:
   airflow:
     dbHost: 'an-db1001.eqiad.wmnet'
     dbName: 'airflow-test-k8s'
     dbUser: 'airflow-test-k8s'
+    config:
+      datahub:
+        cluster: prod
+        conn_id: datahub_kafka_jumbo
+        enabled: False
+  connections:
+    datahub_kafka_jumbo:
+      conn_type: datahub_kafka
+      host: kafka-jumbo-eqiad.external-services:9092
+      extra_dejson:
+        connection:
+          schema_registry_url: https://datahub-gms.discovery.wmnet:30443/schema-registry/api/
 
 external_services:
   postgresql: [analytics]
   kerberos: [kdc]
+  kafka: [jumbo-eqiad]
 
 cloudnative_pg:
   enabled: false
