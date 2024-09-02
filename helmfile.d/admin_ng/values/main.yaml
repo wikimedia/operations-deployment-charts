@@ -425,6 +425,15 @@ namespaces:
           cpu: "120"
           memory: "100Gi"
   push-notifications: {}
+  wikidata-query-gui:
+    tlsExtraSANs:
+      - query.wikidata.org
+      - query-full-experimental.wikidata.org
+      - query-main-experimental.wikidata.org
+      - query-scholarly-experimental.wikidata.org
+      - query-main.wikidata.org
+      - query-scholarly.wikidata.org
+      - commons-query.wikimedia.org
   ratelimit:
     deployTLSCertificate: false
   rdf-streaming-updater:
