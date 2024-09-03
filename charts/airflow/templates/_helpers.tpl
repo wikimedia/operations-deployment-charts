@@ -24,14 +24,39 @@
   {{- toYaml .Values.app.readiness_probe | nindent 4 }}
   {{- end }}
   {{- include "app.airflow.env" . | indent 2 }}
-{{ include "base.helper.resources" .Values.app | indent 2 }}
-{{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
-{{- with .Values.app.volumeMounts }}
+  {{- include "base.helper.resources" .Values.app | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+  {{- with .Values.app.volumeMounts }}
   volumeMounts:
 {{ toYaml . | indent 4 }}
-{{- end }}
+  {{- end }}
 {{- end }}
 
+{{- define "app.airflow.scheduler" }}
+- name: {{ template "base.name.release" . }}
+  image: {{ template "app.generic._image" . }}
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  command: ["airflow"]
+  args: ["scheduler", "--pid" , "/tmp/airflow-scheduler.pid"]
+  ports:
+  - containerPort: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+  - containerPort: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
+  {{- if .Values.scheduler.liveness_probe }}
+  livenessProbe:
+  {{- toYaml .Values.scheduler.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- if .Values.scheduler.readiness_probe }}
+  readinessProbe:
+  {{- toYaml .Values.scheduler.readiness_probe | nindent 4 }}
+  {{- end }}
+  {{- include "app.airflow.env" . | indent 2 }}
+  {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+  {{- with .Values.scheduler.volumeMounts }}
+  volumeMounts:
+{{ toYaml . | indent 2 }}
+  {{- end }}
+{{- end }}
 
 {{ define "app.airflow.env" }}
 env:
@@ -102,6 +127,30 @@ env:
 { {{- range $key, $val := .value }}{{ $key | quote }}: {{ template "toPythonValue" (dict "value" $val) }},{{- end -}} }
 {{- end -}}
 {{- end -}}
+{{/*
+  Recursively evaluate a value until it is no longer if the form of a helm template.
+  We need this template to be recursive because we could have a setup of the following form
+
+  x: "hi"
+  y: "{{ $.Values.x }}"
+  z: "{{ $.Valuez.y }}"
+
+  z would first be evaluated to "{{ $.Values.x }}", and when recursively evaluated once more,
+  it would finally be evaluated to "hi".
+
+*/}}
+{{- define "evalValue" -}}
+{{- if and (kindIs "string" .value ) (hasPrefix "{{" .value) }}
+{{- /* We're dealing with a value itself containing a helm template expression that we evaluate at runtime */}}
+{{- $evaluatedValue := tpl .value .Root -}}
+{{- include "evalValue" (dict "value" $evaluatedValue "Root" .Root) -}}
+{{- else if kindIs "bool" .value }}
+{{- toString .value | title -}}
+{{- else }}
+{{- .value -}}
+{{- end -}}
+{{- end -}}
+
 
 {{- define "airflow.sqlalchemy.connstr" -}}
 {{- if not $.Values.postgresql.cloudnative }}
@@ -112,4 +161,27 @@ sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }
 {{- /* This allows us to give airflow a command to execute to populate the sql_alchemy_conn value */}}
 sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
 {{- end }}
+{{- end -}}
+
+
+{{- define "airflow.initcontainer.gitsync" -}}
+- name: {{ template "base.name.release" . }}-git-sync
+  image: "{{ .Values.docker.registry }}/{{ .Values.gitsync.image_name }}:{{ .Values.gitsync.image_tag }}"
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  command: ["git-sync"]
+  args:
+  - "--repo={{ $.Values.gitsync.dags_repo }}"
+  - "--root={{ $.Values.gitsync.root_dir }}"
+  - "--link={{ $.Values.gitsync.link_dir }}"
+  - "--branch=main"
+  - "--depth=1" {{/* Performs a shallow clone */}}
+  - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
+  - "--one-time"
+  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+  volumeMounts:
+  - name: airflow-dags
+    mountPath: "{{ $.Values.gitsync.root_dir }}"
+  - name: gitsync-sparse-checkout-config
+    mountPath: /etc/gitsync/sparse-checkout.conf
+    subPath: sparse-checkout.conf
 {{- end -}}

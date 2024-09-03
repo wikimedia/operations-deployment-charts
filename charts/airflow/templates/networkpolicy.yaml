@@ -20,6 +20,8 @@ spec:
       - port: 9125 {{- /* prometheus */}}
         protocol: TCP
       {{- end}}
+      - port: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
+        protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}

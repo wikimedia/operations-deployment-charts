@@ -73,12 +73,8 @@ data:
 
     [{{ $config_section }}]
     {{- range $config_key, $config_value := $config }}
-    {{- if and (kindIs "string" $config_value ) (hasPrefix "{{" $config_value) }}
-    {{- /* We're dealing with a value itself containing a helm template expression that we evaluate at runtime */}}
-    {{ $config_key }} = {{ tpl $config_value $ -}}
-    {{- else }}
-    {{ $config_key }} = {{ template "toIniValue" (dict "value" $config_value)  }}
-    {{- end }}
+    {{- $value := include "evalValue" (dict "value" $config_value "Root" $)}}
+    {{ $config_key }} = {{ template "toIniValue" (dict "value" $value)  }}
     {{- end }}
     {{- if eq $config_section "database" }}
     {{- include "airflow.sqlalchemy.connstr" $ | indent 4}}
@@ -185,14 +181,16 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gitsync-sparse-checkout-file
-  {{- include "base.meta.labels" . | indent 2 }}
-  namespace: {{ .Release.Namespace }}
+  name: airflow-{{ .component }}-gitsync-sparse-checkout-file
+  {{- include "base.meta.labels" .Root | indent 2 }}
+  namespace: {{ .Root.Release.Namespace }}
 data:
   sparse-checkout.conf: |
     !/*
     !/*/
-    /{{ $.Values.config.airflow.dags_folder }}/
+    {{- if ne .component "webserver"}} {{- /* The webserver does not need to have dags locally pulled */}}
+    /{{ .Root.Values.config.airflow.dags_folder }}/
+    {{- end }}
     /wmf_airflow_common/
 
 {{- end }}

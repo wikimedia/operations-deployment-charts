@@ -51,7 +51,7 @@ app:
   #   configMap:
   #     name: pod-template-file-settings-volume
 
-  volumeMounts:
+  volumeMounts: &airflow_volume_mounts
   - name: airflow-config
     mountPath: /opt/airflow/airflow.cfg
     subPath: airflow.cfg
@@ -113,9 +113,13 @@ config:
       core:
         colored_console_log: false
         dags_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ $.Values.config.airflow.dags_folder }}"
+        plugins_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/wmf_airflow_common/plugins"
         executor: LocalExecutor
         load_examples: false
         remote_logging: false
+        max_active_runs_per_dag: 3
+        max_active_tasks_per_dag: 6
+        parallelism: 64
       database:
         load_default_connections: false
       elasticsearch:
@@ -139,13 +143,13 @@ config:
         statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
         statsd_host: localhost
         statsd_on: True
-        statsd_port: 9102
+        statsd_port: "{{ $.Values.monitoring.statsd.port }}"
         statsd_prefix: airflow
       scheduler:
-        run_duration: 41460
         standalone_dag_processor: false
-        statsd_host: localhost
-        statsd_on: false
+        enable_health_check: true
+        scheduler_health_check_server_host: '0.0.0.0'
+        scheduler_health_check_server_port: &scheduler_healthcheck_port 8765
       smtp:
         smtp_host: mx1001.wikimedia.org
         smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"
@@ -166,6 +170,22 @@ config:
     fs_local:
       conn_type: fs
       description: Local filesystem on the Airflow Scheduler node
+
+scheduler:
+  liveness_probe:
+    tcpSocket:
+      port:  8793
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: *scheduler_healthcheck_port
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  volumeMounts: *airflow_volume_mounts
 
 # Export the content of the postgresql app secret to environment variables
 postgresql:
@@ -294,26 +314,36 @@ monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: true
     # from https://github.com/blueswen/gunicorn-monitoring
-  config: |-
-    mappings:
-    - match: "*.gunicorn.request.status.*"
-      help: "gunicorn response code"
-      name: "gunicorn_response_code"
-      labels:
-        app: "$1"
-        status: "$2"
-    - match: "*.gunicorn.workers"
-      name: "gunicorn_workers"
-      labels:
-        app: "$1"
-    - match: "*.gunicorn.requests"
-      name: "gunicorn_requests"
-      labels:
-        app: "$1"
-    - match: "*.gunicorn.request.duration"
-      name: "gunicorn_request_duration"
-      labels:
-        app: "$1"
+  statsd:
+    port: 9102
+    prestop_sleep: 0
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    # from https://github.com/blueswen/gunicorn-monitoring
+    config: |-
+      mappings:
+      - match: "*.gunicorn.request.status.*"
+        help: "gunicorn response code"
+        name: "gunicorn_response_code"
+        labels:
+          app: "$1"
+          status: "$2"
+      - match: "*.gunicorn.workers"
+        name: "gunicorn_workers"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.requests"
+        name: "gunicorn_requests"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.request.duration"
+        name: "gunicorn_request_duration"
+        labels:
+          app: "$1"
 
 
 networkpolicy:
@@ -376,5 +406,6 @@ cronjobs: []
 # for the list of supported services
 external_services:
   gitlab: [wikimedia]
+  wikimail: [mx]
 
 pgServiceName: override_me
