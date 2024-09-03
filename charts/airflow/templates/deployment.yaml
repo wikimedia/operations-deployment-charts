@@ -50,6 +50,7 @@ spec:
         - "--depth=1" {{/* Performs a shallow clone */}}
         - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
         - "--one-time"
+        {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         volumeMounts:
         - name: airflow-dags
           mountPath: "{{ $.Values.gitsync.root_dir }}"
