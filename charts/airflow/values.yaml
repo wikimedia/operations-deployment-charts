@@ -97,9 +97,48 @@ config:
     dags_root: *dags_root
     dags_folder: override_me
     instance_name: override_me
-    executor: 'LocalExecutor'
 
-    config: {}
+    config:
+      core:
+        colored_console_log: false
+        dags_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ $.Values.config.airflow.dags_folder }}"
+        executor: LocalExecutor
+        load_examples: false
+        remote_logging: false
+      database:
+        load_default_connections: false
+      elasticsearch:
+        json_format: true
+        log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
+      elasticsearch_configs:
+        max_retries: 3
+        retry_timeout: true
+        timeout: 30
+      kubernetes_executor:
+        multi_namespace_mode: false
+        namespace: airflow-analytics-test
+        pod_template_file: /opt/airflow/pod_templates/pod_template_file.yaml
+        worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.image }}"
+        worker_container_tag: "{{ $.Values.app.version }}"
+      logging:
+        colored_console_log: false
+        remote_logging: false
+      scheduler:
+        run_duration: 41460
+        standalone_dag_processor: false
+        statsd_host: localhost
+        statsd_on: false
+      smtp:
+        smtp_host: mx1001.wikimedia.org
+        smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"
+        smtp_port: 25
+        smtp_ssl: false
+        smtp_starttls: false
+      triggerer:
+        default_capacity: 1000
+      webserver:
+        enable_proxy_fix: true
+        rbac: true
 
   connections:
     fs_local:

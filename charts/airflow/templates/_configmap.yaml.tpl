@@ -69,97 +69,22 @@ metadata:
 data:
   # These are system-specified config overrides.
   airflow.cfg: |
-
-    [core]
-    colored_console_log = False
-    {{- with $.Values.config.airflow }}
-    dags_folder = {{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ .dags_folder }}
-    executor = {{ .executor }}
-    load_examples = False
-    remote_logging = False
-
-    [database]
-    load_default_connections = False
-    {{- if not $.Values.postgresql.cloudnative }}
-    sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
-    {{- else }}
-    {{/* This allows us to give airflow a command to execute to populate the sql_alchemy_conn value */}}
-    sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
-    {{- end }}
-    {{- end }}
-
-    [elasticsearch]
-    json_format = True
-    log_id_template = {dag_id}_{task_id}_{execution_date}_{try_number}
-
-    [elasticsearch_configs]
-    max_retries = 3
-    retry_timeout = True
-    timeout = 30
-
-    [kerberos]
-    ; ccache = /var/kerberos-ccache/cache
-    ; keytab = /etc/airflow.keytab
-    ; principal = airflow@FOO.COM
-    ; reinit_frequency = 3600
-
-    [kubernetes]
-    ; airflow_configmap = airflow-config
-    ; airflow_local_settings_configmap = airflow-config
-    ; multi_namespace_mode = False
-    ; namespace = airflow-analytics-test
-    ; pod_template_file = /opt/airflow/pod_templates/pod_template_file.yaml
-    ; worker_container_repository = docker-registry.wikimedia.org/repos/data-engineering/airflow
-    ; worker_container_tag = latest
-
-    [kubernetes_executor]
-    multi_namespace_mode = False
-    namespace = airflow-analytics-test
-    pod_template_file = /opt/airflow/pod_templates/pod_template_file.yaml
-    worker_container_repository = docker-registry.wikimedia.org/repos/data-engineering/airflow
-    worker_container_tag = latest
-
-    [logging]
-    colored_console_log = False
-    remote_logging = False
-
-    ; config copied from our vm-hosted airflow instance
-    [metrics]
-    ;metrics_allow_list = operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
-    ;statsd_custom_client_path = wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
-    ;statsd_host = localhost
-    ;statsd_on = True
-    ;statsd_port = 9125
-    ;statsd_prefix = airflow
-
-    [scheduler]
-    run_duration = 41460
-    standalone_dag_processor = False
-    statsd_host = localhost
-    statsd_on = False
-
-    ; config copied from our vm-hosted airflow instance
-    [smtp]
-    smtp_host = mx1001.wikimedia.org
-    smtp_mail_from = Airflow dse-k8s-eqiad: <noreply@wikimedia.org>
-    smtp_port = 25
-    smtp_ssl = False
-    smtp_starttls = False
-
-    [triggerer]
-    default_capacity = 1000
-
-    [webserver]
-    enable_proxy_fix = True
-    rbac = True
-
     {{- range $config_section, $config := $.Values.config.airflow.config }}
 
     [{{ $config_section }}]
     {{- range $config_key, $config_value := $config }}
-    {{ $config_key }} = {{ template "toIni" (dict "value" $config_value)  }}
+    {{- if and (kindIs "string" $config_value ) (hasPrefix "{{" $config_value) }}
+    {{- /* We're dealing with a value itself containing a helm template expression that we evaluate at runtime */}}
+    {{ $config_key }} = {{ tpl $config_value $ -}}
+    {{- else }}
+    {{ $config_key }} = {{ template "toIniValue" (dict "value" $config_value)  }}
     {{- end }}
     {{- end }}
+    {{- if eq $config_section "database" }}
+    {{- include "airflow.sqlalchemy.connstr" $ | indent 4}}
+    {{- end }}
+    {{- end }}
+
 {{- end }}
 
 {{- define "configmap.airflow-webserver-config" }}

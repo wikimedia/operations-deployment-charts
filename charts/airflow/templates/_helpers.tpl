@@ -78,10 +78,22 @@ env:
 
 
 {{/* Represents a Go variable as an INI value */}}
-{{- define "toIni" -}}
+{{- define "toIniValue" -}}
 {{- if kindIs "bool" .value -}}
 {{- .value | toString | camelcase }}
 {{- else -}}
 {{ .value }}
 {{- end -}}
+{{- end -}}
+
+
+{{- define "airflow.sqlalchemy.connstr" -}}
+{{- if not $.Values.postgresql.cloudnative }}
+{{- with $.Values.config.airflow }}
+sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
+{{- end }}
+{{- else }}
+{{- /* This allows us to give airflow a command to execute to populate the sql_alchemy_conn value */}}
+sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
+{{- end }}
 {{- end -}}
