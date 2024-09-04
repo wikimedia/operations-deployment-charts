@@ -1,2 +1,20 @@
 monitoring:
   enabled: false
+
+inference_services:
+  articlequality:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-articlequality"
+      image_version: "2024-08-01-160129-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "articlequality"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
+        - name: FORCE_HTTP
+          value: "True"
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 1Gi
