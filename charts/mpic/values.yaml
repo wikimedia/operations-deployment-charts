@@ -70,7 +70,7 @@ app:
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+  enabled: true
 
 service:
   deployment: minikube # valid values are "production" and "minikube"
@@ -185,10 +185,6 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 1
-
-monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
 
 # enable egress traffic to the database
 networkpolicy:
