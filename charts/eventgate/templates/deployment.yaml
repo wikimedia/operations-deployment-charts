@@ -73,22 +73,11 @@ spec:
           livenessProbe:
             tcpSocket:
               port: {{ .Values.app.port }}
-{{- if .Values.main_app.conf.test_events | default false }}
-          readinessProbe:
-            # EventGate should process a test event if it is ready.
-            # The GET /v1/_test/events route will process the configured
-            # test_events as if they were POSTed to /v1/events.
-            httpGet:
-              path: /v1/_test/events
-              port: {{ .Values.app.port }}
-            initialDelaySeconds: 2
-{{- else }}
           readinessProbe:
             httpGet:
               path: /_info
               port: {{ .Values.app.port }}
             initialDelaySeconds: 2
-{{- end }}
 {{- if .Values.main_app.prestop_sleep | default false }}
           {{- include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 10 }}
 {{- end }}
