@@ -61,7 +61,7 @@ spec:
 {{- end }}
 
 
-{{- define "deployment.airflow.scheduler" -}}
+{{- define "deployment.airflow.scheduler" }}
 ---
 apiVersion: apps/v1
 kind: Deployment
