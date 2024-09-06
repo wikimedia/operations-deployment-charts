@@ -34,7 +34,9 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/mw-debug/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - "/etc/helmfile-defaults/mediawiki/release/mw-debug-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+      # Temporarily override release values file for "next" to that of "pinkunicorn" to faciliate turnup (until scap is ready).
+      # TODO: Remove temporary override.
+      - '/etc/helmfile-defaults/mediawiki/release/mw-debug-{{`{{ if eq .Release.Name "next" }}pinkunicorn{{ else }}{{ .Release.Name }}{{ end }}`}}.yaml' # Special file controlled by other processes on the deployment host
   statsd-exporter: &statsd
     namespace: mw-debug
     chart: wmf-stable/statsd-exporter
@@ -73,16 +75,18 @@ hooks:
 releases:
   - name: pinkunicorn
     <<: *default
+  - name: next
+    <<: *default
   - name: prometheus
     <<: *statsd
 
 environments:
   eqiad:
     values:
-      - releases: [pinkunicorn, prometheus]
+      - releases: [pinkunicorn, next, prometheus]
   codfw:
     values:
-      - releases: [pinkunicorn, prometheus]
+      - releases: [pinkunicorn, next, prometheus]
   # This is a non-production development environment used for testing
   # scap and related deployment tooling.
   traindev:

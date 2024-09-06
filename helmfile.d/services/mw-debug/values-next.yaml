@@ -1,0 +1,10 @@
+mesh:
+  public_port: 4453
+  tracing:
+    service_name: mw-debug-next
+
+resources:
+  replicas: 1
+
+php:
+  servergroup: kube-mw-debug-next
