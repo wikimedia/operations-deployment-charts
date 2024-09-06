@@ -16,12 +16,6 @@ spec:
     - ports:
       {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
       {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
-      {{- if $.Values.monitoring.enabled }}
-      - port: {{ $.Values.monitoring.prometheus_port }}
-        protocol: TCP
-      {{- end}}
-      - port: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
-        protocol: TCP
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
@@ -32,3 +26,39 @@ spec:
 {{- end }}
 
 {{ include "base.networkpolicy.egress.external-services" . }}
+
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-webserver-ingress
+spec:
+  types:
+    - Ingress
+  selector: "app == 'airflow' && component == 'webserver'"
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+        - {{ $.Values.app.port }}
+
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-scheduler-ingress
+spec:
+  types:
+    - Ingress
+  selector: "app == 'airflow' && component == 'scheduler'"
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+        - {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+        - {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
+        {{- if $.Values.monitoring.enabled }}
+        - {{ $.Values.monitoring.prometheus_port }}
+        {{- end }}

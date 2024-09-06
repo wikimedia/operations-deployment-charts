@@ -84,12 +84,6 @@ config:
     AIRFLOW_HOME: /opt/airflow
   private: {} # Add here all the keys that should be private but still available as env variables
   airflow:
-  # airflow generates fernetKey and webServerSecretKey automatically if they're not present.
-  # We may prefer to use our own values, see
-  # https://airflow.apache.org/docs/apache-airflow/stable/
-  # cli-and-env-variables-ref.html#envvar-AIRFLOW__-SECTION-__-KEY-_CMD
-    fernetKey: secret
-    webserverSecretKey: secret
     postgresqlPass: secret
     dbHost: ''
     dbName: ''
@@ -120,6 +114,7 @@ config:
         max_active_runs_per_dag: 3
         max_active_tasks_per_dag: 6
         parallelism: 64
+        hostname_callable: 'airflow.utils.net.get_host_ip_address'
       database:
         load_default_connections: false
       elasticsearch:
