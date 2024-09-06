@@ -51,3 +51,24 @@ inference:
     prometheus.kserve.io/scrape: "true"
     prometheus.kserve.io/port: "8080"
     prometheus.kserve.io/path: "/metrics"
+
+
+inference_services:
+  articlequality:
+    annotations:
+      autoscaling.knative.dev/target: "20"
+    predictor:
+      image: "machinelearning-liftwing-inference-services-articlequality"
+      image_version: "2024-09-06-141508-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "articlequality"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
+        - name: FORCE_HTTP
+          value: "True"
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 1Gi
