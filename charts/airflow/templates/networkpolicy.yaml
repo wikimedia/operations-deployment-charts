@@ -17,7 +17,7 @@ spec:
       {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
       {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
       {{- if $.Values.monitoring.enabled }}
-      - port: 9125 {{- /* prometheus */}}
+      - port: {{ $.Values.monitoring.prometheus_port }}
         protocol: TCP
       {{- end}}
       - port: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}

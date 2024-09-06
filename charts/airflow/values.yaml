@@ -313,9 +313,9 @@ resources:
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: true
-    # from https://github.com/blueswen/gunicorn-monitoring
+  prometheus_port: 9102
   statsd:
-    port: 9102
+    port: 9125
     prestop_sleep: 0
     requests:
       memory: 100Mi
@@ -325,25 +325,7 @@ monitoring:
       cpu: 200m
     # from https://github.com/blueswen/gunicorn-monitoring
     config: |-
-      mappings:
-      - match: "*.gunicorn.request.status.*"
-        help: "gunicorn response code"
-        name: "gunicorn_response_code"
-        labels:
-          app: "$1"
-          status: "$2"
-      - match: "*.gunicorn.workers"
-        name: "gunicorn_workers"
-        labels:
-          app: "$1"
-      - match: "*.gunicorn.requests"
-        name: "gunicorn_requests"
-        labels:
-          app: "$1"
-      - match: "*.gunicorn.request.duration"
-        name: "gunicorn_request_duration"
-        labels:
-          app: "$1"
+      mappings: []
 
 
 networkpolicy:

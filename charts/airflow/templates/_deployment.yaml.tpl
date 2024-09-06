@@ -45,15 +45,9 @@ spec:
       containers:
         {{- include "app.airflow.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
-        {{- if $.Values.monitoring.enabled }}
-        {{- include "base.statsd.container" . | indent 8 }}
-        {{- end }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
-        {{- if $.Values.monitoring.enabled }}
-        {{- include "base.statsd.volume" . | indent 8 }}
-        {{- end }}
         - name: gitsync-sparse-checkout-config
           configMap:
             name: airflow-webserver-gitsync-sparse-checkout-file
@@ -80,6 +74,9 @@ spec:
         component: scheduler
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- if $.Values.monitoring.enabled }}
+        prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
+        {{- end }}
         {{- include "mesh.name.annotations" . | indent 8 }}
         checksum/airflow-bash-executables: {{ include "configmap.airflow-bash-executables" . | sha256sum }}
         checksum/airflow-config: {{ include "configmap.airflow-config" . | sha256sum }}
