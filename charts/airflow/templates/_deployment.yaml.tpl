@@ -83,6 +83,7 @@ spec:
         checksum/airflow-connections: {{ include "configmap.airflow-connections" . | sha256sum }}
         checksum/gitsync-sparse-checkout: {{ include "configmap.gitsync-sparse-checkout-file" (dict "component" "scheduler" "Root" $ ) | sha256sum }}
         checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
+        checksum/statsd-exporter-config: {{ $.Values.monitoring.statsd.config | sha256sum }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
