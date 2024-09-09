@@ -129,13 +129,6 @@ main_app:
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
 
-    - name: aqs
-      timeout: 15s
-      urls:
-        - name: knowledge_gap
-          in: '(.+)/v1/knowledge-gap/(.+)'
-          out: '/analytics.wikimedia.org/v1/knowledge-gap/\2'
-
     - name: geo-analytics
       timeout: 15s
       ingress: true
@@ -238,9 +231,6 @@ main_app:
     wikifeeds:
       tls: true
       port: 4101
-    aqs:
-      port: 7232
-      tls: false
     device-analytics:
       port: 4972
       tls: true
@@ -362,14 +352,6 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4003
-    - cidr: 10.2.2.12/32 # aqs.discovery.wmnet (eqiad)
-      ports:
-        - protocol: tcp
-          port: 7232
-    - cidr: 10.2.1.12/32 # aqs.discovery.wmnet (codfw)
-      ports:
-        - protocol: tcp
-          port: 7232
     - cidr: 10.2.2.70/32 # k8s-ingress-wikikube-ro.discovery.wmnet (eqiad)
       ports:
         - protocol: tcp
