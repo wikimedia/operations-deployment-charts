@@ -63,6 +63,7 @@ spec:
   to setup replication.
   Allow the PG pods themselves to talk to each other, to maintain replication.
   Allow the pooler pods to reach out to PG, to query the DB.
+  Allow the test job pod to reach out to PG, to perform a simple test request.
 */}}
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -76,6 +77,9 @@ spec:
     - action: Allow
       protocol: TCP
       source:
-        selector: "cnpg.io/jobRole == 'join' || cnpg.io/podRole in { 'instance', 'pooler' }"
+        selector: >-
+          cnpg.io/jobRole == 'join' ||
+          cnpg.io/podRole in { 'instance', 'pooler' } ||
+          app.kubernetes.io/component == 'database-ping-test'
       destination:
         ports: [5432]
