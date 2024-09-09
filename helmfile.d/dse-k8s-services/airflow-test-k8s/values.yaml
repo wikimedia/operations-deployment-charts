@@ -12,16 +12,12 @@ config:
     config:
       datahub:
         cluster: prod
-        conn_id: datahub_kafka_jumbo
+        conn_id: datahub_gms_prod
         enabled: False
   connections:
-    datahub_kafka_jumbo:
-      conn_type: datahub_kafka
-      host: kafka-jumbo-eqiad.external-services:9092
-      extra_dejson:
-        connection:
-          schema_registry_url: https://datahub-gms.discovery.wmnet:30443/schema-registry/api/
-
+    datahub_gms_prod:
+      conn_type: datahub-rest
+      host: datahub-gms-production.datahub.svc:8080
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
@@ -29,7 +25,6 @@ config:
 external_services:
   postgresql: [analytics]
   kerberos: [kdc]
-  kafka: [jumbo-eqiad]
   cas: [idp-test]
 
 postgresql:
