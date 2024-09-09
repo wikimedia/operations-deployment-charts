@@ -198,6 +198,10 @@ networkpolicy:
   egress:
     enabled: false
 
+# use the newer calico-based network policies, see https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts
+## Enabling_egress_to_services_external_to_Kubernetes
+external_services: {}
+
 # Add here the list of kafka-clusters (by name) that the service will need to reach.
 kafka:
   allowed_clusters: []

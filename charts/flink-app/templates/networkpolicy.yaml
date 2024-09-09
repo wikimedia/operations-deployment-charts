@@ -63,3 +63,7 @@ spec:
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
     {{- include "base.networkpolicy.egress.zookeeper" . | indent 4 }}
 {{- end }}
+
+# use the newer calico-based network policies, see https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts
+## Enabling_egress_to_services_external_to_Kubernetes
+{{ include "base.networkpolicy.egress.external-services" . }}
