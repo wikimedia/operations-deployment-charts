@@ -904,6 +904,11 @@ spec:
                                 type: object
                             type: object
                           securityContext:
+                            seccompProfile:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
                             properties:
                               allowPrivilegeEscalation:
                                 type: boolean
@@ -1190,6 +1195,11 @@ spec:
                       type: string
                     podSecurityContext:
                       properties:
+                        seccompProfile:
+                          type: object
+                          properties:
+                            type:
+                              type: string
                         fsGroup:
                           format: int64
                           type: integer
@@ -1258,6 +1268,11 @@ spec:
                       type: array
                     securityContext:
                       properties:
+                        seccompProfile:
+                          type: object
+                          properties:
+                            type:
+                              type: string
                         allowPrivilegeEscalation:
                           type: boolean
                         capabilities:
@@ -1690,6 +1705,11 @@ spec:
                             type: object
                           securityContext:
                             properties:
+                              seccompProfile:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
                               allowPrivilegeEscalation:
                                 type: boolean
                               capabilities:
@@ -2717,6 +2737,11 @@ spec:
                             type: object
                           securityContext:
                             properties:
+                              seccompProfile:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
                               allowPrivilegeEscalation:
                                 type: boolean
                               capabilities:
@@ -2898,6 +2923,11 @@ spec:
                       type: object
                     podSecurityContext:
                       properties:
+                        seccompProfile:
+                          type: object
+                          properties:
+                            type:
+                              type: string
                         fsGroup:
                           format: int64
                           type: integer
@@ -2966,6 +2996,11 @@ spec:
                       type: array
                     securityContext:
                       properties:
+                        seccompProfile:
+                          type: object
+                          properties:
+                            type:
+                              type: string
                         allowPrivilegeEscalation:
                           type: boolean
                         capabilities:
@@ -3394,6 +3429,11 @@ spec:
                             type: object
                           securityContext:
                             properties:
+                              seccompProfile:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
                               allowPrivilegeEscalation:
                                 type: boolean
                               capabilities:
