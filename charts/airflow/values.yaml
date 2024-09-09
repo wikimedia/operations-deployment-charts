@@ -145,6 +145,9 @@ config:
         enable_health_check: true
         scheduler_health_check_server_host: '0.0.0.0'
         scheduler_health_check_server_port: &scheduler_healthcheck_port 8765
+      secrets:
+        backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
+        backend_kwargs: '{"connections_file_path": "/opt/airflow/connections.yaml"}' # WARN: must be json-parseable
       smtp:
         smtp_host: mx1001.wikimedia.org
         smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"
