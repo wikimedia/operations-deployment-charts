@@ -17,6 +17,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: database-ping-test
+          {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           image: {{ $.Values.cluster.imageName }}:{{ $.Values.cluster.version }}
           command: [ 'sh' ]
           env:

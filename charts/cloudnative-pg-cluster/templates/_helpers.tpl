@@ -54,3 +54,14 @@ app.kubernetes.io/part-of: cloudnative-pg
 {{- define "cluster.imagecatalog.name" -}}
 {{ include "cluster.fullname" . }}-catalog
 {{- end }}
+
+{{- define "base.helper.restrictedSecurityContext" }}
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+     drop:
+     - ALL
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+{{- end -}}
