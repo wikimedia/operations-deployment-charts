@@ -115,6 +115,7 @@ config:
         max_active_tasks_per_dag: 6
         parallelism: 64
         hostname_callable: 'airflow.utils.net.get_host_ip_address'
+        test_connection: enabled
       database:
         load_default_connections: false
       elasticsearch:
