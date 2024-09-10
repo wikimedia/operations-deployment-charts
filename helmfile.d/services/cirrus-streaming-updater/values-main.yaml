@@ -42,6 +42,10 @@ app:
     # only when the job is running, so if the job is offline e.g. over a weekend,
     # we won't going to lose the latest savepoint.
     kubernetes.operator.savepoint.history.max.age: 24h
+    # Increase from default 5s to 30s, we've (esp. codfw) having troubles with repeated timeout failures
+    # and since these are during writes they are not generally retried and thus causes the job to restart
+    # (see T362508 for context on the first time it happened on another job)
+    s3.socket-timeout: 30s
 
   config_files:
     app.config.yaml:
