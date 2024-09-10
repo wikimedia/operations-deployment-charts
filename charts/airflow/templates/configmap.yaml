@@ -4,6 +4,5 @@
 {{- include "mesh.configuration.configmap" . }}
 {{- include "base.statsd.configmap" . }}
 {{- include "configmap.airflow-bash-executables" . }}
-{{- include "configmap.airflow-connections" . }}
 {{- include "configmap.gitsync-sparse-checkout-file" (dict "component" "webserver" "Root" . ) }}
 {{- include "configmap.gitsync-sparse-checkout-file" (dict "component" "scheduler" "Root" . ) }}

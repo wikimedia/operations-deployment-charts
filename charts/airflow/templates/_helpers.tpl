@@ -185,3 +185,19 @@ sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
     mountPath: /etc/gitsync/sparse-checkout.conf
     subPath: sparse-checkout.conf
 {{- end -}}
+
+
+{{- define "secret.airflow-connections" }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: airflow-connections
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  connections.yaml: |
+    {{- tpl ( toYaml $.Values.config.connections) $ | nindent 4 }}
+
+{{- end }}

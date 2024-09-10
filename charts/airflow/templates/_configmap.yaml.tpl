@@ -155,20 +155,6 @@ data:
 
 {{- end }}
 
-{{- define "configmap.airflow-connections" }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: airflow-connections
-  {{- include "base.meta.labels" . | indent 2 }}
-  namespace: {{ .Release.Namespace }}
-data:
-  connections.yaml: |
-    {{- toYaml $.Values.config.connections | nindent 4 }}
-
-{{- end }}
-
 {{- define "configmap.gitsync-sparse-checkout-file" }}
 {{/*
   This allows us to configure what directories get git pulled by git-sync.

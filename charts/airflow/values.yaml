@@ -41,8 +41,8 @@ app:
       name: airflow-bash-executables
       defaultMode: 0777
   - name: airflow-connections
-    configMap:
-      name: airflow-connections
+    secret:
+      secretName: airflow-connections
   - name: airflow-dags
     emptyDir: {}
 # The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
