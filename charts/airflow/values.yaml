@@ -91,6 +91,8 @@ config:
     dags_root: *dags_root
     dags_folder: override_me
     instance_name: override_me
+    aws_access_key_id: override_me
+    aws_secret_access_key: override_me
 
     auth:
       role_admin: Admin
@@ -133,7 +135,11 @@ config:
         worker_container_tag: "{{ $.Values.app.version }}"
       logging:
         colored_console_log: false
-        remote_logging: false
+        remote_logging: true
+        delete_local_logs: true
+        remote_base_log_folder: '{{ printf "s3://airflow/k8s/%s/logs" $.Values.config.airflow.instance_name }}'
+        remote_log_conn_id: s3
+        encrypt_s3_logs: false
       metrics:
         metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
         statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
@@ -169,6 +175,9 @@ config:
     fs_local:
       conn_type: fs
       description: Local filesystem on the Airflow Scheduler node
+    s3:
+      conn_type: s3
+      extra_dejson: '{"aws_access_key_id": "{{ $.Values.config.airflow.aws_access_key_id }}", "aws_secret_access_key": "{{ $.Values.config.airflow.aws_secret_access_key }}"}'
 
 scheduler:
   liveness_probe:

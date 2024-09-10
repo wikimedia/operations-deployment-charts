@@ -1,6 +1,6 @@
 app:
   # docker image version
-  version: 2024-09-10-084400-f44d5e18491114b22baec4647b9b541d328be7bb@sha256:1e6a0fe77951b9010ddfaed99f123296d3af00befae8cb85a43a22804805471e
+  version: 2024-09-10-155931-16267fd457b14a196911d4100b94f26d0467d510@sha256:4de546f25b3901410f11b9e36e506a9c7e5b9bd750cf6b6b2e91b16afd75daad
 
 config:
   airflow:
@@ -18,6 +18,8 @@ config:
     datahub_gms_prod:
       conn_type: datahub-rest
       host: http://datahub-gms-production.datahub.svc:8080
+    s3:
+      host: https://rgw.eqiad.dpe.anycast.wmnet
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
@@ -26,6 +28,7 @@ external_services:
   postgresql: [analytics]
   kerberos: [kdc]
   cas: [idp-test]
+  s3: [eqiad-dpe]
 
 postgresql:
   cloudnative: false
