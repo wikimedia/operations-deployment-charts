@@ -269,7 +269,7 @@
   {{- if .Values.php.envvars }}
   # PHP environment variables
   - name: {{ $release }}-php-envvars
-    mountPath: /etc/php/7.4/fpm/env
+    mountPath: /etc/php/{{ .Values.php.version }}/fpm/env
     readOnly: true
   {{- end -}}
 
