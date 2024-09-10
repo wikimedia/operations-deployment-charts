@@ -23,6 +23,9 @@ flink:
 job:
   flinkConfiguration:
     "taskmanager.memory.jvm-overhead.fraction": "0.1"
-kafka:
-  allowed_clusters:
+
+external_services:
+  kafka:
     - main-eqiad
+  zookeeper:
+    - flink-eqiad
