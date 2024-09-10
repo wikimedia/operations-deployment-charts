@@ -17,7 +17,7 @@ config:
   connections:
     datahub_gms_prod:
       conn_type: datahub-rest
-      host: datahub-gms-production.datahub.svc:8080
+      host: http://datahub-gms-production.datahub.svc:8080
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
