@@ -92,6 +92,17 @@ inference_services:
         requests:
           memory: 1Gi
 
+  reference-quality:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-reference-quality"
+      image_version: "2024-09-10-160615-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "reference-need"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/reference-quality/reference-need/20240903095237/"
+        - name: FORCE_HTTP
+          value: "True"
 
 
 external_services_app_label_selector: app-wmf
