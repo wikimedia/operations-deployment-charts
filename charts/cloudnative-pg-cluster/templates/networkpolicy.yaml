@@ -83,3 +83,28 @@ spec:
           app.kubernetes.io/component == 'database-ping-test'
       destination:
         ports: [5432]
+
+{{- if $.Values.external_services }}
+{{- range $serviceType, $serviceNames := $.Values.external_services }}
+{{- if $serviceNames }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "cluster.fullname" $ }}-egress-external-services-{{ $serviceType }}
+spec:
+  selector: "cnpg.io/podRole == 'instance'"
+  types:
+  - Egress
+  egress:
+    {{- range $serviceName := $serviceNames }}
+    - action: Allow
+      destination:
+        services:
+          name: {{ $serviceType }}-{{ $serviceName }}
+          namespace: external-services
+    {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}

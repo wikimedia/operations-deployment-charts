@@ -56,6 +56,13 @@ spec:
   superuserSecret:
     name: {{ . }}
   {{ end }}
+  {{- if .Values.cluster.env }}
+  env:
+  {{- range $env_var, $env_value := .Values.cluster.env }}
+  - name: "{{ $env_var }}"
+    value: "{{ $env_value }}"
+  {{- end }}
+  {{- end }}
   postgresql:
       {{- if eq .Values.type "timescaledb" }}
       shared_preload_libraries:

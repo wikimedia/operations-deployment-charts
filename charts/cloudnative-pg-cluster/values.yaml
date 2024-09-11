@@ -40,14 +40,14 @@ recovery:
   # -- Overrides the provider specific default endpoint. Defaults to:
   # S3: https://s3.<region>.amazonaws.com"
   # Leave empty if using the default S3 endpoint
-  endpointURL: ""
+  endpointURL: "{{ $.Values.s3.endpoint_url }}"
   # -- Specifies a CA bundle to validate a privately signed certificate.
   endpointCA:
     # -- Creates a secret with the given value if true, otherwise uses an existing secret.
-    create: false
+    create: true
     name: ""
     key: ""
-    value: ""
+    value: "{{ $.Values.s3.ca_cert_bundle }}"
   # -- Overrides the provider specific default path. Defaults to:
   # S3: s3://<bucket><path>
   # Azure: https://<storageAccount>.<serviceName>.core.windows.net/<containerName><path>
@@ -55,11 +55,11 @@ recovery:
   destinationPath: ""
   provider: s3
   s3:
-    region: ""
-    bucket: ""
-    path: "/"
-    accessKey: ""
-    secretKey: ""
+    region: "{{ $.Values.s3.region }}"
+    bucket: "override_me"
+    path: "override_me"
+    accessKey: "{{ $.Values.s3.accessKey }}"
+    secretKey: "{{ $.Values.s3.secretKey }}"
   secret:
     # -- Whether to create a secret for the backup credentials
     create: true
@@ -101,17 +101,23 @@ cluster:
   # -- The GID of the postgres user inside the image, cf https://gitlab.wikimedia.org/repos/data-engineering/postgresql-kubernetes/-/blob/main/blubber-postgresql.yaml?ref_type=heads#L17
   postgresGID: 102
 
+  # We need to specify TMPDIR=/run because /run is a writable emptydir
+  # when all the usual temporary directories belong to a R-O filesystem.
+  # See https://github.com/cloudnative-pg/cloudnative-pg/issues/5420#issuecomment-2345461860
+  env:
+    TMPDIR: /run
+
   # -- Resources requirements of every generated Pod.
   # Please refer to https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ for more information.
   # We strongly advise you use the same setting for limits and requests so that your cluster pods are given a Guaranteed QoS.
   # See: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/
-  resources: {}
-    # limits:
-    #   cpu: 2000m
-    #   memory: 8Gi
-    # requests:
-    #   cpu: 2000m
-    #   memory: 8Gi
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 8Gi
+    requests:
+      cpu: 2000m
+      memory: 8Gi
 
   priorityClassName: ""
 
@@ -198,18 +204,18 @@ cluster:
 
 backups:
   # -- You need to configure backups manually, so backups are disabled by default.
-  enabled: false
+  enabled: true
 
   # -- Overrides the provider specific default endpoint. Defaults to:
   # S3: https://s3.<region>.amazonaws.com"
-  endpointURL: ""  # Leave empty if using the default S3 endpoint
+  endpointURL: "{{ $.Values.s3.endpoint_url }}"  # Leave empty if using the default S3 endpoint
   # -- Specifies a CA bundle to validate a privately signed certificate.
   endpointCA:
     # -- Creates a secret with the given value if true, otherwise uses an existing secret.
-    create: false
+    create: true
     name: ""
-    key: ""
-    value: ""
+    key: "ca-bundle.crt"
+    value: "{{ $.Values.s3.ca_cert_bundle }}"
 
   # -- Overrides the provider specific default path. Defaults to:
   # S3: s3://<bucket><path>
@@ -218,11 +224,11 @@ backups:
   destinationPath: ""
   provider: s3
   s3:
-    region: ""
-    bucket: ""
+    region: "{{ $.Values.s3.region }}"
+    bucket: "{{ $.Values.s3.bucket }}"
     path: "/"
-    accessKey: ""
-    secretKey: ""
+    accessKey: "{{ $.Values.s3.accessKey }}"
+    secretKey: "{{ $.Values.s3.secretKey }}"
   secret:
     # -- Whether to create a secret for the backup credentials
     create: true
@@ -233,14 +239,18 @@ backups:
     # -- WAL compression method. One of `` (for no compression), `gzip`, `bzip2` or `snappy`.
     compression: gzip
     # -- Whether to instruct the storage provider to encrypt WAL files. One of `` (use the storage container default), `AES256` or `aws:kms`.
-    encryption: AES256
+    # Note: we disable encryption for now, as it causes permissions errors with our Ceph-backed S3 bucket
+    # See: https://github.com/cloudnative-pg/cloudnative-pg/issues/4291#issuecomment-2129750251
+    encryption: "''"
     # -- Number of WAL files to be archived or restored in parallel.
     maxParallel: 1
   data:
     # -- Data compression method. One of `` (for no compression), `gzip`, `bzip2` or `snappy`.
     compression: gzip
     # -- Whether to instruct the storage provider to encrypt data files. One of `` (use the storage container default), `AES256` or `aws:kms`.
-    encryption: AES256
+    # Note: we disable encryption for now, as it causes permissions errors with our Ceph-backed S3 bucket
+    # See: https://github.com/cloudnative-pg/cloudnative-pg/issues/4291#issuecomment-2129750251
+    encryption: "''"
     # -- Number of data files to be archived or restored in parallel.
     jobs: 2
 
@@ -296,3 +306,13 @@ pooler:
 common_images:
   postgresql:
     "15": "override_me"
+
+s3:
+  accessKey: override_me
+  secretKey: override_me
+  region: override_me
+  bucket: override_me
+  ca_cert_bundle: override_me
+  endpoint_url: override_me
+
+external_services: {}

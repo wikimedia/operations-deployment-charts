@@ -8,3 +8,14 @@ pooler:
 common_images:
   postgresql:
     "15": abc123456789
+
+s3:
+  endpoint_url: s3.svc.eqiad.wmtest
+  accessKey: accesskey
+  secretKey: secretKey
+  region: ci
+  bucket: testbucket
+  ca_cert_bundle: |
+    -----BEGIN CERTIFICATE-----
+    plop
+    -----END CERTIFICATE-----

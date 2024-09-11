@@ -22,6 +22,7 @@ releases:
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "/etc/helmfile-defaults/private/dse-k8s_services/postgresql-test/{{ .Environment.Name }}.yaml" # temporarily hard-coded for testing
       - "values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
