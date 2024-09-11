@@ -28,7 +28,7 @@ app:
         # Configure sources and sinks.
         source:
           options:
-            bootstrap.servers: kafka-main2003.codfw.wmnet:9093,kafka-main2004.codfw.wmnet:9093,kafka-main2005.codfw.wmnet:9093,kafka-main2006.codfw.wmnet:9093,kafka-main2007.codfw.wmnet:9093
+            bootstrap.servers: kafka-main2004.codfw.wmnet:9093,kafka-main2005.codfw.wmnet:9093,kafka-main2006.codfw.wmnet:9093,kafka-main2007.codfw.wmnet:9093,kafka-main2008.codfw.wmnet:9093
             # We run in 'active/active single compute' Multi DC mode, so this
             # app in eqiad should only process the eqiad prefixed topic of the
             # mediawiki.page_change.v1 stream.
