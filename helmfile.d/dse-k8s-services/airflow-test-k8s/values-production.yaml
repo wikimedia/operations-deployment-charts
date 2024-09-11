@@ -1,10 +1,8 @@
 app:
-  # docker image version
   version: 2024-09-10-155931-16267fd457b14a196911d4100b94f26d0467d510@sha256:4de546f25b3901410f11b9e36e506a9c7e5b9bd750cf6b6b2e91b16afd75daad
 
 config:
   airflow:
-    dbHost: 'an-db1001.eqiad.wmnet'
     dbName: 'airflow-test-k8s'
     dbUser: 'airflow-test-k8s'
     dags_folder: test_k8s
@@ -18,25 +16,16 @@ config:
     datahub_gms_prod:
       conn_type: datahub-rest
       host: http://datahub-gms-production.datahub.svc:8080
-    s3_dpe:
-      extra:
-        endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
-        region_name: dpe
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
 
 external_services:
   postgresql: [analytics]
-  kerberos: [kdc]
   cas: [idp-test]
-  s3: [eqiad-dpe]
 
 postgresql:
   cloudnative: false
-
-gitsync:
-  image_tag: 2024-08-22-120818-fbafbcdb385bf1008ba0ac8ee350e9fe411a057d@sha256:3e01121704b405a08649012571aba0ce6834ab3aa3428df0b02a476b7ba4c3f5
 
 ingress:
   gatewayHosts:
