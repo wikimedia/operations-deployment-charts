@@ -138,7 +138,7 @@ config:
         remote_logging: true
         delete_local_logs: true
         remote_base_log_folder: '{{ printf "s3://airflow/k8s/%s/logs" $.Values.config.airflow.instance_name }}'
-        remote_log_conn_id: s3
+        remote_log_conn_id: s3_dpe
         encrypt_s3_logs: false
       metrics:
         metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
@@ -175,9 +175,12 @@ config:
     fs_local:
       conn_type: fs
       description: Local filesystem on the Airflow Scheduler node
-    s3:
-      conn_type: s3
-      extra_dejson: '{"aws_access_key_id": "{{ $.Values.config.airflow.aws_access_key_id }}", "aws_secret_access_key": "{{ $.Values.config.airflow.aws_secret_access_key }}"}'
+    s3_dpe:
+      conn_type: aws
+      login: "{{ $.Values.config.airflow.aws_access_key_id }}"
+      password: "{{ $.Values.config.airflow.aws_secret_access_key }}"
+      extra:
+        verify: /etc/ssl/certs/wmf-ca-certificates.crt
 
 scheduler:
   liveness_probe:

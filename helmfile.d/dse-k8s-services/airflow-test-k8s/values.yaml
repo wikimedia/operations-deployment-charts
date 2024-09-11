@@ -18,8 +18,10 @@ config:
     datahub_gms_prod:
       conn_type: datahub-rest
       host: http://datahub-gms-production.datahub.svc:8080
-    s3:
-      host: https://rgw.eqiad.dpe.anycast.wmnet
+    s3_dpe:
+      extra:
+        endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
+        region_name: dpe
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
