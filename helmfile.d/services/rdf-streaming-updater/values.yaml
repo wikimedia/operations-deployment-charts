@@ -22,8 +22,12 @@ app:
       topic_prefixes: eqiad.,codfw.
       use_new_flink_kafka_api: true
       wikibase_repo_thread_pool_size: 30
+      kafka_producer_config.security.protocol: SSL
+      kafka_producer_config.client.dns.lookup: use_all_dns_ips
+      kafka_consumer_config.security.protocol: SSL
+      kafka_consumer_config.client.dns.lookup: use_all_dns_ips
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.17.1-rdf-0.3.145
+  version: flink-1.17.1-rdf-0.3.147
   flinkVersion: v1_17
   env:
     # disable JEMALLOC for testing

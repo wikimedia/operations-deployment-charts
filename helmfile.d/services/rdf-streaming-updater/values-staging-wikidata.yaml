@@ -5,7 +5,6 @@
 app:
   config_files:
     rdf-streaming-updater-config.properties:
-      brokers: kafka-main1001.eqiad.wmnet:9092
       checkpoint_dir: s3://rdf-streaming-updater-staging/wikidata/checkpoints
       consumer_group: wdqs_streaming_updater_test
       hostname: test.wikidata.org
