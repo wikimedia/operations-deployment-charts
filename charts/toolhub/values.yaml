@@ -181,6 +181,14 @@ crawler:
   schedule: "@hourly"
   # -- Job concurrency policy
   concurrencyPolicy: Forbid
+  # -- Job initial and maximum resource limits
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 512Mi
 
 # -- Mcrouter sidecar configuration
 mcrouter:

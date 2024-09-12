@@ -50,6 +50,8 @@ spec:
                       name: {{ template "base.name.release" $ }}-secret-config
                       key: {{ $k }}
                 {{- end }}
+              resources:
+{{ toYaml .Values.crawler.resources | indent 16 }}
               {{- include "base.helper.restrictedSecurityContext" . | indent 14 }}
             {{- include "mesh.deployment.container" . | indent 12}}
             # T292861: mcrouter.container deliberately excluded

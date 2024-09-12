@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square)
+![Version: 1.1.17](https://img.shields.io/badge/Version-1.1.17-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -10,7 +10,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| Bryan Davis | bd808@wikimedia.org | https://wikitech.wikimedia.org/wiki/User:BryanDavis |
+| Bryan Davis | <bd808@wikimedia.org> | <https://wikitech.wikimedia.org/wiki/User:BryanDavis> |
 
 ## Requirements
 
@@ -22,6 +22,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| app.port | int | `8000` |  |
 | common_images | object | `{"mcrouter":{"exporter":"prometheus-mcrouter-exporter:latest","mcrouter":"mcrouter:latest"}}` | Versions for common sidecar images |
 | config.private.DB_PASSWORD | string | `"snakeoil"` | MariaDB database password |
 | config.private.DJANGO_SECRET_KEY | string | `"snakeoil"` | Django core setting. Used for session signing and as default crypto key |
@@ -34,8 +35,8 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.DB_NAME | string | `"toolhub"` |  |
 | config.public.DB_PORT | int | `3306` |  |
 | config.public.DB_USER | string | `"toolhub"` |  |
-| config.public.DJANGO_ALLOWED_HOSTS | string | `"*"` |  |
-| config.public.DJANGO_DEBUG | bool | `false` |  |
+| config.public.DJANGO_ALLOWED_HOSTS | string | `"*"` | Comma-separated list of Host/X-Forwarded-Host header allowed values |
+| config.public.DJANGO_DEBUG | bool | `false` | Enable development mode debug features (error pages, etc) |
 | config.public.DJANGO_SETTINGS_MODULE | string | `"toolhub.settings"` | Name of the settings module for Django to load |
 | config.public.ES_DSL_AUTOSYNC | bool | `true` |  |
 | config.public.ES_DSL_PARALLEL | bool | `true` |  |
@@ -43,11 +44,11 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.ES_INDEX_REPLICAS | int | `0` |  |
 | config.public.ES_INDEX_SHARDS | int | `1` |  |
 | config.public.FIREFOX_DEVTOOL_HACK | bool | `false` | Local dev only hack. Needs DEBUG=True. |
-| config.public.LOGGING_CONSOLE_FORMATTER | string | `"ecs"` |  |
+| config.public.LOGGING_CONSOLE_FORMATTER | string | `"ecs"` | Log event formatter to use |
 | config.public.LOGGING_FILE_FILENAME | string | `"/dev/null"` | 'file' handler output file |
 | config.public.LOGGING_HANDLERS | string | `"console"` | List of log handlers to enable |
 | config.public.LOGGING_LEVEL | string | `"WARNING"` | Base log level to emit |
-| config.public.LOG_REQUEST_ID_HEADER | string | `"HTTP_X_REQUEST_ID"` |  |
+| config.public.LOG_REQUEST_ID_HEADER | string | `"HTTP_X_REQUEST_ID"` | HTTP header to extract tracing id from |
 | config.public.OUTGOING_REQUEST_ID_HEADER | string | `"X-Request-ID"` | Header for propigating trace id to services |
 | config.public.REQUEST_ID_RESPONSE_HEADER | string | `"X-Request-ID"` | Header for returning trace id to client |
 | config.public.REQUIRE_HTTPS | bool | `false` | Ensure TLS enabled and restrict cookies to https |
@@ -56,12 +57,13 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.STATIC_ROOT | string | `"/srv/app/staticfiles"` |  |
 | config.public.URLLIB3_DISABLE_WARNINGS | bool | `false` | Disable warnings from urllib3 about unverfied TLS connections |
 | config.public.WIKIMEDIA_OAUTH2_KEY | string | `"11dec83f263af1b9f480488512556cb1"` | OAuth2 grant public key. The default value is tied to `http://toolhub.test/` which can only be used in local testing. https://meta.wikimedia.org/wiki/Special:OAuthListConsumers/view/11dec83f263af1b9f480488512556cb1 |
-| config.public.WIKIMEDIA_OAUTH2_URL | string | `"https://meta.wikimedia.org/w/rest.php"` |  |
-| config.public.http_proxy | string | `""` |  |
+| config.public.WIKIMEDIA_OAUTH2_URL | string | `"https://meta.wikimedia.org/w/rest.php"` | OAuth2 request base URL |
+| config.public.http_proxy | string | `""` | Outbound http request proxy |
 | config.public.https_proxy | string | `""` | Outbound https request proxy |
 | config.public.no_proxy | string | `""` | Outbound proxy exceptions |
 | crawler.concurrencyPolicy | string | `"Forbid"` | Job concurrency policy |
 | crawler.enabled | bool | `true` | Enable CronJob for toolinfo url crawler |
+| crawler.resources | object | `{"limits":{"cpu":1,"memory":"512Mi"},"requests":{"cpu":"200m","memory":"256Mi"}}` | Job initial and maximum resource limits |
 | crawler.schedule | string | `"@hourly"` | Schedule for crawler job |
 | debug | object | `{"enabled":false,"ports":[]}` | Additional resources if we want to add a port for a debugger to connect to. |
 | docker | object | `{"pull_policy":"IfNotPresent","registry":"docker-registry.wikimedia.org"}` | Shared docker settings |
@@ -82,6 +84,7 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | mcrouter.route_prefix | string | `"local/toolhub"` | Default route prefix. Should vary based on datacenter. |
 | mcrouter.routes | list | `[{"failover":true,"pool":"test-pool","route":"/local/toolhub","type":"standalone"}]` | Routes to configure for mcrouter |
 | mcrouter.zone | string | `"local"` | Zone of this deployment. Used to determine local/remote pools. |
+| mesh | object | `{"certs":{"cert":"snakeoil","key":"snakeoil"},"enabled":false,"public_port":4011,"telemetry":{"enabled":true,"port":9361},"upstream_timeout":"180.0s"}` | TLS terminating ingress configuration |
 | monitoring | object | `{"enabled":true,"uses_statsd":false}` | Monitoring config |
 | networkpolicy | object | `{"egress":{"enabled":false}}` | Networking settings |
 | php | object | `{"fcgi_mode":"unused"}` | Cruft needed for generated templates/deployment.yaml |
@@ -91,7 +94,6 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | service.port.nodePort | string | `nil` | You need to define this if service.deployment="production" is used. |
 | service.port.port | int | `8000` | Number of the port desired to be exposed to the cluster |
 | service.port.targetPort | int | `8000` | Number or name of the exposed port on the container |
-| tls | object | `{"certs":{"cert":"snakeoil","key":"snakeoil"},"enabled":false,"public_port":4011,"telemetry":{"enabled":true,"port":9361},"upstream_timeout":"180.0s"}` | TLS terminating ingress configuration |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)
+Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
