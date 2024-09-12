@@ -1,3 +1,9 @@
+{{- $can_run_maintenance := include "mw.maintenance.can_run" . | include "mw.str2bool" }}
+{{- if and (not $can_run_maintenance) (not .Values.mw.httpd.enabled) (not .Values.mercurius.enabled) }}
+{{/*
+  Maintenance scripts are disabled, we're not serving traffic, and we're not running mercurius.
+*/}}
+{{- else }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -23,3 +29,4 @@ spec:
           - "X-Forwarded-Proto: https"
           - http://test.wikipedia.org/wiki/Main_Page
       restartPolicy: Never
+{{- end }}

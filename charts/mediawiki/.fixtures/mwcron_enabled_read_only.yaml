@@ -1,0 +1,74 @@
+mwcron:
+  enabled: true
+  jobs:
+    - name: "test"
+      schedule: "00 00 00 00 00"
+      command:
+        - "/usr/local/bin/mw-cli-wrapper"
+        - "/usr/local/bin/foreachwiki"
+        - "extensions/foo/bar/cron.php"
+      labels:
+        username: username
+        script: extensions/foo/bar/cron.php
+      comment: comment
+    - name: "test2"
+      schedule: "01 00 00 00 00"
+      command:
+        - "/usr/local/bin/mw-cli-wrapper"
+        - "/usr/local/bin/foreachwiki"
+        - "extensions/foo/bar/mwcron2.php"
+      labels:
+        team: team-name
+        script: extensions/foo/bar/mwcron2.php
+      comment: comment
+mw:
+  httpd:
+    enabled: false
+  primary_dc: local
+  datacenter: local
+  read_only:
+    local: true
+  logging:
+    rsyslog: true
+
+# These are enabled to check the pod.kubernetes.io/sidecars annotation
+cache:
+  mcrouter:
+    enabled: true
+mesh:
+  enabled: true
+  public_port: ~
+  image_version: 1.13.1-2
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+discovery:
+  listeners:
+    - mw-parsoid
+    - mathoid
+    - eventgate-analytics
+    - eventgate-analytics-external
+    - eventgate-main
+    - sessionstore
+    - echostore
+    - termbox
+    - push-notifications
+    - wdqs-internal
+    - restbase
+    - cxserver
+    - shellbox
+    - shellbox-constraints
+    - shellbox-media
+    - shellbox-syntaxhighlight
+    - shellbox-timeline

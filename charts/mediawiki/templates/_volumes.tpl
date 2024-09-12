@@ -1,5 +1,6 @@
 {{- define "mw.volumes" }}
 {{ $release := include "base.name.release" . }}
+{{- if .Values.mw.httpd.enabled }}
 # Apache sites
 - name: {{ $release }}-httpd-sites
   configMap:
@@ -9,6 +10,7 @@
 - name: {{ $release }}-httpd-early
   configMap:
     name: {{ $release }}-httpd-early-config
+{{- end }}
 {{- end }}
 # Datacenter
 - name: {{ $release }}-wikimedia-cluster
@@ -39,7 +41,6 @@
     name: {{ $release }}-php-debug-config
 {{- end }}
 {{- if .Values.cache.mcrouter.enabled }}
-# Mcrouter configuration if any
 {{ template "cache.mcrouter.volume" . }}
 {{- end }}
 {{- if .Values.mw.logging.rsyslog }}

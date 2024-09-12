@@ -13,6 +13,7 @@ data:
 {{- end }}
 {{- end }}
 {{ define "mw.lamp.configmap" }}
+{{- if .Values.mw.httpd.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -21,6 +22,16 @@ metadata:
   {{- include "mw.labels" . | indent 2}}
 data:
 {{ include "mw.web-sites" . }}
+{{- if .Values.mw.httpd.additional_config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-httpd-early-config
+data:
+  00-aaa.conf: {{- .Values.mw.httpd.additional_config | toYaml | indent 4 }}
+{{- end }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -48,15 +59,7 @@ data:
   "{{ $k }}.php": {{ $v | toYaml | indent 4 }}
 {{- end }}
 {{- end -}}
-{{- if .Values.mw.httpd.additional_config }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-httpd-early-config
-data:
-  00-aaa.conf: {{- .Values.mw.httpd.additional_config | toYaml | indent 4 }}
-{{- end }}
+
 {{- if .Values.mw.mail_host }}
 ---
 apiVersion: v1

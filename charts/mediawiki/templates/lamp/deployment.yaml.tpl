@@ -101,6 +101,11 @@
   tty: {{ .Values.mwscript.tty }}
   stdin: {{ .Values.mwscript.stdin }}
   stdinOnce: {{ .Values.mwscript.stdin }}
+  {{- else if .Values.mwcron.enabled }}
+  # MediaWiki cronjobs may require a tty to run, as a first approximation make it always true.
+  # TODO: Eventually, determine which cronjobs need a tty and make it configurable.
+  tty: true
+  command: {{ .Values.mwcron.command }}
   {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:
@@ -196,7 +201,7 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
-  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) }}
+  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) }}
   # See T276908
   livenessProbe:
   {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
@@ -309,7 +314,7 @@
 
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
-# php-fpm exporter
+{{- if .Values.mw.httpd.enabled }}
 # apache exporter on port 9117
 - name: {{ $release }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter.version }}
@@ -329,7 +334,9 @@
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
+{{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+# php-fpm exporter
 - name: {{ $release }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}

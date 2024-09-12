@@ -1,3 +1,9 @@
+{{- $can_run_maintenance := include "mw.maintenance.can_run" . | include "mw.str2bool" }}
+{{- if and (not $can_run_maintenance) (not .Values.mw.httpd.enabled) (not .Values.mercurius.enabled) }}
+{{/*
+  Maintenance scripts are disabled, we're not serving traffic, and we're not running mercurius.
+*/}}
+{{- else }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -44,4 +50,5 @@ spec:
     {{/* add egress rules for envoy upstream clusters. */}}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
     {{- include "base.networkpolicy.egress.kafka" . | indent 4 }}
+{{- end }}
 {{- end }}

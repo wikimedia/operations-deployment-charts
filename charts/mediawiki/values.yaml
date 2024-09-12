@@ -214,6 +214,11 @@ envvars: {}
 mw:
   # The datacenter. To be overridden in deployments.
   datacenter: local
+  # Primary datacenter and read-only status
+  # Overriden by conftool-data in production
+  primary_dc: local
+  read_only:
+    local: false
   domain_suffix: "local"
   egress:
     database_networks: "10.0.0.0/8"
@@ -455,3 +460,7 @@ mercurius:
   # This is useful when a helmfile-only update affecting the job template is
   # needed, in the absence of an image update.
   #generation: 0
+
+mwcron:
+  enabled: false
+  labels: {}
