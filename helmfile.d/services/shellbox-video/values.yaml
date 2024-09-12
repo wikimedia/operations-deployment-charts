@@ -9,6 +9,7 @@ main_app:
 shellbox:
   flavour: video
   min_avail_workers: 1
+  check_process: "ffmpeg-encode.sh"
   # Reduce (but not eliminate) the likelihood that we will
   # accidentally schedule two jobs on a pod by being more fastidious
   # about our checks.

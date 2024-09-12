@@ -111,6 +111,17 @@ resources:
   {{- end }}
     initialDelaySeconds: 1
     periodSeconds: 5
+{{- if .Values.shellbox.check_process }}
+  readinessProbe:
+{{- if .Values.shellbox.readinessParams }}
+{{ toYaml .Values.shellbox.readinessParams | indent 4 }}
+{{- end }}
+    exec:
+      command:
+      - /bin/bash
+      - -c
+      - pgrep {{ .Values.shellbox.check_process }} && exit 1 || exit 0
+{{- end }}
   {{- include "limits" . | indent 2}}
   volumeMounts:
     - name: shellbox-config
