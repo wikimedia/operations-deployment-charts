@@ -23,7 +23,7 @@ recovery:
   # * `object_store` - Recovers a CNPG cluster from a barman object store (PITR supported).
   # * `pg_basebackup` - Recovers a CNPG cluster viaa streaming replication protocol. Useful if you want to
   #        migrate databases to CloudNativePG, even from outside Kubernetes. # TODO
-  method: backup
+  method: object_store
 
   ## -- Point in time recovery target. Specify one of the following:
   pitrTarget:
@@ -46,7 +46,7 @@ recovery:
     # -- Creates a secret with the given value if true, otherwise uses an existing secret.
     create: true
     name: ""
-    key: ""
+    key: "ca-bundle.crt"
     value: "{{ $.Values.s3.ca_cert_bundle }}"
   # -- Overrides the provider specific default path. Defaults to:
   # S3: s3://<bucket><path>

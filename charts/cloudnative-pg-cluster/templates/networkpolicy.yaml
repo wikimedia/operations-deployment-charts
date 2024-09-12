@@ -8,7 +8,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: "cnpg.io/jobRole in { 'initdb', 'join' } || cnpg.io/podRole in { 'instance', 'pooler' }"
+  selector: "cnpg.io/jobRole in { 'initdb', 'join', 'full-recovery' } || cnpg.io/podRole in { 'instance', 'pooler' }"
   egress:
     - action: Allow
       destination:
@@ -78,7 +78,7 @@ spec:
       protocol: TCP
       source:
         selector: >-
-          cnpg.io/jobRole == 'join' ||
+          cnpg.io/jobRole in { 'join', 'full-recovery' } ||
           cnpg.io/podRole in { 'instance', 'pooler' } ||
           app.kubernetes.io/component == 'database-ping-test'
       destination:
@@ -93,7 +93,7 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "cluster.fullname" $ }}-egress-external-services-{{ $serviceType }}
 spec:
-  selector: "cnpg.io/podRole == 'instance'"
+  selector: "cnpg.io/podRole == 'instance' || cnpg.io/jobRole == 'full-recovery'"
   types:
   - Egress
   egress:
