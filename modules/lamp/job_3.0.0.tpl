@@ -1,6 +1,5 @@
 {{/*
 == configuration of jobs for a LAMP stack
-
 - lamp.cron_properties(.job): Definitions of the scheduling properties of a cronjob
 - lamp.container(.app, .job): the definition of a job container for a generic application.
   typical usage: {{ include "app.job.container" (dict "Root" . "Name" $cronjob  "Job" $cron_opts) }}
@@ -8,6 +7,12 @@
 {{- define "lamp.job.cron_properties" }}
 schedule: "{{ .schedule | default "@daily" }}"
 concurrencyPolicy: {{ .concurrency | default "Forbid" }}
+{{- end }}
+
+{{- define "lamp.job.job_properties" }}
+{{- if .activeDeadlineSeconds }}
+activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
+{{- end }}
 {{- end }}
 
 {{- define "lamp.job.container" }}

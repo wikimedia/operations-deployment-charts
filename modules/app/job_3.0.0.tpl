@@ -1,4 +1,3 @@
-
 {{/*
 == configuration of a job (Job or CronJob) for a generic application
 - app.job.cron_properties(.job): Definitions of the scheduling properties of a cronjob
@@ -10,6 +9,11 @@ schedule: "{{ .schedule | default "@daily" }}"
 concurrencyPolicy: {{ .concurrency | default "Forbid" }}
 {{- end }}
 
+{{- define "app.job.job_properties" }}
+{{- if .activeDeadlineSeconds }}
+activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
+{{- end }}
+{{- end }}
 
 {{- define "app.job.container" }}
 - name: {{ template "base.name.release" .Root}}-{{ .Name }}
@@ -51,3 +55,4 @@ volumes:
 {{- toYaml  .Job.volumes  | nindent 2 }}
 {{- end }}
 {{- end }}
+
