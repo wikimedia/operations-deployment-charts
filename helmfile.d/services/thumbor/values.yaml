@@ -79,6 +79,16 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 7531
+      # poolcounter1006
+      - cidr: 10.64.0.150/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # poolcounter1007
+      - cidr: 10.64.32.137/32
+        ports:
+          - protocol: TCP
+            port: 7531
       # poolcounter2003
       - cidr: 10.192.0.132/32
         ports:
@@ -91,6 +101,11 @@ networkpolicy:
             port: 7531
       # poolcounter2005
       - cidr: 10.192.0.9/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # poolcounter2006
+      - cidr: 10.192.16.6/32
         ports:
           - protocol: TCP
             port: 7531
