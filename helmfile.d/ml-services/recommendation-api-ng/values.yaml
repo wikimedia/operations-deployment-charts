@@ -21,6 +21,10 @@ config:
     EVENT_LOGGER_API_HEADER: "intake-analytics.wikimedia.org"
     LANGUAGE_PAIRS_API: "http://localhost:6015/v1/languagepairs"
     LANGUAGE_PAIRS_API_HEADER: "cxserver.wikimedia.org"
+    WIKIDATA_API: "http://localhost:6500/w/api.php"
+    WIKIDATA_API_HEADER: "wikidata.org"
+    WIKIMEDIA_API: "http://localhost:6500/w/api.php"
+    WIKIMEDIA_API_HEADER: "{source}.wikimedia.org"
     WIKIPEDIA_API: "http://localhost:6500/w/api.php"
     WIKIPEDIA_API_HEADER: "{source}.wikipedia.org"
 
@@ -29,7 +33,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-08-19-070929-production"
+  version: "2024-08-22-164531-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: [ "poetry" ]
   args: [ "run", "gunicorn" ]
