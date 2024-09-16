@@ -3,9 +3,6 @@ config:
   private: {}
   public:
     HEALTHCHECK_QUERY: language=de&entity=Q123&revision=1134&editLink=/edit/Q123&preferredLanguages=de|en
-    LANGUAGES_CACHE_MAX_AGE: 300000
-    MEDIAWIKI_REQUEST_TIMEOUT: 3000
-    MESSAGES_CACHE_MAX_AGE: 60000
     WIKIBASE_REPO: http://test.wikidata.org:6500/w
     WIKIBASE_REPO_HOSTNAME_ALIAS: localhost
 main_app:
@@ -21,7 +18,6 @@ main_app:
 service:
   deployment: production
   port: 3031
-tolerations: {}
 app:
   port: 3031
 mesh:
