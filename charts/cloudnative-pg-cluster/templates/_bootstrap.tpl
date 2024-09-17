@@ -43,8 +43,8 @@ externalClusters:
   - name: objectStoreRecoveryCluster
     barmanObjectStore:
       serverName: {{ default (include "cluster.fullname" .) .Values.recovery.clusterName }}
-      {{- $d := dict "chartFullname" (include "cluster.fullname" .) "scope" .Values.recovery "secretPrefix" "recovery" -}}
-      {{- tpl (include "cluster.barmanObjectStoreConfig" $d) . | nindent 4 }}
+      {{- $d := dict "chartFullname" (include "cluster.fullname" .) "scope" .Values.recovery "secretPrefix" "recovery" "Root" $ -}}
+      {{- include "cluster.barmanObjectStoreConfig" $d | nindent 4 }}
 {{-  else }}
   {{ fail "Invalid cluster mode!" }}
 {{- end }}

@@ -13,7 +13,7 @@ backup:
       encryption: {{ .Values.backups.data.encryption }}
       jobs: {{ .Values.backups.data.jobs }}
 
-    {{- $d := dict "chartFullname" (include "cluster.fullname" .) "scope" .Values.backups "secretPrefix" "backup" }}
-    {{- tpl (include "cluster.barmanObjectStoreConfig" $d) . | nindent 2 }}
+    {{- $d := dict "chartFullname" (include "cluster.fullname" .) "scope" .Values.backups "secretPrefix" "backup" "Root" $ }}
+    {{- include "cluster.barmanObjectStoreConfig" $d | nindent 2 }}
 {{- end }}
 {{- end }}

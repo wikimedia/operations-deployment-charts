@@ -1,7 +1,7 @@
 {{- define "cluster.barmanObjectStoreConfig" -}}
 
 {{- if .scope.endpointURL }}
-  endpointURL: {{ .scope.endpointURL | quote }}
+  endpointURL: {{ include "evalValue" (dict "value" .scope.endpointURL "Root" .Root) | quote }}
 {{- end }}
 
 {{- if or (.scope.endpointCA.create) (.scope.endpointCA.name) }}
@@ -19,7 +19,7 @@
   endpointURL: "https://s3.{{ required "You need to specify S3 region if endpointURL is not specified." .scope.s3.region }}.amazonaws.com"
   {{- end }}
   {{- if empty .scope.destinationPath }}
-  destinationPath: "s3://{{ required "You need to specify S3 bucket if destinationPath is not specified." .scope.s3.bucket }}{{ .scope.s3.path }}"
+  destinationPath: "s3://{{ include "evalValue" (dict "value" .scope.s3.bucket "Root" .Root) }}{{ .scope.s3.path }}"
   {{- end }}
   {{- $secretName := coalesce .scope.secret.name (printf "%s-%s-s3-creds" .chartFullname .secretPrefix) }}
   s3Credentials:

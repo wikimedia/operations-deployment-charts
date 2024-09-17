@@ -65,3 +65,25 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
 {{- end -}}
+
+{{/*
+  Recursively evaluate a value until it is no longer if the form of a helm template.
+  We need this template to be recursive because we could have a setup of the following form
+
+  x: "hi"
+  y: "{{ $.Values.x }}"
+  z: "{{ $.Valuez.y }}"
+
+  z would first be evaluated to "{{ $.Values.x }}", and when recursively evaluated once more,
+  it would finally be evaluated to "hi".
+
+*/}}
+{{- define "evalValue" -}}
+{{- if and (kindIs "string" .value ) (and (contains "{{" .value) (contains "}}" .value)) }}
+{{- /* We're dealing with a value itself containing a helm template expression that we evaluate at runtime */}}
+{{- $evaluatedValue := tpl .value .Root -}}
+{{- include "evalValue" (dict "value" $evaluatedValue "Root" .Root) -}}
+{{- else }}
+{{- .value -}}
+{{- end -}}
+{{- end -}}

@@ -56,8 +56,8 @@ recovery:
   provider: s3
   s3:
     region: "{{ $.Values.s3.region }}"
-    bucket: "override_me"
-    path: "override_me"
+    bucket: "{{ $.Values.s3.bucket }}"
+    path: "/"
     accessKey: "{{ $.Values.s3.accessKey }}"
     secretKey: "{{ $.Values.s3.secretKey }}"
   secret:
@@ -311,8 +311,9 @@ s3:
   accessKey: override_me
   secretKey: override_me
   region: override_me
-  bucket: override_me
+  bucket: 'postgresql.{{ replace "_" "-" $.Release.Name }}.{{ $.Values.environmentName }}'
   ca_cert_bundle: override_me
   endpoint_url: override_me
 
 external_services: {}
+environmentName: override_me
