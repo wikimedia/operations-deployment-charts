@@ -56,6 +56,7 @@ spec:
 
 
 {{- define "deployment.airflow.scheduler" }}
+{{- if $.Values.scheduler.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,4 +108,5 @@ spec:
           configMap:
             name: airflow-scheduler-gitsync-sparse-checkout-file
 
+{{- end }}
 {{- end }}

@@ -163,6 +163,7 @@ data:
 
   See https://git-scm.com/docs/git-sparse-checkout and
 */}}
+{{- if .Root.Values.scheduler.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -179,4 +180,5 @@ data:
     {{- end }}
     /wmf_airflow_common/
 
+{{- end }}
 {{- end }}

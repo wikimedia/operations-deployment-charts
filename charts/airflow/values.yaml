@@ -183,6 +183,8 @@ config:
         verify: /etc/ssl/certs/wmf-ca-certificates.crt
 
 scheduler:
+  enabled: true
+  service_name: airflow-scheduler
   liveness_probe:
     tcpSocket:
       port:  8793
