@@ -16,6 +16,7 @@ spec:
     metadata:
       {{- include "base.meta.labels" $root | indent 6 }}
     spec:
+     {{- include "app.job.job_properties" $cron_opts | indent 6 }}
       backoffLimit: 1
       template:
         metadata:
