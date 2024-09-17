@@ -137,7 +137,7 @@ config:
         colored_console_log: false
         remote_logging: true
         delete_local_logs: true
-        remote_base_log_folder: '{{ printf "s3://airflow/k8s/%s/logs" $.Values.config.airflow.instance_name }}'
+        remote_base_log_folder: '{{ printf "s3://logs.airflow-%s.%s" (replace "_" "-" $.Values.config.airflow.instance_name) $.Values.environmentName }}'
         remote_log_conn_id: s3_dpe
         encrypt_s3_logs: false
       metrics:
@@ -503,3 +503,4 @@ external_services:
   wikimail: [mx]
 
 pgServiceName: override_me
+environmentName: override_me
