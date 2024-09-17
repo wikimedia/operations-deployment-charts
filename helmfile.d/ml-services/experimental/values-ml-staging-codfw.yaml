@@ -103,7 +103,14 @@ inference_services:
           value: "s3://wmf-ml-models/reference-quality/reference-need/20240903095237/"
         - name: FORCE_HTTP
           value: "True"
-
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 4Gi
+          requests:
+            cpu: "4"
+            memory: 4Gi
 
 external_services_app_label_selector: app-wmf
 external_services:
