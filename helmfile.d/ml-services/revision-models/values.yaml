@@ -70,10 +70,11 @@ inference_services:
           value: "s3://wmf-ml-models/reference-quality/reference-need/20240903095237/"
         - name: FORCE_HTTP
           value: "True"
-      resources:
-        limits:
-          cpu: "4"
-          memory: 2Gi
-        requests:
-          cpu: "4"
-          memory: 1Gi
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 2Gi
+          requests:
+            cpu: "4"
+            memory: 2Gi
