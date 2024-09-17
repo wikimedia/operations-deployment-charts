@@ -69,7 +69,7 @@ recovery:
 
 cluster:
   # -- Number of instances
-  instances: 3
+  instances: 2
 
   # PG major version
   version: 15
@@ -88,7 +88,7 @@ cluster:
   imagePullSecrets: []
 
   storage:
-    size: 8Gi
+    size: 5Gi
     storageClass: "ceph-rbd-ssd"
 
   walStorage:
@@ -266,7 +266,7 @@ backups:
       method: barmanObjectStore
 
   # -- Retention policy for backups
-  retentionPolicy: "30d"
+  retentionPolicy: "60d"
 
 
 pooler:
