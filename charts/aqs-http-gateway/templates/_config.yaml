@@ -7,6 +7,8 @@ listen_port: 8080
 # Log level, one of (in increasing severity): debug, info, warning, error and fatal
 log_level: {{ .Values.main_app.log_level }}
 
+data_gateway_uri: {{ .Values.main_app.data_gateway_uri }}
+
 druid:
   host: {{ .Values.main_app.druid.host }}
   port: {{ .Values.main_app.druid.port }}

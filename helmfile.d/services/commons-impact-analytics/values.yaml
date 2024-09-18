@@ -1,15 +1,12 @@
 main_app:
   image: repos/generated-data-platform/aqs/commons-impact-analytics
-  version: v1.0.5
+  version: v1.1.0
   # note the binary is 'common-impact-analytics' (not commons)
   command: ["./common-impact-analytics"]
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: commons-impact-analytics
 
-  consistency: localQuorum
-
-  # note the "_"
-  cassandra_user: "commons_impact_analytics"
+  data_gateway_uri: http://127.0.0.1:6036/public/commons
 
   requests:
     cpu: 200m
@@ -36,3 +33,7 @@ service:
 
 monitoring:
   enabled: true
+
+discovery:
+  listeners:
+    - data-gateway
