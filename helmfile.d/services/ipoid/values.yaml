@@ -49,6 +49,11 @@ cronjobs:
     # In practice, this seems to result in a single retry attempt.
     # Keep this, so that we can try to fix a failed import as soon
     # as possible.
+    # Sometimes, the import container gets stuck (T373427), set
+    # a deadline for the container to finish. Set conservatively
+    # to 12 hours, as a typical import is ~3-4 hours, but imports
+    # that recover from failures on previous days may take longer.
+    activeDeadlineSeconds: 43200
     backoffLimit: 2
     resources:
       requests:
