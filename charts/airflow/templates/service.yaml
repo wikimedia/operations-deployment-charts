@@ -7,3 +7,22 @@
 {{- end }}
 {{ include "mesh.service" . }}
 {{- end }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-scheduler
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: scheduler
+spec:
+  type: ClusterIP
+  selector:
+    app: airflow
+    component: scheduler
+  ports:
+    - name: airflow-scheduler
+      protocol: TCP
+      port: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+      targetPort: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
