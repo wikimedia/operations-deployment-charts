@@ -21,3 +21,9 @@ kafka:
   allowed_clusters:
     # Read page change events from main
     - main-codfw
+
+external_services:
+  kafka:
+    - main-codfw
+  zookeeper:
+    - flink-codfw

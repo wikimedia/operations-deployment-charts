@@ -21,3 +21,9 @@ kafka:
   allowed_clusters:
     # Read and write to main
     - main-eqiad
+
+external_services:
+  kafka:
+    - main-eqiad
+  zookeeper:
+    - flink-eqiad
