@@ -40,7 +40,7 @@ matchLabels:
 {{- end }}
 
 {{- define "base.meta.pod_annotations" }}
-checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+checksum/secrets: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/secret.yaml" "Root" $) }}
 {{- if .Values.monitoring.enabled }}
 {{- if .Values.monitoring.named_ports }}
 prometheus.io/scrape_by_name: "true"

@@ -1,3 +1,13 @@
+## meta 2.0.1
+- Secret checkums are now only computed on their data, meaning that they will remain
+  stable if only the Secret metadata changes.
+
+## helper 1.1.3
+
+- Intreoduce a new `base.helper.resourcesDataChecksum` template, aiming at computing
+  a checksum of a ConfigMap or Secret, based on their `data`, `stringData` or `binaryData`
+  content only.
+
 ## certificate 2.0.0
 
 WARNING: Backwards incompatible change!
