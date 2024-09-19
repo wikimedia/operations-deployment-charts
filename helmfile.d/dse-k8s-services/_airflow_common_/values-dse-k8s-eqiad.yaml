@@ -7,11 +7,19 @@ service:
 config:
   airflow:
     dbHost: 'an-db1001.eqiad.wmnet'
+    config:
+      datahub:
+        cluster: prod
+        conn_id: datahub_gms_prod
+        enabled: true
   connections:
     s3_dpe:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
+    datahub_gms_prod:
+      conn_type: datahub-rest
+      host: http://datahub-gms-production.datahub.svc:8080
   oidc:
     idp_server: idp.wikimedia.org
 

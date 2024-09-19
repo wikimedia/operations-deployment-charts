@@ -7,15 +7,6 @@ config:
     dbUser: 'airflow-test-k8s'
     dags_folder: test_k8s
     instance_name: test-k8s
-    config:
-      datahub:
-        cluster: prod
-        conn_id: datahub_gms_prod
-        enabled: True
-  connections:
-    datahub_gms_prod:
-      conn_type: datahub-rest
-      host: http://datahub-gms-production.datahub.svc:8080
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
