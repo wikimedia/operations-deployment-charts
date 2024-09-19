@@ -1,3 +1,5 @@
+## job 3.0.1
+- Noop, keeping up with app.job module version
 ## job 3.0.0
 - Allow to define Job properties
 - Support for activeDeadlineSeconds

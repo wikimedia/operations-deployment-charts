@@ -1,3 +1,5 @@
+## job 3.0.1
+- bug fix for issues with .Values.config.private
 ## job 3.0.0
 - Allow to define Job properties
 - Support for activeDeadlineSeconds
