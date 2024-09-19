@@ -32,7 +32,7 @@ activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
   - name: {{ $k }}
     valueFrom:
       secretKeyRef:
-        name: {{ template "base.name.release" .Root}}-secret-config
+        name: {{ template "base.name.release" $ }}-secret-config
         key: {{ $k }}
   {{- end }}
   command:
