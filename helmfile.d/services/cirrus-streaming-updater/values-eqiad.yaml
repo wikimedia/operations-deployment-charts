@@ -17,11 +17,6 @@ flink:
   high_availability:
     zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
 
-kafka:
-  allowed_clusters:
-    # Read and write to main
-    - main-eqiad
-
 external_services:
   kafka:
     - main-eqiad

@@ -57,7 +57,8 @@ app:
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
-# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+# or automatically configured via discovery.listeners or using calico and
+# external_services.
 networkpolicy:
   egress:
     enabled: true

@@ -23,9 +23,6 @@ flink:
     # and the chart will include staging in the zk path.
     zookeeper_quorum: flink-zk1001.eqiad.wmnet:2181,flink-zk1002.eqiad.wmnet:2181,flink-zk1003.eqiad.wmnet:2181
 
-kafka:
-  allowed_clusters: [test-eqiad]
-
 external_services:
   kafka:
     - test-eqiad

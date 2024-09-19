@@ -17,11 +17,6 @@ flink:
   high_availability:
     zookeeper_quorum: flink-zk2001.codfw.wmnet:2181,flink-zk2002.codfw.wmnet:2181,flink-zk2003.codfw.wmnet:2181
 
-kafka:
-  allowed_clusters:
-    # Read page change events from main
-    - main-codfw
-
 external_services:
   kafka:
     - main-codfw
