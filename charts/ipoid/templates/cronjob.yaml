@@ -26,10 +26,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-          {{- include "app.job.container" (dict "Root" $root  "Name" $cronjob  "Job" $cron_opts ) | nindent 10 }}
-          {{- if $cron_opts.volumeMounts }}
-          volumes:
-          {{- toYaml  $cron_opts.volumes  | nindent 12 }}
-          {{- end }}
+          {{- include "app.job.container" (dict "Root" $root "Name" $cronjob  "Job" $cron_opts )| nindent 10}}
+          {{- include "app.job.volume"    (dict "Root" $root "Name" $cronjob  "Job" $cron_opts )| nindent 10}}
 {{- end }}
 {{- end }}
