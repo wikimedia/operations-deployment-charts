@@ -16,6 +16,7 @@ activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
 {{- end }}
 
 {{- define "app.job.container" }}
+{{- $root := .Root -}}
 - name: {{ template "base.name.release" .Root}}-{{ .Name }}
   {{- if .Job.image_versioned }}
   image: "{{ .Root.Values.docker.registry }}/{{ .Job.image_versioned }}"
@@ -32,7 +33,7 @@ activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
   - name: {{ $k }}
     valueFrom:
       secretKeyRef:
-        name: {{ template "base.name.release" .Root}}-secret-config
+        name: {{ template "base.name.release" $root }}-secret-config
         key: {{ $k }}
   {{- end }}
   command:

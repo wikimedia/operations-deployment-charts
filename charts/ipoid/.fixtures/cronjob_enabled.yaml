@@ -1,3 +1,10 @@
+config:
+  private:
+    somePrivateKey: snakeoil
+    anotherPrivateKey: evenMoreSnakeoil
+  public:
+    somePublicKey: truth
+    anotherPublicKey: evenMoreTruth
 cronjobs:
     my-cron-hourly:
       enabled: true
@@ -46,6 +53,7 @@ cronjobs:
         - fortune
       schedule: "@daily"
       concurrency: Allow
+      activeDeadlineSeconds: 43200
       image_versioned: my-app:1.1.1
       resources:
         requests:
