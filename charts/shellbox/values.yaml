@@ -23,7 +23,11 @@ monitoring:
   enabled: true
   named_ports: true
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  # Select deployment: "none" to indicate that no k8s service should be
+  # deployed for this release. This is useful together with the route_via
+  # top-level value to instead serve a portion of traffic via the service
+  # associated with another release, such as in the case of a canary.
+  deployment: minikube # valid values are "production", "minikube", and "none"
   port:
     name: http
     # protocol: TCP # TCP is the default protocol
