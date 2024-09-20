@@ -1,0 +1,22 @@
+shellbox:
+  flavour: syntaxhighlight81
+  version: "2024-10-01-174300"
+
+# TODO: T375243 - Also migrate to the bullseye-based httpd-fcgi image when
+# available.
+
+# TODO: T375243 - Add release + env-specific values override to facilitate
+# migration of production envs (i.e., ramp from zero) and remove this.
+resources:
+  replicas: 1
+
+# Override local cluster name (defaults to namespace) to disambiguate in
+# tracing and envoy metrics.
+mesh:
+  tracing:
+    service_name: shellbox-syntaxhighlight-migration
+
+# Do not create a distinct service, instead routing via the main release.
+service:
+  deployment: none
+routed_via: main

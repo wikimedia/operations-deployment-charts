@@ -52,11 +52,13 @@ hooks:
 releases:
   - name: main
     <<: *default
+  - name: migration
+    <<: *default
 
 environments:
   staging:
     values:
-      - releases: [main]
+      - releases: [main, migration]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
