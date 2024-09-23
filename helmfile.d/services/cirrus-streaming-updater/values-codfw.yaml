@@ -10,6 +10,7 @@ app:
     app.config.yaml:
       kafka-source-config.bootstrap.servers: kafka-main-codfw.external-services.svc.cluster.local:9093
       kafka-source-config.client.dns.lookup: use_all_dns_ips
+      update-topic: codfw.cirrussearch.update_pipeline.update.rc0
 
 flink:
   object_store:

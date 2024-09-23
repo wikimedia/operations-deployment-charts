@@ -2,7 +2,5 @@ app:
   config_files:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-producer-eqiad
-      public-update-topic: eqiad.cirrussearch.update_pipeline.update.rc0
-      private-update-topic: eqiad.cirrussearch.update_pipeline.update.private.rc0
       topic-prefix-filter: 'eqiad'
       kafka-source-config.group.id: cirrus-streaming-updater-producer-eqiad
