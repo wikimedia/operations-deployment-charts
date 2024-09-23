@@ -19,11 +19,30 @@
 bootstrap:
   initdb:
     {{- with .Values.cluster.initdb }}
-        {{- with (omit . "postInitApplicationSQL") }}
+        {{- with (omit . "postInitApplicationSQL" "import") }}
             {{- . | toYaml | nindent 4 }}
         {{- end }}
     {{- end }}
     postInitApplicationSQL: {{ include "cluster.bootstrap.post_init_app_sql" . | default "[]" }}
+
+    {{- if .Values.cluster.initdb.import }}
+    import:
+      type: {{ default "microservice" .Values.cluster.initdb.import.type }}
+      databases:
+        - {{ required ".Values.cluster.initdb.import.dbname is required in import mode" .Values.cluster.initdb.import.dbname }}
+      source:
+        externalCluster: external-database
+externalClusters:
+- name: external-database
+  connectionParameters:
+    host: {{ required ".Values.cluster.initdb.import.host is required in import mode" .Values.cluster.initdb.import.host }}
+    port: {{ default "5432" .Values.cluster.initdb.import.port | quote }}
+    user: {{ required ".Values.cluster.initdb.import.user is required in import mode" .Values.cluster.initdb.import.user }}
+    dbname: {{ required ".Values.cluster.initdb.import.dbname is required in import mode" .Values.cluster.initdb.import.dbname }}
+  password:
+    name: {{ include "cluster.fullname" . }}-bootstrap-import
+    key: password
+    {{- end }}
 
 {{- else if eq .Values.mode "recovery" -}}
 bootstrap:
