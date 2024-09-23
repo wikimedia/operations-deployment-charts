@@ -24,7 +24,7 @@ config:
     WIKIDATA_API: "http://localhost:6500/w/api.php"
     WIKIDATA_API_HEADER: "wikidata.org"
     WIKIMEDIA_API: "http://localhost:6500/w/api.php"
-    WIKIMEDIA_API_HEADER: "{source}.wikimedia.org"
+    WIKIMEDIA_API_HEADER: "meta.wikimedia.org"
     WIKIPEDIA_API: "http://localhost:6500/w/api.php"
     WIKIPEDIA_API_HEADER: "{source}.wikipedia.org"
 
@@ -33,7 +33,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-08-22-164531-production"
+  version: "2024-09-23-051901-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: [ "poetry" ]
   args: [ "run", "gunicorn" ]
