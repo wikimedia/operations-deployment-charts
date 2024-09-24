@@ -33,7 +33,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-09-23-051901-production"
+  version: "2024-09-24-105455-production"
   # override entrypoint defined in the docker image with k8s command and args
   command: [ "poetry" ]
   args: [ "run", "gunicorn" ]
