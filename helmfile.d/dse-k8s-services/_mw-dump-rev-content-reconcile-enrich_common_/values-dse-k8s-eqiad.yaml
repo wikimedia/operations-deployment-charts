@@ -1,5 +1,8 @@
 # NOTE: values-dse-k8s-eqiad.yaml is configured to be deployed in dse-k8s-eqiad k8s.
 
+service:
+  deployment: production
+
 app:
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
