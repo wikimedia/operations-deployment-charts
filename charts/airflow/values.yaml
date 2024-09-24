@@ -34,8 +34,6 @@ app:
   - name: airflow-webserver-config
     configMap:
       name: airflow-webserver-config
-  - name: logs
-    emptyDir: {}
   - name: airflow-bash-executables
     configMap:
       name: airflow-bash-executables
@@ -43,8 +41,14 @@ app:
   - name: airflow-connections
     secret:
       secretName: airflow-connections
+  - name: airflow-kubernetes-executor-pod-template
+    configMap:
+      name: airflow-kubernetes-executor-pod-template
   - name: airflow-dags
     emptyDir: {}
+  - name: logs
+    emptyDir: {}
+
 # The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
 # commented out, as we are not yet using the Kubernetes Executor.
   # - name: pod-template-file-settings
@@ -67,6 +71,9 @@ app:
     subPath: connections.yaml
   - name: airflow-dags
     mountPath: &dags_root /opt/airflow/dags
+  - name: airflow-kubernetes-executor-pod-template
+    mountPath: &pod_template_file /opt/airflow/pod_templates/pod_template.yaml
+    subPath: pod_template.yaml
   # - name: pod-template-file-settings
   #   mountPath: /opt/airflow/pod_templates/pod_template_file.yaml
 
@@ -116,7 +123,6 @@ config:
         max_active_runs_per_dag: 3
         max_active_tasks_per_dag: 6
         parallelism: 64
-        hostname_callable: 'webserver_config.get_scheduler_service_name'
         test_connection: enabled
       database:
         load_default_connections: false
@@ -129,8 +135,8 @@ config:
         timeout: 30
       kubernetes_executor:
         multi_namespace_mode: false
-        namespace: airflow-analytics-test
-        pod_template_file: /opt/airflow/pod_templates/pod_template_file.yaml
+        namespace: "{{ $.Release.Namespace }}"
+        pod_template_file: *pod_template_file
         worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.image }}"
         worker_container_tag: "{{ $.Values.app.version }}"
       logging:
@@ -185,9 +191,10 @@ config:
 scheduler:
   enabled: true
   service_name: airflow-scheduler
+  local_executor_api_port: 8793
   liveness_probe:
     tcpSocket:
-      port:  8793
+      port: *scheduler_healthcheck_port
   readiness_probe:
     httpGet:
       path: /health
@@ -213,6 +220,14 @@ gitsync:
   dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
   root_dir: /dags
   link_dir: airflow_dags
+
+worker:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

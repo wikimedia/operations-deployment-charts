@@ -8,8 +8,8 @@
 {{ include "mesh.service" . }}
 {{- end }}
 
+{{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -24,5 +24,6 @@ spec:
   ports:
     - name: airflow-scheduler
       protocol: TCP
-      port: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
-      targetPort: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+      port: {{ $.Values.scheduler.local_executor_api_port }}
+      targetPort: {{ $.Values.scheduler.local_executor_api_port }}
+{{- end }}

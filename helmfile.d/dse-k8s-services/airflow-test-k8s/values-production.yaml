@@ -7,6 +7,9 @@ config:
     dbUser: 'airflow-test-k8s'
     dags_folder: test_k8s
     instance_name: test-k8s
+    config:
+      core:
+        executor: KubernetesExecutor
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s

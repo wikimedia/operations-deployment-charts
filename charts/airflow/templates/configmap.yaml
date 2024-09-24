@@ -6,3 +6,5 @@
 {{- include "configmap.airflow-bash-executables" . }}
 {{- include "configmap.gitsync-sparse-checkout-file" (dict "component" "webserver" "Root" . ) }}
 {{- include "configmap.gitsync-sparse-checkout-file" (dict "component" "scheduler" "Root" . ) }}
+{{- include "configmap.gitsync-sparse-checkout-file" (dict "component" "worker" "Root" . ) }}
+{{- include "configmap.airflow-kubernetes-executor-pod-template" . }}

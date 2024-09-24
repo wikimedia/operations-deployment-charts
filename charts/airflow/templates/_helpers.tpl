@@ -39,7 +39,9 @@
   command: ["airflow"]
   args: ["scheduler", "--pid" , "/tmp/airflow-scheduler.pid"]
   ports:
-  - containerPort: {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+  - containerPort: {{ $.Values.scheduler.local_executor_api_port }}
+  {{- end }}
   - containerPort: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
   {{- if .Values.scheduler.liveness_probe }}
   livenessProbe:
@@ -158,7 +160,7 @@ env:
 {{- end -}}
 
 
-{{- define "airflow.sqlalchemy.connstr" -}}
+{{- define "airflow.config.database.sqlalchemy_connstr" -}}
 {{- if not $.Values.postgresql.cloudnative }}
 {{- with $.Values.config.airflow }}
 sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
@@ -169,6 +171,17 @@ sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
 {{- end }}
 {{- end -}}
 
+{{- define "airflow.config.core.hostname_callable" -}}
+{{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+{{/*
+  When we are running with the LocalExecutor, the tasks are executed in the scheduler pod
+  as subprocesses, meaning that we need to tell airflow to use the scheduler service name
+  when using the API to fetch logs for currently running tasks. Indeed, the logs are local
+  to the scheduler pod until the task completes, after which they are uploaded to s3.
+*/}}
+hostname_callable = webserver_config.get_scheduler_service_name
+{{- end }}
+{{- end }}
 
 {{- define "airflow.initcontainer.gitsync" -}}
 - name: {{ template "base.name.release" . }}-git-sync

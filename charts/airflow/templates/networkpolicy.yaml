@@ -59,12 +59,36 @@ spec:
       protocol: TCP
       destination:
         ports:
-        - {{ $.Values.scheduler.liveness_probe.tcpSocket.port }}
+        {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+        - {{ $.Values.scheduler.local_executor_api_port }}
+        {{- end }}
         - {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
         {{- if $.Values.monitoring.enabled }}
         - {{ $.Values.monitoring.prometheus_port }}
         {{- end }}
 
+{{- if eq $.Values.config.airflow.config.core.executor "KubernetesExecutor"}}
+{{/*
+  When using the Kubernetes executor, the scheduler needs to have access to the kube API
+  to manage tasks via Pod resources, and the webserver needs to be able to tail the logs
+  of running Pods.
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-to-kubapi
+spec:
+  types:
+    - Egress
+  selector: "app == 'airflow' && component in { 'scheduler', 'webserver' }"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+{{- end }}
 {{- end }}
 
 {{- if not $.Values.scheduler.enabled }}

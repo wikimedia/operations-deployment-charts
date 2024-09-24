@@ -76,8 +76,11 @@ data:
     {{- $value := include "evalValue" (dict "value" $config_value "Root" $)}}
     {{ $config_key }} = {{ template "toIniValue" (dict "value" $value)  }}
     {{- end }}
+
     {{- if eq $config_section "database" }}
-    {{- include "airflow.sqlalchemy.connstr" $ | indent 4}}
+    {{- include "airflow.config.database.sqlalchemy_connstr" $ | indent 4 }}
+    {{- else if eq $config_section "core" }}
+    {{- include "airflow.config.core.hostname_callable" $ | indent 4 }}
     {{- end }}
     {{- end }}
 
@@ -181,4 +184,49 @@ data:
     /wmf_airflow_common/
 
 {{- end }}
+{{- end }}
+
+{{- define "configmap.airflow-kubernetes-executor-pod-template" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-kubernetes-executor-pod-template
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  pod_template.yaml: |
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: overriden-at-runtime
+      labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: task-pod
+    spec:
+      restartPolicy: Never
+      initContainers:
+      {{- include "airflow.initcontainer.gitsync" . | nindent 8 }}
+      containers:
+      - name: base
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: IfNotPresent
+        {{- include "app.airflow.env" . | indent 8 }}
+        {{- with .Values.app.volumeMounts }}
+        volumeMounts:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        resources:
+          requests:
+          {{- toYaml .Values.worker.requests | nindent 12 }}
+          limits:
+          {{- toYaml .Values.worker.limits | nindent 12 }}
+      volumes:
+      {{- include "app.generic.volume" . | indent 6 }}
+      - name: gitsync-sparse-checkout-config
+        configMap:
+          name: airflow-worker-gitsync-sparse-checkout-file
+
 {{- end }}
