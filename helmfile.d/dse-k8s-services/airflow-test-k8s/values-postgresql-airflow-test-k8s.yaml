@@ -1,0 +1,9 @@
+cluster:
+  initdb:
+    import:
+      host: an-db1001.eqiad.wmnet
+      user: airflow-test-k8s
+      dbname: airflow-test-k8s
+
+external_services:
+  postgresql: [analytics]

@@ -3,8 +3,6 @@ app:
 
 config:
   airflow:
-    dbName: 'airflow-test-k8s'
-    dbUser: 'airflow-test-k8s'
     dags_folder: test_k8s
     instance_name: test-k8s
     config:
@@ -15,11 +13,7 @@ config:
     client_id: airflow_test_k8s
 
 external_services:
-  postgresql: [analytics]
   cas: [idp-test]
-
-postgresql:
-  cloudnative: false
 
 ingress:
   gatewayHosts:
