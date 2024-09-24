@@ -107,6 +107,7 @@ namespaces:
       istio-injection: disabled
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
+
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org
     limitranges:
@@ -130,6 +131,34 @@ namespaces:
         max:
           memory: "8Gi"
           cpu: "4"
+  airflow-analytics:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-analytics.wikimedia.org
+  airflow-analytics-test:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-analytics-test.wikimedia.org
+  airflow-search:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-search.wikimedia.org
+  airflow-research:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-research.wikimedia.org
+  airflow-platform-eng:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-platform-eng.wikimedia.org
+  airflow-analytics-product:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-analytics-product.wikimedia.org
+  airflow-wmde:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-wmde.wikimedia.org
   echoserver: {}
   spark:
     deployClusterRole: deploy-sparkapplications
