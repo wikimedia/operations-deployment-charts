@@ -37,9 +37,6 @@ app:
 # NOTE: staging uses Kafka test-eqiad cluster for both source and sink.
 # Because kafka test-eqiad doesn't have real mediawiki.page_change
 # traffic, it won't really be doing any work.
-kafka:
-  allowed_clusters: [test-eqiad]
-
 external_services:
   kafka:
     - test-eqiad

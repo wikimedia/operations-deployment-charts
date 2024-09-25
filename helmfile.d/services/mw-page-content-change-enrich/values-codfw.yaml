@@ -51,13 +51,6 @@ app:
     "state.checkpoints.dir": s3://mw-page-content-change-enrich.wikikube-codfw/flink/checkpoints # needed for upgradeMode: savepoint
     "state.savepoints.dir": s3://mw-page-content-change-enrich.wikikube-codfw/flink/savepoints # needed for upgradeMode: savepoint
 
-kafka:
-  allowed_clusters:
-    # Read page change events from main
-    - main-codfw
-    # Write page content change events to jumbo
-    - jumbo-eqiad
-
 external_services:
   kafka:
     # Read page change events from main
