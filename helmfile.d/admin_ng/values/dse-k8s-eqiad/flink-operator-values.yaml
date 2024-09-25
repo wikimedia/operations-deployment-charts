@@ -1,7 +1,9 @@
 # List of namespaces that the flink-operator
 # will watch and be granted permissions to manage.
 #
-watchNamespaces: []
+watchNamespaces:
+- mw-dump-rev-content-reconcile-enrich-next
+- mw-dump-rev-content-reconcile-enrich
 
 # Allow the flink-kubernetes-operator chart to create RBAC resources in watchNamespaces.
 rbac:
