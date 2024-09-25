@@ -3,17 +3,19 @@
 main_app:
   # Re-stated image: for greppability.
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
-  version: 2024-08-13-135124
+  version: 2024-09-24-145528
 
 ingress:
   enabled: true
 
 config:
   public:
-    # Envoy service proxy access URL for all production wikis
+    # Production wiki access (initially, for wikifunctions.org)
     WIKI_API_URL: http://localhost:6501/w/api.php
-    # NOTE: This tells the orchestrator to pass Envoy, a "Host: www.wikifunctions.org" header
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
+    # Production Wikidata.org wiki access (null to disable access, for now)
+    WIKIDATA_API_URL: null
+    WIKIDATA_VIRTUAL_HOST: www.wikidata.org
     # Top-level request timeout at the orchestrator level (in milliseconds)
     # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
     ORCHESTRATOR_TIMEOUT_MS: "10000"
