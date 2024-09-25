@@ -58,6 +58,7 @@ docker:
 
 deployExtraClusterRoles:
   - "sparkapplications"
+  - "airflow"
 
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
@@ -105,6 +106,7 @@ namespaces:
     labels:
       istio-injection: disabled
   airflow-test-k8s:
+    deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org
     limitranges:
