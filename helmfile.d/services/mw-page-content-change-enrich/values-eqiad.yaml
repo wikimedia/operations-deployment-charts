@@ -58,6 +58,13 @@ kafka:
     # Write page content change events to jumbo
     - jumbo-eqiad
 
+external_services:
+  kafka:
+    # Read page change events from main
+    - main-eqiad
+    # Write page content change events to jumbo
+    - jumbo-eqiad
+
 networkpolicy:
   egress:
     dst_nets:

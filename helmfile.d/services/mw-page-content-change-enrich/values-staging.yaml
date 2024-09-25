@@ -40,6 +40,10 @@ app:
 kafka:
   allowed_clusters: [test-eqiad]
 
+external_services:
+  kafka:
+    - test-eqiad
+
 networkpolicy:
   egress:
     dst_nets:
