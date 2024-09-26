@@ -172,6 +172,7 @@ config:
       webserver:
         enable_proxy_fix: true
         rbac: true
+        base_url: "https://{{ $.Values.ingress.gatewayHosts.default }}.wikimedia.org"
   oidc:
     idp_server: override_me
     client_id: override_me

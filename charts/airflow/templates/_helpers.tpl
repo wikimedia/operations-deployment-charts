@@ -148,7 +148,7 @@ env:
 
 */}}
 {{- define "evalValue" -}}
-{{- if and (kindIs "string" .value ) (hasPrefix "{{" .value) }}
+{{- if and (kindIs "string" .value ) (and (contains "{{" .value) (contains "}}" .value)) }}
 {{- /* We're dealing with a value itself containing a helm template expression that we evaluate at runtime */}}
 {{- $evaluatedValue := tpl .value .Root -}}
 {{- include "evalValue" (dict "value" $evaluatedValue "Root" .Root) -}}
