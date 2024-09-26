@@ -30,6 +30,7 @@ app:
           stream: mediawiki.dump.revision_content_history.reconcile.rc0:1.0.0
           connector: kafka
           options:
+            bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -37,6 +38,7 @@ app:
           stream: mediawiki.dump.revision_content_history.reconcile.enriched.rc0:1.0.0
           connector: kafka
           options:
+            bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
@@ -50,6 +52,7 @@ app:
           stream: mw_dump_rev_content_reconcile_enrich.error:2.1.0
           connector: kafka
           options:
+            bootstrap_servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
