@@ -206,7 +206,7 @@ hostname_callable = webserver_config.get_scheduler_service_name
 {{- end -}}
 
 
-{{- define "secret.airflow-connections" }}
+{{- define "secret.airflow-connections-variables" }}
 ---
 apiVersion: v1
 kind: Secret
@@ -218,5 +218,7 @@ type: Opaque
 stringData:
   connections.yaml: |
     {{- tpl ( toYaml $.Values.config.connections) $ | nindent 4 }}
+  variables.yaml: |
+    {{- tpl ( toYaml $.Values.config.variables) $  | nindent 4 }}
 
 {{- end }}

@@ -100,6 +100,7 @@ config:
     instance_name: override_me
     aws_access_key_id: override_me
     aws_secret_access_key: override_me
+    s3_bucket: &s3_bucket '{{ printf "logs.airflow-%s.%s" (replace "_" "-" $.Values.config.airflow.instance_name) $.Values.environmentName }}'
 
     auth:
       role_admin: Admin
@@ -112,6 +113,7 @@ config:
         airflow-test-k8s-admins: [Admin]
         ops: [Admin]
 
+    # https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html
     config:
       core:
         colored_console_log: false
@@ -143,7 +145,7 @@ config:
         colored_console_log: false
         remote_logging: true
         delete_local_logs: true
-        remote_base_log_folder: '{{ printf "s3://logs.airflow-%s.%s" (replace "_" "-" $.Values.config.airflow.instance_name) $.Values.environmentName }}'
+        remote_base_log_folder: 's3://{{ $.Values.config.airflow.s3_bucket }}'
         remote_log_conn_id: s3_dpe
         encrypt_s3_logs: false
       metrics:
@@ -160,7 +162,8 @@ config:
         scheduler_health_check_server_port: &scheduler_healthcheck_port 8765
       secrets:
         backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
-        backend_kwargs: '{"connections_file_path": "/opt/airflow/connections.yaml"}' # WARN: must be json-parseable
+        # See https://github.com/apache/airflow/blob/73dd6c17bd10ddda63a1682ac2174b0d206590dd/airflow/secrets/local_filesystem.py#L278-L279
+        backend_kwargs: '{"connections_file_path": "/opt/airflow/connections.yaml", "variables_file_path": "/opt/airflow/variables.yaml"}' # WARN: must be json-parseable
       smtp:
         smtp_host: mx1001.wikimedia.org
         smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"
@@ -173,11 +176,8 @@ config:
         enable_proxy_fix: true
         rbac: true
         base_url: "https://{{ $.Values.ingress.gatewayHosts.default }}.wikimedia.org"
-  oidc:
-    idp_server: override_me
-    client_id: override_me
-    client_secret: override_me
 
+  # https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html
   connections:
     fs_local:
       conn_type: fs
@@ -188,6 +188,16 @@ config:
       password: "{{ $.Values.config.airflow.aws_secret_access_key }}"
       extra:
         verify: /etc/ssl/certs/wmf-ca-certificates.crt
+
+  # https://airflow.apache.org/docs/apache-airflow/stable/howto/variable.html
+  variables:
+    s3_log_bucket: *s3_bucket
+    s3_log_retention_days: 30
+
+  oidc:
+    idp_server: override_me
+    client_id: override_me
+    client_secret: override_me
 
 scheduler:
   enabled: true
