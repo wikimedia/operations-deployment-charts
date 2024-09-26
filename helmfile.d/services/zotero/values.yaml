@@ -29,13 +29,25 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-    - cidr: 208.80.154.224/32
+    - cidr: 208.80.154.224/32 # text-lb.eqiad (for citation of wikipedia articles)
       ports:
       - protocol: TCP
         port: 80
       - protocol: TCP
         port: 443
-    - cidr: 208.80.153.224/32
+    - cidr: 2620:0:861:ed1a::1/128 # text-lb.codfw (for citation of wikipedia articles)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 208.80.153.224/32 # text-lb.codfw (for citation of wikipedia articles)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 2620:0:860:ed1a::1/128 # text-lb.codfw (for citation of wikipedia articles)
       ports:
       - protocol: TCP
         port: 80
