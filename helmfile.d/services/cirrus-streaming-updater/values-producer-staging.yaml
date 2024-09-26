@@ -6,7 +6,7 @@ app:
       private-update-topic: eqiad.cirrussearch.update_pipeline.update.private.rc0
       # While staging lives in eqiad, only eqiad has events right now. Ideally we want staging
       # in all datacenters, but for now we have to manually update this to follow mediawiki.
-      topic-prefix-filter: 'eqiad'
+      topic-prefix-filter: 'codfw'
       kafka-source-config.group.id: cirrus-streaming-updater-producer-staging
       # Read prod events, outputs still flow to test cluster
       kafka-source-config.bootstrap.servers: kafka-main-eqiad.external-services.svc.cluster.local:9093
