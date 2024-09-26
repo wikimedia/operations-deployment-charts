@@ -111,6 +111,10 @@ env:
   {{- else }}
     value: {{ $.Values.scheduler.remote_host }}
   {{- end }}
+  {{- if $.Values.kerberos.enabled }}
+  - name: AIRFLOW_KERBEROS_HOSTNAME
+    value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
+  {{- end }}
 {{- end }}
 
 
@@ -187,10 +191,17 @@ hostname_callable = webserver_config.get_scheduler_service_name
 {{- end }}
 {{- end }}
 
-{{- define "airflow.initcontainer.gitsync" -}}
+{{- define "airflow.config.core.security" }}
+{{- if $.Values.kerberos.enabled }}
+security = kerberos
+{{- end }}
+{{- end }}
 
-{{- end -}}
-
+{{- define "airflow.config.api.auth_backends" }}
+{{- if $.Values.kerberos.enabled }}
+auth_backends = airflow.providers.fab.auth_manager.api.auth.backend.kerberos_auth, airflow.api.auth.backend.session
+{{- end }}
+{{- end }}
 
 {{- define "executor_pod._image" -}}
 "{{ .Values.docker.registry }}/{{ .Values.app.executor_pod_image }}:{{ .Values.app.executor_pod_image_version }}"

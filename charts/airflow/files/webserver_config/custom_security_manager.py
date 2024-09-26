@@ -1,6 +1,15 @@
 from airflow.providers.fab.auth_manager.security_manager.override import FabAirflowSecurityManagerOverride
+from typing import Optional
+
 
 class CustomSecurityManager(FabAirflowSecurityManagerOverride):
+    def find_user(self, username: Optional[str] = None, email: Optional[str] = None):
+        # If the username comes from a kerberos ticket (which happens when a kerberos-authenticated
+        # user calls the API) it will suffixed with @WIKIMEDIA, which does not match what we have
+        # in database. We simply strip the suffix to get back to the actual username.
+        if username and username.endswith("@WIKIMEDIA"):
+            username = username.replace("@WIKIMEDIA", "")
+        return super().find_user(username=username, email=email)
 
     def get_oauth_user_info(self, provider: str, response=None) -> dict:
         if provider == "CAS":
@@ -23,5 +32,6 @@ class CustomSecurityManager(FabAirflowSecurityManagerOverride):
                 "role_keys": role_keys,
             }
             return userinfo
+
 
 SECURITY_MANAGER_CLASS = CustomSecurityManager

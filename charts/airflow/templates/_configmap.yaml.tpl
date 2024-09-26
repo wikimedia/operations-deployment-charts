@@ -39,13 +39,18 @@ data:
       proxiable = true
       ticket_lifetime = 2d
       renew_lifetime = 14d
-      dns_canonicalize_hostname = true
+      {{/*
+        we need this because otherwise the airflow hostname is canonicalized to
+        k8s-ingress-dse.discovery.wmnet, and we'd need to reflect this in the
+        KDB, which does not make a whole lot of sense
+      */}}
+      dns_canonicalize_hostname = false
       rdns = false
 
     [realms]
       WIKIMEDIA = {
         kdc = krb1001.eqiad.wmnet
-        kdc = krb1002.codfw.wmnet
+        kdc = krb2002.codfw.wmnet
         admin_server = krb1001.eqiad.wmnet
       }
     [domain_realm]
@@ -81,6 +86,9 @@ data:
     {{- include "airflow.config.database.sqlalchemy_connstr" $ | indent 4 }}
     {{- else if eq $config_section "core" }}
     {{- include "airflow.config.core.hostname_callable" $ | indent 4 }}
+    {{- include "airflow.config.core.security" $ | indent 4 }}
+    {{- else if eq $config_section "api" }}
+    {{- include "airflow.config.api.auth_backends" $ | indent 4 }}
     {{- end }}
     {{- end }}
 
@@ -137,7 +145,7 @@ data:
     }
     {{- end }}
 
-    {{- range $path, $_ :=  $.Files.Glob "files/**.py"}}
+    {{- range $path, $_ :=  $.Files.Glob "files/webserver_config/*.py"}}
     {{ $.Files.Get $path | nindent 4 }}
     {{- end }}
 
@@ -223,10 +231,5 @@ data:
           {{- toYaml .Values.worker.resources.limits | nindent 12 }}
       volumes:
       {{- include "app.generic.volume" . | indent 6 }}
-      {{- if $.Values.kerberos.enabled }}
-      - name: airflow-kerberos-token
-        persistentVolumeClaim:
-          claimName: airflow-kerberos-token-pvc
-      {{- end }}
 
 {{- end }}

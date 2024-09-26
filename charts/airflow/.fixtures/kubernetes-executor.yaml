@@ -8,10 +8,15 @@ config:
     instance_name: ci
     config:
       core:
-        executor: KerberosExecutor
+        executor: KubernetesExecutor
+      kerberos:
+        principal: airflow/airflow-ci.discovery.wmnet
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: ci
+
+kerberos:
+  keytab: cGxvcAo=
 
 ingress:
   gatewayHosts:

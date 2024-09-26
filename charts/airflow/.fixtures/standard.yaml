@@ -6,9 +6,15 @@ config:
   airflow:
     dags_folder: ci
     instance_name: ci
+    config:
+      kerberos:
+        principal: airflow/airflow-ci.discovery.wmnet
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: ci
+
+kerberos:
+  keytab: cGxvcAo=
 
 ingress:
   gatewayHosts:

@@ -54,6 +54,12 @@ app:
   - name: airflow-dags
     persistentVolumeClaim:
       claimName: airflow-dags-pvc
+  - name: airflow-kerberos-keytab
+    secret:
+      secretName: airflow-kerberos-keytab
+  - name: airflow-kerberos-token
+    persistentVolumeClaim:
+      claimName: airflow-kerberos-token-pvc
 
   volumeMounts: &airflow_volume_mounts
   - name: airflow-config
@@ -77,6 +83,12 @@ app:
   - name: airflow-kubernetes-executor-pod-template
     mountPath: &pod_template_file /opt/airflow/pod_templates/pod_template.yaml
     subPath: pod_template.yaml
+  - name: airflow-kerberos-keytab
+    mountPath: /etc/kerberos/keytabs
+    readOnly: true
+  - name: airflow-kerberos-token
+    mountPath: /tmp/airflow_krb5_ccache
+
 
 service:
   deployment: minikube # valid values are "production" and "minikube"
@@ -115,6 +127,7 @@ config:
 
     # https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html
     config:
+      api: {}
       core:
         colored_console_log: false
         dags_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ $.Values.config.airflow.dags_folder }}"
@@ -126,6 +139,7 @@ config:
         default_task_retries: 5
         parallelism: 64
         test_connection: enabled
+        auth_manager: webserver_config.CustomAuthManager
       database:
         load_default_connections: false
       kerberos:
@@ -133,7 +147,7 @@ config:
         ccache: /tmp/airflow_krb5_ccache/krb5cc
         include_ip: false
         keytab: /etc/kerberos/keytabs/airflow.keytab
-        principal:
+        principal: override_me/override_me
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
@@ -147,6 +161,8 @@ config:
         remote_base_log_folder: 's3://{{ $.Values.config.airflow.s3_bucket }}'
         remote_log_conn_id: s3_dpe
         encrypt_s3_logs: false
+        logging_level: INFO
+        fab_logging_level: INFO
       metrics:
         metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
         statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
@@ -269,19 +285,7 @@ kerberos:
     limits:
       cpu: 500m
       memory: 400Mi
-  volumes:
-  - name: airflow-kerberos-token
-    persistentVolumeClaim:
-      claimName: airflow-kerberos-token-pvc
-  - name: airflow-kerberos-keytab
-    secret:
-      secretName: airflow-kerberos-keytab
-  volumeMounts:
-  - name: airflow-kerberos-token
-    mountPath: /tmp/airflow_krb5_ccache
-  - name: airflow-kerberos-keytab
-    mountPath: /etc/kerberos/keytabs
-    readOnly: true
+
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

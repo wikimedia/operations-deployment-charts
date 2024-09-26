@@ -187,10 +187,8 @@ spec:
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
         volumeMounts:
-        {{- toYaml $.Values.kerberos.volumeMounts  | nindent 8 }}
         {{- toYaml $.Values.app.volumeMounts  | nindent 8 }}
       volumes:
-      {{- toYaml $.Values.kerberos.volumes | nindent 6 }}
       {{- toYaml $.Values.app.volumes | nindent 6 }}
 
 
