@@ -157,6 +157,11 @@ releases:
               resources: ["certificates"]
               verbs: ["*"]
             {{- end }}
+            {{- if hasKey $.Environment.Values "install_cloudnative_pg_operator" }}
+            - apiGroups: ["postgresql.cnpg.io"]
+              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              verbs: ["*"]
+            {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["*"]
