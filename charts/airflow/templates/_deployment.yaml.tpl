@@ -18,12 +18,7 @@ spec:
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
-        checksum/airflow-bash-executables: {{ include "configmap.airflow-bash-executables" . | sha256sum }}
-        checksum/airflow-config: {{ include "configmap.airflow-config" . | sha256sum }}
-        checksum/airflow-connections: {{ include "secret.airflow-connections-variables" . | sha256sum }}
-        checksum/airflow-webserver-config: {{ include "configmap.airflow-webserver-config" . | sha256sum }}
-        checksum/gitsync-sparse-checkout: {{ include "configmap.gitsync-sparse-checkout-file" (dict "component" "webserver" "Root" $) | sha256sum }}
-        checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
+        checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -80,13 +75,7 @@ spec:
         prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8 }}
-        checksum/airflow-bash-executables: {{ include "configmap.airflow-bash-executables" . | sha256sum }}
-        checksum/airflow-config: {{ include "configmap.airflow-config" . | sha256sum }}
-        checksum/airflow-connections: {{ include "secret.airflow-connections-variables" . | sha256sum }}
-        checksum/gitsync-sparse-checkout: {{ include "configmap.gitsync-sparse-checkout-file" (dict "component" "scheduler" "Root" $ ) | sha256sum }}
-        checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
-        checksum/statsd-exporter-config: {{ $.Values.monitoring.statsd.config | sha256sum }}
-        checksum/pod-template: {{ include "configmap.airflow-kubernetes-executor-pod-template" . | sha256sum }}
+        checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}

@@ -19,6 +19,9 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
 - name: statsd-exporter
   image: {{ .Values.docker.registry }}/{{ .Values.common_images.statsd.exporter }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.monitoring.statsd.ipv4 }}
+  args: ['--statsd.listen-udp=0.0.0.0:9125', '--statsd.listen-tcp=0.0.0.0:9125', '--log.level=warn', '--statsd.mapping-config=/etc/monitoring/prometheus-statsd.conf']
+  {{- end }}
   {{- with .Values.monitoring.statsd.prestop_sleep }}
   {{ include "base.helper.prestop" . | nindent 2}}
   {{- end }}
@@ -44,6 +47,12 @@ checksum/prometheus-statsd: {{ include "base.statsd.configmap" . | sha256sum }}
   ports:
   - name: statsd-metrics
     containerPort: 9102
+  - name: statsd-udp
+    containerPort: 9125
+    protocol: UDP
+  - name: statsd-tcp
+    containerPort: 9125
+    protocol: TCP
   livenessProbe:
     tcpSocket:
       port: statsd-metrics
