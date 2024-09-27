@@ -3,6 +3,9 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Values.backups.endpointCA.name | default (printf "%s-ca-bundle" (include "cluster.fullname" .)) | quote }}
+  annotations:
+    {{/* This allows the operator to hot reload the certificate if we ever roll it out. */}}
+    cnpg.io/reload: "true"
 type: Opaque
 data:
   {{ .Values.backups.endpointCA.key | default "ca-bundle.crt" | quote }}: |

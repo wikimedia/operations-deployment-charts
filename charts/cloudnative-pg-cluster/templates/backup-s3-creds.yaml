@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ default (printf "%s-backup-s3-creds" (include "cluster.fullname" .)) .Values.backups.secret.name }}
+  annotations:
+    cnpg.io/reload: "true"
 data:
   ACCESS_KEY_ID: {{ tpl (required ".Values.backups.s3.accessKey is required, but not specified." .Values.backups.s3.accessKey) . | b64enc | quote }}
   ACCESS_SECRET_KEY: {{ tpl (required ".Values.backups.s3.secretKey is required, but not specified." .Values.backups.s3.secretKey) . | b64enc | quote }}
