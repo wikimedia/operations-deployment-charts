@@ -175,6 +175,8 @@ config:
         enable_proxy_fix: true
         rbac: true
         base_url: "https://{{ $.Values.ingress.gatewayHosts.default }}.wikimedia.org"
+        # Our deployments are public-facing by default, but secured by OIDC authentication. Therefore, we can disable this warning. See #T375739
+        warn_deployment_exposure: false
 
   # https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html
   connections:
