@@ -80,6 +80,6 @@ securityContext:
 {{- else if get $resource "binaryData"}}
 {{- $dataArray = append $dataArray (b64enc (get $resource)) }}
 {{- end }}
-{{- toString $dataArray | sha256sum }}
 {{- end }}
+{{- toString $dataArray | sha256sum }}
 {{- end }}
