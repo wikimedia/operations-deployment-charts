@@ -38,9 +38,9 @@ app:
     configMap:
       name: airflow-bash-executables
       defaultMode: 0777
-  - name: airflow-connections
+  - name: airflow-connections-variables
     secret:
-      secretName: airflow-connections
+      secretName: airflow-connections-variables
   - name: airflow-kubernetes-executor-pod-template
     configMap:
       name: airflow-kubernetes-executor-pod-template
@@ -66,9 +66,8 @@ app:
     mountPath: /opt/airflow/logs
   - name: airflow-bash-executables
     mountPath: /opt/airflow/usr/bin
-  - name: airflow-connections
-    mountPath: /opt/airflow/connections.yaml
-    subPath: connections.yaml
+  - name: airflow-connections-variables
+    mountPath: /opt/airflow/secrets
   - name: airflow-dags
     mountPath: &dags_root /opt/airflow/dags
   - name: airflow-kubernetes-executor-pod-template
@@ -163,7 +162,7 @@ config:
       secrets:
         backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
         # See https://github.com/apache/airflow/blob/73dd6c17bd10ddda63a1682ac2174b0d206590dd/airflow/secrets/local_filesystem.py#L278-L279
-        backend_kwargs: '{"connections_file_path": "/opt/airflow/connections.yaml", "variables_file_path": "/opt/airflow/variables.yaml"}' # WARN: must be json-parseable
+        backend_kwargs: '{"connections_file_path": "/opt/airflow/secrets/connections.yaml", "variables_file_path": "/opt/airflow/secrets/variables.yaml"}' # WARN: must be json-parseable
       smtp:
         smtp_host: mx1001.wikimedia.org
         smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"

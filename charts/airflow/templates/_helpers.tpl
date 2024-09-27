@@ -211,7 +211,7 @@ hostname_callable = webserver_config.get_scheduler_service_name
 apiVersion: v1
 kind: Secret
 metadata:
-  name: airflow-connections
+  name: airflow-connections-variables
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 type: Opaque
