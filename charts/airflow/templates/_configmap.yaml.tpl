@@ -210,7 +210,7 @@ data:
       {{- include "airflow.initcontainer.gitsync" . | nindent 8 }}
       containers:
       - name: base
-        image: {{ template "app.generic._image" . }}
+        image: {{ template "executor_pod._image" . }}
         imagePullPolicy: IfNotPresent
         {{- include "app.airflow.env" . | indent 8 }}
         {{- with .Values.app.volumeMounts }}

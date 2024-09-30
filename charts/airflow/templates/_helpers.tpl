@@ -222,3 +222,7 @@ stringData:
     {{- tpl ( toYaml $.Values.config.variables) $  | nindent 4 }}
 
 {{- end }}
+
+{{- define "executor_pod._image" -}}
+"{{ .Values.docker.registry }}/{{ .Values.app.executor_pod_image }}:{{ .Values.app.executor_pod_image_version }}"
+{{- end -}}

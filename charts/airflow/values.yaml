@@ -2,8 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
-  image: repos/data-engineering/airflow
-  version: latest # we use latest everywhere in the defaults.
+  image: &base-image repos/data-engineering/airflow
+  version: &base-image-version latest # we use latest everywhere in the defaults.
+  executor_pod_image: *base-image
+  executor_pod_image_version: *base-image-version
   port: &airflow_frontend 8080 # airflow webUI
   # port: *airflow_frontend # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
