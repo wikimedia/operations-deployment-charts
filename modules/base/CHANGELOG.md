@@ -1,3 +1,8 @@
+## meta 2.0.2
+- Add the `checksum/configuration` annotation to the base pod annotation template,
+  that computes a stable checksum on all configmap resources defined in the `configmap.yaml`
+  file.
+
 ## meta 2.0.1
 - Secret checkums are now only computed on their data, meaning that they will remain
   stable if only the Secret metadata changes.

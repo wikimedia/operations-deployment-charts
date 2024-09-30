@@ -41,6 +41,7 @@ matchLabels:
 
 {{- define "base.meta.pod_annotations" }}
 checksum/secrets: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/secret.yaml" "Root" $) }}
+checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
 {{- if .Values.monitoring.enabled }}
 {{- if .Values.monitoring.named_ports }}
 prometheus.io/scrape_by_name: "true"
