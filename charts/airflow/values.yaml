@@ -140,8 +140,8 @@ config:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
         pod_template_file: *pod_template_file
-        worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.image }}"
-        worker_container_tag: "{{ $.Values.app.version }}"
+        worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.executor_pod_image }}"
+        worker_container_tag: "{{ $.Values.app.executor_pod_image_version }}"
       logging:
         colored_console_log: false
         remote_logging: true
