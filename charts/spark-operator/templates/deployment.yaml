@@ -22,9 +22,8 @@ spec:
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
-        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
-        prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.monitoring.port }}"
         prometheus.io/path: "{{ .Values.monitoring.endpoint }}"
         {{- end }}
@@ -46,7 +45,7 @@ spec:
         {{- if .Values.webhook.enable }}
         - name: webhook-certs
           secret:
-            secretName: {{ template "base.name.release" . }}-webhook-certs
+            secretName: {{ include "base.meta.name" (dict "Root" $ "Name" (get (first $.Values.certificates) "name")) }}
         {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 10 }}
