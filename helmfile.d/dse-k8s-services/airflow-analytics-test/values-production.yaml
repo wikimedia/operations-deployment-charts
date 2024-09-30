@@ -1,0 +1,22 @@
+config:
+  airflow:
+    dags_folder: analytics_test
+    instance_name: analytics-test
+    dbHost: an-db1001.eqiad.wmnet
+    dbName: airflow_analytics_test
+    dbUser: airflow_analytics_test
+    postgresqlPass: secret
+  oidc:
+    client_id: analytics_test
+external_services:
+  postgresql: [analytics]
+  airflow: [analytics-test]
+ingress:
+  gatewayHosts:
+    default: "airflow-analytics-test"
+    extraFQDNs:
+    - airflow-analytics-test.wikimedia.org
+kerberos:
+  enabled: false
+postgresql:
+  cloudnative: false
