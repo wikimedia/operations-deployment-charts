@@ -18,7 +18,6 @@ spec:
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
-        checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -75,7 +74,6 @@ spec:
         prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8 }}
-        checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
