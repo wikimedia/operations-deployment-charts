@@ -98,7 +98,7 @@ env:
     value: "False"
   {{- end }}
   - name: PYTHONPATH
-    value: "/home/airflow/.local/lib/python3.11/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
+    value: "/usr/local/lib/python3.11/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
   - name: AIRFLOW_INSTANCE_NAME
     value: {{ $.Values.config.airflow.instance_name }}
   - name: AIRFLOW_SCHEDULER_HOSTNAME
