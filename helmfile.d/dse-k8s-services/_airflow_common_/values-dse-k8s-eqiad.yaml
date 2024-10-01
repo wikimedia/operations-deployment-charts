@@ -1,6 +1,10 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+
 app:
   version: &base-image-version 2024-09-30-201732-2e16654a5fb27caa8d4caaba0adb40a2c698941d@sha256:481d2a331c9b85663d1485d553a4a436c08f0bc7b60a7872383b407afbdfad67
   executor_pod_image_version: *base-image-version
+
 service:
   deployment: production
 
