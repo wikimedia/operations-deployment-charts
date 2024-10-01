@@ -67,14 +67,14 @@ inference_services:
         - name: MODEL_NAME
           value: "reference-need"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reference-quality/reference-need/20240903095237/"
+          value: "s3://wmf-ml-models/reference-quality/reference-need/20240930095938/"
         - name: FORCE_HTTP
           value: "True"
       container:
         resources:
           limits:
-            cpu: "4"
-            memory: 2Gi
+            cpu: "6"
+            memory: 4Gi
           requests:
-            cpu: "4"
-            memory: 2Gi
+            cpu: "6"
+            memory: 4Gi
