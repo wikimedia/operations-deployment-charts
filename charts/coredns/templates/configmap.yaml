@@ -11,6 +11,7 @@ data:
         errors
         health
         ready
+        nsid
         kubernetes cluster.local in-addr.arpa ip6.arpa {
           pods insecure
           fallthrough in-addr.arpa ip6.arpa
@@ -30,4 +31,11 @@ data:
         loop
         reload
         loadbalance
+    }
+
+    # Similar to reflect.wikimedia.org: will return the client's IP address
+    # in A/AAAA, and will return source port & protocol in a SRV record.
+    reflect.k8s.local.wmnet:53 {
+        nsid
+        whoami
     }
