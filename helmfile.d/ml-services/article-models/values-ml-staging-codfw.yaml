@@ -13,8 +13,9 @@ inference_services:
           value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
         - name: FORCE_HTTP
           value: "True"
-      resources:
-        limits:
-          memory: 1Gi
-        requests:
-          memory: 1Gi
+      container:
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 1Gi
