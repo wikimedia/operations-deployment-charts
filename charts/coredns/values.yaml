@@ -11,6 +11,8 @@ image:
 
 service:
   clusterIP:
+  # Nil, or a port number on which to expose coredns.
+  nodePort: ~
 
 resources:
   limits:
