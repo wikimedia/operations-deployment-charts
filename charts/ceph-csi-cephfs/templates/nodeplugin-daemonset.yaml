@@ -134,9 +134,14 @@ spec:
 {{ toYaml .Values.nodeplugin.plugin.resources | indent 12 }}
 {{- if .Values.nodeplugin.httpMetrics.enabled }}
         - name: liveness-prometheus
+{{- if .Values.selinuxMount }}
+          # This is necessary only for systems with SELinux, where
+          # non-privileged sidecar containers cannot access unix domain socket
+          # created by privileged CSI driver container.
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true
+{{- end }}
           image: "{{ .Values.nodeplugin.plugin.image.repository }}:{{ .Values.nodeplugin.plugin.image.tag }}"
           imagePullPolicy: {{ .Values.nodeplugin.plugin.image.pullPolicy }}
           args:
