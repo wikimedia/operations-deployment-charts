@@ -73,6 +73,7 @@ spec:
               mountPath: /csi
           resources:
 {{ toYaml .Values.provisioner.provisioner.resources | indent 12 }}
+{{- if $.Values.provisioner.snapshotter.enabled }}
         - name: csi-snapshotter
           image: {{ .Values.provisioner.snapshotter.image.repository }}:{{ .Values.provisioner.snapshotter.image.tag }}
           imagePullPolicy: {{ .Values.provisioner.snapshotter.image.pullPolicy }}
@@ -90,6 +91,7 @@ spec:
               mountPath: /csi
           resources:
 {{ toYaml .Values.provisioner.snapshotter.resources | indent 12 }}
+{{- end }}
 {{- if .Values.provisioner.resizer.enabled }}
         - name: csi-resizer
           image: "{{ .Values.provisioner.resizer.image.repository }}:{{ .Values.provisioner.resizer.image.tag }}"
