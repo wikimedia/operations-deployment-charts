@@ -11,6 +11,7 @@ service:
 main_app:
   image: repos/wmde/wikidata-query-gui
   version: 2024-07-26-105140
+  port: 8080
   limits:
     cpu: 200m
     memory: 200Mi
@@ -20,6 +21,7 @@ main_app:
 
 mesh:
   enabled: true
+  public_port: 8081
 
 ingress:
   enabled: true
