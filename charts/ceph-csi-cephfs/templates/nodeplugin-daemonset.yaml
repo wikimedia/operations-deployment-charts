@@ -37,10 +37,11 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: driver-registrar
-          # This is necessary only for systems with SELinux, where
-          # non-privileged sidecar containers cannot access unix domain socket
-          # created by privileged CSI driver container.
+          # This container requires write privileges to the hostPath
+          # /var/lib/kubelet/plugins_registry in order to create a socket
+          # that is used to register the plugin with the kubelet.
           securityContext:
+            runAsUser: 0
             privileged: true
             allowPrivilegeEscalation: true
           image: "{{ .Values.nodeplugin.registrar.image.repository }}:{{ .Values.nodeplugin.registrar.image.tag }}"
