@@ -44,9 +44,7 @@ main_app:
     release_timeout: 59
     config:
       # disable expensive throttling due to erroneous poolcounter usage
-      expensive:
-        workers:  60
-        maxqueue: 120
+      expensive: ~
 
 haproxy:
   timeout_queue: 30000
