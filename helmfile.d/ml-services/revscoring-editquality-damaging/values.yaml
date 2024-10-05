@@ -115,8 +115,11 @@ revscoring_inference_services:
   - wiki: "fawiki"
     version: "20220214192200"
   - wiki: "fiwiki"
-    predictor:
     version: "20220214192203"
+    predictor:
+      custom_env:
+        - name: DUMMY_ENV
+          value: "True"
   - wiki: "frwiki"
     version: "20220214192208"
   - wiki: "hewiki"
