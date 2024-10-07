@@ -14,7 +14,7 @@ main_app:
     enabled: true
     server: "poolcounter1006.eqiad.wmnet"
   thumbor_workers: 2
-
+  failure_throttling_memcache: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
   log_level: "debug"
 
 haproxy:
@@ -22,3 +22,19 @@ haproxy:
 
 mesh:
   enabled: false
+
+cache:
+  mcrouter:
+    route_prefix: eqiad/thumbor
+    zone: eqiad
+    routes:
+      - route: /eqiad/thumbor
+        pool: eqiad-servers
+        failover_time: 600
+    resources:
+      requests:
+        cpu: 200m
+        memory: 150Mi
+      limits:
+        cpu: 300m
+        memory: 250Mi
