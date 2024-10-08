@@ -125,17 +125,11 @@ config:
         remote_logging: false
         max_active_runs_per_dag: 3
         max_active_tasks_per_dag: 6
+        default_task_retries: 5
         parallelism: 64
         test_connection: enabled
       database:
         load_default_connections: false
-      elasticsearch:
-        json_format: true
-        log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
-      elasticsearch_configs:
-        max_retries: 3
-        retry_timeout: true
-        timeout: 30
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
@@ -179,6 +173,10 @@ config:
         base_url: "https://{{ $.Values.ingress.gatewayHosts.default }}.wikimedia.org"
         # Our deployments are public-facing by default, but secured by OIDC authentication. Therefore, we can disable this warning. See #T375739
         warn_deployment_exposure: false
+        expose_config: non-sensitive-only
+        instance_name: "{{ $.Values.config.airflow.instance_name }}"
+        expose_hostname: true
+        expose_stacktrace: true
 
   # https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html
   connections:
