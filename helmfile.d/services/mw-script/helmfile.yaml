@@ -37,6 +37,22 @@ templates:
     setTemplate:
       - name: php.servergroup
         value: "kube-{{`{{ .Release.Namespace }}`}}"
+  statsd-exporter: &statsd
+    namespace: mw-script
+    chart: wmf-stable/statsd-exporter
+    # This template gets applied for every release, all of which are applied in every environment
+    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
+    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/statsd-exporter/values.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "statsd-global.yaml"
+      - "values-statsd-{{ .Environment.Name }}.yaml" # dc-specific overrides
+      - "values-statsd.yaml"
 
 # $RELEASE_NAME is generated in the wrapper script mwscript-k8s so that arbitrarily many one-off
 # scripts can run at the same time, in the same namespace. The wrapper script is found at
@@ -53,14 +69,20 @@ releases:
   # writing, we don't configure MediaWiki in staging.
   - name: ci_only_release_do_not_deploy
     <<: *default
+  - name: prometheus
+    <<: *statsd
 
 environments:
   eqiad:
     values:
-      - releases: [{{ $release_name }}]
+      - releases:
+        - prometheus
+        - {{ $release_name }}
   codfw:
     values:
-      - releases: [{{ $release_name }}]
+      - releases:
+        - prometheus
+        - {{ $release_name }}
   # See the comment above at ci_only_release_do_not_deploy; deploying to staging will not work.
   staging:
     values:
