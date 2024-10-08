@@ -68,4 +68,7 @@ spec:
   # As above, we're not assuming idempotence; don't restart the entire pod, either.
   backoffLimit: 0
   ttlSecondsAfterFinished: 604800  # 7 days
+  {{- with .Values.mwscript.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ . }}
+  {{- end -}}
 {{- end }}
