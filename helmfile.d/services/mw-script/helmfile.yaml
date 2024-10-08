@@ -64,11 +64,8 @@ releases:
     <<: *default
 {{- end }}
   # Since the only real release is dynamically named with an environment variable, CI has nothing
-  # to render. This extra release is defined here as a dummy, so that CI can verify the helmfile.
-  # But it doesn't actually *work* (and you shouldn't attempt to deploy it) because, as of this
-  # writing, we don't configure MediaWiki in staging.
-  - name: ci_only_release_do_not_deploy
-    <<: *default
+  # to render. Before the prometheus release, we had an extra release defined
+  # here as a dummy, that didn't work so that CI can verify the helmfile.
   - name: prometheus
     <<: *statsd
 
@@ -83,7 +80,6 @@ environments:
       - releases:
         - prometheus
         - {{ $release_name }}
-  # See the comment above at ci_only_release_do_not_deploy; deploying to staging will not work.
   staging:
     values:
-      - releases: [ci_only_release_do_not_deploy]
+      - releases: [prometheus]
