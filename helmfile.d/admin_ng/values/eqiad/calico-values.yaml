@@ -11,19 +11,19 @@ IPPools:
 calicoNode:
   resources:
     requests:
-      cpu: 350m
-      memory: 500Mi
+      cpu: 700m
+      memory: 1Gi
     limits:
-      memory: 500Mi
+      memory: 1Gi
 
 typha:
   replicaCount: 3
   resources:
     requests:
-      cpu: 300m
-      memory: 1Gi
+      cpu: 700m
+      memory: 1.5Gi
     limits:
-      memory: 1Gi
+      memory: 1.5Gi
 
 kubeControllers:
   resources:
