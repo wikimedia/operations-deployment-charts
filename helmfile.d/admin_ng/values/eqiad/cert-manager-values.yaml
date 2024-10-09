@@ -1,13 +1,15 @@
 # Config for cert-manager itself
 resources:
+  requests:
+    memory: 1Gi
   limits:
-    memory: 1.5Gi
+    memory: 3Gi
 
 cainjector:
   resources:
     requests:
       cpu: 400m
-      memory: 500Mi
+      memory: 800Mi
     limits:
       cpu: 400m
-      memory: 1Gi
+      memory: 2Gi
