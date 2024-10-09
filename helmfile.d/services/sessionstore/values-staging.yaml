@@ -5,7 +5,8 @@ tolerations: {}
 main_app:
   version: v1.0.14
   # disable native TLS serving
-  certs: {}
+  certs:
+    kask: ~
   cassandra:
     tls:
       ca: /etc/ssl/certs/wmf-ca-certificates.crt
