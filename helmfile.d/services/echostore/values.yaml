@@ -16,7 +16,6 @@ tolerations:
 main_app:
   image: repos/mediawiki/services/kask
   version: v1.0.12
-  port: 8082
   # All of this needs to be overriden in production
   certs:
     cassandra:
@@ -41,33 +40,7 @@ main_app:
         b5JXrjTWCGSr6lxUuh9TeKrpl4tTIMrICDOaJ+QzE6U6E5PwMFXYpePJS4OMfPhL
         P4XQSrS36f9frr1eNtulDsOaigd/utUd7bNrPotufkpJiHZYzzu+
         -----END CERTIFICATE-----
-    kask:
-      cert: |-
-        -----BEGIN CERTIFICATE-----
-        MIIEGzCCAgOgAwIBAgICFRcwDQYJKoZIhvcNAQELBQAwKzEpMCcGA1UEAwwgUHVw
-        cGV0IENBOiBwYWxsYWRpdW0uZXFpYWQud21uZXQwHhcNMTkxMDE0MTEwNzA3WhcN
-        MjQxMDEzMTEwNzA3WjAkMSIwIAYDVQQDDBllY2hvc3RvcmUuZGlzY292ZXJ5Lndt
-        bmV0MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEPBeyp5xX3OfWzLcOIA3fD+00
-        5zou+kDaFcDmZqTVWYAXTT/9ZV8b5CyClok3ybIMpHjDlM9mzSgAtLISIMfeCqOC
-        ARkwggEVMDcGCWCGSAGG+EIBDQQqDChQdXBwZXQgUnVieS9PcGVuU1NMIEludGVy
-        bmFsIENlcnRpZmljYXRlMFoGA1UdEQRTMFGCGWVjaG9zdG9yZS5kaXNjb3Zlcnku
-        d21uZXSCGWVjaG9zdG9yZS5zdmMuY29kZncud21uZXSCGWVjaG9zdG9yZS5zdmMu
-        ZXFpYWQud21uZXQwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUBL1OyJMpqRiYAX20
-        oX5JqiStGsMwHwYDVR0jBBgwFoAUWeSGMH4Crw0ApnTtmvYOF65srrowDgYDVR0P
-        AQH/BAQDAgWgMCAGA1UdJQEB/wQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjANBgkq
-        hkiG9w0BAQsFAAOCAgEAM91ck3usna/C9FkPnH/P+Kebq8vJPysd+oT+2Qc29i+5
-        2I2zx3LS5nA3a5zNL1ZiX48LhNdvzjzxL3b9OL43vPHgfhlBxCL1FMV2p0Wf/sIs
-        paRyrnkqn1qYAGAn3HGoWCoDsaVXpN2eaoRj66eXua9VwzJOmuHTfR3wIK2GIvJo
-        kDnryfH94rK51qXT3aPn8rBH6spAQ0yHK7CKEkRjZBZl2HhAzY3zM5hAt8zUOYmh
-        cXgPraRtpMyINwEt12EHcwdH3yad2Zw2dNbQD2kKhwVrKPlB3F4KOWgfKpa5Ko5w
-        YoZHIGHzruwEEOmxUb2UPtqeSxfLJAYNSPnuLksTZtXLsmKf5Se3UyePe48DiZgk
-        bIbkEiNNLc8AJM0KYC1hawREKDigCjEt78pNTfeW+n2C4XvR/v0edop6ZAwSyKUo
-        Y8IlD3wXa6VlOMgSsnjmxu1AftvZOkBTxaOruhpgNY7I/GMPwK78OlM2uCcRnBko
-        r115rAlinETdWZkp5cj5DTkyufTO+uPFlQV/RvdDvUFCPdRsl+N7OW3vOZEZgwAq
-        wuvq69PYDizmasnGy62lnQHAi0UojY3UqLBr0ojk26AM08zJ3yPOVEAqUWrtGpyw
-        WkgIMYDoc3n+9XqtGCB2mSLa22a6LnV0x234HOZf5pureNywptsVWFoedvk5CN8=
-        -----END CERTIFICATE-----
-      # key: |-
+    kask: ~  # T376766 - null out TLS certs while transitioning to mesh
   base_uri: echoseen/v1
   cassandra:
     tls:
@@ -103,7 +76,7 @@ main_app:
 
 service:
   deployment: production
-  port: 8082
+
 networkpolicy:
   egress:
     enabled: true
@@ -624,5 +597,10 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+
 app:
-  port: 8082
+  port: 8080  # kask must listen on a distinct port from envoy
+
+mesh:
+  enabled: true
+  public_port: 8082 # reserved port for echostore
