@@ -17,6 +17,15 @@ main_app:
       - cassandra-dev2002-b.codfw.wmnet
       - cassandra-dev2003-a.codfw.wmnet
       - cassandra-dev2003-b.codfw.wmnet
+  certs:
+    kask: ~  # T376766 - null out TLS certs while transitioning to mesh
 resources:
   replicas: 1
 tolerations: {}
+# T376766 - kask should listen on a distinct port from envoy
+app:
+  port: 8080
+# T376766 - testing mesh support in staging
+mesh:
+  enabled: true
+  public_port: 8082 # reserved port for echostore
