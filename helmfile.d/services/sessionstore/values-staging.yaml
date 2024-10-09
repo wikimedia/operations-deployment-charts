@@ -27,6 +27,9 @@ main_app:
     cpu: 2500m
     memory: 100Mi
 
+app:
+  port: 8080 # kask listens this port
+
 mesh:
   enabled: true
   public_port: 8081 # reserved port for sessionstore
