@@ -13,8 +13,8 @@ config:
     # Production wiki access (initially, for wikifunctions.org)
     WIKI_API_URL: http://localhost:6501/w/api.php
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
-    # Production Wikidata.org wiki access (null to disable access, for now)
-    WIKIDATA_API_URL: null
+    # Production Wikidata.org wiki access (null to disable access, in emergencies)
+    WIKIDATA_API_URL: "https://www.wikidata.org"
     WIKIDATA_VIRTUAL_HOST: www.wikidata.org
     # Top-level request timeout at the orchestrator level (in milliseconds)
     # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
