@@ -17,6 +17,8 @@ main_app:
       - cassandra-dev2002-b.codfw.wmnet
       - cassandra-dev2003-a.codfw.wmnet
       - cassandra-dev2003-b.codfw.wmnet
+  certs:
+    kask: ~  # T376766 - null out TLS certs while transitioning to mesh
 resources:
   replicas: 1
 tolerations: {}
