@@ -16,6 +16,11 @@ service:
   port:
     nodePort: 8444
 
+# There is no point for a rolling release for mwdebug, recreate them T374907
+strategy:
+  type: Recreate
+  rollingUpdate: ~ # This is here to ensure globals are overriden
+
 mesh:
   tracing:
     enabled: true
