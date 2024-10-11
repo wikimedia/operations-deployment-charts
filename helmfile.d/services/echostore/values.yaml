@@ -40,7 +40,7 @@ main_app:
         b5JXrjTWCGSr6lxUuh9TeKrpl4tTIMrICDOaJ+QzE6U6E5PwMFXYpePJS4OMfPhL
         P4XQSrS36f9frr1eNtulDsOaigd/utUd7bNrPotufkpJiHZYzzu+
         -----END CERTIFICATE-----
-    kask: ~  # T376766 - null out TLS certs while transitioning to mesh
+    kask: ~  # echostore now uses the service mesh (T376766)
   base_uri: echoseen/v1
   cassandra:
     tls:
