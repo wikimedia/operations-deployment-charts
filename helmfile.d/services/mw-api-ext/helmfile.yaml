@@ -36,10 +36,12 @@ templates:
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+      # TODO: T377040 - Remove temporary override when scap is configured to deploy the "next" release.
+      # - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+      - '/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ if eq .Release.Name "next" }}main{{ else }}{{ .Release.Name }}{{ end }}`}}.yaml' # Special file controlled by other processes on the deployment host
     setTemplate:
       - name: php.servergroup
-        value: "kube-{{`{{ .Release.Namespace }}`}}"
+        value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if eq .Release.Name "next" }}-next{{end}}`}}'
   statsd-exporter: &statsd
     namespace: mw-api-ext
     chart: wmf-stable/statsd-exporter
@@ -78,6 +80,8 @@ hooks:
 releases:
   - name: main
     <<: *default
+  - name: next
+    <<: *default
   - name: canary
     <<: *default
   - name: prometheus
@@ -86,7 +90,7 @@ releases:
 environments:
   eqiad:
     values:
-      - releases: [main,canary,prometheus]
+      - releases: [main,next,canary,prometheus]
   codfw:
     values:
-      - releases: [main,canary,prometheus]
+      - releases: [main,next,canary,prometheus]
