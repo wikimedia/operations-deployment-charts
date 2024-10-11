@@ -18,6 +18,33 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
+  volumeMounts:
+    - name: wikidata-custom-config
+      mountPath: /srv/app/html/
+
+# additional configmaps which can be mounted in the application container
+configMaps:
+  wikidata-custom-config:
+    custom-config.json: |-
+      {
+        "api": {
+          "sparql": {
+            "uri": "/sparql"
+            },
+          "urlShortener": "wmf"
+        },
+        "brand": {
+          "logo": "logo.svg",
+          "favicon": "favicon.ico",
+          "title": "Wikidata Query Service",
+          "copyrightUrl": "https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:SPARQL_query_service/Copyright"
+        },
+        "location": {
+          "root": "https://query.wikidata.org/",
+          "index": "https://query.wikidata.org/"
+        },
+        "bannerName": "graph-split"
+      }
 
 mesh:
   enabled: true
