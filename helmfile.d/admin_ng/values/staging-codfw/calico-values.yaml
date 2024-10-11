@@ -8,3 +8,19 @@ IPPools:
     blockSize: 28
   ipv6:
     cidr: "2620:0:860:babe::/64"
+
+calicoNode:
+  resources:
+    limits:
+      memory: ~
+
+typha:
+  resources:
+    limits:
+      memory: ~
+
+kubeControllers:
+  resources:
+    limits:
+      cpu: ~
+      memory: ~

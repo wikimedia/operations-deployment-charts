@@ -14,7 +14,7 @@ calicoNode:
       cpu: 700m
       memory: 1Gi
     limits:
-      memory: 1Gi
+      memory: ~
 
 typha:
   replicaCount: 3
@@ -23,7 +23,7 @@ typha:
       cpu: 700m
       memory: 1.5Gi
     limits:
-      memory: 1.5Gi
+      memory: ~
 
 kubeControllers:
   resources:
@@ -32,4 +32,4 @@ kubeControllers:
       memory: 2Gi
     limits:
       cpu: ~
-      memory: 2Gi
+      memory: ~
