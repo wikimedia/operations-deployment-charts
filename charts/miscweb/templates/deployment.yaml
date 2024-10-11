@@ -37,5 +37,11 @@ spec:
       {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "httpd-exporter" . | indent 8}}
       volumes:
+        {{- if .Values.configMaps }}
+        {{- range $configName, $configData := .Values.configMaps }}
+        - name: {{ $configName }}
+          configMap:
+            name: {{ $.Release.Name }}-{{ $configName }}
+        {{- end }}
+        {{- end }}
       {{- include "wmf.volumes" . | indent 8}}
-

@@ -122,3 +122,16 @@ ingress:
   httproutes: []
 app:
   port: 8080
+
+# additional configmaps which can be mounted in the application container
+#configMaps:
+#  spring-config:
+#    application.properties: |
+#        app.name=MyApp
+#        app.env=production
+
+# The configmap can be mounted with a main_app.volumeMounts:
+#main_app:
+#  volumeMounts:
+#    - name: spring-config
+#      mountPath: /path/to/folder

@@ -14,3 +14,20 @@ data:
 {{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
 {{ end }}
 {{ include "mesh.configuration.configmap" . }}
+---
+{{- if .Values.configMaps }}
+  {{- range $configName, $configData := .Values.configMaps }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-{{ $configName }}
+  labels:
+    app: {{ template "base.name.chart" $ }}
+    chart: {{ template "base.name.chartid" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+data:
+{{ $configData | toYaml | indent 2 }}
+---
+  {{- end }}
+{{- end }}
