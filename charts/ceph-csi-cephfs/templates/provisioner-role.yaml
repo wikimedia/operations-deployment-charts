@@ -23,4 +23,49 @@ rules:
     verbs: ['use']
     resourceNames: ['{{ include "ceph-csi-cephfs.provisioner.fullname" . }}']
 {{- end -}}
+
+{{ range $tenantNamespace := $.Values.tenantNamespaces }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-cephfs.provisioner.fullname" $ }}
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-cephfs.name" $ }}
+    chart: {{ include "ceph-csi-cephfs.chart" $ }}
+    component: {{ $.Values.provisioner.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+{{- if $.Values.provisioner.snapshotter.enabled }}
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["get", "list", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents/status"]
+    verbs: ["update", "patch"]
+{{- end }}
+{{- if $.Values.provisioner.resizer.enabled }}
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims/status"]
+    verbs: ["update", "patch"]
+{{- end -}}
+{{- end -}}
+
 {{- end -}}

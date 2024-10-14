@@ -18,4 +18,49 @@ roleRef:
   kind: Role
   name: {{ include "ceph-csi-cephfs.provisioner.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
+
+{{ range $tenantNamespace := $.Values.tenantNamespaces }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-cephfs.provisioner.fullname" $ }}
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-cephfs.name" $ }}
+    chart: {{ include "ceph-csi-cephfs.chart" $ }}
+    component: {{ $.Values.provisioner.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "ceph-csi-cephfs.serviceAccountName.provisioner" $ }}
+    namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "ceph-csi-cephfs.provisioner.fullname" $ }}
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-cephfs.provisioner.fullname" $ }}-non-namespaced-resources
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-cephfs.name" $ }}
+    chart: {{ include "ceph-csi-cephfs.chart" $ }}
+    component: {{ $.Values.provisioner.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "ceph-csi-cephfs.serviceAccountName.provisioner" $ }}
+    namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "ceph-csi-cephfs.provisioner.fullname" $ }}
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end -}}
 {{- end -}}
