@@ -6,17 +6,24 @@ config:
     dbName: airflow_analytics_test
     dbUser: airflow_analytics_test
     postgresqlPass: secret
+    auth:
+      role_mappings:
+        airflow-analytics-ops: [Admin]
   oidc:
     client_id: analytics_test
+
 external_services:
   postgresql: [analytics]
   airflow: [analytics-test]
+
 ingress:
   gatewayHosts:
     default: "airflow-analytics-test"
     extraFQDNs:
     - airflow-analytics-test.wikimedia.org
+
 kerberos:
   enabled: false
+
 postgresql:
   cloudnative: false
