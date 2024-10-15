@@ -223,16 +223,16 @@ main_app:
         # T374683
         - name: page-metadata-title
           in: '(.+)/v1/page/title/(.+)'
-          out: '\1/w/rest.php/v1/page/\2/bare'
+          out: '/w/rest.php/v1/page/\2/bare'
         - name: page-metadata-revision
           in: '(.+)/v1/page/title/([^\/.]+)/(.+)'
-          out: '\1/w/rest.php/v1/revision/\3/bare'
+          out: '/w/rest.php/v1/revision/\3/bare'
         - name: page-html-title
           in: '(.+)/v1/page/html/(.+)'
-          out: '\1/w/rest.php/v1/page/\2/html'
+          out: '/w/rest.php/v1/page/\2/html'
         - name: page-html-revision
           in: '(.+)/v1/page/html/([^\/.]+)/(.+)'
-          out: '\1/w/rest.php/v1/revision/\3/html'
+          out: '/w/rest.php/v1/revision/\3/html'
 
 
   discovery_endpoints:
