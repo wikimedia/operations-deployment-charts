@@ -60,6 +60,9 @@ templates:
 releases:
 {{- $release_name := env "RELEASE_NAME" }}
 {{- if $release_name }}
+  {{- if (eq $release_name "prometheus") -}}
+    {{ printf "RELEASE_NAME must not be a release statically defined in helmfile.yaml (%s)" $release_name | fail }}
+  {{- end }}
   - name: {{ $release_name }}
     <<: *default
 {{- end }}
