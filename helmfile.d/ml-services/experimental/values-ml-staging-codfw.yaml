@@ -111,6 +111,24 @@ inference_services:
             cpu: "6"
             memory: 4Gi
 
+  article-country:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-article-country"
+      image_version: "2024-10-14-132701-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "article-country"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/article-country/20240901015102/"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:
