@@ -1,6 +1,6 @@
 {{ define "lamp.deployment" }}
 {{ $release := include "base.name.release" . }}
-{{- if not .Values.mwscript.enabled }}
+{{- if .Values.mw.httpd.enabled }}
 ### The apache httpd container
 # TODO: set up logging. See T265876
 # TODO: fix virtualhosts in puppet so that the port is set to APACHE_RUN_PORT
@@ -82,7 +82,12 @@
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- if .Values.mwscript.enabled }}
+  {{- if .Values.mercurius.enabled }}
+  command: ["/usr/bin/mercurius"]
+  args: ["--config", "/etc/mercurius/mercurius.yaml",
+         "--metrics-address",
+          "0.0.0.0:{{.Values.mercurius.monitor_port}}"]
+  {{- else if .Values.mwscript.enabled }}
   command: ["/usr/bin/php"]
   args:
 {{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
@@ -183,7 +188,7 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
-  {{- if not .Values.mwscript.enabled }}
+  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) }}
   # See T276908
   livenessProbe:
   {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
@@ -199,6 +204,11 @@
   {{- end }}
     initialDelaySeconds: 1
     periodSeconds: 5
+  {{- end }}
+  {{- if .Values.mercurius.enabled }}
+  ports:
+   - name: mercurius-metrics
+     containerPort: {{ .Values.mercurius.monitor_port }}
   {{- end }}
   resources:
     requests:
@@ -279,6 +289,14 @@
   - name: {{ $release }}-mwscript-textdata
     mountPath: /data
     readOnly: true
+  {{- end -}}
+  {{- if .Values.mercurius.enabled }}
+  - name: {{ $release }}-mercurius-config
+    mountPath: /etc/mercurius
+    readOnly: true
+  - name: {{ $release }}-mercurius-script
+    mountPath: /usr/bin/mercurius-wrapper
+    subPath: mercurius-wrapper
   {{- end -}}
 
 {{- if .Values.monitoring.enabled }}

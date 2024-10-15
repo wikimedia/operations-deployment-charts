@@ -359,6 +359,7 @@ namespaces:
           cpu: "100m"
   mw-videoscaler:
     pspClusterRole: allow-mediawiki-psp
+    enableJobSidecarController: true
     # Don't set a quota
     resourcequota:
       compute:

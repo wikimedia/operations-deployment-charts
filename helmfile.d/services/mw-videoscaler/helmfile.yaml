@@ -38,32 +38,14 @@ templates:
       - name: php.servergroup
         value: "kube-{{`{{ .Release.Namespace }}`}}"
 
-# In mwscript_k8s (and in whatever script videoscaling ends up using),
-# $RELEASE_NAME is generated to be a random string so that many
-# requests can run in parallel. mw-videoscaler will reuse this
-# approach, or will build unique strings from the video being scaled
-# and the parameters used to generate the job.
 releases:
-{{- $release_name := env "RELEASE_NAME" }}
-{{- if $release_name }}
-  - name: {{ $release_name }}
-    <<: *default
-{{- end }}
-  # Since the only real release is dynamically named with an environment variable, CI has nothing
-  # to render. This extra release is defined here as a dummy, so that CI can verify the helmfile.
-  # But it doesn't actually *work* (and you shouldn't attempt to deploy it) because, as of this
-  # writing, we don't configure MediaWiki in staging.
-  - name: ci_only_release_do_not_deploy
+  - name: main
     <<: *default
 
 environments:
   eqiad:
     values:
-      - releases: [{{ $release_name }}]
+      - releases: [main]
   codfw:
     values:
-      - releases: [{{ $release_name }}]
-  # See the comment above at ci_only_release_do_not_deploy; deploying to staging will not work.
-  staging:
-    values:
-      - releases: [ci_only_release_do_not_deploy]
+      - releases: [main]

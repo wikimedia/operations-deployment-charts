@@ -67,5 +67,11 @@
 - name: {{ $release }}-mwscript-textdata
   configMap:
     name: {{ $release }}-mwscript-textdata
-{{- end}}
+{{- end }}
+{{- if .Values.mercurius.enabled }}
+- name: {{ $release }}-mercurius-config
+  configMap:
+    name: {{ $release }}-mercurius-config
+{{- end }}
+
 {{ end }}

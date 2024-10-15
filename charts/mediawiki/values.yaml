@@ -215,6 +215,8 @@ mw:
     database_networks: "10.0.0.0/8"
     etcd_servers: [] # If present, they need to have the form "{ip: <>, port: <>}"
   httpd:
+    # disabled by mw-script, mw-videoscaler, mw-cron etc
+    enabled: true
     image_tag: latest
     # Add here any apache configuration you might want to test/preload.
     # It will be loaded before all the rest of conf-available and after modules have loaded.
@@ -423,3 +425,19 @@ mwscript:
   comment: ""
   tty: false
   stdin: false
+
+mercurius:
+  # TODO Currently we only support a single job - jobs is maintained
+  # as a list here as in future we will be adding support for multiple
+  # jobs
+  jobs: []
+  brokers: []
+  enabled: false
+  workers: 10
+  # Number of times to retry a failed job
+  max_retries: 3
+  # First interval for expotential backoff
+  retry_interval: 10
+  monitor_port: 9100
+  # maximum number of times to restart a failing mercurius instance
+  backoff_limit: 10

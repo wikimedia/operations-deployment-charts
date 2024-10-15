@@ -1,0 +1,13 @@
+mercurius:
+  enabled: true
+  jobs: ["mytestjob1"]
+
+# These are enabled to check the pod.kubernetes.io/sidecars annotation
+cache:
+  mcrouter:
+    enabled: true
+mw:
+  httpd:
+    enabled: false
+  logging:
+    rsyslog: true

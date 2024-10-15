@@ -39,7 +39,7 @@ spec:
         {{- end -}}
         {{- if $sidecars }}
         pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
-        {{- end -}}
+        {{- end }}
         {{- if .Values.mwscript.comment }}
         comment: {{ .Values.mwscript.comment | quote }}
         {{- end }}
@@ -71,4 +71,49 @@ spec:
   {{- with .Values.mwscript.activeDeadlineSeconds }}
   activeDeadlineSeconds: {{ . }}
   {{- end -}}
+{{ else if .Values.mercurius.enabled -}}
+{{- range $mercurius_job := .Values.mercurius.jobs }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "base.name.release" $ }}-mercurius-{{ $mercurius_job }}
+  {{- include "mw.labels" $ | indent 2 }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "base.name.chart" $ }}
+        release: {{ $.Release.Name }}
+        deployment: {{ $.Release.Namespace }}
+        routed_via: {{ $.Values.routed_via | default $.Release.Name }}
+      annotations:
+        # Scrape our metrics port
+        prometheus.io/scrape_by_name: "true"
+        # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
+        # if sidecars are still running.
+        # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
+        # with their sidecars running even after the main container completes.
+        {{- $release := include "base.name.release" $ -}}
+        {{- $sidecars := list -}}
+        {{- if $.Values.mesh.enabled -}}
+          {{- $sidecars = print $release "-tls-proxy" | append $sidecars -}}
+        {{- end -}}
+        {{- if $sidecars }}
+        pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
+        {{- end }}
+    spec:
+      containers:
+      # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
+      # above.
+      {{- include "mesh.deployment.container" $ | indent 8}}
+      {{- include "lamp.deployment" $ | indent 8 }}
+      volumes:
+      {{- include "mw.volumes" $ | indent 8}}
+      # Exiting 0 indicates that mercurius has picked up a new version and will
+      # later be started with a new deployment. Exiting 1 is an actual error
+      # and is grounds for a restart.
+      restartPolicy: OnFailure
+  backoffLimit: {{ $.Values.mercurius.backoff_limit }}
+  ttlSecondsAfterFinished: 86400  # 1 day
+{{- end }}
 {{- end }}

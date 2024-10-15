@@ -17,6 +17,10 @@ spec:
     - ports:
       - port: {{ .Values.php.httpd.port }}
         protocol: TCP
+      {{- if .Values.mercurius.enabled }}
+      - port: {{ .Values.mercurius.monitor_port }}
+        protocol: TCP
+      {{- end }}
       {{- if .Values.monitoring.enabled }}
       {{/* httpd exporter */}}
       - port: 9117
