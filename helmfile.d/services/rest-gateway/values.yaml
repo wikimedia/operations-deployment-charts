@@ -217,6 +217,24 @@ main_app:
           in: '/wikimedia.org/v1/metrics/commons-analytics/(.+)'
           out: '/metrics/commons-analytics/\1'
 
+    - name: mw-api-int
+      timeout: 15s
+      urls:
+        # T374683
+        - name: page-metadata-title
+          in: '(.+)/v1/page/title/(.+)'
+          out: '\1/w/rest.php/v1/page/\2/bare'
+        - name: page-metadata-revision
+          in: '(.+)/v1/page/title/([^\/.]+)/(.+)'
+          out: '\1/w/rest.php/v1/revision/\3/bare'
+        - name: page-html-title
+          in: '(.+)/v1/page/html/(.+)'
+          out: '\1/w/rest.php/v1/page/\2/html'
+        - name: page-html-revision
+          in: '(.+)/v1/page/html/([^\/.]+)/(.+)'
+          out: '\1/w/rest.php/v1/revision/\3/html'
+
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -258,6 +276,9 @@ main_app:
       ingress: true
       port: 30443 # ingress
       tls: true
+    mw-api-int:
+      tls: true
+      port: 4446
 
 service:
   deployment: production
@@ -376,3 +397,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4972
+    - cidr: 10.2.2.81/32 # mw-api-int.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4446
+    - cidr: 10.2.1.81/32 # mw-api-int.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4446
