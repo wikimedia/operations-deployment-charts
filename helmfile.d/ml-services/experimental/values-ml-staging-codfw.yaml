@@ -120,6 +120,8 @@ inference_services:
           value: "article-country"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/article-country/20240901015102/"
+        - name: FORCE_HTTP
+          value: "True"
       container:
         resources:
           limits:
