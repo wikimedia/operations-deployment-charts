@@ -5,7 +5,6 @@ config:
     dbHost: an-db1001.eqiad.wmnet
     dbName: airflow_analytics_test
     dbUser: airflow_analytics_test
-    postgresqlPass: secret
     auth:
       role_mappings:
         airflow-analytics-ops: [Admin]
@@ -23,6 +22,11 @@ ingress:
     - airflow-analytics-test.wikimedia.org
 
 kerberos:
+  enabled: false
+
+scheduler:
+  remote_host: an-test-client1002.eqiad.wmnet
+  remote_port: 8793
   enabled: false
 
 postgresql:
