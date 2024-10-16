@@ -36,9 +36,7 @@ templates:
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      # TODO: T377040 - Remove temporary override when scap is configured to deploy the "next" release.
-      # - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
-      - '/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ if eq .Release.Name "next" }}main{{ else }}{{ .Release.Name }}{{ end }}`}}.yaml' # Special file controlled by other processes on the deployment host
+      - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
     setTemplate:
       - name: php.servergroup
         value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if eq .Release.Name "next" }}-next{{end}}`}}'
