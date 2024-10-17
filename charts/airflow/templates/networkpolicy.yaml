@@ -90,29 +90,3 @@ spec:
           namespace: default
 {{- end }}
 {{- end }}
-
-{{- if not $.Values.scheduler.enabled }}
-{{- if not (and $.Values.scheduler.remote_host $.Values.scheduler.remote_port) }}
-{{ fail "When the scheduler is disabled, you need to set the scheduler.remote_host and scheduler.remote_port values" }}
-{{- else }}
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}-webserver-to-remote-scheduler
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ template "base.name.chart" . }}
-      release: {{ .Release.Name }}
-      component: webserver
-  policyTypes:
-    - Egress
-  egress:
-  - to:
-    - ipBlock:
-        cidr: {{ $.Values.scheduler.remote_host }}/32
-      ports:
-      - protocol: TCP
-        port: {{ $.Values.scheduler.remote_port }}
-{{- end }}
-{{- end }}
