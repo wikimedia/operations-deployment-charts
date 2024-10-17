@@ -1,5 +1,11 @@
 main_app:
   log_level: debug
+  requests:
+    cpu: 100m
+    memory: 250Mi
+  limits:
+    cpu: 500m
+    memory: 500Mi
 
 resources:
   replicas: 1
