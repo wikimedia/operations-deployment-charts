@@ -121,7 +121,6 @@ config:
         plugins_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/wmf_airflow_common/plugins"
         executor: LocalExecutor
         load_examples: false
-        remote_logging: false
         max_active_runs_per_dag: 3
         max_active_tasks_per_dag: 6
         default_task_retries: 5

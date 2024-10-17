@@ -8,6 +8,9 @@ config:
     auth:
       role_mappings:
         airflow-analytics-ops: [Op]
+    config:
+      logging:
+        remote_logging: false
   oidc:
     client_id: airflow_analytics_test
 
