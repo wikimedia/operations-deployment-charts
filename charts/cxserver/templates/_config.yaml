@@ -2,6 +2,9 @@
 cors: "*"
 port: {{ .Values.app.port }}
 user_agent: CXServer/WMF
+logging:
+  level: warn
+  format: ecs
 # the template used for contacting mediawiki
 mwapi_req:
   body: {{ "'{{" }} request.body {{ "}}'" }}
