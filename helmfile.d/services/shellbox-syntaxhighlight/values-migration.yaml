@@ -1,13 +1,10 @@
 shellbox:
   flavour: syntaxhighlight81
 
-# TODO: T375243 - Also migrate to the bullseye-based httpd-fcgi image when
-# available.
-
-# TODO: T375243 - Add release + env-specific values override to facilitate
-# migration of production envs (i.e., ramp from zero) and remove this.
+# TODO: T377038 - Migrate production traffic by incrementally swapping replica
+# counts with resources.replicas in values.yaml.
 resources:
-  replicas: 1
+  replicas: 0
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
