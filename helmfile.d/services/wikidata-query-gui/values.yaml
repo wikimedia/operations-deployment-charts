@@ -20,7 +20,8 @@ main_app:
     memory: 100Mi
   volumeMounts:
     - name: wikidata-custom-config
-      mountPath: /srv/app/html/
+      mountPath: /srv/app/html/custom-config.json
+      subPath: custom-config.json
 
 # additional configmaps which can be mounted in the application container
 configMaps:
