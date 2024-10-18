@@ -1,0 +1,18 @@
+# This release exists to enable incremental capacity-based traffic migration,
+# and will initially be used to support migration to PHP 8.1.
+
+# Incrementally exchange capacity between this and the "main" release in order
+# to actuate the migration.
+resources:
+  replicas: 0
+
+# Override local cluster name (defaults to namespace) to disambiguate in
+# tracing and envoy metrics.
+mesh:
+  tracing:
+    service_name: mw-api-int-migration
+
+# Do not create a distinct service, instead routing via the main release.
+service:
+  deployment: none
+routed_via: main
