@@ -62,7 +62,11 @@ monitoring:
   #     ...
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  # Select deployment: "none" to indicate that no k8s service should be
+  # deployed for this release. This is useful together with the route_via
+  # top-level value to instead serve a portion of traffic via the service
+  # associated with another release.
+  deployment: minikube # valid values are "production" "minikube" and "none"
   expose_http: false # set this to true if you want to expose both the https and http endpoint
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
