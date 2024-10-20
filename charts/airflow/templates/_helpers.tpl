@@ -184,25 +184,7 @@ hostname_callable = webserver_config.get_scheduler_service_name
 {{- end }}
 
 {{- define "airflow.initcontainer.gitsync" -}}
-- name: {{ template "base.name.release" . }}-git-sync
-  image: "{{ .Values.docker.registry }}/{{ .Values.gitsync.image_name }}:{{ .Values.gitsync.image_tag }}"
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
-  command: ["git-sync"]
-  args:
-  - "--repo={{ $.Values.gitsync.dags_repo }}"
-  - "--root={{ $.Values.gitsync.root_dir }}"
-  - "--link={{ $.Values.gitsync.link_dir }}"
-  - "--branch=main"
-  - "--depth=1" {{/* Performs a shallow clone */}}
-  - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
-  - "--one-time"
-  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
-  volumeMounts:
-  - name: airflow-dags
-    mountPath: "{{ $.Values.gitsync.root_dir }}"
-  - name: gitsync-sparse-checkout-config
-    mountPath: /etc/gitsync/sparse-checkout.conf
-    subPath: sparse-checkout.conf
+
 {{- end -}}
 
 

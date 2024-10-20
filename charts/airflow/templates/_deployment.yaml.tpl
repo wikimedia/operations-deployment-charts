@@ -24,7 +24,6 @@ spec:
       {{- end }}
       serviceAccountName: airflow
       initContainers:
-      {{- include "airflow.initcontainer.gitsync" . | nindent 6 }}
       - name: {{ template "base.name.release" . }}-initdb
         command: ["airflow"]
         args: ["db", "migrate"]
@@ -33,19 +32,15 @@ spec:
         {{- include "app.airflow.env" . | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" .Values.app | indent 8 }}
-        {{- with .Values.app.volumeMounts }}
         volumeMounts:
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
+        {{- toYaml .Values.app.volumeMounts  | nindent 8 }}
       containers:
         {{- include "app.airflow.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
-        - name: gitsync-sparse-checkout-config
-          configMap:
-            name: airflow-webserver-gitsync-sparse-checkout-file
+
 
 {{- end }}
 
@@ -79,8 +74,6 @@ spec:
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       serviceAccountName: airflow
-      initContainers:
-      {{- include "airflow.initcontainer.gitsync" . | nindent 6 }}
       containers:
         {{- include "app.airflow.scheduler" . | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
@@ -94,10 +87,61 @@ spec:
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
         {{- end }}
-        - name: gitsync-sparse-checkout-config
-          configMap:
-            name: airflow-scheduler-gitsync-sparse-checkout-file
 
+{{- end }}
+{{- end }}
+
+{{- define "deployment.airflow.gitsync" }}
+{{- if $.Values.gitsync.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-gitsync
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: gitsync
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: gitsync
+    spec:
+      securityContext:
+        fsGroup: {{ $.Values.gitsync.image_gid }} {{/* This allows the volumes to be writable by the git-sync gid */}}
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: {{ template "base.name.release" . }}-git-sync
+        image: "{{ .Values.docker.registry }}/{{ .Values.gitsync.image_name }}:{{ .Values.gitsync.image_tag }}"
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        command: ["git-sync"]
+        args:
+        - "--repo={{ $.Values.gitsync.dags_repo }}"
+        - "--root={{ $.Values.gitsync.root_dir }}"
+        - "--link={{ $.Values.gitsync.link_dir }}"
+        - "--ref={{ $.Values.gitsync.ref }}"
+        - "--period={{ $.Values.gitsync.period }}s"
+        - "--depth=1" {{/* Performs a shallow clone */}}
+        - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
+        {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
+        volumeMounts:
+        - name: airflow-dags
+          mountPath: "{{ $.Values.gitsync.root_dir }}"
+        - name: gitsync-sparse-checkout-config
+          mountPath: /etc/gitsync/sparse-checkout.conf
+          subPath: sparse-checkout.conf
+      volumes:
+      - name: airflow-dags
+        persistentVolumeClaim:
+          claimName: airflow-dags-pvc
+      - name: gitsync-sparse-checkout-config
+        configMap:
+          name: airflow-gitsync-sparse-checkout-file
 
 {{- end }}
 {{- end }}

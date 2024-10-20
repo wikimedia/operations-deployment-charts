@@ -170,16 +170,14 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-{{ .component }}-gitsync-sparse-checkout-file
-  {{- include "base.meta.labels" .Root | indent 2 }}
-  namespace: {{ .Root.Release.Namespace }}
+  name: airflow-gitsync-sparse-checkout-file
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ $.Release.Namespace }}
 data:
   sparse-checkout.conf: |
     !/*
     !/*/
-    {{- if ne .component "webserver"}} {{- /* The webserver does not need to have dags locally pulled */}}
-    /{{ .Root.Values.config.airflow.dags_folder }}/
-    {{- end }}
+    /{{ $.Values.config.airflow.dags_folder }}/
     /wmf_airflow_common/
 
 {{- end }}
@@ -204,8 +202,6 @@ data:
         component: task-pod
     spec:
       restartPolicy: Never
-      initContainers:
-      {{- include "airflow.initcontainer.gitsync" . | nindent 8 }}
       containers:
       - name: base
         image: {{ template "executor_pod._image" . }}
@@ -223,8 +219,5 @@ data:
           {{- toYaml .Values.worker.limits | nindent 12 }}
       volumes:
       {{- include "app.generic.volume" . | indent 6 }}
-      - name: gitsync-sparse-checkout-config
-        configMap:
-          name: airflow-worker-gitsync-sparse-checkout-file
 
 {{- end }}

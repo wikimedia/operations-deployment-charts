@@ -28,7 +28,7 @@ app:
     httpGet:
       path: /health
       port: *airflow_frontend
-  # add here any volumes to mount onto the pod. Example:
+
   volumes:
   - name: airflow-config
     configMap:
@@ -46,16 +46,11 @@ app:
   - name: airflow-kubernetes-executor-pod-template
     configMap:
       name: airflow-kubernetes-executor-pod-template
-  - name: airflow-dags
-    emptyDir: {}
   - name: logs
     emptyDir: {}
-
-# The full text value to mount as the "pod_template_file.yaml" file used for KubernetesExecutor workers.
-# commented out, as we are not yet using the Kubernetes Executor.
-  # - name: pod-template-file-settings
-  #   configMap:
-  #     name: pod-template-file-settings-volume
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: airflow-dags-pvc
 
   volumeMounts: &airflow_volume_mounts
   - name: airflow-config
@@ -71,12 +66,11 @@ app:
   - name: airflow-connections-variables
     mountPath: /opt/airflow/secrets
   - name: airflow-dags
+    readOnly: true
     mountPath: &dags_root /opt/airflow/dags
   - name: airflow-kubernetes-executor-pod-template
     mountPath: &pod_template_file /opt/airflow/pod_templates/pod_template.yaml
     subPath: pod_template.yaml
-  # - name: pod-template-file-settings
-  #   mountPath: /opt/airflow/pod_templates/pod_template_file.yaml
 
 service:
   deployment: minikube # valid values are "production" and "minikube"
@@ -225,11 +219,18 @@ postgresql:
     host: PG_HOST
 
 gitsync:
+  enabled: true
   image_name: repos/data-engineering/git-sync
   image_tag: override_me
+  image_gid: 900
   dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
   root_dir: /dags
   link_dir: airflow_dags
+  ref: main
+  period: 300 # git pull every 5 minutes
+  volume:
+    storage_class: override_me
+    size: 100Mi
 
 worker:
   requests:
