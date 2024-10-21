@@ -7,7 +7,6 @@ resources:
 main_app:
   image: repos/mediawiki/services/kask
   version: v1.0.12
-  port: 8081
   # All of this needs to be overriden in production
   certs:
     cassandra:
@@ -32,36 +31,7 @@ main_app:
         1HnYoJed8KOpOgWirHbXYnDwf/wIz5JOyYMUmhzhXaaHPgN6MXNSsDmumID9hMjU
         Ea0WMO1qk4kiVO9rfgASstuga4nRs8GlkFdsuSmwzxG2klS3hi98qJVr
         -----END CERTIFICATE-----
-    kask:
-      cert: |-
-        -----BEGIN CERTIFICATE-----
-        MIIEhzCCAm+gAwIBAgICMIQwDQYJKoZIhvcNAQELBQAwKzEpMCcGA1UEAwwgUHVw
-        cGV0IENBOiBwYWxsYWRpdW0uZXFpYWQud21uZXQwHhcNMjQwNTIxMTQ1OTE2WhcN
-        MjkwNTIxMTQ1OTE2WjCBhjElMCMGA1UEAwwcc2Vzc2lvbnN0b3JlLmRpc2NvdmVy
-        eS53bW5ldDEjMCEGA1UECgwaV2lraW1lZGlhIEZvdW5kYXRpb24sIEluYy4xCzAJ
-        BgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJh
-        bmNpc2NvMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEimgqLVdnY5KqgHUa+x18
-        CS5d8ig3WMx2UYxMKk+8V0BT1kIVOAOLPKYyTZEf2qUoTzlJXXLMFGv+8R21d4Pk
-        mKOCASIwggEeMDcGCWCGSAGG+EIBDQQqDChQdXBwZXQgUnVieS9PcGVuU1NMIElu
-        dGVybmFsIENlcnRpZmljYXRlMGMGA1UdEQRcMFqCHHNlc3Npb25zdG9yZS5zdmMu
-        ZXFpYWQud21uZXSCHHNlc3Npb25zdG9yZS5zdmMuY29kZncud21uZXSCHHNlc3Np
-        b25zdG9yZS5kaXNjb3Zlcnkud21uZXQwDgYDVR0PAQH/BAQDAgWgMCAGA1UdJQEB
-        /wQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQW
-        BBRU+e1WXkAV+DsiAKfFUBhLDFWtsjAfBgNVHSMEGDAWgBRZ5IYwfgKvDQCmdO2a
-        9g4XrmyuujANBgkqhkiG9w0BAQsFAAOCAgEAh/bHY5sUxVqKvoJbkoeNjPLc+DBS
-        F9fg0iJXdWrfz5PMuMCW9pkLekZVXBMPAa8Nd2HmM30VsLJ0hszqcLj+iCcwXVl/
-        qLzkZKRBW/Tjmmg9V5WdTfAPGVmTaButj5fv9jeb9Kxyk3tRSryEjagvRX1z5vIj
-        6xCrbItftcM3QVj50IAG6APq+zBkbNZkk4qGHkX4cr1g8CbSxWf3qkdO3TPyoSI6
-        mC26gCs6bRNy0ZjcJgEf+IJW1BNzGw3rNkLJVxSY+oa5+SD0R8fLi4CbFL4fdy3R
-        aHQSYu5nRS3g/no0q/UlKBNw4l3GJheeTF6oC7ncXyC3B86UQDwHp2EHv8/TILwu
-        FHRApYDW7I8fOxtpBIW/VPtnyGeVIVctSES/VeDd3WIB1MwKMwyhI+jDNrCYQICy
-        BH3BMigcnKfVf6lFc2OZL9/nk09a2d55koyyG+Hzj2LYmgs9JNbEdHAvQEpLoav5
-        VI9PxwANTo6HvB0BXBw7oVPrxp0AlmkLU6dwIO4lIGlplDvfHwTjb/3IWObkVmT/
-        N4HslwWMwCCyahBc/vbO315P8ij4Z3T5ETGWYItDuU6xx2U59V0kiVeFkEAvZHRY
-        DhwGJ7c0yGY6dhE3CLGoWTA8CorVCGaZE+QDMLMkSDCvv5t9h36zoMag6S6JMRzc
-        epsCymBFY4o3Rec=
-        -----END CERTIFICATE-----
-      # key: |-
+    kask: ~
   base_uri: sessions/v1
   cassandra:
     tls:
@@ -188,4 +158,16 @@ networkpolicy:
             port: 9042
 
 app:
-  port: 8081
+  port: 8080
+
+mesh:
+  enabled: true
+  # reserved for sessionstore
+  public_port: 8081
+  resources:
+    requests:
+      cpu: 500m
+      memory: 300Mi
+    limits:
+      cpu: 2
+      memory: 1Gi
