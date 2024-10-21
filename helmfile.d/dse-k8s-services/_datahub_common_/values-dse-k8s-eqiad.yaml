@@ -10,7 +10,12 @@ datahubUpgradeJob: &datahubUpgradeJob
   docker: *docker
   image:
     tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:7312a65a24bef6aa81e65ad27207d3def01277ff13667393285f095da5427a02"
-
+  restoreIndices:
+    resources:
+      limits:
+        memory: 1024Mi
+      requests:
+        memory: 512Mi
 
 
 elasticsearchSetupJob:
