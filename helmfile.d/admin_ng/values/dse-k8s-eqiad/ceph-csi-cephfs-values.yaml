@@ -51,9 +51,10 @@ storageClass:
 
 secret:
   create: true
-  userID: dse-k8s-csi-cephfs
-  # userKey: # This value has been added helmfile via the private repo
+  adminID: dse-k8s-csi-cephfs
+  # adminKey: # This value has been added helmfile via the private repo
 
 tenantNamespaces:
+- kube-system
 - airflow-analytics-test
 - airflow-test-k8s
