@@ -9,9 +9,9 @@ resources:
 {{/* Generate a service name for the GMS service, depending on whether or not it uses TLS */}}
 {{- define "wmf.gms-service.mae-consumer" -}}
   {{- if .Values.global.datahub.gms.useSSL }}
-    {{- printf "https://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
   {{- else -}}
-    {{- printf "http://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
   {{- end }}
 {{- end -}}
 {{- define "wmf.gms-service.scheme" -}}
