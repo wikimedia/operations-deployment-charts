@@ -151,6 +151,8 @@ config:
         backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
         # See https://github.com/apache/airflow/blob/73dd6c17bd10ddda63a1682ac2174b0d206590dd/airflow/secrets/local_filesystem.py#L278-L279
         backend_kwargs: '{"connections_file_path": "/opt/airflow/secrets/connections.yaml", "variables_file_path": "/opt/airflow/secrets/variables.yaml"}' # WARN: must be json-parseable
+      email:
+        default_email_on_retry: false # T377745. We want to be alerted only after exhausting all retries.
       smtp:
         smtp_host: mx-out1001.wikimedia.org
         smtp_mail_from: "Airflow dse-k8s-eqiad: <noreply@wikimedia.org>"
