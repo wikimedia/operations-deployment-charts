@@ -9,9 +9,9 @@ resources:
 {{/* Generate a service name for the GMS service, depending on whether or not it uses TLS */}}
 {{- define "wmf.gms-service.mce-consumer" -}}
   {{- if .Values.global.datahub.gms.useSSL }}
-    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "https://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
   {{- else -}}
-    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "http://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
   {{- end }}
 {{- end -}}
 
@@ -69,7 +69,7 @@ resources:
       value: "{{ required "Kafka bootstrap server must be specified" .Values.global.kafka.bootstrap.server }}"
     {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
-      value: {{ printf "https://%s:%s/schema-registry/api/" ( include "wmf.gms-service.mce-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
+      value: {{ printf "%s:%s/schema-registry/api/" ( include "wmf.gms-service.mce-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
     {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
       value: "{{ .Values.global.kafka.schemaregistry.url }}"
