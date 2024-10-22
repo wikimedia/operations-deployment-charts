@@ -4,7 +4,7 @@ resources:
   replicas: 76
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
-  version: 2024-08-22-094413-production
+  version: 2024-10-22-145631-production
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
   mwrestapi_uri: http://localhost:6500/w/rest.php
@@ -18,7 +18,7 @@ main_app:
     enabled: true
     ttl: 300          # Expire objects in 5 mins for testing purposes
     excludedUserAgents:
-      - RESTBase/WMF
+    - RESTBase/WMF
     cassandra:
       keyspace: pregenerated_cache
       storageTable: mobile_html
