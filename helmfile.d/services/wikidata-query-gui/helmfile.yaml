@@ -51,12 +51,20 @@ hooks:
 releases:
   - name: wikidata-query-gui
     <<: *default
-
+  - name: commons-query-gui
+    <<: *default
+  - name: wikidata-query-main-gui
+    <<: *default
+  - name: wikidata-query-scholarly-gui
+    <<: *default
 environments:
   staging: &default_values
     values:
       - releases:
         - wikidata-query-gui
+        - commons-query-gui
+        - wikidata-query-main-gui
+        - wikidata-query-scholarly-gui
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
