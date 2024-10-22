@@ -1,0 +1,17 @@
+app:
+  executor_pod_image: repos/data-engineering/airflow/analytics
+  executor_pod_image_version: 12345
+
+config:
+  airflow:
+    dags_folder: ci
+    instance_name: ci
+  oidc:
+    idp_server: idp-test.wikimedia.org
+    client_id: ci
+
+ingress:
+  gatewayHosts:
+    default: "airflow-ci"
+    extraFQDNs:
+    - airflow-ci.wikimedia.org
