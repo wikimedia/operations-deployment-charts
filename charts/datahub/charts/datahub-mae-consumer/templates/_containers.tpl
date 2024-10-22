@@ -14,7 +14,13 @@ resources:
     {{- printf "http://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
   {{- end }}
 {{- end -}}
-
+{{- define "wmf.gms-service.scheme" -}}
+  {{- if .Values.global.datahub.gms.useSSL }}
+  https://
+  {{- else -}}
+  http://
+  {{- end }}
+{{- end -}}
 {{/* default scaffolding for containers */}}
 {{- define "default.containers.mae-consumer" }}
 # The main application container
@@ -63,7 +69,7 @@ resources:
       value: "{{ required "Kafka bootstrap server must be specified" .Values.global.kafka.bootstrap.server }}"
     {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
-      value: {{ printf "%s:%s/schema-registry/api/" ( include "wmf.gms-service.mae-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
+      value: {{ printf "%s%s:%s/schema-registry/api/" ( include "wmf.gms-service.scheme" $ ) ( include "wmf.gms-service.mae-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
     {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
       value: "{{ .Values.global.kafka.schemaregistry.url }}"

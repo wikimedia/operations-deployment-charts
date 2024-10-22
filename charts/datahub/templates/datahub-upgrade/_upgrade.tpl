@@ -5,11 +5,19 @@ Return the env variables for upgrade jobs
 {{/* Generate a service name for the GMS service, depending on whether or not it uses TLS */}}
 {{- define "wmf.gms-service.upgrade" -}}
   {{- if .Values.global.datahub.gms.useSSL }}
-    {{- printf "https://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
   {{- else -}}
-    {{- printf "http://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
   {{- end }}
 {{- end -}}
+{{- define "wmf.gms-service.scheme" -}}
+  {{- if .Values.global.datahub.gms.useSSL }}
+  https://
+  {{- else -}}
+  http://
+  {{- end }}
+{{- end -}}
+
 {{- define "datahub.upgrade.env" -}}
 - name: ENTITY_REGISTRY_CONFIG_PATH
   value: /datahub/datahub-gms/resources/entity-registry.yml
@@ -55,7 +63,7 @@ Return the env variables for upgrade jobs
   value: "{{ .Values.global.kafka.bootstrap.server }}"
 {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
 - name: KAFKA_SCHEMAREGISTRY_URL
-  value: {{ printf "%s:%s/schema-registry/api/" ( include "wmf.gms-service.upgrade" $ ) ( .Values.global.datahub.gms.port | toString ) }}
+  value: {{ printf "%s%s:%s/schema-registry/api/" ( include "wmf.gms-service.scheme" $ ) ( include "wmf.gms-service.upgrade" $ ) ( .Values.global.datahub.gms.port | toString ) }}
 {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
 - name: KAFKA_SCHEMAREGISTRY_URL
   value: "{{ .Values.global.kafka.schemaregistry.url }}"
