@@ -9,9 +9,9 @@ resources:
 {{/* Generate a service name for the GMS service, depending on whether or not it uses TLS */}}
 {{- define "wmf.gms-service.mae-consumer" -}}
   {{- if .Values.global.datahub.gms.useSSL }}
-    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "https://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}-tls-service.{{ .Release.Namespace }}.svc.cluster.local
   {{- else -}}
-    {{- printf "datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
+    {{- printf "http://datahub-gms-%s" .Release.Name | trunc 63 | trimSuffix "-" -}}.{{ .Release.Namespace }}.svc.cluster.local
   {{- end }}
 {{- end -}}
 
@@ -63,7 +63,7 @@ resources:
       value: "{{ required "Kafka bootstrap server must be specified" .Values.global.kafka.bootstrap.server }}"
     {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
-      value: {{ printf "https://%s:%s/schema-registry/api/" ( include "wmf.gms-service.mae-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
+      value: {{ printf "%s:%s/schema-registry/api/" ( include "wmf.gms-service.mae-consumer" $ ) ( .Values.global.datahub.gms.port | toString ) }}
     {{- else if eq .Values.global.kafka.schemaregistry.type "KAFKA" }}
     - name: KAFKA_SCHEMAREGISTRY_URL
       value: "{{ .Values.global.kafka.schemaregistry.url }}"
@@ -115,6 +115,20 @@ resources:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
+    {{- end }}
+    {{- with .Values.global.kafka.topics }}
+    - name: METADATA_AUDIT_EVENT_NAME
+      value: {{ .metadata_audit_event_name }}
+    - name: DATAHUB_USAGE_EVENT_NAME
+      value: {{ .datahub_usage_event_name }}
+    - name: METADATA_CHANGE_LOG_VERSIONED_TOPIC_NAME
+      value: {{ .metadata_change_log_versioned_topic_name }}
+    - name: METADATA_CHANGE_LOG_TIMESERIES_TOPIC_NAME
+      value: {{ .metadata_change_log_timeseries_topic_name }}
+    - name: PLATFORM_EVENT_TOPIC_NAME
+      value: {{ .platform_event_topic_name }}
+    - name: DATAHUB_UPGRADE_HISTORY_TOPIC_NAME
+      value: {{ .datahub_upgrade_history_topic_name }}
     {{- end }}
     {{- if .Values.global.datahub.managed_ingestion.enabled }}
     - name: UI_INGESTION_ENABLED
