@@ -79,13 +79,15 @@ spec:
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.container" . | indent 8 }}
         {{- end }}
-        {{- if .Values.kerberos.enabled }}
-          {{- include "kerberos.container" . | indent 8 }}
-        {{- end }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
+        {{- end }}
+        {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+        - name: airflow-kerberos-token
+          persistentVolumeClaim:
+            claimName: airflow-kerberos-token-pvc
         {{- end }}
 
 {{- end }}
@@ -142,6 +144,55 @@ spec:
       - name: gitsync-sparse-checkout-config
         configMap:
           name: airflow-gitsync-sparse-checkout-file
+
+{{- end }}
+{{- end }}
+
+{{- define "deployment.airflow.kerberos" }}
+{{- if $.Values.kerberos.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-kerberos
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: kerberos
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: kerberos
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      securityContext:
+        fsGroup: {{ $.Values.kerberos.image_gid }}
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: "airflow-kerberos"
+        command: ["airflow"]
+        args:
+        - kerberos
+        - --pid
+        - /tmp/airflow-kerberos.pid
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "app.airflow.env" . | indent 8 }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
+        volumeMounts:
+        {{- toYaml $.Values.kerberos.volumeMounts  | nindent 8 }}
+        {{- toYaml $.Values.app.volumeMounts  | nindent 8 }}
+      volumes:
+      {{- toYaml $.Values.kerberos.volumes | nindent 6 }}
+      {{- toYaml $.Values.app.volumes | nindent 6 }}
+
 
 {{- end }}
 {{- end }}

@@ -40,6 +40,9 @@ app:
     configMap:
       name: airflow-bash-executables
       defaultMode: 0777
+  - name: airflow-kerberos-client-config
+    configMap:
+      name: airflow-kerberos-client-config
   - name: airflow-connections-variables
     secret:
       secretName: airflow-connections-variables
@@ -61,6 +64,9 @@ app:
     subPath: webserver_config.py
   - name: logs
     mountPath: /opt/airflow/logs
+  - name: airflow-kerberos-client-config
+    mountPath: /etc/krb5.conf
+    subPath: krb5.conf
   - name: airflow-bash-executables
     mountPath: /opt/airflow/usr/bin
   - name: airflow-connections-variables
@@ -122,6 +128,12 @@ config:
         test_connection: enabled
       database:
         load_default_connections: false
+      kerberos:
+        reinit_frequency: 3600 # in seconds
+        ccache: /tmp/airflow_krb5_ccache/krb5cc
+        include_ip: false
+        keytab: /etc/kerberos/keytabs/airflow.keytab
+        principal:
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
@@ -235,12 +247,41 @@ gitsync:
     size: 100Mi
 
 worker:
-  requests:
-    cpu: 1000m
-    memory: 2Gi
-  limits:
-    cpu: 2000m
-    memory: 4Gi
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+kerberos:
+  enabled: true
+  keytab: override_me
+  volume:
+    size: 10Mi
+    storage_class: override_me
+  image_gid: 900
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+  volumes:
+  - name: airflow-kerberos-token
+    persistentVolumeClaim:
+      claimName: airflow-kerberos-token-pvc
+  - name: airflow-kerberos-keytab
+    secret:
+      secretName: airflow-kerberos-keytab
+  volumeMounts:
+  - name: airflow-kerberos-token
+    mountPath: /tmp/airflow_krb5_ccache
+  - name: airflow-kerberos-keytab
+    mountPath: /etc/kerberos/keytabs
+    readOnly: true
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -477,18 +518,6 @@ networkpolicy:
 # Add here the list of kafka-clusters (by name) that the service will need to reach.
 kafka:
   allowed_clusters: []
-
-kerberos:
-  enabled: false
-  # ticket_renewal_interval_minutes: 60 # although we have a `default` value, so not 100% mandatory
-  # keytab: override_me
-  # resources:
-  #   requests:
-  #     cpu: 100m
-  #     memory: 200Mi
-  #   limits:
-  #     cpu: 500m
-  #     memory: 400Mi
 
 # Optional affinity settings
 affinity: {}

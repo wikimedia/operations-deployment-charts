@@ -56,7 +56,11 @@
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
   {{- with .Values.scheduler.volumeMounts }}
   volumeMounts:
-{{ toYaml . | indent 2 }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+  - name: airflow-kerberos-token
+    mountPath: /tmp/airflow_krb5_ccache
   {{- end }}
 {{- end }}
 
@@ -187,23 +191,6 @@ hostname_callable = webserver_config.get_scheduler_service_name
 
 {{- end -}}
 
-
-{{- define "secret.airflow-connections-variables" }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: airflow-connections-variables
-  {{- include "base.meta.labels" . | indent 2 }}
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  connections.yaml: |
-    {{- tpl ( toYaml $.Values.config.connections) $ | nindent 4 }}
-  variables.yaml: |
-    {{- tpl ( toYaml $.Values.config.variables) $  | nindent 4 }}
-
-{{- end }}
 
 {{- define "executor_pod._image" -}}
 "{{ .Values.docker.registry }}/{{ .Values.app.executor_pod_image }}:{{ .Values.app.executor_pod_image_version }}"

@@ -9,6 +9,8 @@ config:
     config:
       core:
         executor: KubernetesExecutor
+      kerberos:
+        principal: analytics/airflow-test-k8s.discovery.wmnet
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s

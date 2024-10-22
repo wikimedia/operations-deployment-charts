@@ -209,15 +209,24 @@ data:
         {{- include "app.airflow.env" . | indent 8 }}
         {{- with .Values.app.volumeMounts }}
         volumeMounts:
-        {{- toYaml . | nindent 10 }}
+        {{- toYaml . | nindent 8 }}
+        {{- if $.Values.kerberos.enabled }}
+        - name: airflow-kerberos-token
+          mountPath: /etc/kerberos/airflow_krb5_ccache
+        {{- end }}
         {{- end }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         resources:
           requests:
-          {{- toYaml .Values.worker.requests | nindent 12 }}
+          {{- toYaml .Values.worker.resources.requests | nindent 12 }}
           limits:
-          {{- toYaml .Values.worker.limits | nindent 12 }}
+          {{- toYaml .Values.worker.resources.limits | nindent 12 }}
       volumes:
       {{- include "app.generic.volume" . | indent 6 }}
+      {{- if $.Values.kerberos.enabled }}
+      - name: airflow-kerberos-token
+        persistentVolumeClaim:
+          claimName: airflow-kerberos-token-pvc
+      {{- end }}
 
 {{- end }}

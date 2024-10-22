@@ -11,3 +11,19 @@ spec:
     requests:
       storage: {{ $.Values.gitsync.volume.size }}
   storageClassName: {{ $.Values.gitsync.volume.storage_class }}
+
+{{- if $.Values.kerberos.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-kerberos-token-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ $.Values.kerberos.volume.size }}
+  storageClassName: {{ $.Values.kerberos.volume.storage_class }}
+{{- end }}
