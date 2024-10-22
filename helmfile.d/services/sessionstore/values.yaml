@@ -31,7 +31,14 @@ main_app:
         1HnYoJed8KOpOgWirHbXYnDwf/wIz5JOyYMUmhzhXaaHPgN6MXNSsDmumID9hMjU
         Ea0WMO1qk4kiVO9rfgASstuga4nRs8GlkFdsuSmwzxG2klS3hi98qJVr
         -----END CERTIFICATE-----
-    kask: ~
+    kask:
+      # temporary T363996. In place to stop accidental migrations of
+      # codfw to the service mesh. eqiad has kask nulled out to
+      # disable use of this key and in-kask tls termination, but we
+      # need to provide this here to keep CI happy. In prod this value
+      # is provided by the secrets repo
+      key: snakeoil
+
   base_uri: sessions/v1
   cassandra:
     tls:
