@@ -29,12 +29,16 @@ logging:
       named_levels: true
 
   {{- if .Values.monitoring.enabled }}
-# Statsd metrics reporter
+# Observability
+# Use statsd for initial service-runner stats
+# Use prometheus for custom metrics emitted by the service
 metrics:
-  name: mobileapps
-  host: localhost
-  port: 9125
-  type: statsd
+  - name: mobileapps
+    host: localhost
+    port: 9125
+    type: statsd
+  - type: prometheus
+    port: 9102
   {{- end }}
 
 services:
