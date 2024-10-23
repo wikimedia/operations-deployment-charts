@@ -8,6 +8,8 @@ main_app:
 
 shellbox:
   flavour: video
+  # TODO: T375243 - remove pinned version when upgrading all instances.
+  version: "2024-09-11-160805"
   min_avail_workers: 1
   check_process: "ffmpeg"
   # Reduce (but not eliminate) the likelihood that we will
