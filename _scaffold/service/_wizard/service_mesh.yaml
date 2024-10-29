@@ -39,6 +39,10 @@ values: |
     telemetry:
       enabled: true
       port: 1667
+    # Extra set of label / value to use in the mesh Service label selector.
+    # Use this when you have multiple pods with different functionalities
+    # in the namespace, to make sure the traffic only goes to the appropriate one.
+    extra_service_selector_labels: {}
     resources:
       requests:
         cpu: 200m

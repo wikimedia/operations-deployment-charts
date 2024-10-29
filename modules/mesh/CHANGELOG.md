@@ -1,3 +1,7 @@
+## service 1.2.0
+
+- Add support for additional label selectors for the tls termination Service
+
 ## configuration 1.10.0
 
 - Set route-level idle_timeout to the supplied timeout value.
