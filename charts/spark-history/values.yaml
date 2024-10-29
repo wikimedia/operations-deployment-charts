@@ -23,7 +23,7 @@ app:
     httpGet:
       path: /
       port: 18080
-    initialDelaySeconds: 15 # We wait a bit to let the app start first, which takes a while
+    initialDelaySeconds: 20 # We wait a bit to let the app start first, which takes a while
   # We inject all spark configuration keys into the environment as this is how they are then
   # passed to the java process.
   # See https://github.com/wikimedia/operations-docker-images-production-images/blob/master/images/spark/3.1/entrypoint.sh#L27
