@@ -356,6 +356,8 @@ mesh:
   telemetry:
     enabled: true
     port: 1667
+  extra_service_selector_labels:
+    component: webserver
   resources:
     requests:
       cpu: 200m
