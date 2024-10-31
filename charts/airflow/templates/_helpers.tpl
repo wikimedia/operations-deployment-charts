@@ -52,6 +52,9 @@
   {{- toYaml .Values.scheduler.readiness_probe | nindent 4 }}
   {{- end }}
   {{- include "app.airflow.env" . | indent 2 }}
+  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+  {{- include "app.airflow.env.spark_hadoop" . | indent 4 }}
+  {{- end }}
   {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
   {{- with .Values.scheduler.volumeMounts }}
@@ -61,6 +64,10 @@
   {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
   - name: airflow-kerberos-token
     mountPath: /tmp/airflow_krb5_ccache
+  - name: airflow-hadoop-configuration
+    mountPath: /etc/hadoop/conf
+  - name: airflow-spark-configuration
+    mountPath: /etc/spark3/conf
   {{- end }}
 {{- end }}
 
@@ -114,7 +121,18 @@ env:
   {{- if $.Values.kerberos.enabled }}
   - name: AIRFLOW_KERBEROS_HOSTNAME
     value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
+  - name: KRB5CCNAME
+    value: /tmp/airflow_krb5_ccache/krb5cc
+  - name: KRB5_CONFIG
+    value: /etc/krb5.conf
   {{- end }}
+{{- end }}
+
+{{- define "app.airflow.env.spark_hadoop" }}
+- name: HADOOP_CONF_DIR
+  value: /etc/hadoop/conf
+- name: SPARK_CONF_DIR
+  value: /etc/spark3/conf
 {{- end }}
 
 
@@ -206,3 +224,32 @@ auth_backends = airflow.providers.fab.auth_manager.api.auth.backend.kerberos_aut
 {{- define "executor_pod._image" -}}
 "{{ .Values.docker.registry }}/{{ .Values.app.executor_pod_image }}:{{ .Values.app.executor_pod_image_version }}"
 {{- end -}}
+
+{{- define "render_xml_file" -}}
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+{{- range $k, $v := .config }}
+  <property>
+    <name>{{ $k }}</name>
+    <value>{{ $v }}</value>
+  </property>
+{{- end }}
+</configuration>
+{{- end }}
+
+{{- define "render_dotconf_file" -}}
+{{- range $k, $v := .config }}
+{{ $k }}  {{ $v}}
+{{- end }}
+{{- end }}
+
+
+{{- define "airflow.pod.host_aliases" }}
+hostAliases:
+{{- range $hostname, $ip := $.Values.host_aliases }}
+- ip: {{ $ip }}
+  hostnames:
+  - {{ $hostname}}
+{{- end }}
+{{- end }}

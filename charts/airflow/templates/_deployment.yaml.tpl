@@ -73,6 +73,9 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+      {{- include "airflow.pod.host_aliases" . | indent 6 }}
+      {{- end }}
       serviceAccountName: airflow
       containers:
         {{- include "app.airflow.scheduler" . | indent 8 }}
@@ -88,6 +91,12 @@ spec:
         - name: airflow-kerberos-token
           persistentVolumeClaim:
             claimName: airflow-kerberos-token-pvc
+        - name: airflow-hadoop-configuration
+          configMap:
+            name: airflow-hadoop-configuration
+        - name: airflow-spark-configuration
+          configMap:
+            name: airflow-spark-configuration
         {{- end }}
 
 {{- end }}

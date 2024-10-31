@@ -210,11 +210,13 @@ data:
         component: task-pod
     spec:
       restartPolicy: Never
+      {{- include "airflow.pod.host_aliases" . | indent 6 }}
       containers:
       - name: base
         image: {{ template "executor_pod._image" . }}
         imagePullPolicy: IfNotPresent
         {{- include "app.airflow.env" . | indent 8 }}
+        {{- include "app.airflow.env.spark_hadoop" . | indent 10 }}
         {{- with .Values.app.volumeMounts }}
         volumeMounts:
         {{- toYaml . | nindent 8 }}
@@ -222,6 +224,7 @@ data:
         - name: airflow-kerberos-token
           mountPath: /etc/kerberos/airflow_krb5_ccache
         {{- end }}
+        {{- toYaml $.Values.worker.volumeMounts | nindent 8 }}
         {{- end }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         resources:
@@ -231,5 +234,48 @@ data:
           {{- toYaml .Values.worker.resources.limits | nindent 12 }}
       volumes:
       {{- include "app.generic.volume" . | indent 6 }}
+      {{- toYaml $.Values.worker.volumes | nindent 6 }}
 
+{{- end }}
+
+{{- define "configmap.airflow-hadoop-config" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-hadoop-configuration
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  core-site.xml: |
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.hadoop.core ) | nindent 4 }}
+  hdfs-site.xml: |
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.hadoop.hdfs ) | nindent 4 }}
+  yarn-site.xml: |
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.hadoop.yarn ) | nindent 4 }}
+  log4j.properties: |
+    {{- .Files.Get "files/hadoop/log4j.properties" | nindent 4 }}
+  hadoop-env.sh: |
+    {{- .Files.Get "files/hadoop/hadoop-env.sh" | nindent 4 }}
+  yarn-env.sh: |
+    {{- .Files.Get "files/hadoop/yarn-env.sh" | nindent 4 }}
+{{- end }}
+
+{{- define "configmap.airflow-spark-config" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-spark-configuration
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  hive-site.xml: |
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.spark.hive ) | nindent 4 }}
+  spark-defaults.conf: |
+    {{- include "render_dotconf_file" ( dict "config" .Values.worker.config.spark.spark ) | nindent 4 }}
+  log4j.properties: |
+    {{- .Files.Get "files/spark/log4j.properties" | nindent 4 }}
+  spark-env.sh: |
+    {{- .Files.Get "files/spark/spark-env.sh" | nindent 4 }}
 {{- end }}
