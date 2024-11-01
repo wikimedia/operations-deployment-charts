@@ -1,0 +1,32 @@
+config:
+  private: {}
+  public: {}
+docker:
+  pull_policy: IfNotPresent
+  registry: docker-registry.discovery.wmnet
+helm_scaffold_version: 0.2
+main_app:
+  image: repos/mediawiki/services/chart-renderer
+  version: 2024-11-05-142457-production
+  limits:
+    cpu: 1
+    memory: 1G
+  requests:
+    cpu: 100m
+    memory: 200Mi
+monitoring:
+  enabled: true
+resources:
+  replicas: 2
+service:
+  deployment: production
+mesh:
+  public_port: 4684
+  enabled: true
+  telemetry:
+    enabled: true
+  tracing:
+    enabled: true
+networkpolicy:
+  egress:
+    enabled: false
