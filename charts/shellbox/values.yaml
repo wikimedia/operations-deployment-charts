@@ -19,6 +19,15 @@ main_app:
     # $wgMaxShellMemory is 1024M, plus resources for other pod components
     memory: 2048Mi
 
+# strategy can be used to configure .spec.strategy on the deployment. For
+# example, the following is equivalent to the default:
+#strategy:
+#  type: RollingUpdate
+#  rollingUpdate:
+#    maxUnavailable: 25%
+#    maxSurge: 25%
+strategy: null
+
 monitoring:
   enabled: true
   named_ports: true
