@@ -86,6 +86,9 @@
   command: ["/usr/bin/php"]
   args:
 {{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
+  # If --file isn't passed to the wrapper script, nothing will be mounted to
+  # /data, but it will be (harmlessly) created by setting workingDir here.
+  workingDir: /data
   tty: {{ .Values.mwscript.tty }}
   stdin: {{ .Values.mwscript.stdin }}
   stdinOnce: {{ .Values.mwscript.stdin }}
@@ -270,6 +273,11 @@
   # PHP environment variables
   - name: {{ $release }}-php-envvars
     mountPath: /etc/php/{{ .Values.php.version }}/fpm/env
+    readOnly: true
+  {{- end -}}
+  {{- if and (.Values.mwscript.enabled) (.Values.mwscript.textdata) }}
+  - name: {{ $release }}-mwscript-textdata
+    mountPath: /data
     readOnly: true
   {{- end -}}
 

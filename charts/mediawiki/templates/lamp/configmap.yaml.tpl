@@ -72,5 +72,14 @@ data:
 {{- end }}
 {{ include "mw.lamp.envvars" . }}
 {{- end }}
-
-
+{{- if .Values.mwscript.textdata }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-mwscript-textdata
+data:
+{{- range $k, $v := .Values.mwscript.textdata }}
+  "{{ $k }}": {{ $v | toYaml | indent 4 }}
+{{- end }}
+{{- end }}

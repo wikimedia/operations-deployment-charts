@@ -63,4 +63,9 @@
   configMap:
     name: {{ $release }}-php-envvars
 {{- end }}
+{{- if and (.Values.mwscript.enabled) (.Values.mwscript.textdata) }}
+- name: {{ $release }}-mwscript-textdata
+  configMap:
+    name: {{ $release }}-mwscript-textdata
+{{- end}}
 {{ end }}
