@@ -358,6 +358,31 @@ namespaces:
         min:
           memory: "50Mi"
           cpu: "100m"
+  mw-cron:
+    pspClusterRole: allow-mediawiki-psp
+    enableJobSidecarController: true
+    # Don't set a quota
+    resourcequota:
+      compute:
+        requests:
+          cpu: ~
+          memory: ~
+        limits:
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
   mw-videoscaler:
     pspClusterRole: allow-mediawiki-psp
     enableJobSidecarController: true
