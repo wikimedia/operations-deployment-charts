@@ -12,7 +12,6 @@ spec:
       storage: {{ $.Values.gitsync.volume.size }}
   storageClassName: {{ $.Values.gitsync.volume.storage_class }}
 
-{{- if $.Values.kerberos.enabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -26,4 +25,3 @@ spec:
     requests:
       storage: {{ $.Values.kerberos.volume.size }}
   storageClassName: {{ $.Values.kerberos.volume.storage_class }}
-{{- end }}
