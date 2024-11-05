@@ -224,18 +224,18 @@ main_app:
           value: true
       urls:
         # T374683
-        - name: page-metadata-title
-          in: '(.+)/v1/page/title/(.+)'
-          out: '/w/rest.php/v1/page/\2/bare'
         - name: page-metadata-revision
           in: '(.+)/v1/page/title/([^\/.]+)/(.+)'
           out: '/w/rest.php/v1/revision/\3/bare'
-        - name: page-html-title
-          in: '(.+)/v1/page/html/(.+)'
-          out: '/w/rest.php/v1/page/\2/html'
+        - name: page-metadata-title
+          in: '(.+)/v1/page/title/(.+)'
+          out: '/w/rest.php/v1/page/\2/bare'
         - name: page-html-revision
           in: '(.+)/v1/page/html/([^\/.]+)/(.+)'
           out: '/w/rest.php/v1/revision/\3/html'
+        - name: page-html-title
+          in: '(.+)/v1/page/html/(.+)'
+          out: '/w/rest.php/v1/page/\2/html'
 
 
   discovery_endpoints:
