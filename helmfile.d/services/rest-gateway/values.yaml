@@ -219,6 +219,9 @@ main_app:
 
     - name: mw-api-int
       timeout: 15s
+      request_headers_to_add:
+        - key: x-restbase-compat
+          value: true
       urls:
         # T374683
         - name: page-metadata-title

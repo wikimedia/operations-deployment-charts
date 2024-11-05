@@ -60,6 +60,16 @@
                   - name: ':authority'
                     exact_match: '{{ $endpoint.domain }}'
                   {{- end }}
+                {{- if $endpoint.request_headers_to_add }}
+                request_headers_to_add:
+                {{- range $rh := $endpoint.request_headers_to_add }}
+                  - header:
+                      key: {{ $rh.key }}
+                      value: {{ $rh.value }}
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                {{- end }}
+                {{- end }}
+
                 route:
                   regex_rewrite:
                     pattern:
