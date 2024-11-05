@@ -12,6 +12,7 @@ main_app:
   jobqueue:
     enabled: true
     jobrunner_uri: http://jobrunner01.eqiad.wmnet:9006/rpc/RunSingleJob.php
+    videoscaler_uri: https://test-videoscaler.discovery.wmnet/rpc/RunSingleJob.php
 
     partitioners: false
 
@@ -41,7 +42,15 @@ main_app:
         # by setting the reenqueue delay to 7 days
         reenqueue_delay: 604800
 
-    videoscaler_jobs_config: {}
+    videoscaler_jobs_config:
+      webVideoTranscode:
+        # Jobs of this kind are both long-running and concurrency constrained,
+        # so we override the max poll interval on this particular rule (6h).
+        enabled: true
+        timeout: 86400000
+        concurrency: 4
+        consumer:
+          max.poll.interval.ms: 21600000
 
     partitioned_jobs_config: {}
 

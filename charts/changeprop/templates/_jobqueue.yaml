@@ -137,7 +137,10 @@ spec: &spec
               {{ $topic }}:
                 topic: 'mediawiki.job.{{ $topic }}'
                 {{- range $key, $value := $topic_config }}
-                {{- if ne $key "enabled" }}
+                {{- if eq $key "consumer" }}
+                consumer:
+{{ toYaml $value | indent 18 }}
+                {{- else if ne $key "enabled" }}
                 {{ $key }}: {{ $value }}
                 {{- end }}
                 {{- end }}
@@ -168,7 +171,10 @@ spec: &spec
               {{ $part_topic }}:
                 topic: 'cpjobqueue.partitioned.mediawiki.job.{{ $part_topic }}'
                 {{- range $key, $value := $part_options.partition }}
-                {{- if ne $key "enabled" }}
+                {{- if eq $key "consumer" }}
+                consumer:
+{{ toYaml $value | indent 18 }}
+                {{- else if ne $key "enabled" }}
                 {{ $key }}: {{ $value  }}
                 {{- end }}
                 {{- end }}
@@ -190,7 +196,10 @@ spec: &spec
               {{ $topic }}:
                 topic: 'mediawiki.job.{{ $topic }}'
               {{- range $key, $value := $topic_config }}
-                {{- if ne $key "enabled" }}
+                {{- if eq $key "consumer" }}
+                consumer:
+{{ toYaml $value | indent 18 }}
+                {{- else if ne $key "enabled" }}
                 {{ $key }}: {{ $value }}
                 {{- end }}
               {{- end }}
@@ -223,6 +232,10 @@ spec: &spec
                 {{- end }}
                 {{- range $topic, $topic_config := .Values.main_app.jobqueue.partitioned_jobs_config }}
                   - 'mediawiki.job.{{ $topic }}'
+                {{- end }}
+                {{- with .Values.main_app.jobqueue.low_traffic_jobs.consumer }}
+                consumer:
+{{ toYaml . | indent 18 }}
                 {{- end }}
                 exec:
                   method: post
