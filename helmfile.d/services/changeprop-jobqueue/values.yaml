@@ -154,17 +154,25 @@ main_app:
     # We retry once - these are expensive jobs, so don't retry too
     # often, but also account for k8s ephemerality that might
     # abandon jobs for various reasons.
+    # We also set the max.poll.interval.ms consumer property to a large value
+    # to avoid partition reassignment when the rule reaches the concurrency
+    # limit (and thus will not poll until the next job completes). See
+    # https://phabricator.wikimedia.org/T356241#10291014.
     videoscaler_jobs_config:
       webVideoTranscode:
         enabled: true
         timeout: 86400000
         concurrency: 5
         retry_limit: 1
+        consumer:
+          max.poll.interval.ms: 3600000  # 1h
       webVideoTranscodePrioritized:
         enabled: true
         concurrency: 4
         timeout: 86400000
         retry_limit: 1
+        consumer:
+          max.poll.interval.ms: 3600000  # 1h
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
