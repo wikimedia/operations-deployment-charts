@@ -121,6 +121,7 @@ services:
           - '--no-first-run'
           - '--single-process'
           - '--no-zygote'
+          - '--disable-crashpad-for-testing'
       # Regexp of domains the browser is not allowed to access during rendering the page.
       # Case-insensitive, gets anchored automatically.
       # .*:.* - IPv6 or non-standard port; [\d.]+ - IPv4
