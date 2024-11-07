@@ -10,14 +10,14 @@ docker:
   registry: docker-registry.discovery.wmnet
 helm_scaffold_version: 0.2
 main_app:
-  image: wikimedia/mediawiki-services-zotero
+  image: repos/mediawiki/services/zotero
   limits:
     cpu: 1
     memory: 2Gi
   requests:
     cpu: 200m
     memory: 200Mi
-  version: 2024-10-17-101714-production
+  version: 2024-11-08-122812-production
 monitoring:
   enabled: false
   image_version: latest
