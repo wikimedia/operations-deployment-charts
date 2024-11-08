@@ -1,0 +1,35 @@
+config:
+  airflow:
+    dags_folder: wmde
+    instance_name: analytics-wmde
+    dbHost: an-db1001.eqiad.wmnet
+    dbName: airflow_wmde
+    dbUser: airflow_wmde
+    auth:
+      role_mappings:
+        airflow-analytics-ops: [Op]
+    config:
+      logging:
+        remote_logging: false
+  oidc:
+    client_id: airflow_wmde
+
+external_services:
+  postgresql: [analytics]
+  airflow: [airflow-wmde]
+
+ingress:
+  gatewayHosts:
+    default: "airflow-wmde"
+    extraFQDNs:
+    - airflow-wmde.wikimedia.org
+
+kerberos:
+  enabled: false
+
+scheduler:
+  remote_host: an-airflow1007.eqiad.wmnet
+  enabled: false
+
+postgresql:
+  cloudnative: false
