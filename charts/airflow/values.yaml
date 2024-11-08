@@ -257,7 +257,6 @@ gitsync:
   enabled: true
   image_name: repos/data-engineering/git-sync
   image_tag: override_me
-  image_gid: 900
   dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
   root_dir: /dags
   link_dir: airflow_dags
@@ -446,7 +445,6 @@ kerberos:
   volume:
     size: 10Mi
     storage_class: override_me
-  image_gid: 900
   resources:
     requests:
       cpu: 100m
