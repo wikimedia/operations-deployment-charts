@@ -40,6 +40,7 @@ releases:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "/etc/helmfile-defaults/private/dse-k8s_services/postgresql-airflow-test-k8s/{{ .Environment.Name }}.yaml"
       - "values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
+      - "values-analytics-test.yaml" # analytics-test-hadoop specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - fullnameOverride: "postgresql-airflow-test-k8s"

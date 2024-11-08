@@ -33,9 +33,6 @@ external_services:
   kerberos: [kdc]
   cas: [idp]
   s3: [eqiad-dpe]
-  hive: [analytics]
-  hadoop-master: [analytics]
-  hadoop-worker: [analytics]
 
 gitsync:
   image_tag: 2024-08-22-120818-fbafbcdb385bf1008ba0ac8ee350e9fe411a057d@sha256:3e01121704b405a08649012571aba0ce6834ab3aa3428df0b02a476b7ba4c3f5
@@ -51,29 +48,11 @@ worker:
     hadoop:
       hdfs:
         dfs.cluster.administrators: hdfs analytics-admins,ops
-        dfs.ha.namenodes.analytics-hadoop: an-master1003-eqiad-wmnet,an-master1004-eqiad-wmnet
         dfs.hosts.exclude: /etc/hadoop/conf.analytics-hadoop/hosts.exclude
-        dfs.internal.nameservices: analytics-hadoop
-        dfs.namenode.http-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:50070
-        dfs.namenode.http-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:50070
-        dfs.namenode.rpc-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:8020
-        dfs.namenode.rpc-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:8020
-        dfs.namenode.servicerpc-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:8040
-        dfs.namenode.servicerpc-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:8040
-        dfs.namenode.shared.edits.dir: qjournal://an-worker1078.eqiad.wmnet:8485;an-worker1080.eqiad.wmnet:8485;an-worker1090.eqiad.wmnet:8485;an-worker1142.eqiad.wmnet:8485;analytics1072.eqiad.wmnet:8485/analytics-hadoop
-        dfs.nameservices: analytics-hadoop
       core:
-        fs.defaultFS: hdfs://analytics-hadoop/
         ha.zookeeper.quorum: an-conf1001.eqiad.wmnet,an-conf1002.eqiad.wmnet,an-conf1003.eqiad.wmnet
       yarn:
-        yarn.node-labels.fs-store.root-dir: hdfs://analytics-hadoop/user/yarn/node-labels
-        yarn.resourcemanager.cluster-id: analytics-hadoop
-        yarn.resourcemanager.ha.rm-ids: an-master1003-eqiad-wmnet,an-master1004-eqiad-wmnet
-        yarn.resourcemanager.hostname.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet
-        yarn.resourcemanager.hostname.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet
         yarn.resourcemanager.keytab: /etc/security/keytabs/hadoop/yarn.keytab
-        yarn.resourcemanager.webapp.address.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:8088
-        yarn.resourcemanager.webapp.address.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:8088
         yarn.resourcemanager.zk-address: an-conf1001.eqiad.wmnet,an-conf1002.eqiad.wmnet,an-conf1003.eqiad.wmnet
     spark:
       spark:
@@ -82,15 +61,4 @@ worker:
         spark.yarn.historyServer.address: yarn.wikimedia.org
       hive:
         hive.metastore.kerberos.keytab.file: /etc/security/keytabs/hive/hive.keytab
-        hive.metastore.kerberos.principal: hive/analytics-hive.eqiad.wmnet@WIKIMEDIA
-        hive.metastore.uris: thrift://analytics-hive.eqiad.wmnet:9083
         hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/hive/hive.keytab
-        hive.server2.authentication.kerberos.principal: hive/analytics-hive.eqiad.wmnet@WIKIMEDIA
-
-# We hardcode this hostname / ip mapping to allow Hadoop to perform a reverse DNS
-# resolution of the IPs and to get these hostnames, instead of the coreDNS reverse
-# service IP PTR entries, to make it validate the Kerberos service name.
-# See https://phabricator.wikimedia.org/T377602#10295542
-host_aliases:
-  an-master1003.eqiad.wmnet: 10.64.36.15
-  an-master1004.eqiad.wmnet: 10.64.53.14
