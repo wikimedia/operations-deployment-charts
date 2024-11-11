@@ -34,6 +34,8 @@ listen thumbor
     # could be queuing requests in haproxy.
     acl queue_too_big avg_queue() gt {{ .Values.haproxy.max_avg_queue }}
     monitor-uri /healthz
+    # Also just fail the health check if we run out of healthy replicas
+    monitor fail if { nbsrv() lt 1 }
     monitor fail if queue_too_big
 
     # Deny /metrics scrapers to thumbor instances - these are
