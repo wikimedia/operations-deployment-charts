@@ -54,6 +54,11 @@ main_app:
 
     partitioned_jobs_config: {}
 
+    latency_sensitive_jobs_config:
+      AssembleUploadChunks:
+        enabled: true
+        concurrency: 10
+
     # in beta, all jobs are low_traffic jobs
 
     low_traffic_jobs:
