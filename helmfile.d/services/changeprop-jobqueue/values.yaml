@@ -214,6 +214,26 @@ main_app:
           reenqueue_delay: 3600
           retry_limit: 0
 
+    # Similar to the high_traffic_jobs_config, all jobs listed here get their
+    # own rule, and thus a dedicated consumer.
+    # While the high_traffic_jobs_config exists in part to isolate high-volume
+    # jobs that could otherwise slow down processing for other jobs if left on
+    # the shared low_traffic_jobs config, this works the opposite way: it
+    # isolates jobs known to be latency sensitive into their own rules.
+    latency_sensitive_jobs_config:
+      # T379035 - AssembleUploadChunks, PublishStashedFile, and UploadFromUrl,
+      # are considered latency sensitive, as high backlog time presents a poor
+      # user experience for async uploads.
+      AssembleUploadChunks:
+        enabled: true
+        concurrency: 10
+      PublishStashedFile:
+        enabled: true
+        concurrency: 10
+      UploadFromUrl:
+        enabled: true
+        concurrency: 10
+
     # All the jobs not explicitly specified in the config are combined into the
     # `low_traffic_jobs` rule, so they share a worker. The low_traffic_concurrency
     # is shared between all the jobs other then the exceptions listed above.
