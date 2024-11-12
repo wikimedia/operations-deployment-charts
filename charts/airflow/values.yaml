@@ -341,6 +341,9 @@ worker:
         yarn.log-aggregation.retain-seconds: '5184000'
         yarn.node-labels.enabled: 'true'
         yarn.node-labels.fs-store.root-dir: override_me
+        yarn.nodemanager.log-dirs: ''
+        yarn.nodemanager.remote-app-log-dir: /var/log/hadoop-yarn/apps
+        yarn.nodemanager.log-aggregation.compression-type: gz
         yarn.resourcemanager.am.max-attempts: '6'
         yarn.resourcemanager.cluster-id: override_me
         yarn.resourcemanager.connect.retry-interval.ms: '2000'
