@@ -46,3 +46,9 @@ secret:
   create: true
   userID: dse-k8s-csi
   # userKey: # This value has been added helmfile via the private repo
+
+tenantNamespaces:
+- kube-system
+- airflow-analytics-test
+- airflow-test-k8s
+- growthbook
