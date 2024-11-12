@@ -2,6 +2,7 @@ worker:
   config:
     hadoop:
       hdfs:
+        dfs.client.failover.proxy.provider.analytics-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
         dfs.ha.namenodes.analytics-hadoop: an-master1003-eqiad-wmnet,an-master1004-eqiad-wmnet
         dfs.internal.nameservices: analytics-hadoop
         dfs.namenode.http-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:50070

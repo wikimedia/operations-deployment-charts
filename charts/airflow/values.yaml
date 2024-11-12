@@ -284,10 +284,8 @@ worker:
         dfs.namenode.service.handler.count: '100'
         dfs.nameservices: override_me
         dfs.internal.nameservices: override_me
-        dfs.ha.namenodes.analytics-hadoop: override_me
         dfs.namenode.shared.edits.dir: override_me
         dfs.journalnode.edits.dir: /var/lib/hadoop/journal
-        dfs.client.failover.proxy.provider.analytics-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
         dfs.ha.fencing.methods: shell(/bin/true)
         dfs.namenode.name.dir: file:///var/lib/hadoop/name
         dfs.namenode.handler.count: '127'
