@@ -11,6 +11,9 @@ metadata:
     heritage: {{ .Release.Service }}
 rules:
   - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
   - apiGroups: [""]

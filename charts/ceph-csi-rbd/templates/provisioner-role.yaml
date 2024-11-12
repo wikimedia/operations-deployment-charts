@@ -36,19 +36,19 @@ rules:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "ceph-csi-rbd.nodeplugin.fullname" $ }}-tenant
+  name: {{ include "ceph-csi-rbd.provisioner.fullname" $ }}-tenant
   namespace: {{ $tenantNamespace }}
   labels:
     app: {{ include "ceph-csi-rbd.name" $ }}
     chart: {{ include "ceph-csi-rbd.chart" $ }}
-    component: {{ $.Values.nodeplugin.name }}
+    component: {{ $.Values.provisioner.name }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 rules:
 {{- if $.Values.storageClass.encrypted }}
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["get"]
   - apiGroups: [""]
     resources: ["serviceaccounts/token"]
     verbs: ["create"]
