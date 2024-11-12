@@ -1,4 +1,5 @@
-{{- if and .Values.rbac.create .Values.nodeplugin.podSecurityPolicy.enabled -}}
+{{- if .Values.rbac.create }}
+{{- if .Values.nodeplugin.podSecurityPolicy.enabled -}}
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -15,4 +16,36 @@ rules:
     resources: ['podsecuritypolicies']
     verbs: ['use']
     resourceNames: ['{{ include "ceph-csi-rbd.nodeplugin.fullname" . }}']
+{{- end -}}
+
+{{ range $tenantNamespace := $.Values.tenantNamespaces }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-rbd.nodeplugin.fullname" $ }}-tenant
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-rbd.name" $ }}
+    chart: {{ include "ceph-csi-rbd.chart" $ }}
+    component: {{ $.Values.nodeplugin.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+rules:
+{{- if $.Values.storageClass.encrypted }}
+  # allow to read Vault Token and connection options from the Tenants namespace
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts/token"]
+    verbs: ["create"]
+{{- end }}
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get"]
+{{- end -}}
 {{- end -}}

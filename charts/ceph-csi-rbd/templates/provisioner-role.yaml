@@ -29,4 +29,41 @@ rules:
     verbs: ['use']
     resourceNames: ['{{ include "ceph-csi-rbd.provisioner.fullname" . }}']
 {{- end -}}
+
+
+{{ range $tenantNamespace := $.Values.tenantNamespaces }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-rbd.nodeplugin.fullname" $ }}-tenant
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-rbd.name" $ }}
+    chart: {{ include "ceph-csi-rbd.chart" $ }}
+    component: {{ $.Values.nodeplugin.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+rules:
+{{- if $.Values.storageClass.encrypted }}
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts/token"]
+    verbs: ["create"]
+{{- end }}
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "create", "update"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get"]
+{{- end -}}
 {{- end -}}

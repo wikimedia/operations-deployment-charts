@@ -10,11 +10,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
-{{- if .Values.storageClass.encrypted }}
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "list", "watch"]
-{{- end }}
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
@@ -24,12 +19,6 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["list", "watch", "create", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["endpoints"]
-    verbs: ["get", "create", "update"]
 {{- if .Values.provisioner.attacher.enabled }}
   - apiGroups: ["storage.k8s.io"]
     resources: ["volumeattachments"]
@@ -55,12 +44,6 @@ rules:
     resources: ["volumesnapshotcontents/status"]
     verbs: ["update", "patch"]
 {{- end }}
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get"]
-  - apiGroups: [""]
-    resources: ["serviceaccounts"]
-    verbs: ["get"]
 {{- if .Values.provisioner.resizer.enabled }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims/status"]
@@ -74,10 +57,4 @@ rules:
     resources: ["csinodes"]
     verbs: ["get", "list", "watch"]
 {{- end }}
-{{- if .Values.storageClass.encrypted }}
-  - apiGroups: [""]
-    resources: ["serviceaccounts/token"]
-    verbs: ["create"]
-{{- end }}
-
 {{- end -}}

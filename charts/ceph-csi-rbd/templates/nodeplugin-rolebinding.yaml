@@ -1,4 +1,5 @@
-{{- if and .Values.rbac.create .Values.nodeplugin.podSecurityPolicy.enabled -}}
+{{- if .Values.rbac.create }}
+{{- if .Values.nodeplugin.podSecurityPolicy.enabled -}}
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -18,4 +19,29 @@ roleRef:
   kind: Role
   name: {{ include "ceph-csi-rbd.nodeplugin.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
+{{- end -}}
+
+{{ range $tenantNamespace := $.Values.tenantNamespaces }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "ceph-csi-rbd.nodeplugin.fullname" $ }}-tenant
+  namespace: {{ $tenantNamespace }}
+  labels:
+    app: {{ include "ceph-csi-rbd.name" $ }}
+    chart: {{ include "ceph-csi-rbd.chart" $ }}
+    component: {{ $.Values.nodeplugin.name }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "ceph-csi-rbd.serviceAccountName.nodeplugin" $ }}
+    namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "ceph-csi-rbd.nodeplugin.fullname" $ }}-tenant
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end -}}
 {{- end -}}
