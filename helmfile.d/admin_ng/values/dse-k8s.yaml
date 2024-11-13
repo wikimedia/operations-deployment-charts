@@ -139,6 +139,10 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-wmde.wikimedia.org
+  airflow-research:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-research.wikimedia.org
   echoserver: {}
   hdfs-synchronizer: {}
   spark:
