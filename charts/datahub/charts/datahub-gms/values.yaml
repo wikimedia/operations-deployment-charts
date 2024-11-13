@@ -20,13 +20,20 @@ main_app:
   limits:
     cpu: 1
     memory: 2G
-  # liveness_probe:
-  #   tcpSocket:
-  #     port: 8080
-  # readiness_probe:
-  #   httpGet:
-  #     path: /health
-  #     port: 8080
+  liveness_probe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 3
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 3
 
 monitoring:
   enabled: true

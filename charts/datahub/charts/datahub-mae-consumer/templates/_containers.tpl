@@ -39,6 +39,14 @@ resources:
     - {{ . }}
     {{- end }}
   {{- end }}
+  {{- if .Values.main_app.liveness_probe }}
+  livenessProbe:
+  {{- toYaml .Values.main_app.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- if .Values.main_app.readiness_probe }}
+  readinessProbe:
+  {{- toYaml .Values.main_app.readiness_probe | nindent 4 }}
+  {{- end }}
   env:
     - name: SERVICE_IDENTIFIER
       value: {{ template "base.name.release" . }}

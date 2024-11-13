@@ -19,6 +19,20 @@ main_app:
   limits:
     cpu: 1
     memory: 1G
+  liveness_probe:
+    httpGet:
+      path: /actuator/health
+      port: 9091
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
+  readiness_probe:
+    httpGet:
+      path: /actuator/health
+      port: 9091
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    failureThreshold: 3
 
 monitoring:
   enabled: true
