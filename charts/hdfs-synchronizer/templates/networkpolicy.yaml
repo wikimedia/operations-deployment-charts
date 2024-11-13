@@ -23,7 +23,6 @@ spec:
     {{- include "base.networkpolicy.egress.mariadb" . | indent 4 }}
     {{- include "base.networkpolicy.egress.zookeeper" . | indent 4 }}
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
-    {{- include "cache.mcrouter.egress" . | indent 4 }}
 {{- end }}
 
 {{ include "base.networkpolicy.egress.external-services" . }}
