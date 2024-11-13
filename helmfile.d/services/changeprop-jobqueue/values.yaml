@@ -165,14 +165,14 @@ main_app:
         concurrency: 15
         retry_limit: 1
         consumer:
-          max.poll.interval.ms: 3600000  # 1h
+          max.poll.interval.ms: 7200000  # 2h
       webVideoTranscodePrioritized:
         enabled: true
         concurrency: 8
         timeout: 86400000
         retry_limit: 1
         consumer:
-          max.poll.interval.ms: 3600000  # 1h
+          max.poll.interval.ms: 7200000  # 2h
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
