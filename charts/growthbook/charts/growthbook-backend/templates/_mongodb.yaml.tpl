@@ -53,6 +53,8 @@ spec:
           {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
           volumeMounts:
             {{-  toYaml $.Values.mongodb.volumeMounts | nindent 12 }}
+      securityContext:
+        fsGroup: 900
       volumes:
       {{-  toYaml $.Values.mongodb.volumes | nindent 8 }}
 {{- end }}
