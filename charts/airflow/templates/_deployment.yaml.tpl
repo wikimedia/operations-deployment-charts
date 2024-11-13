@@ -121,6 +121,8 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: gitsync
     spec:
+      securityContext:
+        fsGroup: {{ $.Values.gitsync.image_gid }} {{/* This allows the volumes to be writable by the git-sync gid */}}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
@@ -176,6 +178,8 @@ spec:
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
     spec:
+      securityContext:
+        fsGroup: {{ $.Values.kerberos.image_gid }}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
