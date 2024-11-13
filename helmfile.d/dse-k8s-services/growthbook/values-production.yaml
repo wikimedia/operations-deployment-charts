@@ -23,6 +23,7 @@ growthbook-backend:
     auth:
       enabled: true
     version: 2024-08-22-154123-2e75b412380e89e34b5630512fbdc04f21618581@sha256:fb70a7d712e23f2cdeda0aab55351275bd385cc03138ede68627c806e904e068
+    disk_size: 30Gi  # We manually resized the PVC and thus can't go back to the default 10Gi value
 
   ingress:
     gatewayHosts:
