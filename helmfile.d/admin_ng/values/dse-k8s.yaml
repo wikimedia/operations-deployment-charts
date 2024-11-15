@@ -151,6 +151,10 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-analytics.wikimedia.org
+  airflow-platform-eng:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-platform-eng.wikimedia.org
   echoserver: {}
   hdfs-synchronizer: {}
   spark:
