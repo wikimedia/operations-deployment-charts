@@ -1,0 +1,29 @@
+config:
+  hdfs:
+    dfs.nameservices: analytics-hadoop
+    dfs.internal.nameservices: analytics-hadoop
+    dfs.client.failover.proxy.provider.analytics-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+    dfs.ha.namenodes.analytics-hadoop: an-master1003-eqiad-wmnet,an-master1004-eqiad-wmnet
+    dfs.namenode.servicerpc-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:8040
+    dfs.namenode.servicerpc-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:8040
+    dfs.namenode.rpc-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:8020
+    dfs.namenode.rpc-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:8020
+    dfs.namenode.http-address.analytics-hadoop.an-master1003-eqiad-wmnet: an-master1003.eqiad.wmnet:50070
+    dfs.namenode.http-address.analytics-hadoop.an-master1004-eqiad-wmnet: an-master1004.eqiad.wmnet:50070
+
+  hadoop:
+    fs.defaultFS: hdfs://analytics-hadoop/
+
+ingress:
+  gatewayHosts:
+    default: "blunderbuss"
+
+external_services:
+  hadoop-master:
+  - analytics
+  hadoop-worker:
+  - analytics
+
+common_images:
+  kerberos:
+    version: 2024-11-22-165659-58a0855db4580609a7dbced0ac450acde29947b5@sha256:1094847900f362504d7f75ccc4e1864e7062784ddc8170999745f19a80fa3e6e

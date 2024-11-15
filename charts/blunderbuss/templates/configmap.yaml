@@ -1,2 +1,4 @@
-{{ include "mesh.configuration.configmap" . }}
+{{- include "configmap.kerberos" . }}
+{{- include "configmap.blunderbuss" . }}
+{{- include "mesh.configuration.configmap" . }}
 {{- include "base.statsd.configmap" . }}

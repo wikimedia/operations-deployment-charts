@@ -233,18 +233,6 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
             "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
             path: "/dev/stdout"
         http_filters:
-        {{- if (.Values.mesh.faultinjection | default dict).enabled }}
-        {{- /* Fault needs to be before any other filter */}}
-        - name: name: envoy.filters.http.fault
-          typed_config:
-            "@type": type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
-            max_active_faults: 100
-            abort:
-              http_status: {{ .Values.mesh.faultinjection.http_status | default 503 }}
-              percentage:
-                numerator: {{ .Values.mesh.faultinjection.pct | default 0 }}
-                denominator: HUNDRED
-        {{- end }}
         - name: envoy.filters.http.router
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router

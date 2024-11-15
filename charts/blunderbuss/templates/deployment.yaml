@@ -12,6 +12,14 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        checksum/blunderbuss-config: {{ include "configmap.blunderbuss" . | sha256sum }}
+        checksum/kerberos-config: {{ include "configmap.kerberos" . | sha256sum }}
+        {{- if $.Values.monitoring.enabled }}
+        {{- if $.Values.monitoring.statsd }}
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: {{ $.Values.monitoring.statsd.port | quote }}
+        {{- end }}
+        {{- end }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
@@ -21,10 +29,10 @@ spec:
         {{- include "app.generic.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
         {{- include "base.statsd.container" . | indent 8 }}
+        {{- if .Values.kerberos.enabled }}
+          {{- include "kerberos.container" . | indent 8 }}
+        {{- end }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
         {{- include "base.statsd.volume" . | indent 8 }}
-
-
-

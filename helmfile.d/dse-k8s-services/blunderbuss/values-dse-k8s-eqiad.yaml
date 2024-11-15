@@ -1,0 +1,7 @@
+kerberos:
+  image:
+    version: 2024-08-22-120740-071bae0306d1f9ab8addd0630ca1ae6bb216a122@sha256:5a48a0fa4d9fe6ac95023b36da50a10677c8ca1857994d69e878263574702a2a
+  volume:
+    storage_class: ceph-cephfs-ssd
+external_services:
+  kerberos: [kdc]

@@ -2,37 +2,67 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
-  image: blunderbuss
+  image: repos/data-engineering/blunderbuss
+  date: "{{ .Release.Time.Seconds }}"
   version: latest # we use latest everywhere in the defaults.
-  port: 8000 # port exposed as a Service, also used by service-checker.
-  # Use command and args below to override the entrypoint. Type is arrays
-  # Not necessary unless you want to change the entrypoint defined in the docker image
-  # Example:
-  # command: ["node"]
-  # args: ["bin/server.js", "--param1", "arg1"]
-  command: []
-  args: []
+  port: &app_port 8090 # This port will be the nginx reverse proxy
+  command: ["/srv/app/bootstrap.sh"]
+  args:
+  - *app_port
+  replicas: 1
   requests:
-    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 200Mi # Just some sample, edit these
+    cpu: 4
+    memory: 8Gi
   limits:
-    cpu: 1 # Just some sample, edit these
-    memory: 400Mi # Just some sample, edit these
+    cpu: 5
+    memory: 10Gi
   liveness_probe:
-    tcpSocket:
-      port: 8000
+    httpGet:
+      path: /health
+      port: *app_port
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 60
+    periodSeconds: 5
+    successThreshold: 1
   readiness_probe:
     httpGet:
-      path: /
-      port: 8000
-  # add here any volumes to mount onto the pod. Example:
-  #volumes:
-  #- name: scratchdir
-  #  emptyDir: {}
-  # add here any mounted volumes to make accessible to the container. Example:
-  #volumeMounts:
-  #   - name: scratchdir # the name from your volume above
-  #     mountPath: /scratch/ # where it should live in your container
+      path: /health
+      port: *app_port
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 61
+    periodSeconds: 5
+    successThreshold: 1
+
+  volumes:
+  # This volume contains the Superset / gunicorn configuration
+  - name: blunderbuss-config-volume
+    configMap:
+      name: blunderbuss-config
+  # This volume contains the Kerberos client configuration
+  - name: blunderbuss-kerberos-client-config-volume
+    configMap:
+      name: blunderbuss-kerberos-client-config
+  # This volume contains the Kerberos keytab file
+  - name: blunderbuss-kerberos-keytab-volume
+    secret:
+      secretName: blunderbuss-kerberos-keytab
+  # This volume contains the TGT that will be obtained from the kerberos server
+  - name: blunderbuss-kerberos-tgt-cache-volume
+    emptyDir: {}
+
+  volumeMounts:
+  - name: blunderbuss-kerberos-client-config-volume
+    mountPath: /etc/krb5.conf
+    subPath: krb5.conf
+  - name: blunderbuss-kerberos-keytab-volume
+    mountPath: /etc/kerberos/keytabs
+  - name: blunderbuss-kerberos-tgt-cache-volume
+    mountPath: /etc/kerberos/tgt
+  - name: blunderbuss-config-volume
+    mountPath: /etc/blunderbuss
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
@@ -42,13 +72,25 @@ service:
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 8000 # the number or name of the exposed port on the container
-    port: 8000 # the number of the port desired to be exposed to the cluster
+    targetPort:  *app_port # the number or name of the exposed port on the container
+    port:  *app_port # the number of the port desired to be exposed to the cluster
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  public: # Add here all the keys that can be publicly available as a ConfigMap
+    KRB5CCNAME: FILE:/etc/kerberos/tgt/tkt  # file in which Kerberos will store its TGT ticket
+    LANG: 'C.UTF-8'
+    LC_ALL: 'C.UTF-8'
+    FLASK_APP: 'blunderbuss.app:app'
+    # PYTHONPATH: '/app:/home/superset/.local/lib/python3.9/site-packages/:/etc/superset'
+    FLASK_RUN_PORT: *app_port
+
   private: {} # Add here all the keys that should be private but still available as env variables
+
+  gunicorn:
+    workers: 1
+    worker_class: gevent
+    timeout: 185
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -56,55 +98,28 @@ debug:
   # Define here any port that you want to expose for debugging purposes
   ports: []
 
-cronjobs: {}
-#    my-cron-hourly:
-#      name: my-cron-hourly
-#      enabled: true
-#      command:
-#        - /bin/cowsay
-#        - "hello"
-#      schedule: "@hourly"
-#      concurrency: Replace
-#      image_versioned: my-app:1.1.1
-#      resources:
-#        requests:
-#          cpu: 500m
-#           memory: 200M
-#        limits:
-#          cpu: 500m
-#          memory: 200M
-#      volumeMounts:
-#        - mountPath: "/tmp/acow"
-#          name: tmp-cow-memory
-#      volumes:
-#        - name: tmp-cow-memory
-#          emptyDir:
-#            medium: Memory
-#            sizeLimit: "10Gi"
-
 # Basic mesh-related data.
 mesh:
-  enabled: false
-  admin: {port: 1666 }
+  enabled: true
+  certmanager:
+    enabled: true
+  admin:
+    port: 1666
   image_version: latest
   # http keepalive timeout for incoming requests
   idle_timeout: "4.5s"
   # Port to listen to
-  public_port: 8000
+  public_port: 9081
   local_access_log_min_code: "200"
   # Headers to add to a local request,
   # in dictionary form.
   request_headers_to_add: []
   # Timeout of a request to the local service
-  upstream_timeout: "60s"
+  upstream_timeout: "185s"
   # Enabling telemetry, telemetry port.
   telemetry:
     enabled: true
     port: 1667
-  # Extra set of label / value to use in the mesh Service label selector.
-  # Use this when you have multiple pods with different functionalities
-  # in the namespace, to make sure the traffic only goes to the appropriate one.
-  extra_service_selector_labels: {}
   resources:
     requests:
       cpu: 200m
@@ -132,7 +147,7 @@ tcp_services_proxy: ~
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
-  enabled: false
+  enabled: true
   # By default, enabling ingress will switch the charts services from type NodePort to
   # ClusterIP. While that is fine for new services it may not be desired during transition
   # of existing ones from dedicated LVS to Ingress.
@@ -173,24 +188,74 @@ ingress:
 
 common_images:
   statsd:
-    exporter: prometheus-statsd-exporter:latest
+    exporter: prometheus-statsd-exporter
+    version: latest
+  kerberos:
+    # image: repos/data-engineering/kerberos-kinit
+    # we're using the Blunderbuss image instead of kerberos-kinit
+    # in order to have the Kerberos ticket file owned by the blunderbuss user
+    image: repos/data-engineering/blunderbuss
+    version: latest
+
 # WARNING: If you want to enable the module,
 # you will need to add a "statsd" stanza to monitoring
 # see modules/base/values.yaml for reference.
 
+kerberos:
+  enabled: true
+  ticket_renewal_interval_minutes: 60
+  keytab: override_me
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+
 docker:
   registry: docker-registry.wikimedia.org
-  pull_policy: IfNotPresent
+  pull_policy: Always
 resources:
   replicas: 1
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+  enabled: true
+  statsd:
+    port: 9102
+    prestop_sleep: 0
+    requests:
+      memory: 100Mi
+      cpu: 100m
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    # from https://github.com/blueswen/gunicorn-monitoring
+    config: |-
+      mappings:
+      - match: "*.gunicorn.request.status.*"
+        help: "gunicorn response code"
+        name: "gunicorn_response_code"
+        labels:
+          app: "$1"
+          status: "$2"
+      - match: "*.gunicorn.workers"
+        name: "gunicorn_workers"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.requests"
+        name: "gunicorn_requests"
+        labels:
+          app: "$1"
+      - match: "*.gunicorn.request.duration"
+        name: "gunicorn_request_duration"
+        labels:
+          app: "$1"
 
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
 
 # Add here the list of kafka-clusters (by name) that the service will need to reach.
 kafka:
@@ -210,6 +275,32 @@ affinity: {}
 #  nodeSelector:
 #    node.kubernetes.io/some-key: some-value
 
+cronjobs: {}
+#    my-cron-hourly:
+#      name: my-cron-hourly
+#      enabled: true
+#      command:
+#        - /bin/cowsay
+#        - "hello"
+#      schedule: "@hourly"
+#      concurrency: Replace
+#      image_versioned: my-app:1.1.1
+#      resources:
+#        requests:
+#          cpu: 500m
+#           memory: 200M
+#        limits:
+#          cpu: 500m
+#          memory: 200M
+#      volumeMounts:
+#        - mountPath: "/tmp/acow"
+#          name: tmp-cow-memory
+#      volumes:
+#        - name: tmp-cow-memory
+#          emptyDir:
+#            medium: Memory
+#            sizeLimit: "10Gi"
+
 # The set of external services to allow egress to
 # Example:
 # kafka:
@@ -220,4 +311,5 @@ affinity: {}
 #
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
-external_services: {}
+external_services:
+  gitlab: [wikimedia]
