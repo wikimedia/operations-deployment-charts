@@ -3,6 +3,7 @@ app:
     rdf-streaming-updater-config.properties:
       checkpoint_interval: 30000
       checkpoint_timeout: 900000
+      output_mutation_schema_version: v2
       event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
       generate_diff_timeout: -1
       http_routes: test-commons.wikimedia.org=localhost:6500,commons.wikimedia.org=localhost:6500,test.wikidata.org=localhost:6500,www.wikidata.org=localhost:6500,meta.wikimedia.org=localhost:6500,schema.wikimedia.org=localhost:6023
