@@ -1,6 +1,9 @@
 main_app:
   image: repos/wmde/wikidata-query-builder
   version: 2024-11-15-102226
+  readiness_probe:
+    httpGet:
+      path: /querybuilder
 
 ingress:
   enabled: true
