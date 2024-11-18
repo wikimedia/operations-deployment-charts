@@ -57,6 +57,8 @@ releases:
     <<: *default
   - name: wikidata-query-scholarly-gui
     <<: *default
+  - name: wikidata-query-builder
+    <<: *default
 environments:
   staging: &default_values
     values:
@@ -65,6 +67,7 @@ environments:
         - commons-query-gui
         - wikidata-query-main-gui
         - wikidata-query-scholarly-gui
+        - wikidata-query-builder
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
