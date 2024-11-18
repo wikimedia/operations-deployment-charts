@@ -160,7 +160,28 @@ namespaces:
     tlsExtraSANs:
       - airflow-analytics-product.wikimedia.org
   echoserver: {}
-  blunderbuss: {}
+  blunderbuss:
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
   spark:
     deployClusterRole: deploy-sparkapplications
     deployTLSCertificate: false
