@@ -7,9 +7,6 @@ service:
   port:
     nodePort: 8453
 
-resources:
-  replicas: 1
-
 php:
   version: "8.1"
   servergroup: kube-mw-debug-next
