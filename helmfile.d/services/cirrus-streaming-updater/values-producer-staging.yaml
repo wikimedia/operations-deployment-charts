@@ -12,6 +12,10 @@ app:
       kafka-source-config.bootstrap.servers: kafka-main-eqiad.external-services.svc.cluster.local:9093
       kafka-source-config.client.dns.lookup: use_all_dns_ips
 
+taskManager:
+  resource:
+    memory: 2g
+
 external_services:
   kafka:
     - main-eqiad
