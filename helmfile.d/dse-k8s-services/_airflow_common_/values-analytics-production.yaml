@@ -29,6 +29,15 @@ worker:
         hive.metastore.uris: thrift://analytics-hive.eqiad.wmnet:9083
         hive.server2.authentication.kerberos.principal: hive/analytics-hive.eqiad.wmnet@WIKIMEDIA
 
+config:
+  connections:
+    analytics-hive:
+      conn_type: hive_metastore
+      host: analytics-hive.eqiad.wmnet
+      port: 9083
+      extra_dejson:
+        authMechanism: GSSAPI
+
 external_services:
   hive: [analytics]
   hadoop-master: [analytics]
