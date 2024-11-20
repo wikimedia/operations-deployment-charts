@@ -33,3 +33,7 @@ scheduler:
 
 postgresql:
   cloudnative: false
+
+gitsync:
+  # Some DAGS in analytics_test import functions from the analytics folder
+  extra_dags_folders: [analytics]

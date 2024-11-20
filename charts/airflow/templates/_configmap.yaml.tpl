@@ -186,6 +186,9 @@ data:
     !/*
     !/*/
     /{{ $.Values.config.airflow.dags_folder }}/
+    {{- range $extra_dag_folder := $.Values.gitsync.extra_dags_folders }}
+    /{{ $extra_dag_folder }}/
+    {{- end }}
     /wmf_airflow_common/
 
 {{- end }}
