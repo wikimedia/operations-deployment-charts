@@ -9,27 +9,21 @@ config:
       role_mappings:
         airflow-analytics-ops: [Op]
     config:
-      logging:
-        remote_logging: false
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics/airflow-analytics-test.discovery.wmnet
   oidc:
     client_id: airflow_analytics_test
 
 external_services:
   postgresql: [analytics]
-  airflow: [analytics-test]
 
 ingress:
   gatewayHosts:
     default: "airflow-analytics-test"
     extraFQDNs:
     - airflow-analytics-test.wikimedia.org
-
-kerberos:
-  enabled: false
-
-scheduler:
-  remote_host: an-test-client1002.eqiad.wmnet
-  enabled: false
 
 postgresql:
   cloudnative: false
