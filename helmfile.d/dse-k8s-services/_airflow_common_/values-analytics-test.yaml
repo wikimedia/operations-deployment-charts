@@ -38,9 +38,10 @@ config:
         auth_mechanism: GSSAPI
 
 external_services:
-  hadoop-master: [analytics-test]
-  hadoop-worker: [analytics-test]
-  hive: [analytics-test]
+  task-pod:
+    hadoop-master: [analytics-test]
+    hadoop-worker: [analytics-test]
+    hive: [analytics-test]
 
 # We hardcode this hostname / ip mapping to allow Hadoop to perform a reverse DNS
 # resolution of the IPs and to get these hostnames, instead of the coreDNS reverse

@@ -15,8 +15,9 @@ config:
     client_id: airflow_ci
 
 external_services:
-  postgresql: [ci]
-  airflow: [analytics-ci]
+  webserver:
+    postgresql: [ci]
+    airflow: [analytics-ci]
 
 ingress:
   gatewayHosts:

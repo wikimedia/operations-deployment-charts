@@ -17,8 +17,9 @@ config:
     client_id: airflow_wmde
 
 external_services:
-  postgresql: [analytics]
-  airflow: [search]
+  webserver:
+    postgresql: [analytics]
+    airflow: [search]
 
 ingress:
   gatewayHosts:

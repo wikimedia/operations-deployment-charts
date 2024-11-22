@@ -12,7 +12,8 @@ config:
     client_id: airflow_test_k8s
 
 external_services:
-  cas: [idp-test]
+  webserver:
+    cas: [idp-test]
 
 ingress:
   gatewayHosts:

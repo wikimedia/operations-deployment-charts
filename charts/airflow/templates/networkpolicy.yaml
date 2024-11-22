@@ -25,8 +25,6 @@ spec:
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
 {{- end }}
 
-{{ include "base.networkpolicy.egress.external-services" . }}
-
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -88,5 +86,41 @@ spec:
         services:
           name: kubernetes
           namespace: default
+{{- end }}
+{{- end }}
+
+
+{{/*
+== NetworkPolicy resources associated with external (aka not running in Kubernetes) services.
+
+These resources are scoped to a particular airflow component (scheduler, webserver, etc)
+
+*/}}
+{{- if $.Values.external_services }}
+{{- range $component, $externalServices := $.Values.external_services }}
+{{- range $serviceType, $serviceNames := $externalServices }}
+{{- if $serviceNames }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.meta.name" (dict "Root" $) }}-egress-external-services-{{ $component }}
+  {{- include "base.meta.labels" $ | indent 2 }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector: "app == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}' && component == '{{ $component }}'"
+  types:
+  - Egress
+  egress:
+    {{- range $serviceName := $serviceNames }}
+    - action: Allow
+      destination:
+        services:
+          name: {{ $serviceType }}-{{ $serviceName }}
+          namespace: external-services
+    {{- end }}
+
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
