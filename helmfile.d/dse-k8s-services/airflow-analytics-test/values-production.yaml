@@ -2,9 +2,6 @@ config:
   airflow:
     dags_folder: analytics_test
     instance_name: analytics-test
-    dbHost: an-db1001.eqiad.wmnet
-    dbName: airflow_analytics_test
-    dbUser: airflow_analytics_test
     auth:
       role_mappings:
         airflow-analytics-ops: [Op]
@@ -16,17 +13,11 @@ config:
   oidc:
     client_id: airflow_analytics_test
 
-external_services:
-  postgresql: [analytics]
-
 ingress:
   gatewayHosts:
     default: "airflow-analytics-test"
     extraFQDNs:
     - airflow-analytics-test.wikimedia.org
-
-postgresql:
-  cloudnative: false
 
 gitsync:
   # Some DAGS in analytics_test import functions from the analytics folder
