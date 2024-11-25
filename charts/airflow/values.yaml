@@ -178,7 +178,7 @@ config:
       secrets:
         backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
         # See https://github.com/apache/airflow/blob/73dd6c17bd10ddda63a1682ac2174b0d206590dd/airflow/secrets/local_filesystem.py#L278-L279
-        backend_kwargs: '{"connections_file_path": "/opt/airflow/secrets/connections.yaml", "variables_file_path": "/opt/airflow/secrets/variables.yaml"}' # WARN: must be json-parseable
+        backend_kwargs: '{"connections_file_path": "/opt/airflow/secrets/connections.yaml"}' # WARN: must be json-parseable
       email:
         default_email_on_retry: false # T377745. We want to be alerted only after exhausting all retries.
       smtp:
@@ -216,11 +216,6 @@ config:
       host: yarn
       extra:
         deploy-mode: cluster
-
-  # https://airflow.apache.org/docs/apache-airflow/stable/howto/variable.html
-  variables:
-    s3_log_bucket: *s3_bucket
-    s3_log_retention_days: 30
 
   oidc:
     idp_server: override_me
