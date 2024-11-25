@@ -4,15 +4,6 @@ docker:
   pull_policy: IfNotPresent
 resources:
   replicas: 4
-tolerations:
-  - key: "dedicated"
-    operator: "Equal"
-    value: "kask"
-    effect: "NoSchedule"
-  - key: "dedicated"
-    operator: "Equal"
-    value: "kask"
-    effect: "NoExecute"
 main_app:
   image: repos/mediawiki/services/kask
   version: v1.0.12
