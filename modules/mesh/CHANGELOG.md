@@ -1,3 +1,7 @@
+## configuration 1.10.1
+
+- Allow to set a health check config for the tcp_proxy.
+
 ## service 1.2.0
 
 - Add support for additional label selectors for the tls termination Service
