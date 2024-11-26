@@ -125,7 +125,13 @@ env:
     value: /tmp/airflow_krb5_ccache/krb5cc
   - name: KRB5_CONFIG
     value: /etc/krb5.conf
+  - name: KRB5_KEYTAB
+    value: {{ $.Values.config.airflow.config.kerberos.keytab }}
+  - name: KRB5_PRINCIPAL
+    value: {{ $.Values.config.airflow.config.kerberos.principal }}
   {{- end }}
+  - name: REQUESTS_CA_BUNDLE
+    value: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
 
 {{- define "app.airflow.env.spark_hadoop" }}
