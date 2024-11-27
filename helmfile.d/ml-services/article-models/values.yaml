@@ -73,3 +73,23 @@ inference_services:
             memory: 1Gi
           requests:
             memory: 1Gi
+
+  article-country:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-article-country"
+      image_version: "2024-11-25-122620-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "article-country"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/article-country/20240901015102/"
+        - name: FORCE_HTTP
+          value: "True"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "2"
+            memory: 2Gi
