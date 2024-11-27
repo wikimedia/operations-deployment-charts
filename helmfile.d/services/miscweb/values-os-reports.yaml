@@ -1,0 +1,40 @@
+main_app:
+  image: repos/sre/miscweb/os-reports
+  version: 2025-01-20-155643
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+      - os-reports.wikimedia.org
+
+config:
+  public:
+    puppet_db_host: puppetdb2003.codfw.wmnet
+
+cronjob:
+  enabled: true
+  schedule: "0 3 * * *"
+  image:
+    registry: docker-registry.discovery.wmnet
+    name: kubectl
+    version: 1.23.14-4-20250105
+    pull_policy: Always
+  command:
+    - /usr/bin/kubectl
+    - -n
+    - miscweb
+    - rollout
+    - restart
+    - deployment
+    - miscweb-os-reports
