@@ -131,7 +131,7 @@ env:
     value: {{ $.Values.config.airflow.config.kerberos.principal }}
   {{- end }}
   - name: REQUESTS_CA_BUNDLE
-    value: /etc/ssl/certs/wmf-ca-certificates.crt
+    value: /etc/ssl/certs/ca-certificates.crt
 {{- end }}
 
 {{- define "app.airflow.env.spark_hadoop" }}
