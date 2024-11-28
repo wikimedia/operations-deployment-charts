@@ -39,8 +39,7 @@ resources:
 app:
   image: wikimedia/research-recommendation-api
   version: "2024-11-27-142924-production"
-  command: [ "poetry" ]
-  args: [ "run", "gunicorn" ]
+  command: [ "./entrypoint.sh" ]
   limits:
     cpu: 2
     memory: 1Gi

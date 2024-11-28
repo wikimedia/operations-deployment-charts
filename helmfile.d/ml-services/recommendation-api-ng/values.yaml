@@ -35,8 +35,7 @@ app:
   image: wikimedia/research-recommendation-api
   version: "2024-11-27-142924-production"
   # override entrypoint defined in the docker image with k8s command and args
-  command: [ "poetry" ]
-  args: [ "run", "gunicorn" ]
+  command: [ "./entrypoint.sh" ]
   limits:
     cpu: 2
     memory: 1Gi
