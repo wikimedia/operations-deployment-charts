@@ -9,6 +9,7 @@ metadata:
     chart: {{ template "base.name.chartid" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    component: flink-app-config
 data:
   {{- range $k, $v := .Values.app.config_files }}
   {{ $k }}: |- {{ toYaml $v | nindent 4 }}
