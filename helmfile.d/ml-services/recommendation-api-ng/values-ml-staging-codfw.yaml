@@ -22,9 +22,10 @@ config:
     API_PREFIX: "/service/lw/recommendation/api"
     CXSERVER_URL: "http://localhost:6015"
     CXSERVER_HEADER: "cxserver.wikimedia.org"
+    API_CONCURRENCY_LIMIT: int = 10
     EVENT_LOGGER_API: "http://localhost:6004/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: "intake-analytics.wikimedia.org"
-    LANGUAGE_PAIRS_API: "http://localhost:6015/v1/list/languagepairs"
+    LANGUAGE_PAIRS_API: "http://localhost:6015/v2/list/languagepairs"
     LANGUAGE_PAIRS_API_HEADER: "cxserver.wikimedia.org"
     WIKIDATA_API: "http://localhost:6500/w/api.php"
     WIKIDATA_API_HEADER: "www.wikidata.org"
@@ -38,7 +39,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2024-11-28-052541-production"
+  version: "2024-11-28-163815-production"
   command: [ "./entrypoint.sh" ]
   limits:
     cpu: 2
