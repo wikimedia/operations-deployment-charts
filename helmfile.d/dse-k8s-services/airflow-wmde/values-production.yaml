@@ -2,9 +2,6 @@ config:
   airflow:
     dags_folder: wmde
     instance_name: wmde
-    dbHost: an-db1001.eqiad.wmnet
-    dbName: airflow_wmde
-    dbUser: airflow_wmde
     auth:
       role_mappings:
         airflow-wmde-ops: [Op]
@@ -31,6 +28,3 @@ ingress:
     default: "airflow-wmde"
     extraFQDNs:
     - airflow-wmde.wikimedia.org
-
-postgresql:
-  cloudnative: false
