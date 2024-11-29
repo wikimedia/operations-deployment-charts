@@ -52,6 +52,12 @@ app:
       path: /docs
       port: 8080
     timeoutSeconds: 10
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 6
 
 ingress:
   mlstaging: true
