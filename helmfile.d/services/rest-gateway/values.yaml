@@ -224,6 +224,18 @@ main_app:
           value: true
       urls:
         # T374683
+        # NOTE: Revision regexps come first as the title regexps are broad
+        # enough to match the revision ones as well, ordering to the rescue
+        # NOTE: The REST gateway, in the same spirit as RESTBase before it,
+        # assumes the caller will be URL encoding the page titles so that if
+        # they have slashes in them.
+        #
+        # e.g. Foo/Bar/Baz should become Foo%2FBar%2FBaz
+        #
+        # before reaching REST gateway.
+        # In case a non URL encoded page with slashes is submitted, it's the
+        # duty of MediaWiki to return the appropriate response (and MediaWiki
+        # does return a 404)
         - name: page-metadata-revision
           in: '(.+)/v1/page/title/([^\/.]+)/(.+)'
           out: '/w/rest.php/v1/revision/\3/bare'
