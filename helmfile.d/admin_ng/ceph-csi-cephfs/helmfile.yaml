@@ -38,7 +38,7 @@ releases:
           spec:
             types:
               - Egress
-            selector: "app.kubernetes.io/component == 'provisioner' && app.kubernetes.io/chart == 'ceph-csi-cephfs'"
+            selector: "component == 'provisioner' && app == 'ceph-csi-cephfs'"
             egress:
               - action: Allow
                 destination:
