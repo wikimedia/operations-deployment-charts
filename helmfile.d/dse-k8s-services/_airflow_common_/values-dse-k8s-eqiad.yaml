@@ -29,17 +29,28 @@ config:
 
 external_services:
   gitsync:
+    # git-sync pulls code from our gitlab instance
     gitlab: [wikimedia]
   scheduler:
+    # the scheduler needs to be able to send alert emails
     wikimail: [mx]
+    # it also needs to be able to move task logs to s3 once they complete
     s3: [eqiad-dpe]
   kerberos:
+    # the airflow kerberos compomnent needs to be able to talk to our KDC
+    # to get an initial TGT, as well as renew it
     kerberos: [kdc]
   webserver:
+    # The webserver needs to talk to CAS to perform the OAuth dance, to log
+    # users in
     cas: [idp]
+    # The webserver needs to talk to S3 to fetch task logs for completed tasks
     s3: [eqiad-dpe]
   task-pod:
+    # Task pods need access to kerberos to get a Client-to-Service ticket from
+    # their TGT, by talking to the TGS
     kerberos: [kdc]
+    # Some tasks connect to S3 directly
     s3: [eqiad-dpe]
 
 gitsync:

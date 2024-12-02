@@ -13,6 +13,7 @@ config:
 
 external_services:
   webserver:
+    # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]
 
 ingress:

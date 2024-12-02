@@ -61,4 +61,5 @@ s3:
     -----END CERTIFICATE-----
 
 external_services:
+  # PG needs access to S3 to upload its WALs and base backups
   s3: [eqiad-dpe]

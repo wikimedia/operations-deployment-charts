@@ -40,6 +40,9 @@ config:
 
 external_services:
   task-pod:
+    # When connecting to the analytics-hadoop cluster, the task pods need access
+    # to the master (to submit jobs), the workers (to fetch data) as well as Hive, to
+    # sense data partitions.
     hive: [analytics]
     hadoop-master: [analytics]
     hadoop-worker: [analytics]

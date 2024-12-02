@@ -16,7 +16,11 @@ config:
 
 external_services:
   webserver:
+    # The webserver needs access to the analytics PG, as its data hasn't yet been migrated
+    # to a dedicated cloudnative PG cluster
     postgresql: [analytics]
+    # The webserver needs access to airflow-search scheduler, as it has not yet been
+    # migrated to Kubernetes
     airflow: [search]
 
 ingress:
