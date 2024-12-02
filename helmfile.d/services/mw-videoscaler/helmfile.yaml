@@ -38,6 +38,24 @@ templates:
       - name: php.servergroup
         value: "kube-{{`{{ .Release.Namespace }}`}}"
 
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/mw-videoscaler: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/mw-videoscaler: {{`{{.HelmfileCommand}}`}}",
+
+      ]
+
+
 releases:
   - name: main
     <<: *default

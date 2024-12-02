@@ -21,7 +21,8 @@ data:
   release.json: |-
     {{ dict "id" $release "ts" $ts | toJson }}
   # in future we will create a config for each job - for now share the config
-  mercurius.yaml: |-
+  {{- range $mercurius_job := $.Values.mercurius.jobs }}
+  {{ $mercurius_job }}.yaml: |-
     release-id: "{{ $release }}"
     release-time: {{ $ts }}
     release-path: /etc/mercurius/release.json
@@ -30,29 +31,27 @@ data:
       ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384"
       curves: "P-256"
       sig-algs: "ECDSA+SHA256"
-    {{- $job_count := len $.Values.mercurius.jobs }}
-    {{- if gt $job_count 1 }}
-    {{- fail "Mercurius chart currently only supports one job" }}
-    {{- end -}}
     {{- with $.Values.mercurius }}
     topics:
-    {{- range $mercurius_job := .jobs }}
       - {{ $.Values.mw.datacenter }}.mediawiki.job.{{ $mercurius_job }}
-    {{- end }}
     brokers:
     {{- range $broker := .brokers }}
       - {{ $broker }}
     {{- end }}
-    group: mercurius-{{ $.Values.mw.datacenter }}
+    group: mercurius-{{ $.Values.mw.datacenter }}-{{ $mercurius_job }}
     workers: {{ .workers }}
     command: /bin/bash
     command-args:
       - /usr/bin/mercurius-wrapper
     max-retries: {{ .max_retries }}
     retry-interval: {{ .retry_interval }}
+    {{- if .consumer_properties }}
     consumer-properties:
-      # avoid processing old jobs on startup
-      auto.offset.reset: largest
+    {{- range $property, $value := .consumer_properties }}
+      {{ $property }}: {{ $value }}
     {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
 {{- end }}
 {{- end -}}

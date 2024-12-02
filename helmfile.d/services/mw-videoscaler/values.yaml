@@ -21,6 +21,13 @@ mercurius:
   # We currently only support one job
   jobs: [webVideoTranscodePrioritized]
   debug: true
+  consumer_properties:
+    # Set the max.poll.interval.ms consumer property to a large value
+    # to avoid partition reassignment when the rule reaches the concurrency
+    # limit (and thus will not poll until the next job completes). See
+    # https://phabricator.wikimedia.org/T356241#10291014.
+    # Use a string here to stop helm printing this value in scientific notation
+    max.poll.interval.ms: "7200000"
 
 # we don't need the monitoring bits that come with mediawiki
 monitoring:

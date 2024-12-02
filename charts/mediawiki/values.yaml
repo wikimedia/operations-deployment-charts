@@ -446,3 +446,6 @@ mercurius:
   # maximum number of times to restart a failing mercurius instance
   backoff_limit: 10
   debug: false
+  consumer_properties:
+    # avoid processing old jobs on startup
+    auto.offset.reset: largest

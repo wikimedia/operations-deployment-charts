@@ -106,7 +106,8 @@ spec:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
       # above.
       {{- include "mesh.deployment.container" $ | indent 8}}
-      {{- include "lamp.deployment" $ | indent 8 }}
+      {{- $configpath := printf "/etc/mercurius/%s.yaml" $mercurius_job }}
+      {{- include "lamp.deployment" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
       volumes:
       {{- include "mw.volumes" $ | indent 8}}
       # Exiting 0 indicates that mercurius has picked up a new version and will

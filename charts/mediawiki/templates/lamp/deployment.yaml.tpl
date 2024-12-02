@@ -84,12 +84,13 @@
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- if .Values.mercurius.enabled }}
   command: ["/usr/bin/mercurius"]
-  args: ["--config", "/etc/mercurius/mercurius.yaml",
+  args: [
          {{- if .Values.mercurius.debug }}
          "--debug",
          {{- end }}
          "--metrics-address",
-          "0.0.0.0:{{.Values.mercurius.monitor_port}}"]
+         "0.0.0.0:{{.Values.mercurius.monitor_port}}"
+        ]
   {{- else if .Values.mwscript.enabled }}
   command: ["/usr/bin/php"]
   args:
@@ -178,6 +179,10 @@
   {{- if .Values.mw.logging.rsyslog }}
   - name: FPM__slowlog
     value: /var/log/php-fpm/slowlog.log
+  {{- end }}
+  {{- if .Values.mercurius.enabled }}
+  - name: MERCURIUS_CFG
+    value: MERCURIUS_JOB_PLACEHOLDER
   {{- end }}
   # Variables that will be made available to php-fpm and cli scripts.
   {{- range $k, $v := .Values.php.envvars }}
