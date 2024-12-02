@@ -98,8 +98,6 @@ These resources are scoped to a particular airflow component (scheduler, webserv
 */}}
 {{- if $.Values.external_services }}
 {{- range $component, $externalServices := $.Values.external_services }}
-{{- range $serviceType, $serviceNames := $externalServices }}
-{{- if $serviceNames }}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -112,6 +110,8 @@ spec:
   types:
   - Egress
   egress:
+    {{- range $serviceType, $serviceNames := $externalServices }}
+    {{- if $serviceNames }}
     {{- range $serviceName := $serviceNames }}
     - action: Allow
       destination:
@@ -119,8 +119,7 @@ spec:
           name: {{ $serviceType }}-{{ $serviceName }}
           namespace: external-services
     {{- end }}
-
-{{- end }}
-{{- end }}
+    {{- end }}
+    {{- end }}
 {{- end }}
 {{- end }}
