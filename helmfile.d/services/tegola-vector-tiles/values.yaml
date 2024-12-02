@@ -53,6 +53,17 @@ tcp_proxy:
 
 tcp_services_proxy:
   maps_postgres:
+    # Basic TCP health checks
+    # For more info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/health_check.proto#envoy-v3-api-msg-config-core-v3-healthcheck
+    health_checks:
+    - timeout: 5s
+      interval: 1s
+      unhealthy_threshold: 3
+      initial_jitter: 1s
+      healthy_threshold: 5
+      tcp_health_check: {}
+      always_log_health_check_failures: true
+      event_log_path: "/dev/stdout"
     port: 5432
     connect_timeout: "60s"
 
