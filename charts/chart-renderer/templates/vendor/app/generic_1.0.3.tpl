@@ -75,6 +75,10 @@ Probably this should be a separated configuration module?
 - port: {{ .Values.app.port }}
   protocol: TCP
 {{- end }}
+{{- with .Values.app.metricsPort }}
+- port: {{ . }}
+  protocol: TCP
+{{- end }}
 {{- if .Values.debug.enabled }}
 {{- range .Values.debug.ports }}
 - port: {{ . }}
