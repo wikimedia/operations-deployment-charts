@@ -2,6 +2,7 @@ app:
   image: repos/mediawiki/services/chart-renderer
   version: latest
   port: 6284
+  metricsPort: 9100
   requests:
     cpu: 100m
     memory: 200Mi
@@ -18,6 +19,7 @@ app:
 
 monitoring:
   enabled: true
+  named_ports: true
 
 service:
   deployment: minikube
