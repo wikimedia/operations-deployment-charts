@@ -9,7 +9,7 @@ datahubUpgradeJob: &datahubUpgradeJob
   enabled: true
   docker: *docker
   image:
-    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:7312a65a24bef6aa81e65ad27207d3def01277ff13667393285f095da5427a02"
+    tag: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:b352b7575f418af0ebd98b2106626efc6c5f98ed4b2f0f7f84d927d05767d528"
   restoreIndices:
     resources:
       limits:
@@ -22,13 +22,13 @@ elasticsearchSetupJob:
   enabled: true
   docker: *docker
   image:
-    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:c08ae86e58b125232b29520933d690589fb74f32982d52337c1cd05c344490f3"
+    tag: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:9069a5ca5d1d4df908ab1ecb3ffa128354463b53e9f40c5c1f59d9ba67c20f4a"
 
 mysqlSetupJob:
   enabled: true
   docker: *docker
   image:
-    tag: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:c858620ca6f740db86ff838c565a080c50249f95d7e2c876befca03459caddbe"
+    tag: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:e05bba7d15e46e44e916c92ebf9c89e87fe7fafe867cf931c8bce92f5a6539aa"
 
 kafkaSetupJob:
   enabled: false
@@ -45,22 +45,22 @@ networkpolicy:
 
 datahub-frontend:
   main_app:
-    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:0a0c0cdac51002f89579945ff19a856dc89889745191df75bdcb15adb07a4d85"
+    version: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:4a86b5f08afdfc5b075d7be94968c3313e1516c7e4387f85a0935e76f9352c59"
   docker: *docker
 
 datahub-gms:
   main_app:
-    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:9100b7707326467631130b5eb9aae25ac0fa9c37b2e976af5b7abcbe9f1c1d13"
+    version: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:37abdb83d0361f9f5b454070b7ac30974891d8d24d3f88538d1d1aece754a9e6"
   docker: *docker
 
 datahub-mce-consumer:
   main_app:
-    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:e053baedbc652d71ef3f2634ead3164230a66150c68f00b2eaf7d5be1c2d52ff"
+    version: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:a1fe1abca468ec3b013fea7b7ac596044cea7ede2af37895dffdd9db5d71eb15"
   docker: *docker
 
 datahub-mae-consumer:
   main_app:
-    version: "2024-08-22-120733-07a159013aae500604cd114b62c5231a1da88026@sha256:a60074265a6fffff99e129f97591bbd6a64e2056eb7026867542d8976003b70b"
+    version: "2024-12-04-114340-6b4feed16d7d2b82de68b085fea2b7e9f3995471@sha256:9ccac04254e955034c50898e1b62a94c9e6650a81c32f57d4c51b21f89e2700f"
   docker: *docker
 
 global:
