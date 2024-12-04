@@ -46,7 +46,7 @@ data:
     group: mercurius-{{ $.Values.mw.datacenter }}
     workers: {{ .workers }}
     command: /bin/bash
-    command_args:
+    command-args:
       - /usr/bin/mercurius-wrapper
     max-retries: {{ .max_retries }}
     retry-interval: {{ .retry_interval }}
