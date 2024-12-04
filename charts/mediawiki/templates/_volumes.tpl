@@ -72,6 +72,9 @@
 - name: {{ $release }}-mercurius-config
   configMap:
     name: {{ $release }}-mercurius-config
+- name: {{ $release }}-mercurius-script
+  configMap:
+    name: {{ $release }}-mercurius-script
 {{- end }}
 
 {{ end }}

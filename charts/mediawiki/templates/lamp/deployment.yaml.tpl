@@ -207,7 +207,7 @@
   {{- end }}
   {{- if .Values.mercurius.enabled }}
   ports:
-   - name: mercurius-metrics
+   - name: merc-metrics
      containerPort: {{ .Values.mercurius.monitor_port }}
   {{- end }}
   resources:
