@@ -68,6 +68,8 @@ services:
       user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Citoid/WMF (mailto:noc@wikimedia.org)"
       # contact e-mail address; used for making crossRef requests
       mailto: noc@wikimedia.org
+      # enable use of wayback machine from archive.org if initial url request fails
+      wayback: true
       # whether Citoid should use Zotero
       {{ if .Values.main_app.zotero -}}
       zotero: true
