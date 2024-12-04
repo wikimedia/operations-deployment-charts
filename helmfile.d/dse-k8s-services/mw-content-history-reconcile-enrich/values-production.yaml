@@ -1,0 +1,86 @@
+# WMF production main release specific values.
+#
+# These are kept out of the primary values.yaml just so that it is easier to use
+# with local development.
+#
+# Settings in this file should apply for all WMF production k8s clusters & enviroments.
+# cluster/environment/release specific settings belong in env specific values files.
+
+app:
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for the page_content_change enrichment job.
+      enrich:
+        # MW API requests should go to local envoy service proxy 'mwapi-async'.
+        # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
+        mediawiki_api_endpoint_template: http://localhost:6500/w/api.php
+        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Production requests to stream_config_uri should
+        # be routed via local envoy service proxy 'mwapi-async'.
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
+
+        # Configure sources and sinks.
+        # NOTE: Make sure to set kafka options in environment specific values files.
+        source:
+          stream: mediawiki.content_history_reconcile.v1:1.2.0
+          connector: kafka
+          options:
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+        sink:
+          stream: mediawiki.content_history_reconcile_enriched.v1:1.2.0
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+
+        # By convention we set job_name equal to k8s namespace.
+        # Since this naming will contain hypens, set the error_sink
+        # stream name explicitly for production deployments.
+        error_sink:
+          stream: mw_content_history_reconcile_enrich.error:2.1.0
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+
+  flinkConfiguration:
+    "restart-strategy.type": fixed-delay
+    # delay * attempts should be higher than the usual downtime we see.
+    # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
+    # to err on the side of caution.
+    "restart-strategy.fixed-delay.attempts": "10"
+    "restart-strategy.fixed-delay.delay": "180"
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+# Enable mwapi-async envoy service proxy.
+# This will forward requests to https://localhost:6500 to mw-api-int.discovery.wmnet.
+discovery:
+  listeners:
+    - mw-api-int-async
+
+external_services:
+  kafka:  [jumbo-eqiad]

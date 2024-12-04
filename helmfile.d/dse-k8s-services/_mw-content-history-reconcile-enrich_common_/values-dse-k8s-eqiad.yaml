@@ -1,0 +1,39 @@
+# NOTE: values-dse-k8s-eqiad.yaml is configured to be deployed in dse-k8s-eqiad k8s.
+
+service:
+  deployment: production
+
+app:
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # Input mediawiki.page_change topic has only 1 Kafka topic-partitions (eqiad or codfw).
+    # Increasing the parallelism (replicas) can still help process things faster, as
+    # there are more tasks running that can process the messages.
+    # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
+    # still produces messages in the proper order, per page.
+    replicas: 2
+    resource:
+      cpu: 2
+      memory: 1500m
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Configure sources and sinks.
+        source:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw-content-history-reconcile-enrich.dse-k8s-eqiad.000
+
+        sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            kafka_topic_prefix: eqiad.
+
+        error_sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            kafka_topic_prefix: eqiad.
