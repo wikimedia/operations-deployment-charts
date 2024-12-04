@@ -2,6 +2,10 @@ app:
   image: $IMAGE_NAME
   version: latest # we use latest everywhere in the defaults.
   port: $PORT # port exposed as a Service, also used by service-checker.
+
+  # If your app exposes metrics on a different port than the main port, specify it here.
+  metricsPort: ~
+
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:

@@ -9,6 +9,10 @@
   {{- include "app.generic._command" . | indent 2 }}
   ports:
     - containerPort: {{ .Values.app.port }}
+  {{- with .Values.app.metricsPort }}
+    - containerPort: {{ . }}
+      name: app-metrics
+  {{- end }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
