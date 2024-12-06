@@ -58,6 +58,36 @@ inference_services:
               memory: 35Gi
               amd.com/gpu: "1"
 
+  aya-llm:
+      predictor:
+        image: "machinelearning-liftwing-inference-services-llm"
+        image_version: "2025-01-03-150634-publish"
+        custom_env:
+          - name: MODEL_NAME
+            value: "aya-expanse-8B"
+          - name: STORAGE_URI
+            value: "s3://wmf-ml-models/llm/aya-expanse-8B/"
+          - name: LLM_CLASS
+            value: "llm.Aya"
+          - name: BITSANDBYTES_DTYPE
+            value: "int4"
+          - name: DEVICE
+            value: "auto"
+          - name: ATTN_IMPLEMENTATION
+            value: "flash_attention_2"
+          - name: DTYPE
+            value: "bfloat16"
+        container:
+          resources:
+            limits:
+              cpu: "8"
+              memory: 35Gi
+              amd.com/gpu: "1"
+            requests:
+              cpu: "8"
+              memory: 35Gi
+              amd.com/gpu: "1"
+
   bert:
       predictor:
         image: "machinelearning-liftwing-inference-services-huggingface"
