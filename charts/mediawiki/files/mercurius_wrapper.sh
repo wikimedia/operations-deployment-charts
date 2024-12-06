@@ -11,7 +11,8 @@
 # printed JSON will be rejected, and anything that messes with the
 # field separator or messes up the filename will be rejected also.
 
-read INPUT
+# Read raw input, don't interpret any escaping
+read -r INPUT
 DATABASE=$(echo "${INPUT}" | jq -e -r .database)
 
 if [ $? -ne 0 ] || [ -z "$DATABASE" ]; then
