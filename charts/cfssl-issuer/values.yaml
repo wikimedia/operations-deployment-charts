@@ -71,5 +71,8 @@ affinity: {}
 # The set of external services to allow egress to
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
-external_services:
-  pki: ["multirootca"]
+external_services: {}
+
+# example with multirootca
+#external_services:
+#  pki: [ "multirootca" ]
