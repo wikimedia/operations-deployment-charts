@@ -86,6 +86,9 @@
   command: ["/usr/bin/mercurius"]
   args: ["--config", "/etc/mercurius/mercurius.yaml",
          "--metrics-address",
+         {{- if .Values.mercurius.debug }}
+         "--debug",
+         {{- end }}
           "0.0.0.0:{{.Values.mercurius.monitor_port}}"]
   {{- else if .Values.mwscript.enabled }}
   command: ["/usr/bin/php"]

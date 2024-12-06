@@ -431,12 +431,12 @@ mwscript:
   stdin: false
 
 mercurius:
+  enabled: false
   # TODO Currently we only support a single job - jobs is maintained
   # as a list here as in future we will be adding support for multiple
   # jobs
   jobs: []
   brokers: []
-  enabled: false
   workers: 10
   # Number of times to retry a failed job
   max_retries: 3
@@ -445,3 +445,4 @@ mercurius:
   monitor_port: 9100
   # maximum number of times to restart a failing mercurius instance
   backoff_limit: 10
+  debug: false
