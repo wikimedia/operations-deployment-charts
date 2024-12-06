@@ -1,0 +1,217 @@
+{{- define "config.app" }}
+
+# Always 1 when running in a container.
+num_workers: 1
+
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: {{ .Values.app.worker.heap_limit_mb }}
+
+# The maximum interval in ms that can pass between two beat messages
+# sent by each worker to the master before it is killed
+worker_heartbeat_timeout: {{ .Values.app.worker.heartbeat_timeout }}
+
+logging:
+  level: {{ .Values.app.log.level }}
+  name: kartotherian
+
+{{- if .Values.monitoring.enabled }}
+metrics:
+  host: {{ .Values.app.metrics.statsd_endpoint }}
+  name: kartotherian
+  port: {{ .Values.app.metrics.statsd_port }}
+  type: statsd
+{{- end }}
+
+services:
+  - conf:
+      allowedDomains:
+{{ toYaml .Values.app.allowed_domains | indent 8 }}
+      cors: "*"
+      csp: "default-src 'self'; object-src 'none'; media-src 'none'; style-src 'self'; frame-ancestors 'self'"
+      geoshapes:
+        wikidataQueryService: {{ .Values.app.wdqs.endpoint }}/bigdata/namespace/wdq/sparql
+        allowUserQueries: true
+        database: gis
+        host: {{ .Values.app.geoshapes.endpoint }}
+        lineTable: wikidata_relation_members
+        password: ${KARTOTHERIAN_POSTGRES_GEOSHAPES_PASSWORD}
+        polygonTable: wikidata_relation_polygon
+        table: planet_osm_polygon
+        user: {{ .Values.app.geoshapes.user }}
+        poolSize: {{ .Values.app.geoshapes.pool_size }}
+        enableGeopoints: true
+        coordinatePredicateId: wdt:P625
+        userAgentContact: the WMF Content Transform Team (https://www.mediawiki.org/wiki/Content_Transform_Team)
+      mwapi_req:
+        body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers:
+          host: {{ "'{{" }} request.params.domain {{ "}}'" }}
+          user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
+        method: post
+        uri: http://localhost:6500
+      port: {{ .Values.app.port }}
+      restbase_req:
+        body: {{ "'{{" }} request.body{{ "}}'" }}
+        headers: {{ "'{{" }} request.headers{{ "}}'" }}
+        method: {{ "'{{" }} request.method{{ "}}'" }}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        uri: /{{"{{"}}domain{{ "}}" }}/v1/{+path}
+      sources:
+        # Tegola backend - main source
+        http-tegola:
+          uri: https://{{ .Values.app.tegola.endpoint }}:{{ .Values.app.tegola.port }}/maps/osm/{z}/{x}/{y}.pbf
+          setInfo:
+            maxzoom: 15
+            vector_layers:
+              - id: landuse
+              - id: waterway
+              - id: water
+              - id: aeroway
+              - id: building
+              - id: road
+              - id: admin
+              - id: country_label
+              - id: place_label
+              - id: poi_label
+              - id: road_label
+
+        # Tegola backend - secondary source
+        http-tegola-secondary:
+          uri: https://{{ .Values.app.tegola.endpoint }}:{{ .Values.app.tegola.port }}/maps/osm/{z}/{x}/{y}.pbf
+          setInfo:
+            maxzoom: 15
+            vector_layers:
+              - id: landuse
+              - id: waterway
+              - id: water
+              - id: aeroway
+              - id: building
+              - id: road
+              - id: admin
+              - id: country_label
+              - id: place_label
+              - id: poi_label
+              - id: road_label
+
+        # Mirror requests to tegola
+        mirror:
+          uri: mirror://
+          params:
+            source: { ref: http-tegola }
+            secondarySource: { ref: http-tegola-secondary }
+            enableMirror: false
+            loadBalancer:
+              bucketSize: 1000 # milliseconds
+              totalBuckets: 10 # number of buckets in the histogram
+              threshold: 0
+
+        # expands name_ json blob into several 
+        name_{code} tags
+        genall:
+          uri: json2tags://
+          params:
+            source: {ref: mirror}
+            tag: name
+
+        # OSM PBF source
+        osm-pbf:
+          public: true
+          formats: [pbf]
+          uri: overzoom://
+          params:
+            source: {ref: genall}
+            maxzoom: 19
+          overrideInfo:
+            attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia maps</a> | Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            tiles: ['https://maps.wikimedia.org/osm-pbf/{z}/{x}/{y}.pbf']
+
+        # creates the 'name' attribute based on name_* attributes and lang param
+        babel:
+          uri: babel://
+          params:
+            source: {ref: osm-pbf}
+            tag: name
+            combineName: false
+            defaultLanguage: local
+
+        # OSM map with international labeling
+        osm-tegola:
+          public: true
+          formats: [png,json,headers,svg,jpeg]
+          scales: [1.3, 1.5, 2, 2.6, 3]
+          maxzoom: 19
+          static: true
+          maxheight: 2048
+          maxwidth: 2048
+          uri: tmstyle://
+          yaml:
+            npm: ['@kartotherian/osm-bright-style', "project.yml"]
+          yamlSetParams:
+            source: {ref: babel}
+          overrideInfo:
+            attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia maps</a> | Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            tiles: ['https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png']
+          defaultHeaders:
+            Cache-Control: 'public, max-age=900, s-maxage=86400'
+
+        # OSM map with international labeling - will be used as default
+        osm-intl:
+          public: true
+          formats: [png,json,headers,svg,jpeg]
+          scales: [1.3, 1.5, 2, 2.6, 3]
+          maxzoom: 19
+          static: true
+          maxheight: 2048
+          maxwidth: 2048
+          uri: tmstyle://
+          yaml:
+            npm: ['@kartotherian/osm-bright-style', "project.yml"]
+          yamlSetParams:
+            source: {ref: babel}
+          overrideInfo:
+            attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia maps</a> | Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            tiles: ['https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png']
+          defaultHeaders:
+            Cache-Control: 'public, max-age=900, s-maxage=86400'
+
+        # OSM map without any labels
+        osm:
+          public: true
+          formats: [png,json,headers,svg,jpeg]
+          scales: [1.3, 1.5, 2, 2.6, 3]
+          maxzoom: 19
+          static: true
+          maxheight: 2048
+          maxwidth: 2048
+          uri: tmstyle://
+          yaml:
+            npm: ['@kartotherian/osm-bright-style', "project.yml"]
+          yamlSetParams:
+            source: {ref: osm-pbf}
+          yamlExceptLayers: ['country_label', 'place_label', 'poi_label']
+          overrideInfo:
+            attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia maps</a> | Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            tiles: ['https://maps.wikimedia.org/osm/{z}/{x}/{y}.png']
+          defaultHeaders:
+            Cache-Control: 'public, max-age=900, s-maxage=86400'
+
+      modules:
+      - tilelive-tmstyle
+      - tilelive-http
+      - "@wikimedia/kartotherian-tilelive-switch"
+      - ../lib/babel
+      - ../lib/overzoom
+      - "@kartotherian/tilelive-vector"
+      - "@mapbox/tilejson"
+      variables:
+        osmdb-pswd: ${KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD}
+        osmdb-user: {{ .Values.app.osmdb.user }}
+      requestHandlers:
+      - ../lib/geoshapes
+      - ../lib/maki
+      - ../lib/snapshot
+    entrypoint: 
+    module: ./src/app.js
+    name: kartotherian
+{{ end }}

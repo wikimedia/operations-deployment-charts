@@ -1,0 +1,151 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: wikimedia/mediawiki-services-kartotherian
+  version: latest # we use latest everywhere in the defaults.
+  port: 6533 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: ["/usr/bin/nodejs"]
+  log:
+    level: "INFO"
+  args: ["src/server.js", "/etc/kartotherian/config.yaml"]
+  requests:
+    cpu: 1
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 500Mi
+  liveness_probe:
+    tcpSocket:
+      port: 6543
+  readiness_probe:
+    httpGet:
+      path: /osm-intl/6/23/24.png
+      port: 6543
+  metrics:
+    statsd_endpoint: localhost
+    statsd_port: 8125
+  wdqs:
+    endpoint: localhost
+    port: 6009
+  tegola:
+    endpoint: localhost
+    port: 6040
+  geoshapes:
+    endpoint: localhost
+    port: 5432
+    user: 'kartotherian'
+    pool_size: 10
+  osmdb:
+    user: 'kartotherian'
+  worker:
+    heap_limit_mb: 300
+    heartbeat_timeout: 7500
+  allowed_domains:
+    https:
+      - mediawiki.org
+      - wikibooks.org
+      - wikidata.org
+      - wikimedia.org
+      - wikimediafoundation.org
+      - wikinews.org
+      - wikipedia.org
+      - wikiquote.org
+      - wikisource.org
+      - wikiversity.org
+      - wikivoyage.org
+      - wiktionary.org
+
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+service:
+  deployment: minikube # production used only in helmfile
+  port:
+    name: http
+    targetPort: 6543
+    port: 6543
+    nodePort: null
+
+debug:
+  enabled: false
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private:
+    KARTOTHERIAN_POSTGRES_GEOSHAPES_PASSWORD: "secret"
+    KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD: "secret"
+
+mesh:
+  enabled: false
+  admin: {port: 1666 }
+  image_version: latest
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 6543
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 16543
+  # Extra set of label / value to use in the mesh Service label selector.
+  # Use this when you have multiple pods with different functionalities
+  # in the namespace, to make sure the traffic only goes to the appropriate one.
+  extra_service_selector_labels: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+discovery: []
+
+# Mesh related pure TCP proxies.
+# Useful to set up load-balanced connections to external
+# services like multiple Postgres replicas.
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# The set of external services to allow egress to
+# Example:
+# kafka:
+# - main-codfw
+# - main-eqiad
+# presto:
+# - analytics
+#
+# See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services
+external_services: {}
