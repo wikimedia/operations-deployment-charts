@@ -69,7 +69,7 @@ securityContext:
   their metadata (eg labels) changes.
 */}}
 {{- define "base.helper.resourcesDataChecksum" }}
-{{- $renderedResources :=  tpl (include (print .Root.Template.BasePath .resourceFilePath) .Root) .Root }}
+{{- $renderedResources :=  include (print .Root.Template.BasePath .resourceFilePath) .Root }}
 {{- $dataArray := list }}
 {{- range $resourceStr := split "---\n" $renderedResources }}
 {{- $resource := fromYaml $resourceStr }}

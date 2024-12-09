@@ -1,3 +1,9 @@
+## helper 1.1.3
+
+- Remove `tpl` from `base.helper.resourcesDataChecksum` template, to allow
+  more flexibility when generating config-maps with special/reserved keywords
+  for Helm templates.
+
 ## meta 2.0.2
 - Add the `checksum/configuration` annotation to the base pod annotation template,
   that computes a stable checksum on all configmap resources defined in the `configmap.yaml`
