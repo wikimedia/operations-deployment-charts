@@ -1,0 +1,53 @@
+helm_scaffold_version: 0.3
+
+docker:
+  registry: docker-registry.discovery.wmnet
+  pull_policy: IfNotPresent
+
+resources:
+  replicas: 9
+
+main_app:
+  image: wikimedia/mediawiki-services-kartotherian
+  version:  2024-12-06-082833-production
+
+monitoring:
+  enabled: true
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+
+tcp_proxy:
+  listeners:
+    - maps_postgres
+
+tcp_services_proxy:
+  maps_postgres:
+    health_checks:
+    - timeout: 5s
+      interval: 1s
+      unhealthy_threshold: 3
+      initial_jitter: 1s
+      healthy_threshold: 5
+      tcp_health_check: {}
+      always_log_health_check_failures: true
+      event_log_path: "/dev/stdout"
+    port: 5432
+    connect_timeout: "60s"
+
+discovery:
+  listeners:
+  - wdqs-internal
+  - mwapi-async
+  - tegola-vector-tiles
+
+networkpolicy:
+  egress:
+    enabled: true
