@@ -48,3 +48,20 @@ resources:
   # 96GB memory limit
   # Including the sidecars, the limit is effectively 160 for CPU alone
   replicas: 48
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      # shellbox-video needs to be able to communicate with swift in order to
+      # support large file access via URL - T292322.
+      # ms-fe.svc.eqiad.wmnet.
+      - cidr: 10.2.2.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # ms-fe.svc.codfw.wmnet.
+      - cidr: 10.2.1.27/32
+        ports:
+          - protocol: TCP
+            port: 443
