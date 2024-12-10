@@ -19,7 +19,7 @@ php:
 mercurius:
   enabled: true
   # We currently only support one job
-  jobs: [webVideoTranscodePrioritized]
+  jobs: [webVideoTranscodePrioritized, webVideoTranscode]
   debug: true
   consumer_properties:
     # Set the max.poll.interval.ms consumer property to a large value
