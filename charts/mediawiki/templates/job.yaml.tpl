@@ -73,6 +73,7 @@ spec:
   {{- end -}}
 {{ else if .Values.mercurius.enabled -}}
 {{- range $mercurius_job := .Values.mercurius.jobs }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
