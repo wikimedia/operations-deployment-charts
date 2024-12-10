@@ -512,6 +512,14 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 {{- end }}
                 cluster: {{ .Name }}
                 timeout: {{ .Listener.timeout }}
+                {{- /* puppet-defined idle timeout
+                 note that route-level idle timeouts are stream idle timeouts in envoy terminology and
+                 behave differently to other idle timeout settings - see 039059f18b2 in puppet and
+                 the envoy docs
+                */}}
+                {{- if .Listener.idle_timeout }}
+                idle_timeout: {{ .Listener.idle_timeout }}
+                {{- end }}
                 {{- if .Listener.retry_policy }}
                 retry_policy:
                 {{- range $k, $v :=  .Listener.retry_policy }}
@@ -546,6 +554,14 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
             socket_address:
               address: {{ .Upstream.address }}
               port_value: {{ .Upstream.port }}
+  {{- /* Use puppet-defined tcp keepalives for connections to upstreams */}}
+  {{- if .Upstream.tcp_keepalive }}
+  upstream_connection_options:
+    tcp_keepalive:
+    {{- range $k, $v := .Upstream.tcp_keepalive }}
+      {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
   {{- if .Upstream.encryption }}
   {{- include "mesh.configuration._transport_socket_tls" (dict "Upstream" .Upstream) | indent 2 }}
   {{- end }}

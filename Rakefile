@@ -370,6 +370,9 @@ task :refresh_fixtures do
       if x['keepalive']
         upstream['keepalive'] = x['keepalive']
       end
+      if x['tcp_keepalive']
+        upstream['tcp_keepalive'] = x['tcp_keepalive']
+      end
       x['upstream'] = upstream_mock
 
       if x['split']

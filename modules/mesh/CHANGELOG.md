@@ -1,3 +1,9 @@
+## configuration 1.11.0
+
+- Allow setting `tcp_keepalive` and route-level `idle_timeout` in for
+  mesh http clusters, with values coming from puppet's mesh
+  configuration values.
+
 ## configuration 1.10.1
 
 - Allow to set a health check config for the tcp_proxy.
