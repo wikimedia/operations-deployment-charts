@@ -1,7 +1,13 @@
 {{ define "mw.mercurius.configmap" }}
 {{- if .Values.mercurius.enabled -}}
-{{ $release := .Values.main_app.version }}
+{{ $release := .Values.main_app.image }}
+{{- if .Values.main_app.image | contains ":" }}
+{{ $release = last (splitList ":" .Values.main_app.image ) }}
+{{- end }}
 {{ $ts := now | date "2006-01-02T15:04:05Z" }}
+{{- if .Values.mercurius.dummy_ts }}
+{{ $ts = .Values.mercurius.dummy_ts }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap

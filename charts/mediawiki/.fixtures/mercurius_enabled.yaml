@@ -2,6 +2,8 @@ mercurius:
   enabled: true
   debug: true
   jobs: ["mytestjob1", "mytestjob2"]
+  # use a dummy timestamp to stop test noise where ts changes every run
+  dummy_ts: "2024-12-10T17:41:58Z"
 
 # These are enabled to check the pod.kubernetes.io/sidecars annotation
 cache:
