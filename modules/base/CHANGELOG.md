@@ -1,4 +1,4 @@
-## helper 1.1.3
+## helper 1.1.4
 
 - Remove `tpl` from `base.helper.resourcesDataChecksum` template, to allow
   more flexibility when generating config-maps with special/reserved keywords
