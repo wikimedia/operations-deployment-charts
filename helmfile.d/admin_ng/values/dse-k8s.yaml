@@ -315,6 +315,31 @@ namespaces:
   mw-dump-rev-content-reconcile-enrich-next: {}
   mw-content-history-reconcile-enrich: {}
   mw-content-history-reconcile-enrich-next: {}
+  llm-inference:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
 
 istio:
   gateways:
