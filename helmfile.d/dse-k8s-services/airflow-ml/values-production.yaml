@@ -1,0 +1,20 @@
+config:
+  airflow:
+    dags_folder: ml
+    instance_name: ml
+    auth:
+      role_mappings:
+        airflow-ml-ops: [Op]
+    config:
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics/airflow-ml.discovery.wmnet
+  oidc:
+    client_id: airflow_ml
+
+ingress:
+  gatewayHosts:
+    default: "airflow-ml"
+    extraFQDNs:
+    - airflow-ml.wikimedia.org
