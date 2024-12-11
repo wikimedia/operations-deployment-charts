@@ -159,6 +159,10 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-analytics-product.wikimedia.org
+  airflow-ml:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-ml.wikimedia.org
   echoserver: {}
   blunderbuss:
     limitranges:
