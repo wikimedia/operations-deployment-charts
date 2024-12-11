@@ -77,7 +77,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "mw.name.namespace.env.release" $ }}-mercurius-{{ $mercurius_job | lower }}
+  name: {{ template "mw.name.namespace.env.release" $ }}-{{ $mercurius_job | lower }}
   {{- include "mw.labels" $ | indent 2 }}
 spec:
   template:
