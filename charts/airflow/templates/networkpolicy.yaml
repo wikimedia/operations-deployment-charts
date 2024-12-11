@@ -65,7 +65,7 @@ spec:
         - {{ $.Values.monitoring.prometheus_port }}
         {{- end }}
 
-{{- if eq $.Values.config.airflow.config.core.executor "KubernetesExecutor"}}
+{{- if contains "KubernetesExecutor" $.Values.config.airflow.config.core.executor }}
 {{/*
   When using the Kubernetes executor, the scheduler needs to have access to the kube API
   to manage tasks via Pod resources, and the webserver needs to be able to tail the logs

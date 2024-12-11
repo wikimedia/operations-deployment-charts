@@ -4,7 +4,7 @@ metadata:
   name: airflow
   namespace: {{ $.Release.Namespace }}
   {{- include "base.meta.labels" . | indent 2 }}
-{{- if eq $.Values.config.airflow.config.core.executor "KubernetesExecutor" }}
+{{- if contains "KubernetesExecutor" $.Values.config.airflow.config.core.executor }}
 rules:
 - apiGroups: [""]
   resources: ["pods"]
