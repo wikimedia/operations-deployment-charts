@@ -7,18 +7,21 @@ docker:
 resources:
   replicas: 9
 
-main_app:
+app:
   image: wikimedia/mediawiki-services-kartotherian
-  version:  2024-12-06-082833-production
+  version: 2024-12-06-082833-production
 
 monitoring:
   enabled: true
 
 service:
   deployment: production
+  port:
+    nodePort: 6543
 
 mesh:
   enabled: true
+  public_port: 6543
 
 networkpolicy:
   egress:
