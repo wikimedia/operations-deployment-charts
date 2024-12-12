@@ -13,7 +13,7 @@ app:
   command: ["/usr/bin/nodejs"]
   log:
     level: "INFO"
-  args: ["src/server.js", "/etc/kartotherian/config.yaml"]
+  args: ["server.js", "-c", "/etc/kartotherian/config.yaml"]
   requests:
     cpu: 1
     memory: 500Mi
