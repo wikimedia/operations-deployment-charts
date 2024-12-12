@@ -72,12 +72,16 @@ spec:
   activeDeadlineSeconds: {{ . }}
   {{- end -}}
 {{ else if .Values.mercurius.enabled -}}
+{{ $release := .Values.main_app.image }}
+{{- if .Values.main_app.image | contains ":" }}
+{{ $release = last (splitList ":" .Values.main_app.image ) }}
+{{- end }}
 {{- range $mercurius_job := .Values.mercurius.jobs }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: {{ template "mw.name.namespace.env.release" $ }}-{{ $mercurius_job | lower }}
+  name: mercurius-{{ $release }}-{{ $mercurius_job | lower }}
   {{- include "mw.labels" $ | indent 2 }}
 spec:
   template:
