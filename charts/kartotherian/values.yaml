@@ -13,6 +13,13 @@ app:
   command: ["/usr/bin/nodejs"]
   log:
     level: "INFO"
+  volumes:
+    - name: config-volume
+      configMap:
+        name: config-{{ .Release.Name }}
+  volumeMounts:
+    - name: config-volume
+      mountPath: /etc/kartotherian
   args: ["server.js", "-c", "/etc/kartotherian/config.yaml"]
   requests:
     cpu: 1
