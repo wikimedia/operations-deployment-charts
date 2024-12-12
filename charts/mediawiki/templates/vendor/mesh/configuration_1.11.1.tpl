@@ -517,8 +517,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                  behave differently to other idle timeout settings - see 039059f18b2 in puppet and
                  the envoy docs
                 */}}
-                {{- if .Listener.idle_timeout }}
-                idle_timeout: {{ .Listener.idle_timeout }}
+                {{- if .Listener.upstream.idle_timeout }}
+                idle_timeout: {{ .Listener.upstream.idle_timeout }}
                 {{- end }}
                 {{- if .Listener.retry_policy }}
                 retry_policy:
