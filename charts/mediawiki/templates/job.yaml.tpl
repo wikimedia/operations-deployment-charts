@@ -81,7 +81,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: mercurius-{{ $release }}-{{ $mercurius_job | lower | trunc 63 | trimSuffix "-"}}
+  name: {{ printf "mercurius-%s-%s" $release $mercurius_job | lower | trunc 63 | trimSuffix "-"}}
   {{- include "mw.labels" $ | indent 2 }}
 spec:
   template:
