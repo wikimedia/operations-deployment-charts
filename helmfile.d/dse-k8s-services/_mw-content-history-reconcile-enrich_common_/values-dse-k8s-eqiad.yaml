@@ -37,3 +37,7 @@ app:
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
             kafka_topic_prefix: eqiad.
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet
