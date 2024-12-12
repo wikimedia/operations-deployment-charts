@@ -24,18 +24,18 @@ app:
         # Configure sources and sinks.
         source:
           options:
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-content-history-reconcile-enrich.dse-k8s-eqiad.000
 
         sink:
           options:
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
 
         error_sink:
           options:
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
 
 flink:
