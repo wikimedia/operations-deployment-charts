@@ -49,7 +49,7 @@ services:
           host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
         method: post
-        uri: http://localhost:6500
+        uri: {{ .Values.app.mwapi.endpoint }}
       port: {{ .Values.app.port }}
       restbase_req:
         body: {{ "'{{" }} request.body{{ "}}'" }}
@@ -60,7 +60,7 @@ services:
       sources:
         # Tegola backend - main source
         http-tegola:
-          uri: https://{{ .Values.app.tegola.endpoint }}:{{ .Values.app.tegola.port }}/maps/osm/{z}/{x}/{y}.pbf
+          uri: {{ .Values.app.tegola.endpoint }}/maps/osm/{z}/{x}/{y}.pbf
           setInfo:
             maxzoom: 15
             vector_layers:
@@ -78,7 +78,7 @@ services:
 
         # Tegola backend - secondary source
         http-tegola-secondary:
-          uri: https://{{ .Values.app.tegola.endpoint }}:{{ .Values.app.tegola.port }}/maps/osm/{z}/{x}/{y}.pbf
+          uri: {{ .Values.app.tegola.endpoint }}/maps/osm/{z}/{x}/{y}.pbf
           setInfo:
             maxzoom: 15
             vector_layers:
@@ -211,6 +211,6 @@ services:
       - ../lib/maki
       - ../lib/snapshot
     entrypoint: 
-    module: ./src/app.js
+    module: ./app.js
     name: kartotherian
 {{ end }}
