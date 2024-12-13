@@ -1,7 +1,9 @@
 {{- define "config.app" }}
 
-# Always 1 when running in a container.
-num_workers: 1
+# We don't need to use a master/worker architecture
+# when Kartotherian is running in a container, so explicitly
+# force service runner to create a single process.
+num_workers: 0
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
@@ -14,6 +16,9 @@ worker_heartbeat_timeout: {{ .Values.app.worker.heartbeat_timeout }}
 logging:
   level: {{ .Values.app.log.level }}
   name: kartotherian
+  streams:
+    - type: stdout
+      named_levels: true
 
 {{- if .Values.monitoring.enabled }}
 metrics:
@@ -201,7 +206,7 @@ services:
       - "@wikimedia/kartotherian-tilelive-switch"
       - ../lib/babel
       - ../lib/overzoom
-      - "@kartotherian/tilelive-vector"
+      - "@mapbox/tilelive-vector"
       - "@mapbox/tilejson"
       variables:
         osmdb-pswd: ${KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD}
