@@ -106,8 +106,7 @@ services:
               totalBuckets: 10 # number of buckets in the histogram
               threshold: 0
 
-        # expands name_ json blob into several 
-        name_{code} tags
+        # expands name_ json blob into several name_{code} tags
         genall:
           uri: json2tags://
           params:
