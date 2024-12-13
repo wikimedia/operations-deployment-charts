@@ -16,7 +16,7 @@ app:
   volumes:
     - name: config-volume
       configMap:
-        name: config-{{ .Release.Name }}
+        name: kartotherian-config
   volumeMounts:
     - name: config-volume
       mountPath: /etc/kartotherian
