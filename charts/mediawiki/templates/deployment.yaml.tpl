@@ -1,4 +1,4 @@
-{{ if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) }}
+{{ if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) (not .Values.dumps.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

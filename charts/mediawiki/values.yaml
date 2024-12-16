@@ -464,3 +464,12 @@ mercurius:
 mwcron:
   enabled: false
   labels: {}
+
+dumps:
+  enabled: false
+  persistence:
+    enabled: false
+    claim_name: "mw-dumps-shared-pvc"
+    mount_path: "/mnt/dumps"
+    storage_class: "override_me"
+    size: "10Gi"

@@ -50,15 +50,18 @@
     limits:
 {{ toYaml .Values.php.httpd.limits | indent 6 }}
   volumeMounts:
+  {{- if .Values.mw.httpd.enabled }}
   {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
     # Mount the shared socket volume
   - name: shared-socket
     mountPath: /run/shared
   {{- end }}
+  {{- end }}
   {{- if .Values.debug.php.enabled }}
   - name: {{ $release }}-php-debug
     mountPath: /srv/mediawiki/w/debug
   {{- end }}
+  {{- if .Values.mw.httpd.enabled }}
   # Note: we use subpaths here. Given subpaths are implemented with bind mounts,
   # they won't be updated when the configmap is updated.
   # This is ok because we're re-deploying the pods when that happens.
@@ -75,6 +78,7 @@
   - name: {{ $release }}-httpd-early
     mountPath: /etc/apache2/conf-enabled/00-aaa.conf
     subPath: 00-aaa.conf
+  {{- end }}
   {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
@@ -130,6 +134,7 @@
   env:
   - name: SERVERGROUP
     value: {{ .Values.php.servergroup }}
+  {{- if .Values.mw.httpd.enabled }}
   - name: FCGI_MODE
     value: {{ .Values.php.fcgi_mode }}
   - name: FCGI_URL
@@ -137,6 +142,7 @@
     value: "0.0.0.0:9000"
     {{- else }}
     value: "unix:///run/shared/fpm-www.sock"
+    {{- end }}
     {{- end }}
   - name: PHP__opcache__memory_consumption
     value: "{{ .Values.php.opcache.size }}"
@@ -202,7 +208,7 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
-  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) }}
+  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) (not .Values.dumps.enabled)}}
   # See T276908
   livenessProbe:
   {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
@@ -311,6 +317,10 @@
   - name: {{ $release }}-mercurius-script
     mountPath: /usr/bin/mercurius-wrapper
     subPath: mercurius-wrapper
+  {{- end -}}
+  {{- if (and .Values.dumps.enabled .Values.dumps.persistence.enabled) }}
+  - name: {{ $release }}-dumps
+    mountPath: {{ .Values.dumps.persistence.mount_path }}
   {{- end -}}
 
 {{- if .Values.monitoring.enabled }}

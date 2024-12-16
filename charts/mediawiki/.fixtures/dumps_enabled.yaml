@@ -1,0 +1,8 @@
+dumps:
+  enabled: true
+  persistence:
+    enabled: true
+    claim_name: "mediawiki-dumps-legacy-fs"
+    mount_path: "/mnt/dumpsdata"
+    storage_class: "ceph-cephfs-dumps"
+    size: "10Gi"

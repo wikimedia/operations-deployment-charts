@@ -79,3 +79,12 @@
 {{- end }}
 
 {{ end }}
+
+{{ define "dumps.volume" }}
+{{ $release := include "base.name.release" . }}
+{{- if (and .Values.dumps.enabled .Values.dumps.persistence.enabled) }}
+- name: {{ $release }}-dumps
+  persistentVolumeClaim:
+    claimName: {{ .Values.dumps.persistence.claim_name }}
+{{- end }}
+{{ end }}
