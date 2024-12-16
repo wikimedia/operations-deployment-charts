@@ -40,7 +40,7 @@ services:
         database: gis
         host: {{ .Values.app.geoshapes.endpoint }}
         lineTable: wikidata_relation_members
-        password: ${KARTOTHERIAN_POSTGRES_GEOSHAPES_PASSWORD}
+        password: { env(KARTOTHERIAN_POSTGRES_GEOSHAPES_PASSWORD) }
         polygonTable: wikidata_relation_polygon
         table: planet_osm_polygon
         user: {{ .Values.app.geoshapes.user }}
@@ -209,7 +209,7 @@ services:
       - "@mapbox/tilelive-vector"
       - "@mapbox/tilejson"
       variables:
-        osmdb-pswd: ${KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD}
+        osmdb-pswd: { env(KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD) }
         osmdb-user: {{ .Values.app.osmdb.user }}
       requestHandlers:
       - ../lib/geoshapes
