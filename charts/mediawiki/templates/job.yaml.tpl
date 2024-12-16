@@ -83,6 +83,9 @@ kind: Job
 metadata:
   name: {{ printf "mercurius-%s-%s" $release $mercurius_job | lower | trunc 63 | trimSuffix "-"}}
   {{- include "mw.labels" $ | indent 2 }}
+  annotations:
+    # Keep untracked objects rather than destroy them - preserve jobs after upgrades
+    helm.sh/resource-policy: keep
 spec:
   template:
     metadata:
@@ -106,8 +109,6 @@ spec:
         {{- if $sidecars }}
         pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
         {{- end }}
-        # Keep untracked objects rather than destroy them - preserve jobs after upgrades
-        helm.sh/resource-policy: keep
     spec:
       containers:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
