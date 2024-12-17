@@ -5,11 +5,17 @@ docker:
   pull_policy: IfNotPresent
 
 resources:
-  replicas: 9
+  replicas: 6
 
 app:
   image: wikimedia/mediawiki-services-kartotherian
   version: 2024-12-06-082833-production
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 500m
+    memory: 500Mi
 
 monitoring:
   enabled: true
