@@ -111,7 +111,7 @@
         SetHandler "proxy:{{ .fcgi_endpoint }}"
     </FilesMatch>
 
-    RewriteRule ^/\.well-known/change-password$ /wiki/Special:ChangeCredentials/MediaWiki\\Auth\\PasswordAuthenticationRequest [R=302]
+    RewriteRule ^/\.well-known/change-password$ %{ENV:RW_PROTO}://%{SERVER_NAME}/wiki/Special:ChangeCredentials/MediaWiki\\Auth\\PasswordAuthenticationRequest [R=302]
 </VirtualHost>
 {{ end }}{{/* end vhost */}}
 
