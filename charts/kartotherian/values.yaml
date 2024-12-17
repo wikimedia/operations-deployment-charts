@@ -35,6 +35,7 @@ app:
       path: /osm-intl/6/23/24.png
       port: 6543
       scheme: HTTPS
+  metricsPort: 9102
   metrics:
     statsd_endpoint: localhost
     statsd_port: 9125
@@ -73,24 +74,22 @@ app:
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
+  named_ports: true
   statsd:
     config: |-
       defaults:
         timer_type: histogram
         buckets:
-        - 0.005
         - 0.01
-        - 0.025
         - 0.05
         - 0.1
-        - 0.25
+        - 0.3
         - 0.5
         - 1
         - 2.5
         - 5
         - 10
         - 30
-        - 60
         quantiles:
         - quantile: 0.99
           error: 0.001
@@ -100,7 +99,22 @@ monitoring:
           error: 0.001
         - quantile: 0.5
           error: 0.005
-      mappings: []
+      mappings:
+      - match: kartotherian.req.*.*.*
+        name: kartotherian_req
+        timer_type: histogram
+        buckets:  [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2.5, 5, 10, 30]
+        labels:
+          $1: $2
+          type: $3
+      - match: kartotherian.err.req.*
+        name: kartotherian_err_req
+        labels:
+          type: $1
+      - match: kartotherian.err.marker.*
+        name: kartotherian_err_marker
+        labels:
+          type: $1
 
 service:
   deployment: minikube # production used only in helmfile
