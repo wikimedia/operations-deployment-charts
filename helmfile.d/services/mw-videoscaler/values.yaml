@@ -21,6 +21,8 @@ mercurius:
   # We currently only support one job
   jobs: [webVideoTranscodePrioritized, webVideoTranscode]
   debug: true
+  # Use a dummy timestamp to prevent mercurius appearing in every diff
+  dummy_ts: "mercurius-dummy-timestamp"
   consumer_properties:
     # Set the max.poll.interval.ms consumer property to a large value
     # to avoid partition reassignment when the rule reaches the concurrency
