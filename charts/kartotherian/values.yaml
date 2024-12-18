@@ -78,18 +78,9 @@ monitoring:
   statsd:
     config: |-
       defaults:
-        timer_type: histogram
-        buckets:
-        - 0.01
-        - 0.05
-        - 0.1
-        - 0.3
-        - 0.5
-        - 1
-        - 2.5
-        - 5
-        - 10
-        - 30
+        observer_type: histogram
+        histogram_options:
+          buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60]
         quantiles:
         - quantile: 0.99
           error: 0.001
@@ -100,19 +91,55 @@ monitoring:
         - quantile: 0.5
           error: 0.005
       mappings:
-      - match: kartotherian.req.*.*.*
-        name: kartotherian_req
-        timer_type: histogram
-        buckets:  [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2.5, 5, 10, 30]
+      - match: "kartotherian.req.*.info"
+        name: kartotherian_request_duration_ms
         labels:
-          $1: $2
-          type: $3
-      - match: kartotherian.err.req.*
-        name: kartotherian_err_req
+          source: $1
+          zed: info
+      - match: "kartotherian.req.*.*.*"
+        name: kartotherian_request_duration_ms
+        labels:
+          source: $1
+          zed: $2
+          format: $3
+      - match: "kartotherian.req.*.*.*.*"
+        name: kartotherian_request_duration_ms
+        labels:
+          source: $1
+          zed: $2
+          format: $3
+          scale: $4
+      - match: "kartotherian.req.*.*.*.static.*"
+        name: kartotherian_request_duration_ms
+        labels:
+          source: $1
+          zed: $2
+          format: $3
+          static: $4
+      - match: "kartotherian.err.req.*"
+        name: kartotherian_err_requests_count
         labels:
           type: $1
-      - match: kartotherian.err.marker.*
-        name: kartotherian_err_marker
+      - match: "kartotherian.err.marker.*"
+        name: kartotherian_err_marker_count
+        labels:
+          type: $1
+      - match: "kartotherian.router.*.*.*"
+        name: kartotherian_router_duration_ms
+        labels:
+          path: $1
+          verb: $2
+          response_code: $3
+      - match: "kartotherian.geoshape.*"
+        name: kartotherian_geoshapes_request_duration_ms
+        labels:
+          type: $1
+      - match: "kartotherian.geopoint.*"
+        name: kartotherian_geopoint_request_duration_ms
+        labels:
+          type: $1
+      - match: "kartotherian.geoline.*"
+        name: kartotherian_geoline_request_duration_ms
         labels:
           type: $1
 
