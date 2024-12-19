@@ -340,6 +340,10 @@ namespaces:
         max:
           memory: "32Gi"
           cpu: "16"
+  mediawiki-dumps-legacy:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
 
 istio:
   gateways:
