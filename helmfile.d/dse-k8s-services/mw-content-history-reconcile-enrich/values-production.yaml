@@ -64,6 +64,23 @@ app:
     # to err on the side of caution.
     "restart-strategy.fixed-delay.attempts": "10"
     "restart-strategy.fixed-delay.delay": "180"
+    "state.backend": hashmap
+    "state.checkpoint-storage": filesystem
+    "state.checkpoints.num-retained": "10"
+    "s3.path.style.access": "true"
+    # We need to set an interval in order to trigger checkpointing.
+    # TODO: after gaining some operational experience, set this value to something 
+    # meaningful. Given the small size of kafka offsets (KBs), 30 seconds seems a reasonable
+    # default.
+    "execution.checkpointing.interval": "30000" # 30 seconds.
+    # Have flink-operator periodic savepoints for handling job restarts and upgrades.
+    "kubernetes.operator.periodic.savepoint.interval": 5m
+    # Keep the last 72 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 72h
+    # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
+    "high-availability": KUBERNETES
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
