@@ -30,9 +30,9 @@ mercurius:
     # https://phabricator.wikimedia.org/T356241#10291014.
     # Use a string here to stop helm printing this value in scientific notation
     max.poll.interval.ms: "7200000"
-  # T382630: Initialize the release generation in order to safely transition to
-  # the new job name format (truncated release digest).
-  generation: 0
+  # T382517: Bump the release generation in order to safely add the rsyslog
+  # container to the job template.
+  generation: 1
 
 # we don't need the monitoring bits that come with mediawiki
 monitoring:

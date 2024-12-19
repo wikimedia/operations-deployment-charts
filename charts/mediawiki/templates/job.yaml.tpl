@@ -110,6 +110,9 @@ spec:
         {{- if $.Values.mesh.enabled -}}
           {{- $sidecars = print $release "-tls-proxy" | append $sidecars -}}
         {{- end -}}
+        {{- if $.Values.mw.logging.rsyslog -}}
+          {{- $sidecars = print $release "-rsyslog" | append $sidecars -}}
+        {{- end -}}
         {{- if $sidecars }}
         pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
         {{- end }}
@@ -120,6 +123,7 @@ spec:
       {{- include "mesh.deployment.container" $ | indent 8}}
       {{- $configpath := printf "/etc/mercurius/%s.yaml" $mercurius_job }}
       {{- include "lamp.deployment" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
+      {{- include "rsyslog.deployment" $ | indent 8 }}
       volumes:
       {{- include "mw.volumes" $ | indent 8}}
       # Exiting 0 indicates that mercurius has picked up a new version and will
