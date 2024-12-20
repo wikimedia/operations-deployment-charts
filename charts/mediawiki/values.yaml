@@ -449,3 +449,9 @@ mercurius:
   consumer_properties:
     # avoid processing old jobs on startup
     auto.offset.reset: largest
+  # If set, generation is a suffix that will be appended to the "release
+  # version" used in both constructing the mercurius job name and defining the
+  # release id in config and the release.json control file.
+  # This is useful when a helmfile-only update affecting the job template is
+  # needed, in the absence of an image update.
+  #generation: 0

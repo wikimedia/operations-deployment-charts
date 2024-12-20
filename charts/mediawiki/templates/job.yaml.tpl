@@ -76,6 +76,10 @@ spec:
 {{- if .Values.main_app.image | contains ":" }}
 {{ $release = last (splitList ":" .Values.main_app.image ) }}
 {{- end }}
+{{- if hasKey .Values.mercurius "generation" }}
+{{ $release = print $release "." .Values.mercurius.generation }}
+{{- end }}
+{{ $release = ( sha256sum $release | trunc 10 ) }}
 {{- range $mercurius_job := .Values.mercurius.jobs }}
 ---
 apiVersion: batch/v1

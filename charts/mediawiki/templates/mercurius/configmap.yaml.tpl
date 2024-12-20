@@ -4,6 +4,9 @@
 {{- if .Values.main_app.image | contains ":" }}
 {{ $release = last (splitList ":" .Values.main_app.image ) }}
 {{- end }}
+{{- if hasKey .Values.mercurius "generation" }}
+{{ $release = print $release "." .Values.mercurius.generation }}
+{{- end }}
 {{ $ts := now | date "2006-01-02T15:04:05Z" }}
 {{- if .Values.mercurius.dummy_ts }}
 {{ $ts = .Values.mercurius.dummy_ts }}
