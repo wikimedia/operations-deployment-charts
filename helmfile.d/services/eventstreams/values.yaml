@@ -31,7 +31,7 @@ resources:
 
 main_app:
   name: eventstreams
-  version: v0.9.0
+  version: v0.11.0
 
   requests:
     cpu: 200m
@@ -100,6 +100,10 @@ main_app:
       - mediawiki.revision-tags-change
       - mediawiki.page_change.v1
       - eventgate-main.test.event
+      - rdf-streaming-updater.mutation.v2
+      - rdf-streaming-updater.mutation-main.v2
+      - rdf-streaming-updater.mutation-scholarly.v2
+      - mediainfo-streaming-updater.mutation.v2
     # Before integrating with EventStreamConfig API,
     # stream route to topic name mapping was explicitly declared here.
     # The routes here did not include the 'mediawiki.' prefix
@@ -133,6 +137,26 @@ main_app:
         description: |-
           A test event stream. A new event is posted about once a minute.
         stream_aliases: [test]
+      # These rdf-streaming-updater & mediainfo-streaming-updater streams are "double compute" streams.
+      # We explicitly allow both eqiad & codfw topics but in values-(eqiad|codfw) we set the preferred
+      # topic clients should consume from.
+      # See https://phabricator.wikimedia.org/T382065
+      rdf-streaming-updater.mutation.v2:
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation
+          - codfw.rdf-streaming-updater.mutation
+      rdf-streaming-updater.mutation-main.v2:
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation-main
+          - codfw.rdf-streaming-updater.mutation-main
+      rdf-streaming-updater.mutation-scholarly.v2:
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation-scholarly
+          - codfw.rdf-streaming-updater.mutation-scholarly
+      mediainfo-streaming-updater.mutation.v2:
+        topics_allowed:
+          - eqiad.mediainfo-streaming-updater.mutation
+          - codfw.mediainfo-streaming-updater.mutation
     # Hard-coded redacted page list (from ru:Участник:Lê Lợi (bot)/He protecc)
     # will be updated semi-regularly
     mediawiki_redacted_pages:

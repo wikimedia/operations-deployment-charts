@@ -31,7 +31,7 @@ resources:
 
 main_app:
   name: eventstreams-internal
-  version: v0.9.0
+  version: v0.11.0
 
   requests:
     cpu: 200m
@@ -64,3 +64,32 @@ main_app:
     # Refresh the list of available streams every 5 minutes.
     stream_config_ttl: 300
     stream_ui_enabled: true
+    stream_config_defaults:
+      # These rdf-streaming-updater & mediainfo-streaming-updater streams are "double compute" streams.
+      # We explicitly allow both eqiad & codfw topics, but we arbitrarily set the preferred topic clients should
+      # consume from to eqiad.
+      # See https://phabricator.wikimedia.org/T382065
+      rdf-streaming-updater.mutation.v2:
+        topics:
+          - eqiad.rdf-streaming-updater.mutation
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation
+          - codfw.rdf-streaming-updater.mutation
+      rdf-streaming-updater.mutation-main.v2:
+        topics:
+          - eqiad.rdf-streaming-updater.mutation-main
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation-main
+          - codfw.rdf-streaming-updater.mutation-main
+      rdf-streaming-updater.mutation-scholarly.v2:
+        topics:
+          - eqiad.rdf-streaming-updater.mutation-scholarly
+        topics_allowed:
+          - eqiad.rdf-streaming-updater.mutation-scholarly
+          - codfw.rdf-streaming-updater.mutation-scholarly
+      mediainfo-streaming-updater.mutation.v2:
+        topics:
+          - eqiad.mediainfo-streaming-updater.mutation
+        topics_allowed:
+          - eqiad.mediainfo-streaming-updater.mutation
+          - codfw.mediainfo-streaming-updater.mutation

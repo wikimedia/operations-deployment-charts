@@ -6,3 +6,16 @@ main_app:
   conf:
     kafka:
       metadata.broker.list: kafka-main2006.codfw.wmnet:9093,kafka-main2007.codfw.wmnet:9093,kafka-main2008.codfw.wmnet:9093,kafka-main2009.codfw.wmnet:9093,kafka-main2010.codfw.wmnet:9093
+    stream_config_defaults:
+      rdf-streaming-updater.mutation.v2:
+        topics:
+          - codfw.rdf-streaming-updater.mutation
+      rdf-streaming-updater.mutation-main.v2:
+        topics:
+          - codfw.rdf-streaming-updater.mutation-main
+      rdf-streaming-updater.mutation-scholarly.v2:
+        topics:
+          - codfw.rdf-streaming-updater.mutation-scholarly
+      mediainfo-streaming-updater.mutation.v2:
+        topics:
+          - codfw.mediainfo-streaming-updater.mutation
