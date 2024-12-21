@@ -115,6 +115,7 @@ monitoring:
       cpu: 200m
     config: |-
       defaults:
+        ttl: 30d
         timer_type: histogram
         buckets:
         - 0.005

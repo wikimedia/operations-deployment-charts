@@ -16,6 +16,7 @@ monitoring:
       memory: 400Mi
     config: |-
       defaults:
+        ttl: 30d
         timer_type: histogram
         buckets:
         - 0.005
