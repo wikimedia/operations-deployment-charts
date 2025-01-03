@@ -48,6 +48,9 @@ storageClass:
     clusterID: *clusterid
     fsName: dpe
     pool: cephfs.dpe.data-hdd
+  - name: ceph-cephfs-dumps
+    clusterID: *clusterid
+    fsName: dumps
 
 secret:
   create: true
