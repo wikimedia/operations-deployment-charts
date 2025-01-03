@@ -98,6 +98,7 @@ config:
           # Filter out spans that match any of these conditions.
           - IsMatch(attributes["http.url"], "/wiki/Special:BlankPage$$")
           - IsMatch(attributes["http.url"], "/healthz$$")
+          - IsMatch(attributes["http.url"], "/_info$$")
 
     # Sometimes traces have PII or other sensitive information in them.  Scrub it out.
     transform/scrub:
