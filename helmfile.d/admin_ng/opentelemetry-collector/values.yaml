@@ -112,6 +112,12 @@ config:
             - replace_pattern(attributes["http.url"], "/sessions/v1/([^%]+)%3[Aa]([^%]+)%3[Aa].+", "/sessions/v1/$$1%3A$$2%3A{token}")
             # Note that when using OTTL within the collector's configuration file, $ must be escaped
             # to $$ to bypass environment variable substitution logic.
+        - context: span
+          # Scrub out user IDs from echostore.
+          conditions:
+            - resource.attributes["service.name"] == "echostore"
+          statements:
+            - replace_pattern(attributes["http.url"], "(/echoseen/v1/.*%3[Aa])([0-9]+)$$", "$$1{userid}")
         # 👋 Hello service owner and/or SRE friends!
         # If you have sensitive data in your spans, you can scrub it out here.
         # Make sure to condition on your service name.
