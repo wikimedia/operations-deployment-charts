@@ -51,6 +51,7 @@ storageClass:
   - name: ceph-cephfs-dumps
     clusterID: *clusterid
     fsName: dumps
+    pool: cephfs.dumps.data
 
 secret:
   create: true
