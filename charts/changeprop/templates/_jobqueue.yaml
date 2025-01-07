@@ -1,6 +1,5 @@
 {{- define "jobqueue.app" }}
 {{- $jobrunner_uri  := .Values.main_app.jobqueue.jobrunner_uri -}}
-{{- $videoscaler_uri := .Values.main_app.jobqueue.videoscaler_uri -}}
 
 # service-runner jobqueue app config.yaml.
 spec: &spec
@@ -190,31 +189,6 @@ spec: &spec
 {{- end }}
 {{- end }}
 
-# Videoscaler jobs need to have special rules since then need to go to a different LVS
-{{- range $topic, $topic_config := .Values.main_app.jobqueue.videoscaler_jobs_config }}
-{{- if $topic_config.enabled }}
-              {{ $topic }}:
-                topic: 'mediawiki.job.{{ $topic }}'
-              {{- range $key, $value := $topic_config }}
-                {{- if eq $key "consumer" }}
-                consumer:
-{{ toYaml $value | indent 18 }}
-                {{- else if ne $key "enabled" }}
-                {{ $key }}: {{ $value }}
-                {{- end }}
-              {{- end }}
-                exec:
-                  method: post
-                  uri: '{{ $videoscaler_uri }}'
-                  headers:
-                    content-type: 'application/json'
-                    x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
-                  body: '{{ `{{globals.message}}` }}'
-                  agentOptions:
-                    keepAlive: true
-{{- end }}
-{{- end }}
-
 {{/* TODO: Deduplicate rule definition logic across spec.templates definitions. */}}
 {{- range $topic, $topic_config := .Values.main_app.jobqueue.latency_sensitive_jobs_config }}
 {{- if $topic_config.enabled }}
@@ -253,13 +227,13 @@ spec: &spec
                 {{- range $topic, $topic_config := .Values.main_app.jobqueue.high_traffic_jobs_config }}
                   - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
-                {{- range $topic, $topic_config := .Values.main_app.jobqueue.videoscaler_jobs_config }}
-                  - 'mediawiki.job.{{ $topic }}'
-                {{- end }}
                 {{- range $topic, $topic_config := .Values.main_app.jobqueue.partitioned_jobs_config }}
                   - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
                 {{- range $topic, $topic_config := .Values.main_app.jobqueue.latency_sensitive_jobs_config }}
+                  - 'mediawiki.job.{{ $topic }}'
+                {{- end }}
+                {{- range $topic := .Values.main_app.jobqueue.excluded_jobs }}
                   - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
                 {{- with .Values.main_app.jobqueue.low_traffic_jobs.consumer }}

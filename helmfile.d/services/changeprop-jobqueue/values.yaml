@@ -21,9 +21,12 @@ main_app:
         # T338357
         linger.ms: 20
     jobrunner_uri: https://mw-jobrunner.discovery.wmnet:4448/rpc/RunSingleJob.php
-    videoscaler_uri: https://videoscaler.discovery.wmnet/rpc/RunSingleJob.php
 
     partitioners: true
+
+    # jobs we don't want to process at all
+    # The videotranscode jobs have been moved to use mw-videoscaler and mercurius
+    excluded_jobs: ["webVideoTranscode", "webVideoTranscodePrioritized"]
 
     # All the jobs listed below get their own rule, which transfers to
     # their own processing unit - each type of job listed explicitly is processed
@@ -148,31 +151,6 @@ main_app:
       parsoidCachePrewarm:
         enabled: true
         concurrency: 70
-
-    # Videoscaler jobs point to a different LVS, so they need special treatment
-    # as well - thus special rules.
-    # We retry once - these are expensive jobs, so don't retry too
-    # often, but also account for k8s ephemerality that might
-    # abandon jobs for various reasons.
-    # We also set the max.poll.interval.ms consumer property to a large value
-    # to avoid partition reassignment when the rule reaches the concurrency
-    # limit (and thus will not poll until the next job completes). See
-    # https://phabricator.wikimedia.org/T356241#10291014.
-    videoscaler_jobs_config:
-      webVideoTranscode:
-        enabled: false
-        timeout: 86400000
-        concurrency: 15
-        retry_limit: 1
-        consumer:
-          max.poll.interval.ms: 7200000  # 2h
-      webVideoTranscodePrioritized:
-        enabled: false
-        concurrency: 8
-        timeout: 86400000
-        retry_limit: 1
-        consumer:
-          max.poll.interval.ms: 7200000  # 2h
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:

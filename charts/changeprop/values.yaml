@@ -96,7 +96,21 @@ main_app:
     # changeprop-jobqueue instance. If it's false, we'll assume that
     # we're doing regular changeprop.
     enabled: false
+    partitioners: false
     kafka: {}
+    jobrunner_uri: null
+    # jobs using changeprop's built-in partitioning system
+    partitioned_jobs_config: {}
+    # jobs that require their own config definition outside of the low
+    # traffic defaults
+    high_traffic_jobs_config: {}
+    # latency-sensitive job config - currently functionally identical
+    # to high traffic, but changing in future
+    latency_sensitive_jobs_config: {}
+    # jobs under the mediawiki.job.* hierarchy that we want jobqueue
+    # to completely ignore (unless defined in the other *jobs_config
+    # configs
+    excluded_jobs: []
 
   purge_stream: resource-purge
 
