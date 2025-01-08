@@ -132,6 +132,8 @@ env:
   {{- end }}
   - name: REQUESTS_CA_BUNDLE
     value: /etc/ssl/certs/ca-certificates.crt
+  - name: SCARF_ANALYTICS
+    value: "False"
 {{- end }}
 
 {{- define "app.airflow.env.spark_hadoop" }}
