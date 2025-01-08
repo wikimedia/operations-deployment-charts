@@ -7,7 +7,10 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
-
+  # returns 301 on /, so use another path for probe
+  readiness_probe:
+    httpGet:
+      path: /2024
 mesh:
   enabled: true
   public_port: 4111
