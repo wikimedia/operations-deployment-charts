@@ -9,8 +9,10 @@ config:
       role_mappings:
         airflow-research-ops: [Op]
     config:
-      logging:
-        remote_logging: false
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics-research/airflow-research.discovery.wmnet
   oidc:
     client_id: airflow_research
 
@@ -19,22 +21,12 @@ external_services:
     # The webserver needs access to the analytics PG, as its data hasn't yet been migrated
     # to a dedicated cloudnative PG cluster
     postgresql: [analytics]
-    # The webserver needs access to airflow-research scheduler, as it has not yet been
-    # migrated to Kubernetes
-    airflow: [research]
 
 ingress:
   gatewayHosts:
     default: "airflow-research"
     extraFQDNs:
     - airflow-research.wikimedia.org
-
-kerberos:
-  enabled: false
-
-scheduler:
-  remote_host: an-airflow1002.eqiad.wmnet
-  enabled: false
 
 postgresql:
   cloudnative: false
