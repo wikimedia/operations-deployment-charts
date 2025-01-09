@@ -83,6 +83,8 @@ app:
     "kubernetes.operator.savepoint.history.max.age": 72h
     # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
     "high-availability": KUBERNETES
+    # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
+    "high-availability.storageDir": "s3://mw-content-history-reconcile-enrich-next.dse-k8s-eqiad/staging/high-availability"
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
@@ -103,6 +105,7 @@ discovery:
 
 external_services:
   kafka:  [test-eqiad]
+  s3: [eqiad-dpe]
 
 flink:
   object_store:
