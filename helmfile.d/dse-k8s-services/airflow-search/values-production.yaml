@@ -2,39 +2,19 @@ config:
   airflow:
     dags_folder: search
     instance_name: search
-    dbHost: an-db1001.eqiad.wmnet
-    dbName: airflow_search
-    dbUser: airflow_search
     auth:
       role_mappings:
         airflow-search-ops: [Op]
     config:
-      logging:
-        remote_logging: false
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics-search/airflow-search.discovery.wmnet
   oidc:
     client_id: airflow_search
-
-external_services:
-  webserver:
-    # The webserver needs access to the analytics PG, as its data hasn't yet been migrated
-    # to a dedicated cloudnative PG cluster
-    postgresql: [analytics]
-    # The webserver needs access to airflow-search scheduler, as it has not yet been
-    # migrated to Kubernetes
-    airflow: [search]
 
 ingress:
   gatewayHosts:
     default: "airflow-search"
     extraFQDNs:
     - airflow-search.wikimedia.org
-
-kerberos:
-  enabled: false
-
-scheduler:
-  remote_host: an-airflow1005.eqiad.wmnet
-  enabled: false
-
-postgresql:
-  cloudnative: false
