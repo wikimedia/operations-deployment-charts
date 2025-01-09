@@ -1,0 +1,9 @@
+cluster:
+  initdb:
+    import:
+      host: an-db1001.eqiad.wmnet
+      user: airflow_search
+      dbname: airflow_search
+
+external_services:
+  postgresql: [analytics]
