@@ -46,10 +46,11 @@ query:
     es-archive.num-replicas: 2
     es-archive.num-shards: 1
     es-archive.tags-as-fields.all: true
+  replicaCount: 2
   resources:
     limits:
       cpu: 2
-      memory: 1Gi
+      memory: 4Gi
   agentSidecar:
     enabled: false
   serviceAccount:
