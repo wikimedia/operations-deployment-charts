@@ -32,6 +32,8 @@ mercurius:
     max.poll.interval.ms: "7200000"
   # Bump the release generation in order to safely add envoy telemetry annotations.
   generation: 2
+  # workers *roughly* corresponds to maximum parallel encodes per-job.
+  workers: 10
 
 # we don't need the monitoring bits that come with mediawiki
 monitoring:

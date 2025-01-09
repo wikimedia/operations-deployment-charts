@@ -47,7 +47,17 @@ resources:
   # 64GB memory requested
   # 96GB memory limit
   # Including the sidecars, the limit is effectively 160 for CPU alone
-  replicas: 48
+
+  # This number should loosely track with the mw-videoscaler
+  # mercurius.workers value. The theoretical maximum of parallel jobs
+  # is len(mercurius.jobs) * mercurius.workers, but in reality we'll
+  # need a fudge factor of a few instances in order to satisfy
+  # situations where a retiring mercurius instance still has to finish
+  # a few jobs while the new worker takes over on processing new
+  # jobs. The pathological case is actually twice the theoretical
+  # maximum but this is unlikely to be hit if there are enough
+  # existing workers processing jobs during a rollover of mw-videoscaler
+  replicas: 30
 
 networkpolicy:
   egress:
