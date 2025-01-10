@@ -293,6 +293,34 @@ main_app:
         anon_limit: 50000
         default_limit: 100000
 
+    lw_inference_reference_need:
+      tls: true
+      port: 30443
+      timeout: 30s
+      path: 'lw/inference/v1/models/reference-need(:|%3A|%3a)predict'
+      host: 'reference-quality.revision-models.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
+      internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 50000
+        default_limit: 100000
+
+    lw_inference_reference_risk:
+      tls: true
+      port: 30443
+      timeout: 30s
+      path: 'lw/inference/v1/models/reference-risk(:|%3A|%3a)predict'
+      host: 'reference-quality.revision-models.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
+      internal_host: inference.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      ratelimit_config:
+        anon_limit: 50000
+        default_limit: 100000
+
   aqs:
     device_analytics:
       path: unique-devices
