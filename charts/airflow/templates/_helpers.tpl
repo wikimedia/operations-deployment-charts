@@ -366,6 +366,25 @@ env:
 {{- end }}
 {{- end }}
 
+{{- define "airflow.worker.extra-config-resource-name" -}}
+airflow-worker-extra-configuration{{ .directory | replace "/" "-" }}
+{{- end -}}
+
+{{- define "airflow.worker.extra-config-volumes" }}
+{{- range $directory, $config := $.Values.worker.config.extra_files }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+  configMap:
+    name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+{{- end }}
+{{- end }}
+
+{{- define "airflow.worker.extra-config-volume-mounts" }}
+{{- range $directory, $config := $.Values.worker.config.extra_files }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+  mountPath: {{ $directory }}
+{{- end }}
+{{- end }}
+
 {{- define "kubernetes-executor.pod-template" -}}
 apiVersion: v1
 kind: Pod
@@ -391,6 +410,7 @@ spec:
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos" "keytab")) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
+    {{- include "airflow.worker.extra-config-volume-mounts" .Root | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 
@@ -412,6 +432,7 @@ spec:
     imagePullPolicy: IfNotPresent
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" true "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
+    {{- include "airflow.worker.extra-config-volume-mounts" .Root | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 {{- end }}

@@ -21,3 +21,10 @@ ingress:
     default: "airflow-ci"
     extraFQDNs:
     - airflow-ci.wikimedia.org
+
+worker:
+  config:
+    extra_files:
+      "/etc/refinery":
+        event_intake_service_urls.yaml: |
+          eventgate-ci: https://eventgate-ci.discovery.wmnet:4492/v1/events
