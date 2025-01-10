@@ -45,12 +45,10 @@ releases:
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["get", "list", "watch"]
-        # We use the default system:monitoring for access to
-        # /metrics. However, this isn't enough and we also need a ClusterRole to
-        # allow listing/getting/watching various cluster resources
-        # NOTE: Upstream, at https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/rbac.md
+        # We use the default system:monitoring for access to the control-plane monitoring endpoints.
+        # However, this isn't enough and we also need a ClusterRole to allow listing/getting/watching various cluster resources
+        # NOTE: Upstream, at https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/platform/rbac.md
         # has the following differences:
-        # * List on nodes/metrics,which is covered by system:monitoring in our case
         # * Get on all configmaps, (to manage to start), we don't need that
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -60,15 +58,23 @@ releases:
           - apiGroups: [""]
             resources:
             - nodes
+            - nodes/metrics
             - services
             - endpoints
             - pods
+            verbs: ["get", "list", "watch"]
+          - apiGroups:
+            - discovery.k8s.io
+            resources:
+            - endpointslices
             verbs: ["get", "list", "watch"]
           - apiGroups:
             - networking.k8s.io
             resources:
             - ingresses
             verbs: ["get", "list", "watch"]
+          - nonResourceURLs: ["/metrics"]
+            verbs: ["get"]
         ## Used by imagecatalog
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
