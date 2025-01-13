@@ -101,6 +101,12 @@ spec:
       annotations:
         # Scrape our metrics port
         prometheus.io/scrape_by_name: "true"
+        {{ if and $.Values.mesh.enabled $.Values.mesh.telemetry.enabled -}}
+        # TODO: T382630 - Replace with mesh.name.annotations when we have an
+        # automatic solution for helmfile-only changes.
+        envoyproxy.io/scrape: "true"
+        envoyproxy.io/port: "{{ $.Values.mesh.telemetry.port }}"
+        {{- end }}
         # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
         # if sidecars are still running.
         # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
