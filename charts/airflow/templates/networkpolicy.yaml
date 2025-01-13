@@ -69,17 +69,30 @@ spec:
 {{/*
   When using the Kubernetes executor, the scheduler needs to have access to the kube API
   to manage tasks via Pod resources, and the webserver needs to be able to tail the logs
-  of running Pods.
+  of running Pods. In addition to this, task pods need access to the kube API when using
+  the KubernetesPodOperator, SparkKubernetesOperator, or similar.
 */}}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ template "base.name.release" . }}-to-kubapi
+  name: {{ template "base.name.release" . }}-to-kubeapi
 spec:
   types:
     - Egress
-  selector: "app == 'airflow' && component in { 'scheduler', 'webserver' }"
+  selector: >
+    app == 'airflow'&& (
+      component in { 'scheduler', 'webserver' } ||
+      ( component == 'task-pod' &&
+        operator in (
+          'KubernetesPodOperator',
+          'KubernetesJobOperator',
+          'KubernetesDeleteJobOperator',
+          'KubernetesPatchJobOperator',
+          'SparkKubernetesOperator'
+        )
+      )
+    )
   egress:
     - action: Allow
       destination:
