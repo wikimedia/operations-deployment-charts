@@ -82,14 +82,10 @@ spec:
     - Egress
   selector: >
     app == 'airflow'&& (
-      component in { 'scheduler', 'webserver' } ||
-      ( component == 'task-pod' &&
-        operator in (
-          'KubernetesPodOperator',
-          'KubernetesJobOperator',
-          'KubernetesDeleteJobOperator',
-          'KubernetesPatchJobOperator',
-          'SparkKubernetesOperator'
+      component in { 'scheduler', 'webserver' } || (
+        component == 'task-pod' && (
+          kubernetes_pod_operator == 'True' ||
+          spark_kubernetes_operator == 'True'
         )
       )
     )
