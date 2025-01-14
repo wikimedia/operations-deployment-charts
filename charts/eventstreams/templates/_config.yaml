@@ -1,6 +1,9 @@
 {{- define "config.app" -}}
 # service-runner EventStreams app config.yaml.
 
+# Required for service-utils
+service_name: {{ .Values.main_app.name }}
+
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
