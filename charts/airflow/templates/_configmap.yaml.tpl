@@ -160,9 +160,10 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
+  {{/* This script outputs the URI used to connect to PGBouncer, using a service FQDN */}}
   pg_pooler_uri: |
     #!/bin/sh
-    printf ${PG_URI} | sed "s/$PG_HOST/$POOLER_NAME/"
+    printf ${PG_URI} | sed "s/$PG_HOST/$POOLER_NAME/" | sed "s/{{ $.Release.Namespace }}:5432/{{ $.Release.Namespace }}.svc.cluster.local:5432/"
 
 {{- end }}
 
