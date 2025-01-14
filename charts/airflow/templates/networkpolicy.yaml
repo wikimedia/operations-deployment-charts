@@ -80,15 +80,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: >
-    app == 'airflow'&& (
-      component in { 'scheduler', 'webserver' } || (
-        component == 'task-pod' && (
-          kubernetes_pod_operator == 'True' ||
-          spark_kubernetes_operator == 'True'
-        )
-      )
-    )
+  selector: "app == 'airflow' && component in { 'scheduler', 'webserver' }"
   egress:
     - action: Allow
       destination:
