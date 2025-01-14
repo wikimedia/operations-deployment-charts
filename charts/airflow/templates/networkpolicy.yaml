@@ -69,8 +69,7 @@ spec:
 {{/*
   When using the Kubernetes executor, the scheduler needs to have access to the kube API
   to manage tasks via Pod resources, and the webserver needs to be able to tail the logs
-  of running Pods. In addition to this, task pods need access to the kube API when using
-  the KubernetesPodOperator, SparkKubernetesOperator, or similar.
+  of running Pods.
 */}}
 ---
 apiVersion: crd.projectcalico.org/v1
@@ -87,10 +86,29 @@ spec:
         services:
           name: kubernetes
           namespace: default
+
+{{/*
+  Tasks may now be exectuted with the KubernetesPodOperator or the SpakrKubernetesOperator.
+  These task-pods need to be able to access the Kubernetes API. The operators themselves add
+  a label to indicate that they were executed using this.
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-task-pods-to-kubeapi
+spec:
+  types:
+    - Egress
+  selector: "app == 'airflow' && component == 'task-pod' && ( kubernetes_pod_operator == 'True' || spark_kubernetes_operator == 'True')"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
 {{- end }}
 {{- end }}
-
-
 {{/*
 == NetworkPolicy resources associated with external (aka not running in Kubernetes) services.
 
