@@ -100,7 +100,13 @@ metadata:
 spec:
   types:
     - Egress
-  selector: "app == 'airflow' && component == 'task-pod' && ( kubernetes_pod_operator == 'True' || spark_kubernetes_operator == 'True')"
+  selector: >
+    app == 'airflow' && component == 'task-pod' && operator in (
+      'KubernetesPodOperator',
+      'KubernetesJobOperator',
+      'KubernetesDeleteJobOperator',
+      'KubernetesPatchJobOperator',
+      'SparkKubernetesOperator' )
   egress:
     - action: Allow
       destination:
