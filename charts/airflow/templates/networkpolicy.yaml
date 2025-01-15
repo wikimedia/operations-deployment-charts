@@ -88,7 +88,7 @@ spec:
           namespace: default
 
 {{/*
-  Tasks may now be exectuted with the KubernetesPodOperator or the SpakrKubernetesOperator.
+  Tasks may now be executed with the KubernetesPodOperator or the SparkKubernetesOperator.
   These task-pods need to be able to access the Kubernetes API. The operators themselves add
   a label to indicate that they were executed using this.
 */}}
@@ -100,13 +100,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: >
-    app == 'airflow' && component == 'task-pod' && operator in (
-      'KubernetesPodOperator',
-      'KubernetesJobOperator',
-      'KubernetesDeleteJobOperator',
-      'KubernetesPatchJobOperator',
-      'SparkKubernetesOperator' )
+  selector: "app == 'airflow' && component == 'task-pod' && kubeapi_enabled == 'True'"
   egress:
     - action: Allow
       destination:

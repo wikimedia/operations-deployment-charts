@@ -199,46 +199,50 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-kubernetes-executor-pod-template
+  name: airflow-kubernetes-pod-templates
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  pod_template.yaml: |
+  {{/*
+    This template is used by the Kubernetes Executor to create task pods spec.
+    This is the executor default template, the path to which is set in airflow.cfg
+    cf https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/kubernetes_executor.html#example-pod-templates
+  */}}
+  kubernetes_executor_default_pod_template.yaml: |
+    {{- include "kubernetes-executor.pod-template" (dict "profile" "default" "Root" . ) | nindent 4 }}
+
+  {{/*
+    This template is used by the Kubernetes Executor to create task pods themselves having permission to create children Pods.
+    This is useful for task pods using the KubernetesPodOperator, or SparkKubernetesOperator, for example.
+  */}}
+  kubernetes_executor_pod_template_kubeapi_enabled.yaml: |
+    {{- include "kubernetes-executor.pod-template" (dict "profile" "kubeapi" "Root" . ) | nindent 4 }}
+
+  {{/*
+    This template is used by the KubernetesPodOperator to construct a Pod spec from within a dag task.
+    This is useful to get a DAG task to run non python code, for example the mediawiki dump CLI, etc.
+    cf https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/operators.html#kubernetespodoperator
+  */}}
+  kubernetes_pod_operator_pod_template.yaml: |
     ---
     apiVersion: v1
     kind: Pod
     metadata:
-      name: overriden-at-runtime
       labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: task-pod
     spec:
       restartPolicy: Never
-      {{- include "airflow.pod.host_aliases" . | indent 6 }}
       containers:
       - name: base
         image: {{ template "executor_pod._image" . }}
         imagePullPolicy: IfNotPresent
-        {{- include "app.airflow.env" . | indent 8 }}
-        {{- include "app.airflow.env.spark_hadoop" . | indent 10 }}
-        {{- with .Values.app.volumeMounts }}
-        volumeMounts:
-        {{- toYaml . | nindent 8 }}
-        {{- if $.Values.kerberos.enabled }}
-        - name: airflow-kerberos-token
-          mountPath: /etc/kerberos/airflow_krb5_ccache
-        {{- end }}
-        {{- toYaml $.Values.worker.volumeMounts | nindent 8 }}
-        {{- end }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         resources:
           requests:
           {{- toYaml .Values.worker.resources.requests | nindent 12 }}
           limits:
           {{- toYaml .Values.worker.resources.limits | nindent 12 }}
-      volumes:
-      {{- include "app.generic.volume" . | indent 6 }}
-      {{- toYaml $.Values.worker.volumes | nindent 6 }}
 
 {{- end }}
 

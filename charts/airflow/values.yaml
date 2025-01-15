@@ -46,9 +46,9 @@ app:
   - name: airflow-connections-variables
     secret:
       secretName: airflow-connections-variables
-  - name: airflow-kubernetes-executor-pod-template
+  - name: airflow-kubernetes-pod-templates
     configMap:
-      name: airflow-kubernetes-executor-pod-template
+      name: airflow-kubernetes-pod-templates
   - name: logs
     emptyDir: {}
   - name: airflow-dags
@@ -80,9 +80,8 @@ app:
   - name: airflow-dags
     readOnly: true
     mountPath: &dags_root /opt/airflow/dags
-  - name: airflow-kubernetes-executor-pod-template
-    mountPath: &pod_template_file /opt/airflow/pod_templates/pod_template.yaml
-    subPath: pod_template.yaml
+  - name: airflow-kubernetes-pod-templates
+    mountPath: /opt/airflow/pod_templates
   - name: airflow-kerberos-keytab
     mountPath: /etc/kerberos/keytabs
     readOnly: true
@@ -151,7 +150,7 @@ config:
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
-        pod_template_file: *pod_template_file
+        pod_template_file: /opt/airflow/pod_templates/kubernetes_executor_default_pod_template.yaml
         worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.executor_pod_image }}"
         worker_container_tag: "{{ $.Values.app.executor_pod_image_version }}"
       logging:

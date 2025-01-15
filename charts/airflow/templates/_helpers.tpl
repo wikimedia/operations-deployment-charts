@@ -261,3 +261,48 @@ hostAliases:
   - {{ $hostname}}
 {{- end }}
 {{- end }}
+
+
+{{- define "kubernetes-executor.pod-template" -}}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: overriden-at-runtime
+  labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
+    {{- include "base.meta.pod_labels" .Root | indent 4 }}
+    component: task-pod
+    {{- if eq .profile "kubeapi" }}
+    kubeapi_enabled: 'True' {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to talk to the kube API */}}
+    {{- end }}
+spec:
+  restartPolicy: Never
+  {{- include "airflow.pod.host_aliases" .Root | indent 2 }}
+  containers:
+  - name: base
+    image: {{ template "executor_pod._image" .Root }}
+    imagePullPolicy: IfNotPresent
+    {{- if eq .profile "kubeapi" }}
+    serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
+    {{- end }}
+    {{- include "app.airflow.env" .Root | indent 4 }}
+    {{- include "app.airflow.env.spark_hadoop" .Root | indent 6 }}
+    {{- with .Root.Values.app.volumeMounts }}
+    volumeMounts:
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if .Root.Values.kerberos.enabled }}
+    - name: airflow-kerberos-token
+      mountPath: /etc/kerberos/airflow_krb5_ccache
+    {{- toYaml .Root.Values.worker.volumeMounts | nindent 4 }}
+    {{- end }}
+    {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
+    resources:
+      requests:
+      {{- toYaml .Root.Values.worker.resources.requests | nindent 8 }}
+      limits:
+      {{- toYaml .Root.Values.worker.resources.limits | nindent 8 }}
+  volumes:
+  {{- include "app.generic.volume" .Root | indent 2 }}
+  {{- toYaml .Root.Values.worker.volumes | nindent 2 }}
+{{- end }}
