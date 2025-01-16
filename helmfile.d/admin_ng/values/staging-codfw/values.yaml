@@ -1,4 +1,10 @@
-kubernetesVersion: "1.23"
+kubernetesVersion: "1.31"
+
+chartVersions:
+  wmf-stable/calico: ~
+  wmf-stable/calico-crds: ~
+  wmf-stable/coredns: ~
+  wmf-stable/cert-manager: ~
 
 # Configure the default PodSecurityStandard settings, see: T273507
 PodSecurityStandard:

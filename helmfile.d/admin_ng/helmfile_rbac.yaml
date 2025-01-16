@@ -22,6 +22,7 @@ releases:
               resources: ["gateways", "virtualservices", "destinationrules"]
               verbs: ["get", "list", "watch"]
             {{- end }}
+            # TODO: Can be removed once all clusters are on k8s 1.31 as the new cert-manager version ships this rule.
             {{- if hasKey .Environment.Values "install_cert_manager" }}
             - apiGroups: ["cert-manager.io"]
               resources: ["certificates"]
