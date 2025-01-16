@@ -364,3 +364,27 @@ spec:
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 
 {{- end }}
+
+{{- define "kubernetes-pod-operator.pod-template" }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
+    {{- include "base.meta.pod_labels" .Root | indent 4 }}
+    component: task-pod
+spec:
+  restartPolicy: Never
+  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles) | nindent 6 }}
+  containers:
+  - name: base
+    image: {{ template "executor_pod._image" .Root }}
+    imagePullPolicy: IfNotPresent
+    {{- if has "hadoop" .profiles }}
+    env:
+    {{- include "app.airflow.env.spark_hadoop" .Root | nindent 4 }}
+    {{- end }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 6 }}
+    {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
+    {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
+{{- end }}

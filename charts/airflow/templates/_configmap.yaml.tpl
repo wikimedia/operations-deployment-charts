@@ -219,30 +219,20 @@ data:
     {{- include "kubernetes-executor.pod-template" (dict "profile" "kubeapi" "Root" . ) | nindent 4 }}
 
   {{/*
-    This template is used by the KubernetesPodOperator to construct a Pod spec from within a dag task.
+    This template is used by the KubernetesPodOperator to construct a Pod specs from within a dag task.
     This is useful to get a DAG task to run non python code, for example the mediawiki dump CLI, etc.
     cf https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/operators.html#kubernetespodoperator
   */}}
-  kubernetes_pod_operator_pod_template.yaml: |
-    ---
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
-        {{- include "base.meta.pod_labels" . | indent 8 }}
-        component: task-pod
-    spec:
-      restartPolicy: Never
-      containers:
-      - name: base
-        image: {{ template "executor_pod._image" . }}
-        imagePullPolicy: IfNotPresent
-        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
-        resources:
-          requests:
-          {{- toYaml .Values.worker.resources.requests | nindent 12 }}
-          limits:
-          {{- toYaml .Values.worker.resources.limits | nindent 12 }}
+  kubernetes_pod_operator_default_pod_template.yaml: |
+    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" (list) "Root" . ) | nindent 4 }}
+
+  {{/*
+    This template is used by the KubernetesPodOperator to construct a Pod specs for pods that need
+    access to hadoop.
+  */}}
+  kubernetes_pod_operator_hadoop_pod_template.yaml: |
+    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" (list "kerberos" "hadoop") "Root" . ) | nindent 4 }}
+
 
 {{- end }}
 
