@@ -1,0 +1,22 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: calico-config
+  namespace: kube-system
+  labels:
+    {{- include "calico.labels" $ | nindent 4 }}
+data:
+  {{ with .Values.bpf -}}
+  # Set these to the IP and port of your API server; In BPF mode, we need to connect directly to the
+  # API server because we take over kube-proxy's role.
+  kubernetes_service_host: {{ .kubernetesServiceHost | quote }}
+  kubernetes_service_port: {{ .kubernetesServicePort | quote }}
+  {{ end -}}
+  # You must set a non-zero value for Typha replicas below.
+  typha_service_name: "calico-typha"
+  # Configure the backend to use.
+  calico_backend: "bird"
+  # Configure the MTU to use for workload interfaces and tunnels.
+  # By default, MTU is auto-detected, and explicitly setting this field should not be required.
+  # You can override auto-detection by providing a non-zero value.
+  veth_mtu: "0"

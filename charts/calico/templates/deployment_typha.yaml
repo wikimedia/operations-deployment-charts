@@ -12,6 +12,19 @@ spec:
     matchLabels:
       k8s-app: calico-typha
       {{- include "calico.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      # 100% surge allows a complete up-level set of typha instances to start and become ready,
+      # which in turn allows all the back-level typha instances to start shutting down. This
+      # means that connections tend to bounce directly from a back-level instance to an up-level
+      # instance.
+      maxSurge: 100%
+      # In case the cluster is unable to schedule extra surge instances, allow at most one instance
+      # to shut down to make room. You can set this to 0 if you're sure there'll always be enough room to
+      # schedule extra typha instances during an upgrade (because setting it to 0 blocks shutdown until
+      # up-level typha instances are online and ready).
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       annotations:
@@ -22,22 +35,52 @@ spec:
         k8s-app: calico-typha
         {{- include "calico.labels" . | nindent 8 }}
     spec:
+      # Since Calico can't network a pod until Typha is up, we need to run Typha itself
+      # as a host-networked pod.
+      hostNetwork: true
+      # Typha supports graceful shut down, disconnecting clients slowly during the grace period.
+      # The TYPHA_SHUTDOWNTIMEOUTSECS env var should be kept in sync with this value.
+      terminationGracePeriodSeconds: {{ .Values.typha.shutdownTimeoutSeconds }}
+      tolerations:
+        # Mark the pod as a critical add-on for rescheduling.
+        - key: CriticalAddonsOnly
+          operator: Exists
+      {{- with .Values.typha.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: calico-node
-      # Since Calico can't network a pod until Typha is up, we need to run Typha itself
-      # as a host-networked pod.
-      hostNetwork: true
       priorityClassName: system-cluster-critical
+      # fsGroup allows using projected serviceaccount tokens as described here kubernetes/kubernetes#82573
       securityContext:
         fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: calico-typha
           image: "{{ .Values.image.repository }}/{{ .Values.typha.imageName }}:v{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5473
+              name: calico-typha
+              protocol: TCP
           env:
+            {{- if .Values.bpf }}
+            # Overrides for kubernetes API server host/port. Needed in BPF mode.
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: kubernetes_service_host
+            - name: KUBERNETES_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: kubernetes_service_port
+            {{- end }}
             # Enable "info" logging by default. Can be set to "debug" to increase verbosity.
             - name: TYPHA_LOGSEVERITYSCREEN
               value: "info"
@@ -59,6 +102,8 @@ spec:
               value: "true"
             - name: TYPHA_PROMETHEUSMETRICSPORT
               value: "9093"
+            - name: TYPHA_SHUTDOWNTIMEOUTSECS
+              value: {{ .Values.typha.shutdownTimeoutSeconds | quote }}
             # Location of the CA bundle Typha uses to authenticate calico/node; volume mount
             #- name: TYPHA_CAFILE
             #  value: /calico-typha-ca/typhaca.crt
@@ -71,10 +116,6 @@ spec:
             # Location of the server certificate key for Typha; volume mount
             #- name: TYPHA_SERVERKEYFILE
             #  value: /calico-typha-certs/typha.key
-          ports:
-            - containerPort: 5473
-              name: calico-typha
-              protocol: TCP
           livenessProbe:
             httpGet:
               path: /liveness
@@ -83,6 +124,9 @@ spec:
             periodSeconds: 30
             initialDelaySeconds: 30
             timeoutSeconds: 10
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
           readinessProbe:
             httpGet:
               path: /readiness
@@ -90,9 +134,6 @@ spec:
               host: localhost
             periodSeconds: 10
             timeoutSeconds: 10
-          securityContext:
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
           resources:
             {{- toYaml .Values.typha.resources | nindent 12 }}
       nodeSelector:
@@ -102,13 +143,6 @@ spec:
       {{- end }}
       {{- with .Values.typha.affinity }}
       affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      tolerations:
-        # Mark the pod as a critical add-on for rescheduling.
-        - key: CriticalAddonsOnly
-          operator: Exists
-      {{- with .Values.typha.tolerations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
 ---

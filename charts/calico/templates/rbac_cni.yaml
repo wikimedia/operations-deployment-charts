@@ -1,17 +1,7 @@
-{{- /*
- No service account here as calico-cni runs on the host and needs
- an kube_config with token.
- The calico-cni user needs to be added to the hiera key:
- k8s_infrastructure_users:
-   calico-cni:
-     id: XY
-     token: snakeoil
-     type: calico
-*/}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: calico-cni
+  name: calico-cni-plugin
 rules:
   # The CNI plugin needs to get pods, nodes, and namespaces.
   - apiGroups: [""]
@@ -33,31 +23,29 @@ rules:
       - blockaffinities
       - ipamblocks
       - ipamhandles
+      - clusterinformations
+      - ippools
       - ipreservations
+      - ipamconfigs
     verbs:
       - get
       - list
       - create
       - update
       - delete
-  - apiGroups: ["crd.projectcalico.org"]
-    resources:
-      - ipamconfigs
-      - clusterinformations
-      - ippools
-    verbs:
-      - get
-      - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: calico-cni
+  name: calico-cni-plugin
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: calico-cni
+  name: calico-cni-plugin
 subjects:
+# Instead of a ServiceAccount (like upstream), we are binding the calico-cni user to the calico-cni-plugin role.
+# Upstream uses a ServiceAccount as the CNI plugin is installed and managed by calico-node. In our case, we
+# manage the CNI plugin via puppet and authenticate using a client cert.
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: calico-cni

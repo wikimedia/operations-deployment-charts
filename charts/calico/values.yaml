@@ -62,6 +62,15 @@ GlobalNetworkPolicies: {}
 # Toggle IPv6 support in calico components
 IPv6Support: true
 
+# To enable BPF mode, set kubernetesServiceHost and kubernetesServicePort
+# to the IP and port of the Kubernetes API server LVS endpoint.
+# Since BPF mode replaces kube-proxy, it needs to connect directly to the API server.
+# See https://docs.tigera.io/calico/latest/operations/ebpf/enabling-ebpf
+# bpf:
+#  kubernetesServiceHost: ""
+#  kubernetesServicePort: ""
+bpf: {}
+
 # Typha
 typha:
   imageName: calico/typha
@@ -75,6 +84,8 @@ typha:
       memory: 150Mi
   tolerations: {}
   nodeSelector: {}
+  # Typha supports graceful shut down, disconnecting clients slowly during the grace period.
+  shutdownTimeoutSeconds: 300
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

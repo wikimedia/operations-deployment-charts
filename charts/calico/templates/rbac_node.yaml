@@ -50,6 +50,13 @@ rules:
     verbs:
       - watch
       - list
+  # Watch for changes to Kubernetes AdminNetworkPolicies.
+  - apiGroups: ["policy.networking.k8s.io"]
+    resources:
+      - adminnetworkpolicies
+    verbs:
+      - watch
+      - list
   # Used by Calico for policy information.
   - apiGroups: [""]
     resources:
@@ -65,6 +72,7 @@ rules:
       - globalfelixconfigs
       - felixconfigurations
       - bgppeers
+      - bgpfilters
       - globalbgpconfigs
       - bgpconfigurations
       - ippools
@@ -80,10 +88,17 @@ rules:
       - hostendpoints
       - blockaffinities
       - caliconodestatuses
+      - tiers
     verbs:
       - get
       - list
       - watch
+   # Calico creates some tiers on startup.
+  - apiGroups: ["crd.projectcalico.org"]
+    resources:
+      - tiers
+    verbs:
+      - create
   # Calico must create and update some CRDs on startup.
   - apiGroups: ["crd.projectcalico.org"]
     resources:
@@ -94,7 +109,7 @@ rules:
       - create
       - update
   # Calico must update some CRDs.
-  - apiGroups: [ "crd.projectcalico.org" ]
+  - apiGroups: ["crd.projectcalico.org"]
     resources:
       - caliconodestatuses
     verbs:
@@ -107,11 +122,14 @@ rules:
       - get
       - list
       - watch
+  # The CNI plugin and calico/node need to be able to create a default
+  # IPAMConfiguration
   - apiGroups: ["crd.projectcalico.org"]
     resources:
       - ipamconfigs
     verbs:
       - get
+      - create
   # Block affinities must also be watchable by confd for route aggregation.
   - apiGroups: ["crd.projectcalico.org"]
     resources:
