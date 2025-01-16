@@ -1,4 +1,4 @@
-# Source: crds/calico/crd.projectcalico.org_hostendpoints.yaml
+# Source: crds/crd.projectcalico.org_hostendpoints.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -10,6 +10,7 @@ spec:
     listKind: HostEndpointList
     plural: hostendpoints
     singular: hostendpoint
+  preserveUnknownFields: false
   scope: Cluster
   versions:
   - name: v1
@@ -105,4 +106,3 @@ status:
     plural: ""
   conditions: []
   storedVersions: []
-

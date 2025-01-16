@@ -1,4 +1,4 @@
-# Source: crds/calico/crd.projectcalico.org_networkpolicies.yaml
+# Source: crds/crd.projectcalico.org_networkpolicies.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -10,6 +10,7 @@ spec:
     listKind: NetworkPolicyList
     plural: networkpolicies
     singular: networkpolicy
+  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - name: v1
@@ -779,23 +780,36 @@ spec:
               order:
                 description: Order is an optional field that specifies the order in
                   which the policy is applied. Policies with higher "order" are applied
-                  after those with lower order.  If the order is omitted, it may be
-                  considered to be "infinite" - i.e. the policy will be applied last.  Policies
-                  with identical order will be applied in alphanumerical order based
-                  on the Policy "Name".
+                  after those with lower order within the same tier.  If the order
+                  is omitted, it may be considered to be "infinite" - i.e. the policy
+                  will be applied last.  Policies with identical order will be applied
+                  in alphanumerical order based on the Policy "Name" within the tier.
                 type: number
+              performanceHints:
+                description: "PerformanceHints contains a list of hints to Calico's
+                  policy engine to help process the policy more efficiently.  Hints
+                  never change the enforcement behaviour of the policy. \n Currently,
+                  the only available hint is \"AssumeNeededOnEveryNode\".  When that
+                  hint is set on a policy, Felix will act as if the policy matches
+                  a local endpoint even if it does not. This is useful for \"preloading\"
+                  any large static policies that are known to be used on every node.
+                  If the policy is _not_ used on a particular node then the work done
+                  to preload the policy (and to maintain it) is wasted."
+                items:
+                  type: string
+                type: array
               selector:
-                description: "The selector is an expression used to pick pick out
-                  the endpoints that the policy should be applied to. \n Selector
-                  expressions follow this syntax: \n \tlabel == \"string_literal\"
-                  \ ->  comparison, e.g. my_label == \"foo bar\" \tlabel != \"string_literal\"
-                  \  ->  not equal; also matches if label is not present \tlabel in
-                  { \"a\", \"b\", \"c\", ... }  ->  true if the value of label X is
-                  one of \"a\", \"b\", \"c\" \tlabel not in { \"a\", \"b\", \"c\",
-                  ... }  ->  true if the value of label X is not one of \"a\", \"b\",
-                  \"c\" \thas(label_name)  -> True if that label is present \t! expr
-                  -> negation of expr \texpr && expr  -> Short-circuit and \texpr
-                  || expr  -> Short-circuit or \t( expr ) -> parens for grouping \tall()
+                description: "The selector is an expression used to pick out the endpoints
+                  that the policy should be applied to. \n Selector expressions follow
+                  this syntax: \n \tlabel == \"string_literal\"  ->  comparison, e.g.
+                  my_label == \"foo bar\" \tlabel != \"string_literal\"   ->  not
+                  equal; also matches if label is not present \tlabel in { \"a\",
+                  \"b\", \"c\", ... }  ->  true if the value of label X is one of
+                  \"a\", \"b\", \"c\" \tlabel not in { \"a\", \"b\", \"c\", ... }
+                  \ ->  true if the value of label X is not one of \"a\", \"b\", \"c\"
+                  \thas(label_name)  -> True if that label is present \t! expr ->
+                  negation of expr \texpr && expr  -> Short-circuit and \texpr ||
+                  expr  -> Short-circuit or \t( expr ) -> parens for grouping \tall()
                   or the empty selector -> matches all endpoints. \n Label names are
                   allowed to contain alphanumerics, -, _ and /. String literals are
                   more permissive but they do not support escape characters. \n Examples
@@ -806,6 +820,14 @@ spec:
               serviceAccountSelector:
                 description: ServiceAccountSelector is an optional field for an expression
                   used to select a pod based on service accounts.
+                type: string
+              tier:
+                description: The name of the tier that this policy belongs to.  If
+                  this is omitted, the default tier (name is "default") is assumed.  The
+                  specified tier must exist in order to create security policies within
+                  the tier, the "default" tier is created automatically if it does
+                  not exist, this means for deployments requiring only a single Tier,
+                  the tier name may be omitted on all policy management requests.
                 type: string
               types:
                 description: "Types indicates whether this policy applies to ingress,
@@ -833,4 +855,3 @@ status:
     plural: ""
   conditions: []
   storedVersions: []
-

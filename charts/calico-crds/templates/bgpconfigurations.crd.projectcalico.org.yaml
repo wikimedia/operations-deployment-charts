@@ -1,4 +1,4 @@
-# Source: crds/calico/crd.projectcalico.org_bgpconfigurations.yaml
+# Source: crds/crd.projectcalico.org_bgpconfigurations.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -10,6 +10,7 @@ spec:
     listKind: BGPConfigurationList
     plural: bgpconfigurations
     singular: bgpconfiguration
+  preserveUnknownFields: false
   scope: Cluster
   versions:
   - name: v1
@@ -62,6 +63,12 @@ spec:
                       pattern: ^(\d+):(\d+)$|^(\d+):(\d+):(\d+)$
                       type: string
                   type: object
+                type: array
+              ignoredInterfaces:
+                description: IgnoredInterfaces indicates the network interfaces that
+                  needs to be excluded when reading device routes.
+                items:
+                  type: string
                 type: array
               listenPort:
                 description: ListenPort is the port where BGP protocol should listen.
@@ -177,4 +184,3 @@ status:
     plural: ""
   conditions: []
   storedVersions: []
-
