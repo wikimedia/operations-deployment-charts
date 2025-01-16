@@ -278,13 +278,13 @@ metadata:
 spec:
   restartPolicy: Never
   {{- include "airflow.pod.host_aliases" .Root | indent 2 }}
+  {{- if eq .profile "kubeapi" }}
+  serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
+  {{- end }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
-    {{- if eq .profile "kubeapi" }}
-    serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
-    {{- end }}
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "app.airflow.env.spark_hadoop" .Root | indent 6 }}
     {{- with .Root.Values.app.volumeMounts }}
