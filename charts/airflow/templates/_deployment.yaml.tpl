@@ -39,6 +39,7 @@ spec:
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
 
 
@@ -84,19 +85,9 @@ spec:
         {{- end }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
-        {{- end }}
-        {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-        - name: airflow-kerberos-token
-          persistentVolumeClaim:
-            claimName: airflow-kerberos-token-pvc
-        - name: airflow-hadoop-configuration
-          configMap:
-            name: airflow-hadoop-configuration
-        - name: airflow-spark-configuration
-          configMap:
-            name: airflow-spark-configuration
         {{- end }}
 
 {{- end }}
@@ -141,18 +132,9 @@ spec:
         - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
         {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         volumeMounts:
-        - name: airflow-dags
-          mountPath: "{{ $.Values.gitsync.root_dir }}"
-        - name: gitsync-sparse-checkout-config
-          mountPath: /etc/gitsync/sparse-checkout.conf
-          subPath: sparse-checkout.conf
+        {{- toYaml $.Values.gitsync.volumeMounts | nindent 8 }}
       volumes:
-      - name: airflow-dags
-        persistentVolumeClaim:
-          claimName: airflow-dags-pvc
-      - name: gitsync-sparse-checkout-config
-        configMap:
-          name: airflow-gitsync-sparse-checkout-file
+      {{- toYaml $.Values.gitsync.volumes | nindent 6 }}
 
 {{- end }}
 {{- end }}
@@ -196,9 +178,11 @@ spec:
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
         volumeMounts:
-        {{- toYaml $.Values.app.volumeMounts  | nindent 8 }}
+        {{- toYaml $.Values.app.volumeMounts | nindent 8 }}
+        {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
       volumes:
       {{- toYaml $.Values.app.volumes | nindent 6 }}
+      {{- include "kerberos.volumes" (dict "Root" . "profiles" (list "keytab")) | indent 6 }}
 
 
 {{- end }}

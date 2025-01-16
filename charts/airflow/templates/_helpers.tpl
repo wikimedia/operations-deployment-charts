@@ -28,8 +28,9 @@
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
   {{- with .Values.app.volumeMounts }}
   volumeMounts:
-{{ toYaml . | indent 4 }}
+  {{- toYaml . | nindent 2 }}
   {{- end }}
+  {{- include "kerberos.volumeMounts" (dict "Root" . ) | indent 2 }}
 {{- end }}
 
 {{- define "app.airflow.scheduler" }}
@@ -61,14 +62,7 @@
   volumeMounts:
   {{- toYaml . | nindent 2 }}
   {{- end }}
-  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-  - name: airflow-kerberos-token
-    mountPath: /tmp/airflow_krb5_ccache
-  - name: airflow-hadoop-configuration
-    mountPath: /etc/hadoop/conf
-  - name: airflow-spark-configuration
-    mountPath: /etc/spark3/conf
-  {{- end }}
+  {{- include "kerberos.volumeMounts" (dict "Root" .) | indent 2 }}
 {{- end }}
 
 {{ define "app.airflow.env" }}
@@ -125,8 +119,6 @@ env:
     value: /tmp/airflow_krb5_ccache/krb5cc
   - name: KRB5_CONFIG
     value: /etc/krb5.conf
-  - name: KRB5_KEYTAB
-    value: {{ $.Values.config.airflow.config.kerberos.keytab }}
   - name: KRB5_PRINCIPAL
     value: {{ $.Values.config.airflow.config.kerberos.principal }}
   {{- end }}
@@ -262,6 +254,85 @@ hostAliases:
 {{- end }}
 {{- end }}
 
+{{- define "airflow.task-pod.resources" }}
+resources:
+  requests:
+  {{- toYaml .Values.worker.resources.requests | nindent 4 }}
+  limits:
+  {{- toYaml .Values.worker.resources.limits | nindent 4 }}
+{{- end }}
+
+{{- define "kerberos.volumes" }}
+{{- $profiles := .profiles | default list }}
+{{- if .Root.Values.kerberos.enabled }}
+{{- with .Root.Values.kerberos.volumes.base }}
+{{ toYaml . }}
+{{- end }}
+{{- if has "keytab" $profiles }}
+{{- with .Root.Values.kerberos.volumes.keytab }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "kerberos.volumeMounts" }}
+{{- $profiles := .profiles | default list }}
+{{- if .Root.Values.kerberos.enabled }}
+{{- with .Root.Values.kerberos.volumeMounts.base }}
+{{ toYaml . }}
+{{- end }}
+{{- if has "keytab" $profiles }}
+{{- with .Root.Values.kerberos.volumeMounts.keytab }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "airflow.task-pod.volumes" }}
+volumes:
+{{- if has "airflow" .profiles }}
+{{- with .Root.Values.app.volumes }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "hadoop" .profiles }}
+{{- with .Root.Values.worker.volumes.hadoop }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "spark" .profiles }}
+{{- with .Root.Values.worker.volumes.spark }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "kerberos" .profiles }}
+{{- include "kerberos.volumes" (dict "Root" .Root) }}
+{{- end }}
+{{- end }}
+
+{{- define "airflow.task-pod.volumeMounts" }}
+volumeMounts:
+{{- if has "airflow" .profiles }}
+{{- with .Root.Values.app.volumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "hadoop" .profiles }}
+{{- with .Root.Values.worker.volumeMounts.hadoop }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "spark" .profiles }}
+{{- with .Root.Values.worker.volumeMounts.spark }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+{{- if has "kerberos" .profiles }}
+{{- include "kerberos.volumeMounts" (dict "Root" .Root) }}
+{{- end }}
+{{- end }}
 
 {{- define "kubernetes-executor.pod-template" -}}
 ---
@@ -281,28 +352,15 @@ spec:
   {{- if eq .profile "kubeapi" }}
   serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
   {{- end }}
+  {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "app.airflow.env.spark_hadoop" .Root | indent 6 }}
-    {{- with .Root.Values.app.volumeMounts }}
-    volumeMounts:
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-    {{- if .Root.Values.kerberos.enabled }}
-    - name: airflow-kerberos-token
-      mountPath: /etc/kerberos/airflow_krb5_ccache
-    {{- toYaml .Root.Values.worker.volumeMounts | nindent 4 }}
-    {{- end }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 4}}
+    {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
-    resources:
-      requests:
-      {{- toYaml .Root.Values.worker.resources.requests | nindent 8 }}
-      limits:
-      {{- toYaml .Root.Values.worker.resources.limits | nindent 8 }}
-  volumes:
-  {{- include "app.generic.volume" .Root | indent 2 }}
-  {{- toYaml .Root.Values.worker.volumes | nindent 2 }}
+
 {{- end }}

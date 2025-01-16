@@ -40,9 +40,6 @@ app:
     configMap:
       name: airflow-bash-executables
       defaultMode: 0777
-  - name: airflow-kerberos-client-config
-    configMap:
-      name: airflow-kerberos-client-config
   - name: airflow-connections-variables
     secret:
       secretName: airflow-connections-variables
@@ -54,12 +51,6 @@ app:
   - name: airflow-dags
     persistentVolumeClaim:
       claimName: airflow-dags-pvc
-  - name: airflow-kerberos-keytab
-    secret:
-      secretName: airflow-kerberos-keytab
-  - name: airflow-kerberos-token
-    persistentVolumeClaim:
-      claimName: airflow-kerberos-token-pvc
 
   volumeMounts: &airflow_volume_mounts
   - name: airflow-config
@@ -70,9 +61,6 @@ app:
     subPath: webserver_config.py
   - name: logs
     mountPath: /opt/airflow/logs
-  - name: airflow-kerberos-client-config
-    mountPath: /etc/krb5.conf
-    subPath: krb5.conf
   - name: airflow-bash-executables
     mountPath: /opt/airflow/usr/bin
   - name: airflow-connections-variables
@@ -82,11 +70,6 @@ app:
     mountPath: &dags_root /opt/airflow/dags
   - name: airflow-kubernetes-pod-templates
     mountPath: /opt/airflow/pod_templates
-  - name: airflow-kerberos-keytab
-    mountPath: /etc/kerberos/keytabs
-    readOnly: true
-  - name: airflow-kerberos-token
-    mountPath: /tmp/airflow_krb5_ccache
 
 
 service:
@@ -257,13 +240,26 @@ gitsync:
   image_tag: override_me
   image_gid: 900
   dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
-  root_dir: /dags
+  root_dir: &gitsync_root_dir /dags
   link_dir: airflow_dags
   ref: main
   period: 300 # git pull every 5 minutes
   volume:
     storage_class: override_me
     size: 100Mi
+  volumes:
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: airflow-dags-pvc
+  - name: gitsync-sparse-checkout-config
+    configMap:
+      name: airflow-gitsync-sparse-checkout-file
+  volumeMounts:
+  - name: airflow-dags
+    mountPath: *gitsync_root_dir
+  - name: gitsync-sparse-checkout-config
+    mountPath: /etc/gitsync/sparse-checkout.conf
+    subPath: sparse-checkout.conf
 
 worker:
   resources:
@@ -426,17 +422,22 @@ worker:
         spark.eventLog.compress: true
 
   volumes:
-  - name: airflow-hadoop-configuration
-    configMap:
-      name: airflow-hadoop-configuration
-  - name: airflow-spark-configuration
-    configMap:
-      name: airflow-spark-configuration
+    hadoop:
+    - name: airflow-hadoop-configuration
+      configMap:
+        name: airflow-hadoop-configuration
+    spark:
+    - name: airflow-spark-configuration
+      configMap:
+        name: airflow-spark-configuration
+
   volumeMounts:
-  - name: airflow-hadoop-configuration
-    mountPath: /etc/hadoop/conf
-  - name: airflow-spark-configuration
-    mountPath: /etc/spark3/conf
+    hadoop:
+    - name: airflow-hadoop-configuration
+      mountPath: /etc/hadoop/conf
+    spark:
+    - name: airflow-spark-configuration
+      mountPath: /etc/spark3/conf
 
 
 kerberos:
@@ -453,6 +454,30 @@ kerberos:
     limits:
       cpu: 500m
       memory: 400Mi
+  volumes:
+    base:
+    - name: airflow-kerberos-client-config
+      configMap:
+        name: airflow-kerberos-client-config
+    - name: airflow-kerberos-token
+      persistentVolumeClaim:
+        claimName: airflow-kerberos-token-pvc
+    keytab:
+    - name: airflow-kerberos-keytab
+      secret:
+        secretName: airflow-kerberos-keytab
+  volumeMounts:
+    base:
+    - name: airflow-kerberos-client-config
+      mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+    - name: airflow-kerberos-token
+      mountPath: /tmp/airflow_krb5_ccache
+    keytab:
+    - name: airflow-kerberos-keytab
+      mountPath: /etc/kerberos/keytabs
+      readOnly: true
+
 
 
 # Additional resources if we want to add a port for a debugger to connect to.
