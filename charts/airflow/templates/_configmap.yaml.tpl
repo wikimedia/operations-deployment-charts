@@ -267,6 +267,8 @@ data:
     {{- .Files.Get "files/hadoop/hadoop-env.sh" | nindent 4 }}
   yarn-env.sh: |
     {{- .Files.Get "files/hadoop/yarn-env.sh" | nindent 4 }}
+  hive-site.xml: |
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.hadoop.hive ) | nindent 4 }}
 {{- end }}
 
 {{- define "configmap.airflow-spark-config" }}
@@ -279,7 +281,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   hive-site.xml: |
-    {{- include "render_xml_file" ( dict "config" .Values.worker.config.spark.hive ) | nindent 4 }}
+    {{- include "render_xml_file" ( dict "config" .Values.worker.config.hadoop.hive ) | nindent 4 }}
   spark-defaults.conf: |
     {{- include "render_dotconf_file" ( dict "config" .Values.worker.config.spark.spark ) | nindent 4 }}
   log4j.properties: |

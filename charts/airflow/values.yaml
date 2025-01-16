@@ -363,6 +363,36 @@ worker:
         yarn.scheduler.maximum-allocation-vcores: '32'
         yarn.scheduler.minimum-allocation-mb: '1'
         yarn.scheduler.minimum-allocation-vcores: '1'
+      hive:
+        hive.metastore.uris: override_me
+        hive.metastore.kerberos.keytab.file: override_me
+        hive.metastore.kerberos.principal: override_me
+        hive.server2.authentication.kerberos.principal: override_me
+        hive.server2.authentication.kerberos.keytab: override_me
+        hive.cluster.delegation.token.store.class: org.apache.hadoop.hive.thrift.DBTokenStore
+        hive.metastore.sasl.enabled: 'true'
+        hive.server2.thrift.sasl.qop: auth-conf
+        hive.support.concurrency: 'false'
+        hive.metastore.disallow.incompatible.col.type.changes: 'false'
+        hive.metastore.execute.setugi: 'true'
+        hive.cli.print.current.db: 'true'
+        hive.cli.print.header: 'true'
+        hive.mapred.mode: strict
+        hive.start.cleanup.scratchdir: 'true'
+        hive.exec.stagingdir: /tmp/hive-staging
+        hive.error.on.empty.partition: 'true'
+        hive.exec.parallel: 'true'
+        hive.exec.parallel.thread.number: '8'
+        hive.stats.autogather: 'false'
+        hive.variable.substitute.depth: '10000'
+        hive.aux.jars.path: file:///usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core.jar
+        hive.default.fileformat: parquet
+        parquet.compression: SNAPPY
+        hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
+        hive.resultset.use.unique.column.names: 'false'
+        hive.exec.submit.local.task.via.child: 'false'
+        hive.server2.authentication: KERBEROS
+        hive.server2.logging.operation.enabled: 'true'
     spark:
       spark:
         spark.yarn.historyServer.address: override_me
@@ -394,36 +424,7 @@ worker:
         spark.eventLog.enabled: true
         spark.eventLog.dir: hdfs:///var/log/spark
         spark.eventLog.compress: true
-      hive:
-        hive.metastore.uris: override_me
-        hive.metastore.kerberos.keytab.file: override_me
-        hive.metastore.kerberos.principal: override_me
-        hive.server2.authentication.kerberos.principal: override_me
-        hive.server2.authentication.kerberos.keytab: override_me
-        hive.cluster.delegation.token.store.class: org.apache.hadoop.hive.thrift.DBTokenStore
-        hive.metastore.sasl.enabled: 'true'
-        hive.server2.thrift.sasl.qop: auth-conf
-        hive.support.concurrency: 'false'
-        hive.metastore.disallow.incompatible.col.type.changes: 'false'
-        hive.metastore.execute.setugi: 'true'
-        hive.cli.print.current.db: 'true'
-        hive.cli.print.header: 'true'
-        hive.mapred.mode: strict
-        hive.start.cleanup.scratchdir: 'true'
-        hive.exec.stagingdir: /tmp/hive-staging
-        hive.error.on.empty.partition: 'true'
-        hive.exec.parallel: 'true'
-        hive.exec.parallel.thread.number: '8'
-        hive.stats.autogather: 'false'
-        hive.variable.substitute.depth: '10000'
-        hive.aux.jars.path: file:///usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core.jar
-        hive.default.fileformat: parquet
-        parquet.compression: SNAPPY
-        hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
-        hive.resultset.use.unique.column.names: 'false'
-        hive.exec.submit.local.task.via.child: 'false'
-        hive.server2.authentication: KERBEROS
-        hive.server2.logging.operation.enabled: 'true'
+
   volumes:
   - name: airflow-hadoop-configuration
     configMap:

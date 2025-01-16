@@ -75,11 +75,11 @@ worker:
       yarn:
         yarn.resourcemanager.keytab: /etc/security/keytabs/hadoop/yarn.keytab
         yarn.resourcemanager.zk-address: an-conf1001.eqiad.wmnet,an-conf1002.eqiad.wmnet,an-conf1003.eqiad.wmnet
+      hive:
+        hive.metastore.kerberos.keytab.file: /etc/security/keytabs/hive/hive.keytab
+        hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/hive/hive.keytab
     spark:
       spark:
         spark.executorEnv.REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         spark.yarn.appMasterEnv.REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         spark.yarn.historyServer.address: yarn.wikimedia.org
-      hive:
-        hive.metastore.kerberos.keytab.file: /etc/security/keytabs/hive/hive.keytab
-        hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/hive/hive.keytab
