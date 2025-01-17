@@ -291,6 +291,7 @@ resources:
 {{- end }}
 
 {{- define "airflow.task-pod.volumes" }}
+{{- if .profiles }}
 volumes:
 {{- if has "airflow" .profiles }}
 {{- with .Root.Values.app.volumes }}
@@ -311,8 +312,10 @@ volumes:
 {{- include "kerberos.volumes" (dict "Root" .Root) }}
 {{- end }}
 {{- end }}
+{{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
+{{- if .profiles }}
 volumeMounts:
 {{- if has "airflow" .profiles }}
 {{- with .Root.Values.app.volumeMounts }}
@@ -331,6 +334,7 @@ volumeMounts:
 {{- end }}
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumeMounts" (dict "Root" .Root) }}
+{{- end }}
 {{- end }}
 {{- end }}
 
