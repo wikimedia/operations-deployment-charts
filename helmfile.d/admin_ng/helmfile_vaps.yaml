@@ -1,0 +1,8 @@
+releases:
+  - name: validating-admission-policies
+    chart: wmf-stable/validating-admission-policies
+    {{- $version := .Values.chartVersions | get "wmf-stable/validating-admission-policies" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    namespace: kube-system

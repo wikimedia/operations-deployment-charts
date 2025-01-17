@@ -144,7 +144,11 @@ environments:
 ---
 bases:
   - helmfile_rbac.yaml
+  {{- if semverCompare "<=1.24" .Values.kubernetesVersion }}
   - helmfile_psp.yaml
+  {{- else }}
+  - helmfile_vaps.yaml
+  {{- end }}
   - calico/helmfile.yaml
   - coredns/helmfile.yaml
   - helmfile_namespaces.yaml
