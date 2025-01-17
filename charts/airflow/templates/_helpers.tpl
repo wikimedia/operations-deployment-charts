@@ -363,7 +363,7 @@ spec:
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "app.airflow.env.spark_hadoop" .Root | indent 6 }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 4}}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 
@@ -379,7 +379,7 @@ metadata:
     component: task-pod
 spec:
   restartPolicy: Never
-  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles) | nindent 6 }}
+  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles) | nindent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
@@ -388,7 +388,7 @@ spec:
     env:
     {{- include "app.airflow.env.spark_hadoop" .Root | nindent 4 }}
     {{- end }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 6 }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 {{- end }}
