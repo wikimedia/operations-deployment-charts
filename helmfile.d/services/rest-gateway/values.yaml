@@ -243,6 +243,13 @@ main_app:
         - name: page-html-title
           in: '(.+)/v1/page/html/(.+)'
           out: '/w/rest.php/v1/page/\2/html'
+        - name: lint-revision
+          in: '(.+)/v1/page/lint/([^\/.]+)/(.+)'
+          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2/\3'
+        - name: lint-no-revision
+          in: '(.+)/v1/page/lint/([^\/.]+)'
+          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
+
 
 
   discovery_endpoints:
