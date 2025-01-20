@@ -9,7 +9,7 @@ app:
       consumer_group: wdqs_streaming_updater_test
       hostname: test.wikidata.org
       output_topic: eqiad.rdf-streaming-updater.mutation-staging
-      reconciliation_topic: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
+      reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
       wikidata_concept_uri: http://test.wikidata.org
       subgraph_definitions: file:///srv/app/conf/subgraph-definitions.yaml
       subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"

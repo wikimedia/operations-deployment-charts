@@ -1,10 +1,12 @@
 app:
   config_files:
     rdf-streaming-updater-config.properties:
+      page_change_stream: mediawiki.page_change.v1
       brokers: kafka-main-eqiad.external-services.svc.cluster.local:9093
       parallelism: 1
       produce_side_outputs: false
       output_topic_prefix: eqiad.
+      use_event_streams_api: true
   jobManager:
     replicas: 1
     resource:
