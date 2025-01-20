@@ -315,7 +315,7 @@ volumes:
 {{- end }}
 {{- end }}
 {{- if has "kerberos" .profiles }}
-{{- include "kerberos.volumes" (dict "Root" .Root) }}
+{{- include "kerberos.volumes" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -339,7 +339,7 @@ volumeMounts:
 {{- end }}
 {{- end }}
 {{- if has "kerberos" .profiles }}
-{{- include "kerberos.volumeMounts" (dict "Root" .Root) }}
+{{- include "kerberos.volumeMounts" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -379,14 +379,14 @@ spec:
   {{- if eq .profile "kubeapi" }}
   serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
   {{- end }}
-  {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 2 }}
+  {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos")) | nindent 4 }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 4 }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 
