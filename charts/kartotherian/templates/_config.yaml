@@ -54,7 +54,7 @@ services:
           host: {{ "'{{" }} request.params.domain {{ "}}'" }}
           user-agent: {{ "'{{" }} user-agent {{ "}}'" }}
         method: post
-        uri: {{ .Values.app.mwapi.endpoint }}
+        uri: {{ .Values.app.mwapi.endpoint }}/w/api.php
       port: {{ .Values.app.port }}
       restbase_req:
         body: {{ "'{{" }} request.body{{ "}}'" }}
