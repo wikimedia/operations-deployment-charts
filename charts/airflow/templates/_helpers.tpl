@@ -53,9 +53,6 @@
   {{- toYaml .Values.scheduler.readiness_probe | nindent 4 }}
   {{- end }}
   {{- include "app.airflow.env" . | indent 2 }}
-  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-  {{- include "app.airflow.env.spark_hadoop" . | indent 2 }}
-  {{- end }}
   {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
   {{- with .Values.scheduler.volumeMounts }}
@@ -113,12 +110,9 @@ env:
   value: {{ $.Values.scheduler.remote_host }}
 {{- end }}
 {{- if $.Values.kerberos.enabled }}
+{{- include "app.airflow.env.kerberos" . }}
 - name: AIRFLOW_KERBEROS_HOSTNAME
   value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
-- name: KRB5CCNAME
-  value: /tmp/airflow_krb5_ccache/krb5cc
-- name: KRB5_CONFIG
-  value: /etc/krb5.conf
 - name: KRB5_PRINCIPAL
   value: {{ $.Values.config.airflow.config.kerberos.principal }}
 {{- end }}
@@ -126,13 +120,6 @@ env:
   value: /etc/ssl/certs/ca-certificates.crt
 - name: SCARF_ANALYTICS
   value: "False"
-{{- end }}
-
-{{- define "app.airflow.env.spark_hadoop" }}
-- name: HADOOP_CONF_DIR
-  value: /etc/hadoop/conf
-- name: SPARK_CONF_DIR
-  value: /etc/spark3/conf
 {{- end }}
 
 
@@ -262,6 +249,25 @@ resources:
   {{- toYaml .Values.worker.resources.limits | nindent 4 }}
 {{- end }}
 
+{{- define "app.airflow.env.hadoop" }}
+{{- with .Values.worker.env.hadoop }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{- define "app.airflow.env.spark" }}
+{{- with .Values.worker.env.spark }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{- define "app.airflow.env.kerberos" }}
+{{- with .Values.kerberos.env }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+
 {{- define "kerberos.volumes" }}
 {{- $profiles := .profiles | default list }}
 {{- if .Root.Values.kerberos.enabled }}
@@ -338,6 +344,23 @@ volumeMounts:
 {{- end }}
 {{- end }}
 
+{{- define "airflow.task-pod.env" }}
+{{- if .profiles }}
+{{- if .header }}
+env:
+{{- end }}
+{{- if has "hadoop" .profiles }}
+{{- include "app.airflow.env.hadoop" .Root }}
+{{- end }}
+{{- if has "spark" .profiles }}
+{{- include "app.airflow.env.spark" .Root }}
+{{- end }}
+{{- if has "kerberos" .profiles }}
+{{- include "app.airflow.env.kerberos" .Root }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- define "kubernetes-executor.pod-template" -}}
 ---
 apiVersion: v1
@@ -362,7 +385,7 @@ spec:
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
-    {{- include "app.airflow.env.spark_hadoop" .Root | indent 6 }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos")) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos")) | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
@@ -384,10 +407,7 @@ spec:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
-    {{- if has "hadoop" .profiles }}
-    env:
-    {{- include "app.airflow.env.spark_hadoop" .Root | nindent 4 }}
-    {{- end }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" true "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}

@@ -126,7 +126,7 @@ config:
         load_default_connections: false
       kerberos:
         reinit_frequency: 3600 # in seconds
-        ccache: /tmp/airflow_krb5_ccache/krb5cc
+        ccache: &krb5_cache /tmp/airflow_krb5_ccache/krb5cc
         include_ip: false
         keytab: /etc/kerberos/keytabs/airflow.keytab
         principal: override_me/override_me
@@ -434,10 +434,20 @@ worker:
   volumeMounts:
     hadoop:
     - name: airflow-hadoop-configuration
-      mountPath: /etc/hadoop/conf
+      mountPath: &hadoop_conf_dir /etc/hadoop/conf
     spark:
     - name: airflow-spark-configuration
-      mountPath: /etc/spark3/conf
+      mountPath: &spark_conf_dir /etc/spark3/conf
+
+  env:
+    hadoop:
+      - name: HADOOP_CONF_DIR
+        value: *hadoop_conf_dir
+      - name: HIVE_CONF_DIR
+        value: *hadoop_conf_dir
+    spark:
+      - name: SPARK_CONF_DIR
+        value: *spark_conf_dir
 
 
 kerberos:
@@ -469,7 +479,7 @@ kerberos:
   volumeMounts:
     base:
     - name: airflow-kerberos-client-config
-      mountPath: /etc/krb5.conf
+      mountPath: &krb5_conf /etc/krb5.conf
       subPath: krb5.conf
     - name: airflow-kerberos-token
       mountPath: /tmp/airflow_krb5_ccache
@@ -477,6 +487,12 @@ kerberos:
     - name: airflow-kerberos-keytab
       mountPath: /etc/kerberos/keytabs
       readOnly: true
+  env:
+    - name: KRB5CCNAME
+      value: *krb5_cache
+    - name: KRB5_CONFIG
+      value: *krb5_conf
+
 
 
 
