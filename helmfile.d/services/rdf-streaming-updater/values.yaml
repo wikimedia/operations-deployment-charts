@@ -4,7 +4,8 @@ app:
       checkpoint_interval: 30000
       checkpoint_timeout: 900000
       output_mutation_schema_version: v2
-      event_stream_config_endpoint: https://meta.wikimedia.org/w/api.php
+      stream_config_uri: https://meta.wikimedia.org/w/api.php
+      schema_base_uris: https://schema.wikimedia.org/repositories/primary/jsonschema,https://schema.wikimedia.org/repositories/secondary/jsonschema
       generate_diff_timeout: -1
       http_routes: test-commons.wikimedia.org=localhost:6500,commons.wikimedia.org=localhost:6500,test.wikidata.org=localhost:6500,www.wikidata.org=localhost:6500,meta.wikimedia.org=localhost:6500,schema.wikimedia.org=localhost:6023
       input_idleness: 60000
@@ -18,7 +19,6 @@ app:
       restart_failures_rate_interval: 180000
       restart_failures_rate_max_per_interval: 10
       rev_create_topic: mediawiki.revision-create
-      schema_repositories: https://schema.wikimedia.org/repositories/primary/jsonschema,https://schema.wikimedia.org/repositories/secondary/jsonschema
       suppressed_delete_topic: mediawiki.page-suppress
       topic_prefixes: eqiad.,codfw.
       wikibase_repo_thread_pool_size: 30
@@ -27,7 +27,7 @@ app:
       kafka_consumer_config.security.protocol: SSL
       kafka_consumer_config.client.dns.lookup: use_all_dns_ips
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.17.1-rdf-0.3.150
+  version: flink-1.17.1-rdf-0.3.152
   flinkVersion: v1_17
   env:
     # disable JEMALLOC for testing
