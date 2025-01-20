@@ -54,7 +54,7 @@
   {{- end }}
   {{- include "app.airflow.env" . | indent 2 }}
   {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-  {{- include "app.airflow.env.spark_hadoop" . | indent 4 }}
+  {{- include "app.airflow.env.spark_hadoop" . | indent 2 }}
   {{- end }}
   {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
@@ -67,65 +67,65 @@
 
 {{ define "app.airflow.env" }}
 env:
-  - name: SERVICE_IDENTIFIER
-    value: {{ template "base.name.release" . }}
-  {{- range $k, $v := .Values.config.public }}
-  - name: {{ $k | upper }}
-    value: {{ $v | quote }}
-  {{- end }}
-  {{- range $k, $v := .Values.config.private }}
-  - name: {{ $k | upper }}
-    valueFrom:
-      secretKeyRef:
-        name: {{ template "base.name.release" $ }}-secret-config
-        key: {{ $k }}
-  {{- end }}
-  {{- if .Values.postgresql.cloudnative }}
-  {{- range $secret_data_name, $env_var := .Values.postgresql.secrets }}
-  - name: {{ $env_var }}
-    valueFrom:
-      secretKeyRef:
-        name: {{ $.Values.pgServiceName }}-app
-        key: {{ $secret_data_name }}
-  {{- end }}
-  - name: POOLER_NAME
-    value: {{ $.Values.pgServiceName }}-pooler-rw
-  {{- end }}
-  {{- if $.Values.postgresql.cloudnative }}
-  {{/*
-    According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
-    we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
-    This is done by setting `poolclass=NullPool` at the sqlalchemy level, which airflow does when you pass
-    AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED = False.
-    cf https://github.com/apache/airflow/blob/9af26368df3651b21c66ccefa6147158ecf2a8d7/airflow/settings.py#L523-L525
-  */}}
-  - name: AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED
-    value: "False"
-  {{- end }}
-  - name: PYTHONPATH
-    value: "/usr/local/lib/python3.9/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
-  - name: AIRFLOW_INSTANCE_NAME
-    value: {{ $.Values.config.airflow.instance_name }}
-  - name: AIRFLOW_SCHEDULER_HOSTNAME
-  {{- if $.Values.scheduler.enabled }}
-    value: {{ $.Values.scheduler.service_name }}
-  {{- else }}
-    value: {{ $.Values.scheduler.remote_host }}
-  {{- end }}
-  {{- if $.Values.kerberos.enabled }}
-  - name: AIRFLOW_KERBEROS_HOSTNAME
-    value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
-  - name: KRB5CCNAME
-    value: /tmp/airflow_krb5_ccache/krb5cc
-  - name: KRB5_CONFIG
-    value: /etc/krb5.conf
-  - name: KRB5_PRINCIPAL
-    value: {{ $.Values.config.airflow.config.kerberos.principal }}
-  {{- end }}
-  - name: REQUESTS_CA_BUNDLE
-    value: /etc/ssl/certs/ca-certificates.crt
-  - name: SCARF_ANALYTICS
-    value: "False"
+- name: SERVICE_IDENTIFIER
+  value: {{ template "base.name.release" . }}
+{{- range $k, $v := .Values.config.public }}
+- name: {{ $k | upper }}
+  value: {{ $v | quote }}
+{{- end }}
+{{- range $k, $v := .Values.config.private }}
+- name: {{ $k | upper }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ template "base.name.release" $ }}-secret-config
+      key: {{ $k }}
+{{- end }}
+{{- if .Values.postgresql.cloudnative }}
+{{- range $secret_data_name, $env_var := .Values.postgresql.secrets }}
+- name: {{ $env_var }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $.Values.pgServiceName }}-app
+      key: {{ $secret_data_name }}
+{{- end }}
+- name: POOLER_NAME
+  value: {{ $.Values.pgServiceName }}-pooler-rw
+{{- end }}
+{{- if $.Values.postgresql.cloudnative }}
+{{/*
+  According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
+  we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
+  This is done by setting `poolclass=NullPool` at the sqlalchemy level, which airflow does when you pass
+  AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED = False.
+  cf https://github.com/apache/airflow/blob/9af26368df3651b21c66ccefa6147158ecf2a8d7/airflow/settings.py#L523-L525
+*/}}
+- name: AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED
+  value: "False"
+{{- end }}
+- name: PYTHONPATH
+  value: "/usr/local/lib/python3.9/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
+- name: AIRFLOW_INSTANCE_NAME
+  value: {{ $.Values.config.airflow.instance_name }}
+- name: AIRFLOW_SCHEDULER_HOSTNAME
+{{- if $.Values.scheduler.enabled }}
+  value: {{ $.Values.scheduler.service_name }}
+{{- else }}
+  value: {{ $.Values.scheduler.remote_host }}
+{{- end }}
+{{- if $.Values.kerberos.enabled }}
+- name: AIRFLOW_KERBEROS_HOSTNAME
+  value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
+- name: KRB5CCNAME
+  value: /tmp/airflow_krb5_ccache/krb5cc
+- name: KRB5_CONFIG
+  value: /etc/krb5.conf
+- name: KRB5_PRINCIPAL
+  value: {{ $.Values.config.airflow.config.kerberos.principal }}
+{{- end }}
+- name: REQUESTS_CA_BUNDLE
+  value: /etc/ssl/certs/ca-certificates.crt
+- name: SCARF_ANALYTICS
+  value: "False"
 {{- end }}
 
 {{- define "app.airflow.env.spark_hadoop" }}
