@@ -8,12 +8,13 @@ app:
       checkpoint_dir: s3://rdf-streaming-updater-staging/wikidata/checkpoints
       consumer_group: wdqs_streaming_updater_test
       hostname: test.wikidata.org
+      main_output_stream: rdf-streaming-updater.mutation-staging
       output_topic: eqiad.rdf-streaming-updater.mutation-staging
       reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
       wikidata_concept_uri: http://test.wikidata.org
       subgraph_definitions: file:///srv/app/conf/subgraph-definitions.yaml
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "eqiad.rdf-streaming-updater.mutation-main-staging"
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-staging-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-staging-main: "eqiad.rdf-streaming-updater.mutation-main-staging"
     subgraph-definitions.yaml:
       prefixes:
         wdt: http://test.wikidata.org/prop/direct/
@@ -24,21 +25,21 @@ app:
           - wd:Q227265
       subgraphs:
         - name: scholarly_articles
-          stream: rdf-streaming-updater.mutation-scholarly
+          stream: rdf-streaming-updater.mutation-staging-scholarly
           subgraph_uri: wdsubgraph:scholarly_articles
           default: block
           rules:
             - pass ?entity wdt:P82 ?scholarly_type
           stubs_source: true
         - name: wikidata_main
-          stream: rdf-streaming-updater.mutation-main
+          stream: rdf-streaming-updater.mutation-staging-main
           subgraph_uri: wdsubgraph:wikidata_main
           default: pass
           rules:
             - block ?entity wdt:P82 ?scholarly_type
           stubs_source: true
         - name: wikidata_full
-          stream: rdf-streaming-updater.mutation
+          stream: rdf-streaming-updater.mutation-staging
           default: pass
           stubs_source: false
 
