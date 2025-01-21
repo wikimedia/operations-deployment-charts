@@ -12,7 +12,14 @@ metadata:
     component: flink-app-config
 data:
   {{- range $k, $v := .Values.app.config_files }}
+  {{- if regexFind "\\.properties$" $k }}
+  {{ $k }}: |-
+    {{- range $config_key, $config_value := $v }}
+    {{ $config_key }}: {{ $config_value }}
+    {{- end }}
+  {{- else }}
   {{ $k }}: |- {{ toYaml $v | nindent 4 }}
+  {{- end }}
   {{- end }}
 {{- end }}
 {{ include "mesh.configuration.configmap" . }}
