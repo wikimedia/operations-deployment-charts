@@ -362,7 +362,6 @@ env:
 {{- end }}
 
 {{- define "kubernetes-executor.pod-template" -}}
----
 apiVersion: v1
 kind: Pod
 metadata:
@@ -393,7 +392,6 @@ spec:
 {{- end }}
 
 {{- define "kubernetes-pod-operator.pod-template" }}
----
 apiVersion: v1
 kind: Pod
 metadata:
