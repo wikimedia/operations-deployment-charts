@@ -348,6 +348,7 @@ volumeMounts:
 {{- include "kerberos.volumeMounts" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
+{{- include "airflow.worker.extra-config-volume-mounts" .Root }}
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
@@ -411,7 +412,6 @@ spec:
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos" "keytab")) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
-    {{- include "airflow.worker.extra-config-volume-mounts" .Root | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 
@@ -433,7 +433,6 @@ spec:
     imagePullPolicy: IfNotPresent
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" true "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
-    {{- include "airflow.worker.extra-config-volume-mounts" .Root | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 {{- end }}
