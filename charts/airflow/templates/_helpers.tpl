@@ -323,6 +323,7 @@ volumes:
 {{- include "kerberos.volumes" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
+{{- include "airflow.worker.extra-config-volumes" .Root }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
