@@ -4,9 +4,8 @@ cluster:
       host: an-db1001.eqiad.wmnet
       user: airflow_analytics
       dbname: airflow_analytics
-  cluster:
-    storage:
-      size: 30Gi
+  storage:
+    size: 30Gi
 
 external_services:
   postgresql: [analytics]
