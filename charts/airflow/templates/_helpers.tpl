@@ -110,7 +110,7 @@ env:
   value: {{ $.Values.scheduler.remote_host }}
 {{- end }}
 {{- if $.Values.kerberos.enabled }}
-{{- include "app.airflow.env.kerberos" . }}
+{{- include "app.airflow.env.kerberos" (dict "Root" .) }}
 - name: AIRFLOW_KERBEROS_HOSTNAME
   value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
 - name: KRB5_PRINCIPAL
@@ -262,11 +262,16 @@ resources:
 {{- end }}
 
 {{- define "app.airflow.env.kerberos" }}
-{{- with .Values.kerberos.env }}
+{{- $profiles := .profiles | default list }}
+{{- with .Root.Values.kerberos.env.base }}
+{{ toYaml . }}
+{{- end }}
+{{- if has "keytab" $profiles }}
+{{- with .Root.Values.kerberos.env.keytab }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
-
+{{- end }}
 
 {{- define "kerberos.volumes" }}
 {{- $profiles := .profiles | default list }}
@@ -356,7 +361,7 @@ env:
 {{- include "app.airflow.env.spark" .Root }}
 {{- end }}
 {{- if has "kerberos" .profiles }}
-{{- include "app.airflow.env.kerberos" .Root }}
+{{- include "app.airflow.env.kerberos"  (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -384,7 +389,7 @@ spec:
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
-    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos")) | nindent 4 }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos" "keytab")) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}

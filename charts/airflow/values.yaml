@@ -128,7 +128,7 @@ config:
         reinit_frequency: 3600 # in seconds
         ccache: &krb5_cache /tmp/airflow_krb5_ccache/krb5cc
         include_ip: false
-        keytab: /etc/kerberos/keytabs/airflow.keytab
+        keytab: &krb5_keytab /etc/kerberos/keytabs/airflow.keytab
         principal: override_me/override_me
       kubernetes_executor:
         multi_namespace_mode: false
@@ -488,12 +488,14 @@ kerberos:
       mountPath: /etc/kerberos/keytabs
       readOnly: true
   env:
+    base:
     - name: KRB5CCNAME
       value: *krb5_cache
     - name: KRB5_CONFIG
       value: *krb5_conf
-
-
+    keytab:
+    - name: KRB5_KEYTAB
+      value: *krb5_keytab
 
 
 # Additional resources if we want to add a port for a debugger to connect to.
