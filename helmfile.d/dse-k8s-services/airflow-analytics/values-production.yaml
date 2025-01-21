@@ -2,16 +2,26 @@ config:
   airflow:
     dags_folder: analytics
     instance_name: analytics
+    dbHost: an-db1001.eqiad.wmnet
+    dbName: airflow_analytics
+    dbUser: airflow_analytics
     auth:
       role_mappings:
         airflow-analytics-ops: [Op]
     config:
-      core:
-        executor: KubernetesExecutor
-      kerberos:
-        principal: analytics/airflow-analytics.discovery.wmnet
+      logging:
+        remote_logging: false
   oidc:
     client_id: airflow_analytics
+
+external_services:
+  webserver:
+    # The webserver needs access to the analytics PG, as its data hasn't yet been migrated
+    # to a dedicated cloudnative PG cluster
+    postgresql: [analytics]
+    # The webserver needs access to airflow-analytics scheduler, as it has not yet been migrated
+    # to Kubernetes
+    airflow: [analytics]
 
 ingress:
   gatewayHosts:
@@ -19,25 +29,12 @@ ingress:
     extraFQDNs:
     - airflow-analytics.wikimedia.org
 
+kerberos:
+  enabled: false
 
-external_services:
-  task-pod:
-    ats: [wikimedia]
+scheduler:
+  remote_host: an-launcher1002.eqiad.wmnet
+  enabled: false
 
-worker:
-  config:
-    extra_files:
-      "/etc/refinery":
-        event_intake_service_urls.yaml: |
-          eventgate-main: https://eventgate-main.discovery.wmnet:4492/v1/events
-          eventgate-main-eqiad: https://eventgate-main.svc.eqiad.wmnet:4492/v1/events
-          eventgate-main-codfw: https://eventgate-main.svc.codfw.wmnet:4492/v1/events
-          eventgate-analytics: https://eventgate-analytics.discovery.wmnet:4592/v1/events
-          eventgate-analytics-eqiad: https://eventgate-analytics.svc.eqiad.wmnet:4592/v1/events
-          eventgate-analytics-codfw: https://eventgate-analytics.svc.codfw.wmnet:4592/v1/events
-          eventgate-analytics-external: https://eventgate-analytics-external.discovery.wmnet:4692/v1/events
-          eventgate-analytics-external-eqiad: https://eventgate-analytics-external.svc.eqiad.wmnet:4692/v1/events
-          eventgate-analytics-external-codfw: https://eventgate-analytics-external.svc.codfw.wmnet:4692/v1/events
-          eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
-          eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
-          eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
+postgresql:
+  cloudnative: false
