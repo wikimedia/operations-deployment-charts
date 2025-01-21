@@ -39,7 +39,8 @@ spec:
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
-        {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
+        {{/* We need the keytab to be mounted in the webserver for the API Kerberos authentication to work */}}
+        {{- include "kerberos.volumes" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
 
 

@@ -30,7 +30,7 @@
   volumeMounts:
   {{- toYaml . | nindent 2 }}
   {{- end }}
-  {{- include "kerberos.volumeMounts" (dict "Root" . ) | indent 2 }}
+  {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 2 }}
 {{- end }}
 
 {{- define "app.airflow.scheduler" }}
