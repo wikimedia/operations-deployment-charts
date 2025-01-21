@@ -2,6 +2,7 @@ app:
   config_files:
     rdf-streaming-updater-config.properties:
       page_change_stream: mediawiki.page_change.v1
+      page_change_content_models: wikibase-item,wikibase-property,wikibase-lexeme
       brokers: kafka-main-eqiad.external-services.svc.cluster.local:9093
       parallelism: 1
       produce_side_outputs: false
