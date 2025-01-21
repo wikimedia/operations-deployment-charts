@@ -13,8 +13,8 @@ app:
       reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
       wikidata_concept_uri: http://test.wikidata.org
       subgraph_definitions: file:///srv/app/conf/subgraph-definitions.yaml
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-staging-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"
-      subgraph_kafka_topics.rdf-streaming-updater.mutation-staging-main: "eqiad.rdf-streaming-updater.mutation-main-staging"
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly-staging: "eqiad.rdf-streaming-updater.mutation-scholarly-staging"
+      subgraph_kafka_topics.rdf-streaming-updater.mutation-main-staging: "eqiad.rdf-streaming-updater.mutation-main-staging"
     subgraph-definitions.yaml:
       prefixes:
         wdt: http://test.wikidata.org/prop/direct/
@@ -25,14 +25,14 @@ app:
           - wd:Q227265
       subgraphs:
         - name: scholarly_articles
-          stream: rdf-streaming-updater.mutation-staging-scholarly
+          stream: rdf-streaming-updater.mutation-scholarly-staging
           subgraph_uri: wdsubgraph:scholarly_articles
           default: block
           rules:
             - pass ?entity wdt:P82 ?scholarly_type
           stubs_source: true
         - name: wikidata_main
-          stream: rdf-streaming-updater.mutation-staging-main
+          stream: rdf-streaming-updater.mutation-main-staging
           subgraph_uri: wdsubgraph:wikidata_main
           default: pass
           rules:
