@@ -4,6 +4,9 @@ app:
       checkpoint_interval: 30000
       checkpoint_timeout: 900000
       output_mutation_schema_version: v2
+      page_change_stream: mediawiki.page_change.v1
+      page_change_content_models: wikibase-item,wikibase-property,wikibase-lexeme
+      use_event_streams_api: false
       stream_config_uri: https://meta.wikimedia.org/w/api.php
       schema_base_uris: https://schema.wikimedia.org/repositories/primary/jsonschema,https://schema.wikimedia.org/repositories/secondary/jsonschema
       generate_diff_timeout: -1
@@ -27,7 +30,7 @@ app:
       kafka_consumer_config.security.protocol: SSL
       kafka_consumer_config.client.dns.lookup: use_all_dns_ips
   image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.17.1-rdf-0.3.153
+  version: flink-1.17.1-rdf-0.3.154
   flinkVersion: v1_17
   env:
     # disable JEMALLOC for testing

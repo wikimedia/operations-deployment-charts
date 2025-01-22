@@ -2,6 +2,7 @@ app:
   config_files:
     rdf-streaming-updater-config.properties:
       acceptable_mediawiki_lag: 15
+      main_output_stream: mediainfo-streaming-updater.mutation
       consumer_group: wcqs_streaming_updater
       hostname: commons.wikimedia.org
       job_name: WCQS Streaming Updater

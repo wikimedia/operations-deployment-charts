@@ -11,6 +11,7 @@ app:
       checkpoint_dir: s3://rdf-streaming-updater-codfw/commons/checkpoints
       output_topic: codfw.mediainfo-streaming-updater.mutation
       reconciliation_topic: rdf-streaming-updater.reconcile[wcqs_sideoutputs_reconcile@codfw]
+      reconciliation_stream: rdf-streaming-updater.reconcile[wcqs_sideoutputs_reconcile@codfw]
   job:
     initialSavepointPath: s3://rdf-streaming-updater-codfw/commons/2023-11-29T162202/savepoint-4d8b66-8b37083f9f60
     # savepointTriggerNonce triggers a savepoint; see

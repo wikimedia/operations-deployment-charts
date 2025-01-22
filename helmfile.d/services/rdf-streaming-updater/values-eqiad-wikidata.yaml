@@ -10,6 +10,7 @@ app:
       subgraph_kafka_topics.rdf-streaming-updater.mutation-scholarly: "eqiad.rdf-streaming-updater.mutation-scholarly"
       subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "eqiad.rdf-streaming-updater.mutation-main"
       reconciliation_topic: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
+      reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
   job:
     initialSavepointPath: s3://rdf-streaming-updater-eqiad/wikidata/2023-11-29T150001/savepoint-224443-80dd089a12ec
     # savepointTriggerNonce triggers a savepoint; see

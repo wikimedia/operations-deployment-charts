@@ -2,6 +2,7 @@ app:
   config_files:
     rdf-streaming-updater-config.properties:
       acceptable_mediawiki_lag: 10
+      main_output_stream: rdf-streaming-updater.mutation
       consumer_group: wdqs_streaming_updater
       entity_namespaces: 0,120,146
       hostname: www.wikidata.org
