@@ -25,7 +25,6 @@ app:
       # However, using >600 here still results in 429, since the clients are not synced in any way.
       # 600 appears enough to avoid 429 responses and still get enough throughput.
       http-rate-limit-per-second: 600
-      wikiids: -labswiki
 
   # (job|task)Manager.resource are k8s Resource configs, and used by the
   # flink-kubernetes-operator to request resources from k8s.
