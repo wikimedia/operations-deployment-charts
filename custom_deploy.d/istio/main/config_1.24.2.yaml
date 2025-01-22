@@ -2,7 +2,7 @@ apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   hub: docker-registry.discovery.wmnet/istio
-  tag: 1.15.7-2
+  tag: 1.24.2-1
   meshConfig:
     # This enables access logging in istio-proxy, which means all sidecars
     # as well as all ingress and egress gateways.
@@ -66,8 +66,6 @@ spec:
     global:
       istioNamespace: istio-system
       jwtPolicy: third-party-jwt
-      # Use the Mesh Control Protocol (MCP) for configuring Mixer and Pilot. Requires galley (--set galley.enabled=true).
-      useMCP: false
       logAsJson: true
       logging:
         # Default: default:info
