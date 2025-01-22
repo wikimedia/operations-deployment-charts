@@ -5,9 +5,6 @@ metadata:
   namespace: kube-system
   labels:
     k8s-app: kube-dns
-    # TODO: Deprecated label, should be removed at some point.
-    # https://github.com/kubernetes/kubernetes/issues/72757
-    kubernetes.io/cluster-service: "true"
     {{- include "coredns.labels" . | nindent 4 }}
 spec:
   selector:

@@ -9,12 +9,14 @@ data:
   Corefile: |
     .:53 {
         errors
-        health
+        health {
+            lameduck 5s
+        }
         ready
         nsid
         kubernetes cluster.local in-addr.arpa ip6.arpa {
-          pods insecure
-          fallthrough in-addr.arpa ip6.arpa
+            pods insecure
+            fallthrough in-addr.arpa ip6.arpa
         }
         {{- if hasKey ( .Values.coredns | default dict ) "rewrite_actions" }}
         {{- range $action, $configs := .Values.coredns.rewrite_actions }}
@@ -25,7 +27,7 @@ data:
         {{- end }}
         {{- end }}
         {{- end }}
-        prometheus :9153
+        prometheus 0.0.0.0:9153
         forward . /etc/resolv.conf
         cache 30
         loop

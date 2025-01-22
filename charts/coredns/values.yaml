@@ -6,7 +6,8 @@ replicaCount: 2
 
 image:
   repository: docker-registry.wikimedia.org/coredns
-  tag: 1.8.7-1
+  # Overrides the images tags (whose default is the chart appVersion).
+  tag: ""
   pullPolicy: IfNotPresent
 
 service:
