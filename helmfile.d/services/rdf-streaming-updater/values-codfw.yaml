@@ -5,6 +5,7 @@
 app:
   config_files:
     rdf-streaming-updater-config.properties:
+      use_event_streams_api: true
       brokers: kafka-main-codfw.external-services.svc.cluster.local:9093
       # TODO: This value is also constructed by the chart and fed to flink config, but the chart can't
       # know anything about our specific application. Is there some way to read the flink value
