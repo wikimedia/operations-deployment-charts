@@ -1,23 +1,28 @@
-annotations:
-  # This chart is based on upstream version v1.10.1
-  wmf/upstreamVersion: v1.10.1
 apiVersion: v2
-# appVersion derives from upstream as it is used as docker image tag by default
-appVersion: 1.10.1-2
-version: 1.10.6
+name: cert-manager
 description: A Helm chart for cert-manager
-home: https://github.com/cert-manager/cert-manager
-icon: https://raw.githubusercontent.com/cert-manager/cert-manager/d53c0b9270f8cd90d908460d69502694e1838f5f/logo/logo-small.png
+home: https://cert-manager.io
+icon: https://raw.githubusercontent.com/cert-manager/community/4d35a69437d21b76322157e6284be4cd64e6d2b7/logo/logo-small.png
 keywords:
   - cert-manager
   - kube-lego
   - letsencrypt
   - tls
-kubeVersion: ">= 1.20.0-0"
+annotations:
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/category: security
+  artifacthub.io/prerelease: "false"
+  artifacthub.io/signKey: |
+    fingerprint: 1020CF3C033D4F35BAE1C19E1226061C665DF13E
+    url: https://cert-manager.io/public-keys/cert-manager-keyring-2021-09-20-1020CF3C033D4F35BAE1C19E1226061C665DF13E.gpg
+  wmf/upstreamVersion: v1.16.3
 maintainers:
-  - email: cert-manager-maintainers@googlegroups.com
-    name: cert-manager-maintainers
+  - name: cert-manager-maintainers
+    email: cert-manager-maintainers@googlegroups.com
     url: https://cert-manager.io
-name: cert-manager
 sources:
   - https://github.com/cert-manager/cert-manager
+kubeVersion: ">= 1.22.0-0"
+version: 1.16.3
+# appVersion derives from upstream as it is used as docker image tag by default
+appVersion: 1.16.3-1
