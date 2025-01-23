@@ -1,7 +1,6 @@
 app:
   config_files:
     rdf-streaming-updater-config.properties:
-      use_event_streams_api: true
       brokers: kafka-main-eqiad.external-services.svc.cluster.local:9093
       parallelism: 1
       produce_side_outputs: false
