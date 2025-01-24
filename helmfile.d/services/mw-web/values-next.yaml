@@ -1,5 +1,6 @@
 resources:
-  replicas: 2  # TODO: T383845 - Tune provisioning for initial traffic ramp.
+  # T383845 - 30 replicas is 10% of the size of main (293) as of 2025-01-24.
+  replicas: 30
 
 mesh:
   public_port: 4454
