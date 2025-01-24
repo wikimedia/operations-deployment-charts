@@ -116,11 +116,9 @@ module Tester
         # validate_yaml has a better diagnostic output
         # than what helm gives us.
         #
-        # So here we proceed to YAML validation even if
-        # outcome.ok? is false as long as there was any
-        # output to stdout (e.g. there is something to
-        # validate).
-        next if outcome.out.nil?
+        # Assets are responsible of ignoring errors (TestOutcome.ignore_errors)
+        # in case they wish to fall through to the YAML validation.
+        next if outcome.out.nil? or !outcome.ok?
 
         r[label] = validate_yaml outcome
         next unless r[label].ok?
@@ -419,6 +417,7 @@ module Tester
         lints = @result[:lint].values.map(&:ok?)
         return false if lints.include?(false)
       end
+
       return false unless validate_errors.empty?
 
       true
@@ -476,6 +475,11 @@ module Tester
           nil,
           tmpdir
         )
+        # if out.ok?
+        #   puts "Running '#{helmfile_command}'".green
+        # else
+        #   puts "Running '#{helmfile_command}' failed with #{out.exit_status}".red
+        # end
       end
       out
     end
@@ -495,7 +499,7 @@ module Tester
       fix.each do |label, environment|
         outcomes[label] = _helmfile(command: 'template', environment: environment, source: src)
         # If we got a yaml parse error, we will let the validation
-        # take that into account, and output better diagnostics.
+        # take that into account, and output better diagnostics from yaml parser.
         outcomes[label].ignore_errors if outcomes[label].err =~ /YAML parse error/
       end
       outcomes

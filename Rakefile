@@ -555,8 +555,9 @@ task :check_deployments, %i[tests deployments] => [:refresh_fixtures] do |_, arg
 end
 
 desc 'Run checks for the admin section'
-task check_admin: %i[repo_update refresh_fixtures] do
-  Rake::Task[:check].invoke('admin', nil, nil)
+task :check_admin, %i[tests envs] => [:repo_update, :refresh_fixtures] do |_, args|
+  args = {} if args.nil?
+  Rake::Task[:check].invoke('admin', args.fetch(:tests, nil), args.fetch(:envs, nil))
   Rake::Task[:check].reenable
 end
 
