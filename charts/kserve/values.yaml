@@ -30,6 +30,19 @@ kserve:
       limits:
         cpu: 100m
         memory: 300Mi
+    # -- Pod Security Context.
+    # https://kubernetes.io/docs/tasks/configure-pod-container/security-context
+    securityContext:
+      runAsNonRoot: true
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
+      # We added this extra bit to support PSS, see T362978 and T369493
+      seccompProfile:
+        type: RuntimeDefault
 
   storage_initializer:
     image: kserve-storage-initializer

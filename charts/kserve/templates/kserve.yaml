@@ -21100,13 +21100,17 @@ spec:
             cpu: {{ $.Values.kserve.controller.resources.requests.cpu }}
             memory: {{ $.Values.kserve.controller.resources.requests.memory }}
         securityContext:
-          allowPrivilegeEscalation: false
+          {{- with .Values.kserve.controller.containerSecurityContext}}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         volumeMounts:
         - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: cert
           readOnly: true
+      {{- with .Values.kserve.controller.securityContext}}
       securityContext:
-        runAsNonRoot: true
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: kserve-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:
