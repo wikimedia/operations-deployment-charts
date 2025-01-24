@@ -138,8 +138,7 @@ module Tester
     ASSET = AdminAsset
     # We have just one asset here - the admin helmfile.
     def find_assets(_pattern, to_run)
-      asset = self.class::ASSET.new(self.class::HELMFILE_PATH, nil)
-      asset.filter_fixtures(to_run)
+      asset = self.class::ASSET.new(self.class::HELMFILE_PATH, to_run)
       { 'admin' => asset }
     end
   end

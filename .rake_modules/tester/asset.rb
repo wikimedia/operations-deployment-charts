@@ -40,7 +40,6 @@ module Tester
       @should_run = to_run.nil? || to_run.include?(name)
       # After this point, we have expensive operations.
       # Avoid running them unless we need to.
-
       @fixtures = if should_run?
                     # Test cases we'll use when executing commands on the asset.
                     collect_fixtures
@@ -471,8 +470,9 @@ module Tester
         # --skip-deps skips updating repositories and helm chart dependencies over and over again.
         # This requires the dependencies to be available in the git checkout, but this is how we currently
         # handle it anyways.
+        helmfile_command = "HELM_HOME='#{helm_home}' helmfile -e '#{environment}' -f '#{@helmfile}' '#{command}' --skip-deps"
         out = _exec(
-          "HELM_HOME='#{helm_home}' helmfile -e '#{environment}' -f '#{@helmfile}' '#{command}' --skip-deps",
+          helmfile_command,
           nil,
           tmpdir
         )
@@ -680,14 +680,24 @@ module Tester
   class AdminAsset < HelmfileAsset
 
     def initialize(path, to_run = nil)
-      super
-      @kube_version = collect_kube_version(path) if should_test?
+      @to_run = to_run
+      # Don't pass to_run to the super class as it will check if it includes the filename in path (which it does not for AdminAssets)
+      super(path, nil)
+      if should_test? and !@fixtures.nil?
+        @kube_version = collect_kube_version(path)
+      end
+    end
+
+    def collect_fixtures(chdir = nil)
+      fixtures = super
+      return filter_fixtures(fixtures) unless fixtures.nil?
     end
 
     # Given we have only one admin asset with multiple "fixtures",
     # We allow to actually select the fixtures
-    def filter_fixtures(to_run)
-      @fixtures.filter! { |_, v| to_run.include?(v) } unless to_run.nil?
+    def filter_fixtures(fixtures)
+      fixtures.filter! { |_, v| @to_run.include?(v) } unless @to_run.nil?
+      return fixtures
     end
 
     private

@@ -262,8 +262,9 @@ end
 ## RAKE TASKS admin_ng
 
 desc 'Runs helmfile lint on admin_ng for all environments'
-task admin_lint: %i[check_dep repo_update refresh_fixtures] do
-  Rake::Task[:check].invoke('admin', nil, nil)
+task admin_lint: %i[check_dep repo_update refresh_fixtures] do |_t, args|
+  envs = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
+  Rake::Task[:check].invoke('admin', 'lint', envs)
   Rake::Task[:check].reenable
 end
 

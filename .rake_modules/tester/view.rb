@@ -10,10 +10,10 @@ module Tester
       @args = args
       tpl_dir = File.join File.dirname(__FILE__), 'templates'
       kind = args[:kind]
-      # Use the chrts template for scaffold
+      # Use the charts template for scaffold
       kind = 'charts' if kind == 'scaffold'
       template = File.read(File.join(tpl_dir, "#{kind}.erb"))
-      @tpl = ERB.new(template, nil, '-')
+      @tpl = ERB.new(template, trim_mode: '-')
     end
 
     def has_lv?
