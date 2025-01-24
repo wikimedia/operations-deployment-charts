@@ -1,0 +1,372 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+main_app:
+  requests:
+    cpu: 4000m
+    memory: 1000Mi
+  limits:
+    cpu: 5000m
+    memory: 2800Mi
+resources:
+  replicas: 1
+
+service:
+  deployment: production
+  expose_http: false
+  port:
+    nodePort: 8444
+
+mesh:
+  public_port: null
+  tracing:
+    enabled: true
+    sampling: 100
+  enabled: true
+  certmanager:
+    enabled: true
+    # WARNING: If you change the SAN here, also update:
+    #  _mediawiki-common_/global.yaml
+    #  private/modules/secret/secrets/certificates/certificate.manifests.d/mediawiki.certs.yaml
+    extraFQDNs:
+      - "*.m.mediawiki.org"
+      - "*.m.wikibooks.org"
+      - "*.m.wikidata.org"
+      - "*.m.wikimedia.org"
+      - "*.m.wikimediafoundation.org"
+      - "*.m.wikinews.org"
+      - "*.m.wikipedia.org"
+      - "*.m.wikiquote.org"
+      - "*.m.wikisource.org"
+      - "*.m.wikiversity.org"
+      - "*.m.wikivoyage.org"
+      - "*.m.wiktionary.org"
+      - "*.mediawiki.org"
+      - "*.planet.wikimedia.org"
+      - "*.wikibooks.org"
+      - "*.wikidata.org"
+      - "*.wikifunctions.org"
+      - "*.wikimedia.org"
+      - "*.wikimediafoundation.org"
+      - "*.wikinews.org"
+      - "*.wikipedia.org"
+      - "*.wikiquote.org"
+      - "*.wikisource.org"
+      - "*.wikiversity.org"
+      - "*.wikivoyage.org"
+      - "*.wiktionary.org"
+      - "*.wmfusercontent.org"
+      - "*.zero.wikipedia.org"
+      - "api-ro.discovery.wmnet"
+      - "api-rw.discovery.wmnet"
+      - "api.svc.codfw.wmnet"
+      - "api.svc.eqiad.wmnet"
+      - "appservers-ro.discovery.wmnet"
+      - "appservers-rw.discovery.wmnet"
+      - "appservers.svc.codfw.wmnet"
+      - "appservers.svc.eqiad.wmnet"
+      - "jobrunner.discovery.wmnet"
+      - "jobrunner.svc.codfw.wmnet"
+      - "jobrunner.svc.eqiad.wmnet"
+      - "mediawiki.org"
+      - "mw-api-ext-ro.discovery.wmnet"
+      - "mw-api-ext.discovery.wmnet"
+      - "mw-api-ext.svc.codfw.wmnet"
+      - "mw-api-ext.svc.eqiad.wmnet"
+      - "mw-api-int-ro.discovery.wmnet"
+      - "mw-api-int.discovery.wmnet"
+      - "mw-api-int.svc.codfw.wmnet"
+      - "mw-api-int.svc.eqiad.wmnet"
+      - "mw-wikifunctions-ro.discovery.wmnet"
+      - "mw-wikifunctions.discovery.wmnet"
+      - "mw-wikifunctions.svc.codfw.wmnet"
+      - "mw-wikifunctions.svc.eqiad.wmnet"
+      - "videoscaler.discovery.wmnet"
+      - "videoscaler.svc.codfw.wmnet"
+      - "videoscaler.svc.eqiad.wmnet"
+      - "w.wiki"
+      - "wikibooks.org"
+      - "wikidata.org"
+      - "wikifunctions.org"
+      - "wikimedia.org"
+      - "wikimediafoundation.org"
+      - "wikinews.org"
+      - "wikipedia.org"
+      - "wikiquote.org"
+      - "wikisource.org"
+      - "wikiversity.org"
+      - "wikivoyage.org"
+      - "wiktionary.org"
+      - "wmfusercontent.org"
+  concurrency: "12"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      memory: 500Mi
+
+
+# See the dockerfiles for the php-fpm base image to know what can be tweaked.
+# Those can be passed via config.public above.
+php:
+  timeout: 201
+  slowlog_timeout: 5
+  workers: 8
+  servergroup: kube-dumps
+  fcgi_mode: FCGI_UNIX
+  exporter:
+    version: 0.0.4-20240623
+  httpd:
+    exporter:
+      version: 0.0.4-20240623
+    requests:
+      cpu: 200m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+  opcache:
+    nofiles: "32531"
+    size: 500
+    interned_strings_buffer: "50"
+  apc:
+    size: 768
+
+mw:
+  domain_suffix: "org"
+  httpd:
+    enabled: false
+  logging:
+    udp2log_ratelimit_interval: 0 # Disable rate limiting for mediawiki-dumps-legacy
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200m
+  egress:
+    etcd_servers:
+      # conf1007
+      - ip: 10.64.0.207
+        port: 4001
+      - ip: 2620:0:861:101:10:64:0:207
+        port: 4001
+      # conf1008
+      - ip: 10.64.16.110
+        port: 4001
+      - ip: 2620:0:861:102:10:64:16:110
+        port: 4001
+      # conf1009
+      - ip: 10.64.48.154
+        port: 4001
+      - ip: 2620:0:861:107:10:64:48:154
+        port: 4001
+      # conf2004
+      - ip: 10.192.16.45
+        port: 4001
+      - ip: 2620:0:860:102:10:192:16:45
+        port: 4001
+      # conf2005
+      - ip: 10.192.32.52
+        port: 4001
+      - ip: 2620:0:860:103:10:192:32:52
+        port: 4001
+      # conf2006
+      - ip: 10.192.48.59
+        port: 4001
+      - ip: 2620:0:860:104:10:192:48:59
+        port: 4001
+    kubestage_servers:
+      # termbox-test - all kubestage nodes
+      - ip: 10.192.0.195
+        port: 3031
+      - ip: 10.192.16.137
+        port: 3031
+      - ip: 10.64.16.55
+        port: 3031
+      - ip: 10.64.48.106
+        port: 3031
+cache:
+  mcrouter:
+    enabled: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 700m
+        memory: 200Mi
+# network egress for various services
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      # swift, used by ThumbnailRenderer
+      # ms-fe.svc.eqiad.wmnet.
+      - cidr: 10.2.2.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # ms-fe.svc.codfw.wmnet.
+      - cidr: 10.2.1.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # url-downloader is covered by the default egress rules
+      # Common defs
+      #IRC - TODO: define the port range once we upgrade k8s
+      # irc1003
+      - cidr: 208.80.154.72/32
+      # irc2003
+      - cidr: 208.80.153.10/32
+      # xenon / arclamp
+      # arclamp1001
+      - cidr: 10.64.16.88/32
+        ports:
+          - protocol: TCP
+            port: 6379
+      # arclamp2001
+      - cidr: 10.192.48.82/32
+        ports:
+          - protocol: TCP
+            port: 6379
+      # excimer ('excimer-ui-server' in mediawiki-config)
+      # webperf1003 / performance.discovery.wmnet
+      - cidr: 10.64.32.23/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # webperf2003 / performance.discovery.wmnet
+      - cidr: 10.192.32.23/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # statsd
+      # graphite1005 / statsd.eqiad.wmnet
+      - cidr: 10.64.16.81/32
+        ports:
+          - protocol: UDP
+            port: 8125
+      # graphite2004 / statsd.eqiad.wmnet
+      - cidr: 10.192.16.37/32
+        ports:
+          - protocol: UDP
+            port: 8125
+      # eventlogging
+      # eventlog1001
+      - cidr: 10.64.32.167/32
+        ports:
+          - protocol: TCP
+            port: 8421
+      # logstash
+      # logstash.svc.eqiad.wmnet
+      - cidr: 10.2.2.36/32
+      # DC-specific defs
+      ## Eqiad
+      # Poolcounter
+      # poolcounter1006
+      - cidr: 10.64.0.150/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # poolcounter1007
+      - cidr: 10.64.32.137/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # udp2log
+      # mwlog1002
+      - cidr: 10.64.32.141/32
+        ports:
+          - protocol: UDP
+            port: 8420
+      # redis_lock
+      # rdb1011 A1
+      - cidr: 10.64.0.36/32
+      # rdb1012 D1
+      - cidr: 10.64.48.49/32
+      # rdb1013 B6
+      - cidr: 10.64.16.18/32
+      - cidr: 2620:0:861:102:10:64:16:18/128
+      # rdb1014 D3
+      - cidr: 10.64.48.42/32
+      - cidr: 2620:0:861:107:10:64:48:42/128
+      # wiki-mail-eqiad
+      - cidr: 208.80.154.91/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:861:3:208:80:154:91/128
+        ports:
+          - protocol: TCP
+            port: 25
+      # mx-out1001.wikimedia.org
+      - cidr: 208.80.154.5/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:861:1:208:80:154:5/128
+        ports:
+          - protocol: TCP
+            port: 25
+      ## Codfw
+      # Poolcounter
+      # poolcounter2005
+      - cidr: 10.192.0.9/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # poolcounter2006
+      - cidr: 10.192.16.6/32
+        ports:
+          - protocol: TCP
+            port: 7531
+      # udp2log
+      # mwlog2002
+      - cidr: 10.192.32.9/32
+        ports:
+          - protocol: UDP
+            port: 8420
+      # redis_lock
+      # rdb2007 A5
+      - cidr: 10.192.0.198/32
+      # rdb2009 C3
+      - cidr: 10.192.32.8/32
+      # wiki-mail-codfw
+      - cidr: 208.80.153.46/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:860:2:208:80:153:46/128
+        ports:
+          - protocol: TCP
+            port: 25
+      # mx-out2001.wikimedia.org
+      - cidr: 208.80.153.13/32
+        ports:
+          - protocol: TCP
+            port: 25
+      - cidr: 2620:0:860:1:208:80:153:13/128
+        ports:
+          - protocol: TCP
+            port: 25
+
+# Only deploy to nodes without spinning disks T288345
+affinity:
+  nodeSelector:
+    node.kubernetes.io/disk-type: ssd
+kafka:
+  allowed_clusters:
+    - logging-eqiad
+    - logging-codfw
+
+# These are specific defintions pertaining to running dumps
+dumps:
+  enabled: true
+  persistence:
+    enabled: true
+    claim_name: "mediawiki-dumps-legacy-fs"
+    mount_path: "/mnt/dumpsdata"
+    storage_class: "ceph-cephfs-dumps"
+    size: "10Gi"
+
+ingress:
+  enabled: false
