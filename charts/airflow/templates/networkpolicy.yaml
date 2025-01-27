@@ -142,3 +142,30 @@ spec:
     {{- end }}
 {{- end }}
 {{- end }}
+
+
+{{- if $.Values.mesh.enabled }}
+{{/* This networkpolicy allows ingress on the envoy pod for every port associated with the registered discovery listeners */}}
+{{- if .Values.discovery | default false }}
+{{- if .Values.discovery.listeners | default false }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-envoy-ingress
+spec:
+  types:
+    - Ingress
+  selector: "app == 'airflow'  && release == '{{ $.Release.Name }}' && component == 'envoy'"
+  ingress:
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports:
+      {{- range $name := .Values.discovery.listeners }}
+      {{- $listener := index $.Values.services_proxy $name }}
+      - {{ $listener.port }}
+      {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

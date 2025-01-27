@@ -27,3 +27,29 @@ spec:
       port: {{ $.Values.scheduler.local_executor_api_port }}
       targetPort: {{ $.Values.scheduler.local_executor_api_port }}
 {{- end }}
+
+{{- if $.Values.mesh.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy
+spec:
+  type: {{ template "base.helper.serviceType" . }}
+  selector:
+    app: {{ template "base.name.chart" . }}
+    routed_via: {{ .Release.Name }}
+    component: envoy
+  {{- if $.Values.discovery | default false }}
+  {{- if $.Values.discovery.listeners | default false }}
+  ports:
+  {{- range $name := $.Values.discovery.listeners }}
+  {{- $listener := index $.Values.services_proxy $name }}
+  - name: {{ $listener.name }}
+    port: {{ $listener.port }}
+    targetPort: {{ $listener.port }}
+    protocol: TCP
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}

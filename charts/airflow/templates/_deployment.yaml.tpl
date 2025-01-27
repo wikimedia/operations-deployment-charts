@@ -188,3 +188,46 @@ spec:
 
 {{- end }}
 {{- end }}
+
+{{- define "deployment.envoy" }}
+{{- if $.Values.mesh.enabled }}
+{{/*
+  We deploy a standalone envoy instance to proxy requests to the service mesh.
+
+  We decided to do this instead of starting an envoy sidecar along with airflow task pods
+  because it is less complex, requires less external moving parts (we needed the a specific
+  controller to exec into the envoy sidecar and SIGTERM it when the airflow task container was
+  done, to allow the pod to terminate), and this setup was inherently racy.
+  Indeed, the task pod was racing envoy, and could send a request to the mesh before envoy
+  was ready to receive them.
+
+  All in all, this is cleaner, and can be observable via
+  https://grafana.wikimedia.org/d/b1jttnFMz/envoy-telemetry-k8s
+
+  */}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: envoy
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: envoy
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      containers:
+      {{- include "mesh.deployment.container" . | indent 6 }}
+      volumes:
+      {{- include "mesh.deployment.volume" . | indent 6 }}
+{{- end }}
+{{- end }}

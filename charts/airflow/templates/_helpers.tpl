@@ -116,12 +116,15 @@ env:
 - name: KRB5_PRINCIPAL
   value: {{ $.Values.config.airflow.config.kerberos.principal }}
 {{- end }}
-- name: REQUESTS_CA_BUNDLE
-  value: /etc/ssl/certs/ca-certificates.crt
+{{- include "airflow.env.requests-ca-bundle" . }}
 - name: SCARF_ANALYTICS
   value: "False"
 {{- end }}
 
+{{- define "airflow.env.requests-ca-bundle" }}
+- name: REQUESTS_CA_BUNDLE
+  value: /etc/ssl/certs/ca-certificates.crt
+{{- end }}
 
 {{/* Represents a Go variable as an INI value */}}
 {{- define "toIniValue" -}}
@@ -352,10 +355,11 @@ volumeMounts:
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
-{{- if .profiles }}
 {{- if .header }}
 env:
 {{- end }}
+{{- include "airflow.env.requests-ca-bundle" .Root }}
+{{- if .profiles }}
 {{- if has "hadoop" .profiles }}
 {{- include "app.airflow.env.hadoop" .Root }}
 {{- end }}
@@ -414,7 +418,6 @@ spec:
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
-
 {{- end }}
 
 {{- define "kubernetes-pod-operator.pod-template" }}
