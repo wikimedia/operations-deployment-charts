@@ -38,3 +38,8 @@ scheduler:
 
 postgresql:
   cloudnative: false
+
+discovery:
+  listeners:
+  - mw-api-int  # to be able to talk to /w/api.php?action=streamsconfig
+  - mw-misc     # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx

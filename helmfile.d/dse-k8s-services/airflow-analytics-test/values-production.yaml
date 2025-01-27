@@ -22,3 +22,8 @@ ingress:
 gitsync:
   # Some DAGS in analytics_test import functions from the analytics folder
   extra_dags_folders: [analytics]
+
+discovery:
+  listeners:
+  - mw-api-int  # to be able to talk to /w/api.php?action=streamsconfig
+  - mw-misc     # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
