@@ -2,6 +2,12 @@ resources:
   # T383845 - 22 replicas is 10% of the size of main (220) as of 2025-01-24.
   replicas: 22
 
+# TODO: T383845 - Temporarily increase maxUnavailable. Needs revised down as
+# the deployment grows.
+strategy:
+  rollingUpdate:
+    maxUnavailable: 20%
+
 mesh:
   public_port: 4455
   tracing:
