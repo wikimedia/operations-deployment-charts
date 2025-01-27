@@ -30,7 +30,7 @@ app:
           stream: mediawiki.content_history_reconcile.v1:1.2.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -38,7 +38,7 @@ app:
           stream: mediawiki.content_history_reconcile_enriched.v1:1.2.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
@@ -52,7 +52,7 @@ app:
           stream: mw_content_history_reconcile_enrich.error:2.1.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
