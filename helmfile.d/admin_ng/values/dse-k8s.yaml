@@ -107,9 +107,9 @@ namespaces:
       istio-injection: disabled
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
-
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org
+    enableJobSidecarController: true
     limitranges:
       container:
         min:
