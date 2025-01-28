@@ -135,34 +135,42 @@ namespaces:
           cpu: "4"
   airflow-analytics-test:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-analytics-test.wikimedia.org
   airflow-wmde:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-wmde.wikimedia.org
   airflow-research:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-research.wikimedia.org
   airflow-search:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-search.wikimedia.org
   airflow-analytics:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-analytics.wikimedia.org
   airflow-platform-eng:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-platform-eng.wikimedia.org
   airflow-analytics-product:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-analytics-product.wikimedia.org
   airflow-ml:
     deployClusterRole: deploy-airflow
+    enableJobSidecarController: true
     tlsExtraSANs:
       - airflow-ml.wikimedia.org
   echoserver: {}
