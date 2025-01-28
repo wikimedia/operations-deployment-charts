@@ -60,20 +60,6 @@ spec:
     pilot:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
-  addonComponents:
-    pilot:
-      enabled: true
-      k8s:
-        securityContext:
-          runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
-    prometheus:
-      enabled: false
-    grafana:
-      enabled: false
-    zipkin:
-      enabled: false
   components:
     # CNI-CONFIG:
     # This hack is meant to avoid deploying the install-cni upstream
@@ -153,3 +139,10 @@ spec:
               name: https
               protocol: TCP
               nodePort: 30443
+    pilot:
+      enabled: true
+      k8s:
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
