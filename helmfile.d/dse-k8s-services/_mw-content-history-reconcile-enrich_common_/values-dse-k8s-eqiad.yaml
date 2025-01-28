@@ -11,7 +11,7 @@ app:
     # there are more tasks running that can process the messages.
     # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
     # still produces messages in the proper order, per page.
-    replicas: 20
+    replicas: 2
     resource:
       cpu: 2
       memory: 3000m
