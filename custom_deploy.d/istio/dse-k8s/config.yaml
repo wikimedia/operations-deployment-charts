@@ -9,32 +9,7 @@ spec:
     # https://istio.io/latest/docs/tasks/observability/logs/
     accessLogFile: /dev/stdout
     accessLogEncoding: JSON
-    outboundTrafficPolicy:
-      mode: 'REGISTRY_ONLY'
-    # Disable zipkin
-    # See https://github.com/istio/istio/issues/33968
-    enableTracing: false
-    defaultConfig:
-      tracing: {}
-      proxyStatsMatcher:
-        inclusionRegexps:
-          - ".*http_local_rate_limit.*"
   values:
-    # CNI-CONFIG:
-    # This config is deployed via puppet, the following settings are not really
-    # used. They are meant to be used by the install-cni DaemonSet that upstream
-    # provides, but that we don't really want to use for security reasons.
-    # See the other CNI-CONFIG tags for more info.
-    cni:
-      cniBinDir: /opt/cni/bin
-      cniConfDir: /etc/cni/net.d
-      cniConfFileName: 10-calico.conflist
-      chained: true
-      excludeNamespaces:
-        - istio-system
-        - kube-system
-        - knative-serving
-        - cert-manager
     global:
       imagePullPolicy: IfNotPresent
       logAsJson: true
@@ -61,30 +36,8 @@ spec:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
   components:
-    # CNI-CONFIG:
-    # This hack is meant to avoid deploying the install-cni upstream
-    # DaemonSet, since we prefer to deploy the cni binaries and config
-    # via puppet.
     cni:
-      enabled: true
-      k8s:
-        securityContext:
-          runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
-        overlays:
-        - apiVersion: apps/v1
-          kind: DaemonSet
-          name: istio-cni-node
-          patches:
-          - path: kind
-            value: Deployment
-          - path: spec.replicas
-            value: 0
-          - path: spec.strategy
-            value:
-              type: Recreate
-          - path: spec.updateStrategy
+      enabled: false
     ingressGateways:
       # This is the default Ingress Gateway installed via istioctl, the one
       # that should be exposed to LVS.
