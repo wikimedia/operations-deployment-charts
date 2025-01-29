@@ -176,7 +176,7 @@ services:
       - "@wikimedia/kartotherian-tilelive-switch"
       - ../lib/babel
       - ../lib/overzoom
-      - "@mapbox/tilelive-vector"
+      - "@wikimedia/tilelive-vector"
       - "@mapbox/tilejson"
       variables:
         osmdb-pswd: { env(KARTOTHERIAN_POSTGRES_OSMDB_PASSWORD) }
