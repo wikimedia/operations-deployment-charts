@@ -60,7 +60,7 @@ spec:
     pilot:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
-  addonComponents:
+  components:
     pilot:
       enabled: true
       k8s:
@@ -68,13 +68,6 @@ spec:
           runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
-    prometheus:
-      enabled: false
-    grafana:
-      enabled: false
-    zipkin:
-      enabled: false
-  components:
     # CNI-CONFIG:
     # This hack is meant to avoid deploying the install-cni upstream
     # DaemonSet, since we prefer to deploy the cni binaries and config
