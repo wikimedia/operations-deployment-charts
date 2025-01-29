@@ -28,17 +28,6 @@ main_app:
     httpGet:
       path: /
       port: 8080
-cronjob:
-  enabled: false
-  serviceAccount: default
-  schedule: "0 3 * * *"
-  image:
-    registry: docker-registry.discovery.wmnet
-    name: kubectl
-    version: latest
-    pull_policy: IfNotPresent
-  env: {}
-  command: []
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
