@@ -16,6 +16,12 @@ app:
   limits:
     cpu: 500m
     memory: 500Mi
+  tegola:
+    # We hit the Tegola's cluster local svc to skip the envoy proxy
+    # and the Tegola's discovery endpoint, keeping the traffic local
+    # to Wikikube.
+    # Note: this needs NODE_EXTRA_CA_CERTS set later on.
+    endpoint: https://tegola-vector-tiles-main-tls-service.tegola-vector-tiles.svc.cluster.local:4105
 
 monitoring:
   enabled: true
@@ -55,8 +61,11 @@ discovery:
   listeners:
   - wdqs-internal
   - mwapi-async
-  - tegola-vector-tiles
 
 networkpolicy:
   egress:
     enabled: true
+
+config:
+  public:
+    NODE_EXTRA_CA_CERTS: /etc/ssl/certs/wmf-ca-certificates.crt
