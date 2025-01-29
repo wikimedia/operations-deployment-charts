@@ -105,8 +105,6 @@ namespaces:
     allowCriticalPods: true
     labels:
       istio-injection: disabled
-  sidecar-controller:
-    systemNamespace: true
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
