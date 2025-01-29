@@ -45,7 +45,7 @@ spec:
   ports:
   {{- range $name := $.Values.discovery.listeners }}
   {{- $listener := index $.Values.services_proxy $name }}
-  - name: {{ $listener.name }}
+  - name: {{ $name }}
     port: {{ $listener.port }}
     targetPort: {{ $listener.port }}
     protocol: TCP
