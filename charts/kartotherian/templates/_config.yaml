@@ -81,41 +81,11 @@ services:
               - id: poi_label
               - id: road_label
 
-        # Tegola backend - secondary source
-        http-tegola-secondary:
-          uri: {{ .Values.app.tegola.endpoint }}/maps/osm/{z}/{x}/{y}.pbf
-          setInfo:
-            maxzoom: 15
-            vector_layers:
-              - id: landuse
-              - id: waterway
-              - id: water
-              - id: aeroway
-              - id: building
-              - id: road
-              - id: admin
-              - id: country_label
-              - id: place_label
-              - id: poi_label
-              - id: road_label
-
-        # Mirror requests to tegola
-        mirror:
-          uri: mirror://
-          params:
-            source: { ref: http-tegola }
-            secondarySource: { ref: http-tegola-secondary }
-            enableMirror: false
-            loadBalancer:
-              bucketSize: 1000 # milliseconds
-              totalBuckets: 10 # number of buckets in the histogram
-              threshold: 0
-
         # expands name_ json blob into several name_{code} tags
         genall:
           uri: json2tags://
           params:
-            source: {ref: mirror}
+            source: {ref: http-tegola}
             tag: name
 
         # OSM PBF source
