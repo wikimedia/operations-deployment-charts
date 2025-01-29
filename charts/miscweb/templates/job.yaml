@@ -15,11 +15,11 @@ spec:
     metadata:
       name: {{ template "base.name.release" . }}-restart-deployment
     spec:
-      serviceAccountName: {{ template "base.name.release" . }}
       template:
         spec:
+          serviceAccountName: {{ template "base.name.release" . }}
           containers:
-            image: {{ .Values.cronjob.image.registry }}/{{ .Values.cronjob.image.name }}:{{ .Values.cronjob.image.version }}
+          - image: {{ .Values.cronjob.image.registry }}/{{ .Values.cronjob.image.name }}:{{ .Values.cronjob.image.version }}
             imagePullPolicy: {{ .Values.cronjob.image.pull_policy }}
             name: restart-deployment
             command:
