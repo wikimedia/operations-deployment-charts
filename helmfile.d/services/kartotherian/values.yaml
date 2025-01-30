@@ -11,10 +11,10 @@ app:
   image: wikimedia/mediawiki-services-kartotherian
   version: 2025-01-27-162855-production
   requests:
-    cpu: 500m
+    cpu: 1000m
     memory: 500Mi
   limits:
-    cpu: 500m
+    cpu: 1000m
     memory: 500Mi
   tegola:
     # We hit the Tegola's cluster local svc to skip the envoy proxy
