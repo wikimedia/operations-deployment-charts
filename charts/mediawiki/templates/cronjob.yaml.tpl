@@ -2,7 +2,7 @@
 {{- $can_run_maintenance := include "mw.maintenance.can_run" . | include "mw.str2bool" }}
 {{- if $can_run_maintenance }}
 {{ $release := include "base.name.release" . }}
-{{- range $job, $jobConfig := .Values.mwcron.jobs }}
+{{- range $jobConfig := .Values.mwcron.jobs }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
