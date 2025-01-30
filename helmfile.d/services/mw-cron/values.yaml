@@ -1,0 +1,31 @@
+mwcron:
+  enabled: true
+  jobs:
+    - name: "test_version"
+      schedule: "*/10 * * * *"
+      command:
+        - "/usr/local/bin/foreachwikiindblist"
+        - "testwikis.dblist"
+        - "Version.php"
+      labels:
+        team: sre-serviceops
+        script: Version.php
+      comment: "Run version.php on all wikis in testwikis.dblist every 10 minutes to test cronjobs"
+mw:
+  httpd:
+    enabled: false
+  logging:
+    rsyslog: true
+
+# These are enabled to check the pod.kubernetes.io/sidecars annotation
+cache:
+  mcrouter:
+    enabled: true
+
+mesh:
+  enabled: true
+  public_port: ~
+
+monitoring:
+  enabled: false
+  statsd: ~
