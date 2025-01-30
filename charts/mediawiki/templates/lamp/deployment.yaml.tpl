@@ -105,7 +105,8 @@
   # MediaWiki cronjobs may require a tty to run, as a first approximation make it always true.
   # TODO: Eventually, determine which cronjobs need a tty and make it configurable.
   tty: true
-  command: {{ .Values.mwcron.command }}
+  command:
+{{ .JobConfig.command | toYaml | indent 4 }}
   {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:

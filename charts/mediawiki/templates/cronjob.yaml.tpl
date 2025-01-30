@@ -52,14 +52,14 @@ spec:
           containers:
           # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
           # above.
-          {{- include "lamp.deployment" $ | indent 10 }}
+          {{- include "lamp.deployment" (merge $ (dict "JobConfig" $jobConfig)) | indent 10 }}
           {{- include "cache.mcrouter.deployment" $ | indent 10 }}
           {{- include "mesh.deployment.container" $ | indent 10}}
           {{- include "rsyslog.deployment" $ | indent 10 }}
           {{- include "base.statsd.container" $ | indent 10 }}
           volumes:
-          {{- include "mw.volumes" $ | indent 10}}
-          {{- include "base.statsd.volume" $ | indent 10 }}
+          {{- include "mw.volumes" $ | indent 12}}
+          {{- include "base.statsd.volume" $ | indent 12 }}
           # Maintenance cronjobs should be idempotent, or at worst duplicate work should be harmless.
           # However, as a first pass, we don't want to restart them on failure so we get good signal for
           # the migration.
