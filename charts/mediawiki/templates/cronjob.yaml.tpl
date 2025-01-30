@@ -1,6 +1,7 @@
-{{- if .Values.mwcron.enabled }}
-{{- $can_run_maintenance := include "mw.maintenance.can_run" . | include "mw.str2bool" }}
-{{- if $can_run_maintenance }}
+{{- $flags := fromJson (include "mw.feature_flags" . ) }}
+{{- if $flags.cron }}
+{{- $can_run := include "mw.can_run" . | include "mw.str2bool" }}
+{{- if $can_run }}
 {{ $release := include "base.name.release" . }}
 {{- range $jobConfig := .Values.mwcron.jobs }}
 apiVersion: batch/v1

@@ -1,4 +1,5 @@
-{{ if .Values.mwscript.enabled }}
+{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{ if $flags.job }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -71,7 +72,7 @@ spec:
   {{- with .Values.mwscript.activeDeadlineSeconds }}
   activeDeadlineSeconds: {{ . }}
   {{- end -}}
-{{ else if .Values.mercurius.enabled -}}
+{{ else if $flags.mercurius -}}
 {{ $release := .Values.main_app.image }}
 {{- if .Values.main_app.image | contains ":" }}
 {{ $release = last (splitList ":" .Values.main_app.image ) }}
@@ -140,7 +141,8 @@ spec:
   ttlSecondsAfterFinished: 86400  # 1 day
 {{- end }}
 {{- end }}
-{{ if .Values.dumps.enabled }}
+{{ if $flags.dumps }}
+{{- if .Values.dumps.enabled }}{{/* TODO: remove dumps.enabled once we're ok enabling it in dse */}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -200,4 +202,5 @@ spec:
   {{- with .Values.dumps.activeDeadlineSeconds }}
   activeDeadlineSeconds: {{ . }}
   {{- end -}}
+{{- end }}
 {{- end }}

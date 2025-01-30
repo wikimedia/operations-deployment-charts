@@ -1,4 +1,5 @@
-{{- if not .Values.mwscript.enabled }}  {{- /* mwscript notes are printed by the Python CLI instead */}}
+{{- $flags := fromJson (include "mw.feature_flags" . ) }}
+{{- if not $flags.job }}  {{- /* mwscript notes are printed by the Python CLI instead */}}
 Thank you for installing {{ template "base.name.chart" . }}.
 
 Your release is named {{ template "base.name.release" . }}.

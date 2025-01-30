@@ -1,6 +1,7 @@
 {{- define "mw.volumes" }}
 {{ $release := include "base.name.release" . }}
-{{- if .Values.mw.httpd.enabled }}
+{{- $flags := include "mw.feature_flags" . | fromJson }}
+{{- if $flags.web }}
 # Apache sites
 - name: {{ $release }}-httpd-sites
   configMap:
@@ -64,12 +65,12 @@
   configMap:
     name: {{ $release }}-php-envvars
 {{- end }}
-{{- if and (.Values.mwscript.enabled) (.Values.mwscript.textdata) }}
+{{- if and ($flags.job) (.Values.mwscript.textdata) }}
 - name: {{ $release }}-mwscript-textdata
   configMap:
     name: {{ $release }}-mwscript-textdata
 {{- end }}
-{{- if .Values.mercurius.enabled }}
+{{- if $flags.mercurius }}
 - name: {{ $release }}-mercurius-config
   configMap:
     name: {{ $release }}-mercurius-config
@@ -81,8 +82,9 @@
 {{ end }}
 
 {{ define "dumps.volume" }}
+{{- $flags := include "mw.feature_flags" . | fromJson }}
 {{ $release := include "base.name.release" . }}
-{{- if (and .Values.dumps.enabled .Values.dumps.persistence.enabled) }}
+{{- if (and $flags.dumps .Values.dumps.persistence.enabled) }}
 - name: {{ $release }}-dumps
   persistentVolumeClaim:
     claimName: {{ .Values.dumps.persistence.claim_name }}

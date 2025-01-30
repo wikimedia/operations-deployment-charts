@@ -1,4 +1,5 @@
-{{ if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) (not .Values.dumps.enabled) }}
+{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{ if $flags.web }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

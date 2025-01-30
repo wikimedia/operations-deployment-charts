@@ -1,5 +1,7 @@
+php:
+  servergroup: "kube-dumps-test"
 dumps:
-  enabled: true
+  enabled: true # TODO: remove once we're ok running in DSE
   persistence:
     enabled: true
     claim_name: "mediawiki-dumps-legacy-fs"

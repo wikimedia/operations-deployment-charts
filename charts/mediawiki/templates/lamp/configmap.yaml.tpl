@@ -13,7 +13,8 @@ data:
 {{- end }}
 {{- end }}
 {{ define "mw.lamp.configmap" }}
-{{- if .Values.mw.httpd.enabled }}
+{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- if $flags.web }}
 ---
 apiVersion: v1
 kind: ConfigMap

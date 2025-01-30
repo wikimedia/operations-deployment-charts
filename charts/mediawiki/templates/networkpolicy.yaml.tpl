@@ -1,9 +1,6 @@
-{{- $can_run_maintenance := include "mw.maintenance.can_run" . | include "mw.str2bool" }}
-{{- if and (not $can_run_maintenance) (not .Values.mw.httpd.enabled) (not .Values.mercurius.enabled) }}
-{{/*
-  Maintenance scripts are disabled, we're not serving traffic, and we're not running mercurius.
-*/}}
-{{- else }}
+{{- $can_run := include "mw.can_run" . | include "mw.str2bool" }}
+{{- $flags := fromJson ( include "mw.feature_flags" . ) }}
+{{- if $can_run }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -21,13 +18,16 @@ spec:
     - Ingress
   ingress:
     - ports:
+      {{- if $flags.web }}
       - port: {{ .Values.php.httpd.port }}
         protocol: TCP
-      {{- if .Values.mercurius.enabled }}
+      {{- end }}
+      {{- if $flags.mercurius }}
       - port: {{ .Values.mercurius.monitor_port }}
         protocol: TCP
       {{- end }}
       {{- if .Values.monitoring.enabled }}
+      {{- if $flags.web }}
       {{/* httpd exporter */}}
       - port: 9117
         protocol: TCP
@@ -37,6 +37,7 @@ spec:
       {{/* php other stats */}}
       - port: 9181
         protocol: TCP
+      {{- end -}}
       {{- if .Values.cache.mcrouter.enabled }}
       - port: 9151
         protocol: TCP

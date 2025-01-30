@@ -1,4 +1,6 @@
-{{ if not (or (hasSuffix "canary" .Release.Name) (eq .Values.service.deployment "none") (.Values.mwscript.enabled) (.Values.mercurius.enabled) (.Values.mwcron.enabled)) }}
+{{- $flags :=  include "mw.feature_flags" . | fromJson }}
+{{- if $flags.web }}
+{{ if not (or (hasSuffix "canary" .Release.Name) (eq .Values.service.deployment "none")) }}
 {{ include "mesh.service" . }}
 {{ if or .Values.service.expose_http (not .Values.mesh.enabled) }}
 ---
@@ -20,5 +22,6 @@ spec:
       {{- if .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

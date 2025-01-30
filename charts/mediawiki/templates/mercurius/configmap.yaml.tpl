@@ -1,5 +1,6 @@
 {{ define "mw.mercurius.configmap" }}
-{{- if .Values.mercurius.enabled -}}
+{{ $flags := fromJson ( include "mw.feature_flags" . ) }}
+{{- if $flags.mercurius -}}
 {{ $release := .Values.main_app.image }}
 {{- if .Values.main_app.image | contains ":" }}
 {{ $release = last (splitList ":" .Values.main_app.image ) }}

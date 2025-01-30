@@ -1,6 +1,7 @@
 {{ define "lamp.deployment" }}
 {{ $release := include "base.name.release" . }}
-{{- if .Values.mw.httpd.enabled }}
+{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- if $flags.web }}
 ### The apache httpd container
 # TODO: set up logging. See T265876
 # TODO: fix virtualhosts in puppet so that the port is set to APACHE_RUN_PORT
@@ -86,7 +87,7 @@
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- if .Values.mercurius.enabled }}
+  {{- if $flags.mercurius }}
   command: ["/usr/bin/mercurius"]
   args: [
          {{- if .Values.mercurius.debug }}
@@ -95,7 +96,7 @@
          "--metrics-address",
          "0.0.0.0:{{.Values.mercurius.monitor_port}}"
         ]
-  {{- else if .Values.mwscript.enabled }}
+  {{- else if $flags.job }}
   command: ["/usr/bin/php"]
   args:
 {{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
@@ -105,7 +106,7 @@
   tty: {{ .Values.mwscript.tty }}
   stdin: {{ .Values.mwscript.stdin }}
   stdinOnce: {{ .Values.mwscript.stdin }}
-  {{- else if .Values.mwcron.enabled }}
+  {{- else if $flags.cron }}
   # MediaWiki cronjobs may require a tty to run, as a first approximation make it always true.
   # TODO: Eventually, determine which cronjobs need a tty and make it configurable.
   tty: true
@@ -192,7 +193,7 @@
   - name: FPM__slowlog
     value: /var/log/php-fpm/slowlog.log
   {{- end }}
-  {{- if .Values.mercurius.enabled }}
+  {{- if $flags.mercurius }}
   - name: MERCURIUS_CFG
     value: MERCURIUS_JOB_PLACEHOLDER
   {{- end }}
@@ -208,7 +209,7 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
-  {{- if and (not .Values.mwscript.enabled) (not .Values.mercurius.enabled) (not .Values.mwcron.enabled) (not .Values.dumps.enabled)}}
+  {{- if $flags.web }}
   # See T276908
   livenessProbe:
   {{- if eq .Values.php.fcgi_mode "FCGI_TCP" }}
@@ -225,7 +226,7 @@
     initialDelaySeconds: 1
     periodSeconds: 5
   {{- end }}
-  {{- if .Values.mercurius.enabled }}
+  {{- if $flags.mercurius }}
   ports:
    - name: merc-metrics
      containerPort: {{ .Values.mercurius.monitor_port }}
@@ -305,12 +306,12 @@
     mountPath: /etc/php/{{ .Values.php.version }}/fpm/env
     readOnly: true
   {{- end -}}
-  {{- if and (.Values.mwscript.enabled) (.Values.mwscript.textdata) }}
+  {{- if and ($flags.job) (.Values.mwscript.textdata) }}
   - name: {{ $release }}-mwscript-textdata
     mountPath: /data
     readOnly: true
   {{- end -}}
-  {{- if .Values.mercurius.enabled }}
+  {{- if $flags.mercurius }}
   - name: {{ $release }}-mercurius-config
     mountPath: /etc/mercurius
     readOnly: true
@@ -318,14 +319,14 @@
     mountPath: /usr/bin/mercurius-wrapper
     subPath: mercurius-wrapper
   {{- end -}}
-  {{- if (and .Values.dumps.enabled .Values.dumps.persistence.enabled) }}
+  {{- if (and $flags.dumps .Values.dumps.persistence.enabled) }}
   - name: {{ $release }}-dumps
     mountPath: {{ .Values.dumps.persistence.mount_path }}
   {{- end -}}
 
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:
-{{- if .Values.mw.httpd.enabled }}
+{{- if $flags.web }}
 # apache exporter on port 9117
 - name: {{ $release }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.php.httpd.exporter.version }}
