@@ -2,7 +2,7 @@ docker:
   registry: docker-registry.discovery.wmnet
 
 app:
-  version: &base-image-version 2024-11-20-130943-4ca02ad5b46df5377ad1535657c302a6ea919340@sha256:61c8740217be4a4e13c3d85deca9b9659e4128ac3399f3cf912e07e9c1f2ad75
+  version: &base-image-version 2025-01-30-150249-576ed08e380791e07ea8c73f3f5cad71ed4b523f@sha256:7548599dc989f6721a5b911269a9f84c7870d3a85193024746dc5a0dcbbf7a79
   executor_pod_image_version: *base-image-version
 
 service:
@@ -14,16 +14,13 @@ config:
     config:
       datahub:
         cluster: prod
-        conn_id: datahub_gms_prod
+        conn_id: datahub_gms
         enabled: true
   connections:
     s3_dpe:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
-    datahub_gms_prod:
-      conn_type: datahub-rest
-      host: http://datahub-gms-production.datahub.svc:8080
   oidc:
     idp_server: idp.wikimedia.org
 

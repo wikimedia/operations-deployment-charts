@@ -36,6 +36,15 @@ config:
       port: 9083
       extra_dejson:
         authMechanism: GSSAPI
+    datahub_gms:
+      conn_type: datahub-rest
+      host: http://datahub-gms-production.datahub.svc:8080
+    datahub_kafka_jumbo:
+      conn_type: datahub_kafka
+      host: kafka-jumbo-eqiad.external-services.svc.cluster.local:9092
+      extra_dejson:
+        connection:
+          schema_registry_url: https://datahub-gms.discovery.wmnet:30443/schema-registry/api/
 
 external_services:
   task-pod:
