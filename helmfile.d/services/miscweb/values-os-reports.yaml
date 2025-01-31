@@ -21,3 +21,14 @@ ingress:
 config:
   public:
     puppet_db_host: puppetdb2003.codfw.wmnet
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.192.48.75/32
+        ports:
+          - protocol: TCP
+            port: 873
+          - protocol: TCP
+            port: 1873
