@@ -48,6 +48,11 @@ services:
         enableGeopoints: true
         coordinatePredicateId: wdt:P625
         userAgentContact: the WMF Content Transform Team (https://www.mediawiki.org/wiki/Content_Transform_Team)
+        mw_api:
+          uri: {{ .Values.app.mwapi.endpoint }}/w/api.php
+          headers:
+            Host: en.wikipedia.org
+            User-Agent: "Kartotherian Geoshapes (The WMF Content Transform team - https://www.mediawiki.org/wiki/Content_Transform_Team)"
       mwapi_req:
         body: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
         headers:
