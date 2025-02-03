@@ -13,7 +13,7 @@ metadata:
     comment: {{ $jobConfig.description | quote }}
 spec:
   schedule: {{ $jobConfig.schedule | default "@daily" | quote }}
-  concurrencyPolicy: {{ $jobConfig.concurrency | default "Forbid" }}
+  concurrencyPolicy: {{ $jobConfig.concurrency | default "Replace" }}
   jobTemplate:
     spec:
       template:
