@@ -1,10 +1,10 @@
-{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{ if $flags.web }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "mw.name.namespace.env.release" . }}
-  {{- include "mw.labels" . | indent 2 }}
+  {{- include "mw.helpers.labels" . | indent 2 }}
 spec:
   selector:
     matchLabels:

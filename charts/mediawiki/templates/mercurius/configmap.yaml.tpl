@@ -1,5 +1,5 @@
 {{ define "mw.mercurius.configmap" }}
-{{ $flags := fromJson ( include "mw.feature_flags" . ) }}
+{{ $flags := fromJson ( include "mw.helpers.feature_flags" . ) }}
 {{- if $flags.mercurius -}}
 {{ $release := .Values.main_app.image }}
 {{- if .Values.main_app.image | contains ":" }}
@@ -17,7 +17,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "base.name.release" $ }}-mercurius-script
-  {{- include "mw.labels" $ | indent 2}}
+  {{- include "mw.helpers.labels" $ | indent 2}}
 data:
   mercurius-wrapper: |
     {{- .Files.Get "files/mercurius_wrapper.sh" | nindent 4 }}
@@ -26,7 +26,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "base.name.release" $ }}-mercurius-config
-  {{- include "mw.labels" $ | indent 2}}
+  {{- include "mw.helpers.labels" $ | indent 2}}
 data:
   release.json: |-
     {{ dict "id" $release "ts" $ts | toJson }}

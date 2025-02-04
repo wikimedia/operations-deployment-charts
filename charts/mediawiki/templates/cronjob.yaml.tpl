@@ -1,4 +1,4 @@
-{{- $flags := fromJson (include "mw.feature_flags" . ) }}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) }}
 {{- if $flags.cron }}
 {{- $can_run := include "mw.can_run" . | include "mw.str2bool" }}
 {{- if $can_run }}
@@ -9,7 +9,7 @@ kind: CronJob
 metadata:
   # The release name includes a randomly generated token for each job, so names are unique.
   name: {{ $release }}-{{ $jobConfig.name }}
-  {{- include "mw.labels" $ | indent 2 }}
+  {{- include "mw.helpers.labels" $ | indent 2 }}
   annotations:
     comment: {{ $jobConfig.description | quote }}
 spec:

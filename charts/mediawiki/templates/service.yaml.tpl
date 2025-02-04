@@ -1,4 +1,4 @@
-{{- $flags :=  include "mw.feature_flags" . | fromJson }}
+{{- $flags :=  include "mw.helpers.feature_flags" . | fromJson }}
 {{- if $flags.web }}
 {{ if not (or (hasSuffix "canary" .Release.Name) (eq .Values.service.deployment "none")) }}
 {{ include "mesh.service" . }}
@@ -9,7 +9,7 @@ kind: Service
 metadata:
   name: {{ template "base.name.release" . }}
   labels:
-  {{- include "mw.labels" . | indent 2 }}
+  {{- include "mw.helpers.labels" . | indent 2 }}
 spec:
   type: NodePort
   selector:

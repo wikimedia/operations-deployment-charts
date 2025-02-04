@@ -1,4 +1,4 @@
-{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{- if (and $flags.dumps .Values.dumps.persistence.enabled) }}
 apiVersion: v1
 kind: PersistentVolumeClaim

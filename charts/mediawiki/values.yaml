@@ -313,33 +313,40 @@ mw:
     rsyslog_max_message_size: 64k
   geoip: true
   # Feature flags enabled / disabled based on specific traits.
-  feature_flags:
-    default:
-      web: true
-      job: false
-      cron: false
-      mercurius: false
-      active_active: true
-      dumps: false
-    async: {}
-    cli:
-      web: false
-      job: true
-      active_active: false
-    periodic:
-      web: false
-      job: false # this overrides the value we get from the "cli" trait if it's selected.
-      cron: true
-    videoscaler:
-      web: false
-      deployment: false
-      mercurius: true
-    dumps:
-      cron: false # this overrides the value we get from "periodic" if selected.
-      # This might seem counterintuitive, but dumps are a read-only operation
-      active_active: true
-      dumps: true
-      # TODO: add a feature flag for dumps.persistence.enabled too?
+  helpers:
+    feature_flags:
+      default:
+        web: true
+        job: false
+        cron: false
+        mercurius: false
+        active_active: true
+        dumps: false
+        networkpolicy: true
+      async: {}
+      cli:
+        web: false
+        job: true
+        active_active: false
+        networkpolicy: true
+      periodic:
+        web: false
+        job: false # this overrides the value we get from the "cli" trait if it's selected.
+        cron: true
+        networkpolicy: true
+      videoscaler:
+        web: false
+        deployment: false
+        mercurius: true
+      dumps:
+        cron: false # this overrides the value we get from "periodic" if selected.
+        # This might seem counterintuitive, but dumps are a read-only operation
+        active_active: true
+        dumps: true
+        # TODO: add a feature flag for dumps.persistence.enabled too?
+  networkpolicy:
+    # Override to allow the networkpolicy to apply to different selection of pods
+    selectors: ~
 
 common_images:
   rsyslogd: rsyslogd:latest
@@ -454,7 +461,7 @@ ingress:
   # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
   httproutes: []
 
-# This is for maintenance scripts. When mw.feature_flags.job is true for your deployment,
+# This is for maintenance scripts. When mw.helpers.feature_flags.job is true for your deployment,
 # the normal MediaWiki Deployment is turned off, and instead a Job runs the provided script.
 mwscript:
   args: []

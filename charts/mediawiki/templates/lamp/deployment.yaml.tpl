@@ -1,6 +1,6 @@
 {{ define "lamp.deployment" }}
 {{ $release := include "base.name.release" . }}
-{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{- if $flags.web }}
 ### The apache httpd container
 # TODO: set up logging. See T265876

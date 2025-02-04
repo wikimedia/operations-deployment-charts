@@ -115,7 +115,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "base.name.release" . }}-rsyslog-config
-  {{- include "mw.labels" . | indent 2}}
+  {{- include "mw.helpers.labels" . | indent 2}}
 data:
   00-max-message-size.conf: |-
     $MaxMessageSize {{ .Values.mw.logging.rsyslog_max_message_size }}

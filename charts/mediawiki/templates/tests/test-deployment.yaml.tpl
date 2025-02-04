@@ -1,10 +1,10 @@
-{{- $flags := fromJson (include "mw.feature_flags" . ) }}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) }}
 {{- if $flags.web }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: test-{{ template "base.name.release" . }}
-  {{- include "mw.labels" . | indent 2 }}
+  {{- include "mw.helpers.labels" . | indent 2 }}
   annotations:
     "helm.sh/hook": test
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded

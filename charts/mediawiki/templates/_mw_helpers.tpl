@@ -9,7 +9,7 @@
  deployment: parsoid
 */}}
 {{ define "mw.labels" }}
-{{- $flags := fromJson ( include "mw.feature_flags" . ) }}
+{{- $flags := fromJson ( include "mw.helpers.feature_flags" . ) }}
 labels:
   app: {{ template "base.name.chart" . }}
   chart: {{ template "base.name.chartid" . }}
@@ -94,7 +94,7 @@ Returns true if mwcron/mwscript is enabled, the datacentre is primary and not re
 
 */}}
 {{- define "mw.can_run" -}}
-  {{- $flags := include "mw.feature_flags" . | fromJson -}}
+  {{- $flags := include "mw.helpers.feature_flags" . | fromJson -}}
   {{/* If active-active is enabled, we can run whatever payload we need */}}
   {{- if $flags.active_active -}}
     {{- print "true" -}}
@@ -104,79 +104,4 @@ Returns true if mwcron/mwscript is enabled, the datacentre is primary and not re
     {{- print (and $is_primary_dc (not $is_read_only)) -}}
   {{- end -}}
 {{- end -}}
-
-{{/*
-
-Helper that allows to define feature flags based on the servergroup
-
-It returns a json string of a dictionary of feature flags, where the key is the flag name
-and the value is the boolean value.
-
-Usage:
-{{- $flags := include "mw.feature_flags" . | fromJson -}}
-{{- if $flags.web }}
-....
-*/}}
-{{ define "mw.feature_flags" }}
-{{ $traits := fromJson (include "mw._traits" .Values.php.servergroup ) }}
-{{ $features := .Values.mw.feature_flags }}
-{{ $flags := deepCopy $features.default }}
-{{ if $traits.async }}
-  {{ $flags = mergeOverwrite $flags $features.async }}
-{{ end }}
-{{ if $traits.cli }}
-  {{ $flags = mergeOverwrite $flags $features.cli }}
-{{ end }}
-{{ if $traits.periodic }}
-  {{ $flags = mergeOverwrite $flags $features.periodic }}
-{{ end }}
-{{ if $traits.videoscaler }}
-  {{ $flags = mergeOverwrite $flags $features.videoscaler }}
-{{ end }}
-{{ if $traits.dumps }}
-  {{ $flags = mergeOverwrite $flags $features.dumps }}
-{{ end }}
-{{ toJson $flags }}
-{{ end }}
-
-
-{{- define "mw._traits" -}}
-  {{ $servergroup := . }}
-  {{/* The async trait might regulate timeouts and other settings */}}
-  {{- $async := false }}
-  {{- range list "-async" "jobrunner" }}
-    {{- if contains . $servergroup  }}
-      {{- $async = true }}
-    {{- end }}
-  {{- end }}
-  {{/* The cli trait will indicate if a webservice is needed or not */}}
-  {{- $cli := false }}
-  {{- range list "script" "cron" }}
-    {{- if contains . $servergroup  }}
-      {{- $cli = true }}
-    {{- end }}
-  {{- end }}
-  {{- $periodic := false }}
-  {{- range list "dumps" "cron" }}
-    {{- if contains . $servergroup  }}
-      {{- $periodic = true }}
-    {{- end }}
-  {{- end }}
-  {{/* The videoscaling trait indicates if we're running videoscaling jobs here */}}
-  {{- $videoscaler := false }}
-  {{- range list "videoscaler" }}
-    {{- if contains . $servergroup  }}
-      {{- $videoscaler = true }}
-    {{- end }}
-  {{- end }}
-  {{- $dumps := false }}
-  {{- range list "dumps" -}}
-    {{- if contains . $servergroup -}}
-      {{- $dumps = true -}}
-    {{- end }}
-  {{- end }}
-  {{- $traits := dict "async" $async "cli" $cli "videoscaler" $videoscaler "periodic" $periodic "dumps" $dumps -}}
-  {{- toJson $traits -}}
-{{- end -}}
-
 

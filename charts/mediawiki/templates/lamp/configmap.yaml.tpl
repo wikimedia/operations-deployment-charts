@@ -13,14 +13,14 @@ data:
 {{- end }}
 {{- end }}
 {{ define "mw.lamp.configmap" }}
-{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{- if $flags.web }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "base.name.release" . }}-httpd-sites-config
-  {{- include "mw.labels" . | indent 2}}
+  {{- include "mw.helpers.labels" . | indent 2}}
 data:
 {{ include "mw.web-sites" . }}
 {{- if .Values.mw.httpd.additional_config }}

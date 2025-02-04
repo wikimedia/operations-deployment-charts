@@ -1,6 +1,6 @@
 {{- define "mw.volumes" }}
 {{ $release := include "base.name.release" . }}
-{{- $flags := include "mw.feature_flags" . | fromJson }}
+{{- $flags := include "mw.helpers.feature_flags" . | fromJson }}
 {{- if $flags.web }}
 # Apache sites
 - name: {{ $release }}-httpd-sites
@@ -82,7 +82,7 @@
 {{ end }}
 
 {{ define "dumps.volume" }}
-{{- $flags := include "mw.feature_flags" . | fromJson }}
+{{- $flags := include "mw.helpers.feature_flags" . | fromJson }}
 {{ $release := include "base.name.release" . }}
 {{- if (and $flags.dumps .Values.dumps.persistence.enabled) }}
 - name: {{ $release }}-dumps

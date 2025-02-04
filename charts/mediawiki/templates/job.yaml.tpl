@@ -1,11 +1,11 @@
-{{- $flags := fromJson (include "mw.feature_flags" . ) -}}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{ if $flags.job }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   # The release name includes a randomly generated token for each job, so names are unique.
   name: {{ template "mw.name.namespace.env.release" . }}
-  {{- include "mw.labels" . | indent 2 }}
+  {{- include "mw.helpers.labels" . | indent 2 }}
   {{- if .Values.mwscript.comment }}
   annotations:
     comment: {{ .Values.mwscript.comment | quote }}
@@ -87,7 +87,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ printf "mercurius-%s-%s" $release $mercurius_job | lower | trunc 63 | trimSuffix "-"}}
-  {{- include "mw.labels" $ | indent 2 }}
+  {{- include "mw.helpers.labels" $ | indent 2 }}
   annotations:
     # Keep untracked objects rather than destroy them - preserve jobs after upgrades
     helm.sh/resource-policy: keep
