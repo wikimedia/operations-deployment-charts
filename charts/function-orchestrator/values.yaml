@@ -15,10 +15,10 @@ main_app:
   args: []
   requests:
     cpu: 100m
-    memory: 200Mi
+    memory: 400Mi
   limits:
     cpu: 400m
-    memory: 400Mi
+    memory: 1Gi
   liveness_probe:
     tcpSocket:
       port: 6254
