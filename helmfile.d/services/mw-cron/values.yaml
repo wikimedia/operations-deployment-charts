@@ -1,16 +1,6 @@
 mwcron:
   enabled: true
-  jobs:
-    - name: "test-version"
-      schedule: "*/10 * * * *"
-      command:
-        - "/usr/local/bin/foreachwikiindblist"
-        - "testwikis.dblist"
-        - "Version.php"
-      labels:
-        team: sre-serviceops
-        script: Version.php
-      description: "Run version.php on all wikis in testwikis.dblist every 10 minutes to test cronjobs"
+
 mw:
   httpd:
     enabled: false
