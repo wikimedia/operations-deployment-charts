@@ -29,6 +29,16 @@ metricDenylist:
   - kube_pod_ips
   - kube_pod_tolerations
 
+# Additional Kubernetes label keys to be used as labels in the metrics.
+metricLabelsAllowlist:
+  - cronjobs=[script,team]
+  - jobs=[script,team]
+
+# Additional Kubernetes label keys to be used as labels in the metrics.
+metricAnnotationsAllowList:
+  - cronjobs=[comment]
+  - jobs=[comment]
+
 podAnnotations:
   prometheus.io/scrape: "true"
 
