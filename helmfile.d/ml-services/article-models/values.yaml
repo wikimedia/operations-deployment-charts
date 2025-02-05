@@ -76,8 +76,11 @@ inference_services:
 
   article-country:
     predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 5
       image: "machinelearning-liftwing-inference-services-article-country"
-      image_version: "2025-01-17-125828-publish"
+      image_version: "2025-01-31-091455-publish"
       custom_env:
         - name: MODEL_NAME
           value: "article-country"
@@ -85,6 +88,12 @@ inference_services:
           value: "s3://wmf-ml-models/article-country/20240901015102/"
         - name: FORCE_HTTP
           value: "True"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_PREDICTION_CLASSIFICATION_CHANGE_STREAM
+          value: "mediawiki.article_country_prediction_change.v1"
+        - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM
+          value: "mediawiki.cirrussearch.page_weighted_tags_change.rc0"
       container:
         resources:
           limits:
