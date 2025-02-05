@@ -1,0 +1,9 @@
+# here we want to install the networkpolicies, we re-instate the original value
+mw:
+  feature_flags:
+    cli:
+      networkpolicy: true
+  networkpolicy:
+    # apply to all mediawiki pods
+    selectors:
+      app: mediawiki
