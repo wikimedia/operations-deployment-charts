@@ -1,0 +1,18 @@
+This is the mediawiki-common chart, installing common elements of the
+mediawiki-chart.
+
+To use it, add a second release to the namespace where you're running
+MediaWiki, and add a values file allowing you to override what you have defined
+in mediawiki itself.
+
+For instance, if you want to add a shared networkpolicy, you can add a release
+called `common` and add a `values-common.yaml` file containing:
+
+mw:
+  networkpolicy:
+    selectors:
+      app: mediawiki
+  feature_flags:
+    cli:
+      networkpolicy: true (# set this to false in the other releases)
+

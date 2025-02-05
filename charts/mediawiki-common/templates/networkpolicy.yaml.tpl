@@ -1,0 +1,2 @@
+{{ include "mw.networkpolicy" . }}
+
