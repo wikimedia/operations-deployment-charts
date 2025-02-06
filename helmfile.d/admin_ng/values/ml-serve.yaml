@@ -253,6 +253,27 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "40Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "44Gi"
+          cpu: "24"
   logo-detection:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
