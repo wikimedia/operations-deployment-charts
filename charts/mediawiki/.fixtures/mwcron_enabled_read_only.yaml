@@ -9,7 +9,7 @@ mwcron:
       labels:
         team: team-name
         script: extensions/foo/bar/cron.php
-      comment: "comment"
+      description: "A description of the job"
     - name: "test2"
       schedule: "*/10 * * * *"
       command:
@@ -18,7 +18,7 @@ mwcron:
       labels:
         team: team-name
         script: extensions/foo/bar/mwcron2.php
-      comment: comment
+      description: "A description of the job"
 mw:
   httpd:
     enabled: false

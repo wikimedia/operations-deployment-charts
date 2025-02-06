@@ -44,9 +44,7 @@ spec:
             {{- if $sidecars }}
             pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
             {{- end }}
-            {{- if $jobConfig.comment }}
-            comment: {{ $jobConfig.comment | quote }}
-            {{- end }}
+            comment: {{ $jobConfig.description | quote }}
         spec:
           terminationGracePeriodSeconds: {{ $jobConfig.terminationGracePeriodSeconds | default $.Values.terminationGracePeriodSeconds }}
           containers:
