@@ -4,8 +4,7 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  # T383845 - Serve ~ 5% of traffic on PHP 8.1 (main: 247 migration: 13)
-  replicas: 13
+  replicas: 0
 
 # TODO: T383845 - Temporarily increase maxUnavailable. Needs revised down as
 # the deployment grows.
