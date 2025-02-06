@@ -9,6 +9,9 @@ inference:
         options:
           - name: ndots
             value: "2"
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
   transformer:
     config:
       dnsConfig:
