@@ -79,6 +79,12 @@ main_app:
         - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
+        - name: ma_media_list_no_revision
+          in: '(.+)/v1/page/media-list/(.+)'
+          out: '\1/v1/page/media-list/\2'
+        - name: ma_media_list_revision
+          in: '(.+)/v1/page/media-list/(.+)/(.+)'
+          out: '\1/v1/page/media-list/\2/\3'
     - name: proton
       timeout: 150s
       urls:
@@ -249,7 +255,6 @@ main_app:
         - name: lint-no-revision
           in: '(.+)/v1/page/lint/([^\/.]+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
-
 
 
   discovery_endpoints:
