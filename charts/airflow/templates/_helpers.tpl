@@ -117,6 +117,7 @@ env:
   value: {{ $.Values.config.airflow.config.kerberos.principal }}
 {{- end }}
 {{- include "airflow.env.requests-ca-bundle" . }}
+{{- include "airflow.env.s3" . }}
 - name: SCARF_ANALYTICS
   value: "False"
 {{- end }}
@@ -124,6 +125,17 @@ env:
 {{- define "airflow.env.requests-ca-bundle" }}
 - name: REQUESTS_CA_BUNDLE
   value: /etc/ssl/certs/ca-certificates.crt
+{{- end }}
+
+{{- define "airflow.env.s3" }}
+{{/*
+  We disable checksum calculation introduced in boto 1.36, as it only pertains to AWS S3, not our Ceph implementation
+  cf https://docs.aws.amazon.com/sdkref/latest/guide/feature-dataintegrity.html
+*/}}
+- name: AWS_REQUEST_CHECKSUM_CALCULATION
+  value: WHEN_REQUIRED
+- name: AWS_RESPONSE_CHECKSUM_VALIDATION
+  value: WHEN_REQUIRED
 {{- end }}
 
 {{/* Represents a Go variable as an INI value */}}
@@ -359,6 +371,7 @@ volumeMounts:
 env:
 {{- end }}
 {{- include "airflow.env.requests-ca-bundle" .Root }}
+{{- include "airflow.env.s3" .Root }}
 {{- if .profiles }}
 {{- if has "hadoop" .profiles }}
 {{- include "app.airflow.env.hadoop" .Root }}
