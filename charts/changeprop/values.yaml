@@ -58,6 +58,8 @@ main_app:
       - media-list
       - mobile-html
 
+    rerendered_pcs_wikis: '/^test.wikipedia.org$/'
+
     # Replace the Mediawiki URI with the correct K8s URI
     mwapi_uri: http://localhost/w/api.php
 
