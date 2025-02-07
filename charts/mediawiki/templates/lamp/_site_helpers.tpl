@@ -131,7 +131,7 @@
   {{- else }}
     {{- $defaults := .defaults -}}
     {{- range $v := .vhosts -}}
-        {{- $params := merge $v $defaults $base_params $tpl_defaults -}}
+        {{- $params := mergeOverwrite (deepCopy $tpl_defaults) (deepCopy $base_params) (deepCopy $defaults) $v -}}
         {{- include "mw-vhost" $params | indent 4 -}}
     {{- end }}
   {{- end -}}
