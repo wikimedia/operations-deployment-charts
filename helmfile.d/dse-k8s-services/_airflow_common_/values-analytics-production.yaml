@@ -45,6 +45,8 @@ config:
       extra_dejson:
         connection:
           schema_registry_url: https://datahub-gms.discovery.wmnet:30443/schema-registry/api/
+          schema_registry_config:
+            ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
 
 external_services:
   task-pod:
