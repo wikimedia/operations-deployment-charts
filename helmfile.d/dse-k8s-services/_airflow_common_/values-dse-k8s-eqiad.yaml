@@ -2,7 +2,7 @@ docker:
   registry: docker-registry.discovery.wmnet
 
 app:
-  version: &base-image-version 2025-01-30-150249-576ed08e380791e07ea8c73f3f5cad71ed4b523f@sha256:7548599dc989f6721a5b911269a9f84c7870d3a85193024746dc5a0dcbbf7a79
+  version: &base-image-version 2025-02-11-110723-8b8261cfc52b6ddc606edd58f01950c2e74319d9@sha256:dce9966b79df1f21186716cacdcb854c5bf957085a02676756349804d63bc130
   executor_pod_image_version: *base-image-version
 
 service:
@@ -21,6 +21,24 @@ config:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
+    kafka_test_eqiad:
+      conn_type: kafka
+      host: kafka-test-eqiad.external-services.svc.cluster.local
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+        security.protocol: SSL
+    kafka_jumbo_eqiad:
+      conn_type: kafka
+      host: kafka-jumbo-eqiad.external-services.svc.cluster.local
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+        security.protocol: SSL
   oidc:
     idp_server: idp.wikimedia.org
 
@@ -51,6 +69,9 @@ external_services:
     s3: [eqiad-dpe]
     # Task pods needs to be able to send alert emails
     wikimail: [mx]
+    # Task pods have access to both kafka-{test,jumbo}-eqiad by default to interact with datahub
+    # and lineage (whether Airflow DAGs or Hive tables)
+    kafka: [test-eqiad, jumbo-eqiad]
 
 gitsync:
   image_tag: 2024-08-22-120818-fbafbcdb385bf1008ba0ac8ee350e9fe411a057d@sha256:3e01121704b405a08649012571aba0ce6834ab3aa3428df0b02a476b7ba4c3f5
