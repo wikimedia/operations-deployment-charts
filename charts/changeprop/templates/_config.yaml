@@ -664,6 +664,12 @@ spec: &spec
                       domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
+                  - method: get
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
+                    headers:
+                      cache-control: no-cache
+                    query:
+                      redirect: false
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
