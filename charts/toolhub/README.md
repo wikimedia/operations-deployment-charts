@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.1.17](https://img.shields.io/badge/Version-1.1.17-informational?style=flat-square)
+![Version: 1.1.18](https://img.shields.io/badge/Version-1.1.18-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 

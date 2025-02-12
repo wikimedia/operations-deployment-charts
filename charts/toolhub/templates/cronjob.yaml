@@ -28,6 +28,10 @@ spec:
           annotations:
             checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
             checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+            {{- if $.Values.mesh.enabled }}
+            # Shutdown the pod via k8s-controller-sidecars when only these containers are alive
+            pod.kubernetes.io/sidecars: {{ template "base.name.release" . }}-tls-proxy
+            {{- end }}
         spec:
           restartPolicy: Never
           containers:
