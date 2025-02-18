@@ -8,7 +8,7 @@ They are generated from kyverno's upstream policies written in CEL using [kyvern
 
 ```bash
 pipx install git+https://gitlab.wikimedia.org/repos/sre/kyverno-policy-parser.git
-kyverno-policy-parser charts/validating-admission-policies/templates/pod-security-policies
+kyverno-policy-parser --output-dir charts/validating-admission-policies/templates/pod-security-standards/
 ```
 
 The script also creates basic chainsaw tests from upstream data but the whole process is far from perfect. So after running the script to update the policies, the resulting diff should be investigated closely (also because it might override necessary local changes).
@@ -42,7 +42,7 @@ Contains custom policies and bindings.
 These are WMF specific hand crafted policies. For consistency sake, they should come with a binding of the same name which allows to `include` the policy at a namespace level, like:
 
 ```yaml
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: fancy-new-policy

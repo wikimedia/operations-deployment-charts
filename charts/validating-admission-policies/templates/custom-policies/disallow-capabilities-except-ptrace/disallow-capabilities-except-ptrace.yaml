@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-capabilities-except-ptrace
@@ -39,7 +39,7 @@ spec:
     message: >-
       Any capabilities added other than SYS_PTRACE are disallowed.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: disallow-capabilities-except-ptrace
@@ -52,4 +52,4 @@ spec:
         operator: In
         values:
         - include
-
+  validationActions: [Deny]

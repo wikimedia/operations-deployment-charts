@@ -21,13 +21,3 @@ spec:
         expect:
         - check:
             ($error != null): true
-  # This test requires manual deletion of the tes namespace as good pods will fail
-  # scheduling due to missing volumes, CSI plugins etc and chainsaw is, for some reason,
-  # unable to handle that/clean those pods up without raising an error.
-  - name: 99-cleanup
-    try:
-    - script:
-        env:
-        - name: NAMESPACE
-          value: $namespace
-        content: kubectl delete all --all --force --grace-period=0 -n $NAMESPACE

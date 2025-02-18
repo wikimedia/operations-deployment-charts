@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-privilege-escalation
@@ -15,35 +15,18 @@ spec:
       resources: [pods]
   validations:
   - expression: |-
-      object.spec.containers.all(container, has(container.securityContext) &&
-      has(container.securityContext.allowPrivilegeEscalation) &&
-      container.securityContext.allowPrivilegeEscalation == false)
+      variables.allContainers.all(container,
+      container.?securityContext.allowPrivilegeEscalation.orValue(true) == false)
     message: >-
-      Privilege escalation is disallowed. The field spec.containers[*].securityContext.allowPrivilegeEscalation
-      must be set to `false`.
-  - expression: |-
-      !has(object.spec.initContainers) ||
-      object.spec.initContainers.all(container,
-      has(container.securityContext) &&
-      has(container.securityContext.allowPrivilegeEscalation)
-      &&
-      container.securityContext.allowPrivilegeEscalation == false)
-    message: >-
-      Privilege escalation is disallowed. The field spec.initContainers[*].securityContext.allowPrivilegeEscalation
-      must be set to `false`.
-  - expression: |-
-      !has(object.spec.ephemeralContainers) ||
-      object.spec.ephemeralContainers.all(container,
-      has(container.securityContext) &&
-      has(container.securityContext.allowPrivilegeEscalation)
-      &&
-      container.securityContext.allowPrivilegeEscalation == false)
-    message: >-
-      Privilege escalation is disallowed. The field spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
-      must be set to `false`.
-         
+      Privilege escalation is disallowed.  All containers must set the securityContext.allowPrivilegeEscalation
+      field to `false`.
+  variables:
+  - name: allContainers
+    expression: |-
+      object.spec.containers +  object.spec.?initContainers.orValue([]) +
+      object.spec.?ephemeralContainers.orValue([])
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: disallow-privilege-escalation
@@ -60,3 +43,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

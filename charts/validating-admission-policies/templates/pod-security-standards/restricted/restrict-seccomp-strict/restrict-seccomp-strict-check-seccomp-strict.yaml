@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: restrict-seccomp-strict-check-seccomp-strict
@@ -55,7 +55,7 @@ spec:
       Use of custom Seccomp profiles is disallowed. The field spec.ephemeralContainers[*].securityContext.seccompProfile.type
       must be set to `RuntimeDefault` or `Localhost`.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: restrict-seccomp-strict-check-seccomp-strict
@@ -72,3 +72,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

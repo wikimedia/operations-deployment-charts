@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-capabilities-strict-require-drop-all
@@ -40,7 +40,7 @@ spec:
     message: >-
       Containers must drop `ALL` capabilities.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: disallow-capabilities-strict-require-drop-all
@@ -57,3 +57,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

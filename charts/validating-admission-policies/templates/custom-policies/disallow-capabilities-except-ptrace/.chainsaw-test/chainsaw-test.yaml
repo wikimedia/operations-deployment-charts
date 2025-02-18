@@ -1,17 +1,17 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: disallow-capabilities-but-ptrace
+  name: disallow-capabilities-except-ptrace
 spec:
   namespaceTemplate:
     metadata:
       labels:
-        pod-security.wmf.org/disallow-capabilities-but-ptrace: include
+        pod-security.wmf.org/disallow-capabilities-except-ptrace: include
   steps:
-  - name: prepare_but-ptrace
+  - name: prepare_except-ptrace
     try:
     - apply:
-        file: ../disallow-capabilities-but-ptrace.yaml
+        file: ../disallow-capabilities-except-ptrace.yaml
   - name: test
     try:
     - create:

@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-privileged-containers
@@ -15,33 +15,18 @@ spec:
       resources: [pods]
   validations:
   - expression: |-
-      object.spec.containers.all(container, !has(container.securityContext) ||
-      !has(container.securityContext.privileged) ||
-      container.securityContext.privileged ==
-      false)
+      variables.allContainers.all(container,
+      container.?securityContext.?privileged.orValue(false) == false)
     message: >-
-      Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
-      must be unset or set to `false`.
-  - expression: |-
-      !has(object.spec.initContainers) ||
-      object.spec.initContainers.all(container,
-      !has(container.securityContext) ||
-      !has(container.securityContext.privileged) ||
-      container.securityContext.privileged == false)
-    message: >-
-      Privileged mode is disallowed. The fields spec.initContainers[*].securityContext.privileged
-      must be unset or set to `false`.
-  - expression: |-
-      !has(object.spec.ephemeralContainers) ||
-      object.spec.ephemeralContainers.all(container,
-      !has(container.securityContext) ||
-      !has(container.securityContext.privileged) ||
-      container.securityContext.privileged == false)
-    message: >-
-      Privileged mode is disallowed. The fields spec.ephemeralContainers[*].securityContext.privileged
-      must be unset or set to `false`.
+      Privileged mode is disallowed. All containers must set the securityContext.privileged
+      field to `false` or unset the field.
+  variables:
+  - name: allContainers
+    expression: |-
+      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: disallow-privileged-containers
@@ -59,3 +44,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

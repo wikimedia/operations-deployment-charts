@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: restrict-volume-types-restricted-volumes
@@ -28,7 +28,7 @@ spec:
       Only the following types of volumes may be used: configMap, csi, downwardAPI,
       emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: restrict-volume-types-restricted-volumes
@@ -45,3 +45,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

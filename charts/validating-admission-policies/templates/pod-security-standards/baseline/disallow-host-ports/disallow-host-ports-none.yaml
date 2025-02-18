@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: disallow-host-ports-none
@@ -43,7 +43,7 @@ spec:
       Use of host ports is disallowed. The field spec.ephemeralContainers[*].ports[*].hostPort
       must either be unset or set to `0`.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: disallow-host-ports-none
@@ -61,3 +61,4 @@ spec:
         operator: NotIn
         values:
         - exclude
+  validationActions: [Deny]

@@ -1,4 +1,4 @@
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
   name: allow-hostpath-geoip
@@ -33,7 +33,7 @@ spec:
     message: >-
       HostPath volumes are allowed for /usr/share/GeoIP and /usr/share/GeoIPInfo only.
 ---
-apiVersion: admissionregistration.k8s.io/v1alpha1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
   name: allow-hostpath-geoip
@@ -46,3 +46,4 @@ spec:
         operator: In
         values:
         - include
+  validationActions: [Deny]
