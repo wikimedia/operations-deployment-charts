@@ -11,6 +11,8 @@ metadata:
 spec:
   schedule: "{{ .Values.crawler.schedule }}"
   concurrencyPolicy: {{ .Values.crawler.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.crawler.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.crawler.failedJobsHistoryLimit }}
   jobTemplate:
     metadata:
       labels:

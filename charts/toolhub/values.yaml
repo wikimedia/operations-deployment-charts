@@ -181,6 +181,10 @@ crawler:
   schedule: "@hourly"
   # -- Job concurrency policy
   concurrencyPolicy: Forbid
+  # -- Number of successful finished jobs to keep
+  successfulJobsHistoryLimit: 3
+  # -- Number of failed finished jobs to keep
+  failedJobsHistoryLimit: 1
   # -- Job initial and maximum resource limits
   resources:
     requests:

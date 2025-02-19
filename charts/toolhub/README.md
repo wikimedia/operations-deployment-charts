@@ -1,6 +1,6 @@
 # toolhub
 
-![Version: 1.1.18](https://img.shields.io/badge/Version-1.1.18-informational?style=flat-square)
+![Version: 1.1.19](https://img.shields.io/badge/Version-1.1.19-informational?style=flat-square)
 
 Helm chart for Toolhub, a catalog of Wikimedia tools
 
@@ -63,8 +63,10 @@ Helm chart for Toolhub, a catalog of Wikimedia tools
 | config.public.no_proxy | string | `""` | Outbound proxy exceptions |
 | crawler.concurrencyPolicy | string | `"Forbid"` | Job concurrency policy |
 | crawler.enabled | bool | `true` | Enable CronJob for toolinfo url crawler |
+| crawler.failedJobsHistoryLimit | int | `1` | Number of failed finished jobs to keep |
 | crawler.resources | object | `{"limits":{"cpu":1,"memory":"512Mi"},"requests":{"cpu":"200m","memory":"256Mi"}}` | Job initial and maximum resource limits |
 | crawler.schedule | string | `"@hourly"` | Schedule for crawler job |
+| crawler.successfulJobsHistoryLimit | int | `3` | Number of successful finished jobs to keep |
 | debug | object | `{"enabled":false,"ports":[]}` | Additional resources if we want to add a port for a debugger to connect to. |
 | docker | object | `{"pull_policy":"IfNotPresent","registry":"docker-registry.wikimedia.org"}` | Shared docker settings |
 | elasticsearch | object | `{"enabled":false,"esJavaOpts":"-Xms512m -Xmx512m","minimumMasterNodes":1,"replicas":1,"resources":{"limits":{"cpu":"500m","memory":"1Gi"},"requests":{"cpu":"500m","memory":"512Mi"}},"roles":{"data":"true","ingest":"false","master":"true"}}` | Optional Elasticsearch single node cluster for use with minikube. |
