@@ -33,6 +33,10 @@ service:
 
 mesh:
   enabled: true
+  certmanager:
+    enabled: true
+    extraFQDNs:
+    - maps.wikimedia.org
   public_port: 6543
 
 networkpolicy:

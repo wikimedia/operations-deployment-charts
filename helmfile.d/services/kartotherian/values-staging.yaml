@@ -26,3 +26,9 @@ tcp_services_proxy:
 
 external_services:
   postgresql: [maps-read-replicas-eqiad]
+
+mesh:
+  certmanager:
+    extraFQDNs:
+      - staging.svc.eqiad.wmnet
+      - staging.svc.codfw.wmnet
