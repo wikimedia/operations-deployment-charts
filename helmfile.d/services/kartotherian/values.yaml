@@ -25,7 +25,13 @@ app:
 
 monitoring:
   enabled: true
-
+  statsd:
+    requests:
+      cpu: 300m
+      memory: 200M
+    limits:
+      cpu: 400m
+      memory: 400M
 service:
   deployment: production
   port:
@@ -38,6 +44,13 @@ mesh:
     extraFQDNs:
     - maps.wikimedia.org
   public_port: 6543
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
 
 networkpolicy:
   egress:
