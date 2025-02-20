@@ -114,7 +114,15 @@ namespaces:
         max:
           memory: "26Gi"
           cpu: "10"
-  kartotherian: {}
+  kartotherian:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "120"
+          memory: "100Gi"
+        limits:
+          cpu: "120"
+          memory: "100Gi"
   linkrecommendation: {}
   machinetranslation:
     limitranges:
