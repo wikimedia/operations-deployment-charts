@@ -18,3 +18,8 @@ ingress:
     default: "airflow-research"
     extraFQDNs:
     - airflow-research.wikimedia.org
+
+external_services:
+  task-pod:
+    # some tasks need to download a conda env from gitlab
+    gitlab: [wikimedia]
