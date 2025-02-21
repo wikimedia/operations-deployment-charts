@@ -9,15 +9,14 @@ inference:
         options:
           - name: ndots
             value: "2"
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
   transformer:
     config:
       dnsConfig:
         options:
           - name: ndots
             value: "2"
+  # These settings are applied to each kserve container
+  # defined explicitly by the isvc, like the model-servers.
   securityContext:
     allowPrivilegeEscalation: false
     capabilities:

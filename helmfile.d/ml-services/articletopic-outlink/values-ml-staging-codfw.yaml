@@ -3,6 +3,26 @@ monitoring:
 
 inference:
   predictor:
+    config:
+      # These settings are applied at the pod level,
+      # that includes all containers not explicitly defined
+      # in the isvc (like the istio-{validation,proxy}).
+      # The knative-serving ones seem to need
+      # an extra level of settings in the knative's control-plane
+      # due to how the various pods/revisions are handled
+      # (dynamically etc..).
+      # More info https://phabricator.wikimedia.org/T369493
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+  transformer:
+    config:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+
+inference:
+  predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
     version: "2025-01-17-101938-publish"
     base_env:
