@@ -31,10 +31,13 @@ logging:
   {{- if .Values.monitoring.enabled }}
 # Statsd metrics reporter
 metrics:
-  name: mobileapps
-  host: localhost
-  port: 9125
-  type: statsd
+  - name: mobileapps
+    host: localhost
+    port: 9125
+    type: statsd
+  - name: mobileapps-prometheus
+    type: prometheus
+    port: {{ .Values.monitoring.prometheus.port }}
   {{- end }}
 
 services:

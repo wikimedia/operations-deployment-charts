@@ -62,6 +62,9 @@ logging:
 monitoring:
   enabled: false
   image_version: latest
+  prometheus:
+    port: 9402
+
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:

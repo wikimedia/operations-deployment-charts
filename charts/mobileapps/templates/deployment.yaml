@@ -25,8 +25,7 @@ spec:
         {{ if .Values.monitoring.enabled -}}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
-        prometheus.io/port: "9102"
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape_by_name: "true"
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       {{- if .Values.affinity }}
@@ -51,6 +50,11 @@ spec:
           {{- end }}
           ports:
             - containerPort: {{ .Values.app.port }}
+          {{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.port }}
+            - containerPort: {{ .Values.monitoring.prometheus.port }}
+              name: mobileapps-prometheus-metrics
+              protocol: TCP
+          {{- end }}
           {{- if .Values.debug.enabled }}
           {{- range .Values.debug.ports }}
             - containerPort: {{ . }}
@@ -94,6 +98,10 @@ spec:
         - name: {{ .Release.Name }}-metrics-exporter
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          ports:
+            - name: prometheus-statsd-exporter-metrics
+              containerPort: 9102
+              protocol: TCP
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           volumeMounts:
             - name: {{ .Release.Name }}-metrics-exporter
