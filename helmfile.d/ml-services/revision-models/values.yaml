@@ -60,7 +60,7 @@ inference_services:
     predictor:
       config:
         minReplicas: 1
-        maxReplicas: 5
+        maxReplicas: 8
       image: "machinelearning-liftwing-inference-services-reference-quality"
       image_version: "2025-01-23-130415-publish"
       custom_env:
@@ -71,8 +71,8 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "12"
+            cpu: "14"
             memory: 6Gi
           requests:
-            cpu: "12"
+            cpu: "14"
             memory: 6Gi

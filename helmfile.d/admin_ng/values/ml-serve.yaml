@@ -274,6 +274,15 @@ namespaces:
         max:
           memory: "10Gi"
           cpu: "24"
+    resourcequota:
+      pods: { }
+      compute:
+        requests:
+          cpu: "150"
+          memory: "150Gi"
+        limits:
+          cpu: "150"
+          memory: "150Gi"
   logo-detection:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
