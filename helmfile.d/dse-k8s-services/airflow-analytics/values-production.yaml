@@ -11,6 +11,8 @@ config:
     config:
       logging:
         remote_logging: false
+      kerberos:
+        principal: analytics/airflow-analytics.discovery.wmnet
   oidc:
     client_id: airflow_analytics
 
@@ -28,9 +30,6 @@ ingress:
     default: "airflow-analytics"
     extraFQDNs:
     - airflow-analytics.wikimedia.org
-
-kerberos:
-  enabled: false
 
 scheduler:
   remote_host: an-launcher1002.eqiad.wmnet
