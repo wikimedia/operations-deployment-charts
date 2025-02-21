@@ -17,7 +17,8 @@ main_app:
   use_coreparsoid_endpoint: true
   caching:
     enabled: true
-    ttl: 300          # Expire objects in 5 mins for testing purposes
+    # Expire objects in 7 days
+    ttl: 604800
     excludedUserAgents:
     - RESTBase/WMF
     cassandra:
