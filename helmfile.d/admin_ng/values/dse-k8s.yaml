@@ -107,6 +107,10 @@ namespaces:
       istio-injection: disabled
   sidecar-controller:
     systemNamespace: true
+  airflow-main:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow.wikimedia.org
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
