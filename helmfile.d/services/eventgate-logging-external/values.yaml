@@ -33,12 +33,7 @@ resources:
 
 main_app:
   name: eventgate-logging-external
-  version: v1.6.3
-  # node module name has changed from 'eventgate' to '@wikimedia/eventgate'
-  # in version 1.10.0.
-  # The chart has beed updated to default to this. To manage rollout to new version,
-  # set module name to 'eventgate' until we deploy a new image version.
-  module: eventgate
+  version: v1.11.0
   conf:
     # eventgate-logging-external is used to intake w3c browser reportingapi reports
     # like Network Error Logging.  Since reportingapi is not POSTing via sendBeacon,
