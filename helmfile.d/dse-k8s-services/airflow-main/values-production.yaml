@@ -6,8 +6,10 @@ config:
       role_mappings:
         airflow-analytics-ops: [Op]
     config:
-      logging:
-        remote_logging: false
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics/airflow.discovery.wmnet
   oidc:
     client_id: airflow_main
 
