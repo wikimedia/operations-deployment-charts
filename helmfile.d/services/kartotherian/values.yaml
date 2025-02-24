@@ -12,10 +12,10 @@ app:
   version: 2025-02-04-091200-production
   requests:
     cpu: 5000m
-    memory: 1Gi
+    memory: 1.5Gi
   limits:
     cpu: 5000m
-    memory: 1Gi
+    memory: 1.5Gi
   tegola:
     # We hit the Tegola's cluster local svc to skip the envoy proxy
     # and the Tegola's discovery endpoint, keeping the traffic local
