@@ -1,0 +1,23 @@
+config:
+  airflow:
+    dags_folder: main
+    instance_name: main
+    auth:
+      role_mappings:
+        airflow-analytics-ops: [Op]
+    config:
+      logging:
+        remote_logging: false
+  oidc:
+    client_id: airflow_main
+
+ingress:
+  gatewayHosts:
+    default: "airflow"
+    extraFQDNs:
+    - airflow.wikimedia.org
+
+discovery:
+  listeners:
+  - mw-api-int  # to be able to talk to https://meta.wikimedia.org/w/api.php?action=streamsconfig
+  - noc         # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
