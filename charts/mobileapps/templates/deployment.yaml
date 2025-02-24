@@ -52,7 +52,7 @@ spec:
             - containerPort: {{ .Values.app.port }}
           {{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.port }}
             - containerPort: {{ .Values.monitoring.prometheus.port }}
-              name: mobileapps-prometheus-metrics
+              name: pcs-metrics
               protocol: TCP
           {{- end }}
           {{- if .Values.debug.enabled }}
@@ -99,7 +99,7 @@ spec:
           image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
-            - name: prometheus-statsd-exporter-metrics
+            - name: statsd-metrics
               containerPort: 9102
               protocol: TCP
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
