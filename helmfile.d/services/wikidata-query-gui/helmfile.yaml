@@ -57,6 +57,8 @@ releases:
     <<: *default
   - name: wikidata-query-scholarly-gui
     <<: *default
+  - name: wikidata-query-legacy-full-gui
+    <<: *default
   - name: wikidata-query-builder
     <<: *default
 environments:
@@ -67,6 +69,7 @@ environments:
         - commons-query-gui
         - wikidata-query-main-gui
         - wikidata-query-scholarly-gui
+        - wikidata-query-legacy-full-gui
         - wikidata-query-builder
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
