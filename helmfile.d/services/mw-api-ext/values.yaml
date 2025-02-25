@@ -2,10 +2,12 @@ resources:
 # When ramping up replicas in the main release, please remember
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
+  # Normal day to day multi-DC replica count
+  #replicas: 220
+
+  # Estimated sizing for single DC *with* a 70/30 split with
+  # mw-api-ext-next, see r/1122561 for details.
   replicas: 220
-  # Estimated sizing when serving from a single DC, as of September 2024. See
-  # T371273 for methodology.
-  #replicas: 242
 
 mesh:
   public_port: 4447

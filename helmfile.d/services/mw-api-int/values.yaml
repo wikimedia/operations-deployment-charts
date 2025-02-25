@@ -4,7 +4,10 @@ resources:
 # We aim for ~3% of the deployment for canaries, rounding up.
   # T383845 - Serve 25% of traffic on PHP 8.1 (main: 195 migration: 65)
   # Original size: 260 replicas
-  replicas: 195
+  # replicas: 195
+
+  # scale up slightly for single-DC
+  replicas: 258
 
 mesh:
   public_port: 4446
