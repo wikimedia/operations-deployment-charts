@@ -25,6 +25,7 @@ spec:
             routed_via: {{ $.Values.routed_via | default $.Release.Name }}
             team: "{{ $jobConfig.labels.team }}"
             script: "{{ $jobConfig.labels.script }}"
+            cronjob: "{{ $jobConfig.name }}"
           annotations:
             # Shut down the pod (via k10s-controller-sidecars) when the -app container is finished, even
             # if sidecars are still running.
