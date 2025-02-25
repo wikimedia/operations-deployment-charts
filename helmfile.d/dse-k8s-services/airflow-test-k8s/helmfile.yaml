@@ -59,7 +59,8 @@ releases:
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/dse-k8s_services/airflow-test-k8s/{{ .Environment.Name }}.yaml"
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
-      - "values-analytics-test.yaml" # analytics-test-hadoop specific overrides
+      # - "values-analytics-test.yaml" # analytics-hadoop specific overrides
+      - "values-analytics-production.yaml" # analytics-hadoop specific overrides, temporarily required for T386282, to mimic airflow-analytics
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-test-k8s"

@@ -1,7 +1,10 @@
 config:
   airflow:
-    dags_folder: test_k8s
+    dags_folder: main # Temporarily required for T386282
     instance_name: test-k8s
+    auth: # Temporarily required for T386282
+      role_mappings:
+        airflow-analytics-ops: [Op]
     config:
       core:
         executor: KubernetesExecutor
@@ -25,3 +28,12 @@ ingress:
 discovery:
   listeners:
   - mw-api-int
+  - noc # Temporarily required for T386282
+
+# T386282: we temporarily use airflow-test-k8s as an integration testing ground
+# for DAGs we migrate over from an-launcher1002/analytics to airflow-main/main.
+# As such, we continuously pull from a feature branch that will be used throughout
+# the whole migration.
+gitsync:
+  ref: "feature/Airflow-Analytics-Migration-Sandbox"
+  period: 60
