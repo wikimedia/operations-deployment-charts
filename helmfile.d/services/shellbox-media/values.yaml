@@ -12,7 +12,7 @@ main_app:
     - name: local-disk-tmp
       mountPath: /tmp
 shellbox:
-  flavour: media
+  flavour: media81
 service:
   deployment: production
 
@@ -27,4 +27,4 @@ php:
   workers: 4
 
 resources:
-  replicas: 7
+  replicas: 8
