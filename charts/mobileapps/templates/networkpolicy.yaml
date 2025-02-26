@@ -29,6 +29,8 @@ spec:
       {{- if .Values.monitoring.enabled }}
       - port: 9102
         protocol: TCP
+      - port: {{ .Values.monitoring.prometheus.port }}
+        protocol: TCP
       {{- end }}
       {{- include "mesh.networkpolicy.ingress" . | indent 6}}
 {{- if .Values.networkpolicy.egress.enabled }}
