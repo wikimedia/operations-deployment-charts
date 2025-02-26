@@ -73,5 +73,7 @@ spec:
       {{- if $container_config }}
       {{- toYaml $container_config | nindent 6 }}
       {{- end }}
+      securityContext:
+        {{- toYaml $.Values.inference.securityContext | nindent 8 }}
 ---
 {{- end }}

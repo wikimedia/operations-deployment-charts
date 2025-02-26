@@ -41,6 +41,8 @@ spec:
       {{- if $container_config }}
       {{- toYaml $container_config | nindent 6 }}
       {{- end }}
+      securityContext:
+        {{- toYaml $.Values.inference.securityContext | nindent 8 }}
 
   {{- $generic_transformer := $.Values.inference.transformer | default dict }}
   {{- $custom_transformer := get $inference_settings "transformer" | default dict }}
@@ -69,6 +71,8 @@ spec:
       {{- if $transformer_container_config }}
       {{- toYaml $transformer_container_config | nindent 6 }}
       {{- end }}
+      securityContext:
+        {{- toYaml $.Values.inference.securityContext | nindent 8 }}
   {{- end }}
 ---
 {{- end }}
