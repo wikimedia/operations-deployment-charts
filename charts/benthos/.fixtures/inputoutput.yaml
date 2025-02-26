@@ -1,0 +1,12 @@
+app:
+  input:
+    stdin: {}
+  processors:
+    - sleep:
+        duration: 1s
+  output:
+    stdout: {}
+  metrics:
+    statsd:
+      address: localhost:8125
+      flush_period: 100ms

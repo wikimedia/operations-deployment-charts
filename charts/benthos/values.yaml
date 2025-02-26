@@ -1,7 +1,7 @@
 # Default values.
 app:
   version: latest  # we use latest in the defaults, overridden in helmfile releases
-  port: 4195  # note that this port is not exposed as a Service, as benthos is only a kafka client
+  port: 4195  # note that this port is not exposed as a Service, as we only use it for metrics ATM
 
   kafka:
     broker_list:
@@ -11,7 +11,10 @@ app:
     compression_codec: snappy
     ssl: false
 
-  processors: []
+  input: ~  # input configuration; or will generate a kafka_franz input if null
+  output: ~  # output configuration; or will generate a kafka_franz output if null
+  processors: []  # processor configuration
+  metrics: ~  # metrics configuration; or will set up prometheus with default settings if null
 
   requests:
     cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
@@ -23,8 +26,6 @@ app:
   shutdown:
     delay: ""
     timeout: 20s
-
-  site: datacenter1
 
 monitoring:
   enabled: true

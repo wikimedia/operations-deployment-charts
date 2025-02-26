@@ -1,39 +1,46 @@
-{{- define "config.app" }}
+{{- define "config.input.kafka" }}
+label: "kafka-in"
+kafka_franz:
+  seed_brokers:
+    {{- toYaml .Values.app.kafka.broker_list | nindent 4 }}
+  topics:
+    {{- toYaml .Values.app.kafka.topics_in | nindent 4 }}
+  tls:
+    enabled: {{ .Values.app.kafka.ssl }}
+  consumer_group: {{ template "base.name.release" . }}-{{ $.Release.Namespace }}
+  client_id: {{ template "base.name.release" . }}-{{ $.Release.Namespace }}
+  batching:
+    count: 2048
+    period: 500ms
+{{- end }}
 
+{{- define "config.output.kafka" }}
+label: "kafka-out"
+kafka_franz:
+  seed_brokers:
+    {{- toYaml .Values.app.kafka.broker_list | nindent 4 }}
+  topic: {{ .Values.app.kafka.topic_out }}
+  tls:
+    enabled: {{ .Values.app.kafka.ssl }}
+  client_id: {{ template "base.name.release" . }}-{{ $.Release.Namespace }}
+  max_in_flight: 10
+  batching:
+    count: 2048
+    period: 500ms
+{{- end }}
+
+{{- define "config.app" }}
 http:
   enabled: true
   address: 0.0.0.0:{{ .Values.app.port }}
   debug_endpoints: {{ .Values.debug.enabled }}
 
 input:
-  label: ""
-  kafka:
-    addresses:
-      {{- toYaml .Values.app.kafka.broker_list | nindent 6 }}
-    topics:
-      {{- toYaml .Values.app.kafka.topics_in | nindent 6 }}
-    target_version: 2.0.0
-    tls:
-      enabled: {{ .Values.app.kafka.ssl }}
-      skip_cert_verify: false
-      root_cas: ""
-      root_cas_file: ""
-      client_certs: []
-    consumer_group: {{ template "base.name.release" . }}
-    client_id: {{ template "base.name.release" . }}
-    checkpoint_limit: 1024
-    commit_period: 1s
-    max_processing_period: 100ms
-    group:
-      session_timeout: 10s
-      heartbeat_interval: 3s
-      rebalance_timeout: 60s
-    batching:
-      count: 0
-      byte_size: 0
-      period: ""
-      check: ""
-      processors: []
+  {{- if .Values.app.input }}
+  {{- toYaml .Values.app.input | nindent 2 }}
+  {{- else }}
+  {{ include "config.input.kafka" . | indent 2 }}
+  {{- end }}
 
 buffer:
   none: {}
@@ -44,43 +51,11 @@ pipeline:
     {{- toYaml .Values.app.processors | nindent 4 }}
 
 output:
-  label: ""
-  kafka:
-    addresses:
-      {{- toYaml .Values.app.kafka.broker_list | nindent 6 }}
-    tls:
-      enabled: {{ .Values.app.kafka.ssl }}
-      skip_cert_verify: false
-      enable_renegotiation: false
-      root_cas: ""
-      root_cas_file: ""
-      client_certs: []
-    topic: {{ .Values.app.kafka.topic_out }}
-    client_id: {{ template "base.name.release" . }}
-    target_version: 2.0.0
-    key: ""
-    partitioner: fnv1a_hash
-    partition: ""
-    compression: {{ .Values.app.kafka.compression_codec }}
-    static_headers: {}
-    metadata:
-      exclude_prefixes: []
-    max_in_flight: 64
-    ack_replicas: false
-    max_msg_bytes: 1000000
-    timeout: 5s
-    retry_as_batch: false
-    batching:
-      count: 0
-      byte_size: 0
-      period: ""
-      check: ""
-      processors: []
-    max_retries: 0
-    backoff:
-      initial_interval: 3s
-      max_interval: 10s
-      max_elapsed_time: 30s
+  {{- if .Values.app.output }}
+  {{- toYaml .Values.app.output | nindent 2 }}
+  {{- else }}
+  {{ include "config.output.kafka" . | indent 2 }}
+  {{- end }}
 
 logger:
   level: INFO
@@ -88,14 +63,18 @@ logger:
   add_timestamp: false
 
 metrics:
+  {{- if .Values.app.metrics }}
+  {{- toYaml .Values.app.metrics | indent 2 }}
+  {{- else }}
   prometheus:
     use_histogram_timing: false
-    histogram_buckets: []
     add_process_metrics: false
     add_go_metrics: false
-  mapping: ""
+  mapping: |
+    root = "benthos_" + this
+  {{- end }}
 
 shutdown_delay: {{ .Values.app.shutdown.delay }}
 shutdown_timeout: {{ .Values.app.shutdown.timeout }}
 
-{{- end}}
+{{- end }}
