@@ -89,7 +89,7 @@ end
 desc 'Create CRDs JSON schema (for kubeconform validation)'
 task :json_schema do
   output_dir = File.join(JSON_SCHEMA, 'charts')
-  if File.exists?(output_dir)
+  if File.exist?(output_dir)
     Dir.glob(File.join(output_dir, '*.json')).each { |file| File.delete(file) }
   else
     Dir.mkdir(output_dir)

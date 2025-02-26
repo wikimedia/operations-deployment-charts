@@ -13,6 +13,9 @@ module Tester
 
   # Container for a test asset
   class BaseTestAsset
+    # When adding kubernetes versions here the corresponding schemata
+    # need to be made available in https://gitlab.wikimedia.org/repos/sre/kubernetes-json-schema
+    KUBERNETES_VERSIONS = ['1.23.6', '1.31.2'].freeze
     ERROR_CONTEXT_LINES = 4
     INIT_RESULT = { lint: nil, validate: {}, diff: {} }.freeze
     KUBECONFORM_SCHEMA_LOCATIONS = [
@@ -103,7 +106,7 @@ module Tester
 
     # Validate the manifest, by first verifying it's valid yaml,
     # then running it through kubeconform
-    def validate(options)
+    def validate
       # Avoid running if the asset is marked as bad
       return unless should_test?
 
@@ -123,8 +126,8 @@ module Tester
         r[label] = validate_yaml outcome
         next unless r[label].ok?
 
-        if options[:kubeconform]
-          r[label] = validate_kubeconform(label, outcome, options[:kube_versions])
+        if which('kubeconform')
+          r[label] = validate_kubeconform(label, outcome, KUBERNETES_VERSIONS)
         end
       end
     end
@@ -358,13 +361,18 @@ module Tester
       # we need to collect fixtures again if we're in an alternative source
       fix = chdir.nil? ?  fixtures : collect_fixtures(chdir)
       fix.each do |label, fixture|
-        quoted = fixture.nil? ? '' : "-f '#{fixture}'"
+        fixture_arg = fixture.nil? ? '' : "-f '#{fixture}'"
+        satisfied_version = select_satisfied_versions(label, KUBERNETES_VERSIONS)[0]
+        unless satisfied_version
+          outcomes[label] = TestOutcome.new('', "#{label} requires k8s #{self.kube_version[label]}, which is not supported", 1, 'helm template')
+          next
+        end
         # --debug will output yaml even if it's invalid
         # Prepend the default fixtures - by default LISTENERS_FIXTURE so charts don't have to define "services_proxy"
         # but can override that structure at will. If default_fixtures is defined in .fixturectl.yaml, then
         # we'll use that.
         default = @default_fixtures.map { |x| "-f '#{x}'" }.join(' ')
-        command = "helm template --debug #{default} #{quoted} '#{@path}'"
+        command = "helm template --debug #{default} #{fixture_arg} --kube-version #{satisfied_version} '#{@path}'"
         outcomes[label] = _exec command, nil, chdir
         outcomes[label].grep_v(/found symbolic link in path/)
         # If we got a yaml parse error, we will let the validation

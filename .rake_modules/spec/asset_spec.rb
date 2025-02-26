@@ -204,7 +204,8 @@ describe Tester::BaseTestAsset do
       end
       context 'without kubeconform' do
         let(:result) do
-          asset.validate({})
+          allow(asset).to receive(:which).with('kubeconform').and_return(nil)
+          asset.validate()
           asset.result[:validate]
         end
         it 'should pass validation' do
@@ -216,7 +217,7 @@ describe Tester::BaseTestAsset do
       end
       context 'with kubeconform' do
         let(:result) do
-          asset.validate({ kubeconform: true, kube_versions: KUBERNETES_VERSIONS })
+          asset.validate()
           asset.result[:validate]
         end
         it 'should pass validation' do
@@ -233,7 +234,7 @@ describe Tester::BaseTestAsset do
         asset = factory
         allow(asset).to receive(:templates).and_return({ 'foobar': tpl })
         allow(asset).to receive(:collect_fixtures).and_return({ 'foobar': nil })
-        asset.validate({ kubeconform: true, kube_versions: KUBERNETES_VERSIONS })
+        asset.validate()
         asset
       end
       let(:result) do

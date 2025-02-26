@@ -198,3 +198,4 @@ helmDefaults:
   force: false
   args:
     - "--kubeconfig=/etc/kubernetes/admin-{{ .Environment.Name }}.config"
+kubeVersion: "{{ .Values.kubernetesVersion }}"
