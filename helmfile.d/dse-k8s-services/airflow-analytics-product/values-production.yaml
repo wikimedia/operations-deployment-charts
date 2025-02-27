@@ -18,3 +18,7 @@ ingress:
     default: "airflow-analytics-product"
     extraFQDNs:
     - airflow-analytics-product.wikimedia.org
+
+discovery:
+  listeners:
+  - analytics-web  # to be able to talk to https://analytics.wikimedia.org/
