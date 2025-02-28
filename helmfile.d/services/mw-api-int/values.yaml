@@ -2,9 +2,9 @@ resources:
 # When ramping up replicas in the main release, please remember
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
-  # T383845 - Serve ~ 5% of traffic on PHP 8.1 (main: 247 migration: 13)
+  # T383845 - Serve ~ 10% of traffic on PHP 8.1 (main: 234 migration: 26)
   # Original size: 260 replicas
-  replicas: 247
+  replicas: 234
 
 mesh:
   public_port: 4446
