@@ -21,6 +21,13 @@ spec:
       destination:
         ports:
           - {{ .Values.kserve.webhook.port }}
+{{- if .Values.monitoring.enabled }}
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - {{ .Values.kserve.controller.metrics.port }}
+{{- end }}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
