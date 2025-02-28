@@ -113,6 +113,8 @@ env:
 {{- include "app.airflow.env.kerberos" (dict "Root" .) }}
 - name: AIRFLOW_KERBEROS_HOSTNAME
   value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
+- name: AIRFLOW_APPOWNER
+  value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 0 }}
 - name: KRB5_PRINCIPAL
   value: {{ $.Values.config.airflow.config.kerberos.principal }}
 {{- end }}
