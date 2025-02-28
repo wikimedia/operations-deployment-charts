@@ -4,13 +4,21 @@ shellbox:
 # TODO: T377038 - Migrate production traffic by incrementally swapping replica
 # counts with resources.replicas in values.yaml.
 resources:
-  replicas: 0
+  # T377038 - Serve traffic via 8.1 on 1 of 8 replicas.
+  replicas: 1
+
+# T377038 - Debugging malformed responses on PHP 8.1
+config:
+  public:
+    FPM__catch_workers_output: "1"
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
 mesh:
   tracing:
     service_name: shellbox-media-migration
+  # T377038 - Debugging malformed responses on PHP 8.1
+  local_access_log_min_code: 200
 
 # Do not create a distinct service, instead routing via the main release.
 service:
