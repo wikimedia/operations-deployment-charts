@@ -55,6 +55,10 @@ external_services:
     hadoop-master: [analytics-test]
     hadoop-worker: [analytics-test]
     hive: [analytics-test]
+  hadoop-shell:
+    # Give access to hadoop subsystems to the hadoop shell
+    hadoop-master: [analytics-test]
+    hadoop-worker: [analytics-test]
 
 # We hardcode this hostname / ip mapping to allow Hadoop to perform a reverse DNS
 # resolution of the IPs and to get these hostnames, instead of the coreDNS reverse
@@ -63,3 +67,6 @@ external_services:
 host_aliases:
   an-test-master1001.eqiad.wmnet: 10.64.5.39
   an-test-master1002.eqiad.wmnet: 10.64.36.112
+
+hadoop_shell:
+  enabled: true

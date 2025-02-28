@@ -498,6 +498,15 @@ kerberos:
     - name: KRB5_KEYTAB
       value: *krb5_keytab
 
+hadoop_shell:
+  enabled: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

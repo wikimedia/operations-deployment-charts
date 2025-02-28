@@ -231,3 +231,46 @@ spec:
       {{- include "mesh.deployment.volume" . | indent 6 }}
 {{- end }}
 {{- end }}
+
+
+{{- define "deployment.hadoop-shell" }}
+{{- if $.Values.hadoop_shell.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hadoop-shell
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: hadoop-shell
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: hadoop-shell
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      {{- include "airflow.task-pod.volumes" (dict "Root" $ "profiles" (list "hadoop" "kerberos")) | indent 6 }}
+      {{- include "airflow.pod.host_aliases" . | indent 6 }}
+      containers:
+      - name: "hadoop-shell"
+        command: ["sleep"]
+        args: ["infinity"]
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        env:
+        {{- include "app.airflow.env.hadoop" . | indent 8 }}
+        {{- include "app.airflow.env.kerberos" (dict "Root" .) | indent 8 }}
+        {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
+        {{- include "base.helper.resources" $.Values.hadoop_shell.resources | indent 8 }}
+        {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" (list "hadoop" "kerberos")) | indent 8 }}
+
+{{- end }}
+{{- end }}

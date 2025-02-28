@@ -56,7 +56,10 @@ external_services:
     hive: [analytics]
     hadoop-master: [analytics]
     hadoop-worker: [analytics]
-
+  hadoop-shell:
+    # Give access to hadoop subsystems to the hadoop shell
+    hadoop-master: [analytics]
+    hadoop-worker: [analytics]
 # We hardcode this hostname / ip mapping to allow Hadoop to perform a reverse DNS
 # resolution of the IPs and to get these hostnames, instead of the coreDNS reverse
 # service IP PTR entries, to make it validate the Kerberos service name.
@@ -64,3 +67,6 @@ external_services:
 host_aliases:
   an-master1003.eqiad.wmnet: 10.64.36.15
   an-master1004.eqiad.wmnet: 10.64.53.14
+
+hadoop_shell:
+  enabled: true
