@@ -351,8 +351,10 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
           - 1.2.3.3
 
 
-For TCP load balancer, we define the TCP service, and then we add upstreams as a list
-under 'tcp_services_proxy'.
+For TCP load balancer, we define the TCP service, and then we add upstreams as a list under 'tcp_services_proxy'.
+There is also the option to set custom health checks, otherwise all upstreams
+will be considered always up.
+More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/health_check.proto#envoy-v3-api-msg-config-core-v3-healthcheck
   tcp_proxy:
     listeners:
       - tcpServiceA
@@ -366,6 +368,15 @@ under 'tcp_services_proxy'.
            port: 10100               # this is the port on the remote system
          - address: 4.5.6.7
            port: 10100
+       health_checks:                # optional, if not set all upstreams will be always considered up
+       - timeout: 5s
+         interval: 5s
+         unhealthy_threshold: 3
+         initial_jitter: 1s
+         healthy_threshold: 5
+         tcp_health_check: {}
+         always_log_health_check_failures: true
+         event_log_path: "/dev/stdout"
 */}}
 {{- define "mesh.configuration._listener" }}
 - address:
@@ -501,6 +512,14 @@ under 'tcp_services_proxy'.
                 {{- end }}
                 cluster: {{ .Name }}
                 timeout: {{ .Listener.timeout }}
+                {{- /* puppet-defined idle timeout
+                 note that route-level idle timeouts are stream idle timeouts in envoy terminology and
+                 behave differently to other idle timeout settings - see 039059f18b2 in puppet and
+                 the envoy docs
+                */}}
+                {{- if .Listener.upstream.idle_timeout }}
+                idle_timeout: {{ .Listener.upstream.idle_timeout }}
+                {{- end }}
                 {{- if .Listener.retry_policy }}
                 retry_policy:
                 {{- range $k, $v :=  .Listener.retry_policy }}
@@ -535,6 +554,14 @@ under 'tcp_services_proxy'.
             socket_address:
               address: {{ .Upstream.address }}
               port_value: {{ .Upstream.port }}
+  {{- /* Use puppet-defined tcp keepalives for connections to upstreams */}}
+  {{- if .Upstream.tcp_keepalive }}
+  upstream_connection_options:
+    tcp_keepalive:
+    {{- range $k, $v := .Upstream.tcp_keepalive }}
+      {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
   {{- if .Upstream.encryption }}
   {{- include "mesh.configuration._transport_socket_tls" (dict "Upstream" .Upstream) | indent 2 }}
   {{- end }}
@@ -560,6 +587,10 @@ under 'tcp_services_proxy'.
   connect_timeout: {{ .Listener.connect_timeout | default "30s" }}
   type: STRICT_DNS
   dns_lookup_family: V4_ONLY
+{{- if (.Listener.health_checks | default list) }}
+  health_checks:
+{{ toYaml .Listener.health_checks | indent 4 }}
+{{- end }}
   load_assignment:
     cluster_name: {{ .Name }}
     endpoints:
