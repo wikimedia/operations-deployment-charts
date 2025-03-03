@@ -17,5 +17,5 @@ spec:
       protocol: TCP
       destination:
         ports:
-        - 9090
+        - {{ .Values.monitoring.port }}
 {{- end }}

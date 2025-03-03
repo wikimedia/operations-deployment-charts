@@ -49,4 +49,4 @@ spec:
       destination:
         selector: app-wmf=="kserve-inference"
         ports:
-          - 9090
+          - {{ .Values.monitoring.port }}

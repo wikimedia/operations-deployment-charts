@@ -782,7 +782,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: activator
         role: activator
@@ -842,7 +842,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
             - name: http1
@@ -891,8 +891,8 @@ spec:
   ports:
     # Define metrics and profiling for them to be accessible within service meshes.
     - name: http-metrics
-      port: 9090
-      targetPort: 9090
+      port: {{ .Values.monitoring.port }}
+      targetPort: {{ .Values.monitoring.port }}
     - name: http-profiling
       port: 8008
       targetPort: 8008
@@ -947,7 +947,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: autoscaler
         app.kubernetes.io/component: autoscaler
@@ -1014,7 +1014,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
             - name: websocket
@@ -1047,8 +1047,8 @@ spec:
   ports:
     # Define metrics and profiling for them to be accessible within service meshes.
     - name: http-metrics
-      port: 9090
-      targetPort: 9090
+      port: {{ .Values.monitoring.port }}
+      targetPort: {{ .Values.monitoring.port }}
     - name: http-profiling
       port: 8008
       targetPort: 8008
@@ -1094,7 +1094,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: controller
         app.kubernetes.io/component: controller
@@ -1158,7 +1158,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
 ---
@@ -1176,8 +1176,8 @@ spec:
   ports:
     # Define metrics and profiling for them to be accessible within service meshes.
     - name: http-metrics
-      port: 9090
-      targetPort: 9090
+      port: {{ .Values.monitoring.port }}
+      targetPort: {{ .Values.monitoring.port }}
     - name: http-profiling
       port: 8008
       targetPort: 8008
@@ -1220,7 +1220,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: domain-mapping
         app.kubernetes.io/component: domain-mapping
@@ -1276,7 +1276,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
 
@@ -1317,7 +1317,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: domainmapping-webhook
         role: domainmapping-webhook
@@ -1380,7 +1380,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
             - name: https-webhook
@@ -1421,8 +1421,8 @@ spec:
   ports:
     # Define metrics and profiling for them to be accessible within service meshes.
     - name: http-metrics
-      port: 9090
-      targetPort: 9090
+      port: {{ .Values.monitoring.port }}
+      targetPort: {{ .Values.monitoring.port }}
     - name: http-profiling
       port: 8008
       targetPort: 8008
@@ -1527,7 +1527,7 @@ spec:
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         {{- end }}
-        prometheus.io/port: "9090"
+        prometheus.io/port: "{{ .Values.monitoring.port }}"
       labels:
         app: webhook
         role: webhook
@@ -1591,7 +1591,7 @@ spec:
               type: RuntimeDefault
           ports:
             - name: metrics
-              containerPort: 9090
+              containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
             - name: https-webhook
@@ -1634,8 +1634,8 @@ spec:
   ports:
     # Define metrics and profiling for them to be accessible within service meshes.
     - name: http-metrics
-      port: 9090
-      targetPort: 9090
+      port: {{ .Values.monitoring.port }}
+      targetPort: {{ .Values.monitoring.port }}
     - name: http-profiling
       port: 8008
       targetPort: 8008
