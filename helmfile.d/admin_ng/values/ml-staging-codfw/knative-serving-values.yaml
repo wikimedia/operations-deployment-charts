@@ -27,3 +27,8 @@ core:
   config_features:
      secure-pod-defaults: "enabled"
      kubernetes.podspec-securitycontext: "enabled"
+
+monitoring:
+  # Attempt to avoid the port 9090 that may be used/reserved
+  # by calico. See T387580.
+  port: 19090
