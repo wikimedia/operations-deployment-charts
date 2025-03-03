@@ -46,6 +46,13 @@ net_istio:
         cpu: 200m
         memory: 200Mi
 core:
+  config_observability:
+    # This is needed in the current version of Knative (1.7)
+    # to allow the Prometheus exporters to come up correctly
+    # in various pods. Even if the value has already a default,
+    # the go code doesn't tolerate an empty map and it just logs
+    # an error without starting any exporter.
+    metrics.backend-destination: prometheus
   enable_hpa: false
   # This domain will be used when creating hostnames for routes by Knative
   default_domain: 'wikimedia.org'
