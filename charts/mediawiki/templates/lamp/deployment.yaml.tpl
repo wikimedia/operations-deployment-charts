@@ -198,7 +198,7 @@
   {{- end }}
   # Variables that will be made available to php-fpm and cli scripts.
   {{- range $k, $v := .Values.php.envvars }}
-  {{- if  $v}}
+  {{- if not (quote $v | empty) }}
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}

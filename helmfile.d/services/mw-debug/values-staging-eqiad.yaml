@@ -34,7 +34,8 @@ cache:
         pool: wf-eqiad
         # No failover for wikifunction
         failover_time: 0
-
+monitoring:
+  enabled: false
 # T368366
 common_images:
   mcrouter:
@@ -44,5 +45,5 @@ php:
   envvars:
     MCROUTER_SERVER: "127.0.0.1:11213"
 #    MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
-    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: localhost
 
