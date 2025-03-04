@@ -13,6 +13,25 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/cxserver-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [staging]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [production]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [production]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: cxserver
@@ -54,19 +73,3 @@ releases:
     <<: *default
   - name: staging
     <<: *default
-environments:
-  staging:
-    values:
-      - releases: [staging]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [production]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [production]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

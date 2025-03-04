@@ -12,6 +12,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/echoserver-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [dse]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: echoserver
@@ -51,10 +60,3 @@ hooks:
 releases: # we hope to be able to use the release bits to configure WDQS & WCQS with this same helmfile
   - name: dse
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [dse]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

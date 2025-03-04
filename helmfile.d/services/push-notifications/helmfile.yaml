@@ -13,6 +13,25 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/push-notifications-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: push-notifications
@@ -53,19 +72,3 @@ releases:
     <<: *default
   - name: canary
     <<: *default
-environments:
-  staging:
-    values:
-      - releases: [main]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [main]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [main]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

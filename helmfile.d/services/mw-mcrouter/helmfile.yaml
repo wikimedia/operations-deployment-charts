@@ -13,6 +13,19 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-mcrouter-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [main]
+  eqiad:
+    values:
+      - releases: [main]
+  codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: mw-mcrouter
@@ -50,14 +63,3 @@ hooks:
 releases:
   - name: main
     <<: *default
-
-environments:
-  staging:
-    values:
-      - releases: [main]
-  eqiad:
-    values:
-      - releases: [main]
-  codfw:
-    values:
-      - releases: [main]

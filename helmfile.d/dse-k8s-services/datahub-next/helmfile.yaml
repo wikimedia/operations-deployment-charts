@@ -12,6 +12,17 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/datahub-next-deploy-%s.config" .Environment.Name) }}
 
+# Please note: you might not need to declare all of these releases. Most applications
+# might be fine just declaring "main" everywhere.
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [staging]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: datahub-next
@@ -61,12 +72,3 @@ templates:
 releases:
   - name: staging
     <<: *default
-
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [staging]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

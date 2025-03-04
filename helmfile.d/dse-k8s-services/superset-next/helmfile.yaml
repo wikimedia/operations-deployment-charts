@@ -12,6 +12,14 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/superset-next-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [staging]
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     chart: wmf-stable/superset
@@ -50,9 +58,3 @@ releases:
   - name: staging
     namespace: superset-next
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [staging]
-    missingFileHandler: Warn

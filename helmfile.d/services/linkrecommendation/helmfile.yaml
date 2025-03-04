@@ -13,6 +13,25 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/linkrecommendation-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [staging]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [internal, external]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [internal, external]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: linkrecommendation
@@ -55,19 +74,3 @@ releases:
     <<: *default
   - name: staging
     <<: *default
-environments:
-  staging:
-    values:
-      - releases: [staging]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [internal, external]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [internal, external]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

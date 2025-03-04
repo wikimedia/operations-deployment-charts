@@ -13,6 +13,16 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-api-ext-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main,next,migration,canary,prometheus]
+  codfw:
+    values:
+      - releases: [main,next,migration,canary,prometheus]
+
+---
+
 templates:
   default: &default
     namespace: mw-api-ext
@@ -86,11 +96,3 @@ releases:
     <<: *default
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases: [main,next,migration,canary,prometheus]
-  codfw:
-    values:
-      - releases: [main,next,migration,canary,prometheus]

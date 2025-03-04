@@ -13,6 +13,16 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-jobrunner-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main,migration,canary,prometheus]
+  codfw:
+    values:
+      - releases: [main,migration,canary,prometheus]
+
+---
+
 templates:
   default: &default
     namespace: mw-jobrunner
@@ -84,11 +94,3 @@ releases:
     <<: *default
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases: [main,migration,canary,prometheus]
-  codfw:
-    values:
-      - releases: [main,migration,canary,prometheus]

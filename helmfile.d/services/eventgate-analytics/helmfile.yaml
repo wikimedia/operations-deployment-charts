@@ -13,6 +13,25 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/eventgate-analytics-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [production, canary]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [production, canary]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [production, canary]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: eventgate-analytics
@@ -53,20 +72,3 @@ releases:
     <<: *default
   - name: canary
     <<: *default
-
-environments:
-  staging:
-    values:
-      - releases: [production, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [production, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [production, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

@@ -12,6 +12,33 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/miscweb-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging: &default_values
+    values:
+      - releases:
+        - bugzilla
+        - annualreport
+        - bienvenida
+        - transparencyreport
+        - statictendril
+        - research-landing-page
+        - wikiworkshop
+        - static-codereview
+        - design-blog
+        - design-landing-page
+        - design-strategy
+        - design-style-guide
+        - security-landing-page
+        - os-reports
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    <<: *default_values
+  codfw:
+    <<: *default_values
+
+---
+
 templates:
   default: &default
     namespace: miscweb
@@ -77,28 +104,3 @@ releases:
     <<: *default
   - name: os-reports
     <<: *default
-
-environments:
-  staging: &default_values
-    values:
-      - releases:
-        - bugzilla
-        - annualreport
-        - bienvenida
-        - transparencyreport
-        - statictendril
-        - research-landing-page
-        - wikiworkshop
-        - static-codereview
-        - design-blog
-        - design-landing-page
-        - design-strategy
-        - design-style-guide
-        - security-landing-page
-        - os-reports
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    <<: *default_values
-  codfw:
-    <<: *default_values

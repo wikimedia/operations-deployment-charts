@@ -12,6 +12,27 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/SERVICE_NAME-deploy-%s.config" .Environment.Name) }}
 
+# Please note: you might not need to declare all of these releases. Most applications
+# might be fine just declaring "main" everywhere.
+environments:
+  staging:
+    values:
+      - releases: [main, test]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [main, canary]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [main, canary]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: SERVICE_NAME
@@ -55,22 +76,3 @@ releases:
     <<: *default
   - name: test
     <<: *default
-
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
-environments:
-  staging:
-    values:
-      - releases: [main, test]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [main, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [main, canary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

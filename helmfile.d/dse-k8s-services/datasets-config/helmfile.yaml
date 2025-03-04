@@ -12,6 +12,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/datasets-config-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [production]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: datasets-config
@@ -52,10 +61,3 @@ releases:
   - name: production
     namespace: datasets-config
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [production]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

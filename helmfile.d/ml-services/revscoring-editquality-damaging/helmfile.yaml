@@ -9,6 +9,20 @@ helmDefaults:
   args:
     - "--kubeconfig=/etc/kubernetes/revscoring-editquality-damaging-deploy-{{ .Environment.Name }}.config"
 
+# Please note: you might not need to declare all of these releases.
+environments:
+  ml-serve-eqiad:
+    values:
+      - releases: [main]
+  ml-serve-codfw:
+    values:
+      - releases: [main]
+  ml-staging-codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: revscoring-editquality-damaging
@@ -50,15 +64,3 @@ releases:
   - <<: *service_secrets
   - name: main
     <<: *default
-
-# Please note: you might not need to declare all of these releases.
-environments:
-  ml-serve-eqiad:
-    values:
-      - releases: [main]
-  ml-serve-codfw:
-    values:
-      - releases: [main]
-  ml-staging-codfw:
-    values:
-      - releases: [main]

@@ -9,6 +9,20 @@ helmDefaults:
   args:
     - "--kubeconfig=/etc/kubernetes/recommendation-api-ng-deploy-{{ .Environment.Name }}.config"
 
+# Please note: you might not need to declare all of these releases.
+environments:
+  ml-serve-eqiad:
+    values:
+      - releases: [main]
+  ml-serve-codfw:
+    values:
+      - releases: [main]
+  ml-staging-codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: recommendation-api-ng
@@ -45,15 +59,3 @@ templates:
 releases:
   - name: main
     <<: *default
-
-# Please note: you might not need to declare all of these releases.
-environments:
-  ml-serve-eqiad:
-    values:
-      - releases: [main]
-  ml-serve-codfw:
-    values:
-      - releases: [main]
-  ml-staging-codfw:
-    values:
-      - releases: [main]

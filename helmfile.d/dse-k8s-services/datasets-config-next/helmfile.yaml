@@ -12,6 +12,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/datasets-config-next-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [staging]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: datasets-config-next
@@ -52,10 +61,3 @@ releases:
   - name: staging
     namespace: datasets-config-next
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [staging]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

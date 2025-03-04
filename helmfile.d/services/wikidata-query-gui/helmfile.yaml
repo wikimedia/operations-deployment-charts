@@ -12,6 +12,25 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/wikidata-query-gui-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging: &default_values
+    values:
+      - releases:
+        - wikidata-query-gui
+        - commons-query-gui
+        - wikidata-query-main-gui
+        - wikidata-query-scholarly-gui
+        - wikidata-query-legacy-full-gui
+        - wikidata-query-builder
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    <<: *default_values
+  codfw:
+    <<: *default_values
+
+---
+
 templates:
   default: &default
     namespace: wikidata-query-gui
@@ -61,19 +80,3 @@ releases:
     <<: *default
   - name: wikidata-query-builder
     <<: *default
-environments:
-  staging: &default_values
-    values:
-      - releases:
-        - wikidata-query-gui
-        - commons-query-gui
-        - wikidata-query-main-gui
-        - wikidata-query-scholarly-gui
-        - wikidata-query-legacy-full-gui
-        - wikidata-query-builder
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    <<: *default_values
-  codfw:
-    <<: *default_values

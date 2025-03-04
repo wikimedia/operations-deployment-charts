@@ -13,6 +13,23 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-script-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases:
+        - prometheus
+        - {{ env "RELEASE_NAME" }}
+  codfw:
+    values:
+      - releases:
+        - prometheus
+        - {{ env "RELEASE_NAME" }}
+  staging:
+    values:
+      - releases: [prometheus]
+
+---
+
 templates:
   default: &default
     namespace: mw-script
@@ -72,18 +89,3 @@ releases:
   # here as a dummy, that didn't work so that CI can verify the helmfile.
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases:
-        - prometheus
-        - {{ $release_name }}
-  codfw:
-    values:
-      - releases:
-        - prometheus
-        - {{ $release_name }}
-  staging:
-    values:
-      - releases: [prometheus]

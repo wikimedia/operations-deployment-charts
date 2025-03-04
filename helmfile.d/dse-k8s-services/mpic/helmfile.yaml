@@ -12,6 +12,14 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mpic-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [production]
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     chart: wmf-stable/mpic
@@ -50,9 +58,3 @@ releases:
   - name: production
     namespace: mpic
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [production]
-    missingFileHandler: Warn

@@ -13,6 +13,16 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-videoscaler-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main]
+  codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: mw-videoscaler
@@ -60,11 +70,3 @@ hooks:
 releases:
   - name: main
     <<: *default
-
-environments:
-  eqiad:
-    values:
-      - releases: [main]
-  codfw:
-    values:
-      - releases: [main]

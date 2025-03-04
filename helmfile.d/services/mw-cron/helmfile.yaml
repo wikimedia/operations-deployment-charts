@@ -13,6 +13,16 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-cron-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main]
+  codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: mw-cron
@@ -62,11 +72,3 @@ hooks:
 releases:
   - name: main
     <<: *default
-
-environments:
-  eqiad:
-    values:
-      - releases: [main]
-  codfw:
-    values:
-      - releases: [main]

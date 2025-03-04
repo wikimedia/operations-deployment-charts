@@ -12,6 +12,27 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/rdf-streaming-updater-deploy-%s.config" .Environment.Name) }}
 
+# Please note: you might not need to declare all of these releases. Most applications
+# might be fine just declaring "main" everywhere.
+environments:
+  staging:
+    values:
+      - releases: [wikidata,commons]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    values:
+      - releases: [wikidata,commons]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases: [wikidata,commons]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: rdf-streaming-updater
@@ -53,22 +74,3 @@ releases: # we hope to be able to use the release bits to configure WDQS & WCQS 
     <<: *default
   - name: commons
     <<: *default
-
-# Please note: you might not need to declare all of these releases. Most applications
-# might be fine just declaring "main" everywhere.
-environments:
-  staging:
-    values:
-      - releases: [wikidata,commons]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    values:
-      - releases: [wikidata,commons]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases: [wikidata,commons]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

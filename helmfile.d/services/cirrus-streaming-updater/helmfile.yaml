@@ -12,6 +12,44 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/cirrus-streaming-updater-deploy-%s.config" .Environment.Name) }}
 
+values:
+  # Defaults to false. Set to true from helmfile commandline to invoke the
+  # -backfill consumers. They are conditional so normal deployments don't
+  # attempt to interact with them.
+  - backfill: false
+
+environments:
+  staging:
+    values:
+      - releases:
+        - producer
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+  ## eqiad and codfw are configured, as we are figuring out what exactly needs
+  ## to be set everywhere, but are not ready for production deployment. Initial
+  ## deployment is to be limited to staging. Retained here to explain all the
+  ## extra unreferenced values files.
+
+  eqiad:
+    values:
+      - releases:
+        - producer
+        - "consumer-cloudelastic{{ if .Values.backfill }}-backfill{{ end }}"
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  codfw:
+    values:
+      - releases:
+        - producer
+        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: cirrus-streaming-updater
@@ -79,39 +117,3 @@ releases:
   - name: consumer-cloudelastic-backfill
     <<: *backfill
   {{ end }}
-
-values:
-  # Defaults to false. Set to true from helmfile commandline to invoke the
-  # -backfill consumers. They are conditional so normal deployments don't
-  # attempt to interact with them.
-  - backfill: false
-
-environments:
-  staging:
-    values:
-      - releases:
-        - producer
-        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-
-  ## eqiad and codfw are configured, as we are figuring out what exactly needs
-  ## to be set everywhere, but are not ready for production deployment. Initial
-  ## deployment is to be limited to staging. Retained here to explain all the
-  ## extra unreferenced values files.
-
-  eqiad:
-    values:
-      - releases:
-        - producer
-        - "consumer-cloudelastic{{ if .Values.backfill }}-backfill{{ end }}"
-        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  codfw:
-    values:
-      - releases:
-        - producer
-        - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

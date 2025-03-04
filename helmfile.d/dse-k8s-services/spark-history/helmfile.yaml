@@ -12,6 +12,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/spark-history-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [analytics-hadoop]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     chart: wmf-stable/spark-history
@@ -50,10 +59,3 @@ releases:
   - name: analytics-hadoop
     namespace: spark-history
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [analytics-hadoop]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

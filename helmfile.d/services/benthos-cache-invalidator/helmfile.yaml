@@ -12,6 +12,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/benthos-cache-invalidator-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging:
+    values:
+      - releases: [kafka-smoke-test]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: benthos-cache-invalidator
@@ -51,10 +60,3 @@ hooks:
 releases:
   - name: kafka-smoke-test
     <<: *default
-
-environments:
-  staging:
-    values:
-      - releases: [kafka-smoke-test]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn

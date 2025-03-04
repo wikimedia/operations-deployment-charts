@@ -13,6 +13,15 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/postgresql-test-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases:
+        - postgresql-airflow-test-k8s
+    missingFileHandler: Warn
+
+---
+
 releases:
   - name: postgresql-test
     namespace: postgresql-test
@@ -27,10 +36,3 @@ releases:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - fullnameOverride: "postgresql-test"
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases:
-        - postgresql-airflow-test-k8s
-    missingFileHandler: Warn

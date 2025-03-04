@@ -13,6 +13,16 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/airflow-ml-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases:
+        - postgresql-airflow-ml
+        - production
+    missingFileHandler: Warn
+
+---
+
 hooks:
   - events: ["prepare"]
     command: "helmfile_log_sal"
@@ -62,11 +72,3 @@ releases:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-ml"
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases:
-        - postgresql-airflow-ml
-        - production
-    missingFileHandler: Warn

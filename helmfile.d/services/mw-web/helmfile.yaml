@@ -13,6 +13,21 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-web-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main,next,migration,canary,prometheus]
+  codfw:
+    values:
+      - releases: [main,next,migration,canary,prometheus]
+  # This is a non-production development environment used for testing
+  # scap and related deployment tooling.
+  traindev:
+    values:
+      - releases: [main,canary]
+
+---
+
 templates:
   default: &default
     namespace: mw-web
@@ -86,16 +101,3 @@ releases:
     <<: *default
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases: [main,next,migration,canary,prometheus]
-  codfw:
-    values:
-      - releases: [main,next,migration,canary,prometheus]
-  # This is a non-production development environment used for testing
-  # scap and related deployment tooling.
-  traindev:
-    values:
-      - releases: [main,canary]

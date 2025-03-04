@@ -12,6 +12,22 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/wikifunctions-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  staging: &default_values
+    values:
+      - releases:
+        - main-orchestrator
+        - javascript-evaluator
+        - python-evaluator
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+  eqiad:
+    <<: *default_values
+  codfw:
+    <<: *default_values
+
+---
+
 templates:
   default: &default
     namespace: wikifunctions
@@ -61,17 +77,3 @@ releases:
   - name: python-evaluator
     <<: *default
     chart: wmf-stable/function-evaluator
-
-environments:
-  staging: &default_values
-    values:
-      - releases:
-        - main-orchestrator
-        - javascript-evaluator
-        - python-evaluator
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-    missingFileHandler: Warn
-  eqiad:
-    <<: *default_values
-  codfw:
-    <<: *default_values

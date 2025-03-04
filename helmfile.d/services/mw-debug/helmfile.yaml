@@ -13,6 +13,27 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-debug-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [pinkunicorn, next, prometheus]
+  codfw:
+    values:
+      - releases: [pinkunicorn, next, prometheus]
+  staging-eqiad:
+    values:
+      - releases: [staging]
+  staging-codfw:
+    values:
+      - releases: [staging]
+  # This is a non-production development environment used for testing
+  # scap and related deployment tooling.
+  traindev:
+    values:
+      - releases: [pinkunicorn]
+
+---
+
 templates:
   default: &default
     namespace: mw-debug
@@ -79,22 +100,3 @@ releases:
     <<: *default
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases: [pinkunicorn, next, prometheus]
-  codfw:
-    values:
-      - releases: [pinkunicorn, next, prometheus]
-  staging-eqiad:
-    values:
-      - releases: [staging]
-  staging-codfw:
-    values:
-      - releases: [staging]
-  # This is a non-production development environment used for testing
-  # scap and related deployment tooling.
-  traindev:
-    values:
-      - releases: [pinkunicorn]

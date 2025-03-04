@@ -9,6 +9,17 @@ helmDefaults:
   args:
     - "--kubeconfig=/etc/kubernetes/SERVICE_NAME-deploy-{{ .Environment.Name }}.config"
 
+# Please note: you might not need to declare all of these releases.
+environments:
+  ml-serve-eqiad:
+    values:
+      - releases: [main]
+  ml-serve-codfw:
+    values:
+      - releases: [main]
+
+---
+
 templates:
   default: &default
     namespace: SERVICE_NAME
@@ -66,12 +77,3 @@ releases:
   - <<: *service_secrets
   - name: main
     <<: *default
-
-# Please note: you might not need to declare all of these releases.
-environments:
-  ml-serve-eqiad:
-    values:
-      - releases: [main]
-  ml-serve-codfw:
-    values:
-      - releases: [main]

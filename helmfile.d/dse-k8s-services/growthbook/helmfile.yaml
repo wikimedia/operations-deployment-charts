@@ -12,6 +12,14 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/growthbook-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [production]
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     chart: wmf-stable/growthbook
@@ -61,9 +69,3 @@ releases:
   - name: production
     namespace: growthbook
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [production]
-    missingFileHandler: Warn

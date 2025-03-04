@@ -13,6 +13,16 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-misc-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  eqiad:
+    values:
+      - releases: [main, prometheus]
+  codfw:
+    values:
+      - releases: [main, prometheus]
+
+---
+
 templates:
   default: &default
     namespace: mw-misc
@@ -80,11 +90,3 @@ releases:
     <<: *default
   - name: prometheus
     <<: *statsd
-
-environments:
-  eqiad:
-    values:
-      - releases: [main, prometheus]
-  codfw:
-    values:
-      - releases: [main, prometheus]

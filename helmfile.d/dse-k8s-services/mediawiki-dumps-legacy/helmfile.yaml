@@ -13,6 +13,14 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mediawiki-dumps-legacy-deploy-%s.config" .Environment.Name) }}
 
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [production]
+    missingFileHandler: Warn
+
+---
+
 templates:
   default: &default
     namespace: mediawiki-dumps-legacy
@@ -76,9 +84,3 @@ hooks:
 releases:
   - name: production
     <<: *default
-
-environments:
-  dse-k8s-eqiad:
-    values:
-      - releases: [production]
-    missingFileHandler: Warn
