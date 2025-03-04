@@ -3,7 +3,8 @@ app:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-consumer-cloudelastic-eqiad
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-cloudelastic-eqiad
-      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error.rc0
+      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error.v1
+      fetch-error-stream: cirrussearch.update_pipeline.fetch_error.v1
       elasticsearch-urls.chi: https://cloudelastic.wikimedia.org:9243
       elasticsearch-urls.omega: https://cloudelastic.wikimedia.org:9443
       elasticsearch-urls.psi: https://cloudelastic.wikimedia.org:9643

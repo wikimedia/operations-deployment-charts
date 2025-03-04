@@ -2,10 +2,10 @@ app:
   config_files:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-producer-staging
-      public-update-stream: cirrussearch.update_pipeline.update.rc0
-      private-update-stream: cirrussearch.update_pipeline.update.private.rc0
-      public-update-topic: codfw.cirrussearch.update_pipeline.update.rc0
-      private-update-topic: codfw.cirrussearch.update_pipeline.update.private.rc0
+      public-update-stream: cirrussearch.update_pipeline.update.v1
+      private-update-stream: cirrussearch.update_pipeline.update.private.v1
+      public-update-topic: codfw.cirrussearch.update_pipeline.update.v1
+      private-update-topic: codfw.cirrussearch.update_pipeline.update.private.v1
       # While staging lives in eqiad, only eqiad has events right now. Ideally we want staging
       # in all datacenters, but for now we have to manually update this to follow mediawiki.
       topic-prefix-filter: 'codfw'
