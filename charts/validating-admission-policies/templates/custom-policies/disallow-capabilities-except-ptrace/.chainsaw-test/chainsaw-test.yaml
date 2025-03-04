@@ -6,6 +6,9 @@ spec:
   namespaceTemplate:
     metadata:
       labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.wmf.org/profile: restricted
+        pod-security.wmf.org/disallow-capabilities-strict-adding-capabilities-strict: exclude
         pod-security.wmf.org/disallow-capabilities-except-ptrace: include
   steps:
   - name: prepare_except-ptrace

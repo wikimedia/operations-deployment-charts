@@ -6,6 +6,9 @@ spec:
   namespaceTemplate:
     metadata:
       labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.wmf.org/profile: restricted
+        pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
         pod-security.wmf.org/allow-hostpath-geoip: include
   steps:
   - name: prepare_allow-hostpath-geoip
