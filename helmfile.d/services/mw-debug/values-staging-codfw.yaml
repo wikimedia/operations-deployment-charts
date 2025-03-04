@@ -1,0 +1,48 @@
+# Manual copy of production values to avoid relying on scap
+docker:
+  registry: docker-registry.discovery.wmnet
+main_app:
+  image: restricted/mediawiki-multiversion-debug:2025-03-04-105954-publish
+mw:
+  httpd:
+    image_tag: restricted/mediawiki-webserver:2025-03-04-105954-webserver
+  datacenter: codfw
+  mail_host: mx-out1001.wikimedia.org
+resources:
+  replicas: 1
+# While we are using the mw-mcrouter daemonset by default
+# we can switch to the in-pod mcrouter for debugging purposes
+cache:
+  mcrouter:
+    enabled: false
+    route_prefix: codfw/mw
+    zone: codfw
+    routes:
+      - route: /eqiad/mw
+        pool: eqiad-servers
+        failover_time: 600
+      - route: /codfw/mw
+        pool: codfw-servers
+        failover_time: 600
+      - route: /codfw/mw-wan
+        pool: codfw-servers
+        failover_time: 600
+        replica:
+          route: /eqiad/mw-wan
+          pool: eqiad-servers
+      - route: /local/wf
+        pool: wf-codfw
+        # No failover for wikifunction
+        failover_time: 0
+
+# T368366
+common_images:
+  mcrouter:
+    mcrouter: mcrouter:2023.07.17.00-1-20240714
+    exporter: prometheus-mcrouter-exporter:0.4.0-1
+php:
+  envvars:
+    MCROUTER_SERVER: "127.0.0.1:11213"
+#    MCROUTER_SERVER: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: false
+

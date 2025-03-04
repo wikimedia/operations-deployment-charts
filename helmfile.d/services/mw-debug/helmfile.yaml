@@ -75,6 +75,8 @@ releases:
     <<: *default
   - name: next
     <<: *default
+  - name: staging
+    <<: *default
   - name: prometheus
     <<: *statsd
 
@@ -85,6 +87,12 @@ environments:
   codfw:
     values:
       - releases: [pinkunicorn, next, prometheus]
+  staging-eqiad:
+    values:
+      - releases: [staging]
+  staging-codfw:
+    values:
+      - releases: [staging]
   # This is a non-production development environment used for testing
   # scap and related deployment tooling.
   traindev:
