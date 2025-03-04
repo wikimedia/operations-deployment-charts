@@ -136,6 +136,7 @@ services:
         excludedUserAgents: {{ .Values.main_app.caching.excludedUserAgents }}
         enabled: {{ .Values.main_app.caching.enabled }}
         ttl: {{ .Values.main_app.caching.ttl }}
+        maxJitter: {{ .Values.main_app.caching.maxJitter }}
         cassandra:
           keyspace: {{ .Values.main_app.caching.cassandra.keyspace }}
           storageTable: {{ .Values.main_app.caching.cassandra.storageTable }}

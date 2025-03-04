@@ -17,8 +17,9 @@ main_app:
   use_coreparsoid_endpoint: true
   caching:
     enabled: true
-    # Expire objects in 7 days
+    # Expire objects in 7 days with 1 day max jitter
     ttl: 604800
+    maxJitter: 86400
     excludedUserAgents:
     - RESTBase/WMF
     cassandra:

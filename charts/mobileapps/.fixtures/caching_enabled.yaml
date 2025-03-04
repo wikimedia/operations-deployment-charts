@@ -2,6 +2,7 @@ main_app:
   caching:
     enabled: true
     ttl: 300 # Expire entries in 5*60 seconds
+    maxJitter: 60
     cassandra:
       keyspace: example_cassandra_keyspace
       storageTable: example_cassandra_table
