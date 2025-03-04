@@ -75,6 +75,14 @@ spec:
     {{- end }}
     {{- end }}
 
+  {{- if .Values.app.logConfiguration }}
+  logConfiguration:
+    log4j-overrides.properties: |+
+      {{- range $key, $val := .Values.app.logConfiguration }}
+      {{ $key }} = {{ $val }}
+      {{- end }}
+  {{- end }}
+
   # Use podTemplate to add WMF labels and annotations to all pods.
   # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/pod-template/
   podTemplate:

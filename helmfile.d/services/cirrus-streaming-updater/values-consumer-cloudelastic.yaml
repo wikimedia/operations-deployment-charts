@@ -4,9 +4,8 @@ app:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
 
   logConfiguration:
-    log4j-overrides.properties: |+
-      logger.flinksource.name = org.apache.flink.connector.base.source
-      logger.flinksource.level = TRACE
+    logger.flinksource.name: org.apache.flink.connector.base.source
+    logger.flinksource.level: TRACE
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parallelism.
