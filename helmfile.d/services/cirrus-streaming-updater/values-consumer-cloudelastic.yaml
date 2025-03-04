@@ -3,6 +3,9 @@ app:
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
 
+  logConfiguration:
+    log4j-overrides.properties: ""
+
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parallelism.
     # To increase default job parellism, we can increase this
