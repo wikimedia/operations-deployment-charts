@@ -196,6 +196,15 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels: &mw-pss-labels
+      pod-security.wmf.org/profile: restricted
+      pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+      pod-security.wmf.org/disallow-host-path: exclude
+      pod-security.wmf.org/allow-hostpath-geoip: include
+      pod-security.wmf.org/disallow-capabilities-strict-adding-capabilities-strict: exclude
+      pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
+      pod-security.wmf.org/disallow-capabilities-except-ptrace: include
     # Don't set a quota
     resourcequota:
       compute:
@@ -220,10 +229,16 @@ namespaces:
           cpu: "100m"
   mw-misc:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     tlsExtraSANs:
       - noc.wikimedia.org
   mw-wikifunctions:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
@@ -248,6 +263,9 @@ namespaces:
           cpu: "100m"
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
@@ -272,6 +290,9 @@ namespaces:
           cpu: "100m"
   mw-api-ext:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
@@ -296,6 +317,9 @@ namespaces:
           cpu: "100m"
   mw-jobrunner:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
@@ -320,6 +344,9 @@ namespaces:
           cpu: "100m"
   mw-parsoid:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
@@ -344,6 +371,9 @@ namespaces:
           cpu: "100m"
   mw-script:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     enableJobSidecarController: true
     # Don't set a quota
     resourcequota:
@@ -369,6 +399,9 @@ namespaces:
           cpu: "100m"
   mw-cron:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     enableJobSidecarController: true
     # Don't set a quota
     resourcequota:
@@ -394,6 +427,9 @@ namespaces:
           cpu: "100m"
   mw-videoscaler:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     enableJobSidecarController: true
     # Don't set a quota
     resourcequota:
@@ -419,6 +455,9 @@ namespaces:
           cpu: "100m"
   mw-web:
     pspClusterRole: allow-mediawiki-psp
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
     # Don't set a quota
     resourcequota:
       compute:
