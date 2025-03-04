@@ -15,9 +15,7 @@ app:
   config_files:
     app.config.yaml:
       public-update-stream: cirrussearch.update_pipeline.update.v1
-      public-legacy-update-stream: cirrussearch.update_pipeline.update.rc0
       private-update-stream: cirrussearch.update_pipeline.update.private.v1
-      private-legacy-update-stream: cirrussearch.update_pipeline.update.private.rc0
       http-user-agent: WMF/cirrus-streaming-updater-consumer-cloudelastic
       fetch-request-timeout: 30s
       elasticsearch-bulk-max-action-size: 12mb
