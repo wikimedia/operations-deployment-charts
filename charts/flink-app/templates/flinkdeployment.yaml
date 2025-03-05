@@ -77,7 +77,7 @@ spec:
 
   {{- if .Values.app.logConfiguration }}
   logConfiguration:
-    log4j-overrides.properties: |+
+    log4j-console.properties: |+
       {{- range $key, $val := .Values.app.logConfiguration }}
       {{ $key }} = {{ $val }}
       {{- end }}
