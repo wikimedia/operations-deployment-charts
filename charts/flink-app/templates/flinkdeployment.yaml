@@ -78,6 +78,8 @@ spec:
   {{- if .Values.app.logConfiguration }}
   logConfiguration:
     log4j-console.properties: |+
+      {{- $.Files.Get "conf/log4j-console.properties"  | nindent 6 }}
+      # Logging config sourced from application helm values
       {{- range $key, $val := .Values.app.logConfiguration }}
       {{ $key }} = {{ $val }}
       {{- end }}
