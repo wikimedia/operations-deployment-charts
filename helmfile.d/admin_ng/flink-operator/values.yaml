@@ -78,6 +78,8 @@ defaultConfiguration:
     appender.console.type = CONSOLE
     appender.console.layout.type = EcsLayout
 
+  # This same config is duplicated into charts/flink-app/conf/log4j-console.properties to support
+  # apps that extend the logging configuration. If updating here, update there as well.
   log4j-console.properties: |+
     # log4j config for Flink applications.
     # This will be used by JobManager and TaskManagers.
