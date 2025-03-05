@@ -12,7 +12,10 @@ main_app:
     - name: local-disk-tmp
       mountPath: /tmp
 shellbox:
-  flavour: media
+  flavour: media81
+  # T377038 - Debugging malformed responses on PHP 8.1
+  version: "2025-03-04-121606"
+
 service:
   deployment: production
 
@@ -27,4 +30,9 @@ php:
   workers: 4
 
 resources:
-  replicas: 7
+  replicas: 8
+
+# T377038 - Debugging malformed responses on PHP 8.1
+config:
+  public:
+    FPM__catch_workers_output: "1"
