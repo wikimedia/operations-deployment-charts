@@ -3,10 +3,6 @@ app:
   job:
     entryClass: org.wikimedia.discovery.cirrus.updater.consumer.ConsumerApplication
 
-  logConfiguration:
-    logger.flinksource.name: org.apache.flink.connector.base.source
-    logger.flinksource.level: TRACE
-
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parallelism.
     # To increase default job parellism, we can increase this
