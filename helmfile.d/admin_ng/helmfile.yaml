@@ -151,9 +151,12 @@ bases:
   {{- else }}
   - helmfile_vaps.yaml
   {{- end }}
+  # Namespaces are created first to ensure that ResourceQuota objects are in place (priority classes used by calico etc.)
+  - helmfile_namespaces.yaml
+  # External dependency is required by some of the following releases
+  - external-services/helmfile.yaml
   - calico/helmfile.yaml
   - coredns/helmfile.yaml
-  - helmfile_namespaces.yaml
   - cert-manager/helmfile.yaml
   - helmfile_namespace_certs.yaml
   - helmfile_istio-gateways.yaml
@@ -166,7 +169,6 @@ bases:
   - flink-operator/helmfile.yaml
   - spark-operator/helmfile.yaml
   - k8s-controller-sidecars/helmfile.yaml
-  - external-services/helmfile.yaml
   - opentelemetry-collector/helmfile.yaml
   - ceph-csi-rbd/helmfile.yaml
   - ceph-csi-cephfs/helmfile.yaml
