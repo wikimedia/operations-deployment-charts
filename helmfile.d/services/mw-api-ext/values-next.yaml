@@ -1,6 +1,15 @@
 resources:
-  # T383845 - 88 replicas is 40% of the size of main (220) as of 2025-02-28.
-  replicas: 88
+  ##########################################
+  # March 2025 sizing for *multi-DC* serving:
+  # T383845 - With 100% of cookie-enrolled external traffic routed to PHP 8.1,
+  # the next release has subsumed < 30% of peak traffic directed main.
+  # Scale next to 30% of main's 220 replica sizing:
+  replicas: 66
+  #####################################################
+  # March 2025 estimated sizing for *single-DC* serving:
+  # T383845 - Using the same allocation as above, scale next to 30% of main's
+  # 260 replica sizing:
+  #replicas: 78
 
 # TODO: T383845 - Temporarily increase maxUnavailable. Needs revised down as
 # the deployment grows.

@@ -2,12 +2,19 @@ resources:
 # When ramping up replicas in the main release, please remember
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
-  # Normal day to day multi-DC replica count
-  replicas: 293
-
-  # Estimated sizing for single DC *with* a 70/30 split with
-  # mw-web-next, see r/1122561 for details.
-  # replicas: 315
+  ##########################################
+  # March 2025 sizing for *multi-DC* serving:
+  #replicas: 293
+  # T383845 - With 100% of cookie-enrolled external traffic routed to PHP 8.1,
+  # the next release has subsumed ~ 30% of peak traffic directed main.
+  # Scale main to 80% of the 293 replica sizing (10% headroom):
+  replicas: 235
+  #####################################################
+  # March 2025 estimated sizing for *single-DC* serving:
+  #replicas: 398
+  # T383845 - Using the same allocation as above, with some traffic directed to
+  # next (i.e., 80% of 398 replicas):
+  #replicas: 318
 
 mesh:
   public_port: 4450
