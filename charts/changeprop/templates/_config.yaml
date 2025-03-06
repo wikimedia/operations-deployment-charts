@@ -197,7 +197,7 @@ spec: &spec
 
 {{/* RESTBase sunset: Native PCS (mobileapps) pregeneration */ -}}
 {{ if .Values.main_app.changeprop.features.rerendered_pcs_endpoints_native }}
-              pcs_rerender_native: &pcs_rerender_spec_native
+              pcs_rerender_native_on_null: &pcs_rerender_spec_native
                 topic: 'resource_change'
                 match:
                   meta:
@@ -217,7 +217,106 @@ spec: &spec
               pcs_rerender_mobile_html_native_wikidata_change:
                 <<: *pcs_rerender_spec_native
                 topic: 'change-prop.wikidata.resource-change'
+
+              pcs_rerender_native_on_edit:
+                topic: 'mediawiki.revision-create'
+                match:
+                  rev_content_changed: true
+                  meta:
+                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                exec:
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
+                    headers:
+                      cache-control: no-cache
+{{ end }}
+              pcs_rerender_native_on_visibility_change:
+                topic: 'mediawiki.revision-visibility-change'
+                match:
+                  meta:
+                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                exec:
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                    headers:
+                      cache-control: no-cache
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
+                    headers:
+                      cache-control: no-cache
+{{ end }}
+              pcs_rerender_native_on_page_move:
+                topic: 'mediawiki.page-move'
+                match:
+                  meta:
+                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                exec:
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
+                    headers:
+                      cache-control: no-cache
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.prior_state.page_title}'
+                    headers:
+                      cache-control: no-cache
+{{ end }}
+              pcs_rerender_native_on_page_delete:
+                topics:
+                  - 'mediawiki.page-delete'
+                  - 'mediawiki.page-suppress'
+                match:
+                  meta:
+                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                exec:
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
+                    headers:
+                      cache-control: no-cache
+{{ end }}
+              pcs_rerender_native_page_images_summary:
+                topic: mediawiki.page-properties-change
+                # We don't support 'OR' in the match section, so workaround it by 2 cases with identical exec
+                cases:
+                  - match:
+                      - meta:
+                          domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                      - added_properties:
+                          page_image: '/.+/' # Regex that matches anything just to check the prop is set
+                    match_not:
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
+                        page_namespace: 0
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
+                        page_namespace: 120
+                    exec:
+                      method: get
+                      uri: '{{ .Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
+                      headers:
+                        cache-control: no-cache
+                  - match:
+                      - meta:
+                          domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
+                      - removed_properties:
+                          page_image: '/.+/' # Regex that matches anything just to check the prop is set
+                    match_not:
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
+                        page_namespace: 0
+                      - meta:
+                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
+                        page_namespace: 120
+                    exec:
+                      method: get
+                      uri: '{{ .Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/summary/{message.page_title}'
+                      headers:
+                        cache-control: no-cache
 {{ end -}}
+
 {{ if .Values.main_app.changeprop.features.purge_varnish }}
               generate_purge_varnish: &purge_varnish_spec
                 enable_blacklist: false
