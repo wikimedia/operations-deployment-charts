@@ -13,7 +13,7 @@ main_app:
       mountPath: /tmp
 shellbox:
   flavour: media81
-  # T377038 - Debugging malformed responses on PHP 8.1
+  # TODO: T377038 - (cleanup) Align shellbox image version across services.
   version: "2025-03-04-121606"
 
 service:
@@ -31,8 +31,3 @@ php:
 
 resources:
   replicas: 8
-
-# T377038 - Debugging malformed responses on PHP 8.1
-config:
-  public:
-    FPM__catch_workers_output: "1"
