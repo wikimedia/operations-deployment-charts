@@ -7,8 +7,7 @@ resources:
   # T383845 - Serve 25% of traffic on PHP 8.1 (main: 195 migration: 65)
   replicas: 65
 
-# TODO: T383845 - Temporarily increase maxUnavailable. Needs revised down as
-# the deployment grows.
+# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
 strategy:
   rollingUpdate:
     maxUnavailable: 20%

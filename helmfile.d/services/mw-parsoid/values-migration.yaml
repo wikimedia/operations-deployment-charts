@@ -7,6 +7,11 @@ resources:
   # T383845 - Serve ~ 2% of traffic on PHP 8.1 (main: 137 migration: 4)
   replicas: 4
 
+# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
+strategy:
+  rollingUpdate:
+    maxUnavailable: 20%
+
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
 mesh:

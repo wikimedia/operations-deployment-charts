@@ -9,6 +9,11 @@ resources:
   # simplicity, we will only scale up main and next.
   replicas: 10
 
+# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
+strategy:
+  rollingUpdate:
+    maxUnavailable: 20%
+
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
 mesh:

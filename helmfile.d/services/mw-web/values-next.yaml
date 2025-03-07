@@ -11,11 +11,10 @@ resources:
   # 398 replica sizing:
   #replicas: 140
 
-# TODO: T383845 - Temporarily increase maxUnavailable. Needs revised down as
-# the deployment grows.
+# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
 strategy:
   rollingUpdate:
-    maxUnavailable: 20%
+    maxUnavailable: 10%
 
 mesh:
   public_port: 4454
