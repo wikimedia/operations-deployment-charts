@@ -4,17 +4,10 @@ resources:
 # We aim for ~3% of the deployment for canaries, rounding up.
   ##########################################
   # March 2025 sizing for *multi-DC* serving:
-  #replicas: 220
-  # T383845 - With 100% of cookie-enrolled external traffic routed to PHP 8.1,
-  # the next release has subsumed ~ 30% of peak traffic directed main.
-  # Scale main to 80% of the 220 replica sizing (10% headroom):
-  replicas: 198
+  replicas: 220
   #####################################################
   # March 2025 estimated sizing for *single-DC* serving:
   #replicas: 260
-  # T383845 - Using the same allocation as above, with some traffic directed to
-  # next (i.e., 80% of 260 replicas):
-  #replicas: 208
 
 mesh:
   public_port: 4447
