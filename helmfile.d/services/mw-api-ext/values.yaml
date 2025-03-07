@@ -9,9 +9,9 @@ resources:
   # the next release has subsumed ~ 30% of peak traffic directed main.
   # Scale main to 80% of the 220 replica sizing (10% headroom):
   #replicas: 198
-  # T383845 - Direct 25% of traffic of remaining to the migration release, by
-  # swapping 50 replicas from main to migration:
-  replicas: 148
+  # T383845 - Direct 50% of traffic of remaining to the migration release, by
+  # swapping 99 replicas from main to migration:
+  replicas: 99
   #####################################################
   # March 2025 estimated sizing for *single-DC* serving:
   #replicas: 260
