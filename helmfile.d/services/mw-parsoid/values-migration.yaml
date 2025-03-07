@@ -4,13 +4,13 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  # T383845 - Serve ~ 25% of traffic on PHP 8.1 (main: 108 migration: 34)
-  replicas: 36
+  replicas: 0
 
-# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
+# Default maxUnavailable is 6%, however it can increased if needed, eg in  
+# T383845#10612223
 strategy:
   rollingUpdate:
-    maxUnavailable: 20%
+    maxUnavailable: 6%
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
@@ -23,5 +23,5 @@ service:
   deployment: none
 routed_via: main
 
-php:
-  version: "8.1"
+# php:
+#   version: "8.1"
