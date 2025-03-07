@@ -2,26 +2,16 @@ config:
   airflow:
     dags_folder: platform_eng
     instance_name: platform-eng
-    dbHost: an-db1001.eqiad.wmnet
-    dbName: airflow_platform_eng
-    dbUser: airflow_platform_eng
     auth:
       role_mappings:
         airflow-platform-eng-ops: [Op]
     config:
-      logging:
-        remote_logging: false
+      core:
+        executor: KubernetesExecutor
+      kerberos:
+        principal: analytics-platform-eng/airflow-platform-eng.discovery.wmnet
   oidc:
     client_id: airflow_platform_eng
-
-external_services:
-  webserver:
-    # The webserver needs access to the analytics PG, as its data hasn't yet been migrated
-    # to a dedicated cloudnative PG cluster
-    postgresql: [analytics]
-    # The webserver needs access to airflow-platform-eng scheduler, as it has not yet been
-    # migrated to Kubernetes
-    airflow: [platform-eng]
 
 ingress:
   gatewayHosts:
@@ -29,12 +19,3 @@ ingress:
     extraFQDNs:
     - airflow-platform-eng.wikimedia.org
 
-kerberos:
-  enabled: false
-
-scheduler:
-  remote_host: an-airflow1004.eqiad.wmnet
-  enabled: false
-
-postgresql:
-  cloudnative: false
