@@ -4,10 +4,10 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  # T383845 - Serve 5% of traffic on PHP 8.1 (main: 188 migration: 10)
+  # T383845 - Serve 25% of traffic on PHP 8.1 (main: 148 migration: 50)
   # NOTE: There is no need to adjust this for single-DC serving. For
   # simplicity, we will only scale up main and next.
-  replicas: 10
+  replicas: 50
 
 # TODO: T383845 - Temporarily increase maxUnavailable (6% default).
 strategy:
