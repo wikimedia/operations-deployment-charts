@@ -17,6 +17,9 @@ image: &image
 
 global:
   priorityClassName: system-cluster-critical
+  #TODO: Create leases for leader election in cert-manager rather than kube-system namespace when all clusters are on k8s 1.31
+  #leaderElection:
+  #  namespace: cert-manager
 
 # Disable acmesolver, we're not using ACME
 acmesolver: {}

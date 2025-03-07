@@ -3,3 +3,8 @@ startupapicheck:
   enabled: true
 # Having installCRDs and crds.enabled set to true will make the cert-manager 1.16 chart fail to render
 installCRDs: false
+
+# Create leases for leader election in cert-manager rather than kube-system namespace
+global:
+  leaderElection:
+    namespace: cert-manager
