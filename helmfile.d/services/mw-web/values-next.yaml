@@ -1,15 +1,6 @@
 resources:
-  ##########################################
-  # March 2025 sizing for *multi-DC* serving:
-  # T383845 - With 100% of cookie-enrolled external traffic routed to PHP 8.1,
-  # the next release has subsumed ~ 30% of peak traffic directed main.
-  # Scale next to ~ 35% of main's 293 replica sizing (5% headroom):
-  replicas: 103
-  #####################################################
-  # March 2025 estimated sizing for *single-DC* serving:
-  # T383845 - Using the same allocation as above, scale next to 35% of main's
-  # 398 replica sizing:
-  #replicas: 140
+  # Keep 1 replica running to satisfy pybal checks, etc.
+  replicas: 1
 
 # TODO: T383845 - Temporarily increase maxUnavailable (6% default).
 strategy:
