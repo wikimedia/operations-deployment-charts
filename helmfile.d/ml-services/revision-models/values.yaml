@@ -62,12 +62,14 @@ inference_services:
         minReplicas: 1
         maxReplicas: 8
       image: "machinelearning-liftwing-inference-services-reference-quality"
-      image_version: "2025-03-07-154549-publish"
+      image_version: "2025-03-10-174434-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/reference-quality/20250127142109/"
         - name: FORCE_HTTP
           value: "True"
+        - name: NUM_OF_WORKERS
+          value: "1"
       container:
         resources:
           limits:
