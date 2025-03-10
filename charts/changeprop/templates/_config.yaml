@@ -204,7 +204,7 @@ spec: &spec
                     uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
                     domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
-{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{decode(match.meta.uri.title)}'
                     headers:
@@ -225,7 +225,7 @@ spec: &spec
                   meta:
                     domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
-{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
                     headers:
@@ -237,7 +237,7 @@ spec: &spec
                   meta:
                     domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
-{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}/{{ `{{message.rev_id}}` }}'
                     headers:
@@ -253,7 +253,7 @@ spec: &spec
                   meta:
                     domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
-{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
                     headers:
@@ -271,7 +271,7 @@ spec: &spec
                   meta:
                     domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
-{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints }}
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{message.page_title}'
                     headers:
