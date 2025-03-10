@@ -12,7 +12,7 @@ config:
         principal: analytics/airflow-analytics-test.discovery.wmnet
     extra_rbac:
     # This will be used to read the mediawiki dumps job and create a pod from its spec
-    - apiGroups: ["batch/v1"]
+    - apiGroups: ["batch"]
       resources: ["jobs"]
       verbs: ["get"]
   oidc:
