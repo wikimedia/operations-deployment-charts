@@ -11,12 +11,12 @@ helmDefaults:
     # Use the following example as a reference:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
      - "--kubeconfig"
-     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mediawiki-dumps-legacy-deploy-%s.config" .Environment.Name) }}
+     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/airflow-analytics-test-deploy-%s.config" .Environment.Name) }}
 
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [production]
+      - releases: [mediawiki-dumps-legacy]
     missingFileHandler: Warn
 
 ---
@@ -82,5 +82,5 @@ hooks:
       ]
 
 releases:
-  - name: production
+  - name: mediawiki-dumps-legacy
     <<: *default
