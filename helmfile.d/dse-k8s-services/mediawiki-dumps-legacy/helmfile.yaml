@@ -23,7 +23,7 @@ environments:
 
 templates:
   default: &default
-    namespace: mediawiki-dumps-legacy
+    namespace: airflow-analytics-test
     chart: wmf-stable/mediawiki
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
@@ -46,7 +46,7 @@ templates:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
   statsd-exporter: &statsd
-    namespace: mediawiki-dumps-legacy
+    namespace: airflow-analytics-test
     chart: wmf-stable/statsd-exporter
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
