@@ -12,6 +12,9 @@ rules:
 - apiGroups: [""]
   resources: ["pods/log"]
   verbs: ["get", "list"]
+{{- with $.Values.config.airflow.extra_rbac }}
+{{ toYaml . }}
+{{- end }}
 {{- else }}
 rules: []
 {{- end }}

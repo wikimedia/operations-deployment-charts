@@ -10,6 +10,11 @@ config:
         executor: KubernetesExecutor
       kerberos:
         principal: analytics/airflow-analytics-test.discovery.wmnet
+    extra_rbac:
+    # This will be used to read the mediawiki dumps job and create a pod from its spec
+    - apiGroups: ["batch/v1"]
+      resources: ["jobs"]
+      verbs: ["get"]
   oidc:
     client_id: airflow_analytics_test
 
