@@ -657,14 +657,14 @@ GlobalNetworkPolicies:
       - action: Allow
         destination:
           nets:
-            # wikikube eqiad. In the past it was 10.64.64.0/21
+            # wikikube eqiad
             - "10.67.128.0/18"
-            # wikikube codfw. In the past it was 10.192.64.0/21
+            # wikikube codfw
             - "10.194.128.0/18"
             # staging-eqiad
             - "10.64.75.0/24"
             # staging-codfw
-            - "10.192.75.0/24"
+            - "10.192.64.0/21"
       - action: Allow
         destination:
           nets:
