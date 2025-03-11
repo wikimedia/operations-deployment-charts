@@ -21,6 +21,8 @@ releases:
     missingFileHandler: Warn
     needs:
       - kube-system/calico-crds
+      # The namespaces release sets up ResourceQuota for priority classes which are required by calico
+      - kube-system/namespaces
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/common-bgp.yaml"                                               # All relevant routers
