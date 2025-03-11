@@ -137,6 +137,8 @@ namespaces:
           memory: "8Gi"
           cpu: "4"
   airflow-analytics-test:
+    enableJobSidecarController: true
+    pspClusterRole: allow-mediawiki-psp
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-analytics-test.wikimedia.org
