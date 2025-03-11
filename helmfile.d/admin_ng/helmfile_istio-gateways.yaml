@@ -11,6 +11,9 @@ templates:
     name: istio-gateways-networkpolicies
     chart: wmf-stable/raw
     namespace: istio-system
+    needs:
+      - kube-system/namespaces
+      - kube-system/calico-crds
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"istio_gateways\" }}{{ .Environment.Values.istio_gateways }}{{ else }}{{ false }}{{end}}`}}"
     values:
       - resources:
