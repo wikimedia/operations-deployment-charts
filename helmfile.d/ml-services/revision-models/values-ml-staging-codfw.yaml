@@ -17,7 +17,12 @@ inference:
           type: RuntimeDefault
 
 inference_services:
-  reference-quality:
+  reference-need:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+  reference-risk:
     predictor:
       config:
         minReplicas: 1

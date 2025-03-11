@@ -54,30 +54,6 @@ inference:
 
 
 inference_services:
-  reference-quality:
-    annotations:
-      autoscaling.knative.dev/target: "3"
-    predictor:
-      config:
-        minReplicas: 1
-        maxReplicas: 8
-      image: "machinelearning-liftwing-inference-services-reference-quality"
-      image_version: "2025-03-10-174434-publish"
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/reference-quality/20250127142109/"
-        - name: FORCE_HTTP
-          value: "True"
-        - name: NUM_OF_WORKERS
-          value: "1"
-      container:
-        resources:
-          limits:
-            cpu: "14"
-            memory: 6Gi
-          requests:
-            cpu: "14"
-            memory: 6Gi
 
   reference-need:
     annotations:
@@ -98,10 +74,10 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "10"
+            cpu: "16"
             memory: 2Gi
           requests:
-            cpu: "10"
+            cpu: "16"
             memory: 2Gi
 
   reference-risk:
@@ -123,8 +99,8 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "4"
-            memory: 3Gi
+            cpu: "2"
+            memory: 2Gi
           requests:
-            cpu: "4"
-            memory: 3Gi
+            cpu: "2"
+            memory: 2Gi
