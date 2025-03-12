@@ -11,19 +11,19 @@ helmDefaults:
     # Use the following example as a reference:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
      - "--kubeconfig"
-     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/airflow-analytics-test-deploy-%s.config" .Environment.Name) }}
+     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mediawiki-dumps-legacy-deploy-%s.config" .Environment.Name) }}
 
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [mediawiki-dumps-legacy]
+      - releases: [production]
     missingFileHandler: Warn
 
 ---
 
 templates:
   default: &default
-    namespace: airflow-analytics-test
+    namespace: mediawiki-dumps-legacy
     chart: wmf-stable/mediawiki
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
@@ -46,7 +46,7 @@ templates:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
   statsd-exporter: &statsd
-    namespace: airflow-analytics-test
+    namespace: mediawiki-dumps-legacy
     chart: wmf-stable/statsd-exporter
     # This template gets applied for every release, all of which are applied in every environment
     # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
@@ -82,5 +82,5 @@ hooks:
       ]
 
 releases:
-  - name: mediawiki-dumps-legacy
+  - name: production
     <<: *default
