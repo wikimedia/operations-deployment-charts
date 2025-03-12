@@ -59,6 +59,7 @@ docker:
 deployExtraClusterRoles:
   - "sparkapplications"
   - "airflow"
+  - "mediawiki-dumps-legacy"
 
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
@@ -348,6 +349,7 @@ namespaces:
           memory: "32Gi"
           cpu: "16"
   mediawiki-dumps-legacy:
+    deployClusterRole: deploy-mediawiki-dumps-legacy
     deployTLSCertificate: false
     labels:
       istio-injection: disabled

@@ -179,6 +179,47 @@ releases:
               verbs: ["*"]
 
       {{- end }}
+      {{- if eq . "mediawiki-dumps-legacy" }}
+        ## Used by deploy users
+        ## mediawiki-dumps-legacy deploy users need the ability to create role/rolebindings
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-mediawiki-dumps-legacy
+          rules:
+            ## Note: all rules until the next comment are taken from the `deploy`
+            ## ClusterRole. The intent is that this deploy-mediawiki-dumps-legacy
+            ## should be able any resource commonly found in charts, that the `deploy`
+            ## ClusterRole can deploy, and on top of that, it should be able to deploy
+            ## Roles and RoleBindings
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+            {{- if hasKey $.Environment.Values "istio_gateways" }}
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey $.Environment.Values "install_cert_manager" }}
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey $.Environment.Values "install_cloudnative_pg_operator" }}
+            - apiGroups: ["postgresql.cnpg.io"]
+              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              verbs: ["*"]
+            {{- end }}
+            - apiGroups: ["crd.projectcalico.org"]
+              resources: ["networkpolicies"]
+              verbs: ["*"]
+            ## End of the permissions taken from the `deploy` ClusterRole and start
+            ## of the extra permissions.
+            - apiGroups: ["rbac.authorization.k8s.io"]
+              resources: ["roles", "rolebindings"]
+              verbs: ["*"]
+
+      {{- end }}
       {{- if eq . "liftwing-debugging" }}
         ## Used by ml-team to manage/debug pods in experimental namespace
         - apiVersion: rbac.authorization.k8s.io/v1
