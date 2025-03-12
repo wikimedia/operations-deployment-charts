@@ -41,6 +41,7 @@ COMMON_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/common/kubernetes.yaml?form
 desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
+  check_binary('helm3.11')
   check_binary('helmfile')
   check_binary('semver-cli')
 

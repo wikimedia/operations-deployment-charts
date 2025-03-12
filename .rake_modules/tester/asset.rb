@@ -16,6 +16,7 @@ module Tester
     # When adding kubernetes versions here the corresponding schemata
     # need to be made available in https://gitlab.wikimedia.org/repos/sre/kubernetes-json-schema
     KUBERNETES_VERSIONS = ['1.23.6', '1.31.2'].freeze
+    KUBE_VERSION_STATE_VALUE = "kubernetesVersion=#{KUBERNETES_VERSIONS[0]}"
     ERROR_CONTEXT_LINES = 4
     INIT_RESULT = { lint: nil, validate: {}, diff: {} }.freeze
     KUBECONFORM_SCHEMA_LOCATIONS = [
@@ -387,6 +388,7 @@ module Tester
   class HelmfileAsset < BaseTestAsset
     ENV_EXPLORE = %w[staging eqiad ml-serve-eqiad ml-staging-codfw dse-k8s-eqiad aux-k8s-eqiad].freeze
     LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'
+    BASE_HELMFILE = 'helmfile.d/services/global.yaml'
     INIT_RESULT = { lint: {}, validate: {}, diff: {} }.freeze
 
     def initialize(path, to_run)
@@ -438,7 +440,10 @@ module Tester
 
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
-        res = _exec("helmfile -e #{env} build", nil, real_path)
+        # We hard-code a k8s version here for simplicity. This sets helmBinary to helm3.11.
+        # Note that this is only needed because we are not including /etc/helmfile-defaults/* here,
+        # so it can go away if we fix that.
+        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, real_path)
         next unless res.ok?
 
         releases = YAML.safe_load(res.out)['releases']
@@ -456,7 +461,7 @@ module Tester
 
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
-        res = _exec("helmfile -e #{env} build", nil, real_path)
+        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, real_path)
         return YAML.safe_load(res.out)['environments'].keys.map { |e| ["#{label}/#{e}", e] }.to_h if res.ok?
       end
       # If we get here, it means we failed to compile the helmfile
@@ -532,6 +537,10 @@ module Tester
         ['charts', '.fixtures/'].each do |what|
           FileUtils.cp_r File.join(source, what), dir
         end
+        # Copy over the base helmfile
+        if File.exist? File.join(source, self.class::BASE_HELMFILE)
+          FileUtils.cp File.join(source, self.class::BASE_HELMFILE), File.join(dir, '..')
+        end
         block.call dir
       end
     end
@@ -543,7 +552,7 @@ module Tester
       return results if @fixtures.nil?
 
       @fixtures.each_value do |env|
-        res = _exec("helmfile -e #{env} build", nil, @path)
+        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, @path)
         next unless res.ok?
 
         manifest = YAML.safe_load(res.out)
