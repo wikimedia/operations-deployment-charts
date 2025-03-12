@@ -138,8 +138,6 @@ namespaces:
           memory: "8Gi"
           cpu: "4"
   airflow-analytics-test:
-    enableJobSidecarController: true
-    pspClusterRole: allow-mediawiki-psp
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-analytics-test.wikimedia.org
@@ -349,6 +347,8 @@ namespaces:
           memory: "32Gi"
           cpu: "16"
   mediawiki-dumps-legacy:
+    enableJobSidecarController: true
+    pspClusterRole: allow-mediawiki-psp
     deployClusterRole: deploy-mediawiki-dumps-legacy
     deployTLSCertificate: false
     labels:
