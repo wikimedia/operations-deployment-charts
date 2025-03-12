@@ -4,7 +4,7 @@ releases:
     namespace: kube-system
     values:
       - templates:
-      {{- range $namespace, $values := .Environment.Values.namespaces }}
+      {{- range $namespace, $values := .Values.namespaces }}
         {{/* Don't mess with Kubernetes builtin namespaces while still allow to deploy to it */}}
         {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
         {{/* All builtin namespaces are system namespaces */}}
@@ -18,9 +18,9 @@ releases:
             metadata:
               name: {{ $namespace }}
               {{- $labels := $values | get "labels" dict }}
-              {{- if and (eq $pspClusterRole "allow-restricted-psp") $.Environment.Values.PodSecurityStandard.enabled -}}
+              {{- if and (eq $pspClusterRole "allow-restricted-psp") $.Values.PodSecurityStandard.enabled -}}
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
-                {{- if ($.Environment.Values.PodSecurityStandard | get "enforce" false) -}}
+                {{- if ($.Values.PodSecurityStandard | get "enforce" false) -}}
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/enforce" "restricted") }}
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/warn" "restricted") }}
                 {{- end }}
@@ -69,7 +69,7 @@ releases:
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
+            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
               name: disable-psp
             {{- else }}
               name: allow-psp
@@ -78,7 +78,7 @@ releases:
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
+            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
               {{/* Binding the namespace to the privileged PSP will effectively disable PSP validation */}}
               name: allow-privileged-psp
             {{- else }}
@@ -91,7 +91,7 @@ releases:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
                 name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
-          {{ $limitranges := $values | getOrNil "limitranges" | default $.Environment.Values.limitranges }}
+          {{ $limitranges := $values | getOrNil "limitranges" | default $.Values.limitranges }}
           {{- with $limitranges}}
           {{- if or .container .pod }}
           - |
@@ -134,7 +134,7 @@ releases:
                 {{- end }}{{/* end if .pod */}}
           {{- end }}
           {{- end }}
-          {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Environment.Values.resourcequota }}
+          {{ $resourcequota := $values | getOrNil "resourcequota" | default $.Values.resourcequota }}
           {{- with $resourcequota }}
           {{- $count := . | get "count" list }}
           {{- if or $count .compute.requests .compute.limits }}
@@ -170,7 +170,7 @@ releases:
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
+            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
               name: disable-psp
             {{- else }}
               name: allow-psp
@@ -179,7 +179,7 @@ releases:
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Environment.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
+            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
               {{/* Binding the namespace to the privileged PSP will effectively disable PSP validation */}}
               name: allow-privileged-psp
             {{- else }}
