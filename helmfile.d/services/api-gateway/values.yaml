@@ -321,6 +321,21 @@ main_app:
         anon_limit: 50000
         default_limit: 100000
 
+    lw_inference_editcheck_staging:
+      tls: true
+      port: 30443
+      timeout: 30s
+      path: 'lw/inference/v1/models/edit-check(:|%3A|%3a)predict'
+      host: 'edit-check.experimental.wikimedia.org'
+      full_path_trim: "/service/lw/inference/"
+      internal_host: inference-staging.discovery.wmnet
+      # Total requests / hour allowed for a single IP
+      # (either logged in with OAuth - default - or not - anon)
+      # We set anon_limit to 0 in order to allow access only to authenticated users
+      ratelimit_config:
+        anon_limit: 0
+        default_limit: 100000
+
   aqs:
     device_analytics:
       path: unique-devices
