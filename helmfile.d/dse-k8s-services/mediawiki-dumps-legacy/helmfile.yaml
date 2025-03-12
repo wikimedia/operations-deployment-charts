@@ -16,7 +16,9 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [production]
+      - releases:
+        - production
+        - resources
     missingFileHandler: Warn
 
 ---
@@ -45,24 +47,16 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
-  statsd-exporter: &statsd
+
+  resources: &resources
     namespace: mediawiki-dumps-legacy
-    chart: wmf-stable/statsd-exporter
-    # This template gets applied for every release, all of which are applied in every environment
-    # The installedTemplate line below is how we guarantee we only install the appropriate release in each enviornment.
-    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
+    chart: wmf-stable/mediawiki-dumps-legacy
     installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     missingFileHandler: Warn
     values:
-      - "/etc/helmfile-defaults/statsd-exporter/values.yaml"
-      - "/etc/helmfile-defaults/general-eqiad.yaml" # TODO - should create dse-k8s-eqiad specific file
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - "statsd-global.yaml"
-      - "values-statsd-eqiad.yaml" # TODO - should create dse-k8s-eqiad specific file
-      - "values-statsd-{{ .Environment.Name }}.yaml" # dc-specific overrides
-      - "values-statsd.yaml"
+      - values.yaml  # non-env-specific values, in this repository
 
 hooks:
   - events: ["prepare"]
@@ -84,3 +78,5 @@ hooks:
 releases:
   - name: production
     <<: *default
+  - name: resources
+    <<: *resources

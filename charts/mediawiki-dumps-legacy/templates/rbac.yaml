@@ -1,0 +1,41 @@
+{{/*
+  Orchestratng the mediawiki legacy dumps jobs (running as Kubernetes Pods) requires
+  a custom set of permissions:
+  - reading the mediawiki-$release-dumps-job-template Job spec in the namespace we deploy
+    the mediawiki-dumps-legacy chart into
+  - as well as managing the lifecycle of a dumps pod in that mediawiki-dumps-legacy namespace
+  all of which from the namespace of the orchestrator.
+
+  What we do is define a Role granting these permissions in the release namespace (which should
+  be mediawiki-dumps-legacy), which will then be bound to the orchestrator (aka airflow) ServiceAccount.
+*/}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mediawiki-dumps-legacy-orchestration
+  namespace: {{ $.Release.Namespace }}
+  {{- include "base.meta.labels" . | indent 2 }}
+rules:
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mediawiki-dumps-legacy-orchestration
+  namespace: {{ $.Release.Namespace }}
+  {{- include "base.meta.labels" . | indent 2 }}
+roleRef:
+  kind: Role
+  name: mediawiki-dumps-legacy-orchestration
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ $.Values.dumps.orchestrator.service_account }}
+  namespace: {{ $.Values.dumps.orchestrator.namespace }}
