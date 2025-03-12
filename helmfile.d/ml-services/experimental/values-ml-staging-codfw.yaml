@@ -212,14 +212,14 @@ inference_services:
   edit-check:
     predictor:
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-02-26-114039-publish"
+      image_version: "2025-03-12-150734-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/edit-check/peacock/20250226154546/"
+          value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: MODEL_VERSION
-          value: "edit_check_v1"
+          value: "v1"
       container:
         resources:
           limits:
