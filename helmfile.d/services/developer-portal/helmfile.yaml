@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -30,6 +29,9 @@ environments:
     missingFileHandler: Warn
 
 ---
+
+bases:
+  - ../global.yaml
 
 templates:
   default: &default

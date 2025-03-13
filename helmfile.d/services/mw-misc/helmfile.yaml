@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -13,15 +12,21 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-misc-deploy-%s.config" .Environment.Name) }}
 
+# kubernetesVersion is hard-coded here -- T388969. Remember to change it when upgrading k8s!
 environments:
   eqiad:
     values:
       - releases: [main, prometheus]
+      - kubernetesVersion: '1.23'
   codfw:
     values:
       - releases: [main, prometheus]
+      - kubernetesVersion: '1.23'
 
 ---
+
+bases:
+  - ../global.yaml
 
 templates:
   default: &default

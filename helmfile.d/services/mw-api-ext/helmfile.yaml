@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -17,11 +16,16 @@ environments:
   eqiad:
     values:
       - releases: [main,next,migration,canary,prometheus]
+      - kubernetesVersion: '1.23'
   codfw:
     values:
       - releases: [main,next,migration,canary,prometheus]
+      - kubernetesVersion: '1.23'
 
 ---
+
+bases:
+  - ../global.yaml
 
 templates:
   default: &default
