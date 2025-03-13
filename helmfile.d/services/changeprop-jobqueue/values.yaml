@@ -36,7 +36,7 @@ main_app:
         enabled: true
         concurrency: 10
       categoryMembershipChange:
-        enabled: false
+        enabled: true
         concurrency: 100
       # CNDPurge is quite low-volume, but it uses delayed execution,
       # so avoid putting it together with other low-volume jobs so that it doesn't
