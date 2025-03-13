@@ -26,13 +26,15 @@ CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
 CDRS_GLOB = 'charts/**/.fixtures/crds.yaml'.freeze
 ISTIOCTL_VERSION = 'istioctl-1.15.7'.freeze
 JSON_SCHEMA = 'jsonschema/'.freeze
+LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 
 # This returns a base64-encoded value.
-DEPLOYMENT_SERVER_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/role/common/deployment_server/kubernetes.yaml?format=TEXT'.freeze
-LISTENERS_DEFINITIONS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml?format=TEXT'.freeze
-MARIADB_SECTION_PORTS_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common/profile/mariadb.yaml?format=TEXT'.freeze
-LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
-COMMON_HIERA_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata/common.yaml?format=TEXT'.freeze
+HIERADATA_BASE_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata'.freeze
+DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/role/common/deployment_server/kubernetes.yaml?format=TEXT".freeze
+LISTENERS_DEFINITIONS_URL = "#{HIERADATA_BASE_URL}/common/profile/services_proxy/envoy.yaml?format=TEXT".freeze
+MARIADB_SECTION_PORTS_URL = "#{HIERADATA_BASE_URL}/common/profile/mariadb.yaml?format=TEXT".freeze
+COMMON_HIERA_URL = "#{HIERADATA_BASE_URL}/common.yaml?format=TEXT".freeze
+COMMON_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/common/kubernetes.yaml?format=TEXT".freeze
 
 ## RAKE TASKS
 
@@ -428,6 +430,24 @@ task :refresh_fixtures do
     common_clusters['kafka_brokers'] = kafka_brokers
   end
 
+  # Read the kubernetes cluster information from hiera
+  # merging defaults with cluster settings. Like modules/k8s/manifests/clusters.pp
+  kubernetes_clusters = {}
+  URI.open(COMMON_KUBERNETES_HIERA_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded, aliases: true)
+    defaults = hiera['kubernetes::clusters_defaults']
+    hiera['kubernetes::clusters'].each do |group_name, clusters|
+      clusters.each do |cluster_name, cluster_values|
+        kubernetes_clusters[cluster_name] = deep_merge(cluster_values, defaults.dup)
+        kubernetes_clusters[cluster_name]['cluster_group'] = group_name
+        if cluster_values.has_key?('cluster_alias')
+          kubernetes_clusters[cluster_values['cluster_alias']] = kubernetes_clusters[cluster_name]
+        end
+      end
+    end
+  end
+
   # Mock the data structure created for the external-services chart in
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
   external_services_definitions = {
@@ -482,7 +502,7 @@ task :refresh_fixtures do
 
   # Fetch general settings for all environment, similar to
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
-  URI.open(DEPLOYMENT_SERVER_HIERA_URL) do |res|
+  URI.open(DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded, aliases: true)
     data = hiera['profile::kubernetes::deployment_server::general']
@@ -496,6 +516,7 @@ task :refresh_fixtures do
           mariadb_sections,
           common_clusters,
           external_services_definitions,
+          {'kubernetesVersion' => kubernetes_clusters[env_name]['version']}
         ].reduce { |acc, h| deep_merge(h, acc) }
         YAML.dump(res, out)
       end
