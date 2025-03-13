@@ -37,3 +37,22 @@ discovery:
 gitsync:
   ref: "feature/Airflow-Analytics-Migration-Sandbox"
   period: 60
+
+# Temporarily required for T386282
+worker:
+  config:
+    extra_files:
+      "/etc/refinery":
+        event_intake_service_urls.yaml: |
+          eventgate-main: https://eventgate-main.discovery.wmnet:4492/v1/events
+          eventgate-main-eqiad: https://eventgate-main.svc.eqiad.wmnet:4492/v1/events
+          eventgate-main-codfw: https://eventgate-main.svc.codfw.wmnet:4492/v1/events
+          eventgate-analytics: https://eventgate-analytics.discovery.wmnet:4592/v1/events
+          eventgate-analytics-eqiad: https://eventgate-analytics.svc.eqiad.wmnet:4592/v1/events
+          eventgate-analytics-codfw: https://eventgate-analytics.svc.codfw.wmnet:4592/v1/events
+          eventgate-analytics-external: https://eventgate-analytics-external.discovery.wmnet:4692/v1/events
+          eventgate-analytics-external-eqiad: https://eventgate-analytics-external.svc.eqiad.wmnet:4692/v1/events
+          eventgate-analytics-external-codfw: https://eventgate-analytics-external.svc.codfw.wmnet:4692/v1/events
+          eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
+          eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
+          eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
