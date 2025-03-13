@@ -328,7 +328,7 @@ main_app:
       path: 'lw/inference/v1/models/edit-check(:|%3A|%3a)predict'
       host: 'edit-check.experimental.wikimedia.org'
       full_path_trim: "/service/lw/inference/"
-      internal_host: inference-staging.discovery.wmnet
+      internal_host: inference-staging.svc.codfw.wmnet
       # Total requests / hour allowed for a single IP
       # (either logged in with OAuth - default - or not - anon)
       # We set anon_limit to 0 in order to allow access only to authenticated users
