@@ -5,7 +5,7 @@
 # to actuate the migration.
 resources:
   # T383845 - Serve ~ 25% of traffic on PHP 8.1 (main: 105 migration: 35)
-  replicas: 35
+  replicas: 0
 
 # TODO: T383845 - Temporarily increase maxUnavailable (6% default).
 strategy:
