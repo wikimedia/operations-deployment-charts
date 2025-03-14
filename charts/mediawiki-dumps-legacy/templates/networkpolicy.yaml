@@ -1,0 +1,15 @@
+{{- if .Values.networkpolicy.egress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "base.name.chart" . }}
+      release: {{ .Release.Name }}
+  policyTypes:
+    - Egress
+  egress:
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+{{- end }}

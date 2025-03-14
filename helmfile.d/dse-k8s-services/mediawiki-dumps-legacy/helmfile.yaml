@@ -56,7 +56,7 @@ templates:
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     missingFileHandler: Warn
     values:
-      - values.yaml  # non-env-specific values, in this repository
+      - values-dumps.yaml  # non-env-specific values, in this repository
 
 hooks:
   - events: ["prepare"]
