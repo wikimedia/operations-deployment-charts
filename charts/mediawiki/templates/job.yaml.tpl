@@ -184,6 +184,9 @@ spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
+      # We need to be able to write to the mounted volume as the www-data user
+      securityContext:
+        fsGroup: 33
       containers:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
       # above.
