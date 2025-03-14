@@ -105,3 +105,17 @@ Returns true if mwcron/mwscript is enabled, the datacentre is primary and not re
   {{- end -}}
 {{- end -}}
 
+{{/*
+
+Naming convention for mediawiki rsyslog topic
+k8s-mw{-staging,}-{codfw,eqiad}
+
+*/}}
+{{- define "mw.rsyslog.topic" -}}
+{{- $dc := default "local" .Values.mw.datacenter -}}
+{{- $env := "" -}}
+{{- if eq .Release.Name "staging" -}}
+{{- $env = "-staging" -}}
+{{- end -}}
+{{- printf "k8s-mw%s-%s" $env $dc -}}
+{{- end -}}

@@ -72,13 +72,14 @@ input(type="imfile" addMetadata="on" file="/var/log/php-fpm/error.log" tag="php-
 # Kakfa.
 # To be recognized as JSON the syslog message must be prepended with "@cee: "
 # see also https://www.rsyslog.com/doc/v8-stable/configuration/modules/mmjsonparse.html
-# Kafka topic selection is based on the syslog message severity.
-template(name="udp_localhost_topic" type="string" string="udp_localhost-%syslogseverity-text:::lowercase%")
+# Kafka topic selection is based on the environment and datacenter
+
+template(name="mw-kafka-topic" type="string" string="{{- include "mw.rsyslog.topic" . -}}")
 
 # Use a separate (in memory) queue to limit message processing to this ruleset only.
 ruleset(name="udp_localhost_to_kafka" queue.type="LinkedList") {
   action(type="mmjsonparse" name="mmjsonparse_udp_localhost")
-  {{- dict "Values" .Values "name" "udp_localhost_compat" "topic" "udp_localhost_topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
+  {{- dict "Values" .Values "name" "udp_localhost_compat" "topic" "mw-kafka-topic" | include "mw.rsyslog.omkafka_action" | indent 2 }}
 }
 
 input(type="imudp" port="10514" address="{{ .Values.mw.logging.allowed_address }}" ruleset="udp_localhost_to_kafka")
