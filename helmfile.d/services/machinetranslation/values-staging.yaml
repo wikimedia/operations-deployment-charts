@@ -5,3 +5,10 @@ strategy:
   type: Recreate
 ingress:
   staging: true
+
+liveness_probe:
+  tcpSocket:
+    port: 8989
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 6
