@@ -81,7 +81,7 @@ monitoring:
         observer_type: histogram
         histogram_options:
           buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60]
-        ttl: 30d
+        ttl: 720h
         quantiles:
         - quantile: 0.99
           error: 0.001
