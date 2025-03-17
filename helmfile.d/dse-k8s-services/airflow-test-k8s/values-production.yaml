@@ -10,6 +10,15 @@ config:
         executor: KubernetesExecutor
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
+    local_settings:
+      ui_alerts:
+        - text: >-
+            This instance is currently used to test analytics DAGs before they get migrated to the <code>airflow-main</code> instance.
+            See <a href="https://phabricator.wikimedia.org/T386282">T386282</a> for details, and
+            <a href="https://docs.google.com/spreadsheets/d/1SKlAv-oTKBhGM1duW7j8j_PFoRUQZozjQCOBhWySITE/edit?gid=1954854246#gid=1954854246">this spreadsheet</a>
+            to track the migration progress.
+          category: warning
+          html: true
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
