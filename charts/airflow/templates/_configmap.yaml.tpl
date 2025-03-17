@@ -149,6 +149,24 @@ data:
     {{ $.Files.Get $path | nindent 4 }}
     {{- end }}
 
+  airflow_local_settings.py: |
+    from airflow.www.utils import UIAlert
+    DASHBOARD_UIALERTS = [
+    {{- range $ui_alert := $.Values.config.airflow.local_settings.ui_alerts }}
+        UIAlert(
+          """{{ $ui_alert.text }}""",
+          html={{ template "toPythonValue" (dict "value" ($ui_alert.html | default false )) }},
+          category={{ template "toPythonValue" (dict "value" ($ui_alert.category | default "info" )) }},
+        ),
+    {{- end }}
+    {{- if ne $.Values.gitsync.ref "main" }}
+        UIAlert(
+          """<code>git-sync</code> is currently pulling the <code><a href="https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags/-/tree/{{ $.Values.gitsync.ref }}">{{ $.Values.gitsync.ref }}</a></code> ref from <code>airflow-dags</code>.""",
+          html=True,
+          category="warning",
+        ),
+    {{- end }}
+    ]
 {{- end }}
 
 {{- define "configmap.airflow-bash-executables" }}

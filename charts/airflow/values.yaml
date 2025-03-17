@@ -59,6 +59,9 @@ app:
   - name: airflow-webserver-config
     mountPath: /opt/airflow/webserver_config.py
     subPath: webserver_config.py
+  - name: airflow-webserver-config
+    mountPath: /opt/airflow/airflow_local_settings.py
+    subPath: airflow_local_settings.py
   - name: logs
     mountPath: /opt/airflow/logs
   - name: airflow-bash-executables
@@ -108,6 +111,8 @@ config:
         ops: [Admin]
 
     extra_rbac: ~
+    local_settings:
+      ui_alerts: []
 
     # https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html
     config:
