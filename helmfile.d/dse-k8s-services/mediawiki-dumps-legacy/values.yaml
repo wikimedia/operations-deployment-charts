@@ -134,6 +134,16 @@ php:
     size: 768
 
 mw:
+  helpers:
+    feature_flags:
+      default:
+        web: false
+        job: false
+        cron: false
+        mercurius: false
+        active_active: false
+        dumps: true
+        networkpolicy: false
   domain_suffix: "org"
   httpd:
     enabled: false
@@ -198,166 +208,14 @@ cache:
 # network egress for various services
 networkpolicy:
   egress:
-    enabled: true
-    dst_nets:
-      # swift, used by ThumbnailRenderer
-      # ms-fe.svc.eqiad.wmnet.
-      - cidr: 10.2.2.27/32
-        ports:
-          - protocol: TCP
-            port: 443
-      # ms-fe.svc.codfw.wmnet.
-      - cidr: 10.2.1.27/32
-        ports:
-          - protocol: TCP
-            port: 443
-      # url-downloader is covered by the default egress rules
-      # Common defs
-      #IRC - TODO: define the port range once we upgrade k8s
-      # irc1003
-      - cidr: 208.80.154.72/32
-      # irc2003
-      - cidr: 208.80.153.10/32
-      # xenon / arclamp
-      # arclamp1001
-      - cidr: 10.64.16.88/32
-        ports:
-          - protocol: TCP
-            port: 6379
-      # arclamp2001
-      - cidr: 10.192.48.82/32
-        ports:
-          - protocol: TCP
-            port: 6379
-      # excimer ('excimer-ui-server' in mediawiki-config)
-      # webperf1003 / performance.discovery.wmnet
-      - cidr: 10.64.32.23/32
-        ports:
-          - protocol: TCP
-            port: 443
-      # webperf2003 / performance.discovery.wmnet
-      - cidr: 10.192.32.23/32
-        ports:
-          - protocol: TCP
-            port: 443
-      # statsd
-      # graphite1005 / statsd.eqiad.wmnet
-      - cidr: 10.64.16.81/32
-        ports:
-          - protocol: UDP
-            port: 8125
-      # graphite2004 / statsd.eqiad.wmnet
-      - cidr: 10.192.16.37/32
-        ports:
-          - protocol: UDP
-            port: 8125
-      # eventlogging
-      # eventlog1001
-      - cidr: 10.64.32.167/32
-        ports:
-          - protocol: TCP
-            port: 8421
-      # logstash
-      # logstash.svc.eqiad.wmnet
-      - cidr: 10.2.2.36/32
-      # DC-specific defs
-      ## Eqiad
-      # Poolcounter
-      # poolcounter1006
-      - cidr: 10.64.0.150/32
-        ports:
-          - protocol: TCP
-            port: 7531
-      # poolcounter1007
-      - cidr: 10.64.32.137/32
-        ports:
-          - protocol: TCP
-            port: 7531
-      # udp2log
-      # mwlog1002
-      - cidr: 10.64.32.141/32
-        ports:
-          - protocol: UDP
-            port: 8420
-      # redis_lock
-      # rdb1011 A1
-      - cidr: 10.64.0.36/32
-      # rdb1012 D1
-      - cidr: 10.64.48.49/32
-      # rdb1013 B6
-      - cidr: 10.64.16.18/32
-      - cidr: 2620:0:861:102:10:64:16:18/128
-      # rdb1014 D3
-      - cidr: 10.64.48.42/32
-      - cidr: 2620:0:861:107:10:64:48:42/128
-      # wiki-mail-eqiad
-      - cidr: 208.80.154.91/32
-        ports:
-          - protocol: TCP
-            port: 25
-      - cidr: 2620:0:861:3:208:80:154:91/128
-        ports:
-          - protocol: TCP
-            port: 25
-      # mx-out1001.wikimedia.org
-      - cidr: 208.80.154.5/32
-        ports:
-          - protocol: TCP
-            port: 25
-      - cidr: 2620:0:861:1:208:80:154:5/128
-        ports:
-          - protocol: TCP
-            port: 25
-      ## Codfw
-      # Poolcounter
-      # poolcounter2005
-      - cidr: 10.192.0.9/32
-        ports:
-          - protocol: TCP
-            port: 7531
-      # poolcounter2006
-      - cidr: 10.192.16.6/32
-        ports:
-          - protocol: TCP
-            port: 7531
-      # udp2log
-      # mwlog2002
-      - cidr: 10.192.32.9/32
-        ports:
-          - protocol: UDP
-            port: 8420
-      # redis_lock
-      # rdb2007 A5
-      - cidr: 10.192.0.198/32
-      # rdb2009 C3
-      - cidr: 10.192.32.8/32
-      # wiki-mail-codfw
-      - cidr: 208.80.153.46/32
-        ports:
-          - protocol: TCP
-            port: 25
-      - cidr: 2620:0:860:2:208:80:153:46/128
-        ports:
-          - protocol: TCP
-            port: 25
-      # mx-out2001.wikimedia.org
-      - cidr: 208.80.153.13/32
-        ports:
-          - protocol: TCP
-            port: 25
-      - cidr: 2620:0:860:1:208:80:153:13/128
-        ports:
-          - protocol: TCP
-            port: 25
+    enabled: false
+    dst_nets: []
+
 
 # Only deploy to nodes without spinning disks T288345
 affinity:
   nodeSelector:
     node.kubernetes.io/disk-type: ssd
-kafka:
-  allowed_clusters:
-    - logging-eqiad
-    - logging-codfw
 
 # These are specific defintions pertaining to running dumps
 dumps:
