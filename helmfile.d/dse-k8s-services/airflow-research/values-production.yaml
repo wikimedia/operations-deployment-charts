@@ -23,3 +23,6 @@ external_services:
   task-pod:
     # some tasks need to download a conda env from gitlab
     gitlab: [wikimedia]
+    # The article_quality DAG has a sensor for an analytics DAG, itself being migrated to airflow-main
+    # so we query the old an-launcher1002 API for now.
+    airflow: [analytics]
