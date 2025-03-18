@@ -63,14 +63,14 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/aus-k8s-eqiad-services/jaeger: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/aux-k8s-services/jaeger: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/aus-k8s-eqiad-services/jaeger: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/aux-k8s-services/jaeger: {{`{{.HelmfileCommand}}`}}",
 
       ]
 
