@@ -214,7 +214,7 @@ inference_services:
   edit-check:
     predictor:
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-03-12-150734-publish"
+      image_version: "2025-03-18-094854-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check"
@@ -227,9 +227,11 @@ inference_services:
           limits:
             cpu: "2"
             memory: 2Gi
+            amd.com/gpu: "1"
           requests:
             cpu: "2"
             memory: 2Gi
+            amd.com/gpu: "1"
 
 external_services_app_label_selector: app-wmf
 external_services:
