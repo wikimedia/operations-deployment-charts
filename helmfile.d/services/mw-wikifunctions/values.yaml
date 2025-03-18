@@ -1,6 +1,13 @@
 resources:
   replicas: 6
 
+# Override global mw settings because of the small size
+# of the deployment.
+strategy:
+  rollingUpdate:
+    maxUnavailable: 10%
+    maxSurge: 10%
+
 mesh:
   public_port: 4451
   tracing:
