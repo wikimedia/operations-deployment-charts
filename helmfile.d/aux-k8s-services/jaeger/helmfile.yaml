@@ -20,6 +20,11 @@ environments:
       - releases: [main]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
+  aux-k8s-codfw:
+    values:
+      - releases: [main]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
 
 ---
 
