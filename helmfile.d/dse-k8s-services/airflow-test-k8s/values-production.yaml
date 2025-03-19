@@ -24,6 +24,12 @@ config:
     client_id: airflow_test_k8s
 
 external_services:
+  task-pod:
+    # temporarily required for T386282: some DAGs talk to
+    # aqs1010-a.eqiad.wmnet:9042,aqs1011-a.eqiad.wmnet:9042,aqs1012-a.eqiad.wmnet:9042
+    cassandra:
+    - analytics-query-service-storage-a-eqiad
+    - analytics-query-service-storage-b-eqiad
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]

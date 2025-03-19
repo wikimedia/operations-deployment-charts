@@ -59,3 +59,11 @@ worker:
           eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
           eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
           eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
+
+external_services:
+  task-pod:
+    # Some DAGs talk to
+    # aqs1010-a.eqiad.wmnet:9042,aqs1011-a.eqiad.wmnet:9042,aqs1012-a.eqiad.wmnet:9042
+    cassandra:
+    - analytics-query-service-storage-a-eqiad
+    - analytics-query-service-storage-b-eqiad
