@@ -205,10 +205,10 @@ cache:
       limits:
         cpu: 700m
         memory: 200Mi
-# network egress for various services
+
 networkpolicy:
   egress:
-    enabled: false
+    enabled: true
     dst_nets: []
 
 
