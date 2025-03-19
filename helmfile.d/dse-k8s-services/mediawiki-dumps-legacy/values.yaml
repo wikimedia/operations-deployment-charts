@@ -132,8 +132,10 @@ php:
     interned_strings_buffer: "50"
   apc:
     size: 768
+  envvars: ~
 
 mw:
+  mail_host: ~
   helpers:
     feature_flags:
       default:
@@ -228,4 +230,10 @@ dumps:
     size: "10Gi"
 
 ingress:
+  enabled: false
+
+kafka:
+  allowed_clusters: []
+
+monitoring:
   enabled: false
