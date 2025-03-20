@@ -33,13 +33,12 @@ discovery:
   - noc         # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
 
 scheduler:
-  resources:
-    requests:
-      cpu: 8
-      memory: 4Gi
-    limits:
-      cpu: 8
-      memory: 4Gi
+  requests:
+    cpu: 8
+    memory: 4Gi
+  limits:
+    cpu: 8
+    memory: 4Gi
 
 # Required to render the /etc/refinery/event_intake_service_urls.yaml file in the task pods
 worker:
