@@ -1,16 +1,23 @@
+# This release exists to enable incremental traffic migration actuated by an
+# external system, in contrast to the migration release.
+# For this use case, an externally addressible discovery service distinct from
+# main is required (e.g., a cookie-driven migration that selects the relevant
+# discovery service at ATS).
+
 resources:
   # Keep 1 replica running to satisfy pybal checks, etc.
   replicas: 1
 
-# TODO: T383845 - Temporarily increase maxUnavailable (6% default).
-strategy:
-  rollingUpdate:
-    maxUnavailable: 10%
+# During the early phases of a migration when the number of replicas is small,
+# it may be useful to increase maxUnavailable (default: 6%) in order to improve
+# deployment speed if the next release is using a different mediawiki image
+# than main (as the image is then unlikely to be cached).
+# See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
+#strategy:
+#  rollingUpdate:
+#    maxUnavailable: 10%
 
 mesh:
   public_port: 4455
   tracing:
     service_name: mw-api-ext-next
-
-php:
-  version: "8.1"
