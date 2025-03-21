@@ -1,35 +1,18 @@
 config:
   airflow:
-    dags_folder: main # Temporarily required for T386282
+    dags_folder: test_k8s
     instance_name: test-k8s
-    auth: # Temporarily required for T386282
-      role_mappings:
-        airflow-analytics-ops: [Op]
     config:
       core:
         executor: KubernetesExecutor
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
-    local_settings:
-      ui_alerts:
-        - text: >-
-            This instance is currently used to test analytics DAGs before they get migrated to the <code>airflow-main</code> instance.
-            See <a href="https://phabricator.wikimedia.org/T386282">T386282</a> for details, and
-            <a href="https://docs.google.com/spreadsheets/d/1SKlAv-oTKBhGM1duW7j8j_PFoRUQZozjQCOBhWySITE/edit?gid=1954854246#gid=1954854246">this spreadsheet</a>
-            to track the migration progress.
-          category: warning
-          html: true
+
   oidc:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
 
 external_services:
-  task-pod:
-    # temporarily required for T386282: some DAGs talk to
-    # aqs1010-a.eqiad.wmnet:9042,aqs1011-a.eqiad.wmnet:9042,aqs1012-a.eqiad.wmnet:9042
-    cassandra:
-    - analytics-query-service-storage-a-eqiad
-    - analytics-query-service-storage-b-eqiad
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]
@@ -43,31 +26,4 @@ ingress:
 discovery:
   listeners:
   - mw-api-int
-  - noc # Temporarily required for T386282
-
-# T386282: we temporarily use airflow-test-k8s as an integration testing ground
-# for DAGs we migrate over from an-launcher1002/analytics to airflow-main/main.
-# As such, we continuously pull from a feature branch that will be used throughout
-# the whole migration.
-gitsync:
-  ref: "feature/Airflow-Analytics-Migration-Sandbox"
-  period: 60
-
-# Temporarily required for T386282
-worker:
-  config:
-    extra_files:
-      "/etc/refinery":
-        event_intake_service_urls.yaml: |
-          eventgate-main: https://eventgate-main.discovery.wmnet:4492/v1/events
-          eventgate-main-eqiad: https://eventgate-main.svc.eqiad.wmnet:4492/v1/events
-          eventgate-main-codfw: https://eventgate-main.svc.codfw.wmnet:4492/v1/events
-          eventgate-analytics: https://eventgate-analytics.discovery.wmnet:4592/v1/events
-          eventgate-analytics-eqiad: https://eventgate-analytics.svc.eqiad.wmnet:4592/v1/events
-          eventgate-analytics-codfw: https://eventgate-analytics.svc.codfw.wmnet:4592/v1/events
-          eventgate-analytics-external: https://eventgate-analytics-external.discovery.wmnet:4692/v1/events
-          eventgate-analytics-external-eqiad: https://eventgate-analytics-external.svc.eqiad.wmnet:4692/v1/events
-          eventgate-analytics-external-codfw: https://eventgate-analytics-external.svc.codfw.wmnet:4692/v1/events
-          eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
-          eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
-          eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
+  - noc
