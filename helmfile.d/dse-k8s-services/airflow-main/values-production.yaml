@@ -10,14 +10,6 @@ config:
         executor: KubernetesExecutor
       kerberos:
         principal: analytics/airflow.discovery.wmnet
-    local_settings:
-      ui_alerts:
-        - text: >-
-            The <code>analytics</code> DAGs are being migrated to this instance.
-            See <a href="https://docs.google.com/spreadsheets/d/1SKlAv-oTKBhGM1duW7j8j_PFoRUQZozjQCOBhWySITE/edit?gid=1954854246#gid=1954854246">this spreadsheet</a>
-            to track the migration progress.
-          category: info
-          html: true
   oidc:
     client_id: airflow_main
 
