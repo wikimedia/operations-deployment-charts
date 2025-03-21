@@ -333,7 +333,7 @@ main_app:
       # (either logged in with OAuth - default - or not - anon)
       # We set anon_limit to 0 in order to allow access only to authenticated users
       ratelimit_config:
-        anon_limit: 1000
+        anon_limit: 0
         default_limit: 100000
 
   aqs:
