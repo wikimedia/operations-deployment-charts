@@ -12,7 +12,7 @@ strategy:
   maxSurge: 0
   # This needs to be high as scaling up while rolling out will hit our
   # limits and then fail.
-  maxUnavailable: 16
+  maxUnavailable: 40%
 
 discovery:
   listeners:
