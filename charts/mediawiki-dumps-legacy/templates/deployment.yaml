@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "base.name.chart" . }}-toolbox
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: toolbox
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: toolbox
+    spec:
+      securityContext:
+        fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
+      containers:
+      - name: "toolbox"
+        command: ["sleep"]
+        args: ["infinity"]
+        image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}"
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        {{ include "base.helper.resources" $.Values.dumps.toolbox.resources | indent 8 }}
+        volumeMounts:
+        - name: dumps-cephfs
+          mountPath: {{ $.Values.dumps.persistence.mount_path }}
+      volumes:
+      - name: dumps-cephfs
+        persistentVolumeClaim:
+          claimName: {{ $.Values.dumps.persistence.claim_name }}

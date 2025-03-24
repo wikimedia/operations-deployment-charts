@@ -2,8 +2,27 @@ dumps:
   orchestrator:
     namespace: override_me
     service_account: override_me
+  toolbox:
+    fsgroup: override_me
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 200m
+  persistence:
+    mount_path: override_me
+    claim_name: override_me
 
 networkpolicy:
   egress:
     enabled: false
     dst_nets: []
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+main_app:
+  image: override_me

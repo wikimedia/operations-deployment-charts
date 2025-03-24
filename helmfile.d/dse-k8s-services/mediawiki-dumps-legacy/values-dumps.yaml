@@ -2,6 +2,15 @@ dumps:
   orchestrator:
     namespace: airflow-test-k8s  # temporary namespace, until the DAG is production ready
     service_account: airflow
+  toolbox:
+    fs_group: 33
+
+# We set these values here but once scap integrates with mediawiki-dumps-legacy,
+# we will get these automatically from
+# /etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-main.yaml
+# cf T389786
+main_app:
+  image: restricted/mediawiki-multiversion-cli:2025-03-20-170003-publish-81
 
 _dbstore1007_ports: &dbstore1007_ports
   ports:
