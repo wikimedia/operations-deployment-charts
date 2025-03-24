@@ -7,8 +7,7 @@ app:
     app.config.yaml:
       pipeline.name: cirrus-streaming-updater-consumer-search-staging
       kafka-source-config.group.id: cirrus-streaming-updater-consumer-search-staging
-      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error.v1
-      fetch-error-stream: cirrussearch.update_pipeline.fetch_error.v1
+      fetch-error-topic: eqiad.cirrussearch.update_pipeline.fetch_error
       # relforge doesn't have three clusters like the prod endpoints, point
       # it all at the same cluster.
       elasticsearch-urls.chi: https://relforge1003.eqiad.wmnet:9243
