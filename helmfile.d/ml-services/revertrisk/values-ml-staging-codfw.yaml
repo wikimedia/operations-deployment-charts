@@ -17,7 +17,7 @@ inference_services:
   revertrisk-language-agnostic:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2024-08-28-094356-publish"
+      image_version: "2025-03-24-121712-publish"
       config:
         minReplicas: 1
         maxReplicas: 1
@@ -30,6 +30,10 @@ inference_services:
           value: "true"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_prediction_change.rc0"
   revertrisk-multilingual:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
