@@ -5,6 +5,7 @@ config:
     config:
       core:
         executor: KubernetesExecutor
+        max_map_length: 1200 # We need larger than the default map size of 1024 - See T389773 for details.
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
 
