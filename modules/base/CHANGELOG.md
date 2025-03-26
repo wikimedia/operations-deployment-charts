@@ -1,3 +1,8 @@
+## external-services-networkpolicy 1.2.0
+
+- Allow the whole `selector` NetworkPolicy field to be overriden via the
+  `external_services_selector` value (empty by default).
+
 ## helper 1.1.4
 
 - Remove `tpl` from `base.helper.resourcesDataChecksum` template, to allow
