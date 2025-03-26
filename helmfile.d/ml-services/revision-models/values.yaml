@@ -61,7 +61,7 @@ inference_services:
     predictor:
       config:
         minReplicas: 1
-        maxReplicas: 8
+        maxReplicas: 5
       image: "machinelearning-liftwing-inference-services-reference-quality"
       image_version: "2025-03-19-145037-publish"
       custom_env:
@@ -75,16 +75,16 @@ inference_services:
           value: "16"
           # We set number of threads for each worker model to (num_cpus/2)-1 to leave CPU capacity to the main event loop
         - name: NUM_THREADS
-          value: "7"
+          value: "14"
         - name: NUM_OF_WORKERS
           value: "2"
       container:
         resources:
           limits:
-            cpu: "16"
+            cpu: "30"
             memory: 4Gi
           requests:
-            cpu: "16"
+            cpu: "30"
             memory: 4Gi
 
   reference-risk:
