@@ -56,3 +56,9 @@ networkpolicy:
         <<: *dbstore1009_ports
       - cidr: 2620:0:861:10e:10:64:135:22/128
         <<: *dbstore1009_ports
+
+
+# Apply external services policies to all airflow task pods
+external_services_selector: "has(dag_id) && has(task_id) && has(run_id) && has(try_number)"
+external_services:
+  mariadb-external-storage: [eqiad]
