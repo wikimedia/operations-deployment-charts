@@ -12,8 +12,10 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "base.meta.pod_labels" . | indent 8 }}
         component: toolbox
+        {{/* We hardcode these labels so that the toolbox pod is matched by the mediawiki networkpolicy selector */}}
+        app: mediawiki
+        release: production
     spec:
       securityContext:
         fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
@@ -34,6 +36,9 @@ spec:
           mountPath: /etc/dumps/templs
         - name: mediwiki-dumps-legacy-dblists
           mountPath: /etc/dumps/dblists
+        env:
+        - name: SERVERGROUP
+          value: kube-dumps
       volumes:
       - name: dumps-cephfs
         persistentVolumeClaim:

@@ -13,6 +13,3 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
 {{- end }}
-
-
-{{ include "base.networkpolicy.egress.external-services" . }}
