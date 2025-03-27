@@ -113,6 +113,14 @@ namespaces:
     tlsExtraSANs:
       - airflow.wikimedia.org
       - airflow.discovery.wmnet
+    resourcequota:
+      compute:
+        requests:
+          cpu: "150"
+          memory: "250Gi"
+        limits:
+          cpu: "150"
+          memory: "250Gi"
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
