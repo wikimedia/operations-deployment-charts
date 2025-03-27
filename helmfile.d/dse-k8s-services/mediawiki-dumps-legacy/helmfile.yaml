@@ -58,6 +58,8 @@ templates:
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     missingFileHandler: Warn
     values:
+      - "/etc/helmfile-defaults/general-eqiad.yaml" # TODO - should create dse-k8s-specific file
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - values.yaml
       - values-dumps.yaml  # non-env-specific values, in this repository
 

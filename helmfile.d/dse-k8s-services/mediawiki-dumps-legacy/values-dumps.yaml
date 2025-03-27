@@ -11,3 +11,22 @@ dumps:
 # cf T389786
 main_app:
   image: restricted/mediawiki-multiversion-cli:2025-03-20-170003-publish-81
+
+mesh:
+  enabled: true
+  public_port: null
+  tracing:
+    enabled: false
+  certmanager:
+    enabled: false
+  telemetry:
+    enabled: true
+    port: 9361
+
+networkpolicy:
+  egress:
+    enabled: false
+
+discovery:
+  listeners:
+    - mw-api-int

@@ -19,6 +19,9 @@ spec:
         {{/* We hardcode these labels so that the toolbox pod is matched by the mediawiki networkpolicy selector */}}
         app: mediawiki
         release: production
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       securityContext:
         fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
@@ -42,6 +45,9 @@ spec:
         env:
         - name: SERVERGROUP
           value: kube-dumps
+        - name: ENVOY_MW_API_HOST
+          value: http://localhost:6501
+      {{- include "mesh.deployment.container" . | indent 6 }}
       volumes:
       - name: dumps-cephfs
         persistentVolumeClaim:
@@ -55,3 +61,6 @@ spec:
       - name: mediwiki-dumps-legacy-dblists
         configMap:
           name: mediwiki-dumps-legacy-dblists
+      - name: envoy-config-volume
+        configMap:
+          name: mediawiki-production-envoy-config-volume
