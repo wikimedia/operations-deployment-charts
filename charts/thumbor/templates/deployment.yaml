@@ -31,7 +31,7 @@ spec:
         checksum/swift: {{ include "swift.config" . | sha256sum }}
         {{- if .Values.monitoring.enabled }}
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape_by_name: "true"
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:
