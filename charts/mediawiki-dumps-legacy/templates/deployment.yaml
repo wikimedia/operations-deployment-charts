@@ -4,10 +4,13 @@ kind: Deployment
 metadata:
   name: {{ template "base.name.chart" . }}-toolbox
   {{- include "base.meta.labels" . | indent 2 }}
-    component: toolbox
 spec:
   selector:
-  {{- include "base.meta.selector" . | indent 4 }}
+    matchLabels:
+      app: mediawiki
+      component: toolbox
+      release: production
+      component: toolbox
   replicas: 1
   template:
     metadata:
