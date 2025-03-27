@@ -5,12 +5,12 @@ dumps:
   toolbox:
     fsgroup: override_me
     resources:
-      requests:
-        memory: 128Mi
-        cpu: 100m
       limits:
-        memory: 256Mi
-        cpu: 200m
+        memory: 8Gi
+        cpu: 4
+      requests:
+        memory: 4Gi
+        cpu: 2
   persistence:
     mount_path: override_me
     claim_name: override_me
