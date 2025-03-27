@@ -42,6 +42,9 @@ spec:
           mountPath: /etc/dumps/templs
         - name: mediwiki-dumps-legacy-dblists
           mountPath: /etc/dumps/dblists
+        - name: wikimedia-cluster-config
+          mountPath: /etc/wikimedia-cluster
+          subPath: wikimedia-cluster
         env:
         - name: SERVERGROUP
           value: kube-dumps
@@ -64,3 +67,6 @@ spec:
       - name: envoy-config-volume
         configMap:
           name: mediawiki-production-envoy-config-volume
+      - name: wikimedia-cluster-config
+        configMap:
+          name: mediawiki-production-wikimedia-cluster-config
