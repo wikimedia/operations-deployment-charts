@@ -28,7 +28,22 @@ spec:
         volumeMounts:
         - name: dumps-cephfs
           mountPath: {{ $.Values.dumps.persistence.mount_path }}
+        - name: mediwiki-dumps-legacy-configs
+          mountPath: /etc/dumps/confs
+        - name: mediwiki-dumps-legacy-templates
+          mountPath: /etc/dumps/templs
+        - name: mediwiki-dumps-legacy-dblists
+          mountPath: /etc/dumps/dblists
       volumes:
       - name: dumps-cephfs
         persistentVolumeClaim:
           claimName: {{ $.Values.dumps.persistence.claim_name }}
+      - name: mediwiki-dumps-legacy-configs
+        configMap:
+          name: mediwiki-dumps-legacy-configs
+      - name: mediwiki-dumps-legacy-templates
+        configMap:
+          name: mediwiki-dumps-legacy-templates
+      - name: mediwiki-dumps-legacy-dblists
+        configMap:
+          name: mediwiki-dumps-legacy-dblists
