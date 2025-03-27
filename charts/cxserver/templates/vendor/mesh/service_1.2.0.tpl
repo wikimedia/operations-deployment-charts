@@ -10,6 +10,11 @@ spec:
   selector:
     app: {{ template "base.name.chart" . }}
     routed_via: {{ .Release.Name }}
+    {{- if .Values.mesh.extra_service_selector_labels }}
+    {{- range $label, $value := .Values.mesh.extra_service_selector_labels }}
+    {{ $label }}: {{ $value }}
+    {{- end }}
+    {{- end }}
   ports:
     - name: {{ template "base.name.release" . }}-https
       protocol: TCP

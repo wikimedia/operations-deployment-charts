@@ -54,6 +54,25 @@ in particular for egress.
 {{- end }}{{ end }} {{/* end if's */}}
 {{- end -}}
 
+{{/* Auto-generate egress networkpolicies for zookeeper */}}
+{{- define "base.networkpolicy.egress.zookeeper" -}}
+{{- $clusters := .Values.zookeeper_clusters -}}
+{{- if .Values.zookeeper }}{{ if .Values.zookeeper.allowed_clusters }}
+{{- range $c := .Values.zookeeper.allowed_clusters }}
+{{- $cidrs := index $clusters $c }}
+# Nodes in the zookeeper cluster {{ $c }}
+{{- range $cidrs }}
+- to:
+  - ipBlock:
+      cidr: {{ . }}
+  ports:
+  - protocol: TCP
+    port: 2181
+{{- end }} {{/* end range cidrs */}}
+{{- end }} {{/* end range allowed_clusters */}}
+{{- end }}{{ end }} {{/* end if's */}}
+{{- end -}}
+
 {{/* Auto-generate egress networkpolicies for MariaDB sections */}}
 {{- define "base.networkpolicy.egress.mariadb" -}}
 {{/* MariaDB egress. Ask for MariaDB section names. We hardcode eqiad/codfw CIDRs they are kinda ossified */}}
