@@ -17,6 +17,9 @@ main_app:
   access_log:
     debug: false
 
+  ratelimiter:
+    log_level: warning
+
   endpoints:
     mwapi_cluster:
       tls: true
