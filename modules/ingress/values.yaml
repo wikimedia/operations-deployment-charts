@@ -45,3 +45,6 @@ ingress:
   # https://istio.io/latest/docs/reference/config/networking/virtual-service/#CorsPolicy
   # Takes precedence over base_cors_policy.
   custom_cors_policy: {}
+  # Add a list of destination rule hosts to allow httproute rules to address more than 1 backend services.
+  # NOTE: The list needs to be a list of kubernetes service DNS names
+  destinationrulehosts: []
