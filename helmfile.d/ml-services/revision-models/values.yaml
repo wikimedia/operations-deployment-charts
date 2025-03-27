@@ -75,16 +75,16 @@ inference_services:
           value: "16"
           # We set number of threads for each worker model to (num_cpus/2)-1 to leave CPU capacity to the main event loop
         - name: NUM_THREADS
-          value: "14"
+          value: "10"
         - name: NUM_OF_WORKERS
           value: "2"
       container:
         resources:
           limits:
-            cpu: "30"
+            cpu: "22"
             memory: 4Gi
           requests:
-            cpu: "30"
+            cpu: "22"
             memory: 4Gi
 
   reference-risk:
