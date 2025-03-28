@@ -538,6 +538,10 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+    - cidr: 2620:0:861:101:10:64:0:36/64 # rdb1011
+      ports:
+      - protocol: tcp
+        port: 6379
     - cidr: 10.64.48.49/32 # rdb1012
       ports:
       - protocol: tcp
