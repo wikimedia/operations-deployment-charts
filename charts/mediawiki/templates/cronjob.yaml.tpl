@@ -54,7 +54,7 @@ spec:
           containers:
           # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
           # above.
-          {{- include "lamp.deployment" (merge $ (dict "JobConfig" $jobConfig)) | indent 10 }}
+          {{- include "lamp.deployment" (merge (dict "JobConfig" $jobConfig) $ ) | indent 10 }}
           {{- include "cache.mcrouter.deployment" $ | indent 10 }}
           {{- include "mesh.deployment.container" $ | indent 10}}
           {{- include "rsyslog.deployment" $ | indent 10 }}
