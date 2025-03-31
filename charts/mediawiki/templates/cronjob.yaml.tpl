@@ -10,6 +10,8 @@ metadata:
   # The release name includes a randomly generated token for each job, so names are unique.
   name: {{ $release }}-{{ $jobConfig.name }}
   {{- include "mw.helpers.labels" $ | indent 2 }}
+    team: "{{ $jobConfig.labels.team }}"
+    script: "{{ $jobConfig.labels.script }}"
   annotations:
     comment: {{ $jobConfig.description | quote }}
 spec:
