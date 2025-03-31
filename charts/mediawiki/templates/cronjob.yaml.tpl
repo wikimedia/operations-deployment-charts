@@ -68,6 +68,7 @@ spec:
       # As above, we're not assuming idempotence; don't restart the entire pod, either.
       backoffLimit: {{ $jobConfig.backoffLimit | default 0 }}
       ttlSecondsAfterFinished: {{ $jobConfig.ttlSecondsAfterFinished | default 106400 }}  # 1 day
-{{- end }}
-{{- end }}
-{{- end }}
+---
+{{- end }} {{/* end range $jobConfig */}}
+{{- end }} {{/* end if $can_run */}}
+{{- end }} {{/* end if $flags.cron */}}
