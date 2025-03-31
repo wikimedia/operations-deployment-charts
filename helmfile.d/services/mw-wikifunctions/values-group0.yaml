@@ -1,0 +1,75 @@
+# We are only going via ingress, no nodePort
+service:
+  nodePort: false
+resources:
+  # This will only redirect to www.wikifunctions.org, no need for a lot of resources
+  replicas: 2
+
+# Ingress will only be defined in this release, the others will share
+ingress:
+  enabled: true
+  gatewayHosts:
+    default: "mediawiki"
+    extraFQDNs:
+      - '*.wikifunctions.org'
+      - 'wikifunctions.org'
+      # And now everything we receive traffic for completeness
+      - '*.wikipedia.org'
+      - '*.mediawiki.org'
+      - '*.wikibooks.org'
+      - '*.wikidata.org'
+      - '*.wikimedia.org'
+      - '*.wikimediafoundation.org'
+      - '*.wikinews.org'
+      - '*.wikiquote.org'
+      - '*.wikisource.org'
+      - '*.wikiversity.org'
+      - '*.wikivoyage.org'
+      - '*.wiktionary.org'
+      - '*.wmfusercontent.org'
+      - 'mediawiki.org'
+      - 'w.wiki'
+      - 'wikibooks.org'
+      - 'wikidata.org'
+      - 'wikimedia.org'
+      - 'wikimediafoundation.org'
+      - 'wikinews.org'
+      - 'wikiquote.org'
+      - 'wikisource.org'
+      - 'wikiversity.org'
+      - 'wikivoyage.org'
+      - 'wiktionary.org'
+      - 'wmfusercontent.org'
+      - 'wikipedia.org'
+  httproutes:
+    # We send on purpose traffic to this one. It will redirect to www.wikifunctions.org anyway
+    - name: group0
+      match:
+        - authority:
+            exact: wikifunctions.org
+      route:
+        - destination:
+            port:
+              number: 4446
+            host: mediawiki-group0-tls-service.mw-wikifunctions.svc.cluster.local
+    # This is where we 'll actually send traffic to
+    - name: group1
+      match:
+        - authority:
+            exact: www.wikifunctions.org
+      route:
+        - destination:
+            port:
+              number: 4446
+            host: mediawiki-group1-tls-service.mw-wikifunctions.svc.cluster.local
+    # default everything else to group2
+    - name: group2
+      route:
+        - destination:
+            port:
+              number: 4446
+            host: mediawiki-group2-tls-service.mw-wikifunctions.svc.cluster.local
+  destinationrulehosts:
+    - mediawiki-group0-tls-service.mw-wikifunctions.svc.cluster.local
+    - mediawiki-group1-tls-service.mw-wikifunctions.svc.cluster.local
+    - mediawiki-group2-tls-service.mw-wikifunctions.svc.cluster.local
