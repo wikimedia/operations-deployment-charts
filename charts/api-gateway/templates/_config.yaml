@@ -128,7 +128,7 @@ static_resources:
                 httpCode: "%RESPONSE_CODE%"
                 httpReason: "%LOCAL_REPLY_BODY%"
           route_config:
-{{- if .Values.main_app.restbase_routes }}
+{{- if .Values.main_app.rest_gateway_routes }}
 {{ include "restgateway.routes" . }}
 {{- else }}
 {{ include "apigateway.routes" . }}
@@ -193,7 +193,7 @@ static_resources:
                     key: x_wikimedia_debug_server
                     value: none
                     type: STRING
-{{- if .Values.main_app.restbase_routes }}
+{{- if .Values.main_app.rest_gateway_routes }}
           - name: envoy.filters.http.lua
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua

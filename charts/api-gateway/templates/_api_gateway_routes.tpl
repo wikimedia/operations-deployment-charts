@@ -180,7 +180,7 @@
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
 {{- /*
-BEGIN restbase route definition
+BEGIN wikifeeds route definition
 */}}
               - name: feed
 {{- if $strip_cookies }}
@@ -199,21 +199,9 @@ BEGIN restbase route definition
                       google_re2: {}
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
-                  cluster: restbase_cluster
-{{- if .Values.main_app.restbase_dev }}
-              - name: restbase
-                match:
-                  prefix: "/restbase/"
-                route:
-                  cluster: restbase_cluster
-                  regex_rewrite:
-                    pattern:
-                      google_re2: {}
-                      regex: '^/restbase/(.*)'
-                    substitution: '/\1'
-{{- end }}
+                  cluster: rest_gateway_cluster
 {{- /*
-END restbase route definition
+END wikifeeds route definition
 */}}
 {{- /*
 BEGIN descriptions/mobileapps_cluster route definition

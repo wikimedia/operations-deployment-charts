@@ -36,6 +36,11 @@ main_app:
       tls: true
       hosts:
         restbase.discovery.wmnet: 7443
+    rest_gateway_cluster:
+      type: LOGICAL_DNS
+      tls: true
+      hosts:
+        rest-gateway.discovery.wmnet: 4113
     mwapi_cluster:
       debug_hosts:
         mwdebug.svc.eqiad.wmnet: 4444
@@ -631,3 +636,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4450
+    - cidr: 10.2.1.82/32 # rest-gateway.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4113
+    - cidr: 10.2.2.82/32 # rest-gateway.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4113

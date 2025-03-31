@@ -47,8 +47,8 @@
                 direct_response:
                   status: 200
                   body: {inline_string: "This is the REST Gateway."}
-{{- /* BEGIN restbase_routes definition */}}
-{{- range $endpoint := .Values.main_app.restbase_routes }}
+{{- /* BEGIN rest_gateway_routes definition */}}
+{{- range $endpoint := .Values.main_app.rest_gateway_routes }}
 {{- range $route := $endpoint.urls }}
               - name: {{ $endpoint.name }}_{{ $route.name }}
                 match:
@@ -90,7 +90,7 @@
                   {{- end }}
 {{- end }}
 {{- end }}
-{{- /* END restbase_routes definition */}}
+{{- /* END rest_gateway_routes definition */}}
 
 
 {{- end }}

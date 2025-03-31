@@ -87,11 +87,9 @@ main_app:
     kid: ""
     key: ""
 
-  # Enable /restbase/ route for testing features as part of restbase sunset
-  restbase_dev: false
   # If this list is populated, we will not configure the gateway
   # as an API gateway, but as a REST gateway
-  restbase_routes: []
+  rest_gateway_routes: []
 
   endpoints:
     # for /core/ URLs
@@ -100,8 +98,12 @@ main_app:
       hosts: {}
       # Specifies the host to support debug routing to via X-Wikimedia-Debug
       debug_hosts: {}
-    # used for /feed/
+    # use for /v1/ which visual editor etc use
     restbase_cluster:
+      type: LOGICAL_DNS
+      hosts: {}
+    # used for /feed/
+    rest_gateway_cluster:
       type: LOGICAL_DNS
       hosts: {}
     # used for descriptions

@@ -21,8 +21,6 @@ main_app:
       requests_per_unit: 5000
       unit: HOUR
 
-  restbase_dev: true
-
   access_log:
     sample_percentage: 50
 
@@ -94,6 +92,10 @@ main_app:
       debug_hosts:
         localhost: 9999
     restbase_cluster:
+      type: STRICT_DNS
+      hosts:
+        localhost: 8888
+    rest_gateway_cluster:
       type: STRICT_DNS
       hosts:
         localhost: 8888
