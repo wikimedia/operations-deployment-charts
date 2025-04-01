@@ -49,8 +49,6 @@ ingress:
             exact: wikifunctions.org
       route:
         - destination:
-            port:
-              number: 4446
             host: mediawiki-group0-tls-service.mw-wikifunctions.svc.cluster.local
     # This is where we 'll actually send traffic to
     - name: group1
@@ -59,15 +57,11 @@ ingress:
             exact: www.wikifunctions.org
       route:
         - destination:
-            port:
-              number: 4446
             host: mediawiki-group1-tls-service.mw-wikifunctions.svc.cluster.local
     # default everything else to group2
     - name: group2
       route:
         - destination:
-            port:
-              number: 4446
             host: mediawiki-group2-tls-service.mw-wikifunctions.svc.cluster.local
   destinationrulehosts:
     - mediawiki-group0-tls-service.mw-wikifunctions.svc.cluster.local
