@@ -32,7 +32,7 @@ tileCaching:
 
 config:
   public:
-    TEGOLA_BROKER_URL: "kafka://10.64.16.146:9092" # kafka-test1006.eqiad.wmnet
+    TEGOLA_BROKER_URL: "kafka://kafka-test-eqiad.external-services.svc.cluster.local:9092"
     TEGOLA_QUEUE_NAME: "tegola-staging"
 
 tilePregeneration:
@@ -42,6 +42,7 @@ tilePregeneration:
 kafka:
   allowed_clusters:
     - test-eqiad
-
+  kafka:
+    - test-eqiad
 external_services:
   postgresql: [maps-read-replicas-eqiad]

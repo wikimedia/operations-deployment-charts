@@ -3,7 +3,7 @@ resources:
 
 config:
   public:
-    TEGOLA_BROKER_URL: "kafka://kafka-main2006.codfw.wmnet:9092"
+    TEGOLA_BROKER_URL: "kafka://kafka-main-codfw.external-services.svc.cluster.local:9092"
     TEGOLA_QUEUE_NAME: "codfw.maps.tiles_change"
 
 # Temporarily we will use envoy as a L4 tcp proxy until envoy's
@@ -46,3 +46,5 @@ external_services:
   postgresql:
   - maps-read-replicas-codfw
   - maps-master-codfw
+  kafka:
+    - main-codfw
