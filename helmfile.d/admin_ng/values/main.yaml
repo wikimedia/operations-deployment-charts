@@ -261,6 +261,9 @@ namespaces:
         min:
           memory: "50Mi"
           cpu: "100m"
+    # TODO: Temporary, remove after the experiment outlined in T384944 is completed
+    tlsExtraSANs:
+      - mw-wikifunctions-ingress.discovery.wmnet
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
