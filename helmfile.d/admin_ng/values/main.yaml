@@ -261,8 +261,10 @@ namespaces:
         min:
           memory: "50Mi"
           cpu: "100m"
-    # TODO: Temporary, remove after the experiment outlined in T384944 is completed
     tlsExtraSANs:
+      - wikifunctions.org
+      - www.wikifunctions.org
+      # TODO: Temporary, remove after the experiment outlined in T384944 is completed
       - mw-wikifunctions-ingress.discovery.wmnet
   mw-api-int:
     pspClusterRole: allow-mediawiki-psp
