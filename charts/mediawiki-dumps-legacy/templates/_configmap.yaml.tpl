@@ -9,6 +9,8 @@ metadata:
 data:
   wikidump.conf.dumps: |
 {{ .Files.Get "files/config/wikidump.conf.dumps" | indent 4 }}
+  wikidump.conf.tests: |
+{{ .Files.Get "files/config/wikidump.conf.tests" | indent 4 }}
   wikidump.conf.other: |
 {{ .Files.Get "files/config/wikidump.conf.other" | indent 4 }}
   table_jobs.yaml: |
