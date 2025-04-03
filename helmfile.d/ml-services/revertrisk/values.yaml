@@ -60,7 +60,7 @@ inference_services:
         minReplicas: 5
         maxReplicas: 15
       image: "machinelearning-liftwing-inference-services-revertrisk"
-      image_version: "2024-08-28-094356-publish"
+      image_version: "2025-03-31-160149-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-language-agnostic"
@@ -68,6 +68,10 @@ inference_services:
           value: "s3://wmf-ml-models/revertrisk/language-agnostic/20231117132654/"
         - name: WIKI_URL
           value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_revertrisk_language_agnostic_prediction_change.v1"
   revertrisk-multilingual:
     annotations:
       autoscaling.knative.dev/target: "3"
