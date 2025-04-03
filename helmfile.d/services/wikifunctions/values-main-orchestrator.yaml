@@ -47,6 +47,19 @@ discovery:
 networkpolicy:
   egress:
     extraRules:
+    # This is required for the pods to be able to reach out to ingress gateway.
+    # The rule matching the nodePort 30443 and the WikiKube Ingress IPs isn't
+    # sufficient
+    - ports:
+      - protocol: TCP
+        port: 8443
+      to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: istio-system
+        podSelector:
+          matchLabels:
+            istio: ingressgateway
     # This is a copy from the charts values.yaml as these don't get deep merged here
     - ports:
       - protocol: TCP
