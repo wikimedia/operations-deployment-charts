@@ -4,18 +4,14 @@ mwcron:
   jobs:
     - name: "test"
       schedule: "@daily"
-      command:
-        - "/usr/local/bin/foreachwiki"
-        - "extensions/foo/bar/cron.php"
+      command: "/usr/local/bin/foreachwiki extensions/foo/bar/cron.php"
       labels:
         team: team-name
         script: extensions/foo/bar/cron.php
       description: "A description of the job"
     - name: "test2"
       schedule: "*/10 * * * *"
-      command:
-        - "/usr/local/bin/foreachwiki"
-        - "extensions/foo/bar/mwcron2.php"
+      command: "/usr/local/bin/expanddblist all | xargs -I{} -P4 bash -c '/usr/local/bin/mwscript Version.php --wiki={} 2>&1 | ts {}'"
       labels:
         team: team-name
         script: extensions/foo/bar/mwcron2.php

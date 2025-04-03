@@ -110,8 +110,8 @@
   # MediaWiki cronjobs may require a tty to run, as a first approximation make it always true.
   # TODO: Eventually, determine which cronjobs need a tty and make it configurable.
   tty: true
-  command:
-{{ .JobConfig.command | toYaml | indent 4 }}
+  command: ["/bin/bash"]
+  args: ["-c", {{ .JobConfig.command | quote }}]
   {{- end }}
   {{- if .Values.php.slowlog_timeout }}
   securityContext:
