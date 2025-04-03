@@ -107,6 +107,39 @@ templates:
           {{- end }}
           {{- end }}
           {{- end }}
+          # Istio leaves envoy at the default configuration regarding HTTP
+          # Server header behavior This means envoy forcefully sets it to the
+          # server_name stanza, which is "istio-envoy" making it impossible to
+          # differentiate between the backends, which is a feature we want for
+          # debugging. Add an EnvoyFilter configuration, applying it only to
+          # the ingressgateway, that sets APPEND_IF_ABSENT, which will only set
+          # the Server header if the fronted application doesn't set it.
+          # We want to set this globally for all fronted applications, so the
+          # filterChain on purpose doesn't match on any of the other predicates
+          # it supports
+          - apiVersion: networking.istio.io/v1alpha3
+            kind: EnvoyFilter
+            metadata:
+              name: preserve-server-header
+              namespace: istio-system
+            spec:
+              workloadSelector:
+                labels:
+                  istio: ingressgateway
+            configPatches:
+            - applyTo: NETWORK_FILTER # http connection manager is a filter in Envoy
+              match:
+                context: GATEWAY
+                listener:
+                  filterChain:
+                    filter:
+                      name: "envoy.filters.network.http_connection_manager"
+              patch:
+                operation: MERGE
+                value:
+                  typed_config:
+                    "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+                    server_header_transformation: APPEND_IF_ABSENT
 
 releases:
   - <<: *istio-gateways-networkpolicies
