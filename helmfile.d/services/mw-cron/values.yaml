@@ -6,6 +6,10 @@ mw:
     enabled: false
   logging:
     rsyslog: true
+  helpers:
+    feature_flags:
+      periodic:
+        networkpolicy: false
 
 # These are enabled to check the pod.kubernetes.io/sidecars annotation
 cache:
