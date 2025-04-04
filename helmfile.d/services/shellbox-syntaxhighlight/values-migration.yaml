@@ -1,8 +1,11 @@
-shellbox:
-  flavour: syntaxhighlight81
+# This release exists to enable incremental capacity-based traffic migration.
 
-# TODO: T377038 - Migrate production traffic by incrementally swapping replica
-# counts with resources.replicas in values.yaml.
+# Override the image flavour used by this release.
+#shellbox:
+#  flavour: syntaxhighlight81
+
+# Incrementally exchange capacity between this and the "main" release in order
+# to actuate the migration.
 resources:
   replicas: 0
 
