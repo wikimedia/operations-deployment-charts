@@ -12,6 +12,8 @@ resources:
 # it may be useful to increase maxUnavailable (default: 6%) in order to improve
 # deployment speed if the next release is using a different mediawiki image
 # than main (as the image is then unlikely to be cached).
+# As an alternative or in addition, it may be useful to temporarily increase
+# the deployment timeout value in helmfile.yaml.
 # See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
 #strategy:
 #  rollingUpdate:
