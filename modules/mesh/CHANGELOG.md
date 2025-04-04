@@ -1,3 +1,8 @@
+## configuration 1.12.0
+
+- Add parameter sni_rewrites_host_header to allow toggling off the behavior of
+  envoy setting whatever is receives in the SNI to the HTTP host header
+
 ## configuration 1.11.0
 
 - Allow setting `tcp_keepalive` and route-level `idle_timeout` in for

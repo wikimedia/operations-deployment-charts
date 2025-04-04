@@ -347,6 +347,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
         percentage: 10
         keepalive: "6s"
         sets_sni: true
+        sni_rewrites_host_header: true
         ips:
           - 1.2.3.3
 
@@ -489,7 +490,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.split.sets_sni (not .Listener.http_host) }}
+                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
+                {{- if and .Listener.split.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.split.sni_rewrites_host_header) .Listener.split.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}-split
@@ -507,7 +509,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) }}
+                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
+                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.upstream.sni_rewrites_host_header) .Listener.upstream.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}
