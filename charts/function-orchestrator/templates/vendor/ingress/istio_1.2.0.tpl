@@ -71,9 +71,16 @@ Ingress default setup
 {{ include "ingress.istio.gateway" . }}
 ---
 {{ include "ingress.istio.virtualservice" . }}
+
+{{- $dsrhosts := list (include "mesh.name.fqdn" . ) }}
+{{- if .Values.ingress.destinationrulehosts }}
+{{- $dsrhosts = .Values.ingress.destinationrulehosts }}
+{{- end }} {{/* if */}}
+{{- range $dsrhosts }}
 ---
-{{ include "ingress.istio.destinationrule" . }}
-{{- end -}}
+{{ include "ingress.istio.destinationrule" (set $ "dsrhost" . ) }}
+{{- end }} {{/* range */}}
+{{- end }} {{/* define */}}
 
 {{/*
 Create a Istio Gateway object
@@ -168,9 +175,10 @@ subjectAltNames configuration, the ingressgateway will skip validation completel
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-{{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
+  name: {{ .dsrhost }}
+{{- include "base.meta.labels" . | indent 2 }}
 spec:
-  host: {{ template "mesh.name.fqdn" . }}
+  host: {{ .dsrhost }}
   trafficPolicy:
     tls:
       mode: SIMPLE
@@ -185,6 +193,6 @@ spec:
       */}}
       subjectAltNames:
       # Default tls-service certificates
-      - {{ template "mesh.name.fqdn" . }}
+      - {{ .dsrhost }}
 {{- end -}}{{/* Values.ingress.enabled */}}
 {{- end -}}{{/* define */}}

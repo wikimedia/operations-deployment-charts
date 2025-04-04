@@ -14,6 +14,17 @@
   - protocol: TCP
     port: {{ .port }}
     {{- end }} {{/* end with upstream */}}
+    {{- with $listener.split }}
+# Network egress to {{ $name }}-split
+- to:
+  {{- range .ips }}
+  - ipBlock:
+      cidr: {{ . }}
+  {{- end }}
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+    {{- end }} {{/* end with split */}}
   {{- end }} {{/* end range listeners */}}
 {{- end }}
 {{- if (.Values.mesh.tracing | default dict).enabled }}
