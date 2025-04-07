@@ -7,7 +7,7 @@ main_app:
 
 ingress:
   enabled: true
-  existingGatewayName: "wikidata-query-gui/miscweb-wikidata-query-gui"
+  existingGatewayName: "miscweb-wikidata-query-gui"
   routeHosts:
   - query.wikidata.org
   - query-main.wikidata.org
@@ -19,3 +19,5 @@ ingress:
     route:
     - destination:
         host: miscweb-wikidata-query-builder-tls-service.wikidata-query-gui.svc.cluster.local
+        port:
+          number: 8081
