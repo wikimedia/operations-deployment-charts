@@ -6,6 +6,7 @@ main_app:
   limits:
     cpu: 500m
     memory: 500Mi
+  data_gateway_uri: http://127.0.0.1:6510/public/commons
 
 resources:
   replicas: 1
@@ -16,5 +17,3 @@ ingress:
 discovery:
   listeners:
     - data-gateway-staging
-
-data_gateway_uri: http://127.0.0.1:6510/public/commons
