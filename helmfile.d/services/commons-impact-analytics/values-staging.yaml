@@ -12,3 +12,9 @@ resources:
 
 ingress:
   staging: true
+
+discovery:
+  listeners:
+    - data-gateway-staging
+
+data_gateway_uri: http://127.0.0.1:6510/public/commons
