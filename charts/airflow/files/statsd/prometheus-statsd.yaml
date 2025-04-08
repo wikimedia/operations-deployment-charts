@@ -1,0 +1,251 @@
+mappings:
+- match: airflow.scheduler.scheduler_loop_duration
+  name: airflow_scheduler_loop_duration
+  summary_options:
+    quantiles:
+      - quantile: 0.5
+        error: 0.1
+    max_age: 30s
+    age_buckets: 30
+    buf_cap: 10
+
+# Example:
+#   airflow.ti_failures count
+#   => airflow_ti{state="failures"} count
+- match: airflow\.ti_(failures|successes)
+  match_type: regex
+  name: airflow_ti
+  labels:
+    state: "$1"
+
+# Example:
+#   airflow.ti.start.example_python_operator.print_array count
+#   dropped
+- match: airflow\.ti\.start.*
+  match_type: regex
+  name: airflow_ti_start
+
+# Renamed to remove ambiguity with the next mapping
+# The ambiguity only happens in prod, and depends on the order of the metric arrivals to the exporter.
+- match: airflow\.ti\.finish$
+  match_type: regex
+  name: airflow_ti_finish_aggregated
+
+# Example:
+#   airflow.ti.finish.example_dag.task_1.failed count
+#   => airflow_ti_finish{dag_id="example_dag", task_id="task1", state="failed"} count
+- match: airflow\.ti\.finish.(\w+)\.(\w+)\.(queued|running|scheduled|success|failed)
+  match_type: regex
+  name: airflow_ti_finish
+  ttl: 1m
+  labels:
+    dag_id: "$1"
+    task_id: "$2"
+    state: "$3"
+
+# Example:
+#   airflow.ti.finish.example_python_operator.print_array.None count
+#   dropped
+- match: airflow\.ti\.finish\.(\w+)\.(\w+)\.(None|deferred|removed|restarting|shutdown|skipped|up_for_reschedule|up_for_retry|upstream_failed)
+  match_type: regex
+  name: airflow_ti_finish_useless
+
+# Example:
+#   airflow.dag.pageview_hourly.move_data_to_archive.duration
+#   => airflow_dag_duration{dag_id="pageview_hourly", task_id="move_data_to_archive"} count
+- match: airflow\.dag\.(\w+)\.(\w+)\.duration
+  match_type: regex
+  name: "airflow_task_duration"
+  ttl: 1m
+  labels:
+    dag_id: "$1"
+    task_id: "$2"
+
+# Example:
+#   airflow.dag.pageview_hourly.move_data_to_archive.duration
+#   dropped
+- match: airflow\.dag\.(\w+)\.(\w+)\.(queued_duration|scheduled_duration)
+  match_type: regex
+  name: airflow_dag_other_durations
+
+# Example:
+#   airflow.dagrun.duration.pageview_hourly count
+#   dropped
+- match: airflow\.dagrun\.duration\.(success|failed)$
+  match_type: regex
+  name: airflow_dagrun_duration_success
+
+# Example:
+#   airflow.dagrun.duration.success.pageview_hourly count
+#   => airflow_dagrun_duration{dag_id="pageview_hourly", state="success"} count
+- match: airflow\.dagrun\.duration\.(success|failed)\.(\w+)
+  match_type: regex
+  name: airflow_dagrun_duration
+  ttl: 1m
+  labels:
+    state: "$1"
+    dag_id: "$2"
+
+# Taken from https://github.com/databand-ai/airflow-dashboards/blob/main/statsd/statsd.conf excluding
+# matches that were already defined.
+- match: "airflow.operator_failures"
+  match_metric_type: counter
+  name: "airflow_operator_failures"
+- match: "airflow.operator_successes"
+  match_metric_type: counter
+  name: "airflow_operator_successes"
+- match: "airflow.scheduler_heartbeat"
+  match_metric_type: counter
+  name: "airflow_scheduler_heartbeat"
+- match: "airflow.dag_processing.processes"
+  match_metric_type: counter
+  name: "airflow_dag_processing_processes"
+- match: "airflow.scheduler.tasks.killed_externally"
+  match_metric_type: counter
+  name: "airflow_scheduler_tasks_killed_externally"
+- match: "airflow.scheduler.tasks.running"
+  match_metric_type: counter
+  name: "airflow_scheduler_tasks_running"
+- match: "airflow.scheduler.tasks.starving"
+  match_metric_type: counter
+  name: "airflow_scheduler_tasks_starving"
+- match: "airflow.scheduler.orphaned_tasks.cleared"
+  match_metric_type: counter
+  name: "airflow_scheduler_orphaned_tasks_cleared"
+- match: "airflow.scheduler.orphaned_tasks.adopted"
+  match_metric_type: counter
+  name: "airflow_scheduler_orphaned_tasks_adopted"
+- match: "airflow.scheduler.critical_section_busy"
+  match_metric_type: counter
+  name: "airflow_scheduler_critical_section_busy"
+- match: "airflow.sla_email_notification_failure"
+  match_metric_type: counter
+  name: "airflow_sla_email_notification_failure"
+- match: "airflow.dagbag_size"
+  match_metric_type: gauge
+  name: "airflow_dagbag_size"
+- match: "airflow.dag_processing.import_errors"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_import_errors"
+- match: "airflow.dag_processing.total_parse_time"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_total_parse_time"
+- match: "airflow.dag_processing.last_runtime.*"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_last_runtime"
+  labels:
+    dag_file: "$1"
+- match: "airflow.dag_processing.last_run.seconds_ago.*"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_last_run_seconds"
+  labels:
+    dag_file: "$1"
+- match: "airflow.dag_processing.processor_timeouts"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_processor_timeouts"
+- match: "airflow.executor.open_slots"
+  match_metric_type: gauge
+  name: "airflow_executor_open_slots"
+- match: "airflow.executor.queued_tasks"
+  match_metric_type: gauge
+  name: "airflow_executor_queued_tasks"
+- match: "airflow.executor.running_tasks"
+  match_metric_type: gauge
+  name: "airflow_executor_running_tasks"
+- match: "airflow.pool.open_slots.*"
+  match_metric_type: gauge
+  name: "airflow_pool_open_slots"
+  labels:
+    pool_name: "$1"
+- match: "airflow.pool.queued_slots.*"
+  match_metric_type: gauge
+  name: "airflow_pool_queued_slots"
+  labels:
+    pool_name: "$1"
+- match: "airflow.pool.running_slots.*"
+  match_metric_type: gauge
+  name: "airflow_pool_running_slots"
+  labels:
+    pool_name: "$1"
+- match: "airflow.pool.deferred_slots.*"
+  match_metric_type: gauge
+  name: "airflow_pool_deferred_slots"
+  labels:
+    pool_name: "$1"
+- match: "airflow.pool.scheduled_slots.*"
+  match_metric_type: gauge
+  name: "airflow_pool_scheduled_slots"
+  labels:
+    pool_name: "$1"
+- match: "airflow.pool.starving_tasks.*"
+  match_metric_type: gauge
+  name: "airflow_pool_starving_tasks"
+  labels:
+    pool_name: "$1"
+- match: "airflow.smart_sensor_operator.poked_tasks"
+  match_metric_type: gauge
+  name: "airflow_smart_sensor_operator_poked_tasks"
+- match: "airflow.smart_sensor_operator.poked_success"
+  match_metric_type: gauge
+  name: "airflow_smart_sensor_operator_poked_success"
+- match: "airflow.smart_sensor_operator.poked_exception"
+  match_metric_type: gauge
+  name: "airflow_smart_sensor_operator_poked_exception"
+- match: "airflow.smart_sensor_operator.exception_failures"
+  match_metric_type: gauge
+  name: "airflow_smart_sensor_operator_exception_failures"
+- match: "airflow.smart_sensor_operator.infra_failures"
+  match_metric_type: gauge
+  name: "airflow_smart_sensor_operator_infra_failures"
+- match: "airflow.dagrun.dependency-check.*"
+  match_metric_type: gauge
+  name: "airflow_dagrun_dependency_check"
+  labels:
+    dag_id: "$1"
+- match: "airflow.dag.*.*.duration"
+  match_metric_type: gauge
+  name: "airflow_dag_task_duration"
+  labels:
+    dag_id: "$1"
+    task_id: "$2"
+- match: "airflow.dag_processing.last_duration.*"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_duration"
+  labels:
+    dag_file: "$1"
+- match: "airflow.dag_processing.last_num_of_db_queries.*"
+  match_metric_type: gauge
+  name: "airflow_dag_processing_last_num_of_db_queries"
+  labels:
+    dag_file: "$1"
+- match: "airflow.dagrun.schedule_delay.*"
+  match_metric_type: gauge
+  name: "airflow_dagrun_schedule_delay"
+  labels:
+    dag_id: "$1"
+- match: "airflow.scheduler.critical_section_duration"
+  match_metric_type: gauge
+  name: "airflow_scheduler_critical_section_duration"
+- match: "airflow.dagrun.*.first_task_scheduling_delay"
+  match_metric_type: gauge
+  name: "airflow_dagrun_first_task_scheduling_delay"
+  labels:
+    dag_id: "$1"
+- match: "airflow\\.task_instance_created_(.+)$"
+  match_metric_type: counter
+  match_type: regex
+  name: "airflow_task_instance_created"
+  labels:
+    operator: "$1"
+- match: "airflow\\.operator_successes_(.+)$"
+  match_metric_type: counter
+  match_type: regex
+  name: "airflow_operator_successes"
+  labels:
+    operator: "$1"
+- match: "airflow\\.operator_failures_(.+)$"
+  match_metric_type: counter
+  match_type: regex
+  name: "airflow_operator_failures"
+  labels:
+    operator: "$1"
