@@ -7,7 +7,6 @@ config:
         airflow-analytics-ops: [Op]
     config:
       core:
-        executor: KubernetesExecutor
         max_active_tasks_per_dag: 64
         parallelism: 128
       kerberos:

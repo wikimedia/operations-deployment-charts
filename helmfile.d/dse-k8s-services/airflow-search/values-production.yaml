@@ -6,8 +6,6 @@ config:
       role_mappings:
         airflow-search-ops: [Op]
     config:
-      core:
-        executor: KubernetesExecutor
       kerberos:
         principal: analytics-search/airflow-search.discovery.wmnet
   oidc:

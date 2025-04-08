@@ -6,8 +6,6 @@ config:
       role_mappings:
         airflow-wmde-ops: [Op]
     config:
-      core:
-        executor: KubernetesExecutor
       kerberos:
         principal: analytics-wmde/airflow-wmde.discovery.wmnet
   oidc:
