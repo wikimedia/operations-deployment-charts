@@ -71,7 +71,7 @@ inference_services:
         - name: EVENTGATE_URL
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_STREAM
-          value: "mediawiki.page_revertrisk_language_agnostic_prediction_change.v1"
+          value: "mediawiki.page_revert_risk_prediction_change.v1"
   revertrisk-multilingual:
     annotations:
       autoscaling.knative.dev/target: "3"
