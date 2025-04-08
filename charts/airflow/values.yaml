@@ -124,7 +124,7 @@ config:
         executor: LocalExecutor
         load_examples: false
         max_active_runs_per_dag: 3
-        max_active_tasks_per_dag: 6
+        max_active_tasks_per_dag: 16
         default_task_retries: 5
         parallelism: 64
         test_connection: enabled
@@ -143,6 +143,9 @@ config:
         pod_template_file: /opt/airflow/pod_templates/kubernetes_executor_default_pod_template.yaml
         worker_container_repository: "{{ $.Values.docker.registry }}/{{ $.Values.app.executor_pod_image }}"
         worker_container_tag: "{{ $.Values.app.executor_pod_image_version }}"
+        # Number of pods that the k8s executor can create in a single scheduler loop
+        # See https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/configurations-ref.html#worker-pods-creation-batch-size
+        worker_pods_creation_batch_size: 16
       logging:
         colored_console_log: false
         remote_logging: true
@@ -153,13 +156,17 @@ config:
         logging_level: INFO
         fab_logging_level: INFO
       metrics:
-        metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes
+        metrics_allow_list: operator_failures_,operator_successes_,sla_missed,executor.queued_tasks,dag.,dagrun.duration.,scheduler.scheduler_loop_duration,dag_processing.import_errors,dag_processing.total_parse_time,ti.failures,ti.successes,ti.finish,ti_failures,ti_successes,dag_processing.total_parse_time
         statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
         statsd_host: localhost
         statsd_on: True
         statsd_port: "{{ $.Values.monitoring.statsd.port }}"
         statsd_prefix: airflow
       scheduler:
+        # Recommended in https://www.astronomer.io/docs/learn/airflow-scaling-workers/#core-settings -> we set the number of parsing processes to twice the amount of vcpus
+        parsing_processes: "{{ mul (atoi (toString $.Values.scheduler.limits.cpu)) 2 }}"
+        scheduler_health_check_threshold: 60
+        max_tis_per_query: 16
         standalone_dag_processor: false
         enable_health_check: true
         scheduler_health_check_server_host: '0.0.0.0'
@@ -227,10 +234,10 @@ scheduler:
       path: /health
       port: *scheduler_healthcheck_port
   requests:
-    cpu: 1000m
+    cpu: "1"
     memory: 2Gi
   limits:
-    cpu: 1000m
+    cpu: "1"
     memory: 2Gi
   volumeMounts: *airflow_volume_mounts
 
@@ -679,7 +686,6 @@ monitoring:
         match_type: regex
         name: airflow_ti_start
         action: drop
-
 
       # Renamed to remove ambiguity with the next mapping
       # The ambiguity only happens in prod, and depends on the order of the metric arrivals to the exporter.
