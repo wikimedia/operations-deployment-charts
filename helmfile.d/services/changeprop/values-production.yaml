@@ -62,6 +62,22 @@ main_app:
                 domain: canary
           namespace: article-models
           kafka_topic: 'mediawiki.page_change.v1'
+        # See T326179 for more info
+        revertrisk-language-agnostic:
+          concurrency: 5
+          match_config_need_quotes: ['wiki_id', 'page_change_kind', 'domain']
+          match_config:
+            match:
+              wiki_id: /^(?!.*(?:commons|meta|sources|species|wikidata)).*wiki$/
+              page_change_kind: /^(edit|create|move)$/
+              page:
+                is_redirect: false
+                namespace_id: 0
+            match_not:
+              meta:
+                domain: canary
+          namespace: revertrisk
+          kafka_topic: 'mediawiki.page_change.v1'
 
 resources:
   replicas: 12
