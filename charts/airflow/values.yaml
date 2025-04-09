@@ -166,6 +166,9 @@ config:
         parsing_processes: "{{ mul (atoi (toString $.Values.scheduler.limits.cpu)) 2 }}"
         scheduler_health_check_threshold: 60
         max_tis_per_query: 16
+        # pool metrics can be expensive to compute. Instead of re-generating them every 5s (default), we align their
+        # computation with the default prometheus scraping interval, to avoid needless rollups in statsd.
+        pool_metrics_interval: 60
         standalone_dag_processor: false
         enable_health_check: true
         scheduler_health_check_server_host: '0.0.0.0'
