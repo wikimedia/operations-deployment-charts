@@ -266,8 +266,10 @@ main_app:
       tls: true
       port: 4030
     citoid:
+      ingress: true
+      port: 30443 # ingress
       tls: true
-      port: 4003
+      internal_host: citoid-ingress.discovery.wmnet
     wikifeeds:
       tls: true
       port: 4101
