@@ -1,0 +1,56 @@
+chartName: zarcillo
+
+monitoring:
+  enabled: true
+
+config:
+  public:
+    STAGE: "prod"
+
+resources:
+  replicas: 1
+
+app:
+  image: wikimedia/zarcillo
+  version: "2025-03-25-091801-production"
+  # override entrypoint defined in the docker image with k8s command and args
+  command: [ "./entrypoint.sh" ]
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 1
+    memory: 1Gi
+  readiness_probe:
+    timeoutSeconds: 5
+    httpGet:
+      path: /healtz
+      port: 8080
+  liveness_probe:
+    initialDelaySeconds: 2
+    periodSeconds: 5
+    failureThreshold: 3
+    httpGet:
+      path: /healtz
+      port: 8080
+
+service:
+  deployment: production
+
+mesh:
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: true
+    # dst_nets:
+    # - cidr: 1.2.3.4/32
+    #   ports:
+    #   - protocol: tcp
+    #     port: 443
+
+ingress:
+  enabled: true
+  # selectors:
+  #   service.istio.io/canonical-name: istio-ingressgateway-services
+  #   istio: ingressgateway
