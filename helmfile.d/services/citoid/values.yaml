@@ -51,3 +51,6 @@ networkpolicy:
 ingress:
   enabled: true
   keepNodePort: true
+  gatewayHosts:
+    extraFQDNs:
+      - citoid-ingress.discovery.wmnet
