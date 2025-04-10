@@ -100,6 +100,7 @@ main_app:
           out: '\1/v1/pdf/\2/\3/\4'
     - name: citoid
       timeout: 120s
+      ingress: true
       urls:
           # We ignore the sitename (first matching group).
           # It is assumed the URL will be properly encoded here - ie /
