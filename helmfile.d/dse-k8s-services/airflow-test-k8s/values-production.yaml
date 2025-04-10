@@ -13,6 +13,14 @@ config:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
 
+scheduler:
+  requests:
+    cpu: 8
+    memory: 4Gi
+  limits:
+    cpu: 8
+    memory: 4Gi
+
 external_services:
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
