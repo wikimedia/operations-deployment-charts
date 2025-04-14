@@ -62,6 +62,13 @@ main_app:
     # required for service mesh
     - "localhost:6033"
 
+  # FOOTGUN ALERT: routes are strictly ordered. This means that if you
+  # have multiple rules that potentially overlap, the LESS general
+  # case should be first. For example, it's very common for
+  # post-restbase rules to support PATH/PAGE/REVISION and
+  # PATH/PAGE. If you define a (.+) regex for PATH/PAGE *before*
+  # PATH/PAGE/REVISION, this rule will get matched first and
+  # PAGE/REVISION will be passed as a single capture group
   rest_gateway_routes:
     - name: mobileapps
       timeout: 120s
@@ -85,6 +92,36 @@ main_app:
         - name: ma_media_list_no_revision
           in: '(.+)/v1/page/media-list/(.+)'
           out: '\1/v1/page/media-list/\2'
+        - name: ma_mobile_html_offline_resources
+          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
+          out: '\1/v1/page/mobile-html-offline-resources/\2/\3'
+        - name: ma_mobile_html_offline_resources
+          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
+          out: '\1/v1/page/mobile-html-offline-resources/\2'
+        - name: ma_data_css_mobile
+          in: '(.+)/v1/data/css/mobile/(.+)'
+          out: '\1/v1/data/css/mobile/\2'
+        - name: ma_data_javascript_mobile
+          in: '(.+)/v1/data/javascript/mobile/(.+)'
+          out: '\1/v1/data/javascript/mobile/\2'
+        - name: ma_data_i18n
+          in: '(.+)/v1/data/i18n/(.+)/(.+)'
+          out: '\1/v1/data/i18n/\2/\3'
+        - name: ma_data_i18n
+          in: '(.+)/v1/data/i18n/(.+)'
+          out: '\1/v1/data/i18n/\2'
+        - name: ma_page_talk
+          in: '(.+)/v1/page/talk/(.+)/(.+)'
+          out: '\1/v1/page/talk/\2/\3'
+        - name: ma_page_talk
+          in: '(.+)/v1/page/talk/(.+)'
+          out: '\1/v1/page/talk/\2'
+        - name: ma_page_definition
+          in: '(.+)/v1/page/definition/(.+)'
+          out: '\1/v1/page/definition/\2'
+        - name: ma_transform_wikitext_mobile_html
+          in: '(.+)/v1/transform/wikitext/to/mobile-html/(.+)'
+          out: '\1/v1/transform/wikitext/to/mobile-html/\2'
     - name: proton
       timeout: 150s
       urls:
