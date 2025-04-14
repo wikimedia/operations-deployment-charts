@@ -67,24 +67,24 @@ main_app:
       timeout: 120s
       urls:
         #TODO tighten capture group criteria
-        - name: ma_mobile_no_revision
-          in: '(.+)/v1/page/mobile-html/(.+)'
-          out: '\1/v1/page/mobile-html/\2'
         - name: ma_mobile_revision
           in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
           out: '\1/v1/page/mobile-html/\2/\3'
-        - name: ma_summary_no_revision
-          in: '(.+)/v1/page/summary/(.+)'
-          out: '\1/v1/page/summary/\2'
+        - name: ma_mobile_no_revision
+          in: '(.+)/v1/page/mobile-html/(.+)'
+          out: '\1/v1/page/mobile-html/\2'
         - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
-        - name: ma_media_list_no_revision
-          in: '(.+)/v1/page/media-list/(.+)'
-          out: '\1/v1/page/media-list/\2'
+        - name: ma_summary_no_revision
+          in: '(.+)/v1/page/summary/(.+)'
+          out: '\1/v1/page/summary/\2'
         - name: ma_media_list_revision
           in: '(.+)/v1/page/media-list/(.+)/(.+)'
           out: '\1/v1/page/media-list/\2/\3'
+        - name: ma_media_list_no_revision
+          in: '(.+)/v1/page/media-list/(.+)'
+          out: '\1/v1/page/media-list/\2'
     - name: proton
       timeout: 150s
       urls:
