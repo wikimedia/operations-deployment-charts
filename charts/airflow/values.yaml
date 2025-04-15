@@ -464,7 +464,7 @@ worker:
       - name: SPARK_CONF_DIR
         value: *spark_conf_dir
 
-kubernetes_executor_task:
+kubernetes_pod_operator:
   resources:
     requests:
       cpu: 200m

@@ -266,12 +266,12 @@ resources:
   {{- toYaml .Values.worker.resources.limits | nindent 4 }}
 {{- end }}
 
-{{- define "airflow.kubernetes-executor-pod.resources" }}
+{{- define "airflow.kubernetes-pod-operator.resources" }}
 resources:
   requests:
-  {{- toYaml .Values.kubernetes_executor_task.resources.requests | nindent 4 }}
+  {{- toYaml .Values.kubernetes_pod_operator.resources.requests | nindent 4 }}
   limits:
-  {{- toYaml .Values.kubernetes_executor_task.resources.limits | nindent 4 }}
+  {{- toYaml .Values.kubernetes_pod_operator.resources.limits | nindent 4 }}
 {{- end }}
 
 {{- define "app.airflow.env.hadoop" }}
@@ -439,7 +439,11 @@ spec:
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos" "keytab")) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
-    {{- include "airflow.kubernetes-executor-pod.resources" .Root | nindent 4 }}
+    {{- if eq .profile "kubeapi" }}
+    {{- include "airflow.kubernetes-pod-operator.resources" .Root | nindent 4 }}
+    {{- else }}
+    {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
+    {{- end }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 {{- end }}
 
