@@ -16,11 +16,11 @@ helmDefaults:
 environments:
   eqiad:
     values:
-      - releases: [main, prometheus, group0, group1, group2]
+      - releases: [prometheus, group0, group1, group2]
       - kubernetesVersion: '1.23'
   codfw:
     values:
-      - releases: [main, prometheus, group0, group1, group2]
+      - releases: [prometheus, group0, group1, group2]
       - kubernetesVersion: '1.23'
 
 ---
@@ -91,8 +91,6 @@ hooks:
 
 
 releases:
-  - name: main
-    <<: *default
   - name: group0
     <<: *default
   - name: group1
