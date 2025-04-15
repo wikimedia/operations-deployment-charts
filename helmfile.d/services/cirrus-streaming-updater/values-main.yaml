@@ -16,7 +16,7 @@ flink:
 
 app:
   job:
-    upgradeMode: last-state
+    upgradeMode: savepoint
 
   flinkConfiguration:
     # Set to a constant port which will have trigger adding appropriate networkpolicy
