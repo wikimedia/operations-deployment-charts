@@ -4,9 +4,12 @@ releases:
     namespace: kube-system
     values:
       - templates:
-      {{- range $namespace, $values := .Values.namespaces }}
+      {{/* Merge (and overwrite) services (defined in hiera) with namespaces (defined in admin_ng values) */}}
+      {{- range $service_name, $values := mergeOverwrite .Values.services .Values.namespaces }}
+        {{/* If the namespace name is undefined, use the service name */}}
+        {{ $namespace_name := $values | get "namespace" $service_name }}
         {{/* Don't mess with Kubernetes builtin namespaces while still allow to deploy to it */}}
-        {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace) true) (eq $namespace "default") }}
+        {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace_name) true) (eq $namespace_name "default") }}
         {{/* All builtin namespaces are system namespaces */}}
         {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
         {{/* Fetch the PSP cluster role to be used for this namespace, default to "allow-restricted-psp" */}}
@@ -16,7 +19,7 @@ releases:
             apiVersion: v1
             kind: Namespace
             metadata:
-              name: {{ $namespace }}
+              name: {{ $namespace_name }}
               {{- $labels := $values | get "labels" dict }}
               {{- if and (eq $pspClusterRole "allow-restricted-psp") $.Values.PodSecurityStandard.enabled -}}
                 {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
@@ -39,7 +42,7 @@ releases:
             kind: RoleBinding
             metadata:
               name: view
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -47,14 +50,14 @@ releases:
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "readOnlyUser" | default $namespace }}
+                name: {{ $values | getOrNil "readOnlyUser" | default $namespace_name }}
           - |
             # Bind the deployer user to the deploy Role for this namespace
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
               name: deploy
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -62,7 +65,7 @@ releases:
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
+                name: {{ $values | getOrNil "deployUser" | default (list $namespace_name "deploy" | join "-" ) }}
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
@@ -74,7 +77,7 @@ releases:
             {{- else }}
               name: allow-psp
             {{- end }}
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -87,10 +90,10 @@ releases:
             subjects:
               - apiGroup: rbac.authorization.k8s.io
                 kind: Group
-                name: system:serviceaccounts:{{ $namespace }}
+                name: system:serviceaccounts:{{ $namespace_name }}
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
-                name: {{ $values | getOrNil "deployUser" | default (list $namespace "deploy" | join "-" ) }}
+                name: {{ $values | getOrNil "deployUser" | default (list $namespace_name "deploy" | join "-" ) }}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Values.limitranges }}
           {{- with $limitranges}}
           {{- if or .container .pod }}
@@ -99,7 +102,7 @@ releases:
             kind: LimitRange
             metadata:
               name: general-limits
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             spec:
               limits:
                 {{- if .container }}
@@ -143,7 +146,7 @@ releases:
             kind: ResourceQuota
             metadata:
               name: quota-compute-resources
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             spec:
               hard:
                 {{- range $resource, $c := $count }}
@@ -175,7 +178,7 @@ releases:
             {{- else }}
               name: allow-psp
             {{- end }}
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             roleRef:
               apiGroup: rbac.authorization.k8s.io
               kind: ClusterRole
@@ -190,7 +193,7 @@ releases:
               # account needs access to the PSP.
               - apiGroup: rbac.authorization.k8s.io
                 kind: Group
-                name: system:serviceaccounts:{{ $namespace }}
+                name: system:serviceaccounts:{{ $namespace_name }}
         {{- end }}{{- /* end if eq $isSystemNamespace false */}}
         {{- if $values | get "allowCriticalPods" false }}
           - |
@@ -198,7 +201,7 @@ releases:
             kind: ResourceQuota
             metadata:
               name: priorityclass
-              namespace: {{ $namespace }}
+              namespace: {{ $namespace_name }}
             spec:
               scopeSelector:
                 matchExpressions:

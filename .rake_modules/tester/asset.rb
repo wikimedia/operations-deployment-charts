@@ -440,10 +440,7 @@ module Tester
 
       # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
       self.class::ENV_EXPLORE.each do |env|
-        # We hard-code a k8s version here for simplicity. This sets helmBinary to helm3.11.
-        # Note that this is only needed because we are not including /etc/helmfile-defaults/* here,
-        # so it can go away if we fix that.
-        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, real_path)
+        res = _helmfile_build(env, real_path)
         next unless res.ok?
 
         releases = YAML.safe_load(res.out)['releases']
@@ -459,9 +456,15 @@ module Tester
       real_path = chdir.nil? ? path : File.join(chdir, path)
       return [] unless File.exist? real_path
 
-      # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build"
+      # Our helmfiles are templated. So we need to first produce a valid one using "helmfile build".
+      # We can use any env to do this, because we're only extracting the environment *names* from
+      # the result. The names are the same no matter what we pass for -e, so we use the first one
+      # that doesn't crash. Nothing else in the templated helmfile is necessarily valid
+      # ({{ .Environment.Name }} will be `env` for every environment in the helmfile!) but that's
+      # okay, because we'll use "helmfile template" later to re-template it again for each
+      # environment -- including the ones that *aren't* in ENV_EXPLORE.
       self.class::ENV_EXPLORE.each do |env|
-        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, real_path)
+        res = _helmfile_build(env, real_path)
         return YAML.safe_load(res.out)['environments'].keys.map { |e| ["#{label}/#{e}", e] }.to_h if res.ok?
       end
       # If we get here, it means we failed to compile the helmfile
@@ -469,7 +472,12 @@ module Tester
       bad(res.err, "helmfile build #{path}")
     end
 
-
+    def _helmfile_build(env, chdir)
+      # We hard-code a k8s version here for simplicity. This sets helmBinary to helm3.11.
+      # Note that this is only needed because we are not including /etc/helmfile-defaults/* here,
+      # so it can go away if we fix that.
+      _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, chdir)
+    end
 
     # Run an helmfile command.
     # We need to create a dedicated execution env for every source
@@ -552,7 +560,7 @@ module Tester
       return results if @fixtures.nil?
 
       @fixtures.each_value do |env|
-        res = _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, @path)
+        res = _helmfile_build(env, @path)
         next unless res.ok?
 
         manifest = YAML.safe_load(res.out)
@@ -563,7 +571,8 @@ module Tester
     end
 
     # Patch helmfiles so that .fixtures.yaml is used instead of
-    # * /etc/helmfile-defaults/general-#{env}.yaml for services helmfiles
+    # * /etc/helmfile-defaults/general-#{env}.yaml
+    # * /etc/helmfile-defaults/services-#{env}.yaml
     # * /etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml for admin_ng helmfiles
     # * For services, also add the service-proxy fixture
     # Also replace references to charts in wmf-stable repo with the local path,
@@ -591,11 +600,11 @@ module Tester
           fixtures = {}
         end
 
-        # For services, we patch helmfile unconditionally, then if the file doesn't exist, we use
-        # the general environment fixtures. If the file does exist we merge it into the general
-        # environment fixtures.
-        # For admin_ng, we only patch helmfile if the fixtures file exists.
-        content.gsub!('/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml', generated_fixtures_file)
+        # For general-* and services-*, we patch helmfile unconditionally, then if the file doesn't
+        # exist, we use the general environment fixtures. If the file does exist we merge it into
+        # the general environment fixtures.
+        # For private/admin, we only patch helmfile if the fixtures file exists.
+        content.gsub!(%r{/etc/helmfile-defaults/(general|services)-{{ .Environment.Name }}.yaml}, generated_fixtures_file)
         if File.exist? fixtures_file
           # Patch admin_ng if the fixture_file exists.
           # admin_ng will never include general environment fixtures so we replace with fixtures_file here
@@ -719,6 +728,22 @@ module Tester
     def filter_fixtures(fixtures)
       fixtures.filter! { |_, v| @to_run.include?(v) } unless @to_run.nil?
       return fixtures
+    end
+
+    def _helmfile_build(env, chdir)
+      # Run helmfile build in a tmpdir, ignoring the chdir we were passed, so we can patch the helmfile.
+      run_in_tmpdir(@origin) do |tmpdir|
+        admin_helmfile = File.join(tmpdir, @helmfile)
+        content = File.read(admin_helmfile)
+        content.gsub!(
+          %r{/etc/helmfile-defaults/(?<filename>general-{{ .Environment.Name }}.yaml)},
+          '.fixtures/\k<filename>')
+        content.gsub!(
+          %r{/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml},
+          '.fixtures/services.yaml')
+        File.write admin_helmfile, content
+        super(env, tmpdir)
+      end
     end
 
     private
