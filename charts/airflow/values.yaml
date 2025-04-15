@@ -464,6 +464,14 @@ worker:
       - name: SPARK_CONF_DIR
         value: *spark_conf_dir
 
+kubernetes_executor_task:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 500Mi
+    limits:
+      cpu: 200m
+      memory: 500Mi
 
 kerberos:
   enabled: true
