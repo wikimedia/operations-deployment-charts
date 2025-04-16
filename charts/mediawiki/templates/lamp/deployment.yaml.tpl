@@ -346,7 +346,6 @@
 {{- if .Values.main_app.prestop_sleep }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
-{{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 # php-fpm exporter
 - name: {{ $release }}-php-fpm-exporter
@@ -368,5 +367,6 @@
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end }}
 {{- end }}
 {{ end }}
