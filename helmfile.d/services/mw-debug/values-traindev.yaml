@@ -44,6 +44,10 @@ php:
       cpu: 100m
     limits:
       cpu: 200m
+  # TODO: T391057 - Hold train-dev back on 7.4, as this needs coordination with
+  # the mediawiki-deployments.yaml bundled therein.
+  version: "7.4"
+
 # See the dockerfiles for the php-fpm base image to know what can be tweaked.
 # Those can be passed via config.public above.
 
