@@ -95,8 +95,8 @@ main_app:
         - name: ma_mobile_html_offline_resources
           in: '(.+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
           out: '\1/v1/page/mobile-html-offline-resources/\2/\3'
-        - name: ma_mobile_html_offline_resources
-          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
+        - name: ma_mobile_html_offline_resources_no_revision
+          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)'
           out: '\1/v1/page/mobile-html-offline-resources/\2'
         - name: ma_data_css_mobile
           in: '(.+)/v1/data/css/mobile/(.+)'
@@ -107,16 +107,19 @@ main_app:
         - name: ma_data_i18n
           in: '(.+)/v1/data/i18n/(.+)/(.+)'
           out: '\1/v1/data/i18n/\2/\3'
-        - name: ma_data_i18n
+        - name: ma_data_i18n_no_revision
           in: '(.+)/v1/data/i18n/(.+)'
           out: '\1/v1/data/i18n/\2'
         - name: ma_page_talk
           in: '(.+)/v1/page/talk/(.+)/(.+)'
           out: '\1/v1/page/talk/\2/\3'
-        - name: ma_page_talk
+        - name: ma_page_talk_no_revision
           in: '(.+)/v1/page/talk/(.+)'
           out: '\1/v1/page/talk/\2'
         - name: ma_page_definition
+          in: '(.+)/v1/page/definition/(.+)/(.+)'
+          out: '\1/v1/page/definition/\2/\3'
+        - name: ma_page_definition_no_revision
           in: '(.+)/v1/page/definition/(.+)'
           out: '\1/v1/page/definition/\2'
         - name: ma_transform_wikitext_mobile_html
