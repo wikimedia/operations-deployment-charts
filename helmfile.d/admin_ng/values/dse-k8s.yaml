@@ -125,14 +125,6 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org
-    resourcequota:
-      compute:
-        requests:
-          cpu: "150"
-          memory: "150Gi"
-        limits:
-          cpu: "200"
-          memory: "200Gi"
     limitranges:
       container:
         min:
@@ -366,6 +358,14 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
+    resourcequota:
+      compute:
+        requests:
+          cpu: "150"
+          memory: "150Gi"
+        limits:
+          cpu: "200"
+          memory: "200Gi"
   query-service:
     enableJobSidecarController: true
     limitranges:
