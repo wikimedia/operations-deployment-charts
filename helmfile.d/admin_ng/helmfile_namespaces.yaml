@@ -38,13 +38,31 @@ releases:
         {{- if eq $isSystemNamespace false }}
           {{/* The only namespace where readOnlyUser or deployUser is used is "ci". */}}
           {{- $defaultROUser := $values | get "readOnlyUser" $namespace_name }}
-          {{- $defaultDeployUser := $values | get "deployUser" (printf "%s-deploy" $namespace_name ) }}
+          {{- $defaultDeployUser := $values | get "deployUser" (print $namespace_name "-deploy") }}
           {{- $defaultUsernames := list (dict "name" $defaultROUser) (dict "name" $defaultDeployUser) }}
-          {{- range ( $values | get "usernames" $defaultUsernames ) }}
-          {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
-          {{- if $isDeployUser }}
+          {{- $usernames := $values | get "usernames" $defaultUsernames }}
           - |
-            # Bind the deployer user to the deploy Role for this namespace
+            # Bind the deployer read-only users to the view Role for this namespace
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: view
+              namespace: {{ $namespace_name }}
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: view
+            subjects:
+              {{- range $usernames }}
+              {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
+              {{- if not $isDeployUser }}
+              - apiGroup: rbac.authorization.k8s.io
+                kind: User
+                name: {{ .name }}
+              {{- end }}
+              {{- end }}
+          - |
+            # Bind the deployer users to the deploy Role for this namespace
             apiVersion: rbac.authorization.k8s.io/v1
             kind: RoleBinding
             metadata:
@@ -55,9 +73,14 @@ releases:
               kind: ClusterRole
               name: {{ $values | getOrNil "deployClusterRole" | default "deploy" }}
             subjects:
+              {{- range $usernames }}
+              {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
+              {{- if $isDeployUser }}
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
                 name: {{ .name }}
+              {{- end }}
+              {{- end }}
           - |
             # Bind the deploy user and all service account of this namespace to
             # the allow-restricted-psp role, see helmfile_psp.yaml
@@ -83,27 +106,14 @@ releases:
               - apiGroup: rbac.authorization.k8s.io
                 kind: Group
                 name: system:serviceaccounts:{{ $namespace_name }}
+              {{- range $usernames }}
+              {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
+              {{- if $isDeployUser }}
               - apiGroup: rbac.authorization.k8s.io
                 kind: User
                 name: {{ .name }}
-          {{- else }}
-          - |
-            # Bind the deployer read-only user to the view Role for this namespace
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: RoleBinding
-            metadata:
-              name: view
-              namespace: {{ $namespace_name }}
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-              name: view
-            subjects:
-              - apiGroup: rbac.authorization.k8s.io
-                kind: User
-                name: {{ .name }}
-          {{- end }}
-          {{- end }}
+              {{- end }}
+              {{- end }}
           {{ $limitranges := $values | getOrNil "limitranges" | default $.Values.limitranges }}
           {{- with $limitranges}}
           {{- if or .container .pod }}
