@@ -12,8 +12,10 @@ resources:
   replicas: 1
 
 app:
-  image: wikimedia/zarcillo
-  version: "2025-03-25-091801-production"
+  # detected by kokkuri from the gitlab repo location
+  image: "repos/data_persistence/zarcillo"
+  # detected by kokkuri from the gitlab repo path
+  version: "devel"
   # override entrypoint defined in the docker image with k8s command and args
   # command: [ "./entrypoint.sh" ]
   limits:
