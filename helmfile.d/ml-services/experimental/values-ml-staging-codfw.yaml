@@ -37,12 +37,12 @@ inference_services:
   articlequality:
     predictor:
       image: "machinelearning-liftwing-inference-services-articlequality"
-      image_version: "2024-08-01-160129-publish"
+      image_version: "2025-04-28-104618-publish"
       custom_env:
         - name: MODEL_NAME
           value: "articlequality"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
+          value: "s3://wmf-ml-models/articlequality/language-agnostic/20250425125943/"
         - name: FORCE_HTTP
           value: "True"
       container:
