@@ -44,8 +44,8 @@ templates:
       - global.yaml
       - global-eqiad.yaml
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/main_services/mediawiki-dumps-legacy/eqiad.yaml" # TODO - should create dse-k8s-specific file
-      - "/etc/helmfile-defaults/private/main_services/mediawiki-dumps-legacy/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/dse-k8s_services/mediawiki-dumps-legacy/eqiad.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/mediawiki-dumps-legacy/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
