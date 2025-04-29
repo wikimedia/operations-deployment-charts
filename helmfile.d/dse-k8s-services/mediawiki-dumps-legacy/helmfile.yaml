@@ -60,6 +60,8 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-eqiad.yaml" # TODO - should create dse-k8s-specific file
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/mediawiki-dumps-legacy/eqiad.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/mediawiki-dumps-legacy/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - values.yaml
       - values-dumps.yaml  # non-env-specific values, in this repository
 
