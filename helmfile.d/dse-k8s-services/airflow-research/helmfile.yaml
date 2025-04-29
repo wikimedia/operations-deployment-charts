@@ -17,7 +17,6 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases:
-        # - postgresql-airflow-research
         - production
     missingFileHandler: Warn
 
@@ -40,20 +39,6 @@ hooks:
       ]
 
 releases:
-  - name: postgresql-airflow-research
-    namespace: airflow-research
-    chart: wmf-stable/cloudnative-pg-cluster
-    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
-    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
-    missingFileHandler: Warn
-    values:
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
-      - "/etc/helmfile-defaults/private/dse-k8s_services/postgresql-airflow-research/{{ .Environment.Name }}.yaml"
-      - "values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
-      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - environmentName: "{{ .Environment.Name }}"
-      - fullnameOverride: "postgresql-airflow-research"
-
   - name: production
     namespace: airflow-research
     chart: wmf-stable/airflow
