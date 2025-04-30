@@ -17,6 +17,12 @@ config:
     idp_server: idp-test.wikimedia.org
     client_id: airflow_test_k8s
 
+app: # the webserver
+  requests:
+    memory: 4Gi
+  limits:
+    memory: 4Gi
+
 scheduler:
   requests:
     cpu: 8
