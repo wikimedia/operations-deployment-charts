@@ -19,3 +19,26 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
   {{- end }}
+{{- if .Values.dumps.rsync.ssh_egress_hosts }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-ssh-egress
+spec:
+  podSelector:
+    matchLabels:
+      app: mediawiki-dumps-legacy
+      component: sync-pod
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+      {{- range .Values.dumps.rsync.ssh_egress_hosts }}
+        - ipBlock:
+            cidr: {{ . }}
+      {{- end }}
+      ports:
+      - port: 22
+        protocol: TCP
+{{- end }}

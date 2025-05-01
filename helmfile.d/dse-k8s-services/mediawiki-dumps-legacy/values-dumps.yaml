@@ -4,6 +4,12 @@ dumps:
     service_account: airflow
   toolbox:
     fs_group: 33
+  rsync:
+    ssh_egress_hosts:
+      - 208.80.154.142/32               # clouddumps1001.wikimedia.org
+      - 2620:0:861:2:208:80:154:142/128 # clouddumps1001.wikimedia.org
+      - 208.80.154.71/32                # clouddumps1002.wikimedia.org
+      - 2620:0:861:3:208:80:154:71/128  # clouddumps1002.wikimedia.org
 
 # We set these values here but once scap integrates with mediawiki-dumps-legacy,
 # we will get these automatically from
