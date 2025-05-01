@@ -17,6 +17,10 @@ dumps:
   # The real private key is distributed from the private repo.
   rsync:
     ssh_private_key: dummy_private_key
+    ssh_egress_hosts:
+      - 127.0.0.1/32
+    ssh_known_hosts:
+      - localhost,127.0.0.1 ssh-rsa dummydata
 
 networkpolicy:
   egress:

@@ -10,6 +10,9 @@ dumps:
       - 2620:0:861:2:208:80:154:142/128 # clouddumps1001.wikimedia.org
       - 208.80.154.71/32                # clouddumps1002.wikimedia.org
       - 2620:0:861:3:208:80:154:71/128  # clouddumps1002.wikimedia.org
+    ssh_known_hosts:
+      - clouddumps1001.wikimedia.org,208.80.154.142,2620:0:861:2:208:80:154:142 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMA/Al2V+CTWWEdMJmqzhSmtn5tche1OmBxh67/g8AP7wdtUSZ6urOUZBe8lcjiAif9heJb7jwWWSNe+VCKCq0g=
+      - clouddumps1002.wikimedia.org,208.80.154.71,2620:0:861:3:208:80:154:71 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBExvftUq/vgRdl20f4hKYECNRYoZNI2C789OOxz92IQBrsDU8NqgMy1o9bdfVc2acZBC3VD/LNCtiLx1kWtetro=
 
 # We set these values here but once scap integrates with mediawiki-dumps-legacy,
 # we will get these automatically from

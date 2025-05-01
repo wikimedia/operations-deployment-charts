@@ -1,4 +1,4 @@
-{{- define "configmap.wikimediwi-dumps-legacy-configs" }}
+{{- define "configmap.mediawiki-dumps-legacy-configs" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -17,7 +17,7 @@ data:
 {{ .Files.Get "files/config/table_jobs.yaml" | indent 4 }}
 {{ end }}
 
-{{- define "configmap.wikimediwi-dumps-legacy-templates" }}
+{{- define "configmap.mediawiki-dumps-legacy-templates" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -38,7 +38,7 @@ data:
 {{ .Files.Get "files/templates/report.html" | indent 4 }}
 {{ end }}
 
-{{- define "configmap.wikimediwi-dumps-legacy-dblists" }}
+{{- define "configmap.mediawiki-dumps-legacy-dblists" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -95,5 +95,22 @@ data:
     zhwiki
   skipnone.dblist: |
     # empty file
+{{ end }}
+
+{{- define "configmap.mediawiki-dumps-legacy-ssh-known-hosts" }}
+{{- if .Values.dumps.rsync.ssh_known_hosts }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediwiki-dumps-legacy-ssh-known-hosts
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  known_hosts: |
+    {{- range .Values.dumps.rsync.ssh_known_hosts }}
+    {{ . }}
+    {{- end }}
+{{ end }}
 {{ end }}
 
