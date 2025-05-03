@@ -1,3 +1,6 @@
+## mcrouter 1.3.3
+- Add KeyModifyRoute support
+
 ## service 2.0.0
 
 - Add the ability to define the clusterIP of the service

@@ -78,6 +78,14 @@ cache:
         warmup:
           pool: foo-pool
           ttl: 60
+      # Route 4: modifykey route
+      # This route uses KeyModifyRoute to modify keys before routing
+      # them to the target pool. It can add a prefix and/or suffix to keys.
+      - route: /modifykey
+        pool: foo-pool
+        modifykey:
+          prefix: "prfx:"
+          suffix: ":sfx"
     exporter:
       resources:
         requests:

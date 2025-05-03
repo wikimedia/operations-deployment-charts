@@ -1,0 +1,24 @@
+cache:
+  mcrouter:
+    enabled: true
+    public_service: true
+    port: 4442
+    route:
+      - route: /eqiad/wf
+        pool: foo-pool
+        modifykey:
+          prefix: "prfx:"
+          suffix: ":sfx"
+
+
+config:
+  private: {}
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: mcrouter
+    targetPort: 4442 # the number or name of the exposed port on the container
+    port: 4442
+  nodePort: 0
+  use_node_local_endpoints: true
