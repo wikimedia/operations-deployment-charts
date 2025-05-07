@@ -202,7 +202,6 @@ spec: &spec
                 match:
                   meta:
                     uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
@@ -222,8 +221,6 @@ spec: &spec
                 topic: 'mediawiki.revision-create'
                 match:
                   rev_content_changed: true
-                  meta:
-                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
@@ -233,9 +230,6 @@ spec: &spec
 {{ end }}
               pcs_rerender_native_on_visibility_change:
                 topic: 'mediawiki.revision-visibility-change'
-                match:
-                  meta:
-                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
@@ -249,9 +243,6 @@ spec: &spec
 {{ end }}
               pcs_rerender_native_on_page_move:
                 topic: 'mediawiki.page-move'
-                match:
-                  meta:
-                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
@@ -267,9 +258,6 @@ spec: &spec
                 topics:
                   - 'mediawiki.page-delete'
                   - 'mediawiki.page-suppress'
-                match:
-                  meta:
-                    domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                 exec:
 {{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
                   - method: get
@@ -282,8 +270,6 @@ spec: &spec
                 # We don't support 'OR' in the match section, so workaround it by 2 cases with identical exec
                 cases:
                   - match:
-                      - meta:
-                          domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                       - added_properties:
                           page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     match_not:
@@ -299,8 +285,6 @@ spec: &spec
                       headers:
                         cache-control: no-cache
                   - match:
-                      - meta:
-                          domain: {{ .Values.main_app.changeprop.rerendered_pcs_wikis }}
                       - removed_properties:
                           page_image: '/.+/' # Regex that matches anything just to check the prop is set
                     match_not:
