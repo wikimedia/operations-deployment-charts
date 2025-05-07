@@ -13,7 +13,7 @@ function testServices {
         command+=',"doValidate":false}'
         response=$(curl $2 --silent --header "Content-type: application/json" -X POST --data $command)
         if grep -q -v "Z22" <<< "$response"; then
-                echo -e '\e[31mFailed response\e[0m:' $response
+                echo -e '\e[34mFailed response\e[0m:' $response
                 return
         fi
 
@@ -28,7 +28,7 @@ function testServices {
                 then
                 echo -ne "\e[32m"
                 else
-                echo -ne "\e[31m"
+                echo -ne "\e[34m"
         fi
         printf %-10s "$value"
         echo -ne "\e[0m – "
@@ -45,7 +45,7 @@ function testServices {
                                 then
                                 echo -ne "\e[91m"
                                 else
-                                echo -ne "\e[31m"
+                                echo -ne "\e[34m"
                         fi
                 fi
         fi
