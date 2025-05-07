@@ -209,6 +209,11 @@
   - name: {{ $k | upper }}
     value: {{ $v | quote }}
   {{- end }}
+  # Variables set by the mw-script wrapper
+  {{- range $k, $v := .Values.mwscript.env }}
+  - name: {{ $k | upper }}
+    value: {{ $v | quote }}
+  {{- end }}
   {{- if $flags.web }}
   # See T276908
   livenessProbe:

@@ -3,6 +3,8 @@ php:
 
 mwscript:
   args: ["Version.php", "--wiki=aawiki"]
+  env:
+    VAR: value
   labels:
     username: username
     script: Version.php
