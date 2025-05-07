@@ -296,7 +296,12 @@ main_app:
         - name: lint-no-revision
           in: '(.+)/v1/page/lint/([^\/]+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
-
+        # reading lists endpoint - supports all HTTP verbs for various options
+        # Note use of * rather than + in regex - needed to match base
+        # `/v0/data/lists/` requests which requires the trailing slash
+        - name: lists
+          in: '(.+)/v0/data/lists/(.*)'
+          out: '/w/rest.php/readinglists/v0/lists/\2'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
