@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-configs
+  name: mediwaiki-dumps-legacy-configs
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -22,7 +22,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-templates
+  name: mediawiki-dumps-legacy-templates
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -43,7 +43,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-dblists
+  name: mediawiki-dumps-legacy-dblists
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -103,7 +103,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-ssh-known-hosts
+  name: mediawiki-dumps-legacy-ssh-known-hosts
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -120,7 +120,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-rsync-targets
+  name: mediawiki-dumps-legacy-rsync-targets
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -137,7 +137,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mediwiki-dumps-legacy-ssh-config
+  name: mediawiki-dumps-legacy-ssh-config
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
