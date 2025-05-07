@@ -114,3 +114,36 @@ data:
 {{ end }}
 {{ end }}
 
+{{- define "configmap.mediawiki-dumps-legacy-rsync-targets" }}
+{{- if .Values.dumps.rsync.ssh_known_hosts }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediwiki-dumps-legacy-rsync-targets
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  rsync_targets: |
+    {{- range .Values.dumps.rsync.ssh_known_hosts }}
+    dumpsgen@{{ . | regexFind "[^,]*" }}
+    {{- end }}
+{{ end }}
+{{ end }}
+
+{{- define "configmap.mediawiki-dumps-legacy-ssh-config" }}
+{{- if .Values.dumps.rsync.ssh_config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mediwiki-dumps-legacy-ssh-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  config: |
+    {{- if .Values.dumps.rsync.ssh_config.ciphers }}
+    Ciphers {{ .Values.dumps.rsync.ssh_config.ciphers | join "," }}
+    {{- end }}
+{{ end }}
+{{ end }}
