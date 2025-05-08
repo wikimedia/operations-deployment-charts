@@ -1,3 +1,8 @@
+## configuration 1.13.0
+
+- Set a custom new default for the Envoy histogram metrics settings, and
+  add a parameter to override the configuration (if needed).
+
 ## configuration 1.12.0
 
 - Add parameter sni_rewrites_host_header to allow toggling off the behavior of
