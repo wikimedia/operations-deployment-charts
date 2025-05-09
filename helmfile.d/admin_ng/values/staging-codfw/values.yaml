@@ -25,16 +25,6 @@ resourcequota:
       memory: "10Gi"
 
 namespaces:
-  ci:
-    deployUser: jenkins
-    resourcequota:
-      compute:
-        requests:
-          cpu: "20"
-          memory: "20Gi"
-        limits:
-          cpu: "20"
-          memory: "20Gi"
   # Redefine these specifically for staging. Main clusters are increasing
   # these, but we don't want that for now on the staging ones
   changeprop-jobqueue:
