@@ -75,6 +75,76 @@ layered_runtime:
     # values from the previous layer.
     - name: admin_layer_0
       admin_layer: {}
+{{- if hasKey .Values.mesh "envoy_stats_config" | default dict -}}
+{{- if .Values.mesh.envoy_stats_config }}
+stats_config:
+  {{- toYaml .Values.mesh.envoy_stats_config | nindent 2}}
+{{- end }}
+{{- else }}
+stats_config:
+  # Tweak histogram buckets
+  # https://phabricator.wikimedia.org/T391333
+  histogram_bucket_settings:
+    - match:
+        safe_regex:
+          regex: ".+rq_time$"
+      buckets: [
+        1,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500
+      ]
+    - match:
+        safe_regex:
+          regex: ".+upstream_cx_connect_ms$"
+      buckets: [
+        1,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000
+      ]
+    - match:
+        safe_regex:
+          regex: ".+(upstream|downstream)_cx_length_ms$"
+      buckets: [
+        2500,
+        5000,
+        10000,
+        30000,
+        60000,
+        300000
+      ]
+    # remove 0.5, 1 and > 60000 default buckets
+    - match:
+        safe_regex:
+          regex: ".+"
+      buckets: [
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500,
+        5000,
+        10000,
+        30000,
+        60000
+      ]
+{{- end }}
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}
