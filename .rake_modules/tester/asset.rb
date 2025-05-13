@@ -474,8 +474,8 @@ module Tester
 
     def _helmfile_build(env, chdir)
       # We hard-code a k8s version here for simplicity. This sets helmBinary to helm3.11.
-      # Note that this is only needed because we are not always including /etc/helmfile-defaults/*,
-      # so it can go away if we fix that everywhere.
+      # Note that this is only needed because we are not including /etc/helmfile-defaults/* here,
+      # so it can go away if we fix that.
       _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, chdir)
     end
 
@@ -720,7 +720,6 @@ module Tester
 
     def collect_fixtures(chdir = nil)
       fixtures = super
-      sleep 0.5
       return filter_fixtures(fixtures) unless fixtures.nil?
     end
 
@@ -737,8 +736,11 @@ module Tester
         admin_helmfile = File.join(tmpdir, @helmfile)
         content = File.read(admin_helmfile)
         content.gsub!(
-          %r{/etc/helmfile-defaults/(?<filename>(general|services)-{{ .Environment.Name }}.yaml)},
+          %r{/etc/helmfile-defaults/(?<filename>general-{{ .Environment.Name }}.yaml)},
           '.fixtures/\k<filename>')
+        content.gsub!(
+          %r{/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml},
+          '.fixtures/services.yaml')
         File.write admin_helmfile, content
         super(env, tmpdir)
       end
@@ -750,7 +752,7 @@ module Tester
     # kubernetesVersion of the environment.
     def collect_kube_version(path)
       fixtures.reduce({}) do |memo, (fixture, env)|
-        env_vals_path = ".fixtures/general-#{env}.yaml"
+        env_vals_path = "#{File.dirname(path)}/values/#{env}/values.yaml"
         if File.exist?(env_vals_path)
           env_vals = yaml_load_file(env_vals_path)
           if env_vals and env_vals.has_key?('kubernetesVersion')
