@@ -75,6 +75,76 @@ layered_runtime:
     # values from the previous layer.
     - name: admin_layer_0
       admin_layer: {}
+{{- if hasKey .Values.mesh "envoy_stats_config" | default dict -}}
+{{- if .Values.mesh.envoy_stats_config }}
+stats_config:
+  {{- toYaml .Values.mesh.envoy_stats_config | nindent 2}}
+{{- end }}
+{{- else }}
+stats_config:
+  # Tweak histogram buckets
+  # https://phabricator.wikimedia.org/T391333
+  histogram_bucket_settings:
+    - match:
+        safe_regex:
+          regex: ".+rq_time$"
+      buckets: [
+        1,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500
+      ]
+    - match:
+        safe_regex:
+          regex: ".+upstream_cx_connect_ms$"
+      buckets: [
+        1,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000
+      ]
+    - match:
+        safe_regex:
+          regex: ".+(upstream|downstream)_cx_length_ms$"
+      buckets: [
+        2500,
+        5000,
+        10000,
+        30000,
+        60000,
+        300000
+      ]
+    # remove 0.5, 1 and > 60000 default buckets
+    - match:
+        safe_regex:
+          regex: ".+"
+      buckets: [
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500,
+        5000,
+        10000,
+        30000,
+        60000
+      ]
+{{- end }}
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}
@@ -347,6 +417,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
         percentage: 10
         keepalive: "6s"
         sets_sni: true
+        sni_rewrites_host_header: true
         ips:
           - 1.2.3.3
 
@@ -489,7 +560,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.split.sets_sni (not .Listener.http_host) }}
+                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
+                {{- if and .Listener.split.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.split.sni_rewrites_host_header) .Listener.split.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}-split
@@ -507,11 +579,20 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
                 {{- end }}
-                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) }}
+                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
+                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.upstream.sni_rewrites_host_header) .Listener.upstream.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}
                 timeout: {{ .Listener.timeout }}
+                {{- /* puppet-defined idle timeout
+                 note that route-level idle timeouts are stream idle timeouts in envoy terminology and
+                 behave differently to other idle timeout settings - see 039059f18b2 in puppet and
+                 the envoy docs
+                */}}
+                {{- if .Listener.upstream.idle_timeout }}
+                idle_timeout: {{ .Listener.upstream.idle_timeout }}
+                {{- end }}
                 {{- if .Listener.retry_policy }}
                 retry_policy:
                 {{- range $k, $v :=  .Listener.retry_policy }}
@@ -546,6 +627,14 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
             socket_address:
               address: {{ .Upstream.address }}
               port_value: {{ .Upstream.port }}
+  {{- /* Use puppet-defined tcp keepalives for connections to upstreams */}}
+  {{- if .Upstream.tcp_keepalive }}
+  upstream_connection_options:
+    tcp_keepalive:
+    {{- range $k, $v := .Upstream.tcp_keepalive }}
+      {{ $k }}: {{ $v }}
+    {{- end }}
+  {{- end }}
   {{- if .Upstream.encryption }}
   {{- include "mesh.configuration._transport_socket_tls" (dict "Upstream" .Upstream) | indent 2 }}
   {{- end }}
