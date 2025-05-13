@@ -57,3 +57,29 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
 {{- end -}}
+
+
+{{/*
+  This helper will render the template located at the provided path
+  (assumed to contain ConfigMap or Secret resources) and perform a
+  sha256sum of the content of their `data`, `stringData` or `binaryData` field.
+
+  This can be used to compute the checksum of secrets and/or configmaps
+  that only changes when their actual content changes, but not when
+  their metadata (eg labels) changes.
+*/}}
+{{- define "base.helper.resourcesDataChecksum" }}
+{{- $renderedResources :=  include (print .Root.Template.BasePath .resourceFilePath) .Root }}
+{{- $dataArray := list }}
+{{- range $resourceStr := split "---\n" $renderedResources }}
+{{- $resource := fromYaml $resourceStr }}
+{{- if get $resource "data"}}
+{{- $dataArray = append $dataArray (get $resource "data") }}
+{{- else if get $resource "stringData"}}
+{{- $dataArray = append $dataArray (get $resource "stringData") }}
+{{- else if get $resource "binaryData"}}
+{{- $dataArray = append $dataArray (b64enc (get $resource)) }}
+{{- end }}
+{{- end }}
+{{- toString $dataArray | sha256sum }}
+{{- end }}
