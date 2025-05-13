@@ -9,6 +9,10 @@
   {{- include "app.generic._command" . | indent 2 }}
   ports:
     - containerPort: {{ .Values.app.port }}
+  {{- with .Values.app.metricsPort }}
+    - containerPort: {{ . }}
+      name: app-metrics
+  {{- end }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
@@ -69,6 +73,10 @@ Probably this should be a separated configuration module?
 {{- define "app.generic.networkpolicy_ingress" }}
 {{- if or (not .Values.mesh.enabled) (ne .Values.app.port .Values.mesh.public_port)}}
 - port: {{ .Values.app.port }}
+  protocol: TCP
+{{- end }}
+{{- with .Values.app.metricsPort }}
+- port: {{ . }}
   protocol: TCP
 {{- end }}
 {{- if .Values.debug.enabled }}
