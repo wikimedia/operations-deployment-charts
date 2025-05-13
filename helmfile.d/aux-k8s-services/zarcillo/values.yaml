@@ -16,8 +16,6 @@ app:
   image: "repos/data_persistence/zarcillo"
   # detected by kokkuri from the gitlab repo path
   version: "devel"
-  # override entrypoint defined in the docker image with k8s command and args
-  # command: [ "./entrypoint.sh" ]
   limits:
     cpu: 1
     memory: 1Gi
@@ -27,7 +25,7 @@ app:
   readiness_probe:
     timeoutSeconds: 5
     httpGet:
-      path: /healtz
+      path: /healthz
       port: 8080
   liveness_probe:
     initialDelaySeconds: 2
