@@ -16,7 +16,7 @@ activeDeadlineSeconds: {{ .activeDeadlineSeconds }}
 {{- end }}
 
 {{- define "app.job.container" }}
-{{- $root := .Root -}}
+{{- $root := .Root }}
 - name: {{ template "base.name.release" .Root}}-{{ .Name }}
   {{- if .Job.image_versioned }}
   image: "{{ .Root.Values.docker.registry }}/{{ .Job.image_versioned }}"
