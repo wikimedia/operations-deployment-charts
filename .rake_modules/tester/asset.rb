@@ -720,6 +720,7 @@ module Tester
 
     def collect_fixtures(chdir = nil)
       fixtures = super
+      sleep 0.5
       return filter_fixtures(fixtures) unless fixtures.nil?
     end
 
