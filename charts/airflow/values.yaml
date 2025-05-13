@@ -29,52 +29,6 @@ app:
       path: /health
       port: *airflow_frontend
 
-  volumes:
-  - name: airflow-config
-    configMap:
-      name: airflow-config
-  - name: airflow-webserver-config
-    configMap:
-      name: airflow-webserver-config
-  - name: airflow-bash-executables
-    configMap:
-      name: airflow-bash-executables
-      defaultMode: 0777
-  - name: airflow-connections-variables
-    secret:
-      secretName: airflow-connections-variables
-  - name: airflow-kubernetes-pod-templates
-    configMap:
-      name: airflow-kubernetes-pod-templates
-  - name: logs
-    emptyDir: {}
-  - name: airflow-dags
-    persistentVolumeClaim:
-      claimName: airflow-dags-pvc
-
-  volumeMounts: &airflow_volume_mounts
-  - name: airflow-config
-    mountPath: /opt/airflow/airflow.cfg
-    subPath: airflow.cfg
-  - name: airflow-webserver-config
-    mountPath: /opt/airflow/webserver_config.py
-    subPath: webserver_config.py
-  - name: airflow-webserver-config
-    mountPath: /opt/airflow/airflow_local_settings.py
-    subPath: airflow_local_settings.py
-  - name: logs
-    mountPath: /opt/airflow/logs
-  - name: airflow-bash-executables
-    mountPath: /opt/airflow/usr/bin
-  - name: airflow-connections-variables
-    mountPath: /opt/airflow/secrets
-  - name: airflow-dags
-    readOnly: true
-    mountPath: &dags_root /opt/airflow/dags
-  - name: airflow-kubernetes-pod-templates
-    mountPath: /opt/airflow/pod_templates
-
-
 service:
   deployment: minikube # valid values are "production" and "minikube"
   port:
@@ -93,7 +47,7 @@ config:
     dbHost: ''
     dbName: ''
     dbUser: ''
-    dags_root: *dags_root
+    dags_root: /opt/airflow/dags
     dags_folder: override_me
     instance_name: override_me
     aws_access_key_id: override_me
@@ -133,9 +87,9 @@ config:
         load_default_connections: false
       kerberos:
         reinit_frequency: 3600 # in seconds
-        ccache: &krb5_cache /tmp/airflow_krb5_ccache/krb5cc
+        ccache: /tmp/airflow_krb5_ccache/krb5cc
         include_ip: false
-        keytab: &krb5_keytab /etc/kerberos/keytabs/airflow.keytab
+        keytab: /etc/kerberos/keytabs/airflow.keytab
         principal: override_me/override_me
       kubernetes_executor:
         multi_namespace_mode: false
@@ -239,7 +193,6 @@ scheduler:
   limits:
     cpu: "1"
     memory: 2Gi
-  volumeMounts: *airflow_volume_mounts
 
 # Export the content of the postgresql app secret to environment variables
 postgresql:
@@ -254,26 +207,13 @@ gitsync:
   image_tag: override_me
   image_gid: 900
   dags_repo: "https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags.git"
-  root_dir: &gitsync_root_dir /dags
+  root_dir: /dags
   link_dir: airflow_dags
   ref: main
   period: 300 # git pull every 5 minutes
   volume:
     storage_class: override_me
     size: 100Mi
-  volumes:
-  - name: airflow-dags
-    persistentVolumeClaim:
-      claimName: airflow-dags-pvc
-  - name: gitsync-sparse-checkout-config
-    configMap:
-      name: airflow-gitsync-sparse-checkout-file
-  volumeMounts:
-  - name: airflow-dags
-    mountPath: *gitsync_root_dir
-  - name: gitsync-sparse-checkout-config
-    mountPath: /etc/gitsync/sparse-checkout.conf
-    subPath: sparse-checkout.conf
 
 worker:
   resources:
@@ -436,33 +376,15 @@ worker:
         spark.eventLog.dir: hdfs:///var/log/spark
         spark.eventLog.compress: true
 
-  volumes:
-    hadoop:
-    - name: airflow-hadoop-configuration
-      configMap:
-        name: airflow-hadoop-configuration
-    spark:
-    - name: airflow-spark-configuration
-      configMap:
-        name: airflow-spark-configuration
-
-  volumeMounts:
-    hadoop:
-    - name: airflow-hadoop-configuration
-      mountPath: &hadoop_conf_dir /etc/hadoop/conf
-    spark:
-    - name: airflow-spark-configuration
-      mountPath: &spark_conf_dir /etc/spark3/conf
-
   env:
     hadoop:
       - name: HADOOP_CONF_DIR
-        value: *hadoop_conf_dir
+        value: /etc/hadoop/conf
       - name: HIVE_CONF_DIR
-        value: *hadoop_conf_dir
+        value: /etc/hadoop/conf
     spark:
       - name: SPARK_CONF_DIR
-        value: *spark_conf_dir
+        value: /etc/spark3/conf
 
 kubernetes_pod_operator:
   resources:
@@ -487,38 +409,15 @@ kerberos:
     limits:
       cpu: 500m
       memory: 400Mi
-  volumes:
-    base:
-    - name: airflow-kerberos-client-config
-      configMap:
-        name: airflow-kerberos-client-config
-    - name: airflow-kerberos-token
-      persistentVolumeClaim:
-        claimName: airflow-kerberos-token-pvc
-    keytab:
-    - name: airflow-kerberos-keytab
-      secret:
-        secretName: airflow-kerberos-keytab
-  volumeMounts:
-    base:
-    - name: airflow-kerberos-client-config
-      mountPath: &krb5_conf /etc/krb5.conf
-      subPath: krb5.conf
-    - name: airflow-kerberos-token
-      mountPath: /tmp/airflow_krb5_ccache
-    keytab:
-    - name: airflow-kerberos-keytab
-      mountPath: /etc/kerberos/keytabs
-      readOnly: true
   env:
     base:
     - name: KRB5CCNAME
-      value: *krb5_cache
+      value: /tmp/airflow_krb5_ccache/krb5cc
     - name: KRB5_CONFIG
-      value: *krb5_conf
+      value: /etc/krb5.conf
     keytab:
     - name: KRB5_KEYTAB
-      value: *krb5_keytab
+      value: /etc/kerberos/keytabs/airflow.keytab
 
 hadoop_shell:
   enabled: false
@@ -713,3 +612,6 @@ environmentName: override_me
 # IP to its an-masterxxxx.eqiad.wmnet name and to avoid the coredns service ip reverse
 # DNS, to validate Kerberos identity.
 host_aliases: {}
+
+devenv:
+  enabled: false

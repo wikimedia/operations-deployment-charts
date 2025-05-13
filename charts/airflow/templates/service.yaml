@@ -13,7 +13,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $.Values.scheduler.service_name }}
+  name: {{ template "release.name" . }}-scheduler
   {{- include "base.meta.labels" . | indent 2 }}
     component: scheduler
 spec:
@@ -36,6 +36,27 @@ apiVersion: v1
 kind: Service
 metadata:
   name: envoy
+spec:
+  type: {{ template "base.helper.serviceType" . }}
+  selector:
+    app: {{ template "base.name.chart" . }}
+    routed_via: {{ .Release.Name }}
+    component: envoy
+  ports:
+  {{- range $name := $.Values.discovery.listeners }}
+  {{- $listener := index $.Values.services_proxy $name }}
+  - name: {{ $name }}
+    port: {{ $listener.port }}
+    targetPort: {{ $listener.port }}
+    protocol: TCP
+  {{- end }}
+
+---
+{{/* We duplicate the service with the name airflow-envoy, and we'll have to reflect this change in airflow-dags once deployed everywhere. */}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "release.name" . }}-envoy
 spec:
   type: {{ template "base.helper.serviceType" . }}
   selector:

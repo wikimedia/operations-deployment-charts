@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-webserver
+  name: {{ template "release.name" . }}-webserver
   {{- include "base.meta.labels" . | indent 2 }}
     component: webserver
 spec:
@@ -22,7 +22,7 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
-      serviceAccountName: airflow
+      serviceAccountName: {{ template "release.name" . }}
       initContainers:
       - name: {{ template "base.name.release" . }}-initdb
         command: ["airflow"]
@@ -33,12 +33,12 @@ spec:
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" .Values.app | indent 8 }}
         volumeMounts:
-        {{- toYaml .Values.app.volumeMounts  | nindent 8 }}
+        {{- include "app.airflow.volumeMounts" . | indent 8 }}
       containers:
         {{- include "app.airflow.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
-        {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "app.airflow.volumes" . | indent 8 }}
         {{/* We need the keytab to be mounted in the webserver for the API Kerberos authentication to work */}}
         {{- include "kerberos.volumes" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
@@ -53,7 +53,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-scheduler
+  name: {{ template "release.name" . }}-scheduler
   {{- include "base.meta.labels" . | indent 2 }}
     component: scheduler
 spec:
@@ -78,14 +78,14 @@ spec:
       {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       {{- end }}
-      serviceAccountName: airflow
+      serviceAccountName: {{ template "release.name" . }}
       containers:
         {{- include "app.airflow.scheduler" . | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.container" . | indent 8 }}
         {{- end }}
       volumes:
-        {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "app.airflow.volumes" . | indent 8 }}
         {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
@@ -100,7 +100,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-gitsync
+  name: {{ template "release.name" . }}-gitsync
   {{- include "base.meta.labels" . | indent 2 }}
     component: gitsync
 spec:
@@ -135,9 +135,9 @@ spec:
         - "--sparse-checkout-file=/etc/gitsync/sparse-checkout.conf"
         {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         volumeMounts:
-        {{- toYaml $.Values.gitsync.volumeMounts | nindent 8 }}
+        {{- include "app.gitsync.volumeMounts" . | nindent 8 }}
       volumes:
-      {{- toYaml $.Values.gitsync.volumes | nindent 6 }}
+      {{- include "app.gitsync.volumes" . | nindent 6 }}
 
 {{- end }}
 {{- end }}
@@ -148,7 +148,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow-kerberos
+  name: {{ template "release.name" . }}-kerberos
   {{- include "base.meta.labels" . | indent 2 }}
     component: kerberos
 spec:
@@ -181,10 +181,10 @@ spec:
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
         volumeMounts:
-        {{- toYaml $.Values.app.volumeMounts | nindent 8 }}
+        {{- include "app.airflow.volumeMounts" . | indent 8 }}
         {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
       volumes:
-      {{- toYaml $.Values.app.volumes | nindent 6 }}
+      {{- include "app.airflow.volumes" . | indent 6 }}
       {{- include "kerberos.volumes" (dict "Root" . "profiles" (list "keytab")) | indent 6 }}
 
 
@@ -211,7 +211,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: envoy
+  name: {{ template "release.name" . }}-envoy
   {{- include "base.meta.labels" . | indent 2 }}
     component: envoy
 spec:
@@ -241,7 +241,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hadoop-shell
+  name: {{ template "release.name" . }}-hadoop-shell
   {{- include "base.meta.labels" . | indent 2 }}
     component: hadoop-shell
 spec:

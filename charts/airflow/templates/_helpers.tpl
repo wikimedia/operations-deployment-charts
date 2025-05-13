@@ -26,10 +26,8 @@
   {{- include "app.airflow.env" . | indent 2 }}
   {{- include "base.helper.resources" .Values.app | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
-  {{- with .Values.app.volumeMounts }}
   volumeMounts:
-  {{- toYaml . | nindent 2 }}
-  {{- end }}
+  {{- include "app.airflow.volumeMounts" . | indent 2 }}
   {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 2 }}
 {{- end }}
 
@@ -55,10 +53,8 @@
   {{- include "app.airflow.env" . | indent 2 }}
   {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
-  {{- with .Values.scheduler.volumeMounts }}
   volumeMounts:
-  {{- toYaml . | nindent 2 }}
-  {{- end }}
+  {{- include "app.airflow.volumeMounts" . | indent 2 }}
   {{- include "kerberos.volumeMounts" (dict "Root" .) | indent 2 }}
 {{- end }}
 
@@ -301,13 +297,9 @@ resources:
 {{- define "kerberos.volumes" }}
 {{- $profiles := .profiles | default list }}
 {{- if .Root.Values.kerberos.enabled }}
-{{- with .Root.Values.kerberos.volumes.base }}
-{{ toYaml . }}
-{{- end }}
+{{ include "app.kerberos.volumes.base" .Root }}
 {{- if has "keytab" $profiles }}
-{{- with .Root.Values.kerberos.volumes.keytab }}
-{{ toYaml . }}
-{{- end }}
+{{ include "app.kerberos.volumes.keytab" .Root }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -315,13 +307,9 @@ resources:
 {{- define "kerberos.volumeMounts" }}
 {{- $profiles := .profiles | default list }}
 {{- if .Root.Values.kerberos.enabled }}
-{{- with .Root.Values.kerberos.volumeMounts.base }}
-{{ toYaml . }}
-{{- end }}
+{{ include "app.kerberos.volumeMounts.base" .Root }}
 {{- if has "keytab" $profiles }}
-{{- with .Root.Values.kerberos.volumeMounts.keytab }}
-{{ toYaml . }}
-{{- end }}
+{{ include "app.kerberos.volumeMounts.keytab" .Root }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -330,50 +318,38 @@ resources:
 {{- if .profiles }}
 volumes:
 {{- if has "airflow" .profiles }}
-{{- with .Root.Values.app.volumes }}
-{{ toYaml . }}
-{{- end }}
+{{ include "app.airflow.volumes" .Root }}
 {{- end }}
 {{- if has "hadoop" .profiles }}
-{{- with .Root.Values.worker.volumes.hadoop }}
-{{ toYaml . }}
-{{- end }}
+{{- include "app.worker.volumes.hadoop" .Root }}
 {{- end }}
 {{- if has "spark" .profiles }}
-{{- with .Root.Values.worker.volumes.spark }}
-{{ toYaml . }}
-{{- end }}
+{{- include "app.worker.volumes.spark" .Root }}
 {{- end }}
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumes" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
-{{- include "airflow.worker.extra-config-volumes" .Root }}
+{{- include "airflow.worker.extra-config-volumes" (dict "Root" .Root) }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
 {{- if .profiles }}
 volumeMounts:
 {{- if has "airflow" .profiles }}
-{{- with .Root.Values.app.volumeMounts }}
-{{ toYaml . }}
-{{- end }}
+{{- include "app.airflow.volumeMounts" .Root }}
 {{- end }}
 {{- if has "hadoop" .profiles }}
-{{- with .Root.Values.worker.volumeMounts.hadoop }}
-{{ toYaml . }}
-{{- end }}
+{{- include "app.worker.volumeMounts.hadoop" .Root }}
 {{- end }}
 {{- if has "spark" .profiles }}
-{{- with .Root.Values.worker.volumeMounts.spark }}
-{{ toYaml . }}
-{{- end }}
+{{- include "app.worker.volumeMounts.spark" .Root }}
 {{- end }}
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumeMounts" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
 {{- end }}
-{{- include "airflow.worker.extra-config-volume-mounts" .Root }}
+{{- include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root) }}
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
@@ -396,20 +372,20 @@ env:
 {{- end }}
 
 {{- define "airflow.worker.extra-config-resource-name" -}}
-airflow-worker-extra-configuration{{ .directory | replace "/" "-" }}
+{{ template "release.name" .Root }}-worker-extra-configuration{{ .directory | replace "/" "-" }}
 {{- end -}}
 
 {{- define "airflow.worker.extra-config-volumes" }}
-{{- range $directory, $config := $.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+{{- range $directory, $config := .Root.Values.worker.config.extra_files }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
   configMap:
-    name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+    name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
 {{- end }}
 {{- end }}
 
 {{- define "airflow.worker.extra-config-volume-mounts" }}
-{{- range $directory, $config := $.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+{{- range $directory, $config := .Root.Values.worker.config.extra_files }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
   mountPath: {{ $directory }}
 {{- end }}
 {{- end }}
@@ -429,7 +405,7 @@ spec:
   restartPolicy: Never
   {{- include "airflow.pod.host_aliases" .Root | indent 2 }}
   {{- if eq .profile "kubeapi" }}
-  serviceAccountName: airflow {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
+  serviceAccountName: {{ template "release.name" .Root }} {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
   {{- end }}
   {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 2 }}
   containers:
@@ -465,4 +441,130 @@ spec:
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
+{{- end }}
+
+
+{{ define "release.name" }}
+{{- if .Values.devenv.enabled }}
+{{- template "base.name.release" . }}
+{{- else }}
+{{- printf "airflow" }}
+{{- end }}
+{{- end }}
+
+
+{{- define "app.airflow.volumes" }}
+- name: {{ template "release.name" . }}-config
+  configMap:
+    name: {{ template "release.name" . }}-config
+- name: {{ template "release.name" . }}-webserver-config
+  configMap:
+    name: {{ template "release.name" . }}-webserver-config
+- name: {{ template "release.name" . }}-bash-executables
+  configMap:
+    name: {{ template "release.name" . }}-bash-executables
+    defaultMode: 0777
+- name: {{ template "release.name" . }}-connections-variables
+  secret:
+    secretName: {{ template "release.name" . }}-connections-variables
+- name: {{ template "release.name" . }}-kubernetes-pod-templates
+  configMap:
+    name: {{ template "release.name" . }}-kubernetes-pod-templates
+- name: {{ template "release.name" . }}-logs
+  emptyDir: {}
+- name: {{ template "release.name" . }}-dags
+  persistentVolumeClaim:
+    claimName: {{ template "release.name" . }}-dags-pvc
+{{- end }}
+
+{{- define "app.airflow.volumeMounts" }}
+- name: {{ template "release.name" . }}-config
+  mountPath: /opt/airflow/airflow.cfg
+  subPath: airflow.cfg
+- name: {{ template "release.name" . }}-webserver-config
+  mountPath: /opt/airflow/webserver_config.py
+  subPath: webserver_config.py
+- name: {{ template "release.name" . }}-webserver-config
+  mountPath: /opt/airflow/airflow_local_settings.py
+  subPath: airflow_local_settings.py
+- name: {{ template "release.name" . }}-logs
+  mountPath: /opt/airflow/logs
+- name: {{ template "release.name" . }}-bash-executables
+  mountPath: /opt/airflow/usr/bin
+- name: {{ template "release.name" . }}-connections-variables
+  mountPath: /opt/airflow/secrets
+- name: {{ template "release.name" . }}-dags
+  readOnly: true
+  mountPath: /opt/airflow/dags
+- name: {{ template "release.name" . }}-kubernetes-pod-templates
+  mountPath: /opt/airflow/pod_templates
+{{- end }}
+
+{{- define "app.gitsync.volumes" }}
+- name: {{ template "release.name" . }}-dags
+  persistentVolumeClaim:
+    claimName: {{ template "release.name" . }}-dags-pvc
+- name: {{ template "release.name" . }}-sparse-checkout-config
+  configMap:
+    name: {{ template "release.name" . }}-gitsync-sparse-checkout-file
+{{- end }}
+
+{{- define "app.gitsync.volumeMounts" }}
+- name: {{ template "release.name" . }}-dags
+  mountPath: /dags
+- name: {{ template "release.name" . }}-sparse-checkout-config
+  mountPath: /etc/gitsync/sparse-checkout.conf
+  subPath: sparse-checkout.conf
+{{- end }}
+
+{{ define "app.worker.volumes.hadoop" }}
+- name: {{ template "release.name" . }}-hadoop-configuration
+  configMap:
+    name: {{ template "release.name" . }}-hadoop-configuration
+{{- end }}
+
+{{ define "app.worker.volumes.spark" }}
+- name: {{ template "release.name" . }}-spark-configuration
+  configMap:
+    name: {{ template "release.name" . }}-spark-configuration
+{{- end }}
+
+{{ define "app.worker.volumeMounts.hadoop" }}
+- name: {{ template "release.name" . }}-hadoop-configuration
+  mountPath: /etc/hadoop/conf
+{{- end }}
+
+
+{{ define "app.worker.volumeMounts.spark" }}
+- name: {{ template "release.name" . }}-spark-configuration
+  mountPath: /etc/spark3/conf
+{{- end }}
+
+{{- define "app.kerberos.volumes.base" }}
+- name: {{ template "release.name" . }}-kerberos-client-config
+  configMap:
+    name: {{ template "release.name" . }}-kerberos-client-config
+- name: {{ template "release.name" . }}-kerberos-token
+  persistentVolumeClaim:
+    claimName: {{ template "release.name" . }}-kerberos-token-pvc
+{{- end }}
+
+{{- define "app.kerberos.volumes.keytab" }}
+- name: {{ template "release.name" . }}-kerberos-keytab
+  secret:
+    secretName: {{ template "release.name" . }}-kerberos-keytab
+{{- end }}
+
+{{- define "app.kerberos.volumeMounts.base" }}
+- name: {{ template "release.name" . }}-kerberos-client-config
+  mountPath: /etc/krb5.conf
+  subPath: krb5.conf
+- name: {{ template "release.name" . }}-kerberos-token
+  mountPath: /tmp/airflow_krb5_ccache
+{{- end }}
+
+{{- define "app.kerberos.volumeMounts.keytab" }}
+- name: {{ template "release.name" . }}-kerberos-keytab
+  mountPath: /etc/kerberos/keytabs
+  readOnly: true
 {{- end }}

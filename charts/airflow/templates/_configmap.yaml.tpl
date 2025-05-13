@@ -26,7 +26,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-kerberos-client-config
+  name: {{ template "release.name" . }}-kerberos-client-config
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -68,7 +68,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-config
+  name: {{ template "release.name" . }}-config
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -102,7 +102,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-webserver-config
+  name: {{ template "release.name" . }}-webserver-config
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -174,7 +174,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-bash-executables
+  name: {{ template "release.name" . }}-bash-executables
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -197,7 +197,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-gitsync-sparse-checkout-file
+  name: {{ template "release.name" . }}-gitsync-sparse-checkout-file
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ $.Release.Namespace }}
 data:
@@ -217,7 +217,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-kubernetes-pod-templates
+  name: {{ template "release.name" . }}-kubernetes-pod-templates
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -259,7 +259,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-hadoop-configuration
+  name: {{ template "release.name" . }}-hadoop-configuration
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
@@ -284,7 +284,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: airflow-spark-configuration
+  name: {{ template "release.name" . }}-spark-configuration
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:

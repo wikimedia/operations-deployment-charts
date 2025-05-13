@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: airflow
+  name: {{ template "release.name" . }}
   namespace: {{ $.Release.Namespace }}
   {{- include "base.meta.labels" . | indent 2 }}
 {{- if contains "KubernetesExecutor" $.Values.config.airflow.config.core.executor }}
@@ -23,14 +23,14 @@ rules: []
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: airflow-scheduler
+  name: {{ template "release.name" . }}-scheduler
   namespace: {{ $.Release.Namespace }}
   {{- include "base.meta.labels" . | indent 2 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: airflow
+  name: {{ template "release.name" . }}
 subjects:
 - kind: ServiceAccount
-  name: airflow
+  name: {{ template "release.name" . }}
   namespace: {{ $.Release.Namespace }}
