@@ -4,6 +4,7 @@ resources:
 config:
   public:
     NODE_EXTRA_CA_CERTS: /etc/ssl/certs/wmf-ca-certificates.crt
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local:4318/
 
 mesh:
   enabled: true
