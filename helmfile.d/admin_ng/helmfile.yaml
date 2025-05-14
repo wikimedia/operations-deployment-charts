@@ -5,6 +5,7 @@ environments:
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
@@ -22,6 +23,7 @@ environments:
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
@@ -39,6 +41,7 @@ environments:
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
@@ -55,6 +58,7 @@ environments:
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
@@ -72,6 +76,7 @@ environments:
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
       - install_kserve: true
       - install_cert_manager: true
@@ -88,6 +93,7 @@ environments:
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
       - install_kserve: true
       - install_cert_manager: true
@@ -104,6 +110,7 @@ environments:
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
       - install_kserve: true
       - install_cert_manager: true
@@ -120,6 +127,7 @@ environments:
       - "values/dse-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # We are not installing knative and kserve yet, but may do so in the near future.
       # - install_knative: true
       # - install_kserve: true
@@ -142,6 +150,7 @@ environments:
       - "values/aux-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer

@@ -120,11 +120,15 @@ module Tester
     # @return Hash[]
     def find_assets(pattern, to_run)
       data = FileList.new(pattern).map do |path|
+        name = File.basename(File.dirname(path))
+        # Exclude early in order to avoid helmfile calls for assets we don't want
+        next if self.class::EXCLUDE.include?(name)
+        should_run = to_run.nil? || to_run.include?(name)
+        # Filter out assets that should not run
+        next if !should_run
         asset = self.class::ASSET.new(path, to_run)
-        _ = [asset.label, asset]
-      end
-      # Remove any asset that we're not interested in.
-      data.select { |x| x[1].should_run? }.to_h.reject { |_, v| self.class::EXCLUDE.include?(v.name) }
+        [asset.label, asset]
+      end.compact.to_h
     end
   end
 

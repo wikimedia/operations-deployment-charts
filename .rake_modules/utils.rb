@@ -134,11 +134,11 @@ def yaml_load_file(yaml_path)
     yaml = YAML.load_file(yaml_path)
   rescue Psych::SyntaxError => e
     report_yaml_parse_error(yaml_type, error, yaml, e)
-    raise("Failure parsing #{file}")
+    raise("Failure parsing #{yaml_path}")
   rescue StandardError => e
     puts error.red
     puts e
-    raise("Generic failure interpreting #{file}")
+    raise("Generic failure interpreting #{yaml_path}")
   end
   yaml
 end

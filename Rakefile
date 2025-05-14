@@ -31,6 +31,7 @@ LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 # This returns a base64-encoded value.
 HIERADATA_BASE_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata'.freeze
 DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/role/common/deployment_server/kubernetes.yaml?format=TEXT".freeze
+DEPLOYMENT_SERVER_YAML_URL = "#{HIERADATA_BASE_URL}/common/profile/kubernetes/deployment_server.yaml?format=TEXT".freeze
 LISTENERS_DEFINITIONS_URL = "#{HIERADATA_BASE_URL}/common/profile/services_proxy/envoy.yaml?format=TEXT".freeze
 MARIADB_SECTION_PORTS_URL = "#{HIERADATA_BASE_URL}/common/profile/mariadb.yaml?format=TEXT".freeze
 COMMON_HIERA_URL = "#{HIERADATA_BASE_URL}/common.yaml?format=TEXT".freeze
@@ -528,6 +529,21 @@ task :refresh_fixtures do
       write_env_fixtures.call(cluster_name, cluster_values)
       if cluster_name == 'staging-eqiad'
         write_env_fixtures.call('staging', cluster_values)
+      end
+    end
+  end
+
+  # Fetch services definition per cluster
+  URI.open(DEPLOYMENT_SERVER_YAML_URL) do |res|
+    decoded = Base64.decode64(res.read)
+    hiera = YAML.safe_load(decoded, aliases: true)
+    user_defaults = hiera['profile::kubernetes::deployment_server::user_defaults']
+    services_by_group = hiera['profile::kubernetes::deployment_server::services']
+    services_by_group.each do |cluster_group, services|
+      kubernetes_clusters.filter { |_, v| v['cluster_group'] == cluster_group }.each do | cluster_name, _ |
+        File.open(".fixtures/services-#{cluster_name}.yaml", 'w') do |out|
+          YAML.dump({'services' => services}, out)
+        end
       end
     end
   end
