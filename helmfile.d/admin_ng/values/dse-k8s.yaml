@@ -108,6 +108,8 @@ namespaces:
       istio-injection: disabled
   sidecar-controller:
     systemNamespace: true
+  airflow-dev:
+    deployClusterRole: deploy-airflow
   airflow-main:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
