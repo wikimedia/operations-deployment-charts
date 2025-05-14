@@ -7,6 +7,11 @@ IPPools:
     cidr: "10.194.61.0/24"
   ipv6:
     cidr: "2620:0:860:302::/64"
+
+# Setting pod MTU in order to inform the clients of max TCP MSS during the
+# 3-way TCP handshake, thus forcing a good enough MTU that is compatible with
+# IP/IP and Liberica. T352956
+veth_mtu: "1460"
 # It's recommended to run a minimum of 3 typha replicas as long as the number of nodes is >3.
 # TODO(klausman): While staging currently (2023-12) has only two worker nodes,
 # it will soon be expanded. Uncomment the replicaCount statement below when the
