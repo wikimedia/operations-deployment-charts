@@ -1,3 +1,5 @@
+## generic 1.0.4
+- Allow to define application environment variables from a configmap using .Values.app.env_from
 ## job 3.0.1
 - bug fix for issues with .Values.config.private
 ## job 3.0.0
