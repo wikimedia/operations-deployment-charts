@@ -168,13 +168,55 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- if $.Values.devenv.enabled }}
+      {{/*
+        In development environments, we need to wait for engineers to exec into that init container
+        to run kinit, which will create the kerberos cache file, causing the init container to stop,
+        and the kerberos renewer container to start.
+      */}}
+      initContainers:
+      - name: "airflow-kinit"
+        command: ["python3"]
+        args:
+        - -c
+        - |
+          import time
+          import sys
+          import os
+          from pathlib import Path
+          while True:
+            if Path(os.environ['KRB5CCNAME']).exists():
+              sys.exit(0)
+            time.sleep(5)
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "app.airflow.env" . | indent 8 }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
+        volumeMounts:
+        {{- include "app.airflow.volumeMounts" . | indent 8 }}
+        {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
+      {{- end }}
       containers:
       - name: "airflow-kerberos"
+        {{- if $.Values.devenv.enabled }}
+        {{/*
+          In development environments, we cannot rely on a keytab, as the kerberos token is associated
+          with the personal identity of the developer, instead of a service account. Due to the lack of
+          keytab, we can't rely on the `airflow kerberos` command (which assumes a keytab is present),
+          so we rely on the `krenew` command, to simpluy renew the ticket contained in the krb5 cache.
+        */}}
+        command: ["krenew"]
+        args:
+        - -K  {{/* Run as daemon, check ticket every <interval> minutes */}}
+        - {{ $.Values.devenv.kerberos.ticket_renewal_interval_minutes | quote }}
+        {{- else }}
         command: ["airflow"]
         args:
         - kerberos
         - --pid
         - /tmp/airflow-kerberos.pid
+        {{- end }}
         image: {{ template "app.generic._image" . }}
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "app.airflow.env" . | indent 8 }}
