@@ -178,10 +178,14 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  {{/* This script outputs the URI used to connect to PGBouncer, using a service FQDN */}}
+  {{/* This script outputs the URI used to connect to PGBouncer, using a service FQDN. For devens, we also override the db name */}}
   pg_pooler_uri: |
     #!/bin/sh
-    printf ${PG_URI} | sed "s/$PG_HOST.{{ $.Release.Namespace }}/$POSTGRESQL_AIRFLOW_{{ $.Values.config.airflow.instance_name | upper | replace "-" "_" }}_POOLER_RW_SERVICE_HOST/"
+    pg_uri=$(echo "${PG_URI}" | sed "s/$PG_HOST.{{ $.Release.Namespace }}/${{ $.Values.pgServiceName | upper | replace "-" "_" }}_POOLER_RW_SERVICE_HOST/")
+    {{- if $.Values.devenv.enabled }}
+    pg_uri=$(echo "${pg_uri}" | sed 's@/[^/]*$@/{{ $.Values.devenv.db.name }}@')
+    {{- end }}
+    printf "${pg_uri}"
 
 {{- end }}
 
