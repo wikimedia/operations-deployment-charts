@@ -14,6 +14,7 @@ metadata:
   annotations:
     comment: {{ $jobConfig.description | quote }}
 spec:
+  suspend: {{ has $jobConfig.name $.Values.mwcron.suspended_jobs }}
   schedule: {{ $jobConfig.schedule | default "@daily" | quote }}
   concurrencyPolicy: {{ $jobConfig.concurrency | default "Replace" }}
   jobTemplate:
