@@ -36,16 +36,17 @@ service:
   deployment: production
 
 mesh:
-  enabled: false
+  enabled: true
+  # The port on which envoy will be listening. Given we're enabling ingress,
+  # this will only be internal to the cluster and doesn't need to be unique
+  public_port: 8000
+  certmanager:
+    extraFQDNs:
+      - zarcillo.wikimedia.org
 
 networkpolicy:
   egress:
     enabled: true
-    # dst_nets:
-    # - cidr: 1.2.3.4/32
-    #   ports:
-    #   - protocol: tcp
-    #     port: 443
 
 ingress:
   enabled: true
@@ -55,3 +56,7 @@ ingress:
   # selectors:
   #   service.istio.io/canonical-name: istio-ingressgateway-services
   #   istio: ingressgateway
+
+mariadb:
+  egress:
+    sections: ['m5']
