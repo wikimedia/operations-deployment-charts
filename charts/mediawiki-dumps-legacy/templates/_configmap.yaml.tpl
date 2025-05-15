@@ -13,6 +13,8 @@ data:
 {{ .Files.Get "files/config/wikidump.conf.tests" | indent 4 }}
   wikidump.conf.other: |
 {{ .Files.Get "files/config/wikidump.conf.other" | indent 4 }}
+  addschanges.conf: |
+{{ .Files.Get "files/config/addschanges.conf" | indent 4 }}
   table_jobs.yaml: |
 {{ .Files.Get "files/config/table_jobs.yaml" | indent 4 }}
 {{ end }}
