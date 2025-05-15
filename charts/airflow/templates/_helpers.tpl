@@ -118,6 +118,8 @@ env:
 {{- include "airflow.env.s3" . }}
 - name: SCARF_ANALYTICS
   value: "False"
+- name: ENVOY_SERVICE_NAME
+  value: {{ template "service.envoy" . }}
 {{- end }}
 
 {{- define "airflow.env.requests-ca-bundle" }}
@@ -571,4 +573,9 @@ spec:
 - name: {{ template "release.name" . }}-kerberos-keytab
   mountPath: /etc/kerberos/keytabs
   readOnly: true
+{{- end }}
+
+
+{{- define "service.envoy" }}
+{{- template "release.name" . }}-envoy
 {{- end }}
