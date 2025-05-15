@@ -108,6 +108,7 @@ metadata:
 data:
   # These are system-specified config overrides.
   webserver_config.py: |
+    {{- if not $.Values.devenv.enabled }}
     from airflow.www.fab_security.manager import AUTH_OAUTH
 
     AUTH_TYPE = AUTH_OAUTH
@@ -143,6 +144,7 @@ data:
       "cn={{ $ldapGroup }},ou=groups,dc=wikimedia,dc=org": {{ template "toPythonValue" (dict "value" $airflowRole) }},
       {{- end }}
     }
+    {{- end }}
     {{- end }}
 
     {{- range $path, $_ :=  $.Files.Glob "files/webserver_config/*.py"}}
