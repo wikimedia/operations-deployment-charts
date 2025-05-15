@@ -1,0 +1,52 @@
+devenv:
+  enabled: true
+
+# We limit the request consumption of the core components
+app:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+scheduler:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+config:
+  airflow:
+    config:
+      core:
+        # Fallback to the default auth manager
+        auth_manager: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+        # We pause all DAGs at creation, to avoid ay surprise
+        dags_are_paused_at_creation: true
+        executor: KubernetesExecutor
+      email:
+        # We don't want to alert for development instances to avoid adding noise
+        # to ops week.
+        default_email_on_failure: false
+      logging:
+        # Each airflow dev instance will send their logs to a subfolder of the airflow-dev
+        # S3 bucket, to ensure isolation.
+        remote_base_log_folder: "s3://{{ $.Values.config.airflow.s3_bucket }}/{{ $.Values.config.airflow.instance_name }}"
+      webserver:
+        # The dev instances will not be reacheable via a public wikimedia.org domain.
+        # Instead, they will be exposed by a combination of kubectl port-forward between
+        # the pod and the dev server, and an ssh tunnel between the dev server and the
+        # engineer's workstation.
+        base_url: "http://localhost:8080"
+        # The dev instances should not be scraped by robots. Warn us if they are.
+        warn_deployment_exposure: true
+    # Disable all auth config
+    auth: {}
+    # S3 bucket *name* is shared between all dev instances
+    s3_bucket: '{{ printf "logs.airflow-dev.%s" $.Values.environmentName }}'
+# The webserver will not be reachable from the outside
+ingress:
+  enabled: false

@@ -211,13 +211,17 @@ hostname_callable = webserver_config.get_scheduler_service_name
 
 {{- define "airflow.config.core.security" }}
 {{- if $.Values.kerberos.enabled }}
+{{- if not $.Values.devenv.enabled }}
 security = kerberos
+{{- end }}
 {{- end }}
 {{- end }}
 
 {{- define "airflow.config.api.auth_backends" }}
 {{- if $.Values.kerberos.enabled }}
+{{- if not $.Values.devenv.enabled }}
 auth_backends = airflow.providers.fab.auth_manager.api.auth.backend.kerberos_auth, airflow.api.auth.backend.session
+{{- end }}
 {{- end }}
 {{- end }}
 
