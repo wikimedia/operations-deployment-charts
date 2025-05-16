@@ -1,0 +1,37 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: allow-hostpath-mw-experimental
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.wmf.org/profile: restricted
+        pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+        pod-security.wmf.org/allow-hostpath-mw-experimental: include
+  steps:
+  - name: prepare_allow-hostpath-mw-experimental
+    try:
+    - apply:
+        file: ../allow-hostpath-mw-experimental.yaml
+  - name: test
+    try:
+    - create:
+        file: pod-good.yaml
+    - create:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true
+
+  # This test requires manual deletion of the tes namespace as good pods will fail
+  # scheduling due to missing volumes, CSI plugins etc and chainsaw is, for some reason,
+  # unable to handle that/clean those pods up without raising an error.
+  - name: 99-cleanup
+    try:
+    - script:
+        env:
+        - name: NAMESPACE
+          value: $namespace
+        content: kubectl delete all --all --force --grace-period=0 -n $NAMESPACE
