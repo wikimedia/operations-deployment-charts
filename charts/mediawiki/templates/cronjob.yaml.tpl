@@ -17,6 +17,11 @@ spec:
   suspend: {{ has $jobConfig.name $.Values.mwcron.suspended_jobs }}
   schedule: {{ $jobConfig.schedule | default "@daily" | quote }}
   concurrencyPolicy: {{ $jobConfig.concurrency | default "Replace" }}
+  # startingDeadlineSeconds must be more than 10 seconds if set
+  # see https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#job-creation
+  {{- if $jobConfig.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ max $jobConfig.startingDeadlineSeconds 10 }}
+  {{- end }}
   jobTemplate:
     spec:
       template:
