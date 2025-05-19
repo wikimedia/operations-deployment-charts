@@ -196,7 +196,10 @@ namespaces:
           memory: "250Gi"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
-    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+   # The pod-security.wmf.org labels are used on Kubernetes 1.31 to customise
+   # Pod Security Standards.
+   # If you add or remove any policies from mw-pss-labels, please ensure
+   # you do the same for mw-experimental further down.
     labels: &mw-pss-labels
       pod-security.wmf.org/profile: restricted
       pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
@@ -206,6 +209,40 @@ namespaces:
       pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
       pod-security.wmf.org/disallow-capabilities-except-ptrace: include
     # Don't set a quota
+    resourcequota:
+      compute:
+        requests:
+          cpu: ~
+          memory: ~
+        limits:
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+  mw-experimental:
+  # In mw-experimental we need to mount via hostPath both geoip data + /srv/mediawiki
+  # All hostPaths are included in the allow-hostpath-mw-experimental
+  # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
+    pspClusterRole: allow-mediawiki-psp
+    labels:
+      pod-security.wmf.org/profile: restricted
+      pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+      pod-security.wmf.org/disallow-host-path: exclude
+      pod-security.wmf.org/disallow-capabilities-strict-adding-capabilities-strict: exclude
+      pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
+      pod-security.wmf.org/disallow-capabilities-except-ptrace: include
+      pod-security.wmf.org/allow-hostpath-mw-experimental: include
     resourcequota:
       compute:
         requests:
