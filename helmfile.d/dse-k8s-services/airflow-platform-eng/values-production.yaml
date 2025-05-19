@@ -6,6 +6,8 @@ config:
       role_mappings:
         airflow-platform-eng-ops: [Op]
     config:
+      core:
+        dag_file_processor_timeout: 600  # T394459: we observed DAG processing timeouts
       kerberos:
         principal: analytics-platform-eng/airflow-platform-eng.discovery.wmnet
   oidc:
