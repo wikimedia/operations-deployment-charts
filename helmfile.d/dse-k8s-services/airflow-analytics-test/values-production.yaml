@@ -27,8 +27,8 @@ ingress:
     - airflow-analytics-test.wikimedia.org
 
 gitsync:
-  # Some DAGS in analytics_test import functions from the main and analytics folder
-  extra_dags_folders: [main, analytics]
+  # Some DAGS in analytics_test import functions from the main folder
+  extra_dags_folders: [main]
 
 discovery:
   listeners:
