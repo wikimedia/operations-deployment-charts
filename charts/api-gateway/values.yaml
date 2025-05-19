@@ -68,9 +68,12 @@ main_app:
     envoy_timeout: 0.25
 
   # Type of access logging
-  # - false to turn off access logging
   access_log:
-    # if set, sample access log results
+    # if set to false, only 5xx errors will be logged unless sample_percentage is set
+    enable: false
+    # if set to an integer, sample that percentage of all
+    # requests. Applies when firehose access log is enabled or
+    # disabled, independent of 5xx logging.
     #sample_percentage: 2
 
   # by default, envoy does not normalise URLs paths at present. keep

@@ -6,6 +6,8 @@ main_app:
   telemetry_port: 1667
 
   access_log:
+    # Disable access log but enable 5xx logging and sample 1%
+    enabled: false
     sample_percentage: 1
 
   requests:

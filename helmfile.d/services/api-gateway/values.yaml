@@ -23,6 +23,8 @@ main_app:
   strip_api_cookies: true
 
   access_log:
+    # Disable access log but enable 5xx logging and sample 1%
+    enabled: false
     sample_percentage: 1
   normalise_paths: true
 

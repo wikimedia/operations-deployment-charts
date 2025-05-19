@@ -64,11 +64,11 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: ingress_http
-{{- if .Values.main_app.access_log }}
           # configure logging
           access_log:
             name: envoy.file_access_log
             filter:
+{{- if .Values.main_app.access_log.enable }}
               and_filter:
                 filters:
                   - not_health_check_filter: {}
@@ -81,6 +81,26 @@ static_resources:
                       percent_sampled:
                         numerator: {{ .Values.main_app.access_log.sample_percentage}}
                         denominator: HUNDRED
+{{- end }}
+{{- else }}
+              or_filter:
+                filters:
+                  - status_code_filter:
+                      comparison:
+                        op: "GE"
+                        value:
+                          default_value: 500
+                          runtime_key: rest_gateway_min_log_code
+{{- if .Values.main_app.access_log.sample_percentage }}
+                  - runtime_filter:
+                      # This is a required-optional value read from
+                      # runtime that is used for overriding - we don't
+                      # want to do that so use a junk value.
+                      runtime_key: "key_never_used_optional_required"
+                      percent_sampled:
+                        numerator: {{ .Values.main_app.access_log.sample_percentage}}
+                        denominator: HUNDRED
+{{- end }}
 {{- end }}
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
@@ -105,7 +125,6 @@ static_resources:
                   total_time_ms: "%DURATION%"
                   client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:aud)%"
                   route: "%ROUTE_NAME%"
-{{- end }}
           use_remote_address: true
 {{- if .Values.main_app.normalise_paths }}
           normalize_path: true
