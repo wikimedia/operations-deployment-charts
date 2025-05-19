@@ -14,8 +14,8 @@ config:
     client_id: airflow_platform_eng
 
 gitsync:
-  # Some DAGS in platform_eng import functions from the analytics folder
-  extra_dags_folders: [analytics]
+  # Some DAGS in platform_eng import functions from the main folder
+  extra_dags_folders: [main]
 
 ingress:
   gatewayHosts:
