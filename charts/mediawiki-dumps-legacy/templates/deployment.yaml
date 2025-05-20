@@ -8,7 +8,6 @@ spec:
   selector:
     matchLabels:
       app: mediawiki
-      component: toolbox
       release: production
       component: toolbox
   replicas: 1
@@ -70,3 +69,73 @@ spec:
       - name: wikimedia-cluster-config
         configMap:
           name: mediawiki-production-wikimedia-cluster-config
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "base.name.chart" . }}-sync-toolbox
+  {{- include "base.meta.labels" . | indent 2 }}
+spec:
+  selector:
+    matchLabels:
+      app: mediawiki-dumps-legacy
+      release: {{ $.Release.Name }}
+      component: sync-pod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: sync-pod
+        release: {{ $.Release.Name }}
+        app: mediawiki-dumps-legacy
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      securityContext:
+        fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
+      containers:
+      - name: "sync-toolbox"
+        command: ["sleep"]
+        args: ["infinity"]
+        image: "{{ .Values.docker.registry }}/{{ .Values.sync_toolbox.image }}"
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
+        {{ include "base.helper.resources" $.Values.dumps.toolbox.resources | indent 8 }}
+        volumeMounts:
+        - name: dumps-cephfs
+          mountPath: {{ $.Values.dumps.persistence.mount_path }}
+        - name: mediawiki-dumps-legacy-ssh-config
+          mountPath: /home/runuser/.ssh/config
+          subPath: config
+        - name: mediawiki-dumps-legacy-ssh-known-hosts
+          mountPath: /home/runuser/.ssh/known_hosts
+          subPath: known_hosts
+        - name: ssh-private-key
+          mountPath: /home/runuser/.ssh/id_rsa
+          subPath: id_rsa
+        - name: mediawiki-dumps-legacy-rsync-targets
+          mountPath: /etc/rsync_targets
+          subPath: rsync_targets
+      {{- include "mesh.deployment.container" . | indent 6 }}
+      volumes:
+      - name: dumps-cephfs
+        persistentVolumeClaim:
+          claimName: {{ $.Values.dumps.persistence.claim_name }}
+      - name: mediawiki-dumps-legacy-ssh-config
+        configMap:
+          name: mediawiki-dumps-legacy-ssh-config
+      - name: mediawiki-dumps-legacy-ssh-known-hosts
+        configMap:
+          name: mediawiki-dumps-legacy-ssh-known-hosts
+      - name: mediawiki-dumps-legacy-rsync-targets
+        configMap:
+          name: mediawiki-dumps-legacy-rsync-targets
+      - name: envoy-config-volume
+        configMap:
+          name: mediawiki-production-envoy-config-volume
+      - name: ssh-private-key
+        secret:
+          secretName: ssh-private-key

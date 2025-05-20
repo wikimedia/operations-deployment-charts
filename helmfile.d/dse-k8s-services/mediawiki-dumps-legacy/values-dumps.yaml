@@ -21,6 +21,9 @@ dumps:
 main_app:
   image: restricted/mediawiki-multiversion-cli:2025-03-27-113206-publish-81
 
+sync_toolbox:
+  image: repos/data-engineering/sync-utils:2025-05-06-121409-454fc28fa21159e3c4b0fd89d9924776ff6e4d67
+
 mesh:
   enabled: true
   public_port: null
