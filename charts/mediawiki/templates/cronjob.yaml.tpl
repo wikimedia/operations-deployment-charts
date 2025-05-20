@@ -74,7 +74,7 @@ spec:
           restartPolicy: Never
       # As above, we're not assuming idempotence; don't restart the entire pod, either.
       backoffLimit: {{ $jobConfig.backoffLimit | default 0 }}
-      ttlSecondsAfterFinished: {{ $jobConfig.ttlSecondsAfterFinished | default 106400 }}  # 1 day
+      ttlSecondsAfterFinished: {{ $jobConfig.ttlSecondsAfterFinished | default 106400 }}  # {{ $jobConfig.ttlSecondsAfterFinished | default 106400 | toString | duration }}
 ---
 {{- end }} {{/* end range $jobConfig */}}
 {{- end }} {{/* end if $can_run */}}
