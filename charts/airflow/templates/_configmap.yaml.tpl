@@ -161,6 +161,13 @@ data:
           category={{ template "toPythonValue" (dict "value" ($ui_alert.category | default "info" )) }},
         ),
     {{- end }}
+    {{- if $.Values.devenv.enabled }}
+        UIAlert(
+          """This is an ephemeral airflow development instance. Please destroy it with <code>airflow-devenv destroy airflow-{{ $.Values.config.airflow.instance_name }}</code> when you're done.""",
+          html=True,
+          category="info",
+        ),
+    {{- end }}
     {{- if ne $.Values.gitsync.ref "main" }}
         UIAlert(
           """<code>git-sync</code> is currently pulling the <code><a href="https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags/-/tree/{{ $.Values.gitsync.ref }}">{{ $.Values.gitsync.ref }}</a></code> ref from <code>airflow-dags</code>.""",
