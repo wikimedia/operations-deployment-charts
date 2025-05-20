@@ -54,11 +54,6 @@ main_app:
 
     event_service_uri: localhost:32192/v1/events
 
-    # List of endpoints used for PCS deployed behind RESTBase
-    rerendered_pcs_endpoints:
-      - media-list
-      - mobile-html
-
     # List of endpoints used for PCS deployed behind REST gateway (restbase sunset)
     rerendered_pcs_endpoints_native:
       - media-list
@@ -94,7 +89,6 @@ main_app:
       wikidata_description_on_edit: true
       wikidata_description_on_undelete: true
       page_images_summary: true
-      rerendered_pcs_endpoints: true
       liftwing_models: false
       rerendered_pcs_endpoints_native: true
 
