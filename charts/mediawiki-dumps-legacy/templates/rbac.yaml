@@ -39,6 +39,10 @@ roleRef:
   name: mediawiki-dumps-legacy-orchestration
   apiGroup: rbac.authorization.k8s.io
 subjects:
+{{ range $namespace, $service_accounts := $.Values.dumps.orchestrator.service_accounts }}
+{{ range $service_account := $service_accounts }}
 - kind: ServiceAccount
-  name: {{ $.Values.dumps.orchestrator.service_account }}
-  namespace: {{ $.Values.dumps.orchestrator.namespace }}
+  name: {{ $service_account }}
+  namespace: {{ $namespace }}
+{{- end }}
+{{- end }}

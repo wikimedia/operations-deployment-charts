@@ -1,7 +1,8 @@
 dumps:
   orchestrator:
-    namespace: airflow-test-k8s  # temporary namespace, until the DAG is production ready
-    service_account: airflow
+    service_accounts:
+      airflow-test-k8s: [airflow]  # temporary namespace, until the DAG is production ready
+      airflow-dev: [airflow-dev-btullis]
   toolbox:
     fs_group: 33
   rsync:
