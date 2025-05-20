@@ -41,6 +41,15 @@ config:
         ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
         bootstrap.servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
         security.protocol: SSL
+    kafka_jumbo_eqiad_external:
+      conn_type: kafka
+      host: kafka-jumbo1010.eqiad.wmnet
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-jumbo1010.eqiad.wmnet:9093,kafka-jumbo1011.eqiad.wmnet:9093,kafka-jumbo1012.eqiad.wmnet:9093,kafka-jumbo1013.eqiad.wmnet:9093,kafka-jumbo1014.eqiad.wmnet:9093,kafka-jumbo1015.eqiad.wmnet:9093
+        security.protocol: SSL
   oidc:
     idp_server: idp.wikimedia.org
 
