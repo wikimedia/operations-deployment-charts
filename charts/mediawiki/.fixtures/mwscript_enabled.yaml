@@ -2,6 +2,7 @@ php:
   servergroup: "mwscript-test"
 
 mwscript:
+  command: ["/usr/local/bin/mwscript"]
   args: ["Version.php", "--wiki=aawiki"]
   env:
     VAR: value

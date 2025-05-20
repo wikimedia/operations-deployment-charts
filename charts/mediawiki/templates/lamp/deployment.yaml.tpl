@@ -97,9 +97,13 @@
          "0.0.0.0:{{.Values.mercurius.monitor_port}}"
         ]
   {{- else if $flags.job }}
-  command: ["/usr/bin/php"]
+  command: {{ .Values.mwscript.command }}
   args:
+  {{- if eq (.Values.mwscript.command | first) "/usr/bin/php" }}{{/* backwards compatibility T378479 */}}
 {{ prepend .Values.mwscript.args "/srv/mediawiki/multiversion/MWScript.php" | toYaml | indent 4 }}
+  {{- else }}
+{{ .Values.mwscript.args | toYaml | indent 4 }}
+  {{- end }}
   # If --file isn't passed to the wrapper script, nothing will be mounted to
   # /data, but it will be (harmlessly) created by setting workingDir here.
   workingDir: /data
