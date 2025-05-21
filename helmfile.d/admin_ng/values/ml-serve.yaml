@@ -112,6 +112,7 @@ namespaces:
       - '*.logo-detection.wikimedia.org'
       - '*.article-models.wikimedia.org'
       - '*.revision-models.wikimedia.org'
+      - '*.edit-check.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -308,6 +309,11 @@ namespaces:
       istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
   llm:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
+  edit-check:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
     labels:
