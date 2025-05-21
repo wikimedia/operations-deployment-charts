@@ -50,3 +50,7 @@ config:
 # The webserver will not be reachable from the outside
 ingress:
   enabled: false
+
+gitsync:
+  # We want fast DAG updates after a git push happened
+  period: 30
