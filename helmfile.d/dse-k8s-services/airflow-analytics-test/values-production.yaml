@@ -24,6 +24,14 @@ config:
   oidc:
     client_id: airflow_analytics_test
 
+scheduler:
+  requests:
+    cpu: 8
+    memory: 4Gi
+  limits:
+    cpu: 8
+    memory: 4Gi
+
 ingress:
   gatewayHosts:
     default: "airflow-analytics-test"
