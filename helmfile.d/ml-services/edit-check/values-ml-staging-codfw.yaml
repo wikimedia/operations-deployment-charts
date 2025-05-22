@@ -1,0 +1,40 @@
+inference:
+  predictor:
+    config:
+      # These settings are applied at the pod level,
+      # that includes all containers not explicitly defined
+      # in the isvc (like the istio-{validation,proxy}).
+      # The knative-serving ones seem to need
+      # an extra level of settings in the knative's control-plane
+      # due to how the various pods/revisions are handled
+      # (dynamically etc..).
+      # More info https://phabricator.wikimedia.org/T369493
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+
+inference_services:
+  edit-check:
+    predictor:
+      batcher:
+        maxBatchSize: 32
+        maxLatency: 20
+      config:
+        maxReplicas: 1
+      image: "machinelearning-liftwing-inference-services-edit-check"
+      image_version: "2025-05-15-100949-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "edit-check-staging"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/edit-check/peacock/"
+        - name: MODEL_VERSION
+          value: "v1"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+          requests:
+            cpu: "4"
+            memory: 8Gi
