@@ -46,6 +46,7 @@ templates:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/mediawiki/conftool-state.yaml"
       - "/etc/helmfile-defaults/mediawiki/periodic-jobs.yaml"
+      - "/etc/helmfile-defaults/mediawiki/fancycaptcha.yaml"
       - "global.yaml" # common values for all mediawiki deployments
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/main_services/{{`{{ .Release.Namespace }}`}}/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE

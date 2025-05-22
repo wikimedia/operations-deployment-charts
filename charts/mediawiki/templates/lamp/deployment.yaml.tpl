@@ -332,6 +332,14 @@
   - name: {{ $release }}-dumps
     mountPath: {{ .Values.dumps.persistence.mount_path }}
   {{- end -}}
+  {{- if $flags.cron }}
+  - name: {{ $release }}-cron-captcha-badwords
+    mountPath: /etc/fancycaptcha/badwords
+    readOnly: true
+  - name: {{ $release }}-cron-captcha-words
+    mountPath: /etc/fancycaptcha/words
+    readOnly: true
+  {{- end -}}
 
 {{- if .Values.monitoring.enabled }}
 # Add the following exporters:

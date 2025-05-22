@@ -4,4 +4,5 @@
 {{ include "base.statsd.configmap" . }}
 {{ include "mw.lamp.configmap" . }}
 {{ include "mw.mercurius.configmap" . }}
+{{ include "mw.cron.configmap" . }}
 {{ end }}

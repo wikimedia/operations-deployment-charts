@@ -78,8 +78,15 @@
   configMap:
     name: {{ $release }}-mercurius-script
 {{- end }}
-
-{{ end }}
+{{- if $flags.cron }}
+- name: {{ $release }}-cron-captcha-badwords
+  configMap:
+    name: {{ $release }}-cron-captcha-badwords
+- name: {{ $release }}-cron-captcha-words
+  configMap:
+    name: {{ $release }}-cron-captcha-words
+{{- end }}
+{{- end }}
 
 {{ define "dumps.volume" }}
 {{- $flags := include "mw.helpers.feature_flags" . | fromJson }}

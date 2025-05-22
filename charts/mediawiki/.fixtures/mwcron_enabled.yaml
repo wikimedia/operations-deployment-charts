@@ -26,6 +26,16 @@ mw:
     local: false
   logging:
     rsyslog: true
+  fancycaptcha:
+    words: |
+      fnord
+      lord
+      zord
+    badwords: |
+      cloud
+      webscale
+      mongodb
+      eiximenis
 
 # These are enabled to check the pod.kubernetes.io/sidecars annotation
 cache:
