@@ -154,8 +154,6 @@ services:
             change: {{ .Values.main_app.caching.event.stream.change }}
             purge: {{ .Values.main_app.caching.event.stream.purge }}
       {{- end }}
-      http_client:
-        use_service_mesh: {{ .Values.main_app.use_service_mesh }}
 {{ if .Values.datastore.cassandra_client.enabled -}}
 {{ include "datastore.cassandra_client.config" . | indent 6 }}
 {{- end -}}
