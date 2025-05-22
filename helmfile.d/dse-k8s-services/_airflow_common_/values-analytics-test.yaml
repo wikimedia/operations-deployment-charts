@@ -49,7 +49,7 @@ config:
             ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
 
 external_services:
-  task-pod:
+  task-pod: &task_pod_external_services
     # When connecting to the analytics-test-hadoop cluster, the task pods need access
     # to the master (to submit jobs), the workers (to fetch data) as well as Hive, to
     # sense data partitions.
@@ -57,6 +57,9 @@ external_services:
     hadoop-worker: [analytics-test]
     hive: [analytics-test]
     druid: [analytics-test]
+  scheduler: *task_pod_external_services
+    # When using a combination of the KubernetesExecutor and LocalExecutor, the scheduler
+    # pods will also need the same access to Hadoop as the task pods.
   hadoop-shell:
     # Give access to hadoop subsystems to the hadoop shell
     hadoop-master: [analytics-test]
