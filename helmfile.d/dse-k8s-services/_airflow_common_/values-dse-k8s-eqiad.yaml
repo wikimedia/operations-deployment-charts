@@ -53,6 +53,15 @@ config:
   oidc:
     idp_server: idp.wikimedia.org
 
+networkpolicy:
+ egress:
+   enabled: true
+   dst_nets:
+     - cidr: 10.2.2.43/32  # schema.deployment.wmnet
+       ports:
+       - port: 443
+         protocol: tcp
+
 external_services:
   gitsync:
     # git-sync pulls code from our gitlab instance
