@@ -87,12 +87,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 300m
-              memory: 256Mi
+            {{- toYaml .Values.datahubUpgrade.noCodeDataMigration.resources | nindent 12 }}
         {{- with .Values.datahubUpgrade.extraSidecars }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
