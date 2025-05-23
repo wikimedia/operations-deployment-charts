@@ -362,6 +362,16 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 25
+      # prometheus.svc.eqiad.wmnet
+      - cidr: 10.2.2.25/32
+        ports:
+          - protocol: TCP
+            port: 80
+      # prometheus.svc.codfw.wmnet
+      - cidr: 10.2.1.25/32
+        ports:
+          - protocol: TCP
+            port: 80
 
 # Only deploy to nodes without spinning disks T288345
 affinity:
