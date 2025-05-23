@@ -166,6 +166,7 @@ environments:
       - "values/aux-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
       - istio_gateways: true
       # Deploy cert-manager & cfssl-issuer
