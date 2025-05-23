@@ -24,9 +24,9 @@ data:
 
     [realms]
       WIKIMEDIA = {
-        kdc = krb1001.eqiad.wmnet
+        kdc = krb1002.eqiad.wmnet
         kdc = krb1002.codfw.wmnet
-        admin_server = krb1001.eqiad.wmnet
+        admin_server = krb1002.eqiad.wmnet
       }
     [domain_realm]
       .wikimedia = WIKIMEDIA
