@@ -187,7 +187,7 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  {{/* This script outputs the URI used to connect to PGBouncer, using a service FQDN. For devens, we also override the db name */}}
+  {{/* This script outputs the URI used to connect to PGBouncer, using a service FQDN. For devenvs, we also override the db name */}}
   pg_pooler_uri: |
     #!/bin/sh
     pg_uri=$(echo "${PG_URI}" | sed "s/$PG_HOST.{{ $.Release.Namespace }}/${{ $.Values.pgServiceName | upper | replace "-" "_" }}_POOLER_RW_SERVICE_HOST/")
@@ -195,6 +195,26 @@ data:
     pg_uri=$(echo "${pg_uri}" | sed 's@/[^/]*$@/{{ $.Values.devenv.db.name }}@')
     {{- end }}
     printf "${pg_uri}"
+  {{/* This python script checks whether a host/port can be connected to */}}
+  is_port_open: |
+    #!/usr/bin/env python3
+    import socket
+    import sys
+    from contextlib import closing
+
+    def check_socket(host, port, timeout=1):
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+            sock.settimeout(timeout)
+            return sock.connect_ex((host, int(port))) == 0
+
+    if __name__ == "__main__":
+        host, port = sys.argv[1], sys.argv[2]
+        if check_socket(host, port):
+            print(f"{host}:{port} is open")
+        else:
+            print(f"{host}:{port} is closed")
+            sys.exit(1)
+
 
 {{- end }}
 

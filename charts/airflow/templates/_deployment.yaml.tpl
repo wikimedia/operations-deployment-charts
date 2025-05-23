@@ -286,6 +286,7 @@ metadata:
   name: {{ template "release.name" . }}-hadoop-shell
   {{- include "base.meta.labels" . | indent 2 }}
     component: hadoop-shell
+    role: toolbox
 spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
@@ -295,6 +296,7 @@ spec:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: hadoop-shell
+        role: toolbox
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
     spec:
@@ -315,6 +317,56 @@ spec:
         {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         {{- include "base.helper.resources" $.Values.hadoop_shell.resources | indent 8 }}
         {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" (list "hadoop" "kerberos")) | indent 8 }}
+
+{{- end }}
+{{- end }}
+
+{{- define "deployment.task-shell" }}
+{{- if $.Values.task_shell.enabled }}
+{{/*
+  This toolbox allows users to test network policies that would be applied to task pods themselves
+*/}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "release.name" . }}-task-shell
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: task-pod
+    role: toolbox
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: task-pod {{/* To assign task pod network policies */}}
+        role: toolbox
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      {{- include "airflow.pod.host_aliases" . | indent 6 }}
+      volumes:
+      - name: {{ template "release.name" . }}-bash-executables
+        configMap:
+          name: {{ template "release.name" . }}-bash-executables
+          defaultMode: 0777
+      containers:
+      - name: "task-shell"
+        command: ["sleep"]
+        args: ["infinity"]
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
+        {{- include "base.helper.resources" $.Values.task_shell.resources | indent 8 }}
+        volumeMounts:
+        - name: {{ template "release.name" . }}-bash-executables
+          mountPath: /opt/airflow/usr/bin
 
 {{- end }}
 {{- end }}
