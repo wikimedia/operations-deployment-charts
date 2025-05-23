@@ -41,6 +41,13 @@ datahub-frontend:
     <<: *networkpolicies
 
 datahub-gms:
+  main_app:
+    requests:
+      cpu: 2
+      memory: 2G
+    limits:
+      cpu: 4
+      memory: 4G
   config:
     public:
       AUTH_RESOURCES_DIR: "/datahub/datahub-gms/plugins/auth/resources"
@@ -59,16 +66,46 @@ datahub-gms:
     <<: *networkpolicies
 
 datahub-mce-consumer:
+  main_app:
+    limits:
+      cpu: 1
+      memory: 2G
   external_services:
     mariadb: [analytics-test-meta]
     opensearch: [datahubsearch]
     kafka: [test-eqiad]
 
 datahub-mae-consumer:
+  main_app:
+    limits:
+      cpu: 2
+      memory: 2G
+    requests:
+      cpu: 1
+      memory: 1G
   external_services:
     kafka: [test-eqiad]
   networkpolicy:
     <<: *networkpolicies
+
+datahubSystemUpdate:
+  resources:
+    requests:
+      cpu: 2
+      memory: 2048Mi
+    limits:
+      cpu: 4
+      memory: 2048Mi
+
+datahubUpgrade:
+  noCodeDataMigration:
+    resources:
+      limits:
+        cpu: 1
+        memory: 2048Mi
+      requests:
+        cpu: 300m
+        memory: 1024Mi
 
 global:
   kafka:
