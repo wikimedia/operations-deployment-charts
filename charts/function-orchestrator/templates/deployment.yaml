@@ -39,8 +39,7 @@ spec:
         {{- include "default.containers" . | indent 8}}
       {{- end -}}
       {{- include "mesh.deployment.container" . | indent 8}}
+      {{- include "cache.mcrouter.container" . | indent 8 }}
       volumes:
-      {{- include "wmf.volumes" . | indent 8}}
-
-
-
+      {{- include "mesh.deployment.volume" . | indent 8 }}
+      {{- include "cache.mcrouter.volume" .  | indent 8 }}

@@ -1,0 +1,16 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 123.123.123.123/24
+# The discovery stuff adds networkpolicies.
+cache:
+  mcrouter:
+    port: 11213
+    enabled: true
+    route:
+      - route: /eqiad/wf
+        pool: foo-pool
+        modifykey:
+          prefix: "prfx:"
+          suffix: ":sfx"
