@@ -38,6 +38,13 @@ datahub-frontend:
         - cidr: 208.80.153.252/32  # ldap-ro.codfw.wikimedia.org
 
 datahub-gms:
+  main_app:
+    requests:
+      cpu: 2
+      memory: 4G
+    limits:
+      cpu: 4
+      memory: 8G
   config:
     <<: *config
     public:
@@ -56,6 +63,10 @@ datahub-gms:
     <<: *networkpolicies
 
 datahub-mce-consumer:
+  main_app:
+    limits:
+      cpu: 1
+      memory: 2G
   config:
     <<: *config
   external_services:
@@ -66,6 +77,13 @@ datahub-mce-consumer:
 
 
 datahub-mae-consumer:
+  main_app:
+    limits:
+      cpu: 3
+      memory: 2G
+    requests:
+      cpu: 1
+      memory: 1G
   config:
     <<: *config
   external_services:
@@ -74,6 +92,24 @@ datahub-mae-consumer:
   networkpolicy:
     <<: *networkpolicies
 
+datahubSystemUpdate:
+  resources:
+    requests:
+      cpu: 2
+      memory: 2048Mi
+    limits:
+      cpu: 4
+      memory: 2048Mi
+
+datahubUpgrade:
+  noCodeDataMigration:
+    resources:
+      limits:
+        cpu: 1
+        memory: 2048Mi
+      requests:
+        cpu: 300m
+        memory: 1024Mi
 
 global:
   kafka:
