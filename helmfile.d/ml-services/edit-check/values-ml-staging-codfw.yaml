@@ -22,10 +22,10 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-15-100949-publish"
+      image_version: "2025-05-23-102016-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "edit-check-staging"
+          value: "edit-check"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: MODEL_VERSION
