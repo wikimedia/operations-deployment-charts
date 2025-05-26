@@ -19,4 +19,4 @@ chainsaw-custom: kind
 	chainsaw test --include-test-regex "^chainsaw/templates/custom-policies/\$$"
 
 chainsaw-pss: kind
-	chainsaw test --include-test-regex "^chainsaw/templates/pod-security-standards/$"
+	chainsaw test --include-test-regex "^chainsaw/templates/pod-security-standards/\$$"
