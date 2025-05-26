@@ -117,7 +117,7 @@ config:
         statsd_prefix: airflow
       scheduler:
         # Recommended in https://www.astronomer.io/docs/learn/airflow-scaling-workers/#core-settings -> we set the number of parsing processes to twice the amount of vcpus
-        parsing_processes: "{{ mul (atoi (toString $.Values.scheduler.limits.cpu)) 2 }}"
+        parsing_processes: "{{ max (mul (atoi (toString $.Values.scheduler.limits.cpu)) 2) 1 }}"
         scheduler_health_check_threshold: 60
         max_tis_per_query: 16
         # pool metrics can be expensive to compute. Instead of re-generating them every 5s (default), we align their
