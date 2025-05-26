@@ -1,0 +1,26 @@
+# This release exists to enable incremental capacity-based traffic migration.
+
+# Incrementally exchange capacity between this and the "main" release in order
+# to actuate the migration.
+resources:
+  replicas: 0
+
+# During the early phases of a migration when the number of replicas is small,
+# it may be useful to increase maxUnavailable (default: 6%) in order to improve
+# deployment speed if the migration release is using a different mediawiki
+# image than main (as the image is then unlikely to be cached).
+# See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
+#strategy:
+#  rollingUpdate:
+#    maxUnavailable: 20%
+
+# Override local cluster name (defaults to namespace) to disambiguate in
+# tracing and envoy metrics.
+mesh:
+  tracing:
+    service_name: mw-api-int-migration
+
+# Do not create a distinct service, instead routing via the main release.
+service:
+  deployment: none
+routed_via: main

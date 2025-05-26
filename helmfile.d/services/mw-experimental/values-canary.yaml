@@ -1,0 +1,17 @@
+# This file is used to override the production values defaults for the canary release.
+
+# route canary access through the main release
+routed_via: main
+
+service:
+  # Don't deploy a k8s Service for this canary release
+  deployment: none
+
+resources:
+  # 3% of main replicas, rounded up.
+  replicas: 8
+
+# There is no point for a rolling release for canaries, recreate them T375477
+strategy:
+  type: Recreate
+  rollingUpdate: ~ # This is here to ensure globals are overriden
