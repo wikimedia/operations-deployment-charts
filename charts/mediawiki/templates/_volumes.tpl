@@ -60,6 +60,11 @@
   hostPath:
     path: /usr/share/GeoIPInfo
 {{- end }}
+{{- if .Values.mw.experimental.enabled }}
+- name: {{ $release }}-experimental-mediawiki
+  hostPath:
+    path: /srv/mediawiki
+{{- end }}
 {{- if .Values.php.envvars }}
 - name: {{ $release }}-php-envvars
   configMap:

@@ -304,6 +304,12 @@
   - name: {{ $release }}-geoipinfo
     mountPath: /usr/share/GeoIPInfo/
     readOnly: true
+  {{- end }}
+  {{- if .Values.mw.experimental.enabled }}
+  # Mount /srv/mediawiki if experimental is enabled
+  - name: {{ $release }}-experimental-mediawiki
+    mountPath: /srv/mediawiki
+    readOnly: true
   {{- end -}}
   {{- if .Values.php.envvars }}
   # PHP environment variables

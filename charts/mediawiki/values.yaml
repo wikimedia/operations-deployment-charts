@@ -312,6 +312,10 @@ mw:
     udp2log_ratelimit_burst: 100
     rsyslog_max_message_size: 64k
   geoip: true
+  # If true, this mounts /srv/mediawiki from the wikikube host
+  # This feature is only enabled in the mw-experimental service
+  experimental:
+    enabled: false
   # Feature flags enabled / disabled based on specific traits.
   helpers:
     feature_flags:
