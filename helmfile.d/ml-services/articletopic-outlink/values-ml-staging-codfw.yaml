@@ -16,7 +16,7 @@ inference:
         seccompProfile:
           type: RuntimeDefault
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2025-03-28-075500-publish"
+    version: "2025-05-23-112000-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -28,7 +28,7 @@ inference:
         value: "mediawiki.page_prediction_change.rc0"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2025-03-28-075458-publish"
+    version: "2025-05-23-112001-publish"
     config:
       securityContext:
         seccompProfile:
