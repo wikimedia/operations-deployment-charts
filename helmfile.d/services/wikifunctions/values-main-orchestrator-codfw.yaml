@@ -1,0 +1,10 @@
+cache:
+  mcrouter:
+    enabled: true
+    route_prefix: local/wf
+    zone: codfw
+    routes:
+      - route: /local/wf
+        pool: wf-codfw
+        modifykey:
+          prefix: "wforch:"

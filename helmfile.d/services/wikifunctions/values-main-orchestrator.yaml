@@ -8,6 +8,16 @@ main_app:
 ingress:
   enabled: true
 
+cache:
+  mcrouter:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 700m
+        memory: 400Mi
+
 config:
   public:
     # Production wiki access (initially, for wikifunctions.org)

@@ -1,0 +1,29 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 123.123.123.123/24
+cache:
+  mcrouter:
+    enabled: true
+    route_prefix: local/wf
+    zone: eqiad
+    routes:
+      - route: /local/wf
+        pool: wf-eqiad
+        modifykey:
+          prefix: "wforch:"
+    pools:
+      - name: wf-eqiad
+        zone: eqiad
+        servers: [10.4.0.1, 10.4.0.2]
+      - name: wf-codfw
+        zone: codfw
+        servers: [10.5.0.1, 10.5.0.2]
+    resources:
+      requests:
+        cpu: 200m
+        memory: 100Mi
+      limits:
+        cpu: 700m
+        memory: 200Mi
