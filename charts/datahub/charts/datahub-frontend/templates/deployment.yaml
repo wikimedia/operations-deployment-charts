@@ -42,4 +42,4 @@ spec:
               - key: jaas.conf
                 path: jaas.conf
       {{- end }}
-      {{- include "wmf.volumes" . | indent 8}}
+      {{- include "mesh.deployment.volume" . | indent 8}}

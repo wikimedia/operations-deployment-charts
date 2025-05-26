@@ -62,5 +62,5 @@ spec:
             {{- include "mesh.deployment.container" . | indent 12}}
             # T292861: mcrouter.container deliberately excluded
           volumes:
-            {{- include "wmf.volumes" . | indent 12}}
+            {{- include "mesh.deployment.volume" . | indent 12}}
 {{- end }}

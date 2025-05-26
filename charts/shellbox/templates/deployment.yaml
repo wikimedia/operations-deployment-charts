@@ -35,7 +35,24 @@ spec:
       {{- include "php.containers" . | indent 8}}
       {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
-      {{- include "wmf.volumes" . | indent 8}}
-
-
-
+      {{- include "mesh.deployment.volume" . | indent 8}}
+        {{- if eq .Values.php.fcgi_mode "FCGI_UNIX" }}
+        # Shared unix socket for php apps
+        - name: shared-socket
+          emptyDir: {}
+        {{- end -}}
+        {{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
+        # Prometheus statsd exporter configuration
+        - name: {{ .Release.Name }}-metrics-exporter
+          configMap:
+              name: {{ template "base.name.release" . }}-metrics-config
+        {{- end }}
+        - name: shellbox-config
+          configMap:
+              name: {{ template "base.name.release" . }}-shellbox-config
+        {{ with .Values.main_app.volumes -}}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        - name: shellbox-httpd-config
+          configMap:
+              name: {{ template "base.name.release" . }}-shellbox-httpd-config

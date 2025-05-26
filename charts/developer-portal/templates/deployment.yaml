@@ -40,7 +40,4 @@ spec:
       {{- end -}}
       {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
-      {{- include "wmf.volumes" . | indent 8}}
-
-
-
+      {{- include "mesh.deployment.volume" . | indent 8}}
