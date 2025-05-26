@@ -17,7 +17,7 @@ inference_services:
   revertrisk-wikidata:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
-      image_version: "2024-06-27-100336-publish"
+      image_version: "2025-05-23-111959-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-wikidata"
@@ -37,7 +37,7 @@ inference_services:
   articlequality:
     predictor:
       image: "machinelearning-liftwing-inference-services-articlequality"
-      image_version: "2025-04-28-122502-publish"
+      image_version: "2025-05-23-112447-publish"
       custom_env:
         - name: MODEL_NAME
           value: "articlequality"
@@ -92,7 +92,7 @@ inference_services:
         minReplicas: 1
         maxReplicas: 8
       image: "machinelearning-liftwing-inference-services-reference-quality"
-      image_version: "2025-03-11-113532-publish"
+      image_version: "2025-05-23-112449-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/reference-quality/20250127142109/"
@@ -113,7 +113,7 @@ inference_services:
   article-country:
     predictor:
       image: "machinelearning-liftwing-inference-services-article-country"
-      image_version: "2024-12-09-142136-publish"
+      image_version: "2025-05-23-112448-publish"
       custom_env:
         - name: MODEL_NAME
           value: "article-country"
@@ -138,7 +138,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-04-15-093418-publish"
+      image_version: "2025-05-23-112451-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check-staging"
@@ -163,7 +163,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-15-100949-publish"
+      image_version: "2025-05-23-112451-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check-staging-cpu"
@@ -188,7 +188,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-15-100949-publish"
+      image_version: "2025-05-23-112451-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check-staging-gpu"
