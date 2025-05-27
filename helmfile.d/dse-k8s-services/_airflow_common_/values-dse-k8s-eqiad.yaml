@@ -15,6 +15,10 @@ config:
         cluster: prod
         conn_id: datahub_gms
         enabled: true
+      logging:
+        remote_log_conn_id: s3_dpe
+      smtp:
+        smtp_host: mx-out1001.wikimedia.org
   connections:
     s3_dpe:
       extra:

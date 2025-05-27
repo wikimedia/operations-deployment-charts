@@ -112,7 +112,7 @@ config:
         remote_logging: true
         delete_local_logs: true
         remote_base_log_folder: 's3://{{ $.Values.config.airflow.s3_bucket }}'
-        remote_log_conn_id: s3_dpe
+        remote_log_conn_id: override_me
         encrypt_s3_logs: false
         logging_level: INFO
         fab_logging_level: INFO
@@ -141,7 +141,7 @@ config:
       email:
         default_email_on_retry: false # T377745. We want to be alerted only after exhausting all retries.
       smtp:
-        smtp_host: mx-out1001.wikimedia.org
+        smtp_host: override_me
         smtp_mail_from: "airflow-{{ $.Values.config.airflow.instance_name }}: <noreply@wikimedia.org>"
         smtp_port: 25
         smtp_ssl: false
