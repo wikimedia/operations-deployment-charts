@@ -43,10 +43,6 @@ config:
     AIRFLOW_HOME: /opt/airflow
   private: {} # Add here all the keys that should be private but still available as env variables
   airflow:
-    postgresqlPass: secret
-    dbHost: ''
-    dbName: ''
-    dbUser: ''
     dags_root: /opt/airflow/dags
     dags_folder: override_me
     instance_name: override_me
@@ -196,7 +192,6 @@ scheduler:
 
 # Export the content of the postgresql app secret to environment variables
 postgresql:
-  cloudnative: true
   secrets:
     uri: PG_URI
     host: PG_HOST

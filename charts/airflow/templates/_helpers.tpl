@@ -73,18 +73,15 @@ env:
       name: {{ template "base.name.release" $ }}-secret-config
       key: {{ $k }}
 {{- end }}
-{{- if .Values.postgresql.cloudnative }}
 {{- range $secret_data_name, $env_var := .Values.postgresql.secrets }}
 - name: {{ $env_var }}
   valueFrom:
     secretKeyRef:
       name: {{ $.Values.pgServiceName }}-app
       key: {{ $secret_data_name }}
-{{- end }}
 - name: POOLER_NAME
   value: {{ $.Values.pgServiceName }}-pooler-rw
 {{- end }}
-{{- if $.Values.postgresql.cloudnative }}
 {{/*
   According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
   we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
@@ -94,7 +91,6 @@ env:
 */}}
 - name: AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED
   value: "False"
-{{- end }}
 - name: PYTHONPATH
   value: "/usr/local/lib/python3.9/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
 - name: AIRFLOW_INSTANCE_NAME
@@ -189,14 +185,8 @@ env:
 
 
 {{- define "airflow.config.database.sqlalchemy_connstr" -}}
-{{- if not $.Values.postgresql.cloudnative }}
-{{- with $.Values.config.airflow }}
-sql_alchemy_conn = postgresql://{{ .dbUser }}:{{ .postgresqlPass }}@{{ .dbHost }}/{{ .dbName }}?sslmode=require&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
-{{- end }}
-{{- else }}
 {{- /* This allows us to give airflow a command to execute to populate the sql_alchemy_conn value */}}
 sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
-{{- end }}
 {{- end -}}
 
 {{- define "airflow.config.core.hostname_callable" -}}
