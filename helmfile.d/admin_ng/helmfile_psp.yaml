@@ -113,11 +113,15 @@ releases:
             # but we can provide it for defense in depth.
             requiredDropCapabilities:
               - ALL
-            # Allow core volume types and specific hostPaths
+            # Allow core volume types and specific hostPaths. We are adding /srv/mediawiki solely 
+            # for mw-experimental. Since psp will be superseded, we will not create a new PSP,
+            # but rather update the existing one.
             allowedHostPaths:
               - pathPrefix: /usr/share/GeoIP
                 readOnly: true
               - pathPrefix: /usr/share/GeoIPInfo
+                readOnly: true
+              - pathPrefix: /srv/mediawiki
                 readOnly: true
             volumes:
               - 'configMap'
