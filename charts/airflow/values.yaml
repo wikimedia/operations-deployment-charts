@@ -82,7 +82,7 @@ config:
         colored_console_log: false
         dags_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/{{ $.Values.config.airflow.dags_folder }}"
         plugins_folder: "{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/wmf_airflow_common/plugins"
-        executor: LocalExecutor
+        executor: KubernetesExecutor
         load_examples: false
         max_active_runs_per_dag: 3
         max_active_tasks_per_dag: 16
