@@ -116,3 +116,10 @@ worker:
         spark.executorEnv.REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         spark.yarn.appMasterEnv.REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
         spark.yarn.historyServer.address: yarn.wikimedia.org
+
+discovery:
+  listeners:
+  - mw-api-int     # to be able to talk to https://meta.wikimedia.org/w/api.php?action=streamsconfig
+  - noc            # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
+  - schema         # to be able to talk to https://schema.discovery.wmnet
+  - analytics-web  # to be able to talk to https://analytics.wikimedia.org
