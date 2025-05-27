@@ -33,6 +33,7 @@ spec:
 {{- if $.Values.mesh.enabled }}
 {{- if $.Values.discovery | default false }}
 {{- if $.Values.discovery.listeners | default false }}
+{{- if not $.Values.devenv.enabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -52,7 +53,7 @@ spec:
     targetPort: {{ $listener.port }}
     protocol: TCP
   {{- end }}
-
+{{- end }}
 ---
 {{/* We duplicate the service with the name airflow-envoy, and we'll have to reflect this change in airflow-dags once deployed everywhere. */}}
 apiVersion: v1
