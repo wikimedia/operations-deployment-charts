@@ -481,12 +481,6 @@ spec: &spec
                           stream: '{{ $purge_stream }}'
                           domain: '{{`{{message.meta.domain}}`}}'
                           dt: '{{`{{message.meta.dt}}`}}'
-                      - $schema: '/resource_change/1.0.0'
-                        meta:
-                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/definition/{message.page_title}'
-                          stream: '{{ $purge_stream }}'
-                          domain: '{{`{{message.meta.domain}}`}}'
-                          dt: '{{`{{message.meta.dt}}`}}'
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.page_restore }}
               page_restore:
