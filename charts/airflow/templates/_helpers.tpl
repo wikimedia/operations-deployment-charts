@@ -527,13 +527,13 @@ spec:
 
 {{ define "app.worker.volumeMounts.hadoop" }}
 - name: {{ template "release.name" . }}-hadoop-configuration
-  mountPath: /etc/hadoop/conf
+  mountPath: {{ $.Values._vars.hadoop_conf_dir }}
 {{- end }}
 
 
 {{ define "app.worker.volumeMounts.spark" }}
 - name: {{ template "release.name" . }}-spark-configuration
-  mountPath: /etc/spark3/conf
+  mountPath: {{ $.Values._vars.spark_conf_dir }}
 {{- end }}
 
 {{- define "app.kerberos.volumes.base" }}
@@ -553,10 +553,10 @@ spec:
 
 {{- define "app.kerberos.volumeMounts.base" }}
 - name: {{ template "release.name" . }}-kerberos-client-config
-  mountPath: /etc/krb5.conf
+  mountPath: {{ $.Values._vars.krb5conf }}
   subPath: krb5.conf
 - name: {{ template "release.name" . }}-kerberos-token
-  mountPath: /tmp/airflow_krb5_ccache
+  mountPath: {{ $.Values._vars.krb5ccdir }}
 {{- end }}
 
 {{- define "app.kerberos.volumeMounts.keytab" }}

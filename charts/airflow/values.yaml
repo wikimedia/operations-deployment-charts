@@ -1,6 +1,17 @@
 # Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+_vars:
+  krb5ccdir: /tmp/airflow_krb5_ccache
+  krb5ccname: &krb5ccname /tmp/airflow_krb5_ccache/krb5cc
+  krb5conf: &krb5conf /etc/krb5.conf
+  keytab: &keytab /etc/kerberos/keytabs/airflow.keytab
+  hadoop_conf_dir: &hadoop_conf_dir /etc/hadoop/conf
+  spark_conf_dir: &spark_conf_dir /etc/spark3/conf
+  hdfs_keytab: &hdfs_keytab /etc/security/keytabs/hadoop/hdfs.keytab
+  hdfs_principal: &hdfs_principal hdfs/_HOST@WIKIMEDIA
+
 app:
   image: &base-image repos/data-engineering/airflow
   version: &base-image-version latest # we use latest everywhere in the defaults.
@@ -83,9 +94,9 @@ config:
         load_default_connections: false
       kerberos:
         reinit_frequency: 3600 # in seconds
-        ccache: /tmp/airflow_krb5_ccache/krb5cc
+        ccache: *krb5ccname
         include_ip: false
-        keytab: /etc/kerberos/keytabs/airflow.keytab
+        keytab: *keytab
         principal: override_me/override_me
       kubernetes_executor:
         multi_namespace_mode: false
@@ -242,21 +253,21 @@ worker:
         dfs.namenode.audit.log.async: 'true'
         dfs.block.access.token.enable: 'true'
         dfs.data.transfer.protection: privacy
-        dfs.datanode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
-        dfs.datanode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
+        dfs.datanode.kerberos.principal: *hdfs_principal
+        dfs.datanode.keytab.file: *hdfs_keytab
         dfs.encrypt.data.transfer: 'true'
         dfs.encrypt.data.transfer.cipher.key.bitlength: '128'
         dfs.encrypt.data.transfer.cipher.suites: AES/CTR/NoPadding
         dfs.http.policy: HTTPS_ONLY
         dfs.journalnode.kerberos.internal.spnego.principal: HTTP/_HOST@WIKIMEDIA
-        dfs.journalnode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
-        dfs.journalnode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
-        dfs.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
-        dfs.namenode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
-        dfs.secondary.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
-        dfs.secondary.namenode.keytab.file: /etc/security/keytabs/hadoop/hdfs.keytab
+        dfs.journalnode.kerberos.principal: *hdfs_principal
+        dfs.journalnode.keytab.file: *hdfs_keytab
+        dfs.namenode.kerberos.principal: *hdfs_principal
+        dfs.namenode.keytab.file: *hdfs_keytab
+        dfs.secondary.namenode.kerberos.principal: *hdfs_principal
+        dfs.secondary.namenode.keytab.file: *hdfs_keytab
         dfs.web.authentication.kerberos.keytab: /etc/security/keytabs/hadoop/HTTP.keytab
-        dfs.web.authentication.kerberos.principal: HTTP/_HOST@WIKIMEDIA
+        dfs.web.authentication.kerberos.principal: *hdfs_principal
       core:
         fs.defaultFS: override_me
         ha.zookeeper.quorum: override_me
@@ -374,12 +385,12 @@ worker:
   env:
     hadoop:
       - name: HADOOP_CONF_DIR
-        value: /etc/hadoop/conf
+        value: *hadoop_conf_dir
       - name: HIVE_CONF_DIR
-        value: /etc/hadoop/conf
+        value: *hadoop_conf_dir
     spark:
       - name: SPARK_CONF_DIR
-        value: /etc/spark3/conf
+        value: *spark_conf_dir
 
 kubernetes_pod_operator:
   resources:
@@ -407,12 +418,12 @@ kerberos:
   env:
     base:
     - name: KRB5CCNAME
-      value: /tmp/airflow_krb5_ccache/krb5cc
+      value: *krb5ccname
     - name: KRB5_CONFIG
-      value: /etc/krb5.conf
+      value: *krb5conf
     keytab:
     - name: KRB5_KEYTAB
-      value: /etc/kerberos/keytabs/airflow.keytab
+      value: *keytab
 
 hadoop_shell:
   enabled: false
