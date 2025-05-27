@@ -49,9 +49,10 @@ data:
 
     [realms]
       WIKIMEDIA = {
-        kdc = krb1002.eqiad.wmnet
-        kdc = krb2002.codfw.wmnet
-        admin_server = krb1002.eqiad.wmnet
+        {{- range $kerberos_server := $.Values.kerberos.servers }}
+        kdc = {{ $kerberos_server }}
+        {{- end }}
+        admin_server = {{ $.Values.kerberos.admin }}
       }
     [domain_realm]
       .wikimedia = WIKIMEDIA
