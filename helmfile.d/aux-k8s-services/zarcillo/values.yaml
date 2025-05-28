@@ -47,6 +47,23 @@ mesh:
 networkpolicy:
   egress:
     enabled: true
+    dst_nets:
+    # prometheus.svc.eqiad.wmnet
+    - cidr: 10.2.2.25/32
+      ports:
+        - protocol: TCP
+          port: 80
+    # prometheus.svc.codfw.wmnet
+    - cidr: 10.2.1.25/32
+      ports:
+        - protocol: TCP
+          port: 80
+    # dborch1001.wikimedia.org / orchestrator.wikimedia.org
+    - cidr: 208.80.155.103/32
+      ports:
+        - protocol: TCP
+          port: 443
+
 
 ingress:
   enabled: true
