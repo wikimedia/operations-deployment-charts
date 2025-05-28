@@ -2,6 +2,17 @@ mwcron:
   enabled: true
   suspended_jobs: []
 
+main_app:
+  requests:
+    auto_compute: false
+    cpu: 1000m
+    memory: 1000Mi
+  limits:
+    enforce: true
+    auto_compute: false
+    cpu: 1000m
+    memory: 1200Mi
+
 mw:
   httpd:
     enabled: false
