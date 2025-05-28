@@ -18,7 +18,7 @@ net_istio:
     replicaCount: 2
 core:
   activator:
-    version: 1.7.2-2
+    version: 1.7.2-7
     replicaCount: 2
     resources:
       requests:
@@ -28,7 +28,7 @@ core:
         cpu: 3000m
         memory: 800Mi
   autoscaler:
-    version: 1.7.2-2
+    version: 1.7.2-7
     replicaCount: 2
     resources:
       requests:
@@ -38,7 +38,7 @@ core:
         cpu: 3000m
         memory: 600Mi
   controller:
-    version: 1.7.2-2
+    version: 1.7.2-7
     replicaCount: 2
     resources:
       requests:
@@ -54,7 +54,7 @@ core:
     # from the Kube API (that in turn is contacted by Helm).
     # Having 4 pods helped during the last deployment issue.
     replicaCount: 4
-    version: 1.7.2-2
+    version: 1.7.2-7
     resources:
       requests:
         cpu: 500m
@@ -63,9 +63,9 @@ core:
         cpu: 1000m
         memory: 500Mi
   domain_mapping:
-    version: 1.7.2-1
+    version: 1.7.2-7
   domain_mapping_webhook:
-    version: 1.7.2-1
+    version: 1.7.2-7
 
 
   config_autoscaler:

@@ -1,22 +1,8 @@
 # Differences from eqiad:
-# - More up-to-date docker images for https://phabricator.wikimedia.org/T369493
 # - Allow to specify a security context when deploying isvcs based on Knative,
 #   and enable base security defaults.
 
 core:
-  activator:
-    version: 1.7.2-7
-  webhook:
-    version: 1.7.2-7
-  autoscaler:
-    version: 1.7.2-7
-  controller:
-    version: 1.7.2-7
-  domain_mapping:
-    version: 1.7.2-7
-  domain_mapping_webhook:
-    version: 1.7.2-7
-
   config_features:
     secure-pod-defaults: "enabled"
     kubernetes.podspec-securitycontext: "enabled"
