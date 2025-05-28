@@ -134,6 +134,7 @@ spec: &spec
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
+                    host: '{{ `{{globals.message.meta.domain }}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -151,6 +152,7 @@ spec: &spec
                   headers:
                     content-type: "application/json"
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
+                    host: '{{ `{{globals.message.meta.domain }}` }}'
                   body: '{{ `{{globals.message}}` }}'
               {{ $part_topic }}:
                 topic: 'cpjobqueue.partitioned.mediawiki.job.{{ $part_topic }}'
@@ -168,6 +170,7 @@ spec: &spec
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
+                    host: '{{ `{{globals.message.meta.domain }}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -193,6 +196,7 @@ spec: &spec
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
+                    host: '{{ `{{globals.message.meta.domain }}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
@@ -231,6 +235,7 @@ spec: &spec
                   headers:
                     content-type: 'application/json'
                     x-request-id: '{{ `{{globals.message.meta.request_id}}` }}'
+                    host: '{{ `{{globals.message.meta.domain }}` }}'
                   body: '{{ `{{globals.message}}` }}'
                   agentOptions:
                     keepAlive: true
