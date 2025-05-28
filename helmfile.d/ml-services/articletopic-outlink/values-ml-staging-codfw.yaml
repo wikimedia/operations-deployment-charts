@@ -4,17 +4,6 @@ monitoring:
 inference:
   predictor:
     config:
-      # These settings are applied at the pod level,
-      # that includes all containers not explicitly defined
-      # in the isvc (like the istio-{validation,proxy}).
-      # The knative-serving ones seem to need
-      # an extra level of settings in the knative's control-plane
-      # due to how the various pods/revisions are handled
-      # (dynamically etc..).
-      # More info https://phabricator.wikimedia.org/T369493
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
     image: "machinelearning-liftwing-inference-services-outlink"
     version: "2025-05-23-112000-publish"
     base_env:
@@ -28,11 +17,7 @@ inference:
         value: "mediawiki.page_prediction_change.rc0"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2025-05-23-112001-publish"
-    config:
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
+    version: "2025-03-28-075458-publish"
     base_env:
       - name: WIKI_URL
         value: "http://mw-api-int-ro.discovery.wmnet:4680"

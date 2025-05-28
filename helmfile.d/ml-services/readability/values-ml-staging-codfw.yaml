@@ -1,18 +1,3 @@
-inference:
-  predictor:
-    config:
-      # These settings are applied at the pod level,
-      # that includes all containers not explicitly defined
-      # in the isvc (like the istio-{validation,proxy}).
-      # The knative-serving ones seem to need
-      # an extra level of settings in the knative's control-plane
-      # due to how the various pods/revisions are handled
-      # (dynamically etc..).
-      # More info https://phabricator.wikimedia.org/T369493
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
-
 inference_services:
   readability:
     predictor:
