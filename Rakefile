@@ -417,14 +417,18 @@ task :refresh_fixtures do
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
 
-    zookeeper_mock = ['1.2.3.4/32']
+    # Using Wikimedia DNS IPs to mock real IPs in order to be able to deploy mocked values
+    # to a k8s dev/test environment, T396107
+    zookeeper_mock = ['185.71.138.138/32']
     zookeeper_clusters = {}
     hiera['zookeeper_clusters'].each_key do |cluster_name|
       zookeeper_clusters[cluster_name] = zookeeper_mock
     end
     common_clusters['zookeeper_clusters'] = zookeeper_clusters
 
-    kafka_mock = ['1.2.3.4/32']
+    # Using Wikimedia DNS IPs to mock real IPs in order to be able to deploy mocked values
+    # to a k8s dev/test environment, T396107
+    kafka_mock = ['185.71.138.138/32']
     kafka_brokers = {}
     hiera['kafka_clusters'].each_key do |cluster_name|
       kafka_brokers[cluster_name] = kafka_mock
@@ -452,6 +456,9 @@ task :refresh_fixtures do
 
   # Mock the data structure created for the external-services chart in
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+  #
+  # Using Wikimedia DNS IPs to mock real IPs in order to be able to deploy mocked values
+  # to a k8s dev/test environment, T396107
   external_services_definitions = {
     'external_services_definitions' => {
       'kafka' => {
@@ -469,12 +476,12 @@ task :refresh_fixtures do
         },
         'instances' => {
           'main-eqiad' => [
-            '1.2.3.4/32',
-            'fe80::ffff:ffff:ffff:ffff/128',
+            '185.71.138.138/32',
+            '2001:67c:930::1/128',
           ],
           'main-codfw' => [
-            '1.2.3.4/32',
-            'fe80::ffff:ffff:ffff:ffff/128',
+            '185.71.138.138/32',
+            '2001:67c:930::1/128',
           ]
         }
       },
@@ -494,8 +501,8 @@ task :refresh_fixtures do
         },
         'instances' => {
           'kdc' => [
-            '1.2.3.4',
-            'fe80::ffff:ffff:ffff:ffff',
+            '185.71.138.138',
+            '2001:67c:930::1',
           ]
         }
       },
