@@ -1,7 +1,5 @@
 # Differences from prod:
 # - Reduce some the replicas from what we set for production.
-# - More up-to-date security settings
-#   for https://phabricator.wikimedia.org/T369493
 
 net_istio:
   webhook:
@@ -12,5 +10,3 @@ core:
     replicaCount: 2
   webhook:
     replicaCount: 2
-  config_features:
-     secure-pod-defaults: "enabled"
