@@ -125,3 +125,6 @@ kubeControllers:
   # https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config
   dnsConfig: {}
 
+cni:
+  # Set to true to install the CNI plugin via initContainer of the calico-node DaemonSet.
+  install: false

@@ -49,3 +49,14 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: calico-cni
+{{- if .Values.cni.install }}
+- kind: ServiceAccount
+  name: calico-cni-plugin
+  namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-cni-plugin
+  namespace: kube-system
+{{- end }}

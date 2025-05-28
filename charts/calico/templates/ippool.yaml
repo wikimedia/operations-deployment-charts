@@ -1,3 +1,8 @@
+# The default for IPPools seem to be enforced by the calico-apiserver.
+# Deploying IPPools via Custom Resources (as we do here) may lead to
+# the defaults (as mentioned in the documentation) not being applied.
+# To work around this, we set some defaults here.
+{{- $specDefaults := dict "vxlanMode" "Never" "ipipMode" "Never" }}
 {{- range $name, $spec := .Values.IPPools }}
 apiVersion: crd.projectcalico.org/v1
 kind: IPPool
@@ -6,12 +11,6 @@ metadata:
   labels:
     {{- include "calico.labels" $ | nindent 4 }}
 spec:
-  # The default for these seem to be enforced only by the calico-apiserver so
-  # they end up being != Never for IPPools deployed directly via CRD.
-  # Hardcoding the values here might not be sensible but this way no backwards
-  # compatibility code needs to be written.
-  vxlanMode: Never
-  ipipMode: Never
-  {{- toYaml $spec | nindent 2 }}
+  {{- toYaml (merge $spec $specDefaults) | nindent 2 }}
 ---
 {{- end }}{{/* end range */}}

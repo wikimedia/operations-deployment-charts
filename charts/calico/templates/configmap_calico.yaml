@@ -20,3 +20,31 @@ data:
   # By default, MTU is auto-detected, and explicitly setting this field should not be required.
   # You can override auto-detection by providing a non-zero value.
   veth_mtu: "{{- .Values.veth_mtu | default 0 }}"
+  {{- if .Values.cni.install }}
+  cni_network_config: |-
+    {
+      "name": "k8s-pod-network",
+      "cniVersion": "0.3.1",
+      "plugins": [
+        {
+          "type": "calico",
+          "log_level": "info",
+          "log_file_path": "/var/log/calico/cni/cni.log",
+          "datastore_type": "kubernetes",
+          "nodename": "__KUBERNETES_NODE_NAME__",
+          "mtu": __CNI_MTU__,
+          "ipam": {
+              "type": "calico-ipam",
+              "assign_ipv4": "true",
+              "assign_ipv6": "true"
+          },
+          "policy": {
+              "type": "k8s"
+          },
+          "kubernetes": {
+              "kubeconfig": "__KUBECONFIG_FILEPATH__"
+          }
+        }
+      ]
+    }
+  {{- end }}

@@ -11,6 +11,24 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: calico-node
 rules:
+  {{- if .Values.cni.install }}
+  # Used for creating service account tokens to be used by the CNI plugin
+  - apiGroups: [""]
+    resources:
+      - serviceaccounts/token
+    resourceNames:
+      - calico-cni-plugin
+    verbs:
+      - create
+  # The CNI plugin needs to get pods, nodes, and namespaces.
+  - apiGroups: [""]
+    resources:
+      - pods
+      - nodes
+      - namespaces
+    verbs:
+      - get
+  {{- end }}
   # EndpointSlices are used for Service-based network policy rule
   # enforcement.
   - apiGroups: ["discovery.k8s.io"]
@@ -122,6 +140,21 @@ rules:
       - get
       - list
       - watch
+  {{- if .Values.cni.install }}
+  # These permissions are required for Calico CNI to perform IPAM allocations.
+  # Which seems to be done by calico-node or at least with it's service account.
+  - apiGroups: ["crd.projectcalico.org"]
+    resources:
+      - blockaffinities
+      - ipamblocks
+      - ipamhandles
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  {{- end }}
   # The CNI plugin and calico/node need to be able to create a default
   # IPAMConfiguration
   - apiGroups: ["crd.projectcalico.org"]

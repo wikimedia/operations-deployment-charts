@@ -47,8 +47,9 @@ spec:
       # deletion": https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods.
       terminationGracePeriodSeconds: 0
       priorityClassName: system-node-critical
-      {{- if .Values.bpf }}
+      {{- if or .Values.bpf .Values.cni.install }}
       initContainers:
+        {{- if .Values.bpf }}
         # This init container mounts the necessary filesystems needed by the BPF data plane
         # i.e. bpf at /sys/fs/bpf and cgroup2 at /run/calico/cgroup. Calico-node initialization is executed
         # in best effort fashion, i.e. no failure for errors, to not disrupt pod creation in iptables mode.
@@ -74,7 +75,71 @@ spec:
               readOnly: true
           securityContext:
             privileged: true
-      {{- end }}
+        {{- end }}
+        {{- if .Values.cni.install }}
+        # This container installs the CNI binaries
+        # and CNI network config file on each node.
+        - name: install-cni
+          image: docker.io/calico/cni:v{{ .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/opt/cni/bin/install"]
+          envFrom:
+          - configMapRef:
+              # Allow KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT to be overridden for eBPF mode.
+              name: kubernetes-services-endpoint
+              optional: true
+          env:
+            {{- if .Values.bpf }}
+            # Overrides for kubernetes API server host/port. Needed in BPF mode.
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: kubernetes_service_host
+            - name: KUBERNETES_SERVICE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: kubernetes_service_port
+            {{- end }}
+            # Name of the CNI config file to create.
+            - name: CNI_CONF_NAME
+              value: "10-calico.conflist"
+            # The CNI network config to install on each node.
+            - name: CNI_NETWORK_CONFIG
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: cni_network_config
+            # Set the hostname based on the k8s node name.
+            - name: KUBERNETES_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            {{- if .Values.cni.install }}
+            # CNI MTU Config variable
+            - name: CNI_MTU
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: veth_mtu
+            {{- end }}
+            # Prevents the container from sleeping forever.
+            - name: SLEEP
+              value: "false"
+            {{- if .Values.cni.env }}
+              {{ toYaml .Values.cni.env | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: /host/opt/cni/bin
+              name: cni-bin-dir
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+          securityContext:
+            privileged: true
+        {{- end }}
+
+      {{- end }} {{/* if or .Values.bpf .Values.cni.install */}}
       containers:
         # Runs calico-node container on each Kubernetes node. This
         # container programs network policy and routes on each
@@ -101,7 +166,7 @@ spec:
           {{- end }}
             # Don't try to manage the CNI's kubeconfig/token (puppet does that)
             - name: CALICO_MANAGE_CNI
-              value: "false"
+              value: "{{ .Values.cni.install }}"
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"
@@ -209,6 +274,11 @@ spec:
           resources:
             {{- toYaml .Values.calicoNode.resources | nindent 12 }}
           volumeMounts:
+          {{- if .Values.cni.install }}
+            - mountPath: /host/etc/cni/net.d
+              name: cni-net-dir
+              readOnly: false
+          {{- end }}
             - mountPath: /lib/modules
               name: lib-modules
               readOnly: true
@@ -264,6 +334,20 @@ spec:
         - name: nodeproc
           hostPath:
             path: /proc
+        {{- end }}
+        {{- if .Values.cni.install }}
+        # Used to install CNI.
+        - name: cni-bin-dir
+          hostPath:
+            path: /opt/cni/bin
+            type: DirectoryOrCreate
+        - name: cni-net-dir
+          hostPath:
+            path: /etc/cni/net.d
+        # Used to access CNI logs.
+        - name: cni-log-dir
+          hostPath:
+            path: /var/log/calico/cni
         {{- end }}
         # Used to create per-pod Unix Domain Sockets
         - name: policysync
