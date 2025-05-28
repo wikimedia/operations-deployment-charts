@@ -7,7 +7,7 @@ metadata:
     {{- include "coredns.labels" . | nindent 4 }}
 data:
   Corefile: |
-    .:53 {
+    .:5353 {
         errors
         health {
             lameduck 5s
@@ -37,7 +37,7 @@ data:
 
     # Similar to reflect.wikimedia.org: will return the client's IP address
     # in A/AAAA, and will return source port & protocol in a SRV record.
-    reflect.k8s.local.wmnet:53 {
+    reflect.k8s.local.wmnet:5353 {
         nsid
         whoami
     }

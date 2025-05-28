@@ -22,9 +22,11 @@ spec:
     {{- with .Values.service.nodePort }}
     nodePort: {{ . }}
     {{- end }}
+    targetPort: 5353
   - name: dns-tcp
     port: 53
     protocol: TCP
     {{- with .Values.service.nodePort }}
     nodePort: {{ . }}
     {{- end }}
+    targetPort: 5353
