@@ -7,6 +7,7 @@ monitoring:
 config:
   public:
     STAGE: "prod"
+    NOC_HOSTPORT: "localhost:6509"
 
 resources:
   replicas: 1
@@ -76,7 +77,7 @@ ingress:
 
 mariadb:
   egress:
-    sections: ['m5']
+    sections: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 'm5']
 
 discovery:
   listeners:
