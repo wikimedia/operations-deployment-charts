@@ -760,3 +760,8 @@ kubeControllers:
     limits:
       cpu: ~
       memory: 200Mi
+
+PodSecurityStandard:
+  disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles
+  enforce: true              # Enforce the PodSecurityStandard profile "restricted"
+  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP

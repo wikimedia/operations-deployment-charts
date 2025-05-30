@@ -60,8 +60,3 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
         - 8081
-
-PodSecurityStandard:
-  disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles 
-  enforce: true              # Enforce the PodSecurityStandard profile "restricted"
-  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP
