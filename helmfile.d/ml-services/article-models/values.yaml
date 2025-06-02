@@ -59,12 +59,12 @@ inference_services:
       autoscaling.knative.dev/target: "20"
     predictor:
       image: "machinelearning-liftwing-inference-services-articlequality"
-      image_version: "2024-09-06-141508-publish"
+      image_version: "2025-05-23-112447-publish"
       custom_env:
         - name: MODEL_NAME
           value: "articlequality"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/articlequality/language-agnostic/20240801111508/"
+          value: "s3://wmf-ml-models/articlequality/language-agnostic/20250425125943/"
         - name: FORCE_HTTP
           value: "True"
       container:
@@ -80,7 +80,7 @@ inference_services:
         minReplicas: 1
         maxReplicas: 5
       image: "machinelearning-liftwing-inference-services-article-country"
-      image_version: "2025-03-31-160149-publish"
+      image_version: "2025-05-23-112448-publish"
       custom_env:
         - name: MODEL_NAME
           value: "article-country"
