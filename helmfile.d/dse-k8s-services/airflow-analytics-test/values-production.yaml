@@ -12,6 +12,7 @@ config:
         parallelism: 128
       kubernetes_executor:
           worker_pods_creation_batch_size: 64
+          worker_pods_queued_check_interval: 30
       scheduler:
           max_tis_per_query: 64
       kerberos:
