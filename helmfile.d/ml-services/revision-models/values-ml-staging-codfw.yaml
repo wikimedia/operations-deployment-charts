@@ -7,6 +7,19 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+      custom_env:
+        - name: NUM_THREADS
+          value: "1"
+        - name: NUM_OF_WORKERS
+          value: "1"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 2Gi
+          requests:
+            cpu: "4"
+            memory: 2Gi
   reference-risk:
     predictor:
       config:
