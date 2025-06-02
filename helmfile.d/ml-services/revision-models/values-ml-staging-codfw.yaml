@@ -8,6 +8,14 @@ inference_services:
         minReplicas: 1
         maxReplicas: 1
       custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/reference-quality/20250127142109/"
+        - name: FORCE_HTTP
+          value: "True"
+        - name: MODEL_TO_DEPLOY
+          value: "reference-need"
+        - name: BATCH_SIZE
+          value: "16"
         - name: NUM_THREADS
           value: "1"
         - name: NUM_OF_WORKERS
