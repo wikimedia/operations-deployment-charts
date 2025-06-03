@@ -53,6 +53,19 @@ spec:
             runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
+      {{- if .Values.overrideCA.secretName }}
+          env:
+            - name: SSL_CERT_FILE
+              value: /ca/{{ .Values.overrideCA.fileName | default "ca.pem" }}
+          volumeMounts:
+            - name: ca
+              mountPath: /ca
+              readOnly: true
+      volumes:
+        - name: ca
+          secret:
+            secretName: {{ .Values.overrideCA.secretName }}
+      {{- end }}
       serviceAccountName: controller-manager
       {{- with .Values.nodeSelector }}
       nodeSelector:

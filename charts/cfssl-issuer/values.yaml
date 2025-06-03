@@ -76,3 +76,9 @@ external_services: {}
 # example with multirootca
 #external_services:
 #  pki: [ "multirootca" ]
+
+# Specify the name of a secret object containing a CA certificate
+# to use instead of the default certificate bundle (from wmf-certificates).
+overrideCA:
+  secretName: ""
+  fileName: "ca.pem" # the name of the file in the secret, defaults to ca.pem
