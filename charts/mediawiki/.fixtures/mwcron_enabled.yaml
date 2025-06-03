@@ -10,6 +10,9 @@ mwcron:
         script: extensions/foo/bar/cron.php
       description: "A description of the job"
       startingDeadlineSeconds: 30
+      successfulJobsHistoryLimit: 10
+      failedJobsHistoryLimit: 10
+      ttlSecondsAfterFinished: 1000000000
     - name: "test2"
       schedule: "*/10 * * * *"
       command: "/usr/local/bin/expanddblist all | xargs -I{} -P4 bash -c '/usr/local/bin/mwscript Version.php --wiki={} 2>&1 | ts {}'"

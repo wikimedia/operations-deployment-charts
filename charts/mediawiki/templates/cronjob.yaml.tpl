@@ -22,6 +22,8 @@ spec:
   {{- if $jobConfig.startingDeadlineSeconds }}
   startingDeadlineSeconds: {{ max $jobConfig.startingDeadlineSeconds 10 }}
   {{- end }}
+  failedJobsHistoryLimit: {{ $jobConfig.failedJobsHistoryLimit | default 1 }}
+  successfulJobsHistoryLimit: {{ $jobConfig.successfulJobsHistoryLimit | default 3 }}
   jobTemplate:
     spec:
       template:
@@ -74,7 +76,8 @@ spec:
           restartPolicy: Never
       # As above, we're not assuming idempotence; don't restart the entire pod, either.
       backoffLimit: {{ $jobConfig.backoffLimit | default 0 }}
-      ttlSecondsAfterFinished: {{ $jobConfig.ttlSecondsAfterFinished | default 106400 }}  # {{ $jobConfig.ttlSecondsAfterFinished | default 106400 | toString | duration }}
+      ttlSecondsAfterFinished: {{ $jobConfig.ttlSecondsAfterFinished | int | default 106400 }}  # {{ $jobConfig.ttlSecondsAfterFinished | int | default 106400 | toString | duration }}
+
 ---
 {{- end }} {{/* end range $jobConfig */}}
 {{- end }} {{/* end if $can_run */}}
