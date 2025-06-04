@@ -45,7 +45,7 @@ app:
       # Even when backfilling in prod (with one TaskManager),
       # JobManager never used more than 650MB.
       # This might when we are taking checkpoints.
-      memory: 1000m
+      memory: 2000m
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
