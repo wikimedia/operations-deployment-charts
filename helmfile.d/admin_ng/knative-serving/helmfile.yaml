@@ -12,6 +12,8 @@ releases:
     version: {{ $version }}
     {{- end }}
     <<: *default
+    needs:
+      - kube-system/namespaces
   - name: knative-serving
     chart: wmf-stable/knative-serving
     {{- $version := .Values.chartVersions | get "wmf-stable/knative-serving" "" }}
@@ -20,6 +22,7 @@ releases:
     {{- end }}
     <<: *default
     needs:
+      - kube-system/namespaces
       - knative-serving/knative-serving-crds
     values:
       # Generic default values for all environments

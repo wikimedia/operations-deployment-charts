@@ -16,6 +16,7 @@ releases:
     <<: *default
     needs:
       - kube-system/namespaces
+      - kube-system/calico-crds
     values:
       - resources:
         # Allow all pods in this namespace to contact the Kubernetes API
@@ -67,8 +68,8 @@ releases:
     {{- end }}
     <<: *default
     needs:
-      - kube-system/coredns
       - kube-system/namespaces
+      - kube-system/coredns
       - cert-manager/cert-manager-networkpolicies
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
@@ -94,7 +95,8 @@ releases:
     {{- end }}
     <<: *default
     needs:
-      - cert-manager/cert-manager
+      - kube-system/namespaces
+      - cert-manager/cert-manager  # cfssl-issuer extends rbac rules of cert-manager, ensure it is installed first
       - cert-manager/cfssl-issuer-crds
       - external-services/external-services
     values:

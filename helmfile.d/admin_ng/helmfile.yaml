@@ -187,10 +187,10 @@ bases:
   {{- end }}
   # Namespaces are created first to ensure that ResourceQuota objects are in place (priority classes used by calico etc.)
   - helmfile_namespaces.yaml
-  # External dependency is required by some of the following releases
-  - external-services/helmfile.yaml
   - calico/helmfile.yaml
   - coredns/helmfile.yaml
+  # External dependency is required by some of the following releases
+  - external-services/helmfile.yaml
   - cert-manager/helmfile.yaml
   - helmfile_namespace_certs.yaml
   - helmfile_istio-gateways.yaml

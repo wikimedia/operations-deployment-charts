@@ -115,6 +115,7 @@ releases:
     <<: *default
     needs:
       - kube-system/namespaces
+      # This also depends on istio CRDs. But we can't add a dependency here as those are not installed via helmfile.
     values:
       - resources:
           # Istio leaves envoy at the default configuration regarding HTTP

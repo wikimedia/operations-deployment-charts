@@ -20,8 +20,10 @@ releases:
     {{- end }}
     <<: *default
     needs:
-      # This is to ensure this helmfile is processed after networking and DNS is set up properly
-      # If you are sure you don't depend on that, remove the "needs".
+      # This is to ensure this helmfile is processed after namespaces, networking and DNS
+      # is set up properly.
+      # If you are sure you don't depend on any of that, remove the "needs".
+      - kube-system/namespaces
       - kube-system/coredns
     values:
       # Generic default values for all environments

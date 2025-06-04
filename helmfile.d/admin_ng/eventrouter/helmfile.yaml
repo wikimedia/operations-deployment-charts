@@ -8,6 +8,7 @@ releases:
     {{- end }}
     missingFileHandler: Warn
     needs:
+      - kube-system/namespaces
       - kube-system/coredns
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments

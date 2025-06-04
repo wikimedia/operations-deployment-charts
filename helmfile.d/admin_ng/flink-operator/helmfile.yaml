@@ -31,8 +31,8 @@ releases:
     {{- end }}
     <<: *default
     needs:
-      - kube-system/coredns
       - kube-system/namespaces
+      - kube-system/coredns
       # WMF maintains flink-kubernetes-operator-crds as separate chart and release
       - flink-operator/flink-operator-crds
     values:
