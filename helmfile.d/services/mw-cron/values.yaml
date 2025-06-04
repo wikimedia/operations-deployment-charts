@@ -8,7 +8,10 @@ main_app:
     cpu: 1000m
     memory: 1000Mi
   limits:
-    enforce: false
+    enforce: true
+    auto_compute: false
+    cpu: 1000m
+    memory: 2000Mi
 
 mw:
   httpd:
