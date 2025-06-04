@@ -30,7 +30,13 @@ monitoring:
 mw:
   sites:
   - name: mw-jobrunner
-    priority: 1
+    # Despite this being the only website around, we also have the nonexistent
+    # one by default in our setup. That one ends up with a virtualhost file
+    # entry of 00-nonexistent. Having 0 for the priority here as well, ensures
+    # that all requests go to the mw-jobrunner one, even if they don't have the
+    # proper Host header. This is crucial for the Single Version MediaWiki HTTP
+    # routing implementation
+    priority: 0
     content: |+
       <Virtualhost *:8080>
         Servername mw-jobrunner.discovery.wmnet
