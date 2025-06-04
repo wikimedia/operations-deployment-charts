@@ -336,10 +336,10 @@
   {{- end -}}
   {{- if $flags.cron }}
   - name: {{ $release }}-cron-captcha-badwords
-    mountPath: /etc/fancycaptcha/badwords
+    mountPath: /etc/fancycaptcha/
     readOnly: true
   - name: {{ $release }}-cron-captcha-words
-    mountPath: /etc/fancycaptcha/words
+    mountPath: /etc/fancycaptcha/
     readOnly: true
   {{- end -}}
 

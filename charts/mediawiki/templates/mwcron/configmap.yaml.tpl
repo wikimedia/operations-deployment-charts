@@ -8,7 +8,7 @@ metadata:
   name: {{ template "base.name.release" $ }}-cron-captcha-badwords
   {{- include "mw.helpers.labels" $ | indent 2}}
 data:
-  captcha-badwords: |
+  badwords: |
     {{- .Values.mw.fancycaptcha.badwords | nindent 4 }}
 ---
 apiVersion: v1
@@ -17,7 +17,7 @@ metadata:
   name: {{ template "base.name.release" $ }}-cron-captcha-words
   {{- include "mw.helpers.labels" $ | indent 2}}
 data:
-  captcha-words: |
+  words: |
     {{- .Values.mw.fancycaptcha.words | nindent 4 }}
 {{- end }}
 {{- end }}
