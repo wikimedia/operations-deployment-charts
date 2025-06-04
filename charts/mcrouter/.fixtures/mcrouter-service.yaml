@@ -16,3 +16,12 @@ service:
     port: 4442
   nodePort: 0
   use_node_local_endpoints: true
+
+tolerations:
+  - key: dedicated
+    value: mw-experimental
+    effect: NoExecute
+  - key: dedicated
+    value: mw-experimental
+    effect: NoSchedule
+

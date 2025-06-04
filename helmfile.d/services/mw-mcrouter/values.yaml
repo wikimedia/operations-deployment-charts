@@ -40,3 +40,11 @@ cache:
 networkpolicy:
   egress:
     enabled: true
+
+tolerations:
+  - key: dedicated
+    value: mw-experimental
+    effect: NoExecute
+  - key: dedicated
+    value: mw-experimental
+    effect: NoSchedule
