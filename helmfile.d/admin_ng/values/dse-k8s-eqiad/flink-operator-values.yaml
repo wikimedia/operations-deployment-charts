@@ -46,3 +46,12 @@ zookeeper:
 #         ports:
 #           - port: 2181
 #             protocol: tcp
+
+operatorPod:
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1024Mi"
+    requests:
+      cpu: "500m"
+      memory: "1024Mi"
