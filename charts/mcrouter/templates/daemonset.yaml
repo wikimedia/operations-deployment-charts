@@ -25,6 +25,6 @@ spec:
         {{- include "cache.mcrouter.volume" .  | indent 8 }}
       {{- if .Values.tolerations }}
       tolerations:
-        {{- toYaml .Values.tolerations | nindent 6 }}
+        {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
 
