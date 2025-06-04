@@ -15,38 +15,6 @@ zookeeper:
   allowed_clusters:
     - flink-eqiad
 
-# Commented out for now, we need a newer version of Zookeeper to use Zookeeper HA with Flink.
-# https://phabricator.wikimedia.org/T331283#8874029
-# networkpolicy:
-#   egress:
-#     enabled: true
-#     dst_nets:
-#       # Zookeeper main-eqiad on conf nodes
-#       - cidr: 10.64.0.207/32 # conf1007
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-#       - cidr: 2620:0:861:101:10:64:0:207/128 # conf1007
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-#       - cidr: 10.64.16.110/32 # conf1008
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-#       - cidr: 2620:0:861:102:10:64:16:110/128 # conf1008
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-#       - cidr: 10.64.48.154/32 # conf1009
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-#       - cidr: 2620:0:861:107:10:64:48:154/128 # conf1009
-#         ports:
-#           - port: 2181
-#             protocol: tcp
-
 operatorPod:
   resources:
     limits:
