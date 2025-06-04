@@ -335,10 +335,7 @@
     mountPath: {{ .Values.dumps.persistence.mount_path }}
   {{- end -}}
   {{- if $flags.cron }}
-  - name: {{ $release }}-cron-captcha-badwords
-    mountPath: /etc/fancycaptcha/
-    readOnly: true
-  - name: {{ $release }}-cron-captcha-words
+  - name: {{ $release }}-cron-captcha
     mountPath: /etc/fancycaptcha/
     readOnly: true
   {{- end -}}

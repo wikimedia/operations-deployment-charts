@@ -84,12 +84,14 @@
     name: {{ $release }}-mercurius-script
 {{- end }}
 {{- if $flags.cron }}
-- name: {{ $release }}-cron-captcha-badwords
+- name: {{ $release }}-cron-captcha
   configMap:
-    name: {{ $release }}-cron-captcha-badwords
-- name: {{ $release }}-cron-captcha-words
-  configMap:
-    name: {{ $release }}-cron-captcha-words
+    name: {{ $release }}-cron-captcha
+    items:
+      - key: badwords
+        path: badwords
+      - key: words
+        path: words
 {{- end }}
 {{- end }}
 

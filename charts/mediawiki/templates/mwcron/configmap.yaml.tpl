@@ -5,18 +5,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "base.name.release" $ }}-cron-captcha-badwords
+  name: {{ template "base.name.release" $ }}-cron-captcha
   {{- include "mw.helpers.labels" $ | indent 2}}
 data:
   badwords: |
     {{- .Values.mw.fancycaptcha.badwords | nindent 4 }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" $ }}-cron-captcha-words
-  {{- include "mw.helpers.labels" $ | indent 2}}
-data:
   words: |
     {{- .Values.mw.fancycaptcha.words | nindent 4 }}
 {{- end }}
