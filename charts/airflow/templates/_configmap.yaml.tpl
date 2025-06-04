@@ -243,6 +243,7 @@ data:
     /{{ $extra_dag_folder }}/
     {{- end }}
     /wmf_airflow_common/
+    /config/
 
 {{- end }}
 
