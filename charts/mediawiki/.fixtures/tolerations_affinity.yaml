@@ -1,0 +1,16 @@
+debug:
+  php:
+    enabled: true
+mw:
+  logging:
+    rsyslog: false
+tolerations:
+  - key: dedicated
+    value: mw-experimental
+    effect: NoExecute
+  - key: dedicated
+    value: mw-experimental
+    effect: NoSchedule
+affinity:
+  nodeSelector:
+    dedicated: mw-experimental
