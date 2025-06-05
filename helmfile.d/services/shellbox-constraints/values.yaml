@@ -13,3 +13,10 @@ mesh:
 
 resources:
   replicas: 10
+
+main_app:
+  limits:
+    # $wgMaxShellMemory is 1024M, plus resources for other pod components
+    # For some reason, ram usage is very high, but relatively stable.
+    # Bump it.
+    memory: 3.5Gi
