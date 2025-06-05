@@ -75,12 +75,16 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
-      {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
+      {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       {{- end }}
       serviceAccountName: {{ template "release.name" . }}
       containers:
-        {{- include "app.airflow.scheduler" . | indent 8 }}
+        {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
+        {{- include "app.airflow.scheduler" (dict "Root" . "profiles" (list "LocalExecutor")) | indent 8 }}
+        {{- else }}
+        {{- include "app.airflow.scheduler" (dict "Root" . "profiles" list) | indent 8 }}
+        {{- end }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.container" . | indent 8 }}
         {{- end }}
@@ -89,6 +93,10 @@ spec:
         {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
+        {{- end }}
+        {{/* If the scheduler is running with the LocalExecutor, it also neefs the hadoop and kerberos config files rendered locally */}}
+        {{- if has "LocalExecutor" .profiles }}
+        {{- include "airflow.task-pod.volumes" (dict "Root" . "profiles" (list "hadoop" "kerberos")) | indent 2 }}
         {{- end }}
 
 {{- end }}

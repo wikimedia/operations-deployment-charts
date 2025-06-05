@@ -32,30 +32,37 @@
 {{- end }}
 
 {{- define "app.airflow.scheduler" }}
-- name: {{ template "base.name.release" . }}
-  image: {{ template "app.generic._image" . }}
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
+- name: {{ template "base.name.release" .Root }}
+  image: {{ template "app.generic._image" .Root }}
+  imagePullPolicy: {{ .Root.Values.docker.pull_policy }}
   command: ["airflow"]
   args: ["scheduler", "--pid" , "/tmp/airflow-scheduler.pid"]
   ports:
-  {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-  - containerPort: {{ $.Values.scheduler.local_executor_api_port }}
+  {{- if has "LocalExecutor" .profiles }}
+  - containerPort: {{ .Root.Values.scheduler.local_executor_api_port }}
   {{- end }}
-  - containerPort: {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
-  {{- if .Values.scheduler.liveness_probe }}
+  - containerPort: {{ .Root.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
+  {{- if .Root.Values.scheduler.liveness_probe }}
   livenessProbe:
-  {{- toYaml .Values.scheduler.liveness_probe | nindent 4 }}
+  {{- toYaml .Root.Values.scheduler.liveness_probe | nindent 4 }}
   {{- end }}
-  {{- if .Values.scheduler.readiness_probe }}
+  {{- if .Root.Values.scheduler.readiness_probe }}
   readinessProbe:
-  {{- toYaml .Values.scheduler.readiness_probe | nindent 4 }}
+  {{- toYaml .Root.Values.scheduler.readiness_probe | nindent 4 }}
   {{- end }}
-  {{- include "app.airflow.env" . | indent 2 }}
-  {{- include "base.helper.resources" .Values.scheduler | indent 2 }}
-  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+  {{- include "app.airflow.env" .Root | indent 2 }}
+  {{- if has "LocalExecutor" .profiles }}
+  {{- include "app.airflow.env.hadoop" .Root | indent 2 }}
+  {{- include "app.airflow.env.kerberos" (dict "Root" .Root) | indent 2 }}
+  {{- end }}
+  {{- include "base.helper.resources" .Root.Values.scheduler | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" .Root | indent 2 }}
   volumeMounts:
-  {{- include "app.airflow.volumeMounts" . | indent 2 }}
-  {{- include "kerberos.volumeMounts" (dict "Root" .) | indent 2 }}
+  {{- include "app.airflow.volumeMounts" .Root | indent 2 }}
+  {{- include "kerberos.volumeMounts" (dict "Root" .Root) | indent 2 }}
+  {{- if has "LocalExecutor" .profiles }}
+  {{- include "app.worker.volumeMounts.hadoop" .Root | indent 2 }}
+  {{- end }}
 {{- end }}
 
 {{ define "app.airflow.env" }}
