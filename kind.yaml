@@ -1,0 +1,30 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+featureGates:
+  # Required because securityContext.procMount will be forced to "Default" if not enabled
+  ProcMountType: true
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry]
+    config_path = "/etc/containerd/certs.d"
+kubeadmConfigPatches:
+- |
+  kind: ClusterConfiguration
+  apiServer:
+    extraArgs:
+      "service-node-port-range": "1-65535"
+- |
+  kind: KubeletConfiguration
+  clusterDNS: ["10.192.76.3"]
+nodes:
+- role: control-plane
+  image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
+- role: worker
+  image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
+- role: worker
+  image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
+networking:
+  ipFamily: dual
+  disableDefaultCNI: true
+  podSubnet: "10.192.64.0/21,2620:0:860:babe::/64"
+  serviceSubnet: "10.192.76.0/24,2620:0:860:306::1000/116"

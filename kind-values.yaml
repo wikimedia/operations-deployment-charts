@@ -1,0 +1,33 @@
+# This file contains overrides for the kind cluster configuration
+# It can be added to helmfile sync calls "on top" of the environment
+# specific values files, e.g.:
+#   helmfile -e staging-codfw -f ../../kind-values.yaml sync
+
+# Reconfigure the cfssl-issuer to use the kind clusters simple-cfssl deployment
+issuers:
+  discovery:
+    label: intermediate1
+    profile: ~
+    url: https://api.simple-cfssl.svc.cluster.local:30888
+    authSecret:
+      # This is not a secret secret key. It's baked into the simple-cfssl image
+      key: b8093a819f367241a8e0f55125589e25
+
+# Override the CA used to validate certificates in the cfssl-issuer so it
+# can successfully verify the certificate simple-cfssl uses.
+overrideCA:
+  secretName: simple-cfssl-ca
+
+# Configure calico-node to set up the CNI binaries on the kind nodes
+cni:
+  install: true
+
+# Enable CrossSubnet VXLAN mode as well as outgoing NAT for both IPv4 and IPv6
+# IP pools in the kind cluster.
+IPPools:
+  ipv4:
+    vxlanMode: "CrossSubnet"
+    natOutgoing: true
+  ipv6:
+    vxlanMode: "CrossSubnet"
+    natOutgoing: true
