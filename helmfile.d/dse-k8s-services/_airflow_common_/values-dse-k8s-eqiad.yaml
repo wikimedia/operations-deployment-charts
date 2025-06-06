@@ -19,6 +19,9 @@ config:
         remote_log_conn_id: s3_dpe
       smtp:
         smtp_host: mx-out1001.wikimedia.org
+    local_settings:
+      xcom_sidecar:
+        tag: '20250601' # This is a bookworm image build date
   connections:
     s3_dpe:
       extra:
