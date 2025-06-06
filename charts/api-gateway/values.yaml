@@ -45,15 +45,16 @@ main_app:
   # if true, enable a debug server that echoes requests - see README.md
   http_https_echo: false
   ratelimiter:
+    enabled: false
+    # image version
+    version: latest
+    port: 8081
     requests:
       cpu: 200m
       memory: 200Mi
     limits:
       cpu: 500m
       memory: 1000Mi
-    enabled: false
-    # image version
-    version: latest
     anon_limit:
       requests_per_unit: 500
       unit: HOUR
@@ -241,11 +242,6 @@ mesh:
   # public_port must be set in order for the cert-manager certificate to be
   # rendered. It is not used for anything else.
   public_port: "Value that evaluates to true but is not a valid port"
-
-debug:
-  enabled: false
-  # Define here any port that you want to expose for debugging purposes
-  ports: []
 
 networkpolicy:
   egress:

@@ -38,11 +38,6 @@ spec:
         checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         {{ end -}}
         prometheus.io/scrape: "true"
-        prometheus.io/port: "9102"
-        {{ if .Values.main_app.telemetry_port -}}
-        envoyproxy.io/scrape: "true"
-        envoyproxy.io/port: "{{ .Values.main_app.telemetry_port }}"
-        {{ end }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -66,10 +61,6 @@ spec:
           {{- end }}
           ports:
             - containerPort: {{ .Values.app.port }}
-          {{- if .Values.debug.enabled }}
-          {{- range .Values.debug.ports }}
-            - containerPort: {{ . }}
-          {{- end }}{{ end }}
           {{- if .Values.main_app.liveness_probe }}
           livenessProbe:
           {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
@@ -166,7 +157,7 @@ spec:
           image: {{ .Values.docker.registry }}/ratelimit:{{ .Values.main_app.ratelimiter.version }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
-            - containerPort: 8081
+            - containerPort: {{ .Values.main_app.ratelimiter.port }}
           readinessProbe:
             httpGet:
               path: /healthcheck
