@@ -60,6 +60,9 @@
                   - name: ':authority'
                     exact_match: '{{ $endpoint.domain }}'
                   {{- end }}
+                {{- if $route.route_stats }}
+                stat_prefix: {{ $endpoint.name | replace "-" "_"}}.{{ $route.name | replace "-" "_" }}
+                {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
                 {{- range $rh := $endpoint.request_headers_to_add }}
@@ -69,7 +72,6 @@
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- end }}
                 {{- end }}
-
                   {{- if $endpoint.params}}
                   query_parameters:
                   {{- range $param := $endpoint.params }}

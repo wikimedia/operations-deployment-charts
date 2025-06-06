@@ -6,6 +6,7 @@ main_app:
   access_log:
     #enabled: false
     sample_percentage: 50
+  telemetry_port: 8089
 
   domains:
     - localhost
@@ -20,18 +21,19 @@ main_app:
       hostname: mobileapps.discovery.wmnet
       urls:
         #TODO tighten capture group criteria
-        - name: ma_mobile_no_revision
-          in: '(.+)/v1/page/mobile-html/(.+)'
-          out: '\1/v1/page/mobile-html/\2'
         - name: ma_mobile_revision
           in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
           out: '\1/v1/page/mobile-html/\2/\3'
-        - name: ma_summary_no_revision
-          in: '(.+)/v1/page/summary/(.+)'
-          out: '\1/v1/page/summary/\2'
+        - name: ma_mobile_no_revision
+          in: '(.+)/v1/page/mobile-html/(.+)'
+          out: '\1/v1/page/mobile-html/\2'
         - name: ma_summary_revision
           in: '(.+)/v1/page/summary/(.+)/(.+)'
           out: '\1/v1/page/summary/\2/\3'
+          route_stats: true
+        - name: ma_summary_no_revision
+          in: '(.+)/v1/page/summary/(.+)'
+          out: '\1/v1/page/summary/\2'
     - name: proton
       timeout: 150s
       ingress: true
