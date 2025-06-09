@@ -157,27 +157,21 @@ main_app:
         - name: announcements
           in: '(.+)/v1/feed/announcements'
           out: '\1/v1/feed/announcements'
-          route_stats: true
         - name: onthisday_all
           in: '(.+)/v1/feed/onthisday/all/(.+)/(.+)'
           out: '\1/v1/aggregated/onthisday/all/\2/\3'
-          route_stats: true
         - name: onthisday
           in: '(.+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
           out: '\1/v1/feed/onthisday/\2/\3/\4'
-          route_stats: true
         - name: featured
           in: '(.+)/v1/feed/featured/(.+)/(.+)/(.+)'
           out: '\1/v1/aggregated/featured/\2/\3/\4'
-          route_stats: true
         - name: availability
           in: '(.+)/v1/feed/availability'
           out: '\1/v1/feed/availability'
-          route_stats: true
         - name: random
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
-          route_stats: true
 
     - name: geo-analytics
       timeout: 15s
@@ -310,7 +304,6 @@ main_app:
         - name: lists
           in: '(.+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
-          route_stats: true
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress

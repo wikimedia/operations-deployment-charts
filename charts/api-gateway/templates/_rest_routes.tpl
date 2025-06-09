@@ -60,8 +60,8 @@
                   - name: ':authority'
                     exact_match: '{{ $endpoint.domain }}'
                   {{- end }}
-                {{- if $route.route_stats }}
-                stat_prefix: {{ $endpoint.name | replace "-" "_"}}_{{ $route.name | replace "-" "_" }}
+                {{- if not $route.disable_route_stats }}
+                stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
