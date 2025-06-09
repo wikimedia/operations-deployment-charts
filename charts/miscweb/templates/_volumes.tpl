@@ -25,9 +25,9 @@
 # TLS configurations
 {{- include "mesh.deployment.volume" . }}
 # Additional app-specific volumes.
-  {{- with .Values.main_app.volumes }}
-    {{- toYaml . }}
-  {{- end }}
+{{ with .Values.main_app.volumes }}
+  {{- toYaml . }}
+{{- end }}
 {{ else }}
 []
 {{- end }}

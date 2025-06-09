@@ -59,6 +59,31 @@ resources:
 {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 
+{{- if .Values.sidecar.enabled }}
+- name: {{ .Release.Name }}-sidecar
+  image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  command:
+    {{- range .Values.sidecar.command }}
+    - {{ . }}
+    {{- end}}
+  resources:
+    requests:
+{{ toYaml .Values.sidecar.requests | indent 6 }}
+    limits:
+{{ toYaml .Values.sidecar.limits | indent 6 }}
+{{- with .Values.sidecar.volumeMounts }}
+  volumeMounts:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  env:
+  {{- range $k, $v := .Values.config.public }}
+    - name: {{ $k | upper }}
+      value: {{ $v | quote }}
+  {{- end }}
+{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- end}}
+
 {{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
 - name: {{ .Release.Name }}-metrics-exporter
   image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version | default "latest" }}

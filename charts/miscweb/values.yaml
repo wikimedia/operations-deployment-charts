@@ -28,6 +28,15 @@ main_app:
     httpGet:
       path: /
       port: 8080
+sidecar:
+  enabled: false
+  command: []
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false

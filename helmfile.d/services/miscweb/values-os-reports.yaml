@@ -7,6 +7,33 @@ main_app:
   requests:
     cpu: 200m
     memory: 300Mi
+  volumes:
+    - name: rsync-data
+      emptyDir: {}
+  volumeMounts:
+    - name: rsync-data
+      mountPath: /srv/app/html
+
+sidecar:
+  enabled: true
+  limits:
+    cpu: 200m
+    memory: 250Mi
+  requests:
+    cpu: 100m
+    memory: 150Mi
+  command:
+  - while true;
+  - do
+  - /usr/bin/rsync
+  - -trv
+  - rsync://$PUPPET_DB_HOST/osreports
+  - /srv/app/html;
+  - sleep 12h;
+  - done
+  volumeMounts:
+    - name: rsync-data
+      mountPath: /srv/app/html
 
 mesh:
   enabled: true
