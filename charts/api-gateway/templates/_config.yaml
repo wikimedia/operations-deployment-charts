@@ -40,6 +40,11 @@ static_resources:
               name: admin_cluster
               routes:
               - match:
+                  prefix: /metrics
+                route:
+                  cluster: admin_cluster
+                  prefix_rewrite: "/stats/prometheus"
+              - match:
                   prefix: /stats
                 route:
                   cluster: admin_cluster
