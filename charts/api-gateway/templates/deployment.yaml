@@ -61,6 +61,9 @@ spec:
           {{- end }}
           ports:
             - containerPort: {{ .Values.app.port }}
+            {{- if .Values.main_app.telemetry_port }}
+            - containerPort: {{ .Values.main_app.telemetry_port }}
+            {{- end }}
           {{- if .Values.main_app.liveness_probe }}
           livenessProbe:
           {{- toYaml .Values.main_app.liveness_probe | nindent 12 }}
