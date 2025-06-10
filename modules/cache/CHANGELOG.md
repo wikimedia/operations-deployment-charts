@@ -1,3 +1,6 @@
+## mcrouter 1.3.4
+- Fix typo in ModifyKeyRoute
+
 ## mcrouter 1.3.3
 - Add KeyModifyRoute support
 
