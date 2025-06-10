@@ -30,6 +30,11 @@ mesh:
   # Port to listen to
   public_port: 8080
   local_access_log_min_code: "200"
+  # Specify a retry policy for the upstream cluster of the TLS terminator.
+  # Without this specified there are no retries
+  # upstream_retry_policy:
+  #  retry_on: 5xx
+  #  num_retries: 1
   # Headers to add to a local request,
   # in dictionary form.
   request_headers_to_add: []
