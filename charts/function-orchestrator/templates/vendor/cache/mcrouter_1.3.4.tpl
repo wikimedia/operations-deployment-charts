@@ -462,7 +462,7 @@ sent to the target pool will be "bar:foo:baz".
     "{{ $route }}/"
   ],
   "route": {
-    "type": "KeyModifyRoute",
+    "type": "ModifyKeyRoute",
     {{- if .modifykey.prefix }}
     "prefix": "{{ .modifykey.prefix }}",
     {{- end }}
