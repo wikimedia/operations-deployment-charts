@@ -7,3 +7,16 @@ ingress:
 mesh:
   tracing:
     enabled: false  # not supported in staging
+
+cache:
+  mcrouter:
+    enabled: true
+    route_prefix: local/wf
+    zone: eqiad
+    routes:
+      - route: /local/wf
+        pool: wf-eqiad
+        modifykey:
+          prefix: "stagingorch:"
+        # No failover for wikifunction
+        failover_time: 0
