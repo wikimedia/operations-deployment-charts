@@ -94,7 +94,7 @@ revscoring_inference_services:
         - name: ASYNCIO_USE_PROCESS_POOL
           value: "True"
         - name: ASYNCIO_AUX_WORKERS
-          value: 2
+          value: 3
         - name: PREPROCESS_MP
           value: "True"
         - name: INFERENCE_MP
@@ -102,6 +102,6 @@ revscoring_inference_services:
       container:
         resources:
           limits:
-            cpu: "3"
+            cpu: "4"
           requests:
-            cpu: "3"
+            cpu: "4"
