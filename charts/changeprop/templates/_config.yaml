@@ -255,113 +255,6 @@ spec: &spec
 {{ end -}}
 
               # RESTBase update jobs
-{{ if .Values.main_app.changeprop.features.mw_purge_null_edit }}
-              mw_purge:
-                topic: resource_change
-                limiters:
-                  blacklist: 'html:{message.meta.uri}'
-                cases:
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      tags:
-                        - purge
-                    exec: &mw_purge_wikipedia_rerender
-                      - method: get
-                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
-                        # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
-                        headers:
-                          cache-control: no-cache
-                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
-                        query:
-                          redirect: false
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      tags:
-                        - purge
-                    exec: &mw_purge_wiktionary_rerender
-                      - method: get
-                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
-                        # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
-                        headers:
-                          cache-control: no-cache
-                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
-                        query:
-                          redirect: false
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                      tags:
-                        - purge
-                    match_not: &others_match_not
-                      - meta:
-                          domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      - meta:
-                          domain: '/\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                        page_namespace: 0
-                      - meta:
-                          domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                        page_namespace: 120
-                    exec: &mw_purge_others_rerender
-                      - method: get
-                        # This even comes directly from MediaWiki, so title is encoded in MW-specific way.
-                        # Re-encode the title in standard `encodeURIComponent` encoding.
-                        uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{decode(match.meta.uri.title)}'
-                        headers:
-                          cache-control: no-cache
-                          if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
-                        query:
-                          redirect: false
-                        # The HTML might not change but sometimes editors use a purge to drop incorrectly rendered summary/MCS
-                        # content, so let's purge them as well just in case. The rate is low.
-              null_edit:
-                topic: resource_change
-                ignore:
-                  status:
-                    - 403 # Ignoring 403 since some of the pages with high number of null_edit events are blacklisted
-                    - 412
-                limiters:
-                  blacklist: 'html:{message.meta.uri}'
-                cases:
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      tags:
-                        - null_edit
-                    exec: *mw_purge_wikipedia_rerender
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                        domain: '/wiktionary.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                      tags:
-                        - null_edit
-                    exec: *mw_purge_wiktionary_rerender
-                  - match:
-                      meta:
-                        uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
-                      tags:
-                        - null_edit
-                    match_not: &others_match_not
-                       - meta:
-                           domain: '/\.wikipedia\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                       - meta:
-                           domain: '/\.wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
-                       - meta:
-                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                         page_namespace: 0
-                       - meta:
-                           domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                         page_namespace: 120
-                    exec: *mw_purge_others_rerender
-{{ end -}}
 {{ if .Values.main_app.changeprop.features.page_edit }}
               page_edit:
                 topic: mediawiki.revision-create
@@ -386,53 +279,9 @@ spec: &spec
                       domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                     page_namespace: 828
                 exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
-                    headers:
-                      cache-control: no-cache
-                      x-restbase-parentrevision: '{{ `{{message.rev_parent_id}}` }}'
-                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
-                    query:
-                      redirect: false
                   - method: post
                     uri: '/sys/links/transcludes/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
-{{ end -}}
-{{ if .Values.main_app.changeprop.features.revision_visibility_change }}
-              revision_visibility_change:
-                enable_blacklist: false
-                topic: mediawiki.revision-visibility-change
-                ignore:
-                  status:
-                    - 403 # When the revision is hidden 403 will be returned by RESTBase, it's a valid situation
-                    - 412
-                match_not:
-                  - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                    page_namespace: 0
-                  - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                    page_namespace: 120
-                exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}/{{ `{{message.rev_id}}` }}'
-                    headers:
-                      cache-control: no-cache
-                    query:
-                      redirect: false
-                  # For page revision restriction RESTBase doesn't emit resource_change events, and to go through
-                  # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
-                  # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
-                  # Only purge the URIs with a rev_id since the latest revision can not be restricted.
-                  - method: 'post'
-                    uri: '/sys/queue/events'
-                    body:
-                      - $schema: '/resource_change/1.0.0'
-                        meta:
-                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
-                          stream: '{{ $purge_stream }}'
-                          domain: '{{`{{message.meta.domain}}`}}'
-                          dt: '{{`{{message.meta.dt}}`}}'
 {{ end -}}
 
 {{ if .Values.main_app.changeprop.features.page_delete }}
@@ -452,35 +301,11 @@ spec: &spec
                   - meta:
                       domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
+                # The links to the deleted page should become red again
                 exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
-                    headers:
-                      cache-control: no-cache
-                    query:
-                      redirect: false
-                  # The links to the deleted page should become red again
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
-                  # For page deletion RESTBase doesn't emit resource_change events, and to go through
-                  # the normal purge chain (html update -> html resource_change -> summary update -> summary resource_change)
-                  # we need to add many workarounds/shortcurst in RESTBase. So having this list here is an OK compromise.
-                  - method: post
-                    uri: '/sys/queue/events'
-                    body:
-                      - $schema: '/resource_change/1.0.0'
-                        meta:
-                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}'
-                          stream: '{{ $purge_stream }}'
-                          domain: '{{`{{message.meta.domain}}`}}'
-                          dt: '{{`{{message.meta.dt}}`}}'
-                      - $schema: '/resource_change/1.0.0'
-                        meta:
-                          uri: 'http://{{ `{{message.meta.domain}}` }}/api/rest_v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
-                          stream: '{{ $purge_stream }}'
-                          domain: '{{`{{message.meta.domain}}`}}'
-                          dt: '{{`{{message.meta.dt}}`}}'
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.page_restore }}
               page_restore:
@@ -494,42 +319,10 @@ spec: &spec
                       domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
-                    headers:
-                      cache-control: no-cache
-                    query:
-                      redirect: false
                   # The links to the restored page should not be red any more
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
-{{ end -}}
-{{ if .Values.main_app.changeprop.features.page_move }}
-              page_move:
-                disable_blacklist: true
-                topic: mediawiki.page-move
-                match_not:
-                  - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                    page_namespace: 0
-                  - meta:
-                      domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
-                    page_namespace: 120
-                exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
-                    headers:
-                      cache-control: no-cache
-                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
-                    query:
-                      redirect: false
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.prior_state.page_title}'
-                    headers:
-                      cache-control: no-cache
-                    query:
-                      redirect: false
 {{ end -}}
 {{ if .Values.main_app.changeprop.features.on_transclusion_update }}
               on_transclusion_update:
@@ -538,23 +331,6 @@ spec: &spec
                 limiters:
                   blacklist: 'html:{message.meta.uri}'
                 cases:
-                  - match:
-                      $schema: '/^\/resource_change\/.*/'
-                      meta:
-                        uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
-                      tags: [ 'transcludes' ]
-                    exec:
-                      method: get
-                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
-                      headers:
-                        cache-control: no-cache
-                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
-                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
-                      query:
-                        redirect: false
-                    match_not:
-                      meta:
-                        domain: ceb.wikipedia.org
                   - match:
                       $schema: '/^\/change-prop\/continue\/.*/'
                     match_not:
@@ -586,12 +362,6 @@ spec: &spec
                       domain: /\.wikidata\.{{ .Values.main_app.changeprop.domain_zone }}$/
                     page_namespace: 120
                 exec:
-                  - method: get
-                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/title/{message.page_title}'
-                    headers:
-                      cache-control: no-cache
-                    query:
-                      redirect: false
                   - method: post
                     uri: '/sys/links/backlinks/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
@@ -602,20 +372,6 @@ spec: &spec
                 limiters:
                   blacklist: 'html:{message.meta.uri}'
                 cases:
-                  - match:
-                      $schema: '/^\/resource_change\/.*/'
-                      meta:
-                        uri: '/https?:\/\/[^\/]+\/wiki\/(?<title>.+)/'
-                      tags: [ 'backlinks' ]
-                    exec:
-                      method: get
-                      uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{{ `{{match.meta.uri.title}}` }}'
-                      headers:
-                        cache-control: no-cache
-                        if-unmodified-since: '{{ `{{date(message.root_event.dt)}}` }}'
-                        x-restbase-mode: '{{ `{{message.tags[1]}}` }}'
-                      query:
-                        redirect: false
                   - match:
                       $schema: '/^\/change-prop\/continue\/.*/'
                     exec:
