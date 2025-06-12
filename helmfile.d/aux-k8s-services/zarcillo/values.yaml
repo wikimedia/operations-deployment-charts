@@ -64,7 +64,11 @@ networkpolicy:
       ports:
         - protocol: TCP
           port: 443
-
+    # idp.wikimedia.org
+    - cidr: 208.80.153.40/32
+      ports:
+        - protocol: TCP
+          port: 443
 
 ingress:
   enabled: true
