@@ -12,6 +12,7 @@ main_app:
   mwrest_uri: http://localhost:6500/w/rest.php
   restbase_uri: http://localhost:6503
   rest_gateway_uri: http://localhost:6033
+  mobileapps_uri: http://localhost:6012
   usecorepagehtml: true
   use_service_mesh: true
   # Use command and args below to override the entrypoint
@@ -54,6 +55,7 @@ discovery:
   - mw-api-int-async
   - restbase-for-services
   - rest-gateway
+  - mobileapps
 networkpolicy:
   egress:
     enabled: true
