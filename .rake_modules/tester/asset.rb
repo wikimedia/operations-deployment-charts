@@ -470,8 +470,8 @@ module Tester
       # If we get here, it means we failed to compile the helmfile
       # to extract the environments.
       bad(res.err, "helmfile build #{real_path}")
-      puts "Unable to build helmfile #{@name} (#{real_path}) for any environment. Last error was:"
-      puts res.err
+      puts "Unable to build helmfile #{@name} (#{real_path}) for any environment. Last error was:".red
+      puts res.err.red
     end
 
     def _helmfile_build(env, chdir)

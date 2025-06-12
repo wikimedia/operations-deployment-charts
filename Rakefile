@@ -637,6 +637,11 @@ def tasklist_from_changes(changes)
   tasks = {scaffold: false, charts: [], deployments: [], admin: false, envoy: true, istio: false}
   all_changes = changes.values.flatten
 
+  # Ensure fixtures are up to date
+  # This is required since this function creates instances of HelmfileAsset and AdminAsset
+  # which will require the fixtures in order to build/render correctly.
+  Rake::Task[:refresh_fixtures].invoke
+
   # Scaffold is easy. Any file under _scaffold or modules changed?
   all_changes.each do |path|
     if path.start_with?('_scaffold/') || path.start_with?('modules')
@@ -740,5 +745,5 @@ def tasklist_from_changes(changes)
 end
 
 # This is the old default
-task all: %i[repo_update test_scaffold check_charts check_deployments check_admin validate_envoy_config validate_istio_config]
+task all: %i[repo_update refresh_fixtures test_scaffold check_charts check_deployments check_admin validate_envoy_config validate_istio_config]
 task default: %i[check_change]
