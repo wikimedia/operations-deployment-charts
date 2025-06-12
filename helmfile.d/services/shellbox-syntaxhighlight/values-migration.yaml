@@ -7,7 +7,13 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 0
+  replicas: 1  # T378128: Pilot bookworm-based httpd image
+
+# T378128: Pilot bookworm-based httpd image
+php:
+  httpd:
+    image_name: "httpd-fcgi-bookworm"
+    version: "2.4.62-1"
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
