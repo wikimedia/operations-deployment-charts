@@ -11,7 +11,7 @@ resources:
 # The apache httpd container
 # TODO: set up logging. See T265876
 - name: {{ template "base.name.release" . }}-httpd
-  image: {{.Values.docker.registry }}/httpd-fcgi:{{ .Values.php.httpd.version }}
+  image: {{.Values.docker.registry }}/{{ .Values.php.httpd.image_name }}:{{ .Values.php.httpd.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
     - name: FCGI_MODE
