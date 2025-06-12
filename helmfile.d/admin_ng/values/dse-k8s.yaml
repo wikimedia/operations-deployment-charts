@@ -118,22 +118,30 @@ namespaces:
     resourcequota:
       compute:
         requests:
-          cpu: "150"
-          memory: "250Gi"
+          cpu: "300"
+          memory: "500Gi"
         limits:
-          cpu: "150"
-          memory: "250Gi"
+          cpu: "400"
+          memory: "600Gi"
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org
+    resourcequota:
+      compute:
+        requests:
+          cpu: "300"
+          memory: "500Gi"
+        limits:
+          cpu: "400"
+          memory: "600Gi"
     limitranges:
       container:
         min:
           memory: "100Mi"
           cpu: "100m"
         max:
-          memory: "8Gi"
+          memory: "16Gi"
           cpu: "8"
         defaultRequest:
           memory: "100Mi"
@@ -363,11 +371,11 @@ namespaces:
     resourcequota:
       compute:
         requests:
-          cpu: "150"
-          memory: "150Gi"
+          cpu: "300"
+          memory: "500Gi"
         limits:
-          cpu: "200"
-          memory: "200Gi"
+          cpu: "400"
+          memory: "600Gi"
   query-service:
     enableJobSidecarController: true
     limitranges:
