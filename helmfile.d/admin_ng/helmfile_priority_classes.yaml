@@ -1,0 +1,20 @@
+templates:
+  default: &default
+    namespace: kube-system
+    missingFileHandler: Warn
+
+releases:
+  - name: priority-classes
+    chart: wmf-stable/raw
+    values:
+      - templates:
+        {{- range $priorityClass := .Values.priorityClasses }}
+        - |
+          apiVersion: scheduling.k8s.io/v1
+          kind: PriorityClass
+          metadata:
+            name: {{ $priorityClass.name }}
+          value: {{ $priorityClass.value }}
+          globalDefault: false
+          description: {{ $priorityClass.description }}
+        {{- end }}

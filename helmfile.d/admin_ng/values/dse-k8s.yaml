@@ -458,3 +458,9 @@ resourcequota:
     limits:
       cpu: "150"
       memory: "150Gi"
+
+
+priorityClasses:
+- name: low-priority-pod
+  value: -100
+  description: "Priority class used by non-critical non-system pods, to ensure they get evicted first under resource pressure"

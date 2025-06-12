@@ -207,6 +207,7 @@ bases:
   - ceph-csi-rbd/helmfile.yaml
   - ceph-csi-cephfs/helmfile.yaml
   - cloudnative-pg-operator/helmfile.yaml
+  - helmfile_priority_classes.yaml
 
 hooks:
   - events: ["prepare"]

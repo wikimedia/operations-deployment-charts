@@ -77,6 +77,13 @@ IPAMConfig:
 # of the extra cluster roles to deploy without the common 'deploy-' prefix.
 deployExtraClusterRoles: []
 
+# In helmfile_priority_classes.yaml, we define a list of custom PriorityClass resources
+# that are deployed in the target environment. Each member of that list must have a `name`,
+# `value` and `description` field.
+# The default system priority classes are available even if that list is empty.
+# See https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+priorityClasses: []
+
 limitranges:
   # check out documentation to understand this well
   # https://v1-23.docs.kubernetes.io/docs/concepts/policy/limit-range/
