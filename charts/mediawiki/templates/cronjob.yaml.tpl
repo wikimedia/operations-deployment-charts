@@ -82,3 +82,76 @@ spec:
 {{- end }} {{/* end range $jobConfig */}}
 {{- end }} {{/* end if $can_run */}}
 {{- end }} {{/* end if $flags.cron */}}
+
+{{ if $flags.dumps }}
+{{- if $.Values.dumps.enabled }}{{/* TODO: remove dumps.enabled once we're ok enabling it in dse */}}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "base.name.release" . }}-dumps-job-template
+  {{- include "mw.labels" $ | indent 2 }}
+  {{- if .Values.dumps.comment }}
+  annotations:
+    comment: {{ .Values.dumps.comment | quote }}
+  {{- end }}
+spec:
+  suspend: true
+  schedule: "@daily"
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ template "base.name.chart" $ }}
+            release: {{ .Release.Name }}
+            deployment: {{ .Release.Namespace }}
+          annotations:
+            # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
+            # if sidecars are still running.
+            # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
+            # with their sidecars running even after the main container completes.
+            {{- $release := include "base.name.release" $ -}}
+            {{- $sidecars := list -}}
+            {{- if $.Values.cache.mcrouter.enabled -}}
+              {{- $sidecars = print $release "-mcrouter" | append $sidecars -}}
+            {{- end -}}
+            {{- if $.Values.mesh.enabled -}}
+              {{- $sidecars = print $release "-tls-proxy" | append $sidecars -}}
+            {{- end -}}
+            {{- if $.Values.mw.logging.rsyslog -}}
+              {{- $sidecars = print $release "-rsyslog" | append $sidecars -}}
+            {{- end -}}
+            {{- if $sidecars }}
+            pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
+            {{- end }}
+        spec:
+          {{- if $.Values.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+          {{- end }}
+          # We need to be able to write to the mounted volume as the www-data user
+          securityContext:
+            fsGroup: 33
+          containers:
+          # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
+          # above.
+          {{- include "lamp.deployment" $ | indent 10 }}
+          {{- include "cache.mcrouter.deployment" $ | indent 10 }}
+          {{- include "mesh.deployment.container" $ | indent 10 }}
+          {{- include "rsyslog.deployment" $ | indent 10 }}
+          {{- include "base.statsd.container" $ | indent 10 }}
+          volumes:
+          {{- include "mw.volumes" $ | indent 10 }}
+          {{- include "base.statsd.volume" $ | indent 10 }}
+          {{- include "dumps.volume" $ | indent 10 }}
+          restartPolicy: Never
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 604800  # 7 days
+      {{- with $.Values.dumps.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ . }}
+      {{- end -}}
+{{- end }}
+{{- end }}
