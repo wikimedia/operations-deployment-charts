@@ -95,11 +95,11 @@ env:
   value: "/usr/local/lib/python3.9/site-packages:{{ $.Values.config.airflow.dags_root }}/{{ $.Values.gitsync.link_dir }}/:{{ $.Values.config.public.AIRFLOW_HOME }}"
 - name: AIRFLOW_INSTANCE_NAME
   value: {{ $.Values.config.airflow.instance_name }}
-- name: AIRFLOW_ENVIRONMENT
+- name: AIRFLOW_ENVIRONMENT_NAME
 {{- if $.Values.devenv.enabled }}
-  value: dev
+  value: dev_wmf
 {{- else }}
-  value: prod
+  value: wmf
 {{- end }}
 - name: AIRFLOW_SCHEDULER_HOSTNAME
 {{- if $.Values.scheduler.enabled }}
