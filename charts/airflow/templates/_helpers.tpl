@@ -410,6 +410,7 @@ spec:
   serviceAccountName: {{ template "release.name" .Root }} {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
   {{- end }}
   {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 2 }}
+  {{- include "pod.priority.low" .Root | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
@@ -435,6 +436,7 @@ metadata:
 spec:
   restartPolicy: Never
   {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles) | nindent 2 }}
+  {{- include "pod.priority.low" .Root | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
@@ -574,4 +576,13 @@ spec:
 
 {{- define "service.envoy" }}
 {{- template "release.name" . }}-envoy
+{{- end }}
+
+
+{{/*
+  This PriorityClass is applied on airflow task pods, as they are safer to evict under resource pressure
+  than the airflow core components, or other production-bearing pods.
+*/}}
+{{- define "pod.priority.low" }}
+priorityClassName: low-priority-pod
 {{- end }}
