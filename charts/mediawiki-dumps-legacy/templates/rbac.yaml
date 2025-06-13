@@ -18,7 +18,7 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
 rules:
 - apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
+  resources: ["cronjobs"]
   verbs: ["get"]
 - apiGroups: [""]
   resources: ["pods"]
