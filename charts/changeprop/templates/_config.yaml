@@ -279,6 +279,14 @@ spec: &spec
                       domain: '/wiktionary\.{{ .Values.main_app.changeprop.domain_zone }}$/'
                     page_namespace: 828
                 exec:
+                  - method: get
+                    uri: '{{ .Values.main_app.changeprop.restbase_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/html/{message.page_title}/{{ `{{message.rev_id}}` }}'
+                    headers:
+                      cache-control: no-cache
+                      x-restbase-parentrevision: '{{ `{{message.rev_parent_id}}` }}'
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+                    query:
+                      redirect: false
                   - method: post
                     uri: '/sys/links/transcludes/{message.page_title}'
                     body: '{{ `{{globals.message}}` }}'
