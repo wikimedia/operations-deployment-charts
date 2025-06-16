@@ -53,7 +53,6 @@
   {{- include "app.airflow.env" .Root | indent 2 }}
   {{- if has "LocalExecutor" .profiles }}
   {{- include "app.airflow.env.hadoop" .Root | indent 2 }}
-  {{- include "app.airflow.env.kerberos" (dict "Root" .Root) | indent 2 }}
   {{- end }}
   {{- include "base.helper.resources" .Root.Values.scheduler | indent 2 }}
   {{- include "base.helper.restrictedSecurityContext" .Root | indent 2 }}
@@ -325,7 +324,9 @@ resources:
 
 {{- define "airflow.task-pod.volumes" }}
 {{- if .profiles }}
+{{- if ne .header false }}
 volumes:
+{{- end }}
 {{- if has "airflow" .profiles }}
 {{ include "app.airflow.volumes" .Root }}
 {{- end }}
@@ -344,7 +345,9 @@ volumes:
 
 {{- define "airflow.task-pod.volumeMounts" }}
 {{- if .profiles }}
+{{- if ne .header false }}
 volumeMounts:
+{{- end }}
 {{- if has "airflow" .profiles }}
 {{- include "app.airflow.volumeMounts" .Root }}
 {{- end }}
@@ -362,7 +365,7 @@ volumeMounts:
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
-{{- if .header }}
+{{- if ne .header false }}
 env:
 {{- end }}
 {{- include "airflow.env.requests-ca-bundle" .Root }}
@@ -448,7 +451,7 @@ spec:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
-    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" true "profiles" .profiles) | nindent 4 }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}

@@ -94,9 +94,9 @@ spec:
         {{- if $.Values.monitoring.enabled }}
         {{- include "base.statsd.volume" . | indent 8 }}
         {{- end }}
-        {{/* If the scheduler is running with the LocalExecutor, it also neefs the hadoop and kerberos config files rendered locally */}}
-        {{- if has "LocalExecutor" .profiles }}
-        {{- include "airflow.task-pod.volumes" (dict "Root" . "profiles" (list "hadoop" "kerberos")) | indent 2 }}
+        {{/* If the scheduler is running with the LocalExecutor, it also needs the hadoop config files rendered locally */}}
+        {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
+        {{- include "airflow.task-pod.volumes" (dict "Root" . "profiles" (list "hadoop") "header" false) | indent 8 }}
         {{- end }}
 
 {{- end }}
