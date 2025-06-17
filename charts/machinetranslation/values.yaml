@@ -35,6 +35,9 @@ config:
     # GUNICORN_WORKERS: 4
     # STATSD_HOST: localhost
     # STATSD_PORT: 8125
+  private:
+    AWS_ACCESS_KEY_ID: machinetranslation
+    AWS_SECRET_ACCESS_KEY: secretkey
 monitoring:
   enabled: false
   image_version: latest

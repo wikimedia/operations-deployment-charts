@@ -10,7 +10,7 @@ main_app:
   limits:
     cpu: 4
     memory: 32Gi
-  version: 2025-04-09-054213-production
+  version: 2025-06-03-083423-production
 monitoring:
   enabled: true
   image_version: latest
@@ -25,8 +25,9 @@ mesh:
     enabled: true
 config:
   public:
-    BASE_URL: https://peopleweb.discovery.wmnet/~santhosh
-    CT2_INTER_THREADS: 4  # Match available CPUs
+    BASE_URL: "s3://wmf-ml-models/mint/20250514081434/"
+    USE_S3CMD: true
+    CT3_INTER_THREADS: 4  # Match available CPUs
     CT2_INTRA_THREADS: 0  # Set to 0 so that CTranslate2 use a default value
     GUNICORN_WORKERS: 4  # Match available CPUs
     STATSD_HOST: localhost
