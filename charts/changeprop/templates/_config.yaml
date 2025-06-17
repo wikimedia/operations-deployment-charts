@@ -136,7 +136,7 @@ spec: &spec
               pcs_rerender_mobile_html_native_transcludes:
                 <<: *pcs_rerender_spec_native
                 topic: 'change-prop.transcludes.resource-change'
-                concurrency: {{ mul .Values.main_app.concurrency 2 }}
+                concurrency: {{ mul .Values.main_app.concurrency 4 }}
 
               pcs_rerender_mobile_html_native_wikidata_change:
                 <<: *pcs_rerender_spec_native
