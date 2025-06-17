@@ -61,3 +61,9 @@ worker:
 gitsync:
   # Some DAGS in analytics_test import functions from the main folder
   extra_dags_folders: [main]
+
+external_services:
+  scheduler:
+    # As we're running both KubernetesExecutor and LocalExecutor, the tasks run from the scheduler itself with
+    # LocalExecutor will require the scheduler pod to run the task, and ergo to talk to Kerberos in some cases.
+    kerberos: [kdc]
