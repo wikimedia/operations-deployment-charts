@@ -19,11 +19,6 @@ mesh:
 
 php:
   workers: 6
-  # T378128: Pilot bookworm-based httpd image
-  httpd:
-    image_name: "httpd-fcgi-bookworm"
-    version: "2.4.62-1"
-
 
 resources:
   replicas: 12
