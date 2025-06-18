@@ -1,7 +1,7 @@
 docker:
   registry: docker-registry.discovery.wmnet
 resources:
-  replicas: 100
+  replicas: 110
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
   version: 2025-05-27-100010-production
@@ -13,7 +13,7 @@ main_app:
   eventgate_uri: http://localhost:6005/v1/events
   limits:
     cpu: 2.5
-    memory: 2Gi
+    memory: 1Gi
   use_coreparsoid_endpoint: true
   caching:
     enabled: true
