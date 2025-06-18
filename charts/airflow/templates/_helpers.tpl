@@ -61,6 +61,7 @@
   {{- include "kerberos.volumeMounts" (dict "Root" .Root) | indent 2 }}
   {{- if has "LocalExecutor" .profiles }}
   {{- include "app.worker.volumeMounts.hadoop" .Root | indent 2 }}
+  {{- include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root) | indent 2 }}
   {{- end }}
 {{- end }}
 
