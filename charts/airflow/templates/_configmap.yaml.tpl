@@ -180,9 +180,18 @@ data:
     from airflow.kubernetes.pod_generator import PodDefaults
     from kubernetes.client import models as k8s
     PodDefaults.SIDECAR_CONTAINER.image = {{ $.Values.docker.registry }}/{{ $.Values.config.airflow.local_settings.xcom_sidecar.image}}:{{ $.Values.config.airflow.local_settings.xcom_sidecar.tag}}
+    {{- with $.Values.config.airflow.local_settings.xcom_sidecar.resources }}
     PodDefaults.SIDECAR_CONTAINER.resources = k8s.V1ResourceRequirements(
-    {{- toYaml .Values.config.airflow.local_settings.xcom_sidecar.resources | nindent 6 }}
-    ),
+      limits={
+        "cpu": "{{ .limits.cpu }}",
+        "memory": "{{ .limits.memory }}",
+      },
+      requests={
+        "cpu": "{{ .requests.cpu }}",
+        "memory": "{{ .requests.memory }}",
+      }
+    )
+    {{- end }}
     PodDefaults.SIDECAR_CONTAINER.security_context=k8s.V1SecurityContext(
       allowPrivilegeEscalation: false
       capabilities:
