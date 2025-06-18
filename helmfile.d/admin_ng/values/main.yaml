@@ -186,14 +186,28 @@ namespaces:
       - wikiworkshop.org
       - www.wikiworkshop.org
   mobileapps:
+    # Don't set a quota
     resourcequota:
       compute:
         requests:
-          cpu: "600"
-          memory: "250Gi"
+          cpu: ~
+          memory: ~
         limits:
-          cpu: "600"
-          memory: "250Gi"
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
   mw-debug:
     pspClusterRole: allow-mediawiki-psp
    # The pod-security.wmf.org labels are used on Kubernetes 1.31 to customise
