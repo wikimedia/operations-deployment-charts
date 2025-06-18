@@ -87,6 +87,10 @@ main_app:
       liftwing_models: false
       rerendered_pcs_endpoints_native: true
 
+    # TTL (in seconds) to abandon processing of old events
+    claim_ttl:
+      native_pcs_rerendering: 864000
+
   jobqueue:
     # if jobqueue is true, then we'll configure our pod as a
     # changeprop-jobqueue instance. If it's false, we'll assume that
