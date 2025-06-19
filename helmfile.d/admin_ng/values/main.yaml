@@ -722,16 +722,16 @@ GlobalNetworkPolicies:
       - action: Allow
         protocol: UDP
         destination:
-          selector: 'k8s-app == "kube-dns"'
-          ports:
-            - 53
+          services:
+            name: "kube-dns"
+            namespace: "kube-system"
       # Allow all namespaces to communicate to DNS pods (TCP)
       - action: Allow
         protocol: TCP
         destination:
-          selector: 'k8s-app == "kube-dns"'
-          ports:
-            - 53
+          services:
+            name: "kube-dns"
+            namespace: "kube-system"
   # This allows egress from all pods to all pods. Ingress still needs to be
   # allowed by the destination, though.
   allow-pod-to-pod:
