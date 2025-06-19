@@ -108,10 +108,10 @@ worker:
         dfs.cluster.administrators: hdfs analytics-admins,ops
         dfs.hosts.exclude: /etc/hadoop/conf.analytics-hadoop/hosts.exclude
       core:
-        ha.zookeeper.quorum: an-conf1001.eqiad.wmnet,an-conf1002.eqiad.wmnet,an-conf1003.eqiad.wmnet
+        ha.zookeeper.quorum: an-conf1004.eqiad.wmnet,an-conf1005.eqiad.wmnet,an-conf1006.eqiad.wmnet
       yarn:
         yarn.resourcemanager.keytab: /etc/security/keytabs/hadoop/yarn.keytab
-        yarn.resourcemanager.zk-address: an-conf1001.eqiad.wmnet,an-conf1002.eqiad.wmnet,an-conf1003.eqiad.wmnet
+        yarn.resourcemanager.zk-address: an-conf1004.eqiad.wmnet,an-conf1005.eqiad.wmnet,an-conf1006.eqiad.wmnet
       hive:
         hive.metastore.kerberos.keytab.file: /etc/security/keytabs/hive/hive.keytab
         hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/hive/hive.keytab
