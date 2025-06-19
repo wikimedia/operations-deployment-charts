@@ -43,10 +43,8 @@ app:
   # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#resource
   jobManager:
     resource:
-      # Even when backfilling in prod (with one TaskManager),
-      # JobManager never used more than 650MB.
-      # This might when we are taking checkpoints.
-      memory: 1000m
+      # Bug: T397336
+      memory: 1500m
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
