@@ -91,6 +91,12 @@ main_app:
     # This is used both for claim_ttl and root_claim_ttl
     claim_ttl:
       native_pcs_rerendering: 864000
+    # multiply base_app.concurrency by these factors
+    pcs_rerender_concurrency_factor:
+      pcs_rerender_native_on_edit: 1
+      pcs_rerender_native_on_null: 2
+      pcs_rerender_mobile_html_native_transcludes: 4
+      pcs_rerender_mobile_html_native_wikidata_change: 1
 
   jobqueue:
     # if jobqueue is true, then we'll configure our pod as a

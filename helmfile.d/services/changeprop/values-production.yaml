@@ -14,6 +14,9 @@ main_app:
   changeprop:
     event_service_uri: https://eventgate-main.discovery.wmnet:4492/v1/events
 
+    pcs_rerender_concurrency_factor:
+      pcs_rerender_mobile_html_native_transcludes: 6
+
     features:
       liftwing_models: true
     liftwing:

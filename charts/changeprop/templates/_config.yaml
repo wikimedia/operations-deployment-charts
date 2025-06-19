@@ -125,6 +125,7 @@ spec: &spec
                 topic: 'change-prop.wikidata.resource-change'
                 claim_ttl: {{ .Values.main_app.changeprop.claim_ttl.native_pcs_rerendering }}
                 root_claim_ttl: {{ .Values.main_app.changeprop.claim_ttl.native_pcs_rerendering }}
+                concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_mobile_html_native_wikidata_change }}
                 match:
                   meta:
                     uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
@@ -138,15 +139,16 @@ spec: &spec
               pcs_rerender_mobile_html_native_transcludes:
                 <<: *pcs_rerender_spec_native
                 topic: 'change-prop.transcludes.resource-change'
-                concurrency: {{ mul .Values.main_app.concurrency 4 }}
+                concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_mobile_html_native_transcludes }}
 
               pcs_rerender_native_on_null:
                 <<: *pcs_rerender_spec_native
                 topic: 'resource_change'
-                concurrency: {{ mul .Values.main_app.concurrency 2 }}
+                concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_native_on_null }}
 
               pcs_rerender_native_on_edit:
                 topic: 'mediawiki.revision-create'
+                concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_native_on_edit }}
                 match:
                   rev_content_changed: true
                 exec:
