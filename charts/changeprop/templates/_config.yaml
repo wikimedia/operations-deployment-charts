@@ -124,6 +124,7 @@ spec: &spec
               pcs_rerender_mobile_html_native_wikidata_change: &pcs_rerender_spec_native
                 topic: 'change-prop.wikidata.resource-change'
                 claim_ttl: {{ .Values.main_app.changeprop.claim_ttl.native_pcs_rerendering }}
+                root_claim_ttl: {{ .Values.main_app.changeprop.claim_ttl.native_pcs_rerendering }}
                 match:
                   meta:
                     uri: '/^https?:\/\/[^\/]+\/wiki\/(?<title>.+)$/'
