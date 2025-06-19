@@ -121,6 +121,8 @@ env:
 {{- else }}
 - name: AIRFLOW_APPOWNER
   value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 0 }}
+- name: AIRFLOW_KERBEROS_HOSTNAME
+  value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
 {{- end }}
 - name: KRB5_PRINCIPAL
   value: {{ $.Values.config.airflow.config.kerberos.principal }}
