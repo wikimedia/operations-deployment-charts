@@ -26,14 +26,7 @@ sidecar:
   - /bin/sh
   args:
   - -c
-  - while true;
-  - do
-  - /usr/bin/rsync
-  - -trv
-  - rsync://$PUPPET_DB_HOST/osreports
-  - /srv/app/html;
-  - sleep 12h;
-  - done
+  - while true; do /usr/bin/rsync -trv rsync://$PUPPET_DB_HOST/osreports /srv/app/html; sleep 12h; done
   volumeMounts:
     - name: rsync-data
       mountPath: /srv/app/html
