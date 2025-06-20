@@ -27,11 +27,11 @@ environments:
         - "mediawiki-common"
         - prometheus
         - {{ env "RELEASE_NAME" }}
-      - kubernetesVersion: '1.23'
+      - kubernetesVersion: '1.31'
   staging:
     values:
       - releases: [prometheus]
-      - kubernetesVersion: '1.23'
+      - kubernetesVersion: '1.31'
 
 ---
 
@@ -126,4 +126,3 @@ releases:
 
   - name: mediawiki-common
     <<: *common
-
