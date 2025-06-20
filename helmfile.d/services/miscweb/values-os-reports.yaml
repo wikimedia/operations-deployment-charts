@@ -23,6 +23,9 @@ sidecar:
     cpu: 100m
     memory: 150Mi
   command:
+  - /bin/sh
+  args:
+  - -c
   - while true;
   - do
   - /usr/bin/rsync

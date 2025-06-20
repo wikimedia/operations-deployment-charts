@@ -65,8 +65,12 @@ resources:
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   command:
     {{- range .Values.sidecar.command }}
-    - {{ . }}
+    - {{ . | quote }}
     {{- end}}
+  args:
+    {{- range .Values.sidecar.args }}
+    - {{ . | quote }}
+    {{ end }}
   resources:
     requests:
 {{ toYaml .Values.sidecar.requests | indent 6 }}
