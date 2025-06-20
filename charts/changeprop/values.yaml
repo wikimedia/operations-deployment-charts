@@ -63,9 +63,6 @@ main_app:
     # Replace the Mediawiki URI with the correct K8s URI
     mwapi_uri: http://localhost/w/api.php
 
-    # Replace the Restbase URI with the correct K8s URI
-    restbase_uri: http://localhost:7231
-
     # Replace the PCS URI (mobileapps) with the correct K8s URI
     pcs_uri: http://localhost:4102
 
@@ -97,6 +94,10 @@ main_app:
       pcs_rerender_native_on_null: 2
       pcs_rerender_mobile_html_native_transcludes: 4
       pcs_rerender_mobile_html_native_wikidata_change: 1
+
+    # needs to be implemented on a per-job level in _config.yaml
+    batch_size:
+      pcs_rerender_mobile_html_native_transcludes: 1 # default
 
   jobqueue:
     # if jobqueue is true, then we'll configure our pod as a
