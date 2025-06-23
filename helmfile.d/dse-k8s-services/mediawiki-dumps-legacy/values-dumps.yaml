@@ -15,6 +15,13 @@ dumps:
       - clouddumps1001.wikimedia.org,208.80.154.142,2620:0:861:2:208:80:154:142 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMA/Al2V+CTWWEdMJmqzhSmtn5tche1OmBxh67/g8AP7wdtUSZ6urOUZBe8lcjiAif9heJb7jwWWSNe+VCKCq0g=
       - clouddumps1002.wikimedia.org,208.80.154.71,2620:0:861:3:208:80:154:71 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBExvftUq/vgRdl20f4hKYECNRYoZNI2C789OOxz92IQBrsDU8NqgMy1o9bdfVc2acZBC3VD/LNCtiLx1kWtetro=
 
+# We set these values here but once scap integrates with mediawiki-dumps-legacy,
+# we will get these automatically from
+# /etc/helmfile-defaults/mediawiki/release/mediawiki-dumps-legacy-main.yaml
+# cf T389786
+main_app:
+  image: restricted/mediawiki-multiversion-cli:2025-06-12-221445-publish-81
+
 sync_toolbox:
   image: repos/data-engineering/sync-utils:2025-05-06-121409-454fc28fa21159e3c4b0fd89d9924776ff6e4d67
 

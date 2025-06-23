@@ -28,7 +28,7 @@ spec:
       - name: "toolbox"
         command: ["sleep"]
         args: ["infinity"]
-        image: "{{ .Values.docker.registry }}/{{ .Values.sync_toolbox.image }}"
+        image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}"
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
         {{ include "base.helper.resources" $.Values.dumps.toolbox.resources | indent 8 }}
@@ -44,18 +44,6 @@ spec:
         - name: wikimedia-cluster-config
           mountPath: /etc/wikimedia-cluster
           subPath: wikimedia-cluster
-        - name: mediawiki-dumps-legacy-ssh-known-hosts
-          mountPath: /home/runuser/.ssh/known_hosts
-          subPath: known_hosts
-        - name: mediawiki-dumps-legacy-ssh-config
-          mountPath: /home/runuser/.ssh/config
-          subPath: config
-        - name: ssh-private-key
-          mountPath: /home/runuser/.ssh/id_rsa
-          subPath: id_rsa
-        - name: mediawiki-dumps-legacy-rsync-targets
-          mountPath: /etc/rsync_targets
-          subPath: rsync_targets
         env:
         - name: SERVERGROUP
           value: kube-dumps
@@ -81,18 +69,6 @@ spec:
       - name: wikimedia-cluster-config
         configMap:
           name: mediawiki-production-wikimedia-cluster-config
-      - name: mediawiki-dumps-legacy-ssh-known-hosts
-        configMap:
-          name: mediawiki-dumps-legacy-ssh-known-hosts
-      - name: mediawiki-dumps-legacy-rsync-targets
-        configMap:
-          name: mediawiki-dumps-legacy-rsync-targets
-      - name: ssh-private-key
-        secret:
-          secretName: ssh-private-key
-      - name: mediawiki-dumps-legacy-ssh-config
-        configMap:
-          name: mediawiki-dumps-legacy-ssh-config
 
 
 ---
