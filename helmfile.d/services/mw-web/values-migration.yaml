@@ -3,7 +3,8 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 0
+  # T378128: Pilot ~ 5% of traffic on new httpd images.
+  replicas: 20
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) in order to improve
