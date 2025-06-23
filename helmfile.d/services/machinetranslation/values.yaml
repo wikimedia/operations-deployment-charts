@@ -51,6 +51,16 @@ networkpolicy:
         ports:
           - port: 443
             protocol: tcp
+      # This enables fetching the models from the Thanos/Swift S3 storage
+      # also used by LiftWing services.
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
 
 app:
   port: 8989
