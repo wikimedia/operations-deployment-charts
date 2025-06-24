@@ -376,6 +376,27 @@ namespaces:
         limits:
           cpu: "400"
           memory: "600Gi"
+    limitranges:
+      container:
+        min:
+          memory: "25Mi"
+          cpu: "50m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "25Mi"
+          cpu: "50m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
   query-service:
     enableJobSidecarController: true
     limitranges:
