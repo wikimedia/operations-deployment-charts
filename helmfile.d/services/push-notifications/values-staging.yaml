@@ -1,7 +1,6 @@
 resources:
   replicas: 1
 main_app:
-  version: 2025-06-20-153128-publish
   proxy: http://url-downloader.eqiad.wikimedia.org:8080
   queueing:
     flush_timeout_ms: random
