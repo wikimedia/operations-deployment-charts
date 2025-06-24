@@ -64,12 +64,12 @@ spec:
   {{- end }}
   {{- end }}
   postgresql:
-      {{- if eq .Values.type "timescaledb" }}
-      shared_preload_libraries:
-      - timescaledb
-      {{- else }}
-      shared_preload_libraries: []
-      {{- end }}
+    {{- if eq .Values.type "timescaledb" }}
+    shared_preload_libraries:
+    - timescaledb
+    {{- else }}
+    shared_preload_libraries: []
+    {{- end }}
     {{- with .Values.cluster.postgresql }}
     parameters:
       {{- toYaml . | nindent 6 }}
