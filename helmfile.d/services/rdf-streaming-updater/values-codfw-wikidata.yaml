@@ -14,7 +14,7 @@ app:
       subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "codfw.rdf-streaming-updater.mutation-main"
       reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@codfw]
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-codfw/wikidata/checkpoints/78afd5c8262c8fce39dbad4cbd517ed5/chk-3505774
+    initialSavepointPath: s3://rdf-streaming-updater-codfw/wikidata/checkpoints/a5d35dbf7f38d9c31bc6ea6e0353766c/chk-3831011
     # savepointTriggerNonce triggers a savepoint; see
     # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
     # custom-resource/job-management/#manual-savepoint-triggering
