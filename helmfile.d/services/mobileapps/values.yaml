@@ -26,6 +26,9 @@ main_app:
       keyspace: pregenerated_cache
       storageTable: mobile_html
 
+  # temporarily keep default worker count while we test setting it to 0 in canary
+  num_workers: 2
+
 monitoring:
   enabled: true
 service:

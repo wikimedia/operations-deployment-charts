@@ -32,6 +32,12 @@ main_app:
     httpGet:
       path: /_info
       port: 8888
+
+  # We don't need to use a master/worker architecture
+  # when mobileapps is running in a container, so explicitly
+  # force service runner to create a single process.
+  num_workers: 0
+
   mwapi_uri: https://api-rw.discovery.wmnet/w/api.php
   mwrestapi_uri: https://api-rw.discovery.wmnet/w/rest.php
   restbase_uri: https://restbase.discovery.wmnet:7443
