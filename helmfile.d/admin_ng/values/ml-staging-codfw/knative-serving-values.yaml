@@ -10,3 +10,15 @@ core:
     replicaCount: 2
   webhook:
     replicaCount: 2
+
+  # Explicitly disable tag->sha256 digest resolution when
+  # deploying new Knative revisions.
+  # It is enabled by default to guard against mutable tags
+  # in the Docker Registry, namely when a tag belonging
+  # to an image gests moved to another one.
+  # At the WMF we don't use mutable tags, and the default
+  # is an issue when collecting image:tag combinations
+  # running on a given K8s cluster for Debmonitor.
+  # More info: https://phabricator.wikimedia.org/T397696#10943466
+  config_deployment:
+     registriesSkippingTagResolving: 'docker-registry.wikimedia.org,docker-registry.discovery.wmnet'
