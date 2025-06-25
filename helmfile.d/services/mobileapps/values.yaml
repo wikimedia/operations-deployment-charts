@@ -1,7 +1,7 @@
 docker:
   registry: docker-registry.discovery.wmnet
 resources:
-  replicas: 150
+  replicas: 450
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
   version: 2025-05-27-100010-production
@@ -12,7 +12,7 @@ main_app:
   mw_resource_loader_uri: http://localhost:6500/w/load.php
   eventgate_uri: http://localhost:6005/v1/events
   limits:
-    cpu: 2.5
+    cpu: 1.5
     memory: 1Gi
   use_coreparsoid_endpoint: true
   caching:
@@ -26,8 +26,7 @@ main_app:
       keyspace: pregenerated_cache
       storageTable: mobile_html
 
-  # temporarily keep default worker count while we test setting it to 0 in canary
-  num_workers: 2
+  num_workers: 0
 
 monitoring:
   enabled: true
