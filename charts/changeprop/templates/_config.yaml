@@ -135,6 +135,7 @@ spec: &spec
                     uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{decode(match.meta.uri.title)}'
                     headers:
                       cache-control: no-cache
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
 {{ end }}
               pcs_rerender_mobile_html_native_transcludes:
                 <<: *pcs_rerender_spec_native
