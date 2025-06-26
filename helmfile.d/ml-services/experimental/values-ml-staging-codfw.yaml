@@ -123,7 +123,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-23-112451-publish"
+      image_version: "2025-06-25-142517-publish"
       custom_env:
         - name: MODEL_NAME
           value: "edit-check-staging"
@@ -131,6 +131,8 @@ inference_services:
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: MODEL_VERSION
           value: "v1"
+        - name: USE_METADATA
+          value: "true"
       container:
         resources:
           limits:
@@ -139,58 +141,6 @@ inference_services:
           requests:
             cpu: "4"
             memory: 8Gi
-
-  edit-check-cpu:
-    predictor:
-      batcher:
-        maxBatchSize: 32
-        maxLatency: 20
-      config:
-        maxReplicas: 1
-      image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-23-112451-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "edit-check-staging-cpu"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/edit-check/peacock/"
-        - name: MODEL_VERSION
-          value: "v1"
-      container:
-        resources:
-          limits:
-            cpu: "4"
-            memory: 8Gi
-          requests:
-            cpu: "4"
-            memory: 8Gi
-
-  edit-check-gpu:
-    predictor:
-      batcher:
-        maxBatchSize: 32
-        maxLatency: 20
-      config:
-        maxReplicas: 1
-      image: "machinelearning-liftwing-inference-services-edit-check"
-      image_version: "2025-05-23-112451-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "edit-check-staging-gpu"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/edit-check/peacock/"
-        - name: MODEL_VERSION
-          value: "v1"
-      container:
-        resources:
-          limits:
-            cpu: "4"
-            memory: 8Gi
-            amd.com/gpu: "1"
-          requests:
-            cpu: "4"
-            memory: 8Gi
-            amd.com/gpu: "1"
 
 external_services_app_label_selector: app-wmf
 external_services:
