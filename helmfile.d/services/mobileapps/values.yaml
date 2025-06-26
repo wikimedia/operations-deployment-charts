@@ -11,11 +11,8 @@ main_app:
   restbase_uri: http://localhost:6503
   mw_resource_loader_uri: http://localhost:6500/w/load.php
   eventgate_uri: http://localhost:6005/v1/events
-  requests:
-    cpu: 1.5
-    memory: 1Gi
   limits:
-    cpu: 1.5
+    cpu: ~
     memory: 1Gi
   use_coreparsoid_endpoint: true
   caching:
@@ -33,14 +30,6 @@ main_app:
 
 monitoring:
   enabled: true
-  # re-set limits/requests here to obtain Guaranteed QoS
-  exporter_resources:
-    requests:
-      cpu: 500m
-      memory: 250Mi
-    limits:
-      cpu: 500m
-      memory: 250Mi
 
 service:
   deployment: production
@@ -48,15 +37,6 @@ service:
     nodePort: 8888
 mesh:
   enabled: true
-  # re-set limits/requests here to obtain Guaranteed QoS
-  resources:
-    requests:
-      cpu: 350m
-      memory: 500Mi
-    limits:
-      cpu: 350m
-      memory: 500Mi
-
   public_port: 4102
   local_access_log_min_code: 100
   tracing:
