@@ -33,12 +33,30 @@ main_app:
 
 monitoring:
   enabled: true
+  # re-set limits/requests here to obtain Guaranteed QoS
+  exporter_resources:
+    requests:
+      cpu: 500m
+      memory: 250Mi
+    limits:
+      cpu: 500m
+      memory: 250Mi
+
 service:
   deployment: production
   port:
     nodePort: 8888
 mesh:
   enabled: true
+  # re-set limits/requests here to obtain Guaranteed QoS
+  resources:
+    requests:
+      cpu: 350m
+      memory: 500Mi
+    limits:
+      cpu: 350m
+      memory: 500Mi
+
   public_port: 4102
   local_access_log_min_code: 100
   tracing:
