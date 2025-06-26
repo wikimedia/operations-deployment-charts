@@ -17,10 +17,10 @@ service:
     nodePort: 8444
 
 mesh:
+  enabled: true
   tracing:
     enabled: true
     sampling: 100
-  enabled: true
   certmanager:
     enabled: true
     # WARNING: If you change the SAN here, also update:
@@ -101,6 +101,9 @@ mesh:
       memory: 100Mi
     limits:
       memory: 500Mi
+  upstream_retry_policy:
+    retry_on: 5xx
+    num_retries: 1
 monitoring:
   enabled: true
   statsd: ~
