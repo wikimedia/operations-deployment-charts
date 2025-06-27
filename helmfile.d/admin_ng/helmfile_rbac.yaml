@@ -85,6 +85,15 @@ releases:
             - apiGroups: [""]
               resources: ["namespaces", "pods"]
               verbs: ["list", "get"]
+        ## Used by debmonitor (via docker-report)
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: debmonitor
+          rules:
+            - apiGroups: [""]
+              resources: ["namespaces", "pods"]
+              verbs: ["list", "get"]
         ## Used by deploy users
         - apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -307,3 +316,16 @@ releases:
             - apiGroup: rbac.authorization.k8s.io
               kind: User
               name: imagecatalog
+        ## Used by debmonitor (via docker-report)
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: debmonitor
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: debmonitor
+          subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: User
+              name: debmonitor
