@@ -11,6 +11,13 @@ config:
   oidc:
     client_id: airflow_ml
 
+  connections:
+    thanos_swift:
+      conn_type: aws
+      extra:
+        endpoint_url: https://thanos-swift.discovery.wmnet
+        verify: /etc/ssl/certs/wmf-ca-certificates.crt
+
 ingress:
   gatewayHosts:
     default: "airflow-ml"
