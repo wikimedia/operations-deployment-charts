@@ -16,6 +16,7 @@ datastore:
       username: mediawiki_services_mobileapps
 
 main_app:
+  version: 2025-06-30-115308-production
   eventgate_uri: https://eventgate-production-tls-service.eventgate-main.svc.cluster.local:4492/v1/events
   caching:
     enabled: true
@@ -25,6 +26,14 @@ main_app:
       storageTable: mobile_html
   limits:
     cpu: 1.5
+  # DEBUG: enable profiler on staging
+  command: ["node_modules/0x/cmd.js"]
+  args:
+    - "-D"
+    - "/tmp/mobileapps-{timestamp}-{pid}.0x"
+    - "server.js"
+    - "-c"
+    - "/etc/changeprop/config.yaml"
 
 logging:
   level: trace
