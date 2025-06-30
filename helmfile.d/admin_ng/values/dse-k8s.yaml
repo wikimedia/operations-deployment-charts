@@ -123,6 +123,27 @@ namespaces:
         limits:
           cpu: "400"
           memory: "600Gi"
+      limitranges:
+        container:
+          min:
+            memory: "100Mi"
+            cpu: "100m"
+          max:
+            memory: "12Gi"
+            cpu: "12"
+          defaultRequest:
+            memory: "100Mi"
+            cpu: "100m"
+          default:
+            memory: "100Mi"
+            cpu: "100m"
+        pod:
+          min:
+            memory: "100Mi"
+            cpu: "100m"
+          max:
+            memory: "16Gi"
+            cpu: "16"
   airflow-test-k8s:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
