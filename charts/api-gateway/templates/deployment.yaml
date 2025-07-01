@@ -170,6 +170,8 @@ spec:
               path: /healthcheck
               port: 8080
           env:
+            - name: REDIS_SOCKET_TYPE
+              value: tcp
             - name: REDIS_URL
               value: {{ .Values.main_app.ratelimiter.redis_host }}:{{ .Values.main_app.ratelimiter.redis_port }}
             - name: LOG_LEVEL

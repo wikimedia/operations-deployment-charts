@@ -5,7 +5,9 @@ redis:
   hash: md5
   listen: 127.0.0.1:{{ .Values.nutcracker.port }}
   redis: true
+  {{- if .Values.main_app.ratelimiter.redis_pass }}
   redis_auth: {{ .Values.main_app.ratelimiter.redis_pass }}
+  {{- end }}
   server_connections: 1
   server_failure_limit: 3
   server_retry_timeout: 10000
