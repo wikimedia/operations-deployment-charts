@@ -12,7 +12,7 @@ config:
       kubernetes_executor:
           worker_pods_creation_batch_size: 64  # How many pods to request from K8s API in each scheduler heartbeat
       scheduler:
-          max_tis_per_query: 128  # How many TaskInstances the scheduler picks up per DB query loop
+          max_tis_per_query: 512  # How many TaskInstances the scheduler picks up per DB query loop
       kerberos:
         principal: analytics/airflow.discovery.wmnet
   oidc:
