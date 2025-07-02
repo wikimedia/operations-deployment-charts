@@ -47,6 +47,8 @@ core:
       limits:
         cpu: 3000m
         memory: 1000Mi
+  queue_proxy:
+    version: 1.7.2-7
   webhook:
     # We raise the max number of pods in production since sometimes,
     # when a new knative-serving chart version is rolled out, there is the chance
