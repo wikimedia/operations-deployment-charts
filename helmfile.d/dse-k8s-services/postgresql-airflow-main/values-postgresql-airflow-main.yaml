@@ -1,3 +1,13 @@
 cluster:
+  postgresql:
+    max_connections: "200"
+    shared_buffers: "2048MB" # 20% of the container memory
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 10Gi
+    requests:
+      cpu: 4000m
+      memory: 10Gi
   storage:
     size: 30Gi
