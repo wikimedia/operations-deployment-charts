@@ -221,9 +221,7 @@ hostname_callable = webserver_config.get_scheduler_service_name
 
 {{- define "airflow.config.core.security" }}
 {{- if $.Values.kerberos.enabled }}
-{{- if not $.Values.devenv.enabled }}
 security = kerberos
-{{- end }}
 {{- end }}
 {{- end }}
 
