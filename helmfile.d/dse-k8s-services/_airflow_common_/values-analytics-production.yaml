@@ -60,6 +60,7 @@ external_services:
     druid: [analytics]
   hadoop-shell:
     # Give access to hadoop subsystems to the hadoop shell
+    hive: [analytics]
     hadoop-master: [analytics]
     hadoop-worker: [analytics]
 # We hardcode this hostname / ip mapping to allow Hadoop to perform a reverse DNS
