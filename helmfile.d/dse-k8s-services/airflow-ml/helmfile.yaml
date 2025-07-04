@@ -54,6 +54,7 @@ releases:
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/dse-k8s_services/airflow-ml/{{ .Environment.Name }}.yaml"
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-analytics-production.yaml" # analytics-hadoop specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-ml"
