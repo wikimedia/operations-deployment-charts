@@ -46,6 +46,7 @@ main_app:
   http_https_echo: false
   ratelimiter:
     enabled: false
+    metrics_port: 9090
     # image version
     version: latest
     port: 8081
@@ -213,10 +214,6 @@ nutcracker:
   enabled: false
   port: 6379
   servers: [] # The form is <IP>:<port>:<db> "name" for each element
-
-monitoring:
-  enabled: false
-  image_version: latest
 
 service:
   deployment: minikube

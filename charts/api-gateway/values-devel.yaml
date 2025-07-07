@@ -9,7 +9,7 @@ main_app:
   http_https_echo: true
   ratelimiter:
     enabled: true
-    version: 9.0.2-20240503.3fcc360-20250629
+    version: 9.0.3-20250704.bf8fb04
     log_level: debug
     redis_host: localhost
     redis_port: 6380
@@ -158,8 +158,3 @@ nutcracker:
   port: 6380 # use different port here because local redis uses 6379
   servers:
     - localhost:6379:1 "cp-1"
-
-# Only used by ratelimiter for metrics - envoy uses prometheus native metrics
-monitoring:
-  enabled: true
-  image_version: 0.0.5

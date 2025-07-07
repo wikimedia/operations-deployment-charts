@@ -14,21 +14,6 @@ data:
   tls_certificate_sds_secret.yaml: |-
     {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 4 }}
 {{- end }}
-{{- if .Values.monitoring.enabled }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-metrics-config
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  prometheus-statsd.conf: |-
-{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
-{{ end }}
 {{- if .Values.nutcracker.enabled }}
 ---
 apiVersion: v1
@@ -72,6 +57,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
+  metrics.yaml: |-
+{{ .Files.Get "config/ratelimiter_metrics.yaml" | indent 4 }}
   config.yaml: |- {{ include "ratelimit.config" . | indent 4 }}
 {{ end -}}
 {{- if .Values.main_app.jwt.enabled }}

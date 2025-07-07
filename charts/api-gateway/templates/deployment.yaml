@@ -33,9 +33,7 @@ spec:
         {{ end -}}
         {{ if .Values.main_app.ratelimiter -}}
         checksum/ratelimit: {{ include "ratelimit.config" . | sha256sum }}
-        {{ end -}}
-        {{ if .Values.monitoring.enabled -}}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
+        checksum/ratelimit_metrics: {{ .Files.Get "config/ratelimiter_metrics.yaml" | sha256sum }}
         {{ end -}}
         prometheus.io/scrape: "true"
     spec:
@@ -109,15 +107,6 @@ spec:
 {{ toYaml . | indent 12 }}
 {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
-{{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          image: {{ .Values.docker.registry }}/prometheus-statsd-exporter:{{ .Values.monitoring.image_version }}
-          imagePullPolicy: {{ .Values.docker.pull_policy }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-metrics-exporter
-              mountPath: /etc/monitoring
-{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
-{{- end }}
 {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker
           image: {{ .Values.docker.registry }}/{{ .Values.common_images.nutcracker.nutcracker }}
@@ -150,7 +139,6 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: 6379
-{{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
 {{- if .Values.main_app.ratelimiter.enabled }}
 {{- if not .Values.nutcracker.enabled }}
@@ -161,6 +149,7 @@ spec:
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           ports:
             - containerPort: {{ .Values.main_app.ratelimiter.port }}
+            - containerPort: {{ .Values.main_app.ratelimiter.metrics_port }}
           readinessProbe:
             httpGet:
               path: /healthcheck
@@ -180,18 +169,31 @@ spec:
               value: /etc
             - name: RUNTIME_SUBDIRECTORY
               value: ratelimit
-            - name: USE_STATSD
-              value: "{{ .Values.monitoring.enabled }}"
-            - name: STATSD_HOST
-              value: "localhost"
-            - name: STATSD_PORT
-              value: "9125"
             - name: REDIS_AUTH
               value: {{ .Values.main_app.ratelimiter.redis_pass }}
+            - name: USE_PROMETHEUS
+              value: "true"
+            - name: USE_STATSD
+              value: "false"
+            - name: PROMETHEUS_MAPPER_YAML
+              value: /etc/ratelimit-metrics.yaml
+            - name: PROMETHEUS_ADDR
+              value: "0.0.0.0:{{ .Values.main_app.ratelimiter.metrics_port }}"
           volumeMounts:
+            # We can't mount the metrics file in the same directory as
+            # the ratelimit config or the service will assume this is
+            # a ratelimit config file and barf.
+            # Additionally, we can't mount the config as a directory,
+            # because the hidden files that k8s creates for the mount
+            # will also be potentially read, causing the service to
+            # barf.
             - name: {{ .Release.Name }}-ratelimit-config
               mountPath: /etc/ratelimit/config.yaml
               subPath: config.yaml
+              readOnly: true
+            - name: {{ .Release.Name }}-ratelimit-config
+              mountPath: /etc/ratelimit-metrics.yaml
+              subPath: metrics.yaml
               readOnly: true
           resources:
             requests:
@@ -204,11 +206,6 @@ spec:
         - name: {{ .Release.Name }}-base-config
           configMap:
             name: {{ template "base.name.release" . }}-base-config
-        {{- if .Values.monitoring.enabled }}
-        - name: {{ .Release.Name }}-metrics-exporter
-          configMap:
-            name: {{ template "base.name.release" . }}-metrics-config
-        {{- end }}
         {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker-config
           configMap:

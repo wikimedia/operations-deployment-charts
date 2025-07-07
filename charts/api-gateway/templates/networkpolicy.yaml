@@ -21,10 +21,8 @@ spec:
     - ports:
       - port: {{ .Values.app.port }}
         protocol: TCP
-      {{- if .Values.monitoring.enabled }}
-      - port: 9102
+      - port: {{ .Values.main_app.ratelimiter.metrics_port }}
         protocol: TCP
-      {{- end }}
       {{- if .Values.main_app.telemetry_port }}
       - port: {{ .Values.main_app.telemetry_port }}
         protocol: TCP
