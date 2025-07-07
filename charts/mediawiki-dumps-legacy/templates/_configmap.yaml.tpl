@@ -97,6 +97,8 @@ data:
     zhwiki
   skipnone.dblist: |
     # empty file
+  globalusage.dblist: |
+    commonswiki
 {{ end }}
 
 {{- define "configmap.mediawiki-dumps-legacy-ssh-known-hosts" }}
