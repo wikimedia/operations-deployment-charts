@@ -28,12 +28,12 @@ main_app:
   limits:
     cpu: 1.5
 #  DEBUG: enable profiler on staging
-#  command:
-#    - "node"
-#  args:
-#    - "profile.js"
-#    - "server.js"
-#    - "/etc/mobileapps/config.yaml"
+  command:
+    - "node"
+  args:
+    - "profile.js"
+    - "server.js"
+    - "/etc/mobileapps/config.yaml"
 
 logging:
   level: trace
