@@ -142,6 +142,14 @@ spec: &spec
                 topic: 'change-prop.transcludes.resource-change'
                 concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_mobile_html_native_transcludes }}
                 batch_size: {{ .Values.main_app.changeprop.batch_size.pcs_rerender_mobile_html_native_transcludes }}
+                exec:
+{{ range .Values.main_app.changeprop.rerendered_pcs_endpoints_native }}
+                  - method: get
+                    uri: '{{ $.Values.main_app.changeprop.pcs_uri }}/{{ `{{message.meta.domain}}` }}/v1/page/{{ . }}/{decode(match.meta.uri.title)}'
+                    headers:
+                      x-cache-purge: 'true'
+                      if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
+{{ end }}
 
               pcs_rerender_native_on_null:
                 <<: *pcs_rerender_spec_native
