@@ -150,10 +150,6 @@ spec: &spec
                       x-cache-purge: 'true'
                       if-unmodified-since: '{{ `{{date(message.meta.dt)}}` }}'
 {{ end }}
-                match_not:
-                  # We can't purge File pages via PCS and lots of events get created for transclusions in them
-                  meta:
-                    uri: '/https?:\/\/commons.wikimedia.org/wiki/File%3A.+'
 
               pcs_rerender_native_on_null:
                 <<: *pcs_rerender_spec_native
