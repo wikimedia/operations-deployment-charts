@@ -1,5 +1,3 @@
-main_app:
-    version: 2025-07-09-124154-production
 resources:
   replicas: 1
 
@@ -8,11 +6,6 @@ strategy:
 
 ingress:
   staging: true
-
-config:
-   public:
-    BASE_URL: "s3://wmf-ml-models/mint/20250514081434"
-    USE_S3CMD: true
 
 liveness_probe:
   tcpSocket:
