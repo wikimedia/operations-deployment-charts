@@ -145,7 +145,7 @@ spec: &spec
                 match_not:
                   # Workaround: Ignore almost unused namespaces to reduce backlog
                   meta:
-                    uri: 'https:\/\/.*\/wiki\/(File|Discussion|Template|Talk)%3A.+'
+                    uri: '/https?:\/\/[^\/]+\/wiki\/(File|Discussion|Template|Talk)%3A.+/'
 
               pcs_rerender_native_on_null:
                 <<: *pcs_rerender_spec_native
