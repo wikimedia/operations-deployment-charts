@@ -143,9 +143,9 @@ spec: &spec
                 concurrency: {{ mul .Values.main_app.concurrency .Values.main_app.changeprop.pcs_rerender_concurrency_factor.pcs_rerender_mobile_html_native_transcludes }}
                 batch_size: {{ .Values.main_app.changeprop.batch_size.pcs_rerender_mobile_html_native_transcludes }}
                 match_not:
-                  # We can't purge File pages via PCS and lots of events get created for transclusions in them
+                  # Workaround: Ignore almost unused namespaces to reduce backlog
                   meta:
-                    uri: '/https?:\/\/commons.wikimedia.org\/wiki\/File%3A.+/'
+                    uri: 'https:\/\/.*\/wiki\/(File|Discussion|Template|Talk)%3A.+'
 
               pcs_rerender_native_on_null:
                 <<: *pcs_rerender_spec_native
