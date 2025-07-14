@@ -26,7 +26,6 @@ environments:
         - design-blog
         - design-landing-page
         - design-strategy
-        - design-style-guide
         - security-landing-page
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
@@ -107,8 +106,6 @@ releases:
   - name: design-landing-page
     <<: *default
   - name: design-strategy
-    <<: *default
-  - name: design-style-guide
     <<: *default
   - name: security-landing-page
     <<: *default
