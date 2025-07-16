@@ -10,18 +10,20 @@ tcp_services_proxy:
   maps_postgres:
     upstreams:
       # master node
-      # - address: maps1009.eqiad.wmnet
+      # - address: maps2009.codfw.wmnet
       #   port: 5432
       # read replicas
-      - address: maps1005.eqiad.wmnet
+      - address: maps2005.codfw.wmnet
         port: 5432
-      - address: maps1006.eqiad.wmnet
+      - address: maps2006.codfw.wmnet
         port: 5432
-      - address: maps1007.eqiad.wmnet
+      - address: maps2007.codfw.wmnet
         port: 5432
-      - address: maps1008.eqiad.wmnet
+      - address: maps2008.codfw.wmnet
         port: 5432
-      - address: maps1010.eqiad.wmnet
+      - address: maps2009.codfw.wmnet
+        port: 5432
+      - address: maps2010.codfw.wmnet
         port: 5432
 
 tileCaching:
@@ -45,4 +47,11 @@ kafka:
   kafka:
     - test-eqiad
 external_services:
-  postgresql: [maps-read-replicas-eqiad]
+  postgresql:
+    # - maps-read-replicas-eqiad
+    - maps-read-replicas-codfw
+    - maps-master-codfw
+
+main_app:
+  postgres:
+    user: tegola
