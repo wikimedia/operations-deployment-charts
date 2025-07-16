@@ -4,9 +4,7 @@ shellbox:
   version: "2025-07-15-174312"
 php:
   httpd:
-    # TODO: T378128 - Remove image_name override when httpd-fcgi is rebased
-    # onto bookworm.
-    image_name: "httpd-fcgi-bookworm"
+    image_name: "httpd-fcgi"
     version: "2.4.62-1"
     log:
       skip_system: "1"
