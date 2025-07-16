@@ -10,21 +10,16 @@ tcp_services_proxy:
   maps_postgres:
     upstreams:
       # master node
-      # - address: maps2009.codfw.wmnet
+      # - address: maps-test2001.codfw.wmnet
       #   port: 5432
       # read replicas
-      - address: maps2005.codfw.wmnet
+      - address: maps-test2002.codfw.wmnet
         port: 5432
-      - address: maps2006.codfw.wmnet
+      - address: maps-test2003.codfw.wmnet
         port: 5432
-      - address: maps2007.codfw.wmnet
+      - address: maps-test2004.codfw.wmnet
         port: 5432
-      - address: maps2008.codfw.wmnet
-        port: 5432
-      - address: maps2009.codfw.wmnet
-        port: 5432
-      - address: maps2010.codfw.wmnet
-        port: 5432
+      - address: maps-test2005.codfw.wmnet
 
 tileCaching:
   enabled: true
@@ -49,8 +44,8 @@ kafka:
 external_services:
   postgresql:
     # - maps-read-replicas-eqiad
-    - maps-read-replicas-codfw
-    - maps-master-codfw
+    - maps-bookworm-read-replicas-codfw
+    - maps-bookworm-master-codfw
 
 main_app:
   postgres:
