@@ -69,7 +69,28 @@ namespaces:
           cpu: "180"
           memory: "200Gi"
   chart-renderer: {}
-  cirrus-streaming-updater: {}
+  cirrus-streaming-updater:
+    limitranges:
+      container:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "10"
   citoid: {}
   commons-impact-analytics: {}
   cxserver: {}
