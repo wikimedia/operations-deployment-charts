@@ -169,6 +169,9 @@ main_app:
         - name: availability
           in: '(.+)/v1/feed/availability'
           out: '\1/v1/feed/availability'
+        - name: dyk
+          in: '(.+)/v1/feed/did-you-know'
+          out: '\1/v1/feed/did-you-know'
         - name: random
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
