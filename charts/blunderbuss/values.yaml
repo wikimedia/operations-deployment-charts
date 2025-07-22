@@ -6,7 +6,7 @@ app:
   date: "{{ .Release.Time.Seconds }}"
   version: latest # we use latest everywhere in the defaults.
   port: &app_port 8090 # This port will be the nginx reverse proxy
-  command: ["/srv/app/bootstrap.sh"]
+  command: ["/srv/app/bootstrap_huey.sh"]
   args:
   - *app_port
   replicas: 1
