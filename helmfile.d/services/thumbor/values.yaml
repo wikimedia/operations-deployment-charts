@@ -22,14 +22,14 @@ discovery:
 main_app:
   failure_throttling_memcache: "127.0.0.1:11213"
   version: "2025-07-08-145126-production"
-  thumbor_workers: 7
+  thumbor_workers: 4
 
   log_level: "error"
 
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
     cpu: 2
-    memory: 3Gi
+    memory: 7Gi
   # TODO: This is a hack to trick the scheduler into starting more pods than we
   # currently afford. Once we have more kubernetes hosts, we 'll remove
   requests:
