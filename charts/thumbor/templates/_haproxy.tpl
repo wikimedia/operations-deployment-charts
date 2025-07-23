@@ -24,7 +24,7 @@ listen thumbor
     timeout queue {{ .Values.haproxy.timeout_queue }}ms
 
     # Use first available Thumbor instance for next request
-    balance first
+    balance leastconn
     # Retry once on a different Thumbor instance in case of connection timeout or failure
     retries 1
     option redispatch 1
