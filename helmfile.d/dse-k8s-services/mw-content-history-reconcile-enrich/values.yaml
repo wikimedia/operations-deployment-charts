@@ -25,6 +25,9 @@ app:
 
         # NOTE: Make sure source and sink are configured in other values files.
 
+  flinkConfiguration:
+    jobmanager.memory.off-heap.size: 512m
+
   job:
     # Desired state for the job., either 'running' or 'suspended'.
     # Alter this property to trigger a restart.
