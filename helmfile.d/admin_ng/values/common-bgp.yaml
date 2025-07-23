@@ -14,19 +14,19 @@ BGPPeers:
   cr1-codfw:
     ipv4: "208.80.153.192"
     ipv6: "2620:0:860:ffff::1"
-    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'ganeti-codfw-a', 'ganeti-codfw-b', 'ganeti-codfw-c', 'ganeti-codfw-d' })
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone in {'ganeti-codfw-a', 'ganeti-codfw-b', 'ganeti-codfw-c', 'ganeti-codfw-d' })
   cr2-codfw:
     ipv4: "208.80.153.193"
     ipv6: "2620:0:860:ffff::2"
-    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'ganeti-codfw-a', 'ganeti-codfw-b', 'ganeti-codfw-c', 'ganeti-codfw-d' })
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone in {'ganeti-codfw-a', 'ganeti-codfw-b', 'ganeti-codfw-c', 'ganeti-codfw-d' })
   cr1-eqiad:
     ipv4: 208.80.154.196
     ipv6: 2620:0:861:ffff::1
-    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'ganeti-eqiad-a', 'ganeti-eqiad-b', 'ganeti-eqiad-c', 'ganeti-eqiad-d' })
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'pod-ab', 'pod-cd', 'ganeti-eqiad-a', 'ganeti-eqiad-b', 'ganeti-eqiad-c', 'ganeti-eqiad-d' })
   cr2-eqiad:
     ipv4: 208.80.154.197
     ipv6: 2620:0:861:ffff::2
-    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'ganeti-eqiad-a', 'ganeti-eqiad-b', 'ganeti-eqiad-c', 'ganeti-eqiad-d' })
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'pod-ab', 'pod-cd', 'ganeti-eqiad-a', 'ganeti-eqiad-b', 'ganeti-eqiad-c', 'ganeti-eqiad-d' })
   lsw1-e1-eqiad:
     ipv4: 10.64.130.1
     ipv6: 2620:0:861:109::1
