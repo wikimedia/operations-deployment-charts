@@ -99,6 +99,26 @@ networkpolicy:
         - protocol: TCP
           port: 443
     # # end of idp.w.o # #
+    # # Fetch alerts and silences from the Alertmanager API # #
+    # alertmanager-eqiad.wikimedia.org
+    - cidr: 208.80.154.78
+      ports:
+        - protocol: TCP
+          port: 80
+    - cidr: 2620:0:861:3:208:80:154:78
+      ports:
+        - protocol: TCP
+          port: 80
+    # alertmanager-codfw.wikimedia.org
+    - cidr: 208.80.153.42
+      ports:
+        - protocol: TCP
+          port: 80
+    - cidr: 2620:0:860:2:208:80:153:42
+      ports:
+        - protocol: TCP
+          port: 80
+    # # End of Alertmanager # #
 
 ingress:
   enabled: true
