@@ -127,6 +127,8 @@ main_app:
         - name: ma_transform_wikitext_mobile_html
           in: '(.+)/v1/transform/wikitext/to/mobile-html/(.+)'
           out: '\1/v1/transform/wikitext/to/mobile-html/\2'
+      rb_response_headers: true
+
     - name: proton
       timeout: 150s
       urls:
@@ -140,6 +142,8 @@ main_app:
         - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
+      rb_response_headers: true
+
     - name: citoid
       timeout: 120s
       ingress: true
@@ -150,6 +154,7 @@ main_app:
         - name: citoid_query
           in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
+      rb_response_headers: true
 
     - name: wikifeeds
       timeout: 15s
@@ -175,6 +180,7 @@ main_app:
         - name: random
           in: '(.+)/v1/page/random/(.+)'
           out: '\1/v1/page/random/redirect/\2'
+      rb_response_headers: true
 
     - name: geo-analytics
       timeout: 15s
@@ -186,6 +192,7 @@ main_app:
         - name: geo-editors
           in: '/wikimedia.org/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\1'
+      rb_response_headers: true
 
     - name: media-analytics
       timeout: 15s
@@ -197,6 +204,7 @@ main_app:
         - name: mediarequests
           in: '/wikimedia.org/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\1'
+      rb_response_headers: true
 
     - name: edit-analytics
       timeout: 5s
@@ -214,6 +222,7 @@ main_app:
         - name: edited_pages
           in: '/wikimedia.org/v1/metrics/edited-pages/(.+)'
           out: '/metrics/edited-pages/\1'
+      rb_response_headers: true
 
     - name: editor-analytics
       timeout: 5s
@@ -228,6 +237,7 @@ main_app:
         - name: registered
           in: '/wikimedia.org/v1/metrics/registered-users/(.+)'
           out: '/metrics/registered-users/\1'
+      rb_response_headers: true
 
     - name: page-analytics
       timeout: 5s
@@ -242,6 +252,7 @@ main_app:
         - name: legacy
           in: '/wikimedia.org/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\1'
+      rb_response_headers: true
 
     - name: device-analytics
       timeout: 15s
@@ -252,6 +263,7 @@ main_app:
         - name: unique-devices
           in: '/wikimedia.org/v1/metrics/unique-devices/(.+)'
           out: '/metrics/unique-devices/\1'
+      rb_response_headers: true
 
     - name: commons-impact-analytics
       timeout: 15s
@@ -263,6 +275,7 @@ main_app:
         - name: commons-analytics
           in: '/wikimedia.org/v1/metrics/commons-analytics/(.+)'
           out: '/metrics/commons-analytics/\1'
+      rb_response_headers: true
 
     - name: mw-api-int
       timeout: 15s
@@ -313,6 +326,7 @@ main_app:
         - name: lists
           in: '(.+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
+      rb_response_headers: true
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress

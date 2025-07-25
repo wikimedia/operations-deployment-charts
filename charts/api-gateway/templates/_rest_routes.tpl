@@ -6,40 +6,6 @@
 {{- range $domain := .Values.main_app.domains }}
               - "{{ $domain }}"
 {{- end }}
-
-              response_headers_to_add:
-                - header:
-                    key: "access-control-allow-origin"
-                    value: "*"
-                  append: false
-                - header:
-                    key: "access-control-allow-methods"
-                    value: "GET,HEAD"
-                  append: false
-                - header:
-                    key: "access-control-allow-headers"
-                    value: "accept, content-type, content-length, cache-control, accept-language, api-user-agent, if-match, if-modified-since, if-none-match, dnt, accept-encoding"
-                  append: false
-                - header:
-                    key: "access-control-expose-headers"
-                    value: "etag"
-                  append: false
-                - header:
-                    key: "x-content-type-options"
-                    value: "nosniff"
-                  append: false
-                - header:
-                    key: "x-frame-options"
-                    value: "SAMEORIGIN"
-                  append: false
-                - header:
-                    key: "referrer-policy"
-                    value: "origin-when-cross-origin"
-                  append: false
-                - header:
-                    key: "x-xss-protection"
-                    value: "1; mode=block"
-                  append: false
               routes:
               - name: rest_gateway_root
                 match:
@@ -65,11 +31,54 @@
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
-                {{- range $rh := $endpoint.request_headers_to_add }}
+                {{- range $rqh := $endpoint.request_headers_to_add }}
                   - header:
-                      key: "{{ $rh.key }}"
-                      value: "{{ $rh.value }}"
+                      key: "{{ $rqh.key }}"
+                      value: "{{ $rqh.value }}"
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                {{- end }}
+                {{- end }}
+                {{- if or $endpoint.response_headers_to_add $endpoint.rb_response_headers }}
+                response_headers_to_add:
+                {{- range $rsh := $endpoint.response_headers_to_add }}
+                  - header:
+                      key: "{{ $rsh.key }}"
+                      value: "{{ $rsh.value }}"
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                {{- end }}
+                {{- if $endpoint.rb_response_headers }}
+                  - header:
+                      key: "access-control-allow-origin"
+                      value: "*"
+                    append: false
+                  - header:
+                      key: "access-control-allow-methods"
+                      value: "GET,HEAD"
+                    append: false
+                  - header:
+                      key: "access-control-allow-headers"
+                      value: "accept, content-type, content-length, cache-control, accept-language, api-user-agent, if-match, if-modified-since, if-none-match, dnt, accept-encoding"
+                    append: false
+                  - header:
+                      key: "access-control-expose-headers"
+                      value: "etag"
+                    append: false
+                  - header:
+                      key: "x-content-type-options"
+                      value: "nosniff"
+                    append: false
+                  - header:
+                      key: "x-frame-options"
+                      value: "SAMEORIGIN"
+                    append: false
+                  - header:
+                      key: "referrer-policy"
+                      value: "origin-when-cross-origin"
+                    append: false
+                  - header:
+                      key: "x-xss-protection"
+                      value: "1; mode=block"
+                    append: false
                 {{- end }}
                 {{- end }}
                   {{- if $endpoint.params}}

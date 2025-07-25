@@ -34,6 +34,7 @@ main_app:
         - name: ma_summary_no_revision
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
+      rb_response_headers: true
     - name: proton
       timeout: 150s
       ingress: true
@@ -49,12 +50,14 @@ main_app:
         - name: proton_title_format_type
           in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
+      rb_response_headers: true
     - name: citoid
       timeout: 120s
       urls:
         - name: citoid_query
           in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
+      rb_response_headers: true
 
   discovery_endpoints:
     mobileapps:
