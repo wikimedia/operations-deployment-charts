@@ -101,24 +101,34 @@ networkpolicy:
     # # end of idp.w.o # #
     # # Fetch alerts and silences from the Alertmanager API # #
     # alertmanager-eqiad.wikimedia.org
-    - cidr: 208.80.154.78
+    - cidr: 208.80.154.78/32
       ports:
         - protocol: TCP
           port: 80
-    - cidr: 2620:0:861:3:208:80:154:78
+    - cidr: 2620:0:861:3:208:80:154:78/128
       ports:
         - protocol: TCP
           port: 80
     # alertmanager-codfw.wikimedia.org
-    - cidr: 208.80.153.42
+    - cidr: 208.80.153.42/32
       ports:
         - protocol: TCP
           port: 80
-    - cidr: 2620:0:860:2:208:80:153:42
+    - cidr: 2620:0:860:2:208:80:153:42/128
       ports:
         - protocol: TCP
           port: 80
     # # End of Alertmanager # #
+    # netbox.discovery.wmnet
+    - cidr: 10.64.0.103/32
+      ports:
+        - protocol: TCP
+          port: 443
+    # config-master.discovery.wmnet
+    - cidr: 10.64.0.110/32
+      ports:
+        - protocol: TCP
+          port: 443
 
 ingress:
   enabled: true
