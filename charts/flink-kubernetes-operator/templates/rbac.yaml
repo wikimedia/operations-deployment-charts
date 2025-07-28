@@ -1,4 +1,3 @@
-{{/*
 ################################################################################
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -16,7 +15,7 @@
 #  See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-*/}}
+
 {{/*
 RBAC rules used to create the operator (cluster)role based on the scope
 */}}
@@ -31,7 +30,14 @@ rules:
       - configmaps
       - secrets
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+      - deletecollection
 {{- if .Values.rbac.nodesRule.create }}
   - apiGroups:
     - ""
@@ -47,40 +53,85 @@ rules:
       - deployments/finalizers
       - replicasets
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/scale
+    verbs:
+      - get
+      - update
+      - patch
   - apiGroups:
       - extensions
     resources:
       - deployments
       - ingresses
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - flink.apache.org
     resources:
       - flinkdeployments
-      - flinkdeployments/status
+      - flinkdeployments/finalizers
       - flinksessionjobs
-      - flinksessionjobs/status
+      - flinksessionjobs/finalizers
+      - flinkstatesnapshots
+      - flinkstatesnapshots/finalizers
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - flink.apache.org
+    resources:
+      - flinkdeployments/status
+      - flinksessionjobs/status
+      - flinkstatesnapshots/status
+    verbs:
+      - get
+      - update
+      - patch
   - apiGroups:
       - networking.k8s.io
     resources:
       - ingresses
     verbs:
-      - "*"
-{{/*
-watchNamespaces doesn't need this since the operator handles it
-*/}}
-{{- if not .Values.watchNamespaces }}
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - coordination.k8s.io
     resources:
       - leases
     verbs:
-      - "*"
-{{- end }}
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 {{- end }}
 
 {{/*
@@ -94,14 +145,26 @@ rules:
       - pods
       - configmaps
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - apps
     resources:
       - deployments
       - deployments/finalizers
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 {{- end }}
 
 ---
@@ -178,7 +241,7 @@ subjects:
 {{/*
 Give operator the ability to operate on leases in the release namespace
 */}}
-{{- if .Values.rbac.operatorRole.create }}
+{{- if and .Values.rbac.operatorRole.create (not (has .Release.Namespace .Values.watchNamespaces)) }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -192,10 +255,16 @@ rules:
     resources:
       - leases
     verbs:
-      - "*"
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 {{- end }}
 ---
-{{- if .Values.rbac.operatorRoleBinding.create }}
+{{- if and .Values.rbac.operatorRole.create (not (has .Release.Namespace .Values.watchNamespaces)) }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:

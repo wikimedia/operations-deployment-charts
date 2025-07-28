@@ -1,4 +1,3 @@
-{{/*
 ################################################################################
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -16,7 +15,6 @@
 #  See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
-*/}}
 ---
 {{- if eq (include "flink-operator.webhook-enabled" .) "true" }}
 ---
@@ -25,6 +23,12 @@ kind: Service
 metadata:
   name: flink-operator-webhook-service
   namespace: {{ .Release.Namespace }}
+  {{- if .Values.webhook.serviceLabels }}
+  labels:
+    {{- range $key, $value := .Values.webhook.serviceLabels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+  {{- end }}
 spec:
   ports:
   - port: 443
@@ -105,6 +109,7 @@ webhooks:
     resources:
     - flinkdeployments
     - flinksessionjobs
+    - flinkstatesnapshots
   sideEffects: None
   {{- if .Values.watchNamespaces }}
   namespaceSelector:
@@ -137,8 +142,10 @@ webhooks:
         scope: "Namespaced"
         operations:
           - CREATE
+          - UPDATE
         resources:
           - flinksessionjobs
+          - flinkdeployments
     sideEffects: None
     {{- if .Values.watchNamespaces }}
     namespaceSelector:

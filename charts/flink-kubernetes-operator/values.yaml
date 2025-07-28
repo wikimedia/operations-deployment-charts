@@ -1,3 +1,21 @@
+################################################################################
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+
 ---
 
 # List of kubernetes namespaces to watch for FlinkDeployment changes, empty means all namespaces.
@@ -41,19 +59,35 @@ rbac:
     name: "flink-role-binding"
 
 operatorPod:
+  priorityClassName: null
   annotations: {}
   labels: {}
+  # The env variables only apply to the operator container in the operator pod
+  # TODO: consider making this pod level env variables
   env:
   # - name: ""
   #   value: ""
+  # - name: ""
+  #   valueFrom:
+  #     configMapKeyRef:
+  #       name: ""
+  #       key: ""
   # dnsPolicy: ""
   # dnsConfig: {}
-  # Node labels for operator pod assignment
+  # Node labels and affinity for operator pod assignment
   # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  envFrom:
+  # - configMapRef:
+  #     name: ""
   nodeSelector: {}
+
+  affinity: {}
   # Node tolerations for operator pod assignment
   # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
   tolerations: []
+  # Topology spread constrains
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  topologySpreadConstraints: []
   resources: {}
   # resources:
   #   limits:
@@ -64,6 +98,15 @@ operatorPod:
   #     memory: "512Mi"
   webhook:
     resources: {}
+    container:
+      env:
+      # - name: ""
+      #   value: ""
+  # optional init containers for operator pod
+  initContainers: []
+
+  # optional extra containers for operator pod
+  sidecarContainers: []
 
 operatorServiceAccount:
   create: true
@@ -113,6 +156,7 @@ webhook:
   # passwordSecretRef:
   #   name: jks-password-secret
   #   key: password-key
+  serviceLabels: {}
 
 defaultConfiguration:
   # If set to true, creates ConfigMaps/VolumeMounts. If set to false, no configuration will be created.
@@ -151,6 +195,7 @@ fullnameOverride: ""
 jvmArgs:
   webhook: ""
   operator: ""
+  logConfig: "-Dlog4j.configurationFile=/opt/flink/conf/log4j-operator.properties"
 
 # Configure health probes for the operator
 operatorHealth:
@@ -161,3 +206,14 @@ operatorHealth:
   startupProbe:
     failureThreshold: 30
     periodSeconds: 10
+
+# Set postStart hook of the main container
+postStart: {}
+
+# Configuration for tls
+tls:
+  create: false
+  secretName: flink-operator-cert
+  secretKeyRef:
+    name: operator-certificate-password
+    key: password

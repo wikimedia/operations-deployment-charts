@@ -19,18 +19,17 @@ https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kuberne
 
 - crds are moved to a separate chart: flink-kubernetes-operator-crds
 - package.json and templates/vendor use [sextant](https://gitlab.wikimedia.org/repos/sre/sextant)
-  for networkpolicy_1.0.0.tpl
+  for networkpolicy_1.2.0.tpl
 - templates/networkpolicy.yaml is added to allow:
 -- ingress access to metrics port
--- egress-basic using WMF's vendor/base/networkpolicy_1.0.0.tpl.
+-- egress-basic using WMF's vendor/base/networkpolicy_1.2.0.tpl.
    Set `networkpolicy.egress.enabled: true` in your helmfile values to use this.
    If you enable egress, you must also set at least one of `networkpolicy.egress.dst_nets`
    or `networkpolicy.egress.dst_ports`.
 -- egress to kubernetes API at .Values.kubernetesMasters.cidrs
 -- ingress to webhook from kubernetes API at .Values.kubernetesMasters.cidrs if .Values.webhook.create is true.
 - Added .fixtures for CI.
-- Fixed [FLINK-32041](https://issues.apache.org/jira/browse/FLINK-32041)
-
+- Lowered operator logging level from ERROR to WARN
 ## Upgrading from upstream helm chart.
 
 TODO: add better instructions.
