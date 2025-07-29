@@ -168,6 +168,8 @@ config:
         instance_name: "{{ $.Values.config.airflow.instance_name }}"
         expose_hostname: true
         expose_stacktrace: true
+        # We wish to allow long-running requests, such as when clearing many tasks. See #T400493
+        web_server_worker_timeout: 300 # Note: Deprecated in version 3.0 and replaced with: api.worker_timeout
 
   # https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html
   connections:
@@ -521,7 +523,7 @@ mesh:
   # in dictionary form.
   request_headers_to_add: []
   # Timeout of a request to the local service
-  upstream_timeout: "60s"
+  upstream_timeout: "300s"
   # Enabling telemetry, telemetry port.
   telemetry:
     enabled: true
