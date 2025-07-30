@@ -4,7 +4,7 @@ monitoring:
 inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2025-05-23-112000-publish"
+    version: "2025-07-30-085922-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
@@ -16,7 +16,7 @@ inference:
         value: "mediawiki.page_prediction_change.rc0"
   transformer:
     image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2025-05-23-112001-publish"
+    version: "2025-07-30-085923-publish"
     base_env:
       - name: WIKI_URL
         value: "http://mw-api-int-ro.discovery.wmnet:4680"
