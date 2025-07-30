@@ -327,10 +327,13 @@ resources:
 {{- end }}
 
 {{- define "airflow.task-pod.volumes" }}
+{{/* We only need to add the `volumes:` header if we have volumes to declare in the first place */}}
+{{- $extraVolumes := (include "airflow.worker.extra-config-volumes" (dict "Root" .Root)) }}
+{{- if or .profiles (fromYaml $extraVolumes) }}
 {{- if ne .header false }}
 volumes:
 {{- end }}
-{{- if .profiles }}
+{{- end }}
 {{- if has "airflow" .profiles }}
 {{ include "app.airflow.volumes" .Root }}
 {{- end }}
@@ -343,15 +346,17 @@ volumes:
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumes" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
-{{- end }}
-{{- include "airflow.worker.extra-config-volumes" (dict "Root" .Root) }}
+{{- $extraVolumes }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
+{{/* We only need to add the `volumeMounts:` header if we have volume to declare in the first place */}}
+{{- $extraVolumeMounts := (include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root)) }}
 {{- if ne .header false }}
+{{- if or .profiles (fromYaml $extraVolumeMounts) }}
 volumeMounts:
 {{- end }}
-{{- if .profiles }}
+{{- end }}
 {{- if has "airflow" .profiles }}
 {{- include "app.airflow.volumeMounts" .Root }}
 {{- end }}
@@ -364,8 +369,7 @@ volumeMounts:
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumeMounts" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
-{{- end }}
-{{- include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root) }}
+{{- $extraVolumeMounts }}
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
