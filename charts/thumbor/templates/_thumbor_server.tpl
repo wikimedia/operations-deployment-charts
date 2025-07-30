@@ -138,10 +138,13 @@ COMMUNITY_EXTENSIONS = [
 
 SLOW_PROCESSING_LIMIT = 30000
 
-SUBPROCESS_USE_TIMEOUT = True
+SUBPROCESS_USE_TIMEOUT = {{ .Values.main_app.subprocess_timeout.enabled }}
 # The Varnish slow log currently uses 60s as its threshold. This helps
 # avoiding hitting the slow log for expected subprocess timeout situations.
-SUBPROCESS_TIMEOUT = 59
+SUBPROCESS_TIMEOUT = {{ .Values.main_app.subprocess_timeout.timeout }}
+# Send a SIGKILL if the command is running after SIGTERM has been sent.
+# 0 disables this
+SUBPROCESS_TIMEOUT_KILL_AFTER = {{ .Values.main_app.subprocess_timeout.kill_after }}
 
 VIPS_ENGINE_MIN_PIXELS = 10000000
 

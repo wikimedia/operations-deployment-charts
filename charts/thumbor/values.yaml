@@ -76,6 +76,12 @@ main_app:
     # Warning: will count against the pods' memory limit.
     memory: false
 
+  # We use /usr/bin/timeout to make sure stuck conversions get killed automatically.
+  subprocess_timeout:
+    enabled: False
+    timeout: 59
+    kill_after: 5
+
   # to be changed if/when we use prometheus within thumbor
   # This is currently the statsd exporter
   prometheus_port: 9102
