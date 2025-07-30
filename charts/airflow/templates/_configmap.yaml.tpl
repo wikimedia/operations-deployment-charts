@@ -355,13 +355,14 @@ data:
 {{- end }}
 
 {{- define "configmap.worker.extra-config" }}
+{{ $Root := $ }}
 {{- with $.Values.worker.config.extra_files }}
 {{- range $directory, $config := . }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
+  name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
   {{- include "base.meta.labels" $ | indent 2 }}
   namespace: {{ $.Release.Namespace }}
 data:
@@ -369,24 +370,6 @@ data:
   {{ $filename }}: |
     {{- $content | nindent 4 }}
 {{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{- define "configmap.worker.extra-config" }}
-{{- with $.Values.worker.config.extra_files }}
-{{- range $directory, $config := . }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "airflow.worker.extra-config-resource-name" (dict "directory" $directory) }}
-  {{- include "base.meta.labels" $ | indent 2 }}
-  namespace: {{ $.Release.Namespace }}
-data:
-{{- range $filename, $content := $config }}
-  {{ $filename }}: |
-    {{- $content | nindent 4 }}
 {{- end }}
 {{- end }}
 {{- end }}

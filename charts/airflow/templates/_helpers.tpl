@@ -327,10 +327,10 @@ resources:
 {{- end }}
 
 {{- define "airflow.task-pod.volumes" }}
-{{- if .profiles }}
 {{- if ne .header false }}
 volumes:
 {{- end }}
+{{- if .profiles }}
 {{- if has "airflow" .profiles }}
 {{ include "app.airflow.volumes" .Root }}
 {{- end }}
@@ -348,10 +348,10 @@ volumes:
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
-{{- if .profiles }}
 {{- if ne .header false }}
 volumeMounts:
 {{- end }}
+{{- if .profiles }}
 {{- if has "airflow" .profiles }}
 {{- include "app.airflow.volumeMounts" .Root }}
 {{- end }}
@@ -392,16 +392,18 @@ env:
 {{- end -}}
 
 {{- define "airflow.worker.extra-config-volumes" }}
+{{ $Root := .Root }}
 {{- range $directory, $config := .Root.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
   configMap:
-    name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
+    name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
 {{- end }}
 {{- end }}
 
 {{- define "airflow.worker.extra-config-volume-mounts" }}
+{{ $Root := .Root }}
 {{- range $directory, $config := .Root.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" .Root "directory" $directory) }}
+- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
   mountPath: {{ $directory }}
 {{- end }}
 {{- end }}
@@ -449,14 +451,14 @@ metadata:
     component: task-pod
 spec:
   restartPolicy: Never
-  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles) | nindent 2 }}
+  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles "header" true) | nindent 2 }}
   {{- include "pod.priority.low" .Root | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "airflow.task-pod.env" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles "header" true) | nindent 4 }}
     {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
     {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
 {{- end }}
