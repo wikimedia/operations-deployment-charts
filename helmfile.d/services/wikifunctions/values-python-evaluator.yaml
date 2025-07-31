@@ -6,6 +6,8 @@ main_app:
 
 config:
   public:
+    # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
+    OTEL_SERVICE_NAME: wikifunctions-evaluator-python
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
     WASM_BINARY: /srv/service/programming-languages/rustpython.so
     PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages

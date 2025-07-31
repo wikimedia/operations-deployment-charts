@@ -20,6 +20,8 @@ cache:
 
 config:
   public:
+    # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
+    OTEL_SERVICE_NAME: wikifunctions-orchestrator
     # Production wiki access (initially, for wikifunctions.org)
     WIKI_API_URL: http://localhost:6501/w/api.php
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
