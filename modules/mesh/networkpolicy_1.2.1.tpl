@@ -42,6 +42,8 @@
   ports:
     - protocol: TCP
       port: {{ .Values.mesh.tracing.port | default 4317 }}
+    - protocol: TCP
+      port: {{ .Values.mesh.tracing.app_port | default 4318 }}
 {{- end -}}
 {{- end -}}
 

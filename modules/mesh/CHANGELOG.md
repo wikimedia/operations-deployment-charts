@@ -1,3 +1,7 @@
+## networkpolicy 1.2.1
+
+- When tracing is enabled, also allow egress to otelcol port 4318 (http).
+
 ## configuration 1.13.0
 
 - Set a custom new default for the Envoy histogram metrics settings, and
