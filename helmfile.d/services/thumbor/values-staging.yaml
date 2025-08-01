@@ -6,6 +6,8 @@ strategy:
   maxUnavailable: "100%"
 
 main_app:
+  version: "2025-07-31-121155-production"
+
 
   swift:
     # swift-eqiad service proxy
@@ -16,6 +18,10 @@ main_app:
   thumbor_workers: 2
   failure_throttling_memcache: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
   log_level: "debug"
+  subprocess_timeout:
+    enabled: "True"
+    timeout: 59
+    kill_after: 5
 
 haproxy:
   version: "2.8.3-1"

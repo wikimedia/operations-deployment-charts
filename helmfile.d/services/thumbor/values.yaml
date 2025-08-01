@@ -21,7 +21,7 @@ discovery:
 
 main_app:
   failure_throttling_memcache: "127.0.0.1:11213"
-  version: "2025-07-31-121155-production"
+  version: "2025-07-08-145126-production"
   thumbor_workers: 4
 
   log_level: "error"
@@ -46,9 +46,9 @@ main_app:
       # disable expensive throttling due to erroneous poolcounter usage
       expensive: ~
   subprocess_timeout:
-    enabled: True
+    enabled: "True"
     timeout: 59
-    kill_after: 5
+    kill_after: 0
 
 haproxy:
   timeout_queue: 30000
