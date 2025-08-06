@@ -27,6 +27,8 @@ datahub-frontend:
       default: "datahub-frontend"
       extraFQDNs:
         - datahub.wikimedia.org
+  limits:
+    memory: 4G
   external_services:
     kafka: [jumbo-eqiad]
     cas: [idp]
@@ -80,7 +82,7 @@ datahub-mae-consumer:
   main_app:
     limits:
       cpu: 3
-      memory: 2G
+      memory: 4G
     requests:
       cpu: 1
       memory: 1G
