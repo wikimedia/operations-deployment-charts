@@ -54,6 +54,24 @@ config:
         ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
         bootstrap.servers: kafka-jumbo1010.eqiad.wmnet:9093,kafka-jumbo1011.eqiad.wmnet:9093,kafka-jumbo1012.eqiad.wmnet:9093,kafka-jumbo1013.eqiad.wmnet:9093,kafka-jumbo1014.eqiad.wmnet:9093,kafka-jumbo1015.eqiad.wmnet:9093
         security.protocol: SSL
+    kafka_main_eqiad_external:
+      conn_type: kafka
+      host: kafka-main1006.eqiad.wmnet
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-main1006.eqiad.wmnet:9093,kafka-main1007.eqiad.wmnet:9093,kafka-main1008.eqiad.wmnet:9093,kafka-main1009.eqiad.wmnet:9093,kafka-main1010.eqiad.wmnet:9093
+        security.protocol: SSL
+    kafka_main_codfw_external:
+      conn_type: kafka
+      host: kafka-main2006.codfw.wmnet
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-main2006.codfw.wmnet:9093,kafka-main2007.codfw.wmnet:9093,kafka-main2008.codfw.wmnet:9093,kafka-main2009.codfw.wmnet:9093,kafka-main1010.codfw.wmnet:9093
+        security.protocol: SSL
   oidc:
     idp_server: idp.wikimedia.org
 
