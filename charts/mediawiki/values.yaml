@@ -292,6 +292,8 @@ mw:
           DocumentRoot /srv/mediawiki/docroot/standard-docroot
         </VirtualHost>
   logging:
+    # Log in ecs format by default
+    format: ecs_rsyslog
     kafka_brokers:
       - host: kafka-host-1
         port: 9001

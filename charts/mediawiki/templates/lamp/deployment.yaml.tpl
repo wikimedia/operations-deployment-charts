@@ -20,9 +20,8 @@
     valueFrom:
       fieldRef:
         fieldPath: metadata.name
-  # Log in ecs format
   - name: LOG_FORMAT
-    value: ecs_rsyslog
+    value: {{ .Values.mw.logging.format }}
   # Do not log monitoring requests
   - name: LOG_SKIP_SYSTEM
     value: "1"
