@@ -8,6 +8,22 @@ in particular for egress.
    egress to Service resources associated with external services (databases, Kervberos, CAS, etc).
 
 */}}
+
+{{- define "base.networkpolicy.egress.external-services.selector" }}
+{{- if $.Values.external_services_selector }}
+{{- $.Values.external_services_selector }}
+{{- else }}
+{{- $.Values.external_services_app_label_selector | default "app" }} == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}'
+{{- end }}
+{{- end }}
+
+{{- define "base.networkpolicy.egress.external-services.annotations" }}
+{{- if $.Values.external_services_annotations }}
+annotations:
+  {{- $.Values.external_services_annotations | toYaml | nindent 2 }}
+{{- end }}
+{{- end }}
+
 {{- define "base.networkpolicy.egress.external-services" -}}
 {{- if $.Values.external_services }}
 {{- range $serviceType, $serviceNames := $.Values.external_services }}
@@ -18,9 +34,10 @@ kind: NetworkPolicy
 metadata:
   name: {{ template "base.meta.name" (dict "Root" $) }}-egress-external-services-{{ $serviceType }}
   {{- include "base.meta.labels" $ | indent 2 }}
+  {{- include "base.networkpolicy.egress.external-services.annotations" $ | indent 2 }}
   namespace: {{ $.Release.Namespace }}
 spec:
-  selector: "{{ $.Values.external_services_app_label_selector | default "app" }} == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}'"
+  selector: {{ include "base.networkpolicy.egress.external-services.selector" $ | quote }}
   types:
   - Egress
   egress:

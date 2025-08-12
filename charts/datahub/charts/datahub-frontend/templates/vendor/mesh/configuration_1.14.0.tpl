@@ -340,6 +340,12 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 {{- if .Values.mesh.idle_upstream_timeout | default false }}
                 idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
                 {{- end }}
+                {{- if .Values.mesh.upstream_retry_policy }}
+                retry_policy:
+                {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
+                  {{ $k }}: {{ $v }}
+                {{- end }}
+                {{- end }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
         tracing:
