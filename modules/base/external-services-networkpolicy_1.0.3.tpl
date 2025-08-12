@@ -17,6 +17,13 @@ in particular for egress.
 {{- end }}
 {{- end }}
 
+{{- define "base.networkpolicy.egress.external-services.annotations" }}
+{{- if $.Values.external_services_annotations }}
+annotations:
+  {{- $.Values.external_services_annotations | toYaml | nindent 2 }}
+{{- end }}
+{{- end }}
+
 {{- define "base.networkpolicy.egress.external-services" -}}
 {{- if $.Values.external_services }}
 {{- range $serviceType, $serviceNames := $.Values.external_services }}
@@ -27,8 +34,8 @@ kind: NetworkPolicy
 metadata:
   name: {{ template "base.meta.name" (dict "Root" $) }}-egress-external-services-{{ $serviceType }}
   {{- include "base.meta.labels" $ | indent 2 }}
+  {{- include "base.networkpolicy.egress.external-services.annotations" $ | indent 2 }}
   namespace: {{ $.Release.Namespace }}
-  annotations: {{ $.Values.external_services_annotations | default dict }}
 spec:
   selector: {{ include "base.networkpolicy.egress.external-services.selector" $ | quote }}
   types:

@@ -1,3 +1,7 @@
+## external-services-networkpolicy 1.3.0
+
+- Allow custom annotations to be added via the `external_services_annotations` value (empty by default)
+
 ## external-services-networkpolicy 1.2.0
 
 - Allow the whole `selector` NetworkPolicy field to be overriden via the
