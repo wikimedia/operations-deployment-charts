@@ -326,6 +326,97 @@ main_app:
         - name: lists
           in: '(.+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
+        # *** BEGIN rest.php APIs ***
+        # campaignevents
+        - name: campaignevents
+          in: '/w/rest.php/campaignevents(.*)'
+          out: '/w/rest.php/campaignevents\1'
+        # checkuser
+        - name: checkuser
+          in: '/w/rest.php/checkuser(.*)'
+          out: '/w/rest.php/checkuser\1'
+        # eventbus
+        - name: eventbus
+          in: '/w/rest.php/eventbus(.*)'
+          out: '/w/rest.php/eventbus\1'
+        # growthexperiments
+        - name: growthexperiments
+          in: '/w/rest.php/growthexperiments(.*)'
+          out: '/w/rest.php/growthexperiments\1'
+        # ipinfo
+        - name: ipinfo
+          in: '/w/rest.php/ipinfo(.*)'
+          out: '/w/rest.php/ipinfo\1'
+        # mathoid?
+        - name: math_html
+          in: '/w/rest.php/math/v0/popup/html(.*)'
+          out: '/w/rest.php/math/v0/popup/html\1'
+        # oauth
+        - name: oauth2
+          in: '/w/rest.php/oauth2(.*)'
+          out: '/w/rest.php/oauth2\1'
+        # reportincident
+        - name: reportincident
+          in: '/w/rest.php/reportincident/v0/report'
+          out: '/w/rest.php/reportincident/v0/report'
+        # securepoll
+        - name: securepoll
+          in: '/w/rest.php/securepoll(.*)'
+          out: '/w/rest.php/securepoll\1'
+        # sitemap
+        - name: sitemap
+          in: '/w/rest.php/site/v1/sitemap(.*)'
+          out: '/w/rest.php/site/v1/sitemap\1'
+        # file
+        - name: file
+          in: '/w/rest.php/v1/file(.*)'
+          out: '/w/rest.php/v1/file\1'
+        # page
+        - name: page
+          in: '/w/rest.php/v1/page(.*)'
+          out: '/w/rest.php/v1/page\1'
+        # revision
+        - name: revision
+          in: '/w/rest.php/v1/revision(.*)'
+          out: '/w/rest.php/v1/revision\1'
+        - name: search
+          in: '/w/rest.php/v1/search(.*)'
+          out: '/w/rest.php/v1/search\1'
+        # transforms - NOTE: these do not overlap (even if they
+        # mirror) the existing restbase rules. restbase rules rewrite
+        # restbase paths to use the same paths. Both are needed
+        - name: transform
+          in: '/w/rest.php/v1/transform(.*)'
+          out: '/w/rest.php/v1/transform\1'
+        # flaggedrevs
+        - name: flaggedrevs
+          in: '/w/rest.php/flaggedrevs(.*)'
+          out: '/w/rest.php/flaggedrevs\1'
+        # searchvue
+        - name: searchvue
+          in: '/w/rest.php/searchvue(.*)'
+          out: '/w/rest.php/searchvue\1'
+        # wikifunctions
+        - name: wikifunctions
+          in: '/w/rest.php/wikifunctions(.*)'
+          out: '/w/rest.php/wikifunctions\1'
+        - name: wikimediacampaignevents
+          in: '/w/rest.php/wikimediacampaignevents(.*)'
+          out: '/w/rest.php/wikimediacampaignevents\1'
+        - name: content
+          in: '/w/rest.php/content(.*)'
+          out: '/w/rest.php/content\1'
+        - name: specs
+          in: '/w/rest.php/specs(.*)'
+          out: '/w/rest.php/specs\1'
+        # This case catches remaining rest.php traffic that is not
+        # matched by any existing rule. This shouldn't be something we
+        # hit, and if it is regularly hit it should be investigated to
+        # add suitable rules.
+        - name: rest_php_unmatched
+          in: '/w/rest.php(.*)'
+          out: '/w/rest.php\1'
+        # *** END rest.php APIs ***
       rb_response_headers: true
 
   discovery_endpoints:
