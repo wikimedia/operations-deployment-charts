@@ -1,6 +1,10 @@
 config: &config
   public: {}
 
+external_services_annotations:
+  helm.sh/hook: pre-install,pre-upgrade
+  helm.sh/hook-weight: "-10"  #  deploy external services before anything else
+  helm.sh/hook-delete-policy: before-hook-creation
 external_services:
   mariadb: [analytics-meta]
   zookeeper: [main-eqiad]
