@@ -1,10 +1,14 @@
 config: &config
   public: {}
 
+# We deploy the external services network policies via helm hooks, to make them available
+# for the Job resources also deployed by helm hooks. We deploy the network policies with
+# a lower weight, to make them available _before_ the jobs run.
 external_services_annotations:
   helm.sh/hook: pre-install,pre-upgrade
   helm.sh/hook-weight: "-10"  #  deploy external services before anything else
   helm.sh/hook-delete-policy: before-hook-creation
+  helm.sh/resource-policy: keep  # keep the network policies around, otherwise they somehow get deleted, which breaks datahub altogether
 external_services:
   mariadb: [analytics-meta]
   zookeeper: [main-eqiad]
