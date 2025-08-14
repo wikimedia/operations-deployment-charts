@@ -15,6 +15,21 @@ config:
           max_tis_per_query: 512  # How many TaskInstances the scheduler picks up per DB query loop
       kerberos:
         principal: analytics/airflow.discovery.wmnet
+  extra_secrets:
+    datahub_ingest_superset.yaml: |
+      source:
+        type: "superset"
+        config:
+          connect_uri: "https://superset.discovery.wmnet:30443"
+          display_uri: https://superset.wikimedia.org
+          username: {{ $.Values.config.connections.datahub_superset_ingestion.login }}
+          password: {{ $.Values.config.connections.datahub_superset_ingestion.password }}
+          provider: db
+
+      sink:
+        type: "datahub-rest"
+        config:
+          server: 'https://datahub-gms.discovery.wmnet:30443'
   oidc:
     client_id: airflow_main
 
