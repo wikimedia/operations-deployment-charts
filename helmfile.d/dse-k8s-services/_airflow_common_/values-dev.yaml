@@ -43,6 +43,9 @@ config:
         base_url: "http://localhost:8080"
         # The dev instances should not be scraped by robots. Warn us if they are.
         warn_deployment_exposure: true
+      datahub:
+        # Don't report on DAG runs to datahub, as they would link to http://localhost:8080/...
+        enabled: false
     # Disable all auth config
     auth: {}
     # S3 bucket *name* is shared between all dev instances
