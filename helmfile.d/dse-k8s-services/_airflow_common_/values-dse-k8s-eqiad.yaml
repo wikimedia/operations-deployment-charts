@@ -36,6 +36,15 @@ config:
         ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
         bootstrap.servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
         security.protocol: SSL
+    kafka_test_eqiad_external:
+      conn_type: kafka
+      host: kafka-test-eqiad.external-services.svc.cluster.local
+      port: 9093
+      extra:
+        group.id: airflow-{{ $.Values.config.airflow.instance_name | replace "_" "-" }}
+        ssl.ca.location: /etc/ssl/certs/ca-certificates.crt
+        bootstrap.servers: kafka-test1006.eqiad.wmnet:9093,kafka-test1007.eqiad.wmnet:9093,kafka-test1008.eqiad.wmnet:9093,kafka-test1009.eqiad.wmnet:9093,kafka-test1010.eqiad.wmnet:9093
+        security.protocol: SSL
     kafka_jumbo_eqiad:
       conn_type: kafka
       host: kafka-jumbo-eqiad.external-services.svc.cluster.local
