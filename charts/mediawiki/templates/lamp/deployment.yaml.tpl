@@ -321,6 +321,12 @@
     mountPath: /data
     readOnly: true
   {{- end -}}
+  {{- if and ($flags.job) (.Values.mwscript.dblist_contents) }}
+  - name: {{ $release }}-mwscript-dblist
+    mountPath: /srv/mediawiki/dblists/mwscript.dblist
+    subPath: mwscript.dblist
+    readOnly: true
+  {{- end -}}
   {{- if $flags.mercurius }}
   - name: {{ $release }}-mercurius-config
     mountPath: /etc/mercurius

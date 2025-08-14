@@ -75,6 +75,11 @@
   configMap:
     name: {{ $release }}-mwscript-textdata
 {{- end }}
+{{- if and ($flags.job) (.Values.mwscript.dblist_contents) }}
+- name: {{ $release }}-mwscript-dblist
+  configMap:
+    name: {{ $release }}-mwscript-dblist
+{{- end }}
 {{- if $flags.mercurius }}
 - name: {{ $release }}-mercurius-config
   configMap:

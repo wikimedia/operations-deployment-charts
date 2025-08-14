@@ -6,13 +6,13 @@ metadata:
   # The release name includes a randomly generated token for each job, so names are unique.
   name: {{ template "mw.name.namespace.env.release" . }}
   {{- include "mw.helpers.labels" . | indent 2 }}
-  {{- if or .Values.mwscript.comment .Values.mwscript.dblist }}
+  {{- if or .Values.mwscript.comment .Values.mwscript.dbexpr }}
   annotations:
     {{- with .Values.mwscript.comment }}
     comment: {{ . | quote }}
     {{- end }}
-    {{- with .Values.mwscript.dblist }}
-    dblist: {{ . | quote }}
+    {{- with .Values.mwscript.dbexpr }}
+    dbexpr: {{ . | quote }}
     {{- end }}
   {{- end }}
 spec:

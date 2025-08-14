@@ -87,3 +87,12 @@ data:
   "{{ $k }}": {{ $v | toYaml | indent 4 }}
 {{- end }}
 {{- end }}
+{{- if .Values.mwscript.dblist_contents }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-mwscript-dblist
+data:
+  "mwscript.dblist": {{ .Values.mwscript.dblist_contents | toYaml | indent 4 }}
+{{- end }}
