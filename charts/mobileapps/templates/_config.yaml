@@ -156,6 +156,7 @@ services:
       {{- end }}
       http_client:
         use_service_mesh: {{ .Values.main_app.use_service_mesh }}
+      max_body_size: {{ .Values.main_app.max_body_size }}
 {{ if .Values.datastore.cassandra_client.enabled -}}
 {{ include "datastore.cassandra_client.config" . | indent 6 }}
 {{- end -}}
