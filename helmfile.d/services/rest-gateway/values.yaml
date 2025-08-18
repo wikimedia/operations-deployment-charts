@@ -326,6 +326,20 @@ main_app:
         - name: lists
           in: '(.+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
+      rb_response_headers: true
+
+    - name: mw_rest_php
+      timeout: 15s
+      # This set of routes uses the same cluster as mw-api-int - however
+      # it does NOT use the restbase compability headers as this will
+      # lead to incorrect responses from the mw APIs.
+
+      # These routes also do not use the restbase response headers as
+      # we will either need to put in a more specific set of headers
+      # befitting the mw apis, or to simply defer to the headers
+      # mediawiki sends.
+      cluster: mw-api-int
+      urls:
         # *** BEGIN rest.php APIs ***
         # campaignevents
         - name: campaignevents
@@ -417,7 +431,6 @@ main_app:
           in: '/w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
-      rb_response_headers: true
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress

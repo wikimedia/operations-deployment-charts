@@ -16,6 +16,7 @@
 {{- /* BEGIN rest_gateway_routes definition */}}
 {{- range $endpoint := .Values.main_app.rest_gateway_routes }}
 {{- range $route := $endpoint.urls }}
+{{- $cluster_name := ternary $endpoint.name $endpoint.cluster (not $endpoint.cluster) }}
               - name: {{ $endpoint.name }}_{{ $route.name }}
                 match:
                   safe_regex:
@@ -95,7 +96,7 @@
                       regex: '^{{ $route.in }}$'
                     substitution: '{{ $route.out }}'
                   timeout: {{ $endpoint.timeout | default "15s" }}
-                  cluster: {{ $endpoint.name }}_cluster
+                  cluster: {{ $cluster_name }}_cluster
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}

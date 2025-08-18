@@ -35,6 +35,13 @@ main_app:
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
       rb_response_headers: true
+    - name: other_mobileapps
+      cluster: mobileapps
+      urls:
+        - name: random
+          in: '(.+)/v1/page/oh-no/(.+)/(.+)'
+          out: '\1/v1/page/oh-no/\2/\3'
+      rb_response_headers: false
     - name: proton
       timeout: 150s
       ingress: true
