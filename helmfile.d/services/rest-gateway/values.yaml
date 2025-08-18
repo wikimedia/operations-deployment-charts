@@ -328,7 +328,7 @@ main_app:
           out: '/w/rest.php/readinglists/v0/lists/\2'
       rb_response_headers: true
 
-    - name: mw_rest_php
+    - name: mw-rest-php
       timeout: 15s
       # This set of routes uses the same cluster as mw-api-int - however
       # it does NOT use the restbase compability headers as this will
