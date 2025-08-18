@@ -93,6 +93,9 @@ spec:
     metadata:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
+        {{- if .Values.comment }}
+        comment: {{ .Values.comment | quote }}
+        {{- end }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
