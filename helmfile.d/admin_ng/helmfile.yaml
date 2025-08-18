@@ -144,6 +144,20 @@ environments:
       - install_ceph_csi_cephfs: true
       - install_cloudnative_pg_operator: true
       - install_sidecar_job_controller: true
+  dse-k8s-codfw:
+    values:
+      - "values/common.yaml"
+      - "values/dse-k8s.yaml"
+      - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      # We are not installing knative and kserve yet, but may do so in the near future.
+      # - install_knative: true
+      # - install_kserve: true
+      - install_cert_manager: true
+      - install_kube_state_metrics: true
+      - namespace_certificates: true
+      - install_external_services: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
