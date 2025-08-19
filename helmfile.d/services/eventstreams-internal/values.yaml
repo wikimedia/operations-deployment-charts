@@ -64,7 +64,7 @@ main_app:
     # Refresh the list of available streams every 5 minutes.
     stream_config_ttl: 300
     stream_ui_enabled: true
-    stream_config_defaults:
+    stream_config_overrides:
       # These rdf-streaming-updater & mediainfo-streaming-updater streams are "double compute" streams.
       # We explicitly allow both eqiad & codfw topics, but we arbitrarily set the preferred topic clients should
       # consume from to eqiad.

@@ -6,7 +6,7 @@ main_app:
   conf:
     kafka:
       metadata.broker.list: kafka-main1006.eqiad.wmnet:9093,kafka-main1007.eqiad.wmnet:9093,kafka-main1008.eqiad.wmnet:9093,kafka-main1009.eqiad.wmnet:9093,kafka-main1010.eqiad.wmnet:9093
-    stream_config_defaults:
+    stream_config_overrides:
       rdf-streaming-updater.mutation.v2:
         topics:
           - eqiad.rdf-streaming-updater.mutation
