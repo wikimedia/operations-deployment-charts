@@ -1,7 +1,15 @@
 apiVersion: flink.apache.org/v1beta1
 kind: FlinkDeployment
 metadata:
-  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+  name: {{ template "base.meta.name" (dict "Root" .) }}
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.comment }}
+    comment: {{ .Values.comment | quote }}
+    {{- end }}
 
 spec:
   image: {{ .Values.app.image }}:{{ .Values.app.version }}
@@ -93,9 +101,6 @@ spec:
     metadata:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
-        {{- if .Values.comment }}
-        comment: {{ .Values.comment | quote }}
-        {{- end }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
