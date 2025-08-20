@@ -37,6 +37,7 @@ main_app:
   cassandra:
     tls:
       ca: /etc/cassandra-certs/ca.crt
+      enable_host_verification: false
     authentication:
       # password:
       username: sessions
