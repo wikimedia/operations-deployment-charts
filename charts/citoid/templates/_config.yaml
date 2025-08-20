@@ -57,13 +57,14 @@ services:
       # the list of incoming request headers that can be logged; if left empty,
       # the following headers are allowed: cache-control, content-length,
       # content-type, if-match, user-agent, x-request-id
-      # log_header_whitelist:
-      #   - cache-control
-      #   - content-length
-      #   - content-type
-      #   - if-match
-      #   - user-agent
-      #   - x-request-id
+      log_header_whitelist:
+        - api-user-agent
+        - cache-control
+        - content-length
+        - content-type
+        - if-match
+        - user-agent
+        - x-request-id
       # User-Agent HTTP header to use for requests
       user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36 Citoid/WMF (mailto:noc@wikimedia.org)"
       # contact e-mail address; used for making crossRef requests
