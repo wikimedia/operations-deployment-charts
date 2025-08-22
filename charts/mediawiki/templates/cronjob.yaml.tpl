@@ -135,6 +135,8 @@ spec:
           # We need to be able to write to the mounted volume as the www-data user
           securityContext:
             fsGroup: 33
+            {{/* To speed up volume mounts, as the volume contains many files. See T402644. */}}
+            fsGroupChangePolicy: "OnRootMismatch"
           containers:
           # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
           # above.
