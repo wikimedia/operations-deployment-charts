@@ -54,8 +54,8 @@ releases:
           volumeMode: Filesystem
           resources:
             requests:
-              storage: 20GB
-          storageClassName: ceph-rbd-hdd
+              storage: 20Gi
+          storageClassName: ceph-rbd-sdd
 
   - name: production
     namespace: airflow-ml
