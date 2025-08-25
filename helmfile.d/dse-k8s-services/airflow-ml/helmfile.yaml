@@ -17,6 +17,7 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases:
+        - model-training-pvc
         - production
     missingFileHandler: Warn
 
@@ -39,6 +40,23 @@ hooks:
       ]
 
 releases:
+  - name: model-training-pvc
+    chart: wmf-stable/raw
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: airflow-ml-model-training-pvc
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          volumeMode: Filesystem
+          resources:
+            requests:
+              storage: 20GB
+          storageClassName: ceph-rbd-hdd
+
   - name: production
     namespace: airflow-ml
     chart: wmf-stable/airflow
