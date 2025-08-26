@@ -1,0 +1,31 @@
+opensearchCluster:
+  enabled: true
+#  bootstrap:
+#    Configure settings for the bootstrap pod
+  general:
+    httpPort: "9200"
+    serviceName: "my-cluster"
+    drainDataNodes: false
+    setVMMaxMapCount: false
+    # image:
+#    securityContext:
+#       Specify container security context for OpenSearch pods
+#    podSecurityContext:
+#       Specify pod security context for OpenSearch pods
+  dashboards:
+    enable: false
+
+  nodePools:
+    - component: masters
+      diskSize: "31Gi"
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
+      resources:
+        requests:
+          memory: "2000Mi"
+          cpu: "500m"
+        limits:
+          memory: "2000Mi"
+          cpu: "500m"

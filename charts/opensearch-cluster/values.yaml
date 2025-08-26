@@ -1,0 +1,95 @@
+opensearchCluster:
+  enabled: true
+#  bootstrap:
+#    Configure settings for the bootstrap pod
+  general:
+    image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2025-09-02-211140-2ef1c90115e12fc0a475a1b15c358c3657a5348b
+    imagePullPolicy: Never
+    httpPort: "9200"
+    version: 2.7.0
+    serviceName: "wmf-opensearch"
+    drainDataNodes: true
+    setVMMaxMapCount: false
+# The following securityContext values are required by policy on all WMF k8s clusters, ref T362978
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+    podSecurityContext:
+      fsGroup: 999
+      runAsUser: 999
+  dashboards:
+    enable: false
+    replicas: 1
+    version: 2.3.0
+#        securityContext:
+#           Specify container security context for OSD pods
+#        podSecurityContext:
+#           Specify pod security context for OSD pods
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+# The chart version we are currently using in production (2.7.0) cannot set the
+# WMF-required securityContext for the initHelper container.
+# Luckily, this is OK because we don't run the initHelper at WMF.
+# We toggle it off via the envvar "SKIP_INIT_CONTAINER," which is found in
+# charts/opensearch-operator/values.yaml
+  initHelper:
+    imagePullSecrets: []
+    # - registryKeySecretName
+    imagePullPolicy: IfNotPresent
+    image: docker-registry.wikimedia.org/trixie
+    # version: '20250817'
+    resources: {}
+    # requests:
+    #   memory: "1Gi"
+    #   cpu: "500m"
+    # limits:
+    #   memory: "1Gi"
+    #   cpu: "500m"
+# The following securityContext values are required by policy on all WMF k8s clusters, ref T362978
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+    podSecurityContext:
+      fsGroup: 999
+      runAsUser: 999
+  nodePools:
+    - component: masters
+      diskSize: "30Gi"
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
+      resources:
+        requests:
+          memory: "2Gi"
+          cpu: "500m"
+        limits:
+          memory: "2Gi"
+          cpu: "500m"
+    # These annotations enable/configure metrics scrapes
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+        prometheus.io/path: "/_prometheus/metrics"
+    # prevent 2 masters from being scheduled on the same k8s worker
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-nodepool: masters
+              topologyKey: kubernetes.io/hostname
+  security:
+    tls:
+      transport:
+        generate: true
+      http:
+        generate: true
