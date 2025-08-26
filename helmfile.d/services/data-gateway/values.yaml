@@ -5,7 +5,6 @@ main_app:
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: data-gateway
   consistency: localQuorum
-  log_level: debug
 
   # note the "_"
   cassandra_user: "data_gateway"
