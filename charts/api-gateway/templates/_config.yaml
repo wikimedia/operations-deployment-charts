@@ -2,7 +2,9 @@
 # api gateway envoy config
 {{ if .Values.main_app.telemetry_port -}}
 admin:
-  access_log_path: /dev/stdout
+  access_log:
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
   address:
     socket_address:
       protocol: TCP
@@ -29,7 +31,8 @@ static_resources:
               pass_through_mode: false
               headers:
                 - name: ":path"
-                  exact_match: "/healthz"
+                  string_match:
+                    exact: "/healthz"
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -164,7 +167,8 @@ static_resources:
               pass_through_mode: false
               headers:
                 - name: ":path"
-                  exact_match: "/healthz"
+                  string_match:
+                    exact: "/healthz"
           - name: envoy.filters.http.cors
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
@@ -209,7 +213,6 @@ static_resources:
                     key: x_wikimedia_debug_server
                     regex_value_rewrite:
                       pattern:
-                        google_re2: {}
                         regex: "^backend=([\\w.]+).*$"
                       substitution: "\\1"
                   on_header_missing:

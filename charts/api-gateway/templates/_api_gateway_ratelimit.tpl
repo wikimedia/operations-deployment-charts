@@ -17,9 +17,9 @@
                 - match:
                     headers:
                       - name: ":method"
-                        safe_regex_match:
-                          google_re2: {}
-                          regex: "(POST|PUT|PATCH|DELETE)"
+                        string_match:
+                          safe_regex:
+                            regex: "(POST|PUT|PATCH|DELETE)"
                     prefix: /
                   requires:
                     provider_name: wikimedia
@@ -27,9 +27,9 @@
                 - match:
                     headers:
                       - name: ":method"
-                        safe_regex_match:
-                          google_re2: {}
-                          regex: "(GET|HEAD|OPTIONS)"
+                        string_match:
+                          safe_regex:
+                            regex: "(GET|HEAD|OPTIONS)"
                     prefix: /
                   requires:
                     requires_any:

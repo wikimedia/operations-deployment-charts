@@ -11,20 +11,22 @@
                 - name: rw
                   headers:
                     - name: ":method"
-                      safe_regex_match:
-                        google_re2: {}
-                        regex: "(POST|PUT|PATCH|DELETE)"
+                      string_match:
+                        safe_regex:
+                          regex: "(POST|PUT|PATCH|DELETE)"
                     - name: ":path"
-                      exact_match: "/healthz"
+                      string_match:
+                        exact: "/healthz"
                       invert_match: true
                 - name: r
                   headers:
                     - name: ":method"
-                      safe_regex_match:
-                        google_re2: {}
-                        regex: "(GET|HEAD|OPTIONS)"
+                      string_match:
+                        safe_regex:
+                          regex: "(GET|HEAD|OPTIONS)"
                     - name: ":path"
-                      exact_match: "/healthz"
+                      string_match:
+                        exact: "/healthz"
                       invert_match: true
               rate_limits:
                 # For all rate limits, the top-level key is route_name. This is provided by custom
@@ -196,7 +198,6 @@ BEGIN wikifeeds route definition
                     allow_headers: 'Api-User-Agent,Authorization,Content-type'
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: rest_gateway_cluster
@@ -213,18 +214,16 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- end }}
                 match:
                   safe_regex:
-                    google_re2: {}
                     regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
                 response_headers_to_add:
                   - header:
                       key: "cache-control"
                       value: "no-cache"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 route:
                   cors: *api_cors
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
                       regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
                     substitution: '/\2.\1.org/v1/page/description/\3'
                   cluster: mobileapps_cluster
@@ -242,17 +241,15 @@ BEGIN descriptions/mobileapps_cluster route definition
                   - header:
                       key: "cache-control"
                       value: "no-cache"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 match:
                   safe_regex:
-                    google_re2: {}
                     regex: '^{{ $api_route }}$'
                 route:
                   cors: *api_cors
 {{- if $route_opts.path }}
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
                       regex: '^{{ $api_route }}$'
                     substitution: '{{ $route_opts.path }}'
 {{- end }}
@@ -260,7 +257,6 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- if $route_opts.host }}
                   host_rewrite_path_regex:
                     pattern:
-                      google_re2: {}
                       regex: '^{{ $api_route }}.*'
                     substitution: '{{ $route_opts.host }}'
 {{- end }}
@@ -277,21 +273,19 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- end }}
                 match:
                   safe_regex:
-                    google_re2: {}
                     regex: '^/service/{{ $discovery_opts.path }}(.*)$'
 {{- if or $discovery_opts.allow_cache (not (hasKey $discovery_opts "allow_cache")) }}
                 response_headers_to_add:
                   - header:
                       key: "cache-control"
                       value: "no-cache"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
 {{- end }}
                 route:
                   timeout: {{ $discovery_opts.timeout | default "15s" }}
                   cors: *api_cors
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
 {{- if $discovery_opts.full_path_trim }}
                       regex: '^{{ $discovery_opts.full_path_trim }}(.*)$'
 {{- else }}
@@ -309,7 +303,6 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- else if $discovery_opts.host_rewrite_path }}
                   host_rewrite_path_regex:
                     pattern:
-                      google_re2: {}
                       regex: '^/service/{{ $discovery_opts.path }}(.*)$'
                     substitution: '{{ $discovery_opts.host_rewrite_path }}'
 {{- end }}
@@ -328,14 +321,12 @@ BEGIN descriptions/mobileapps_cluster route definition
               - name: {{ $aqs_service }}_route
                 match:
                   safe_regex:
-                    google_re2: {}
                     regex: '^/(.*)/v1/metrics/{{ $aqs_opts.path }}/(.*)$'
                 route:
                   timeout: {{ $aqs_opts.timeout | default "15s" }}
                   cluster: {{ $aqs_service }}_cluster
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
                       regex: '^/(.*)/v1/metrics/{{ $aqs_opts.path }}/(.*)$'
                     substitution: '/metrics/{{ $aqs_opts.path }}/\2'
 {{- end }}

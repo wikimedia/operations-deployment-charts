@@ -20,12 +20,12 @@
               - name: {{ $endpoint.name }}_{{ $route.name }}
                 match:
                   safe_regex:
-                    google_re2: {}
                     regex: '^{{ $route.in }}$'
                   {{- if $endpoint.domain }}
                   headers:
                   - name: ':authority'
-                    exact_match: '{{ $endpoint.domain }}'
+                    string_match:
+                      exact: '{{ $endpoint.domain }}'
                   {{- end }}
                 {{- if not $route.disable_route_stats }}
                 stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
@@ -51,35 +51,35 @@
                   - header:
                       key: "access-control-allow-origin"
                       value: "*"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "access-control-allow-methods"
                       value: "GET,HEAD"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "access-control-allow-headers"
                       value: "accept, content-type, content-length, cache-control, accept-language, api-user-agent, if-match, if-modified-since, if-none-match, dnt, accept-encoding"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "access-control-expose-headers"
                       value: "etag"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "x-content-type-options"
                       value: "nosniff"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "x-frame-options"
                       value: "SAMEORIGIN"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "referrer-policy"
                       value: "origin-when-cross-origin"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                   - header:
                       key: "x-xss-protection"
                       value: "1; mode=block"
-                    append: false
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- end }}
                 {{- end }}
                   {{- if $endpoint.params}}
@@ -92,7 +92,6 @@
                 route:
                   regex_rewrite:
                     pattern:
-                      google_re2: {}
                       regex: '^{{ $route.in }}$'
                     substitution: '{{ $route.out }}'
                   timeout: {{ $endpoint.timeout | default "15s" }}
