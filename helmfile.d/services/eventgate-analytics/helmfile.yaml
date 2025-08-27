@@ -15,7 +15,7 @@ helmDefaults:
 environments:
   staging:
     values:
-      - releases: [production, canary]
+      - releases: [production]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
