@@ -192,15 +192,17 @@ BEGIN wikifeeds route definition
                 match:
                   prefix: "/feed/"
                 route:
-                  cors: &api_cors
-                    allow_origin_string_match:
-                      - prefix: "*"
-                    allow_headers: 'Api-User-Agent,Authorization,Content-type'
                   regex_rewrite:
                     pattern:
                       regex: '^/feed/v1/(\w+)/(\w+)/'
                     substitution: '/\2.\1.org/v1/feed/'
                   cluster: rest_gateway_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.cors: &api_cors
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.CorsPolicy
+                    allow_origin_string_match:
+                      - prefix: "*"
+                    allow_headers: 'Api-User-Agent,Authorization,Content-type'
 {{- /*
 END wikifeeds route definition
 */}}
@@ -221,12 +223,13 @@ BEGIN descriptions/mobileapps_cluster route definition
                       value: "no-cache"
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 route:
-                  cors: *api_cors
                   regex_rewrite:
                     pattern:
                       regex: '^/core/v1/(\w+)/(\w+)/page/(.*)/description$'
                     substitution: '/\2.\1.org/v1/page/description/\3'
                   cluster: mobileapps_cluster
+                typed_per_filter_config:
+                  envoy.filters.http.cors: *api_cors
 {{- /* END descriptions/mobileapps_cluster route definition */}}
 {{- /* BEGIN pathing_map cluster definition */}}
 {{- range $cluster, $api_routes := .Values.main_app.pathing_map }}
@@ -246,7 +249,6 @@ BEGIN descriptions/mobileapps_cluster route definition
                   safe_regex:
                     regex: '^{{ $api_route }}$'
                 route:
-                  cors: *api_cors
 {{- if $route_opts.path }}
                   regex_rewrite:
                     pattern:
@@ -260,6 +262,8 @@ BEGIN descriptions/mobileapps_cluster route definition
                       regex: '^{{ $api_route }}.*'
                     substitution: '{{ $route_opts.host }}'
 {{- end }}
+                typed_per_filter_config:
+                  envoy.filters.http.cors: *api_cors
 {{- end }}
 {{- /* END pathing_map route definition - read methods*/}}
 {{- end }}
@@ -283,7 +287,6 @@ BEGIN descriptions/mobileapps_cluster route definition
 {{- end }}
                 route:
                   timeout: {{ $discovery_opts.timeout | default "15s" }}
-                  cors: *api_cors
                   regex_rewrite:
                     pattern:
 {{- if $discovery_opts.full_path_trim }}
@@ -312,6 +315,8 @@ BEGIN descriptions/mobileapps_cluster route definition
                     envoy.filters.http.ratelimit:
                       route_name: {{ $discovery_route }}
 {{- end }}
+                typed_per_filter_config:
+                  envoy.filters.http.cors: *api_cors
 {{- end }}
 {{- /* END discovery_endpoints route definition */}}
 {{- /* BEGIN aqs route definition */}}
