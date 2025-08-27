@@ -262,6 +262,35 @@ rules:
       - update
       - patch
       - delete
+  {{/* We grant the operator the permissions required to manage its own CRDs */}}
+  - apiGroups:
+      - flink.apache.org
+    resources:
+      - flinkdeployments
+      - flinkdeployments/finalizers
+      - flinksessionjobs
+      - flinksessionjobs/finalizers
+      - flinkstatesnapshots
+      - flinkstatesnapshots/finalizers
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - flink.apache.org
+    resources:
+      - flinkdeployments/status
+      - flinksessionjobs/status
+      - flinkstatesnapshots/status
+    verbs:
+      - get
+      - update
+      - patch
+
 {{- end }}
 ---
 {{- if and .Values.rbac.operatorRole.create (not (has .Release.Namespace .Values.watchNamespaces)) }}
