@@ -42,7 +42,7 @@ recompressxml=/usr/local/bin/recompressxml
 revsperpage=/usr/local/bin/revsperpage
 
 [cleanup]
-keep=10
+keep=3
 
 [chunks]
 chunksEnabled=0
@@ -66,7 +66,6 @@ chunksForAbstract=6
 chunksForPagelogs=6
 dblist=/etc/dumps/dblists/bigwikis.dblist
 fixeddumporder=1
-keep=8
 lbzip2forhistory=1
 lbzip2threads=6
 recombineHistory=0
@@ -82,7 +81,6 @@ chunksForAbstract=27
 chunksForPagelogs=27
 dblist=/etc/dumps/dblists/enwiki.dblist
 jobsperbatch=xmlstubsdump=9,abstractsdump=9,xmlpagelogsdump=9
-keep=7
 lbzip2threads=20
 maxrevs=20000
 recombineHistory=0
@@ -100,7 +98,6 @@ contentbatchesEnabled=1
 dblist=/etc/dumps/dblists/wikidatawiki.dblist
 emptyAbstracts=1
 jobsperbatch=xmlstubsdump=9,abstractsdump=9,xmlpagelogsdump=9
-keep=7
 lbzip2threads=20
 maxrevs=20000
 recombineHistory=0
