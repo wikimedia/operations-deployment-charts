@@ -117,11 +117,11 @@ inference_services:
 
   edit-check:
     predictor:
-      batcher:
-        maxBatchSize: 32
-        maxLatency: 20
       config:
         maxReplicas: 1
+        batcher:
+          maxBatchSize: 32
+          maxLatency: 100
       image: "machinelearning-liftwing-inference-services-edit-check"
       image_version: "2025-06-25-142517-publish"
       custom_env:
