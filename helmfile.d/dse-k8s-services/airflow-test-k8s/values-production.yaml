@@ -3,13 +3,12 @@ config:
     dags_folder: test_k8s
     instance_name: test-k8s
     config:
-      core:
-        executor: KubernetesExecutor
-        max_map_length: 1200 # We need larger than the default map size of 1024 - See T389773 for details.
-        dag_file_processor_timeout: 600 # T391744: we define very large dumps v1 dags taking a lot of time to process
-        dagbag_import_timeout: 600
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
+      scheduler:
+        # See T402529: we code-generate many dump-related DAGs, so we space out
+        # their parsing to reduce scheduler CPU usage
+        min_file_process_interval: 300
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
 
