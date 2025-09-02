@@ -38,6 +38,13 @@ main_app:
       categoryMembershipChange:
         enabled: true
         concurrency: 200
+      # CategoryCountUpdateJob is generally low-traffic, but can result in
+      # database write contention. Thus, it has a dedicated rule in order to
+      # precisely bound total concurrency. See T402873.
+      # NOTE: This may need moved to a section-partitioned job in the future.
+      CategoryCountUpdateJob:
+        enabled: true
+        concurrency: 50
       # CNDPurge is quite low-volume, but it uses delayed execution,
       # so avoid putting it together with other low-volume jobs so that it doesn't
       # block execution for others.
