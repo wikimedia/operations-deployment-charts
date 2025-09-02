@@ -1,1 +1,7 @@
 installCRDs: false
+# TODO: enable startupapicheck globally once all clusters are on k8s 1.31
+startupapicheck:
+  enabled: true
+global:
+  leaderElection:
+    namespace: cert-manager
