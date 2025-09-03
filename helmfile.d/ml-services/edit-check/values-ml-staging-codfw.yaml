@@ -3,6 +3,7 @@ inference_services:
     predictor:
       config:
         maxReplicas: 3
+        minReplicas: 3
         batcher:
           maxBatchSize: 32
           maxLatency: 100
