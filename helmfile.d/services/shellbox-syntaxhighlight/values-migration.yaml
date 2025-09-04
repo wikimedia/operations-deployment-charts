@@ -1,15 +1,13 @@
 # This release exists to enable incremental capacity-based traffic migration.
 
 # Override the image flavour used by this release.
-# TODO: T403284 - Remove image version and flavour overrides.
-shellbox:
-  version: "2025-08-29-172844"
-  flavour: syntaxhighlight83
+#shellbox:
+#  flavour: syntaxhighlight81
 
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 1  # TODO: T403284 - Scale back down to zero.
+  replicas: 0
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
