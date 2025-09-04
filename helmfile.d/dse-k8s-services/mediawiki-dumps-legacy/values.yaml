@@ -129,7 +129,10 @@ php:
     interned_strings_buffer: "50"
   apc:
     size: 768
-  envvars: ~
+  envvars:
+    MCROUTER_SERVER: "127.0.0.1:11213"
+    STATSD_EXPORTER_PROMETHEUS_SERVICE_HOST: ~
+
 
 mw:
   mail_host: ~
@@ -194,22 +197,18 @@ mw:
         port: 3031
       - ip: 10.64.48.106
         port: 3031
+
+# In wikikube we use the mcrouter daemonset. Here we simply start
+# a mcrouter container. Please note that if dumps are to run on
+# codfw, the routes should be changes accordingly.
 cache:
   mcrouter:
-    enabled: false
-    resources:
-      requests:
-        cpu: 200m
-        memory: 100Mi
-      limits:
-        cpu: 700m
-        memory: 200Mi
+    enabled: true
 
 networkpolicy:
   egress:
     enabled: true
     dst_nets: []
-
 
 # Only deploy to nodes without spinning disks T288345
 affinity:
