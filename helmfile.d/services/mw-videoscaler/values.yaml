@@ -1,5 +1,6 @@
 mesh:
   enabled: true
+  image_version: 1.26.8-1
 
 mw:
   httpd:
@@ -28,8 +29,9 @@ mercurius:
     # https://phabricator.wikimedia.org/T356241#10291014.
     # Use a string here to stop helm printing this value in scientific notation
     max.poll.interval.ms: "7200000"
-  # Bump the release generation in order to safely add envoy telemetry annotations.
-  generation: 2
+  # Bump the generation number whenever updating the pod template, in order to
+  # force a new Helm release.
+  generation: 3
   # workers *roughly* corresponds to maximum parallel encodes per-job.
   workers: 6
 
