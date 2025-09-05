@@ -621,3 +621,12 @@ checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "re
 {{- define "networkpolicy.selector.component" }}
 selector: "app == 'airflow' && release == '{{ .root.Release.Name }}' && component == '{{ .component }}'"
 {{- end }}
+
+
+{{- define "statsd.labels.domain" }}
+{{- if $.Values.devenv.enabled }}
+domain: localhost
+{{- else }}
+domain: {{ first $.Values.ingress.gatewayHosts.extraFQDNs }}
+{{- end }}
+{{- end }}

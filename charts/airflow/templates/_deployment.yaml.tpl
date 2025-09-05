@@ -379,6 +379,7 @@ metadata:
   name: {{ template "release.name" . }}-statsd
   {{- include "base.meta.labels" . | indent 2 }}
     component: statsd
+    {{- include "statsd.labels.domain" . | indent 4 }}
 spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
@@ -388,6 +389,7 @@ spec:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: statsd
+        {{- include "statsd.labels.domain" . | indent 8 }}
       annotations:
         checksum/statsd-config: {{ $.Files.Get "files/statsd/prometheus-statsd.yaml"  | sha256sum }}
         prometheus.io/scrape: "true"
