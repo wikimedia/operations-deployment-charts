@@ -91,7 +91,6 @@ spec:
     app: airflow
     release: "{{ $.Release.Name }}"
     component: statsd
-  clusterIP: None
   ports:
     - name: statsd-tcp
       protocol: TCP
