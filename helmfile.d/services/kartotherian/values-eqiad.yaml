@@ -4,10 +4,7 @@
 tcp_services_proxy:
   maps_postgres:
     upstreams:
-      # master node
-      # - address: maps1009.eqiad.wmnet
-      #   port: 5432
-      # read replicas
+      # read replicas (the master node is left out on purpose to deal with data imports)
       - address: maps1005.eqiad.wmnet
         port: 5432
       - address: maps1006.eqiad.wmnet

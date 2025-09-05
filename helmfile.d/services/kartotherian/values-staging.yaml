@@ -9,10 +9,7 @@ resources:
 tcp_services_proxy:
   maps_postgres:
     upstreams:
-      # master node
-      # - address: maps-test2001.codfw.wmnet
-      #   port: 5432
-      # read replicas
+      # read replicas (the master node is left out on purpose to deal with data imports)
       - address: maps-test2002.codfw.wmnet
         port: 5432
       - address: maps-test2003.codfw.wmnet
