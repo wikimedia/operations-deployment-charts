@@ -77,3 +77,32 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{- if $.Values.monitoring.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "service.statsd" . }}
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: scheduler
+spec:
+  selector:
+    app: airflow
+    release: "{{ $.Release.Name }}"
+    component: statsd
+  clusterIP: None
+  ports:
+    - name: statsd-tcp
+      protocol: TCP
+      port: {{ $.Values.monitoring.statsd.port }}
+      targetPort: {{ $.Values.monitoring.statsd.port }}
+    - name: statsd-udp
+      protocol: UDP
+      port: {{ $.Values.monitoring.statsd.port }}
+      targetPort: {{ $.Values.monitoring.statsd.port }}
+    - name: prometheus-tcp
+      protocol: TCP
+      port: {{ $.Values.monitoring.prometheus_port }}
+      targetPort: {{ $.Values.monitoring.prometheus_port }}
+{{- end }}

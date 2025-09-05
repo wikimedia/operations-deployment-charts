@@ -33,7 +33,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: "app == 'airflow' && component == 'webserver'"
+  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "webserver") | indent 2 }}
   ingress:
     - action: Allow
       protocol: TCP
@@ -51,7 +51,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: "app == 'airflow' && component == 'scheduler'"
+  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "scheduler") | indent 2 }}
   ingress:
     - action: Allow
       protocol: TCP
@@ -61,9 +61,7 @@ spec:
         - {{ $.Values.scheduler.local_executor_api_port }}
         {{- end }}
         - {{ $.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
-        {{- if $.Values.monitoring.enabled }}
-        - {{ $.Values.monitoring.prometheus_port }}
-        {{- end }}
+
 
 {{- if contains "KubernetesExecutor" $.Values.config.airflow.config.core.executor }}
 {{/*
@@ -156,7 +154,7 @@ metadata:
 spec:
   types:
     - Ingress
-  selector: "app == 'airflow'  && release == '{{ $.Release.Name }}' && component == 'envoy'"
+  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "envoy") | indent 2 }}
   ingress:
   - action: Allow
     protocol: TCP
@@ -168,4 +166,30 @@ spec:
       {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+{{- if $.Values.monitoring.enabled }}
+{{/* Allow incoming traffic on statsd and prometheus ports to reach the statsd component. */}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" . }}-statsd-ingress
+spec:
+  types:
+    - Ingress
+  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "statsd") | indent 2 }}
+  ingress:
+  - action: Allow
+    protocol: TCP
+    destination:
+      ports:
+      - {{ $.Values.monitoring.prometheus_port }}
+      - {{ $.Values.monitoring.statsd.port }}
+  - action: Allow
+    protocol: UDP
+    destination:
+      ports:
+      - {{ $.Values.monitoring.statsd.port }}
+
 {{- end }}

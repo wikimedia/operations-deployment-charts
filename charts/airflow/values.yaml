@@ -128,8 +128,8 @@ config:
         fab_logging_level: INFO
       metrics:
         statsd_custom_client_path: wmf_airflow_common.metrics.custom_statsd_client.CustomStatsClient
-        statsd_host: localhost
-        statsd_on: True
+        statsd_host: "{{ include \"service.statsd\" . }}"
+        statsd_on: "{{ include \"toPythonValue\" (dict \"value\" $.Values.monitoring.enabled) }}"
         statsd_port: "{{ $.Values.monitoring.statsd.port }}"
         statsd_prefix: airflow
       scheduler:
@@ -577,6 +577,7 @@ monitoring:
   enabled: true
   prometheus_port: 9102
   statsd:
+    ipv4: true
     port: 9125
     prestop_sleep: 0
     requests:

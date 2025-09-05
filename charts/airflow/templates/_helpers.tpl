@@ -599,10 +599,25 @@ spec:
 {{- end }}
 
 
+{{- define "service.statsd" }}
+{{- template "release.name" . }}-statsd
+{{- end }}
+
 {{/*
   This PriorityClass is applied on airflow task pods, as they are safer to evict under resource pressure
   than the airflow core components, or other production-bearing pods.
 */}}
 {{- define "pod.priority.low" }}
 priorityClassName: low-priority-pod
+{{- end }}
+
+
+{{- define "pod.annotations.secrets-configmap.checksums" }}
+checksum/secrets: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/secret.yaml" "Root" $) }}
+checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "resourceFilePath" "/configmap.yaml" "Root" $) }}
+{{- end }}
+
+
+{{- define "networkpolicy.selector.component" }}
+selector: "app == 'airflow' && release == '{{ .root.Release.Name }}' && component == '{{ .component }}'"
 {{- end }}

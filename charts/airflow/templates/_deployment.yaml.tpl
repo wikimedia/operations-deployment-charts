@@ -16,7 +16,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: webserver
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
@@ -66,10 +66,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: scheduler
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
-        {{- if $.Values.monitoring.enabled }}
-        prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
-        {{- end }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
@@ -85,15 +82,9 @@ spec:
         {{- else }}
         {{- include "app.airflow.scheduler" (dict "Root" . "profiles" list) | indent 8 }}
         {{- end }}
-        {{- if $.Values.monitoring.enabled }}
-        {{- include "base.statsd.container" . | indent 8 }}
-        {{- end }}
       volumes:
         {{- include "app.airflow.volumes" . | indent 8 }}
         {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
-        {{- if $.Values.monitoring.enabled }}
-        {{- include "base.statsd.volume" . | indent 8 }}
-        {{- end }}
         {{/* If the scheduler is running with the LocalExecutor, it also needs the hadoop config files rendered locally */}}
         {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
         {{- include "airflow.task-pod.volumes" (dict "Root" . "profiles" (list "hadoop") "header" false) | indent 8 }}
@@ -121,7 +112,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: gitsync
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
       securityContext:
         fsGroup: {{ $.Values.gitsync.image_gid }} {{/* This allows the volumes to be writable by the git-sync gid */}}
@@ -169,7 +160,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: kerberos
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
       securityContext:
         fsGroup: {{ $.Values.kerberos.image_gid }}
@@ -274,7 +265,7 @@ spec:
         {{- include "base.meta.pod_labels" . | indent 8 }}
         component: envoy
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       containers:
@@ -306,7 +297,7 @@ spec:
         component: hadoop-shell
         role: toolbox
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -353,7 +344,7 @@ spec:
         component: task-pod {{/* To assign task pod network policies */}}
         role: toolbox
       annotations:
-        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
@@ -375,6 +366,40 @@ spec:
         volumeMounts:
         - name: {{ template "release.name" . }}-bash-executables
           mountPath: /opt/airflow/usr/bin
+
+{{- end }}
+{{- end }}
+
+{{- define "deployment.statsd" }}
+{{- if $.Values.monitoring.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "release.name" . }}-statsd
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: statsd
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: statsd
+      annotations:
+        checksum/statsd-config: {{ $.Files.Get "files/statsd/prometheus-statsd.yaml"  | sha256sum }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        {{- include "base.statsd.container" . | indent 8 }}
+      volumes:
+        {{- include "base.statsd.volume" . | indent 8 }}
 
 {{- end }}
 {{- end }}
