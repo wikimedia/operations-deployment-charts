@@ -8,7 +8,6 @@ ingress:
       - noc.wikimedia.org
 
 mesh:
-  image_version: 1.26.8-1
   # The port on which envoy will be listening. Given we're enabling ingress,
   # this will only be internal to the cluster and doesn't need to be unique
   public_port: 8000
