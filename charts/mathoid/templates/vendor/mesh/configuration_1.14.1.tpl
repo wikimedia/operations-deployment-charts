@@ -326,7 +326,11 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
             - header:
                 key: {{ $hdr.header }}
                 value: "{{ $hdr.value }}"
-              append: {{ $hdr.append | default false }}
+              {{- if $hdr.append | default false }}
+              append_action: APPEND_IF_EXISTS_OR_ADD
+              {{- else }}
+              append_action: OVERWRITE_IF_EXISTS_OR_ADD
+              {{- end }}
           {{- end }}
           {{- end }}
           virtual_hosts:
@@ -339,6 +343,12 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
                 {{- if .Values.mesh.idle_upstream_timeout | default false }}
                 idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
+                {{- end }}
+                {{- if .Values.mesh.upstream_retry_policy }}
+                retry_policy:
+                {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
+                  {{ $k }}: {{ $v }}
+                {{- end }}
                 {{- end }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
