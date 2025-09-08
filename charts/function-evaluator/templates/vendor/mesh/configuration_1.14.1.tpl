@@ -326,7 +326,11 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
             - header:
                 key: {{ $hdr.header }}
                 value: "{{ $hdr.value }}"
-              append: {{ $hdr.append | default false }}
+              {{- if $hdr.append | default false }}
+              append_action: APPEND_IF_EXISTS_OR_ADD
+              {{- else }}
+              append_action: OVERWRITE_IF_EXISTS_OR_ADD
+              {{- end }}
           {{- end }}
           {{- end }}
           virtual_hosts:
