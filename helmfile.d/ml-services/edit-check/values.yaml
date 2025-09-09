@@ -64,8 +64,8 @@ inference_services:
   edit-check:
     predictor:
       config:
-        maxReplicas: 3
-        minReplicas: 3
+        maxReplicas: 1
+        minReplicas: 1
         batcher:
           maxBatchSize: 32
           maxLatency: 100
@@ -85,6 +85,8 @@ inference_services:
           limits:
             cpu: "4"
             memory: 8Gi
+            amd.com/gpu: "1"
           requests:
             cpu: "4"
             memory: 8Gi
+            amd.com/gpu: "1"
