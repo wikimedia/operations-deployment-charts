@@ -305,7 +305,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
         http_filters:
         {{- if (.Values.mesh.faultinjection | default dict).enabled }}
         {{- /* Fault needs to be before any other filter */}}
-        - name: name: envoy.filters.http.fault
+        - name: envoy.filters.http.fault
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
             max_active_faults: 100
@@ -365,10 +365,20 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 envoy_grpc:
                   cluster_name: otel_collector
                 timeout: 0.250s
+              service_name: {{ .Values.mesh.tracing.service_name | default .Release.Name }}
         {{- end }}
         stat_prefix: ingress_https_{{ .Release.Name }}
         server_name: {{ .Release.Name }}-tls
         server_header_transformation: APPEND_IF_ABSENT
+        internal_address_config:
+          unix_sockets: true
+          cidr_ranges:
+          - address_prefix: 10.0.0.0
+            prefix_len: 8
+          - address_prefix: 127.0.0.1
+            prefix_len: 32
+          - address_prefix: "::1"
+            prefix_len: 128
     transport_socket:
       name: envoy.transport_sockets.tls
       typed_config:
@@ -609,6 +619,15 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                   {{ $k }}: {{ $v }}
                 {{- end -}}
                 {{- end }}
+        internal_address_config:
+          unix_sockets: true
+          cidr_ranges:
+          - address_prefix: 10.0.0.0
+            prefix_len: 8
+          - address_prefix: 127.0.0.1
+            prefix_len: 32
+          - address_prefix: "::1"
+            prefix_len: 128
 {{- end }}
 
 {{- define "mesh.configuration._cluster" }}
@@ -670,9 +689,28 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
   connect_timeout: {{ .Listener.connect_timeout | default "30s" }}
   type: STRICT_DNS
   dns_lookup_family: V4_ONLY
-{{- if (.Listener.health_checks | default list) }}
+{{- with .Listener.health_checks }}
   health_checks:
-{{ toYaml .Listener.health_checks | indent 4 }}
+  {{- range . }}
+    - timeout: {{ .timeout }}
+      interval: {{ .interval }}
+      unhealthy_threshold: {{ .unhealthy_threshold }}
+      {{- with .initial_jitter }}
+      initial_jitter: {{ . }}
+      {{- end }}
+      healthy_threshold: {{ .healthy_threshold }}
+      tcp_health_check: {}
+      {{- with .always_log_health_check_failures }}
+      always_log_health_check_failures: {{ . }}
+      {{- end }}
+      {{- with .event_log_path }}
+      event_logger:
+      - name: envoy.health_check.event_sinks.file
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.health_check.event_sinks.file.v3.HealthCheckEventFileSink
+          event_log_path: {{ . }}
+      {{- end }}
+  {{- end }}
 {{- end }}
   load_assignment:
     cluster_name: {{ .Name }}
@@ -721,6 +759,15 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
                 status: 403
                 body: {inline_string: "You can't access this url."}
         stat_prefix: admin_interface
+        internal_address_config:
+          unix_sockets: true
+          cidr_ranges:
+          - address_prefix: 10.0.0.0
+            prefix_len: 8
+          - address_prefix: 127.0.0.1
+            prefix_len: 32
+          - address_prefix: "::1"
+            prefix_len: 128
 {{- end }}
 
 {{- define "mesh.configuration._admin_cluster" }}
