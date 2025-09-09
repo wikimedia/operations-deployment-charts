@@ -34,7 +34,7 @@ config:
       logging:
         # Each airflow dev instance will send their logs to a subfolder of the airflow-dev
         # S3 bucket, to ensure isolation.
-        remote_base_log_folder: "s3://{{ $.Values.config.airflow.s3_bucket }}/{{ $.Release.Name }}
+        remote_base_log_folder: "s3://{{ $.Values.config.airflow.s3_bucket }}/{{ $.Release.Name }}"
       webserver:
         # The dev instances will not be reacheable via a public wikimedia.org domain.
         # Instead, they will be exposed by a combination of kubectl port-forward between
