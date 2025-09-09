@@ -2,3 +2,357 @@ PodSecurityStandard:
   disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles
   enforce: true              # Enforce the PodSecurityStandard profile "restricted"
   disableRestrictedPSP: true # Disable PSP binding for the restricted PSP
+
+namespaces:
+  airflow-dev:
+    deployClusterRole: deploy-airflow
+  airflow-main:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow.wikimedia.org
+      - airflow.discovery.wmnet
+    resourcequota:
+      compute:
+        requests:
+          cpu: "300"
+          memory: "500Gi"
+        limits:
+          cpu: "400"
+          memory: "600Gi"
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "12Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "16"
+  airflow-test-k8s:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-test-k8s.wikimedia.org
+    resourcequota:
+      compute:
+        requests:
+          cpu: "300"
+          memory: "500Gi"
+        limits:
+          cpu: "400"
+          memory: "600Gi"
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "10Gi"
+          cpu: "10"
+  airflow-analytics-test:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-analytics-test.wikimedia.org
+  airflow-wmde:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-wmde.wikimedia.org
+  airflow-research:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-research.wikimedia.org
+  airflow-search:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-search.wikimedia.org
+  airflow-platform-eng:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-platform-eng.wikimedia.org
+  airflow-analytics-product:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-analytics-product.wikimedia.org
+  airflow-ml:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+      - airflow-ml.wikimedia.org
+  echoserver: {}
+  blunderbuss:
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+  spark:
+    deployClusterRole: deploy-sparkapplications
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+  spark-history:
+    labels:
+      istio-injection: disabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "16000m"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "17000m"
+  spark-history-test:
+    labels:
+      istio-injection: disabled
+  spark-operator:
+    systemNamespace: true
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+  superset:
+    tlsExtraSANs:
+      - superset.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+  superset-next:
+    tlsExtraSANs:
+      - superset-next.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+  mpic:
+    tlsExtraSANs:
+      - mpic.wikimedia.org
+  mpic-next:
+    tlsExtraSANs:
+      - mpic-next.wikimedia.org
+  flink-operator:
+    systemNamespace: true
+    labels:
+      istio-injection: disabled
+  datasets-config:
+    tlsExtraSANs:
+      - datasets-config.wikimedia.org
+  datasets-config-next:
+    tlsExtraSANs:
+      - datasets-config-next.wikimedia.org
+  datahub:
+    tlsHostnames:
+      - datahub-frontend
+      - datahub-gms
+    tlsExtraSANs:
+      - datahub.wikimedia.org
+  datahub-next:
+    tlsHostnames:
+      - datahub-frontend-next
+      - datahub-gms-next
+    tlsExtraSANs:
+      - datahub-next.wikimedia.org
+  rdf-streaming-updater:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+    # Bump max container memory limit to 4.5Gi, otherwise use the defaults
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "4.5Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "9"
+  growthbook:
+    tlsHostnames:
+      - growthbook
+      - growthbook-backend
+  cloudnative-pg-operator:
+    systemNamespace: true
+  postgresql-test: {}
+  mw-content-history-reconcile-enrich: {}
+  mw-content-history-reconcile-enrich-next: {}
+  llm-inference:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+  mediawiki-dumps-legacy:
+    enableJobSidecarController: true
+    pspClusterRole: allow-mediawiki-psp
+    deployClusterRole: deploy-mediawiki-dumps-legacy
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+    resourcequota:
+      compute:
+        requests:
+          cpu: "300"
+          memory: "500Gi"
+        limits:
+          cpu: "400"
+          memory: "600Gi"
+    limitranges:
+      container:
+        min:
+          memory: "25Mi"
+          cpu: "50m"
+        max:
+          memory: "64Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "25Mi"
+          cpu: "50m"
+        max:
+          memory: "65Gi"
+          cpu: "16"
+  query-service:
+    enableJobSidecarController: true
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "300Mi"
+          cpu: "100m"
+        default:
+          memory: "300Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
