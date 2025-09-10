@@ -1,5 +1,8 @@
 resources:
-  replicas: 4
+  # replicas: 4
+  # Temporary bump for T402412 until ATS changes are merged to send
+  # read traffic to the secondary datacentre.
+  replicas: 6
 
 main_app:
   version: 1.26.8-1
