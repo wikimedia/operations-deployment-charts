@@ -59,6 +59,15 @@ static_resources:
                   status: 403
                   body: {inline_string: "You can't access this url."}
           stat_prefix: admin_cluster
+          internal_address_config:
+            unix_sockets: true
+            cidr_ranges:
+            - address_prefix: 10.0.0.0
+              prefix_len: 8
+            - address_prefix: 127.0.0.1
+              prefix_len: 32
+            - address_prefix: ::1
+              prefix_len: 128
 {{- end }}
   - name: listener_0
     address:
@@ -226,12 +235,22 @@ static_resources:
           - name: envoy.filters.http.lua
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-              inline_code: |
-{{ include "restgateway.lua" . | indent 16 }}
+              default_source_code:
+                inline_string: |
+{{ include "restgateway.lua" . | indent 18 }}
 {{- end }}
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          internal_address_config:
+            unix_sockets: true
+            cidr_ranges:
+            - address_prefix: 10.0.0.0
+              prefix_len: 8
+            - address_prefix: 127.0.0.1
+              prefix_len: 32
+            - address_prefix: ::1
+              prefix_len: 128
 {{- if .Values.mesh.enabled }}
       transport_socket:
         name: envoy.transport_sockets.tls
