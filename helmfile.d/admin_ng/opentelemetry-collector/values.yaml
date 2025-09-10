@@ -78,13 +78,15 @@ config:
             - set(attributes["service.name"], attributes["upstream_cluster.name"])
                 where ((attributes["service.name"] == nil)
                        or (attributes["service.name"] == "")
-                       or (attributes["service.name"] == "OTLPResourceNoServiceName"))
+                       or (attributes["service.name"] == "OTLPResourceNoServiceName")
+                       or (attributes["service.name"] == "unknown_service:envoy"))
                 and (attributes["upstream_cluster.name"] != "local_service")
             # Failing that, use the k8s-namespace-derived service name.
             - set(attributes["service.name"], resource.attributes["k8s.namespace.name"])
                 where ((attributes["service.name"] == nil)
                        or (attributes["service.name"] == "")
-                       or (attributes["service.name"] == "OTLPResourceNoServiceName"))
+                       or (attributes["service.name"] == "OTLPResourceNoServiceName")
+                       or (attributes["service.name"] == "unknown_service:envoy"))
                 and (resource.attributes["k8s.namespace.name"] != nil) and (resource.attributes["k8s.namespace.name"] != "")
     # Re-group spans by their per-span service.name attribute we computed above.
     # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/groupbyattrsprocessor/README.md
