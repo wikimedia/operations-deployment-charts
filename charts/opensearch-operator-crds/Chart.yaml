@@ -1,24 +1,14 @@
 apiVersion: v2
 name: opensearch-operator-crds
 description: The OpenSearch Operator CRDs Helm chart for Kubernetes
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
-
-# This is the opensearch-operator chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
-# Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.0.1
+# NOTE: version here is WMF's version of this chart.
+# appVersion should be the upstream version.
+# (We cannot use a '-wmf0' prerelease suffix in helm charts.
+# Helm considers these 'development' versions.)
+version: 0.0.2
 
 # This is the version number of the application being deployed (the operator). This version number should be
-# incremented each time you make changes to the application. Versions are not expected to
-# follow Semantic Versioning. They should reflect the version the application is using.
-# It is recommended to use it with quotes.
+# incremented each time you make changes to the application. The CRDs in this chart should generally be updated
+# to match whatever version of the opensearch-operator is being deployed.
 appVersion: 2.7.0

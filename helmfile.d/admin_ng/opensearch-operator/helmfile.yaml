@@ -2,6 +2,8 @@ templates:
   default: &default
     namespace: opensearch-operator
     missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_opensearch_operator\" }}{{ .Environment.Values.install_opensearch_operator }}{{ else }}{{ false }}{{end}}`}}"
+
 releases:
   # We only install the CRDs
   - name: opensearch-operator-crds
@@ -11,13 +13,14 @@ releases:
     version: {{ $version }}
     {{- end }}
     <<: *default
+    namespace: ~ # The CRDs are non-namespaced objects, so we can overwrite the value from the defaults with null here.
     needs:
       - kube-system/namespaces
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "opensearch-operator/values.yaml"                                  # Release specific overrides
+      - "opensearch-operator/values.yaml"                                      # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
       - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)

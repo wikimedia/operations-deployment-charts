@@ -1,12 +1,1 @@
-## If this is set to true, RoleBindings will be used instead of ClusterRoleBindings, inorder to restrict ClusterRoles
-## to the namespace where the operator and OpenSearch cluster are in. In that case, specify the namespace where they
-## are in in manager.watchNamespace field.
-## If false, ClusterRoleBindings will be used
-useRoleBindings: true
-
-manager:
-  # If a watchNamespace is specified, the manager's cache will be restricted to
-  # watch objects in the desired namespace. Defaults is to watch all namespaces.
-  watchNamespace: opensearch
-
-installCRDs: true
+# This chart does not have any values, it just contains non templated CRDs
