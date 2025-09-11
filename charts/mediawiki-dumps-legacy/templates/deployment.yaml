@@ -44,6 +44,8 @@ spec:
         - name: wikimedia-cluster-config
           mountPath: /etc/wikimedia-cluster
           subPath: wikimedia-cluster
+        - name: mariadb-client-config
+          mountPath: /etc/dumps/mariadb
         env:
         - name: SERVERGROUP
           value: kube-dumps
@@ -69,7 +71,9 @@ spec:
       - name: wikimedia-cluster-config
         configMap:
           name: mediawiki-production-wikimedia-cluster-config
-
+      - name: mariadb-client-config
+        secret:
+          secretName: mariadb-client-config
 
 ---
 apiVersion: apps/v1
