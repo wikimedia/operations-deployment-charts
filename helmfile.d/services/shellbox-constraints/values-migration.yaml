@@ -1,14 +1,13 @@
 # This release exists to enable incremental capacity-based traffic migration.
 
 # Override the image flavour used by this release.
-# TODO: T403284 - Remove 8.3 override.
-shellbox:
-  flavour: php-rpc83
+#shellbox:
+#  flavour: php-rpc81
 
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 1  # TODO: T403284 - Revert back to zero.
+  replicas: 0
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
