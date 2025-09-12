@@ -52,9 +52,8 @@ manager:
   pprofEndpointsEnabled: false
 
   image:
-    repository: docker-registry.wikimedia.org/opensearch-operator
-    ## tag default uses appVersion from Chart.yaml, to override specify tag tag: "v1.1"
-    tag: "2.7.0"
+    repository: docker-registry.wikimedia.org/repos/data-engineering/opensearch-operator
+    tag: 2025-08-25-204922-014d2b0b6a65947de4486c3919c5b5dcce45d39e
     pullPolicy: IfNotPresent
 
   ## Optional array of imagePullSecrets containing private registry credentials
