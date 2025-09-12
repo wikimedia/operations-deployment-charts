@@ -1,0 +1,13 @@
+mesh:
+  public_port: 10001
+ingress:
+  # gatewayHosts settings configure the hostnames this service will be reachable on.
+  # By default, this will be a list like:
+  # - {{ gatewayHosts.default }}.discovery.wmnet
+  # - {{ gatewayHosts.default }}.svc.codfw.wmnet
+  # - {{ gatewayHosts.default }}.svc.eqiad.wmnet
+  #
+  # And in case .Values.ingress.staging is true:
+  # - {{ gatewayHosts.default }}.k8s-staging.discovery.wmnet
+  gatewayHosts:
+    default: "echoserver-dse-k8s-codfw"
