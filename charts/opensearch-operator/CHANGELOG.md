@@ -5,12 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
-## [Unreleased]
+
+## [0.0.3-wmf]
 ### Added
-- Added support for custom image used by `kubeRbacProxy`.
+- **WMF-specific changes.** This is the first version of the chart modified for WMF; see
+[the chart review on Wikitech](https://wikitech.wikimedia.org/wiki/Helm/Upstream_Charts/opensearch-operator) for more details.
 ### Changed
+- Split out the single operator chart into an operator chart and a CRDs chart.
 ### Deprecated
 ### Removed
+- **Unnecessary ClusterRoles**. Our current design installs an operator in each OpenSearch namespace, so cluster-wide permissions are not needed.
+- **kube-rbac-proxy container** The upstream chart uses this proxy for the OpenSearch performance analyzer and OpenSearch Dashboards, and metrics. None of these are currently needed for our use case.
+
 ### Fixed
 ### Security
 
