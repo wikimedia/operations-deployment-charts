@@ -30,9 +30,13 @@ environments:
     values:
       - releases: [staging]
       - kubernetesVersion: '1.31'
-  # This is a non-production development environment used for testing
+  # These are non-production development environments used for testing
   # scap and related deployment tooling.
   traindev:
+    values:
+      - releases: [pinkunicorn]
+      - kubernetesVersion: '1.31'
+  traindev-staging:
     values:
       - releases: [pinkunicorn]
       - kubernetesVersion: '1.31'
