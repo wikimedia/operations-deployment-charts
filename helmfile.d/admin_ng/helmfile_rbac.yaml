@@ -43,6 +43,11 @@ releases:
               resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups"]
               verbs: ["get", "list", "watch"]
             {{- end }}
+            {{- if hasKey .Environment.Values "install_opensearch_operator" }}
+            - apiGroups: ["opensearch.opster.io"]
+              resources: ["opensearchactiongroups", "opensearchclusters", "opensearchcomponenttemplates", "opensearchindextemplates", "opensearchismpolicies", "opensearchroles", "opensearchsnapshotpolicies", "opensearchtenants", "opensearchuserrolebindings", "opensearchusers"]
+              verbs: ["get", "list", "watch"]
+            {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["get", "list", "watch"]
@@ -121,6 +126,11 @@ releases:
             {{- if hasKey .Environment.Values "install_cloudnative_pg_operator" }}
             - apiGroups: ["postgresql.cnpg.io"]
               resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey .Environment.Values "install_opensearch_operator" }}
+            - apiGroups: ["opensearch.opster.io"]
+              resources: ["opensearchactiongroups", "opensearchclusters", "opensearchcomponenttemplates", "opensearchindextemplates", "opensearchismpolicies", "opensearchroles", "opensearchsnapshotpolicies", "opensearchtenants", "opensearchuserrolebindings", "opensearchusers"]
               verbs: ["*"]
             {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
