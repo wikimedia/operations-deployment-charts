@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.0.3-wmf]
+## [0.0.4-wmf]
 ### Added
 - **WMF-specific changes.** This is the first version of the chart modified for WMF; see
 [the chart review on Wikitech](https://wikitech.wikimedia.org/wiki/Helm/Upstream_Charts/opensearch-operator) for more details.
