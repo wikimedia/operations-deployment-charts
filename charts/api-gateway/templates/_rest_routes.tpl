@@ -32,6 +32,10 @@
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
+                  - header:
+                      key: "Via"
+                      value: "rest-gateway"
+                    append_action: OVERWRITE_IF_EXISTS
                 {{- range $rqh := $endpoint.request_headers_to_add }}
                   - header:
                       key: "{{ $rqh.key }}"

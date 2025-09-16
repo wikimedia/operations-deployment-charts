@@ -72,6 +72,8 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: ingress_http
+          # if set by upstream, use the supplied Server header
+          server_header_transformation: APPEND_IF_ABSENT
           # configure logging
           access_log:
             name: envoy.file_access_log
