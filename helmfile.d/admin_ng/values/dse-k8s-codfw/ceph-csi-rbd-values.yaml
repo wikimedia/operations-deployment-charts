@@ -1,0 +1,49 @@
+---
+csiConfig:
+  - clusterID: &clusterid "8e69717a-518b-4c00-9f96-0635d9b913c6"
+    monitors:
+      - "cephosd2001:6789"
+      - "cephosd2002:6789"
+      - "cephosd2003:6789"
+
+nodeplugin:
+  httpMetrics:
+    enabled: false
+  registrar:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2ec5cc7339112097310d44a46e7855f413321490ceae9609ac1e2bbaf63b8e8c
+  plugin:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
+      tag: 2025-04-07-130725-8ce7fc442c39f3b4fe1a7cb81d70b1328a72c143@sha256:05eaf7794e6f939aa6f9d3aa3fb525d3a4671a0abba4ce233432c5b581433eea
+
+provisioner:
+  provisioner:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2e3be4184503ba6b70ad26d4ef9f6d22624f72cbb9c57e5e778a2fb20356949d
+  attacher:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-attacher
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:0c19e6639d82980599bece800ddc03532c8e52f8e2c83ff2e36015ca4043309c
+  resizer:
+    image:
+      repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer
+      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:255f17ae27ff06eae246d1ac8535e278069f1f3dabd8d315f5254470bd3fc164
+  snapshotter:
+    enabled: false
+
+storageClass:
+  create: true
+  name: ceph-rbd-ssd
+  clusterID: *clusterid
+  pool: dse-k8s-csi-rbd-ssd
+
+secret:
+  create: true
+  userID: dse-k8s-csi
+  # userKey: # This value has been added helmfile via the private repo
+
+tenantNamespaces:
+- kube-system
