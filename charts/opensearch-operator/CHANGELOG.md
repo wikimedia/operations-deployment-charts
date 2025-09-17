@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.0.5-wmf]
+### Added
+### Changed
+- Enhance pod security settings, as required by changes
+tracked in [this Phab task](https://phabricator.wikimedia.org/T362978) .
+- Move WMF-specific values out of the helm chart's
+`values.yaml` and into `helmfile.d/dse-k8s-services/_opensearch_common_/values.yaml`.
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+
+
 ## [0.0.4-wmf]
 ### Added
 - **WMF-specific changes.** This is the first version of the chart modified for WMF; see
