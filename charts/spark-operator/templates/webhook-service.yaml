@@ -2,7 +2,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "base.name.release" . }}-webhook
+  name: {{ template "base.name.release" . }}
   labels:
     app: {{ template "base.name.chart" . }}
     chart: {{ template "base.name.chartid" . }}

@@ -45,7 +45,7 @@ resources:
   - -webhook-port={{ .Values.webhook.port }}
   - -webhook-timeout={{ .Values.webhook.timeout }}
   - -webhook-fail-on-error=true
-  - -webhook-svc-name={{ template "base.name.release" . }}-webhook
+  - -webhook-svc-name={{ template "base.name.release" . }}
   - -webhook-config-name={{ template "base.name.release" . }}-webhook-config
   - -webhook-namespace-selector=kubernetes.io/metadata.name={{ .Values.watchNamespace }}
   - -webhook-server-cert=/etc/webhook-certs/tls.crt
