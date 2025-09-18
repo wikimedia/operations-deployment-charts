@@ -1,3 +1,16 @@
+{{- define "config.app.cookie_to_metadata" }}
+  - cookie: {{ . }}
+    on_header_present:
+      metadata_namespace: envoy.wmf_cookies
+      key: {{ . }}
+      type: STRING
+    on_header_missing:
+      metadata_namespace: envoy.wmf_cookies
+      key: {{ . }}
+      value: '#NONE#' # Empty values are not allowed!
+      type: STRING
+    remove: false
+{{- end }}
 {{- define "config.app" }}
 # api gateway envoy config
 {{ if .Values.main_app.telemetry_port -}}
@@ -143,6 +156,9 @@ static_resources:
                       user-agent: "%REQ(USER-AGENT)%"
                   total_time_ms: "%DURATION%"
                   client_id: "%DYNAMIC_METADATA(envoy.filters.http.jwt_authn:jwt_payload:aud)%"
+                  {{- if .Values.main_app.ratelimiter.key_log_format }}
+                  ratelimit_key: {{ .Values.main_app.ratelimiter.key_log_format | quote }}
+                  {{- end }}
                   route: "%ROUTE_NAME%"
           use_remote_address: true
 {{- if .Values.main_app.normalise_paths }}
@@ -200,6 +216,20 @@ static_resources:
               rules:
 {{ include "apigateway.ratelimit_rules" . }}
 {{- end }}
+{{- if .Values.main_app.rest_gateway_routes }}
+          - name: envoy.filters.http.header_to_metadata
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.Config
+              request_rules:
+                # make centralauth_User cookie available in Lua via metadata
+                {{ include "config.app.cookie_to_metadata" "centralauth_User" | indent 15 }}
+          - name: envoy.filters.http.lua
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+              default_source_code:
+                inline_string: |
+{{ include "restgateway.lua" . | indent 18 }}
+{{- end }}
 {{- if .Values.main_app.ratelimiter.enabled }}
           - name: envoy.filters.http.ratelimit
             typed_config:
@@ -246,14 +276,6 @@ static_resources:
                     key: php_engine
                     value: none
                     type: STRING
-{{- if .Values.main_app.rest_gateway_routes }}
-          - name: envoy.filters.http.lua
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
-              default_source_code:
-                inline_string: |
-{{ include "restgateway.lua" . | indent 18 }}
-{{- end }}
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router

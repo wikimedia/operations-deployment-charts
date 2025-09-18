@@ -179,6 +179,14 @@ spec:
               value: /etc/ratelimit-metrics.yaml
             - name: PROMETHEUS_ADDR
               value: "0.0.0.0:{{ .Values.main_app.ratelimiter.metrics_port }}"
+            {{- if .Values.main_app.ratelimiter.key_prefix }}
+            - name: CACHE_KEY_PREFIX
+              value: {{ .Values.main_app.ratelimiter.key_prefix }}
+            {{- end }}
+            {{- if .Values.main_app.ratelimiter.shadow_mode }}
+            - name: SHADOW_MODE
+              value: "true"
+            {{- end }}
           volumeMounts:
             # We can't mount the metrics file in the same directory as
             # the ratelimit config or the service will assume this is

@@ -1,0 +1,21 @@
+# USE TOGETHER WITH values-rest-devel.yaml OR SOME OTHER VALUES FILE THAT DEFINES REST ROUTES!
+
+main_app:
+  dev_redis: true
+  ratelimiter:
+    enabled: true
+    shadow_mode: true
+    version: 9.0.3-20250704.bf8fb04
+    log_level: debug
+    redis_host: localhost
+    redis_port: 6380 # nutcracker
+    redis_pass: ""
+    key_prefix: "restgw"
+    key_log_format: "%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_class)%:%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_id)%"
+    envoy_timeout: 0.5
+
+nutcracker:
+  enabled: true
+  port: 6380 # use different port here because local redis uses 6379
+  servers:
+    - localhost:6379:1 "cp-1"

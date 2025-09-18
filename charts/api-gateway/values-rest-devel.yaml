@@ -5,8 +5,17 @@ main_app:
   http_https_echo: true
   access_log:
     #enabled: false
-    sample_percentage: 50
+    sample_percentage: 100
   telemetry_port: 8089
+
+  ratelimiter:
+    shadow_mode: false
+    anon_limit:
+      requests_per_unit: 2
+      unit: MINUTE
+    default_limit:
+      requests_per_unit: 5
+      unit: MINUTE
 
   domains:
     - localhost
@@ -35,6 +44,7 @@ main_app:
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
       rb_response_headers: true
+      apply_rate_limiting: true
     - name: other_mobileapps
       cluster: mobileapps
       no_csp: true
@@ -43,6 +53,7 @@ main_app:
           in: '(.+)/v1/page/oh-no/(.+)/(.+)'
           out: '\1/v1/page/oh-no/\2/\3'
       rb_response_headers: false
+      apply_rate_limiting: true
     - name: proton
       timeout: 150s
       ingress: true

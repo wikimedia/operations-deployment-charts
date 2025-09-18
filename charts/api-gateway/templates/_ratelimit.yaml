@@ -4,6 +4,29 @@
 ---
 domain: wikimedia
 descriptors:
+{{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
+  - key: limit_group
+    value: "experiment-2025"
+    descriptors:
+      # Limit for anonymous users. user_id is going to be the IP address or a cookie value.
+      - key: user_class
+        value: anon
+        descriptors:
+          - key: user_id
+            rate_limit:
+              requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
+              unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
+      # Limit for users that have a user ID cookie, so we assume that they are logged in.
+      # Later we will reduce this rate limit and provide better limits for users that
+      # for whom we have a trusted user ID from a JWT.
+      - key: user_class
+        value: cookie-user
+        descriptors:
+          - key: user_id
+            rate_limit:
+              requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
+              unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
+{{- else }}
   - key: route_name
     value: default_rate
     descriptors:
@@ -40,6 +63,7 @@ descriptors:
             rate_limit:
               unit: {{ $default_unit }}
               requests_per_unit: {{ $discovery_opts.ratelimit_config.default_limit }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

@@ -46,6 +46,10 @@ main_app:
   http_https_echo: false
   ratelimiter:
     enabled: false
+    # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about
+    # which ones would have been denied ("dry run").
+    # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode
+    shadow_mode: false
     metrics_port: 9090
     # image version
     version: latest
@@ -56,6 +60,8 @@ main_app:
     limits:
       cpu: 500m
       memory: 1000Mi
+    key_prefix: ""
+    key_log_format: "" # TODO: define log format usable with old api gateway rate limiting
     anon_limit:
       requests_per_unit: 500
       unit: HOUR

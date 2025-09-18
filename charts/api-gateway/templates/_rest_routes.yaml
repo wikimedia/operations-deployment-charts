@@ -6,6 +6,27 @@
 {{- range $domain := .Values.main_app.domains }}
               - "{{ $domain }}"
 {{- end }}
+{{- if .Values.main_app.ratelimiter.enabled }}
+              rate_limits:
+              - actions:
+                - generic_key:
+                    descriptor_key: limit_group
+                    descriptor_value: "experiment-2025"
+                - metadata:
+                    descriptor_key: user_class
+                    source: DYNAMIC
+                    metadata_key:
+                      key: wmf.rest_gateway.rate_limit
+                      path:
+                        - key: user_class
+                - metadata:
+                    descriptor_key: user_id
+                    source: DYNAMIC
+                    metadata_key:
+                      key: wmf.rest_gateway.rate_limit
+                      path:
+                        - key: user_id
+{{- end }}
               routes:
               - name: rest_gateway_root
                 match:
@@ -39,6 +60,15 @@
                 stat_prefix: {{ $endpoint.stat_prefix }}_{{ $route.name }}
                 {{- else }}
                 stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
+                {{- end }}
+                {{- /* TODO: make apply_rate_limiting default to true */}}
+                {{- if $.Values.main_app.ratelimiter.enabled }}
+                {{- if not ( $endpoint.apply_rate_limiting | default false ) }}
+                typed_per_filter_config:
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
+                {{- end }}
                 {{- end }}
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
