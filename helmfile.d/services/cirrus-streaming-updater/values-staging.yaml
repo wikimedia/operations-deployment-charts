@@ -2,8 +2,6 @@
 # It uses Kafka test-eqiad and thanos swift in eqiad.
 #
 app:
-  # Temporary test of flink booksworm base image with java17
-  version: v20250918195946-a438845
   config_files:
     app.config.yaml:
       # Both are specified here so overwriting `source` in the producer doesn't also override the sink
