@@ -28,6 +28,7 @@ config:
     # Production Wikidata.org wiki access
     WIKIDATA_API_URL: http://localhost:6501/
     WIKIDATA_VIRTUAL_HOST: www.wikidata.org
+    ORCHESTRATOR_HEAP_SIZE: "2048"
     # Top-level request timeout at the orchestrator level (in milliseconds)
     # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
     ORCHESTRATOR_TIMEOUT_MS: "10000"
