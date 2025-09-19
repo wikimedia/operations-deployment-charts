@@ -50,7 +50,7 @@ templates:
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
-      - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}.yaml" # Special file controlled by other processes on the deployment host
+      - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
       - name: php.servergroup
         value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if or (eq .Release.Name "next") (eq .Release.Name "migration") }}-{{ .Release.Name }}{{ end }}`}}'
