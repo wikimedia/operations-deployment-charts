@@ -46,8 +46,6 @@ operatorPod:
       memory: "512Mi"
 
 defaultConfiguration:
-  # Set append to false to replace configuration files
-  append: false
   flink-conf.yaml: |+
     # Enable dynamic reloading of watchNamespaces.
     kubernetes.operator.dynamic.namespaces.enabled: true
@@ -65,58 +63,6 @@ defaultConfiguration:
     # one flink operator per namespace, we can set this to the same
     # value for all operator deployments
     kubernetes.operator.leader-election.lease-name: flink-operator-lease
-
-  # Make loggers only log to console in ECS format.
-  log4j-operator.properties: |+
-    # log4j config for the flink-kubernetes-operator.
-    # Logs only to Console in ECS JSON format.
-    rootLogger.level = INFO
-    rootLogger.appenderRef.console.ref = ConsoleAppender
-
-    # Log all infos to the console
-    appender.console.name = ConsoleAppender
-    appender.console.type = CONSOLE
-    appender.console.layout.type = EcsLayout
-
-  # This same config is duplicated into charts/flink-app/conf/log4j-console.properties to support
-  # apps that extend the logging configuration. If updating here, update there as well.
-  log4j-console.properties: |+
-    # log4j config for Flink applications.
-    # This will be used by JobManager and TaskManagers.
-    # Logs only to Console in ECS JSON format.
-
-    # Allow reloading logging config at runtime
-    monitorInterval=300
-
-    # This affects logging for both user code and Flink
-    rootLogger.level = INFO
-    rootLogger.appenderRef.console.ref = ConsoleAppender
-
-    # Uncomment this if you want to _only_ change Flink's logging
-    #logger.flink.name = org.apache.flink
-    #logger.flink.level = INFO
-
-    # The following lines keep the log level of common libraries/connectors on
-    # log level INFO. The root logger does not override this. You have to manually
-    # change the log levels here.
-    logger.akka.name = akka
-    logger.akka.level = INFO
-    logger.kafka.name= org.apache.kafka
-    logger.kafka.level = INFO
-    logger.hadoop.name = org.apache.hadoop
-    logger.hadoop.level = INFO
-    logger.zookeeper.name = org.apache.zookeeper
-    logger.zookeeper.level = INFO
-
-    # Log all infos to the console in ECS format
-    appender.console.name = ConsoleAppender
-    appender.console.type = CONSOLE
-    appender.console.layout.type = EcsLayout
-    #appender.console.layout.serviceName = {{ .Release.Name }} # TODO?
-
-    # Suppress the irrelevant (wrong) warnings from the Netty channel handler
-    logger.netty.name = org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline
-    logger.netty.level = OFF
 
 # Container (operator) security context. This will override podSecurityContext.
 operatorSecurityContext:
