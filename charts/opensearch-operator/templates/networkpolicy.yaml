@@ -1,0 +1,17 @@
+{{/*
+  Allow the opensearch-operator pod to contact the Kubernetes API
+*/}}
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-to-kubeapi
+spec:
+  types:
+    - Egress
+  selector: "control-plane == 'controller-manager'"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
