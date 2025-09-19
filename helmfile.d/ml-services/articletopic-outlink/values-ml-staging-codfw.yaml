@@ -4,29 +4,21 @@ monitoring:
 inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
-    version: "2025-09-19-022028-publish"
+    version: "2025-09-19-105015-publish"
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"
       - name: MODEL_VERSION
         value: "alloutlinks_202209"
+      - name: WIKI_URL
+        value: "http://mw-api-int-ro.discovery.wmnet:4680"
       - name: EVENTGATE_URL
         value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
       - name: EVENTGATE_STREAM
         value: "mediawiki.page_prediction_change.rc0"
-  transformer:
-    image: "machinelearning-liftwing-inference-services-outlink-transformer"
-    version: "2025-09-19-022027-publish"
-    base_env:
-      - name: WIKI_URL
-        value: "http://mw-api-int-ro.discovery.wmnet:4680"
 
 inference_services:
   outlink-topic-model:
-    transformer:
-      config:
-        minReplicas: 1
-        maxReplicas: 1
     predictor:
       config:
         minReplicas: 1
