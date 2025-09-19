@@ -2,6 +2,30 @@
 # It uses Kafka test-eqiad and thanos swift in eqiad.
 #
 app:
+  # Temporary test of flink booksworm base image with java17
+  version: v20250918195946-a438845
+  flinkConfiguration:
+    "env.java.opts.all": >-
+      --add-exports=java.base/sun.net.util=ALL-UNNAMED
+      --add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+      --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+      --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.base/java.net=ALL-UNNAMED
+      --add-opens=java.base/java.io=ALL-UNNAMED
+      --add-opens=java.base/java.nio=ALL-UNNAMED
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+      --add-opens=java.base/java.text=ALL-UNNAMED
+      --add-opens=java.base/java.time=ALL-UNNAMED
+      --add-opens=java.base/java.util=ALL-UNNAMED
+      --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+      --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+      --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
   config_files:
     app.config.yaml:
       # Both are specified here so overwriting `source` in the producer doesn't also override the sink
