@@ -160,6 +160,9 @@ environments:
       - namespace_certificates: true
       - install_external_services: true
       - install_opensearch_operator: true
+      # Deploy network policies for a Istio setup
+      - istio_gateways: true
+      - istio_sidecar_proxy: true
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
