@@ -320,7 +320,7 @@ main_app:
         - name: lint-revision
           in: '/+([^/]+)/v1/page/lint/([^\/]+)/(.+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2/\3'
-        - name: lint-no-revision
+        - name: lint-title
           in: '/+([^/]+)/v1/page/lint/([^\/]+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
         - name: transform_wikitext_to_html
@@ -329,6 +329,9 @@ main_app:
         - name: transform_html_to_wikitext
           in: '/+([^/]+)/v1/transform/html/to/wikitext(.*)'
           out: '/w/rest.php/v1/transform/html/to/wikitext\2'
+        - name: transform_wikitext_to_lint
+          in: '/+([^/]+)/v1/transform/wikitext/to/lint(.*)'
+          out: '/w/rest.php/v1/transform/wikitext/to/lint\2'
         # reading lists endpoint - supports all HTTP verbs for various options
         # Note use of * rather than + in regex - needed to match base
         # `/v1/data/lists/` requests which requires the trailing slash
