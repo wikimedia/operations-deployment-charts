@@ -11,7 +11,7 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_spark_operator\" }}{{ .Environment.Values.install_spark_operator }}{{ else }}{{ false }}{{end}}`}}"
 
 releases:
-  - name: spark-operator
+  - name: production
     chart: wmf-stable/spark-operator
     {{- $version := .Values.chartVersions | get "wmf-stable/spark-operator" "" }}
     {{- if $version }}
@@ -25,6 +25,6 @@ releases:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "spark-operator/values-{{`{{ .Release.Name }}`}}.yaml"                 # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
