@@ -86,7 +86,7 @@ spec:
   - action: Allow
     destination:
       services:
-        name: {{ template "base.name.release" . }}-webhook
+        name: {{ template "base.name.release" . }}
         namespace: {{ .Release.Namespace }}
     protocol: TCP
     source:
