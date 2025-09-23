@@ -44,7 +44,7 @@
                   - header:
                       key: "Via"
                       value: "rest-gateway"
-                    append_action: OVERWRITE_IF_EXISTS
+                    append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- range $rsh := $endpoint.response_headers_to_add }}
                   - header:
                       key: "{{ $rsh.key }}"
