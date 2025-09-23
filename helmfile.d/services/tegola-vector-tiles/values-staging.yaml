@@ -10,15 +10,11 @@ tcp_services_proxy:
   maps_postgres:
     upstreams:
       # read replicas (the master node is left out on purpose to deal with data imports)
-      - address: maps-test2002.codfw.wmnet
+      - address: maps2012.codfw.wmnet
         port: 5432
-      - address: maps-test2003.codfw.wmnet
+      - address: maps2013.codfw.wmnet
         port: 5432
-      - address: maps-test2004.codfw.wmnet
-        port: 5432
-      - address: maps-test2005.codfw.wmnet
-        port: 5432
-      - address: maps-test2006.codfw.wmnet
+      - address: maps2014.codfw.wmnet
         port: 5432
 
 tileCaching:
