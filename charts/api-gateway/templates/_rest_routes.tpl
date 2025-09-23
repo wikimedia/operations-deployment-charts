@@ -39,12 +39,12 @@
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- end }}
                 {{- end }}
-                {{- if or $endpoint.response_headers_to_add $endpoint.rb_response_headers }}
                 response_headers_to_add:
                   - header:
                       key: "Via"
                       value: "rest-gateway"
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
+                {{- if or $endpoint.response_headers_to_add $endpoint.rb_response_headers }}
                 {{- range $rsh := $endpoint.response_headers_to_add }}
                   - header:
                       key: "{{ $rsh.key }}"
