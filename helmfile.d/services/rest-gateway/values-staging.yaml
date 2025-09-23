@@ -2,8 +2,6 @@ resources:
   replicas: 1
 
 main_app:
-  image: envoy-future
-  version: 1.29.12-1
   # enable debug logging in staging
   args: ["-l", "debug"]
   domains:
