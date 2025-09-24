@@ -10,7 +10,19 @@ templates:
     missingFileHandler: Warn
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_spark_operator\" }}{{ .Environment.Values.install_spark_operator }}{{ else }}{{ false }}{{end}}`}}"
 
-#releases:
+releases:
+  # Install first the CRDs, then the operator.
+  - name: spark-operator-crds
+    chart: wmf-stable/spark-operator-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/spark-operator-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    namespace: ~ # The CRDs are non-namespaced objects, so we can overwrite the value from the defaults with null here.
+    needs:
+      - kube-system/namespaces
+
 #  - name: production
 #    chart: wmf-stable/spark-operator
 #    {{- $version := .Values.chartVersions | get "wmf-stable/spark-operator" "" }}
