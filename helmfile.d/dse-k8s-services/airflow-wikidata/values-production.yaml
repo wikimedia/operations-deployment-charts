@@ -1,0 +1,9 @@
+config:
+  airflow:
+    instance_name: wikidata
+
+ingress:
+  gatewayHosts:
+    default: "airflow-wikidata"
+    extraFQDNs:
+    - airflow-wikidata.wikimedia.org
