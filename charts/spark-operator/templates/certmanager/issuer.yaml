@@ -17,9 +17,6 @@ limitations under the License.
 {{- if .Values.webhook.enable }}
 {{- if .Values.certManager.enable }}
 {{- if not .Values.certManager.issuerRef }}
-{{- if not (.Capabilities.APIVersions.Has "cert-manager.io/v1/Issuer") }}
-{{- fail "The cluster does not support the required API version `cert-manager.io/v1` for `Issuer`." }}
-{{- end }}
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
