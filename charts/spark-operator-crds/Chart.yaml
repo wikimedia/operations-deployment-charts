@@ -1,0 +1,11 @@
+apiVersion: v2
+name: spark-operator-crds
+description: Spark Operator CRDs
+type: application
+# NOTE: version here is WMF's version of this chart.
+# appVersion should be the upstream version.
+# (We cannot use a '-wmf0' prerelease suffix in helm charts.
+# Helm considers these 'development' versions.)
+version: 0.0.1
+appVersion: 2.2.1
+icon: https://spark.apache.org/images/spark-logo.png
