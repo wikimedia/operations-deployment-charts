@@ -55,7 +55,7 @@ config:
   private: {} # Add here all the keys that should be private but still available as env variables
   airflow:
     dags_root: /opt/airflow/dags
-    dags_folder: override_me
+    dags_folder: '{{ $.Values.config.airflow.instance_name | replace "-" "_" }}'
     instance_name: override_me
     aws_access_key_id: override_me
     aws_secret_access_key: override_me
@@ -66,7 +66,9 @@ config:
       roles_sync_at_login: true
       user_registration: true
       user_registration_role: Public
+      op_ldap_role: "airflow-{{ $.Values.config.airflow.instance_name }}"
       role_mappings:
+        "{{ $.Values.config.airflow.auth.op_ldap_role }}": [Op]
         nda: [User]
         wmf: [User]
         ops: [Admin]
@@ -107,7 +109,7 @@ config:
         ccache: *krb5ccname
         include_ip: false
         keytab: *keytab
-        principal: override_me/override_me
+        principal: "analytics-{{ $.Values.config.airflow.instance_name }}/airflow-{{ $.Values.config.airflow.instance_name }}.discovery.wmnet"
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
@@ -192,7 +194,7 @@ config:
 
   oidc:
     idp_server: override_me
-    client_id: override_me
+    client_id: 'airflow_{{ $.Values.config.airflow.instance_name | replace "-" "_" }}'
     client_secret: override_me
 
 scheduler:

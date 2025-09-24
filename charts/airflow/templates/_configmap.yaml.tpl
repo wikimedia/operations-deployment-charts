@@ -114,13 +114,14 @@ data:
 
     AUTH_TYPE = AUTH_OAUTH
     {{- with $.Values.config.oidc }}
+    {{- $client_id := include "evalValue" (dict "value" .client_id "Root" $) }}
     OAUTH_PROVIDERS = [
         {
             "name": "CAS",
             "icon": "fa-openid",
             'token_key':'access_token',
             "remote_app": {
-                "client_id": "{{ .client_id }}",
+                "client_id": "{{ $client_id }}",
                 "client_secret": "{{ .client_secret }}",
                 "server_metadata_url": "https://{{ .idp_server }}/oidc/.well-known",
                 'client_kwargs':{
@@ -141,8 +142,11 @@ data:
     WTF_CSRF_ENABLED = True
     WTF_CSRF_TIME_LIMIT = None
     AUTH_ROLES_MAPPING = {
-      {{- range $ldapGroup, $airflowRole := .role_mappings }}
+      {{- range $ldapGroupTpl, $airflowRole := .role_mappings }}
+      {{- $ldapGroup := include "evalValue" (dict "value" $ldapGroupTpl "Root" $) }}
+      {{- if $ldapGroup }}
       "cn={{ $ldapGroup }},ou=groups,dc=wikimedia,dc=org": {{ template "toPythonValue" (dict "value" $airflowRole) }},
+      {{- end }}
       {{- end }}
     }
     {{- end }}
@@ -259,7 +263,7 @@ data:
   sparse-checkout.conf: |
     !/*
     !/*/
-    /{{ $.Values.config.airflow.dags_folder }}/
+    /{{- include "evalValue" (dict "value" $.Values.config.airflow.dags_folder "Root" $) }}/
     {{- range $extra_dag_folder := $.Values.gitsync.extra_dags_folders }}
     /{{ $extra_dag_folder }}/
     {{- end }}

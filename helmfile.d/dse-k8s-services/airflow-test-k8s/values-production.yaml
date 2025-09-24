@@ -1,7 +1,8 @@
 config:
   airflow:
-    dags_folder: test_k8s
     instance_name: test-k8s
+    auth:
+      op_ldap_role: ~
     config:
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
@@ -14,7 +15,6 @@ config:
 
   oidc:
     idp_server: idp-test.wikimedia.org
-    client_id: airflow_test_k8s
 
 app: # the webserver
   requests:

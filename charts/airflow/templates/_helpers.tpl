@@ -66,6 +66,7 @@
 {{- end }}
 
 {{ define "app.airflow.env" }}
+{{- $krbPrincipal := include "evalValue" (dict "value" $.Values.config.airflow.config.kerberos.principal "Root" $) }}
 env:
 - name: SERVICE_IDENTIFIER
   value: {{ template "base.name.release" . }}
@@ -86,9 +87,9 @@ env:
     secretKeyRef:
       name: {{ $.Values.pgServiceName }}-app
       key: {{ $secret_data_name }}
+{{- end }}
 - name: POOLER_NAME
   value: {{ $.Values.pgServiceName }}-pooler-rw
-{{- end }}
 {{/*
   According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
   we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
@@ -118,15 +119,15 @@ env:
 {{- include "app.airflow.env.kerberos" (dict "Root" .) }}
 {{- if $.Values.devenv.enabled }}
 - name: AIRFLOW_APPOWNER
-  value: {{ index (splitList "@" $.Values.config.airflow.config.kerberos.principal) 0 }}
+  value: {{ index (splitList "@" $krbPrincipal) 0 }}
 {{- else }}
 - name: AIRFLOW_APPOWNER
-  value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 0 }}
+  value: {{ index (splitList "/" $krbPrincipal) 0 }}
 - name: AIRFLOW_KERBEROS_HOSTNAME
-  value: {{ index (splitList "/" $.Values.config.airflow.config.kerberos.principal) 1 }}
+  value: {{ index (splitList "/" $krbPrincipal) 1 }}
 {{- end }}
 - name: KRB5_PRINCIPAL
-  value: {{ $.Values.config.airflow.config.kerberos.principal }}
+  value: {{ $krbPrincipal }}
 {{- end }}
 {{- include "airflow.env.requests-ca-bundle" . }}
 {{- include "airflow.env.s3" . }}
@@ -392,7 +393,7 @@ env:
 {{- end }}
 
 {{- define "airflow.worker.extra-config-resource-name" -}}
-{{ template "release.name" .Root }}-worker-extra-configuration{{ .directory | replace "/" "-" }}
+{{ template "release.name" .Root }}-worker-{{ .directory | replace "/" "-" }}
 {{- end -}}
 
 {{- define "airflow.worker.extra-config-volumes" }}

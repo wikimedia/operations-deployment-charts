@@ -1,10 +1,6 @@
 config:
   airflow:
-    dags_folder: analytics_test
     instance_name: analytics-test
-    auth:
-      role_mappings:
-        airflow-analytics-ops: [Op]
     config:
       core:
         executor: KubernetesExecutor,LocalExecutor
@@ -21,8 +17,6 @@ config:
     - apiGroups: ["batch"]
       resources: ["jobs"]
       verbs: ["get"]
-  oidc:
-    client_id: airflow_analytics_test
 
 app:
   version: 2025-06-11-123150-aa24e2974c855c9c59c33dcd92b3310330b46272-airflow-refinery-0_2_65

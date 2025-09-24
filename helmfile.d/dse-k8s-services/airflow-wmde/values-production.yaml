@@ -1,15 +1,6 @@
 config:
   airflow:
-    dags_folder: wmde
     instance_name: wmde
-    auth:
-      role_mappings:
-        airflow-wmde-ops: [Op]
-    config:
-      kerberos:
-        principal: analytics-wmde/airflow-wmde.discovery.wmnet
-  oidc:
-    client_id: airflow_wmde
 
 ingress:
   gatewayHosts:
