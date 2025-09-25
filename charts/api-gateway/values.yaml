@@ -46,13 +46,37 @@ main_app:
   http_https_echo: false
   ratelimiter:
     enabled: false
+    # By default, Envoy will strip the wmf-user-id and wmf-user-class headers from the request to the ratelimit service.
+    # for testing purposes, we can allow them to be passed through by setting this to true.
+    allow_client_headers: false
     # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about
     # which ones would have been denied ("dry run").
     # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode
     shadow_mode: false
-    metrics_port: 9090
+    # The default value for the group key in the rate limit descriptor.
+    # This can be used to switch between different rate limiting regimes
+    # defined in _ratelimit.yaml.
+    # Individual routes can override this by setting the use_rate_limit_group value.
+    # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
+    default_policy: experiment-2025
+    # Whether routes need to opt into rate limiting.
+    # Individual routes can opt in or out by setting the apply_rate_limiting value.
+    # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
+    require_opt_in: false
+    # The rate limiting class to apply if the user identity is not know.
+    # This can be set to "no-limit" for testing, when we only want to enforce rate limits
+    # under special circumstances.
+    fallback_class: "anon"
+    # The name of a cookie that will be trusted to contain the user's identity for use in
+    # rate limiting. The empty string means trust no cookie. Trusting a cookie to contain
+    # the correct identity is generally unsafe, but can be good enough for testing and
+    # evaluation while a better source of truth (like a JWT) is not available.
+    # In WMF production, one useful value might be "centralauth_User".
+    user_id_cookie: ""
+
     # image version
     version: latest
+    metrics_port: 9090
     port: 8081
     requests:
       cpu: 200m

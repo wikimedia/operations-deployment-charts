@@ -1,15 +1,15 @@
 {{- define "config.app.cookie_to_metadata" }}
-  - cookie: {{ . }}
-    on_header_present:
-      metadata_namespace: envoy.wmf_cookies
-      key: {{ . }}
-      type: STRING
-    on_header_missing:
-      metadata_namespace: envoy.wmf_cookies
-      key: {{ . }}
-      value: '#NONE#' # Empty values are not allowed!
-      type: STRING
-    remove: false
+- cookie: {{ . }}
+  on_header_present:
+    metadata_namespace: envoy.wmf_cookies
+    key: {{ . }}
+    type: STRING
+  on_header_missing:
+    metadata_namespace: envoy.wmf_cookies
+    key: {{ . }}
+    value: '#NONE#' # Empty values are not allowed!
+    type: STRING
+  remove: false
 {{- end }}
 {{- define "config.app" }}
 # api gateway envoy config
@@ -217,12 +217,23 @@ static_resources:
 {{ include "apigateway.ratelimit_rules" . }}
 {{- end }}
 {{- if .Values.main_app.rest_gateway_routes }}
+          {{- if not .Values.main_app.ratelimiter.allow_client_headers }}
+          - name: envoy.filters.http.header_mutation
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.header_mutation.v3.HeaderMutation
+              mutations:
+                request_mutations: # strip headers used to decide how to ratelimit this request
+                  - remove: "x-wmf-user-id"
+                  - remove: "x-wmf-user-class"
+          {{- end }}
+          {{- if .Values.main_app.ratelimiter.user_id_cookie }}
           - name: envoy.filters.http.header_to_metadata
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.Config
               request_rules:
-                # make centralauth_User cookie available in Lua via metadata
-                {{ include "config.app.cookie_to_metadata" "centralauth_User" | indent 15 }}
+                # make a cookie for identifying the user available in Lua via metadata
+                {{ include "config.app.cookie_to_metadata" .Values.main_app.ratelimiter.user_id_cookie | indent 16 }}
+          {{- end }}
           - name: envoy.filters.http.lua
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua

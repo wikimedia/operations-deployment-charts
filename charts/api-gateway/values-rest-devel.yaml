@@ -1,7 +1,7 @@
 main_app:
   command: ~
   args: ["-l", "debug"]
-  version: "1.23.10-2-s4"
+  version: "1.26.8-1"
   http_https_echo: true
   access_log:
     #enabled: false
@@ -10,6 +10,7 @@ main_app:
 
   ratelimiter:
     shadow_mode: false
+    allow_client_headers: true
     anon_limit:
       requests_per_unit: 2
       unit: MINUTE
@@ -44,7 +45,7 @@ main_app:
           in: '(.+)/v1/page/summary/(.+)'
           out: '\1/v1/page/summary/\2'
       rb_response_headers: true
-      apply_rate_limiting: true
+      apply_rate_limiting: true # opt into applying rate limits (redundant when require_opt_in is false)
     - name: other_mobileapps
       cluster: mobileapps
       no_csp: true
@@ -53,7 +54,7 @@ main_app:
           in: '(.+)/v1/page/oh-no/(.+)/(.+)'
           out: '\1/v1/page/oh-no/\2/\3'
       rb_response_headers: false
-      apply_rate_limiting: true
+      apply_rate_limiting: false # opt out of applying rate limits (redundant when require_opt_in is true)
     - name: proton
       timeout: 150s
       ingress: true
@@ -70,6 +71,7 @@ main_app:
           in: '(.+)/v1/page/pdf/(.+)/(.+)/(.+)'
           out: '\1/v1/pdf/\2/\3/\4'
       rb_response_headers: true
+      use_rate_limit_policy: "experiment-2025-shadow" # use shadow rate limits (override ratelimiter.default_policy)
     - name: citoid
       timeout: 120s
       urls:
@@ -77,6 +79,7 @@ main_app:
           in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
       rb_response_headers: true
+      use_rate_limit_policy: "experiment-2025" # use enforced rate limits (override ratelimiter.default_policy)
 
   discovery_endpoints:
     mobileapps:
