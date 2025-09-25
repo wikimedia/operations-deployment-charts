@@ -103,6 +103,13 @@
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
+                {{- if $endpoint.no_csp }}
+                typed_per_filter_config:
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
+                {{- end }}
+
 {{- end }}
 {{- end }}
 {{- /* END rest_gateway_routes definition */}}

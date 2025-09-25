@@ -37,6 +37,7 @@ main_app:
       rb_response_headers: true
     - name: other_mobileapps
       cluster: mobileapps
+      no_csp: true
       urls:
         - name: random
           in: '(.+)/v1/page/oh-no/(.+)/(.+)'
