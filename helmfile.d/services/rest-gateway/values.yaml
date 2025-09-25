@@ -76,68 +76,62 @@ main_app:
   # PATH/PAGE. If you define a (.+) regex for PATH/PAGE *before*
   # PATH/PAGE/REVISION, this rule will get matched first and
   # PAGE/REVISION will be passed as a single capture group
-  #
-  # The routes for mobileapps, proton, citoid, wikifeeds, and mw-api-int
-  # get in: URIs that start with /$sitename/.
-  # The routes for mw-rest-php get in: URIs that start with /w/rest.php
-  # Given the strict ordering, we exclude the /w/rest.php from the previous
-  # routes with a [^/]+ match.
   rest_gateway_routes:
     - name: mobileapps
       timeout: 120s
       urls:
         #TODO tighten capture group criteria
         - name: ma_mobile_revision
-          in: '/([^/]+)/v1/page/mobile-html/(.+)/(.+)'
-          out: '/\1/v1/page/mobile-html/\2/\3'
+          in: '(.+)/v1/page/mobile-html/(.+)/(.+)'
+          out: '\1/v1/page/mobile-html/\2/\3'
         - name: ma_mobile_no_revision
-          in: '/([^/]+)/v1/page/mobile-html/(.+)'
-          out: '/\1/v1/page/mobile-html/\2'
+          in: '(.+)/v1/page/mobile-html/(.+)'
+          out: '\1/v1/page/mobile-html/\2'
         - name: ma_summary_revision
-          in: '/([^/]+)/v1/page/summary/(.+)/(.+)'
-          out: '/\1/v1/page/summary/\2/\3'
+          in: '(.+)/v1/page/summary/(.+)/(.+)'
+          out: '\1/v1/page/summary/\2/\3'
         - name: ma_summary_no_revision
-          in: '/([^/]+)/v1/page/summary/(.+)'
-          out: '/\1/v1/page/summary/\2'
+          in: '(.+)/v1/page/summary/(.+)'
+          out: '\1/v1/page/summary/\2'
         - name: ma_media_list_revision
-          in: '/([^/]+)/v1/page/media-list/(.+)/(.+)'
-          out: '/\1/v1/page/media-list/\2/\3'
+          in: '(.+)/v1/page/media-list/(.+)/(.+)'
+          out: '\1/v1/page/media-list/\2/\3'
         - name: ma_media_list_no_revision
-          in: '/([^/]+)/v1/page/media-list/(.+)'
-          out: '/\1/v1/page/media-list/\2'
+          in: '(.+)/v1/page/media-list/(.+)'
+          out: '\1/v1/page/media-list/\2'
         - name: ma_mobile_html_offline_resources
-          in: '/([^/]+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
-          out: '/\1/v1/page/mobile-html-offline-resources/\2/\3'
+          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)/(.+)'
+          out: '\1/v1/page/mobile-html-offline-resources/\2/\3'
         - name: ma_mobile_html_offline_resources_no_revision
-          in: '/([^/]+)/v1/page/mobile-html-offline-resources/(.+)'
-          out: '/\1/v1/page/mobile-html-offline-resources/\2'
+          in: '(.+)/v1/page/mobile-html-offline-resources/(.+)'
+          out: '\1/v1/page/mobile-html-offline-resources/\2'
         - name: ma_data_css_mobile
-          in: '/([^/]+)/v1/data/css/mobile/(.+)'
-          out: '/\1/v1/data/css/mobile/\2'
+          in: '(.+)/v1/data/css/mobile/(.+)'
+          out: '\1/v1/data/css/mobile/\2'
         - name: ma_data_javascript_mobile
-          in: '/([^/]+)/v1/data/javascript/mobile/(.+)'
-          out: '/\1/v1/data/javascript/mobile/\2'
+          in: '(.+)/v1/data/javascript/mobile/(.+)'
+          out: '\1/v1/data/javascript/mobile/\2'
         - name: ma_data_i18n
-          in: '/([^/]+)/v1/data/i18n/(.+)/(.+)'
-          out: '/\1/v1/data/i18n/\2/\3'
+          in: '(.+)/v1/data/i18n/(.+)/(.+)'
+          out: '\1/v1/data/i18n/\2/\3'
         - name: ma_data_i18n_no_revision
-          in: '/([^/]+)/v1/data/i18n/(.+)'
-          out: '/\1/v1/data/i18n/\2'
+          in: '(.+)/v1/data/i18n/(.+)'
+          out: '\1/v1/data/i18n/\2'
         - name: ma_page_talk
-          in: '/([^/]+)/v1/page/talk/(.+)/(.+)'
-          out: '/\1/v1/page/talk/\2/\3'
+          in: '(.+)/v1/page/talk/(.+)/(.+)'
+          out: '\1/v1/page/talk/\2/\3'
         - name: ma_page_talk_no_revision
-          in: '/([^/]+)/v1/page/talk/(.+)'
-          out: '/\1/v1/page/talk/\2'
+          in: '(.+)/v1/page/talk/(.+)'
+          out: '\1/v1/page/talk/\2'
         - name: ma_page_definition
-          in: '/([^/]+)/v1/page/definition/(.+)/(.+)'
-          out: '/\1/v1/page/definition/\2/\3'
+          in: '(.+)/v1/page/definition/(.+)/(.+)'
+          out: '\1/v1/page/definition/\2/\3'
         - name: ma_page_definition_no_revision
-          in: '/([^/]+)/v1/page/definition/(.+)'
-          out: '/\1/v1/page/definition/\2'
+          in: '(.+)/v1/page/definition/(.+)'
+          out: '\1/v1/page/definition/\2'
         - name: ma_transform_wikitext_mobile_html
-          in: '/([^/]+)/v1/transform/wikitext/to/mobile-html/(.+)'
-          out: '/\1/v1/transform/wikitext/to/mobile-html/\2'
+          in: '(.+)/v1/transform/wikitext/to/mobile-html/(.+)'
+          out: '\1/v1/transform/wikitext/to/mobile-html/\2'
       rb_response_headers: true
 
     - name: proton
@@ -145,14 +139,14 @@ main_app:
       urls:
         # Proton doesn't actually support not passing a format - restbase usually adds this
         - name: proton_title
-          in: '/([^/]+)/v1/page/pdf/([^/]+)'
+          in: '(.+)/v1/page/pdf/([^/]+)'
           out: '\1/v1/pdf/\2/a4'
         - name: proton_title_format
-          in: '/([^/]+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b'
-          out: '/\1/v1/pdf/\2/\3'
+          in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b'
+          out: '\1/v1/pdf/\2/\3'
         - name: proton_title_format_type
-          in: '/([^/]+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
-          out: '/\1/v1/pdf/\2/\3/\4'
+          in: '(.+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b/(.+)'
+          out: '\1/v1/pdf/\2/\3/\4'
       rb_response_headers: true
 
     - name: citoid
@@ -163,7 +157,7 @@ main_app:
           # It is assumed the URL will be properly encoded here - ie /
           # replaced by %2F if needs be
         - name: citoid_query
-          in: '/([^/]+)/v1/data/citation/(.+)/(.+)'
+          in: '(.+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
       rb_response_headers: true
 
@@ -171,29 +165,29 @@ main_app:
       timeout: 15s
       urls:
         - name: announcements
-          in: '/([^/]+)/v1/feed/announcements'
-          out: '/\1/v1/feed/announcements'
+          in: '(.+)/v1/feed/announcements'
+          out: '\1/v1/feed/announcements'
         - name: onthisday_all
-          in: '/([^/]+)/v1/feed/onthisday/all/(.+)/(.+)'
-          out: '/\1/v1/aggregated/onthisday/all/\2/\3'
+          in: '(.+)/v1/feed/onthisday/all/(.+)/(.+)'
+          out: '\1/v1/aggregated/onthisday/all/\2/\3'
         - name: onthisday
-          in: '/([^/]+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
-          out: '/\1/v1/feed/onthisday/\2/\3/\4'
+          in: '(.+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
+          out: '\1/v1/feed/onthisday/\2/\3/\4'
         - name: featured
-          in: '/([^/]+)/v1/feed/featured/(.+)/(.+)/(.+)'
-          out: '/\1/v1/aggregated/featured/\2/\3/\4'
+          in: '(.+)/v1/feed/featured/(.+)/(.+)/(.+)'
+          out: '\1/v1/aggregated/featured/\2/\3/\4'
         - name: availability
-          in: '/([^/]+)/v1/feed/availability'
-          out: '/\1/v1/feed/availability'
+          in: '(.+)/v1/feed/availability'
+          out: '\1/v1/feed/availability'
         - name: configuration
-          in: '/([^/]+)/v1/feed/configuration'
-          out: '/\1/v1/feed/configuration'
+          in: '(.+)/v1/feed/configuration'
+          out: '\1/v1/feed/configuration'
         - name: dyk
-          in: '/([^/]+)/v1/feed/did-you-know'
-          out: '/\1/v1/feed/did-you-know'
+          in: '(.+)/v1/feed/did-you-know'
+          out: '\1/v1/feed/did-you-know'
         - name: random
-          in: '/([^/]+)/v1/page/random/(.+)'
-          out: '/\1/v1/page/random/redirect/\2'
+          in: '(.+)/v1/page/random/(.+)'
+          out: '\1/v1/page/random/redirect/\2'
       rb_response_headers: true
 
     - name: geo-analytics
@@ -310,38 +304,35 @@ main_app:
         # In case a non URL encoded page with slashes is submitted, it's the
         # duty of MediaWiki to return the appropriate response (and MediaWiki
         # does return a 404)
-        #
-        # We ignore the sitename (first capture group) and the backend relies
-        # on the Host header to determine the site.
         - name: page-metadata-revision
-          in: '/([^/]+)/v1/page/title/([^\/]+)/(.+)'
+          in: '(.+)/v1/page/title/([^\/]+)/(.+)'
           out: '/w/rest.php/v1/revision/\3/bare'
         - name: page-metadata-title
-          in: '/([^/]+)/v1/page/title/(.+)'
+          in: '(.+)/v1/page/title/(.+)'
           out: '/w/rest.php/v1/page/\2/bare'
         - name: page-html-revision
-          in: '/([^/]+)/v1/page/html/([^\/]+)/(.+)'
+          in: '(.+)/v1/page/html/([^\/]+)/(.+)'
           out: '/w/rest.php/v1/revision/\3/html'
         - name: page-html-title
-          in: '/([^/]+)/v1/page/html/(.+)'
+          in: '(.+)/v1/page/html/(.+)'
           out: '/w/rest.php/v1/page/\2/html'
         - name: lint-revision
-          in: '/([^/]+)/v1/page/lint/([^\/]+)/(.+)'
+          in: '(.+)/v1/page/lint/([^\/]+)/(.+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2/\3'
         - name: lint-no-revision
-          in: '/([^/]+)/v1/page/lint/([^\/]+)'
+          in: '(.+)/v1/page/lint/([^\/]+)'
           out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
         - name: transform_wikitext_to_html
-          in: '/([^/]+)/v1/transform/wikitext/to/html(.*)'
+          in: '(.+)/v1/transform/wikitext/to/html(.*)'
           out: '/w/rest.php/v1/transform/wikitext/to/html\2'
         - name: transform_html_to_wikitext
-          in: '/([^/]+)/v1/transform/html/to/wikitext(.*)'
+          in: '(.+)/v1/transform/html/to/wikitext(.*)'
           out: '/w/rest.php/v1/transform/html/to/wikitext\2'
         # reading lists endpoint - supports all HTTP verbs for various options
         # Note use of * rather than + in regex - needed to match base
         # `/v1/data/lists/` requests which requires the trailing slash
         - name: lists
-          in: '/([^/]+)/v1/data/lists/(.*)'
+          in: '(.+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
       rb_response_headers: true
 
