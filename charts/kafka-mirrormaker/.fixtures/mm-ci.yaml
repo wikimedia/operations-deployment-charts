@@ -1,0 +1,9 @@
+config:
+  mm:
+    source: ci-codfw
+    target: ci-eqiad
+    topics: configMap.mediawiki.client.error
+external_services:
+  kafka:
+  - ci-codfw
+  - ci-eqiad

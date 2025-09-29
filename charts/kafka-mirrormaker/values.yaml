@@ -4,51 +4,73 @@
 app:
   image: repos/data-engineering/kafka
   version: latest # we use latest everywhere in the defaults.
-  port: &port 8083 # port exposed as a Service, also used by service-checker.
+  port: ~ # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
-  command: []
-  args: []
+  command: ["/opt/kafka/bin/kafka-mirror-maker.sh"]
+  args:
+  - --consumer.config=/etc/mirrormaker/consumer.properties
+  - --producer.config=/etc/mirrormaker/producer.properties
+  - --include="{{ $.Values.config.mm.topics }}"
+  - --num.streams={{ dig (splitList "-" $.Values.config.mm.source | first) "flags" "streams" $.Values.config.mm.flags.streams $.Values.config.mm }}
+  - --offset.commit.interval.ms={{ dig (splitList "-" $.Values.config.mm.source | first) "flags" "offset_commit_interval_ms" $.Values.config.mm.flags.offset_commit_interval_ms $.Values.config.mm }}
   requests:
-    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
-    memory: 200Mi # Just some sample, edit these
+    cpu: 4
+    memory: 8Gi
   limits:
-    cpu: 1 # Just some sample, edit these
-    memory: 400Mi # Just some sample, edit these
-  liveness_probe:
-    tcpSocket:
-      port: *port
-  readiness_probe:
-    httpGet:
-      path: /
-      port: *port
+    cpu: 4
+    memory: 8Gi
+
+  # mirrormaker does not expose ports
+  liveness_probe: {}
+  readiness_probe: {}
+
   # add here any volumes to mount onto the pod. Example:
-  #volumes:
-  #- name: scratchdir
-  #  emptyDir: {}
+  volumes:
+  - name: kafka-mirrormaker-config
+    configMap:
+      name: kafka-mirrormaker-config
   # add here any mounted volumes to make accessible to the container. Example:
-  #volumeMounts:
-  #   - name: scratchdir # the name from your volume above
-  #     mountPath: /scratch/ # where it should live in your container
+  volumeMounts:
+    - name: kafka-mirrormaker-config # the name from your volume above
+      mountPath: /etc/mirrormaker # where it should live in your container
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
-service:
-  deployment: minikube # valid values are "production" and "minikube"
-  port:
-    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
-    targetPort: *port # the number or name of the exposed port on the container
-    port: *port # the number of the port desired to be exposed to the cluster
-    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+service: {}
 
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  public: # Add here all the keys that can be publicly available through the environment
+    KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"
+    KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/mirrormaker/log4j.properties"
+    LOG_DIR: /tmp/logs
   private: {} # Add here all the keys that should be private but still available as env variables
+  mm:
+    source: override_me
+    target: override_me
+    topics: override_me
+    flags:
+      offset_commit_interval_ms: 60000
+      streams: 4
+    consumer:
+      exclude.internal.topics: true
+      max.partition.fetch.bytes: "12058624"
+      partition.assignment.strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
+      security.protocol: SSL
+      ssl.truststore.type: PEM
+      ssl.truststore.location: /etc/ssl/certs/ca-certificates.crt
+    producer:
+      acks: all
+      compression.type: snappy
+      linger.ms: 1000
+      max.request.size: "12058624"
+      security.protocol: SSL
+      ssl.truststore.type: PEM
+      ssl.truststore.location: /etc/ssl/certs/ca-certificates.crt
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

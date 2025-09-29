@@ -7,11 +7,13 @@
   image: {{ template "app.generic._image" . }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- include "app.generic._command" . | indent 2 }}
+  {{- if or (.Values.app.port )}}
   ports:
     - containerPort: {{ .Values.app.port }}
   {{- with .Values.app.metricsPort }}
     - containerPort: {{ . }}
       name: app-metrics
+  {{- end }}
   {{- end }}
   {{- if .Values.debug.enabled }}
   {{- range .Values.debug.ports }}
@@ -145,7 +147,7 @@ command:
 {{- if .Values.app.args }}
 args:
   {{- range .Values.app.args }}
-  - {{ . | quote }}
+  - {{ tpl . $ | quote }}
   {{- end }}
 {{- end }}
 {{- end -}}
