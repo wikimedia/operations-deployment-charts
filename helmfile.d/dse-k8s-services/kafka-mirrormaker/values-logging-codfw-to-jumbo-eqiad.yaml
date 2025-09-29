@@ -1,0 +1,9 @@
+config:
+  mm:
+    source: logging-codfw
+    target: jumbo-eqiad
+    topics: 'codfw\..*'
+external_services:
+  kafka:
+  - logging-codfw
+  - jumbo-eqiad

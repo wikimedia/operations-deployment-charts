@@ -1,0 +1,9 @@
+config:
+  mm:
+    source: logging-eqiad
+    target: jumbo-eqiad
+    topics: 'eqiad\..*'
+external_services:
+  kafka:
+  - logging-eqiad
+  - jumbo-eqiad
