@@ -360,3 +360,7 @@ namespaces:
         max:
           memory: "20Gi"
           cpu: "12"
+  kafka-mirrormaker:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
