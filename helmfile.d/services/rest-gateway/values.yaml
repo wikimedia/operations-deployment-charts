@@ -140,7 +140,7 @@ main_app:
         # Proton doesn't actually support not passing a format - restbase usually adds this
         - name: proton_title
           in: '/+([^/]+)/v1/page/pdf/([^/]+)'
-          out: '\1/v1/pdf/\2/a4'
+          out: '/\1/v1/pdf/\2/a4'
         - name: proton_title_format
           in: '/+([^/]+)/v1/page/pdf/(.+)/\b(a4|legal|letter)\b'
           out: '/\1/v1/pdf/\2/\3'
