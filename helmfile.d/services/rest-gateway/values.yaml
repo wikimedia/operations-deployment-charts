@@ -18,6 +18,10 @@ main_app:
     cpu: ~
     memory: ~
 
+  jwt:
+    enabled: true
+    issuer: https://meta.wikimedia.org
+
   ratelimiter:
     # Disable cpu/ram limits
     limits:
@@ -66,6 +70,10 @@ main_app:
           #MINUTE: 100
           #SECOND: 10
         "cookie-user":
+          HOUR: 5000
+          #MINUTE: 300
+          #SECOND: 50
+        "jwt-user":
           HOUR: 5000
           #MINUTE: 600
           #SECOND: 10
