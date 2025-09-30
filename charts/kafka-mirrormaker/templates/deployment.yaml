@@ -6,6 +6,8 @@ spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
   replicas: {{ .Values.resources.replicas }}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

@@ -15,8 +15,8 @@ app:
   - --consumer.config=/etc/mirrormaker/consumer.properties
   - --producer.config=/etc/mirrormaker/producer.properties
   - --include="{{ $.Values.config.mm.topics }}"
-  - --num.streams={{ dig (splitList "-" $.Values.config.mm.source | first) "flags" "streams" $.Values.config.mm.flags.streams $.Values.config.mm }}
-  - --offset.commit.interval.ms={{ dig (splitList "-" $.Values.config.mm.source | first) "flags" "offset_commit_interval_ms" $.Values.config.mm.flags.offset_commit_interval_ms $.Values.config.mm }}
+  - --num.streams={{ $.Values.config.mm.flags.streams }}
+  - --offset.commit.interval.ms={{ $.Values.config.mm.flags.offset_commit_interval_ms }}
   requests:
     cpu: 4
     memory: 8Gi
