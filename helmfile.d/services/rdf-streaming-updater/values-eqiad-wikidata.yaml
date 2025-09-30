@@ -11,10 +11,10 @@ app:
       subgraph_kafka_topics.rdf-streaming-updater.mutation-main: "eqiad.rdf-streaming-updater.mutation-main"
       reconciliation_stream: rdf-streaming-updater.reconcile[wdqs_sideoutputs_reconcile@eqiad]
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-eqiad/wikidata/PLACEHOLDER
+    initialSavepointPath: s3://rdf-streaming-updater-eqiad/wikidata/savepoints/savepoint-d49382-740d0c8bb33d
     # savepointTriggerNonce triggers a savepoint; see
     # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
     # custom-resource/job-management/#manual-savepoint-triggering
     # for more details
     savepointTriggerNonce: 216
-    state: suspended
+    state: running

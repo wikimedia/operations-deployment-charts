@@ -9,10 +9,10 @@ app:
       output_topic: eqiad.mediainfo-streaming-updater.mutation
       reconciliation_stream: rdf-streaming-updater.reconcile[wcqs_sideoutputs_reconcile@eqiad]
   job:
-    initialSavepointPath: s3://rdf-streaming-updater-eqiad/commons/PLACEHOLDER
+    initialSavepointPath: s3://rdf-streaming-updater-eqiad/commons/savepoints/savepoint-4593ac-ac6ecda232e0
     # savepointTriggerNonce triggers a savepoint; see
     # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.6/docs/
     # custom-resource/job-management/#manual-savepoint-triggering
     # for more details
     savepointTriggerNonce: 216
-    state: suspended
+    state: running
