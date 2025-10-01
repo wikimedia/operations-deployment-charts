@@ -1,0 +1,73 @@
+
+{{- /*
+Allow all executor pods to access the block manager and spark driver ports
+on all driver pods in each of the job namespaces.
+*/}}
+{{ range $jobNamespace := $.Values.spark.jobNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-executor-to-driver
+  namespace: {{ $jobNamespace }}
+  labels:
+    {{- include "spark-operator.labels" $ | nindent 4 }}
+spec:
+  selector: 'spark-role == "driver"'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: 'spark-role == "executor"'
+      destination:
+        ports:
+          - 7078 # Driver port
+          - 7079 # Block manager port
+{{- end }}
+
+{{- /*
+Allow the executor pods to contact each other on the block manager port
+in each of the job namespaces. This is required when performing data shuffling.
+*/}}
+{{ range $jobNamespace := $.Values.spark.jobNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-executor-to-executor
+  namespace: {{ $jobNamespace }}
+  labels:
+    {{- include "spark-operator.labels" $ | nindent 4 }}
+spec:
+  selector: 'spark-role == "executor"'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: 'spark-role == "executor"'
+      destination:
+        ports:
+          - 7079 # Block manager port
+{{- end }}
+
+{{- /*
+Allow spark-driver pods to query the K8s API from each of the job namespaces.
+*/}}
+{{ range $jobNamespace := $.Values.spark.jobNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-driver-k8s-api
+  namespace: {{ $jobNamespace }}
+  labels:
+    {{- include "spark-operator.labels" $ | nindent 4 }}
+spec:
+  selector: 'spark-role == "driver"'
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+{{- end }}

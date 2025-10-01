@@ -1,0 +1,19 @@
+
+{{- /*
+Allow the spark-operator controller component to contact the k8s API
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "spark-operator.name" . }}-k8s-api
+  labels:
+    {{- include "spark-operator.labels" . | nindent 4 }}
+spec:
+  selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'controller'"
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default

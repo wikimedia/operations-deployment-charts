@@ -1,0 +1,54 @@
+{{- /*
+Allow the K8S API to call the spark operator mutating webhook.
+*/}}
+{{- if .Values.webhook.enable }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "spark-operator.name" . }}-webhook-k8s-api
+  labels:
+    {{- include "spark-operator.labels" . | nindent 4 }}
+spec:
+  selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'webhook'"
+  ingress:
+  - action: Allow
+    destination:
+      services:
+        name: {{ include "spark-operator.webhook.name" . }}
+        namespace: {{ .Release.Namespace }}
+    protocol: TCP
+    source:
+        services:
+          name: kubernetes
+          namespace: default
+{{- end }}
+
+{{- /*
+Allow the spark-operator webhook to access the driver port on each spark driver pod
+in each of the job namespaces. This is needed in order the mutating webhook to change the
+driver pod spec dynamically.
+*/}}
+{{- if .Values.webhook.enable }}
+{{ range $jobNamespace := $.Values.spark.jobNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-operator-webhook-to-driver
+  namespace: {{ $jobNamespace }}
+  labels:
+    {{- include "spark-operator.labels" $ | nindent 4 }}
+spec:
+  selector: 'spark-role == "driver"'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'webhook'"
+        namespaceSelector: 'kubernetes.io/metadata.name == "{{ $.Release.Namespace }}"'
+      destination:
+        ports:
+          - 7078 # Driver port
+{{- end }}
+{{- end }}
