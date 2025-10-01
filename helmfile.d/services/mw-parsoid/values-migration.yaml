@@ -10,9 +10,10 @@ resources:
 # deployment speed if the migration release is using a different mediawiki
 # image than main (as the image is then unlikely to be cached).
 # See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
-#strategy:
-#  rollingUpdate:
-#    maxUnavailable: 20%
+# TODO: T405955 - Temporarily increase maxUnavailable.
+strategy:
+  rollingUpdate:
+    maxUnavailable: 20%
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
