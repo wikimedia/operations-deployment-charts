@@ -16,6 +16,12 @@ main_app:
   limits:
     cpu: 4
     memory: 2048Mi
+  pregen_requests:
+    cpu: 200m
+    memory: 512Mi
+  pregen_limits:
+    cpu: 8
+    memory: 2048Mi
   postgres:
     user: tilerator
     host: localhost

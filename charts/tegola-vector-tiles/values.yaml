@@ -15,6 +15,12 @@ main_app:
   limits:
     cpu: 1m
     memory: 400Mi
+  pregen_requests:
+    cpu: 1m
+    memory: 200Mi
+  pregen_limits:
+    cpu: 1m
+    memory: 400Mi
   liveness_probe:
     tcpSocket:
       port: 8080

@@ -56,9 +56,9 @@ spec:
                 mountPath: /etc/tegola
             resources:
               requests:
-{{ toYaml .Values.main_app.requests | indent 16 }}
+{{ toYaml .Values.main_app.pregen_requests | indent 16 }}
               limits:
-{{ toYaml .Values.main_app.limits | indent 16 }}
+{{ toYaml .Values.main_app.pregen_limits | indent 16 }}
             {{- include "base.helper.restrictedSecurityContext" . | indent 12}}
           {{- include "mesh.deployment.container" . | indent 10}}
           volumes:
