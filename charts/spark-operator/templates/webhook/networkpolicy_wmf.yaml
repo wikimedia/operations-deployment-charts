@@ -1,26 +1,6 @@
 {{- /*
-Allow the spark-operator webhook component to contact the k8s API
+Allow the spark-operator webhook component to contact the k8s API and vice-versa.
 */}}
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "spark-operator.name" . }}-webhook-k8s-api
-  labels:
-    {{- include "spark-operator.labels" . | nindent 4 }}
-spec:
-  selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'webhook'"
-  egress:
-    - action: Allow
-      destination:
-        services:
-          name: kubernetes
-          namespace: default
-
-{{- /*
-Allow the K8S API to call the spark operator mutating webhook.
-*/}}
-{{- if .Values.webhook.enable }}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -41,7 +21,12 @@ spec:
         services:
           name: kubernetes
           namespace: default
-{{- end }}
+  egress:
+  - action: Allow
+    destination:
+      services:
+        name: kubernetes
+        namespace: default
 
 {{- /*
 Allow the spark-operator webhook to access the driver port on each spark driver pod
