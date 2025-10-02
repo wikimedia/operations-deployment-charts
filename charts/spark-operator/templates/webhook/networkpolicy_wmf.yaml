@@ -14,7 +14,7 @@ spec:
   - action: Allow
     destination:
       services:
-        name: {{ include "spark-operator.webhook.name" . }}
+        name: {{ include "spark-operator.webhook.serviceName" . }}
         namespace: {{ .Release.Namespace }}
     protocol: TCP
     source:
