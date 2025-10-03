@@ -11,8 +11,8 @@ spark:
 certManager:
   enable:
     true
-  issuerRef:
-    # This references the cfssl ClusterIssuer "discovery" defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
-    name: discovery
-    group: cfssl-issuer.wikimedia.org
-    kind: ClusterIssuer
+  # issuerRef:
+  #   # This references the cfssl ClusterIssuer "discovery" defined in admin_ng/cert-manager/cfssl-issuer-values.yaml
+  #   name: discovery
+  #   group: cfssl-issuer.wikimedia.org
+  #   kind: ClusterIssuer
