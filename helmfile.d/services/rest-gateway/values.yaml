@@ -285,11 +285,12 @@ main_app:
           out: '/metrics/commons-analytics/\1'
       rb_response_headers: true
 
-    - name: mw-api-int
+    - name: mw-api-ext
       timeout: 15s
       request_headers_to_add:
         - key: x-restbase-compat
           value: true
+      stat_prefix: restbase_compat
       urls:
         # T374683
         # NOTE: Revision regexps come first as the title regexps are broad
@@ -338,7 +339,7 @@ main_app:
 
     - name: mw-rest-php
       timeout: 15s
-      # This set of routes uses the same cluster as mw-api-int - however
+      # This set of routes uses the same cluster as mw-api-ext - however
       # it does NOT use the restbase compability headers as this will
       # lead to incorrect responses from the mw APIs.
 
@@ -346,7 +347,7 @@ main_app:
       # we will either need to put in a more specific set of headers
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
-      cluster: mw-api-int
+      cluster: mw-api-ext
       no_csp: true
       urls:
         # *** BEGIN rest.php APIs ***
@@ -484,9 +485,9 @@ main_app:
       ingress: true
       port: 30443 # ingress
       tls: true
-    mw-api-int:
+    mw-api-ext:
       tls: true
-      port: 4446
+      port: 4447
 
 service:
   deployment: production
@@ -605,11 +606,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4972
-    - cidr: 10.2.2.81/32 # mw-api-int.discovery.wmnet (eqiad)
+    - cidr: 10.2.2.76/32 # mw-api-ext.discovery.wmnet (eqiad)
       ports:
         - protocol: tcp
           port: 4446
-    - cidr: 10.2.1.81/32 # mw-api-int.discovery.wmnet (codfw)
+    - cidr: 10.2.1.76/32 # mw-api-ext.discovery.wmnet (codfw)
       ports:
         - protocol: tcp
           port: 4446

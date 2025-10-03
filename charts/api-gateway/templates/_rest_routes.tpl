@@ -28,7 +28,11 @@
                       exact: '{{ $endpoint.domain }}'
                   {{- end }}
                 {{- if not $route.disable_route_stats }}
+                {{- if $endpoint.stat_prefix }}
+                stat_prefix: {{ $endpoint.stat_prefix }}_{{ $route.name }}
+                {{- else }}
                 stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
+                {{- end }}
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
