@@ -17,3 +17,30 @@ spec:
         services:
           name: kubernetes
           namespace: default
+
+{{- /*
+Allow the spark-operator controller to access the driver port on each spark driver pod
+in each of the job namespaces. This is needed in order for the controller to change the
+driver pod spec dynamically.
+*/}}
+{{ range $jobNamespace := $.Values.spark.jobNamespaces }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-operator-controller-to-driver
+  namespace: {{ $jobNamespace }}
+  labels:
+    {{- include "spark-operator.labels" $ | nindent 4 }}
+spec:
+  selector: 'spark-role == "driver"'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'controller'"
+        namespaceSelector: 'kubernetes.io/metadata.name == "{{ $.Release.Namespace }}"'
+      destination:
+        ports:
+          - 7078 # Driver port
+{{- end }}

@@ -30,7 +30,7 @@ spec:
 
 {{- /*
 Allow the spark-operator webhook to access the driver port on each spark driver pod
-in each of the job namespaces. This is needed in order the mutating webhook to change the
+in each of the job namespaces. This is needed in order for the mutating webhook to change the
 driver pod spec dynamically.
 */}}
 {{- if .Values.webhook.enable }}
