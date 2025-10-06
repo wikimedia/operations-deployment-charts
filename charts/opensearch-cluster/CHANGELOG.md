@@ -14,6 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 ---
 
+## [0.0.2]
+### Added
+### Changed
+- Add `secret.yaml` template for rendering secrets. See [the upstream docs](https://github.com/opensearch-project/opensearch-k8s-operator/blob/v2.7.0/docs/userguide/main.md#securityconfig) for more details on how we must implement secrets, and `./fixtures/secret.yaml` for an idea of what the values look like.
+- Add `networkpolicy_wmf.yaml`, which allows ingress to the pods.
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [0.0.1]
+### Added
+### Changed
+- - **WMF-specific changes.** This is the first version of the chart modified for WMF; see
+[the chart review on Wikitech](https://wikitech.wikimedia.org/wiki/Helm/Upstream_Charts/opensearch-operator) for more details.
+### Deprecated
+### Removed
+### Fixed
+### Security
+
 ## [2.6.1]
 ### Added
 ### Changed
@@ -25,4 +45,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/opensearch-project/opensearch-k8s-operator/compare/opensearch-operator-2.6.1...HEAD
 [2.6.1]: https://github.com/opensearch-project/opensearch-k8s-operator/compare/opensearch-operator-2.6.0...opensearch-operator-2.6.1
-

@@ -1,0 +1,17 @@
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector: 'has(opster.io/opensearch-cluster)'
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: 'kubernetes.io/metadata.name == "{{ $.Release.Namespace }}"'
+      destination:
+        ports:
+          # REST API
+          - 9200
+          # transport (cluster state)
+          - 9300

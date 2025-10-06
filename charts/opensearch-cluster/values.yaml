@@ -93,3 +93,15 @@ opensearchCluster:
         generate: true
       http:
         generate: true
+# begin WMF-specific config
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: true
+
+config:
+# secrets live here; they are merged via helmfile. See also .fixtures/secrets.yaml
+  private:
+    username: secret
+    password: secret
+    hashed_password: secret
