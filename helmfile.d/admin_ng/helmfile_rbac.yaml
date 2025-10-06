@@ -48,6 +48,11 @@ releases:
               resources: ["opensearchactiongroups", "opensearchclusters", "opensearchcomponenttemplates", "opensearchindextemplates", "opensearchismpolicies", "opensearchroles", "opensearchsnapshotpolicies", "opensearchtenants", "opensearchuserrolebindings", "opensearchusers"]
               verbs: ["get", "list", "watch"]
             {{- end }}
+            {{- if hasKey .Environment.Values "install_spark_operator" }}
+            - apiGroups: ["sparkoperator.k8s.io"]
+              resources: ["sparkapplications", "sparkapplications/status", "scheduledsparkapplications", "scheduledsparkapplications/status"]
+              verbs: ["get", "list", "watch"]
+            {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["get", "list", "watch"]
@@ -131,6 +136,11 @@ releases:
             {{- if hasKey .Environment.Values "install_opensearch_operator" }}
             - apiGroups: ["opensearch.opster.io"]
               resources: ["opensearchactiongroups", "opensearchclusters", "opensearchcomponenttemplates", "opensearchindextemplates", "opensearchismpolicies", "opensearchroles", "opensearchsnapshotpolicies", "opensearchtenants", "opensearchuserrolebindings", "opensearchusers"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey .Environment.Values "install_spark_operator" }}
+            - apiGroups: ["sparkoperator.k8s.io"]
+              resources: ["sparkapplications", "sparkapplications/status", "scheduledsparkapplications", "scheduledsparkapplications/status"]
               verbs: ["*"]
             {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
@@ -306,22 +316,6 @@ releases:
           - apiGroup: rbac.authorization.k8s.io
             kind: User
             name: experimental-debug
-      {{- end }}
-      {{- if eq . "sparkapplications" }}
-        ## Used by deploy users
-        ## Spark deploy users need to be able to create SparkApplication and
-        ## ScheduledSparkApplication objects in the spark namespace.
-        - apiVersion: rbac.authorization.k8s.io/v1
-          kind: ClusterRole
-          metadata:
-            name: deploy-sparkapplications
-          rules:
-            - apiGroups: ["sparkoperator.k8s.io"]
-              resources: ["sparkapplications", "scheduledsparkapplications"]
-              verbs: ["*"]
-            - apiGroups: ["sparkoperator.k8s.io"]
-              resources: ["sparkapplications/status", "scheduledsparkapplications/status"]
-              verbs: ["get"]
       {{- end }}
       {{- end }}
         ## Used by prometheus and rsyslog
