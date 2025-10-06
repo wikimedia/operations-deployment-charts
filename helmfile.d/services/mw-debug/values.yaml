@@ -9,6 +9,10 @@ main_app:
     memory: 2800Mi
 resources:
   replicas: 2
+strategy:
+  rollingUpdate:
+    maxUnavailable: 100%
+    maxSurge: 100%
 
 service:
   deployment: production
