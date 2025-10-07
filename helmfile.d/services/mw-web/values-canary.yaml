@@ -9,10 +9,7 @@ service:
 
 resources:
   # 3% of main replicas, rounded up
-  replicas: 9
-  # Estimated sizing when serving from a single DC, as of September 2024. See
-  # T371273 for methodology.
-  #replicas: 12
+  replicas: 11
 
 # There is no point for a rolling release for canaries, recreate them T375477
 strategy:
