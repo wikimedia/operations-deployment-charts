@@ -54,14 +54,313 @@ main_app:
     - wikipedia.org
     # required for service mesh
     - "localhost:6033"
+  ratelimiter:
+    enabled: true
+    shadow_mode: false
+    lua_hook_enabled: true
+    version: 9.0.3-20250704.bf8fb04
+    log_level: debug
+    redis_host: localhost
+    redis_port: 6380
+    key_prefix: "restgw"
+    key_log_format: "%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_class)%:%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_id)%"
+    envoy_timeout: 0.5
+    anon_limit:
+      requests_per_unit: 3
+      unit: MINUTE
+    default_limit:
+      requests_per_unit: 10
+      unit: MINUTE
 
   access_log:
     debug: true
 
+
+  rest_gateway_routes:
+    - name: mobileapps
+      timeout: 120s
+      urls:
+        #TODO tighten capture group criteria
+        - name: ma_summary_no_revision
+          in: '/+([^/]+)/v1/page/summary/(.+)'
+          out: '/\1/v1/page/summary/\2'
+        - name: ma_transform_wikitext_mobile_html
+          in: '/+([^/]+)/v1/transform/wikitext/to/mobile-html/(.+)'
+          out: '/\1/v1/transform/wikitext/to/mobile-html/\2'
+      rb_response_headers: true
+      apply_rate_limiting: false
+
+    - name: proton
+      timeout: 150s
+      urls:
+        # Proton doesn't actually support not passing a format - restbase usually adds this
+        - name: proton_title
+          in: '/+([^/]+)/v1/page/pdf/([^/]+)'
+          out: '/\1/v1/pdf/\2/a4'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: citoid
+      timeout: 120s
+      ingress: true
+      urls:
+          # We ignore the sitename (first matching group).
+          # It is assumed the URL will be properly encoded here - ie /
+          # replaced by %2F if needs be
+        - name: citoid_query
+          in: '/+([^/]+)/v1/data/citation/(.+)/(.+)'
+          out: '/\2/\3'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: wikifeeds
+      timeout: 15s
+      urls:
+        - name: random
+          in: '/+([^/]+)/v1/page/random/(.+)'
+          out: '/\1/v1/page/random/redirect/\2'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: geo-analytics
+      timeout: 15s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/editors/by-country/api-spec.json'
+          out: '/geo-analytics/api-spec.json'
+        - name: geo-editors
+          in: '/+wikimedia.org/v1/metrics/editors/by-country/(.+)'
+          out: '/metrics/editors/by-country/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: media-analytics
+      timeout: 15s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/mediarequests/api-spec.json'
+          out: '/mediarequests/api-spec.json'
+        - name: mediarequests
+          in: '/+wikimedia.org/v1/metrics/mediarequests/(.+)'
+          out: '/metrics/mediarequests/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: edit-analytics
+      timeout: 5s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/edits/api-spec.json'
+          out: '/edit-analytics/api-spec.json'
+        - name: edits
+          in: '/+wikimedia.org/v1/metrics/edits/(.+)'
+          out: '/metrics/edits/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: editor-analytics
+      timeout: 5s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/editors/api-spec.json'
+          out: '/editors/api-spec.json'
+        - name: edits
+          in: '/+wikimedia.org/v1/metrics/editors/(.+)'
+          out: '/metrics/editors/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: page-analytics
+      timeout: 5s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/pageviews/api-spec.json'
+          out: '/page-analytics/api-spec.json'
+        - name: pageviews
+          in: '/+wikimedia.org/v1/metrics/pageviews/(.+)'
+          out: '/metrics/pageviews/\1'
+        - name: legacy
+          in: '/+wikimedia.org/v1/metrics/legacy/(.+)'
+          out: '/metrics/legacy/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: device-analytics
+      timeout: 15s
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/unique-devices/api-spec.json'
+          out: '/device-analytics/api-spec.json'
+        - name: unique-devices
+          in: '/+wikimedia.org/v1/metrics/unique-devices/(.+)'
+          out: '/metrics/unique-devices/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: commons-impact-analytics
+      timeout: 15s
+      ingress: true
+      urls:
+        - name: api-spec
+          in: '/+wikimedia.org/v1/metrics/commons-analytics/api-spec.json'
+          out: '/commons-impact-analytics/api-spec.json'
+        - name: commons-analytics
+          in: '/+wikimedia.org/v1/metrics/commons-analytics/(.+)'
+          out: '/metrics/commons-analytics/\1'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: mw-api-ext
+      timeout: 15s
+      request_headers_to_add:
+        - key: x-restbase-compat
+          value: true
+      stat_prefix: restbase-compat
+      urls:
+        # T374683
+        # NOTE: Revision regexps come first as the title regexps are broad
+        # enough to match the revision ones as well, ordering to the rescue
+        # NOTE: The REST gateway, in the same spirit as RESTBase before it,
+        # assumes the caller will be URL encoding the page titles so that if
+        # they have slashes in them.
+        #
+        # e.g. Foo/Bar/Baz should become Foo%2FBar%2FBaz
+        #
+        # before reaching REST gateway.
+        # In case a non URL encoded page with slashes is submitted, it's the
+        # duty of MediaWiki to return the appropriate response (and MediaWiki
+        # does return a 404)
+        - name: page-html-title
+          in: '/+([^/]+)/v1/page/html/(.+)'
+          out: '/w/rest.php/v1/page/\2/html'
+        - name: lint-no-revision
+          in: '/+([^/]+)/v1/page/lint/([^\/]+)'
+          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
+        - name: transform_html_to_wikitext
+          in: '/+([^/]+)/v1/transform/html/to/wikitext(.*)'
+          out: '/w/rest.php/v1/transform/html/to/wikitext\2'
+        # reading lists endpoint - supports all HTTP verbs for various options
+        # Note use of * rather than + in regex - needed to match base
+        # `/v1/data/lists/` requests which requires the trailing slash
+        - name: lists
+          in: '/+([^/]+)/v1/data/lists/(.*)'
+          out: '/w/rest.php/readinglists/v0/lists/\2'
+      rb_response_headers: true
+      apply_rate_limiting: true
+
+    - name: mw-rest-php
+      timeout: 15s
+      # This set of routes uses the same cluster as mw-api-ext - however
+      # it does NOT use the restbase compability headers as this will
+      # lead to incorrect responses from the mw APIs.
+
+      # These routes also do not use the restbase response headers as
+      # we will either need to put in a more specific set of headers
+      # befitting the mw apis, or to simply defer to the headers
+      # mediawiki sends.
+      cluster: mw-api-ext
+      no_csp: true
+      urls:
+        # *** BEGIN rest.php APIs ***
+        # oauth
+        - name: oauth2
+          in: '/+w/rest.php/oauth2(.*)'
+          out: '/w/rest.php/oauth2\1'
+        # sitemap
+        - name: sitemap
+          in: '/+w/rest.php/site/v1/sitemap(.*)'
+          out: '/w/rest.php/site/v1/sitemap\1'
+        - name: page
+          in: '/+w/rest.php/v1/page(.*)'
+          out: '/w/rest.php/v1/page\1'
+        - name: search
+          in: '/+w/rest.php/v1/search(.*)'
+          out: '/w/rest.php/v1/search\1'
+        # transforms - NOTE: these do not overlap (even if they
+        # mirror) the existing restbase rules. restbase rules rewrite
+        # restbase paths to use the same paths. Both are needed
+        - name: transform
+          in: '/+w/rest.php/v1/transform(.*)'
+          out: '/w/rest.php/v1/transform\1'
+        # wikifunctions
+        - name: wikifunctions
+          in: '/+w/rest.php/wikifunctions(.*)'
+          out: '/w/rest.php/wikifunctions\1'
+        - name: specs
+          in: '/+w/rest.php/specs(.*)'
+          out: '/w/rest.php/specs\1'
+        # This case catches remaining rest.php traffic that is not
+        # matched by any existing rule. This shouldn't be something we
+        # hit, and if it is regularly hit it should be investigated to
+        # add suitable rules.
+        - name: rest_php_unmatched
+          in: '/+w/rest.php(.*)'
+          out: '/w/rest.php\1'
+        # *** END rest.php APIs ***
+      apply_rate_limiting: true
+
   discovery_endpoints:
+    citoid:
+      ingress: true
+      port: 30443 # ingress
+      tls: true
+      internal_host: citoid.k8s-staging.discovery.wmnet
     geo-analytics:
       internal_host: geo-analytics.k8s-staging.discovery.wmnet
+      tls: true
+      port: 30443
     media-analytics:
       internal_host: media-analytics.k8s-staging.discovery.wmnet
-    citoid:
-      internal_host: citoid.k8s-staging.discovery.wmnet
+      tls: true
+      port: 30443
+    mobileapps:
+      internal_host: mobileapps.k8s-staging.discovery.wmnet
+      tls: true
+      port: 30443
+    proton:
+      internal_host: proton.k8s-staging.discovery.wmnet
+      tls: true
+      port: 30443
+    wikifeeds:
+      internal_host: wikifeeds.k8s-staging.discovery.wmnet
+      tls: true
+      port: 4101
+    device-analytics:
+      internal_host: device-analytics.k8s-staging.discovery.wmnet
+      port: 30443
+      tls: true
+    page-analytics:
+      internal_host: page-analytics.k8s-staging.discovery.wmnet
+      port: 30443
+      tls: true
+    edit-analytics:
+      internal_host: edit-analytics.k8s-staging.discovery.wmnet
+      port: 30443
+      tls: true
+    editor-analytics:
+      internal_host: editor-analytics.k8s-staging.discovery.wmnet
+      port: 30443
+      tls: true
+    commons-impact-analytics:
+      internal_host: commons-impact-analytics.k8s-staging.discovery.wmnet
+      port: 30443
+      tls: true
+    mw-api-ext:
+      tls: true
+      port: 4447
+
+nutcracker:
+  enabled: true
+  version: 0.0.4
+  servers:
+    - rdb1011.eqiad.wmnet:6379:1 "cp-1"
+    - rdb1013.eqiad.wmnet:6379:1 "cp-2"
+
+# Only used by ratelimiter for metrics - envoy uses prometheus native metrics
+monitoring:
+  enabled: true
