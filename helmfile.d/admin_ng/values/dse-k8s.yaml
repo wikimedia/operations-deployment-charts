@@ -109,7 +109,9 @@ namespaces:
       istio-injection: disabled
   sidecar-controller:
     systemNamespace: true
-  analytics-test: {}
+  analytics-test:
+    labels:
+      istio-injection: disabled
   opensearch-test: {}
   opensearch-ipoid: {}
   opensearch-ipoid-test: {}
