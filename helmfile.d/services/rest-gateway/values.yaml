@@ -433,6 +433,9 @@ main_app:
         - name: specs
           in: '/+w/rest.php/specs(.*)'
           out: '/w/rest.php/specs\1'
+        - name: wikibase
+          in: '/+w/rest.php/wikibase(.*)'
+          out: '/w/rest.php/wikibase\1'
         # This case catches remaining rest.php traffic that is not
         # matched by any existing rule. This shouldn't be something we
         # hit, and if it is regularly hit it should be investigated to
