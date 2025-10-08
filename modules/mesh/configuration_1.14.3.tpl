@@ -365,7 +365,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 envoy_grpc:
                   cluster_name: otel_collector
                 timeout: 0.250s
-              service_name: {{ .Values.mesh.tracing.service_name | default .Release.Name }}
+              service_name: {{ .Values.mesh.tracing.service_name | default .Release.Namespace }}
         {{- end }}
         stat_prefix: ingress_https_{{ .Release.Name }}
         server_name: {{ .Release.Name }}-tls
