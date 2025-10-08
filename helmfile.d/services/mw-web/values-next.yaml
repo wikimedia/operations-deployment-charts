@@ -5,8 +5,8 @@
 # discovery service at ATS).
 
 resources:
-  # Keep 1 replica running to satisfy pybal checks, etc.
-  replicas: 1
+  # NOTE: Keep 1 replica running to satisfy pybal checks, etc. when not in use.
+  replicas: 34  # Scaled to 10% of main multi-DC size (T405955)
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) in order to improve
