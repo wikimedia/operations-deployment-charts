@@ -218,6 +218,11 @@ static_resources:
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.Config
               request_rules:
+                {{- /*
+                  NOTE: When adding a new metadata key extraction, be sure to update existing LB subset
+                  use cases for compatibility. See discussion of metadata match for subset_selectors in:
+                  https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/cluster/v3/cluster.proto#config-cluster-v3-cluster-lbsubsetconfig
+                */}}
                 - header: "x-wikimedia-debug"
                   on_header_present:
                     metadata_namespace: envoy.lb
@@ -229,6 +234,16 @@ static_resources:
                   on_header_missing:
                     metadata_namespace: envoy.lb
                     key: x_wikimedia_debug_server
+                    value: none
+                    type: STRING
+                - cookie: PHP_ENGINE
+                  on_header_present:
+                    metadata_namespace: envoy.lb
+                    key: php_engine
+                    type: STRING
+                  on_header_missing:
+                    metadata_namespace: envoy.lb
+                    key: php_engine
                     value: none
                     type: STRING
 {{- if .Values.main_app.rest_gateway_routes }}
@@ -310,9 +325,11 @@ static_resources:
       fallback_policy: "DEFAULT_SUBSET"
       default_subset:
         x_wikimedia_debug_server: none
+        php_engine: none
       subset_selectors:
         - keys:
             - x_wikimedia_debug_server
+            - php_engine
     load_assignment:
       cluster_name: {{ $cluster_name }}
       endpoints:
@@ -327,6 +344,7 @@ static_resources:
             filter_metadata:
               envoy.lb:
                 x_wikimedia_debug_server: none
+                php_engine: none
 {{- end }}
 {{- range $host, $port := $cluster_opts.debug_hosts }}
         - endpoint:
@@ -338,6 +356,7 @@ static_resources:
             filter_metadata:
               envoy.lb:
                 x_wikimedia_debug_server: {{ $host }}
+                php_engine: none
 {{- end }}
 {{- end }}
 {{- end }}
@@ -356,7 +375,12 @@ static_resources:
         common_http_protocol_options:
           max_requests_per_connection: 1000
           idle_timeout: {{ $.Values.main_app.idle_timeout }}
+{{- if $cluster_opts.php_engine_routing }}
+    # A cluster with multiple lb_endpoints must use STRICT_DNS.
+    type: STRICT_DNS
+{{- else }}
     type: LOGICAL_DNS
+{{- end }}
     lb_policy: ROUND_ROBIN
     # required for non-ipv6 services on localhost or elsewhere
     dns_lookup_family: V4_ONLY
@@ -376,6 +400,17 @@ static_resources:
             trusted_ca:
               filename: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
+{{- if $cluster_opts.php_engine_routing }}
+    lb_subset_config:
+      fallback_policy: "DEFAULT_SUBSET"
+      default_subset:
+        php_engine: none
+        x_wikimedia_debug_server: none
+      subset_selectors:
+        - keys:
+            - php_engine
+            - x_wikimedia_debug_server
+{{- end }}
     load_assignment:
       cluster_name: {{ $cluster_name }}_cluster
       endpoints:
@@ -385,6 +420,25 @@ static_resources:
               socket_address:
                 address: {{ $address }}
                 port_value: {{ $cluster_opts.port }}
+{{- if $cluster_opts.php_engine_routing }}
+          metadata:
+            filter_metadata:
+              envoy.lb:
+                php_engine: none
+                x_wikimedia_debug_server: none
+{{- range $cookie_value, $override_opts := $cluster_opts.php_engine_routing }}
+        - endpoint:
+            address:
+              socket_address:
+                address: {{ printf  "%s.discovery.wmnet" $override_opts.service_name }}
+                port_value: {{ $override_opts.port }}
+          metadata:
+            filter_metadata:
+              envoy.lb:
+                php_engine: {{ $cookie_value | quote }}
+                x_wikimedia_debug_server: none
+{{- end }}
+{{- end }}
 {{- end }}
 {{- /* END discovery cluster definition */}}
 {{- if .Values.main_app.ratelimiter.enabled }}
