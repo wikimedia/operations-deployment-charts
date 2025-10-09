@@ -165,6 +165,29 @@ releases:
               resources: ["networkpolicies"]
               verbs: ["*"]
       {{- end }}
+      {{- if eq . "amdgpu-node-labeller" }}
+        ## Daemon running on ml hosts to provide GPU's metadata.
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-amdgpu-node-labeller
+          rules:
+            - apiGroups: [""]
+              resources: ["nodes"]
+              verbs: ["watch", "get", "list", "update"]
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: crb-amdgpu-node-labeller
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: deploy-amdgpu-node-labeller
+          subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: User
+              name: amdgpu-node-labeller
+      {{- end }}
       {{- if eq . "airflow" }}
         ## Used by deploy users
         ## Airflow deploy users need the ability to create role/rolebindings to allow
