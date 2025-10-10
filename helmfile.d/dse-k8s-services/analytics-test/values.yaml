@@ -1,0 +1,45 @@
+orchestrator:
+  service_accounts:
+    airflow-test-k8s: [airflow]
+    airflow-dev: [airflow-dev-btullis]
+
+external_services:
+  hadoop:
+  - analytics-test-hadoop-master
+  - analytics-test-hadoop-worker
+  hive:
+  - analytics-test
+  kerberos:
+  - kdc
+
+# The following value causes the external service network policies deployed by this chart to match airflow
+# task pods that are deployed from the given namespaces, as opposed to any other resources in this chart.
+external_services_selector: "app == 'airflow' && release in (airflow-test-k8s, airflow-dev-btullis)"
+
+config:
+  hadoop:
+    hdfs:
+      dfs.client.failover.proxy.provider.analytics-test-hadoop: org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+      dfs.ha.namenodes.analytics-test-hadoop: an-test-master1001-eqiad-wmnet,an-test-master1002-eqiad-wmnet
+      dfs.internal.nameservices: analytics-test-hadoop
+      dfs.namenode.http-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:50070
+      dfs.namenode.http-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:50070
+      dfs.namenode.rpc-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8020
+      dfs.namenode.rpc-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8020
+      dfs.namenode.servicerpc-address.analytics-test-hadoop.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8040
+      dfs.namenode.servicerpc-address.analytics-test-hadoop.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8040
+      dfs.nameservices: analytics-test-hadoop
+    core:
+      fs.defaultFS: hdfs://analytics-test-hadoop/
+    yarn:
+      yarn.node-labels.fs-store.root-dir: hdfs://analytics-test-hadoop/user/yarn/node-labels
+      yarn.resourcemanager.cluster-id: analytics-test-hadoop
+      yarn.resourcemanager.ha.rm-ids: an-test-master1001-eqiad-wmnet,an-test-master1002-eqiad-wmnet
+      yarn.resourcemanager.hostname.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet
+      yarn.resourcemanager.hostname.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet
+      yarn.resourcemanager.webapp.address.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8088
+      yarn.resourcemanager.webapp.address.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8088
+    hive:
+      hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
+      hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083
+      hive.server2.authentication.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
