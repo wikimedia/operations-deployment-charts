@@ -1,15 +1,18 @@
 config:
   airflow:
     instance_name: analytics-test
+    auth:
+      role_mappings:
+        airflow-analytics-ops: [Op]
     config:
       core:
         executor: KubernetesExecutor,LocalExecutor
         parallelism: 128  # Global cap on the number of running tasks across all DAGs
         max_active_tasks_per_dag: 64  # Max concurrent running tasks for any single DAG
       kubernetes_executor:
-          worker_pods_creation_batch_size: 64  # How many pods to request from K8s API in each scheduler heartbeat
+        worker_pods_creation_batch_size: 64  # How many pods to request from K8s API in each scheduler heartbeat
       scheduler:
-          max_tis_per_query: 256  # How many TaskInstances the scheduler picks up per DB query loop
+        max_tis_per_query: 256  # How many TaskInstances the scheduler picks up per DB query loop
       kerberos:
         principal: analytics/airflow-analytics-test.discovery.wmnet
     extra_rbac:
