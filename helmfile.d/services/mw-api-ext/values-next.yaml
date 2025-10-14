@@ -15,10 +15,12 @@ resources:
 # As an alternative or in addition, it may be useful to temporarily increase
 # the deployment timeout value in helmfile.yaml.
 # See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
-# TODO: T405955 - Temporarily increase maxUnavailable.
+# TODO: T405955 - Temporarily increase maxUnavailable and maxSurge. Update the
+# comment above with revised guidance when cleaning up.
 strategy:
   rollingUpdate:
     maxUnavailable: 10%
+    maxSurge: 10%
 
 mesh:
   public_port: 4455
