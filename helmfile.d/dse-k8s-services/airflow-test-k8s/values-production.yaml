@@ -6,10 +6,6 @@ config:
     config:
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
-      scheduler:
-        # See T402529: we code-generate many dump-related DAGs, so we space out
-        # their parsing to reduce scheduler CPU usage
-        min_file_process_interval: 300
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
 

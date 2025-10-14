@@ -17,6 +17,10 @@ config:
         enabled: true
       logging:
         remote_log_conn_id: s3_dpe
+      scheduler:
+        # See T402529: we code-generate many dump-related DAGs, so we space out
+        # their parsing to reduce scheduler CPU usage
+        min_file_process_interval: 300
       smtp:
         smtp_host: mx-out1001.wikimedia.org
     local_settings:
