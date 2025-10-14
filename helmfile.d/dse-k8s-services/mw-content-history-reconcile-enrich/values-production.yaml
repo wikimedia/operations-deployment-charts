@@ -28,14 +28,14 @@ app:
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
-          stream: mediawiki.content_history_reconcile.v1:1.2.0
+          stream: mediawiki.content_history_reconcile.v1:1.3.0
           connector: kafka
           options:
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
-          stream: mediawiki.content_history_reconcile_enriched.v1:1.2.0
+          stream: mediawiki.content_history_reconcile_enriched.v1:1.3.0
           connector: kafka
           options:
             delivery_guarantee: AT_LEAST_ONCE
