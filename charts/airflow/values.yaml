@@ -217,6 +217,25 @@ scheduler:
     cpu: "1"
     memory: 2Gi
 
+triggerer:
+  port: &triggerer_port 8794
+  liveness_probe:
+    tcpSocket:
+      port: *triggerer_port
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 10
+  readiness_probe:
+    tcpSocket:
+      port: *triggerer_port
+  enabled: false
+  requests:
+    cpu: "0.5"
+    memory: 1Gi
+  limits:
+    cpu: "0.5"
+    memory: 2Gi
+
 # Export the content of the postgresql app secret to environment variables
 postgresql:
   secrets:

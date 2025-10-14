@@ -1,5 +1,6 @@
 {{- include "deployment.airflow.webserver" . }}
 {{- include "deployment.airflow.scheduler" . }}
+{{- include "deployment.airflow.triggerer" . }}
 {{- include "deployment.airflow.gitsync" . }}
 {{- include "deployment.airflow.kerberos" . }}
 {{- include "deployment.envoy" . }}

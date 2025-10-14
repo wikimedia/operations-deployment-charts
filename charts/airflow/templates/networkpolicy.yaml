@@ -25,6 +25,12 @@ spec:
     {{- include "mesh.networkpolicy.egress" . | indent 4 }}
 {{- end }}
 
+
+{{/*
+  Enable ingress traffic to the webserver from specific airflow components.
+
+  Note; the webserver component is listed as part of the pod selector, as it calls its own API.
+*/}}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -33,7 +39,7 @@ metadata:
 spec:
   types:
     - Ingress
-  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "webserver") | indent 2 }}
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" (list "webserver" "triggerer")) | indent 2 }}
   ingress:
     - action: Allow
       protocol: TCP
@@ -43,6 +49,11 @@ spec:
 
 
 {{- if $.Values.scheduler.enabled }}
+{{/*
+  Enable ingress traffic to the scheduler from specific airflow components.
+
+  Note; the scheduler component is listed as part of the pod selector, as it calls its own API.
+*/}}
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
@@ -51,7 +62,7 @@ metadata:
 spec:
   types:
     - Ingress
-  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "scheduler") | indent 2 }}
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" "scheduler") | indent 2 }}
   ingress:
     - action: Allow
       protocol: TCP
@@ -77,7 +88,7 @@ metadata:
 spec:
   types:
     - Egress
-  selector: "app == 'airflow' && component in { 'scheduler', 'webserver' }"
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" (list "scheduler" "webserver")) | indent 2 }}
   egress:
     - action: Allow
       destination:
@@ -154,7 +165,7 @@ metadata:
 spec:
   types:
     - Ingress
-  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "envoy") | indent 2 }}
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" "envoy") | indent 2 }}
   ingress:
   - action: Allow
     protocol: TCP
@@ -178,7 +189,7 @@ metadata:
 spec:
   types:
     - Ingress
-  {{- include "networkpolicy.selector.component" (dict "root" $ "component" "statsd") | indent 2 }}
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" "statsd") | indent 2 }}
   ingress:
   - action: Allow
     protocol: TCP

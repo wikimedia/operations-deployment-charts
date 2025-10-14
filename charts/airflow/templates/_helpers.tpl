@@ -65,6 +65,29 @@
   {{- end }}
 {{- end }}
 
+{{- define "app.airflow.triggerer" }}
+- name: {{ template "base.name.release" $ }}
+  image: {{ template "app.generic._image" $ }}
+  imagePullPolicy: {{ $.Values.docker.pull_policy }}
+  command: ["airflow"]
+  args: ["triggerer", "--pid" , "/tmp/airflow-triggerer.pid"]
+  ports:
+  - containerPort: {{ $.Values.triggerer.port }}
+  {{- if $.Values.triggerer.liveness_probe }}
+  livenessProbe:
+  {{- toYaml $.Values.triggerer.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.triggerer.readiness_probe }}
+  readinessProbe:
+  {{- toYaml $.Values.triggerer.readiness_probe | nindent 4 }}
+  {{- end }}
+  {{- include "app.airflow.env" $ | indent 2 }}
+  {{- include "base.helper.resources" $.Values.triggerer | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
+  volumeMounts:
+  {{- include "app.airflow.volumeMounts" $ | indent 2 }}
+{{- end }}
+
 {{ define "app.airflow.env" }}
 {{- $krbPrincipal := include "evalValue" (dict "value" $.Values.config.airflow.config.kerberos.principal "Root" $) }}
 env:
@@ -619,8 +642,21 @@ checksum/configuration: {{ include "base.helper.resourcesDataChecksum" (dict "re
 {{- end }}
 
 
+{{- define "component.set" -}}
+{{- $components := .components -}}
+{{- if $components -}}
+{{- range $i, $comp := $components -}}
+'{{ $comp }}'{{ if lt $i (sub (len $components) 1) }}, {{ end }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "networkpolicy.selector.component" }}
-selector: "app == 'airflow' && release == '{{ .root.Release.Name }}' && component == '{{ .component }}'"
+{{- if kindIs "slice" .components }}
+selector: "app == 'airflow' && release == '{{ .root.Release.Name }}' && component in { {{ include "component.set" (dict "components" .components) }} }"
+{{- else }}
+selector: "app == 'airflow' && release == '{{ .root.Release.Name }}' && component == '{{ .components }}'"
+{{- end }}
 {{- end }}
 
 

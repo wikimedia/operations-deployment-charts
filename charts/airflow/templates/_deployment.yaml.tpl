@@ -405,3 +405,36 @@ spec:
 
 {{- end }}
 {{- end }}
+
+{{- define "deployment.airflow.triggerer" }}
+{{- if $.Values.triggerer.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "release.name" . }}-triggerer
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: triggerer
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: triggerer
+      annotations:
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        {{- include "app.airflow.triggerer" $ | indent 8 }}
+      volumes:
+        {{- include "app.airflow.volumes" . | indent 8 }}
+
+{{- end }}
+{{- end }}
