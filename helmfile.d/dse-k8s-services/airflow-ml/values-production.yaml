@@ -9,6 +9,9 @@ config:
         endpoint_url: https://thanos-swift.discovery.wmnet
         verify: /etc/ssl/certs/wmf-ca-certificates.crt
 
+triggerer:
+  enabled: true
+
 ingress:
   gatewayHosts:
     default: "airflow-ml"
