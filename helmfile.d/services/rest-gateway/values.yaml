@@ -447,6 +447,24 @@ main_app:
           in: '/+w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
+    - name: mw-action-api
+      timeout: 15s
+      # This set of routes uses the same cluster as mw-api-ext - however
+      # it does NOT use the restbase compability headers as this will
+      # lead to incorrect responses from the mw APIs.
+
+      # These routes also do not use the restbase response headers as
+      # we will either need to put in a more specific set of headers
+      # befitting the mw apis, or to simply defer to the headers
+      # mediawiki sends.
+      cluster: mw-api-ext
+      no_csp: true
+      urls:
+        # *** BEGIN action API routes ***
+        - name: action_api_catchall
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+        # *** END action API routes ***
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
