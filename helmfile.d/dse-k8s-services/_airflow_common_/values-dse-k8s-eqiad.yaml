@@ -11,6 +11,8 @@ service:
 config:
   airflow:
     config:
+      core:
+        max_map_length: 1200
       datahub:
         cluster: prod
         conn_id: datahub_gms
