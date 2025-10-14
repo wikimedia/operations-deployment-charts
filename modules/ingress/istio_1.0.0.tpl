@@ -8,8 +8,7 @@ Creates the following objects:
   - DestinationRule (https://istio.io/v1.9/docs/reference/config/networking/destination-rule/)
 
 In staging clusters, a generic Gateway is to be used instead of a dedicated one.
-
-This requires TLS to be enabled as well (_tls_helpers.tpl).
+This requires TLS to be enabled as well.
 */}}
 
 {{/*
