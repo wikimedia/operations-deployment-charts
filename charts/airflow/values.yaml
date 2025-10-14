@@ -109,7 +109,7 @@ config:
         ccache: *krb5ccname
         include_ip: false
         keytab: *keytab
-        principal: "analytics-{{ $.Values.config.airflow.instance_name }}/airflow-{{ $.Values.config.airflow.instance_name }}.discovery.wmnet"
+        principal: "analytics-{{ $.Values.config.airflow.instance_name | replace \"analytics-\" \"\" }}/airflow-{{ $.Values.config.airflow.instance_name }}.discovery.wmnet"
       kubernetes_executor:
         multi_namespace_mode: false
         namespace: "{{ $.Release.Namespace }}"
