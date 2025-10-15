@@ -1,13 +1,29 @@
-## If this is set to true, RoleBindings will be used instead of ClusterRoleBindings. This limits the operator
-## to managing opensearch objects in its own namespace, rather than operating across the entire cluster.
-## If this is set, the target namespace would be set in the manager.watchNamespace field.
-## If false, ClusterRoleBindings will be used
-useRoleBindings: true
+manager:
+# these values are required by policy on all WMF k8s clusters, ref T362978
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
 
-# We istall the CRDs in a different release
+# don't run an initContainer that changes file permissions;
+# needed because the OpenSearch package we use forces us to run w uid/gid 999
+  extraEnv:
+    - name: SKIP_INIT_CONTAINER
+      value: "true"
+  image:
+    repository: docker-registry.wikimedia.org/repos/data-engineering/opensearch-operator
+    tag: 2025-08-25-204922-014d2b0b6a65947de4486c3919c5b5dcce45d39e
+    pullPolicy: IfNotPresent
+
+# We install the CRDs as a separate helm release; don't repeat it here.
 installCRDs: false
 
-# We always use docker-registry.discovery.wmnet in production
-manager:
-  image:
-    repository: docker-registry.discovery.wmnet/repos/data-engineering/opensearch-operator
+## If this is set to true, RoleBindings will be used instead of ClusterRoleBindings, inorder to restrict ClusterRoles
+## to the namespace where the operator and OpenSearch cluster are in. In that case, specify the namespace where they
+## are in in manager.watchNamespace field.
+## If false, ClusterRoleBindings will be used
+useRoleBindings: true
