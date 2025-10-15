@@ -3,7 +3,8 @@ resources:
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
   # October 2025 sizing for *multi-DC* serving:
-  replicas: 180
+  #replicas: 180
+  replicas: 178  # Scaled to ~ 99% of 180 replicas total (T405955)
   # September 2025 Switchover sizing (estimated) for *single-DC* serving:
   #replicas: 230
 
