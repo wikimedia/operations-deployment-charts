@@ -5,7 +5,7 @@ templates:
     installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_opensearch_operator\" }}{{ .Environment.Values.install_opensearch_operator }}{{ else }}{{ false }}{{end}}`}}"
 
 releases:
-  # We only install the CRDs
+  # We install the CRDs independently of the each operator instance
   - name: opensearch-operator-crds
     chart: wmf-stable/opensearch-operator-crds
     {{- $version := .Values.chartVersions | get "wmf-stable/opensearch-operator-crds" "" }}
@@ -16,11 +16,21 @@ releases:
     namespace: ~ # The CRDs are non-namespaced objects, so we can overwrite the value from the defaults with null here.
     needs:
       - kube-system/namespaces
+
+    # Currently, we need to deploy a release of the operator in each namespace where we want to use opensearch clusters.
+  - name: test
+    chart: wmf-stable/opensearch-operator
+    {{- $version := .Values.chartVersions | get "wmf-stable/opensearch-operator" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    namespace: opensearch-test
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "opensearch-operator/values.yaml"                                      # Release specific overrides
+      - "opensearch-operator/values-common.yaml"                               # Overrides that apply to all releases of opensearch-operator
+      - "opensearch-operator/values-{{`{{ .Release.Name }}`}}.yaml"            # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
       - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
