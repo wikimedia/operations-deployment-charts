@@ -104,7 +104,7 @@ opensearchCluster:
       # adminSecret:
       #   name:  # Name of a secret that contains the admin client certificate
       adminCredentialsSecret:
-        name: opensearch-cluster-secret-config # Name of a secret that contains username/password for admin access
+        name: opensearch-cluster-cluster-secret-config # Name of a secret that contains username/password for admin access
     tls:
       transport:
         generate: true
