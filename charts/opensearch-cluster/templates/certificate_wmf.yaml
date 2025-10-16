@@ -1,0 +1,77 @@
+---
+{{/*
+  This is the certificate associated with the opensearch service.
+
+  It needs to have SANs matching the Kubernetes service discovery, and Opensearch expects
+  its private key to be encoded in the PKCS8 format.
+*/}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $.Values.certificate.name }}
+spec:
+  # CommonName is a common name to be used on the Certificate. The CommonName
+  # should have a length of 64 characters or fewer to avoid generating invalid
+  # CSRs. This value is ignored by TLS clients when any subject alt name is
+  # set. This is x509 behavior: https://tools.ietf.org/html/rfc6125#section-6.4.4
+  commonName: {{ $.Values.certificate.name }}
+  secretName: {{ $.Values.certificate.name }}
+  dnsNames:
+  - {{ $.Release.Name }}.{{ $.Release.Namespace }}
+  - {{ $.Release.Name }}.{{ $.Release.Namespace }}.svc
+  - {{ $.Release.Name }}.{{ $.Release.Namespace }}.svc.cluster.local
+  {{- if $.Values.certificate.extraFQDNs -}}
+  {{ $.Values.certificate.extraFQDNs | toYaml | nindent 2 }}
+  {{- end }}
+  privateKey:
+    encoding: PKCS8
+  # revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history.
+  # If not set, cert-manager will not clean up old CertificateRequests at all. Setting this to 2 makes to have the CR from the
+  # previous Certificate still around after refresh.
+  revisionHistoryLimit: 2
+  issuerRef:
+    name: {{ $.Values.certificate.issuerRefName | default "discovery" }}
+    group: {{ $.Values.certificate.issuerRefGroup | default "cfssl-issuer.wikimedia.org" }}
+    kind: {{ $.Values.certificate.issuerRefKind | default "ClusterIssuer" }}
+
+---
+{{/*
+  This is the certificate associated with the opensearch admin client. This is _not_ a service
+  certificate. It is used by the security plugin to authenticate against the opensearch service.
+
+  As such, it needs to have the `client auth` extra usage.
+  Opensearch expects its private key to be encoded in the PKCS8 format.
+*/}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $.Values.certificate.name }}-admin
+spec:
+  # CommonName is a common name to be used on the Certificate. The CommonName
+  # should have a length of 64 characters or fewer to avoid generating invalid
+  # CSRs. This value is ignored by TLS clients when any subject alt name is
+  # set. This is x509 behavior: https://tools.ietf.org/html/rfc6125#section-6.4.4
+  commonName: admin  # expected by Opensearch
+  secretName: {{ $.Values.certificate.name }}-admin
+  subject:
+    organizationalUnits:
+    - {{ $.Release.Name }}
+  privateKey:
+    encoding: PKCS8
+  usages:
+    {{/*
+      We need to have `client auth` as part of its usages, which will allow the certificate to be used to
+      perform client authentication (aka mTLS). Without that usage, we were seeing a traceback on the
+      cluster-discovery pod side, with the following error
+      `Caused by javax.net.ssl.SSLHandshakeException -> Extended key usage does not permit use for TLS client authentication`
+    */}}
+  - "server auth"
+  - "client auth"
+  # revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history.
+  # If not set, cert-manager will not clean up old CertificateRequests at all. Setting this to 2 makes to have the CR from the
+  # previous Certificate still around after refresh.
+  revisionHistoryLimit: 2
+  issuerRef:
+    name: {{ $.Values.certificate.issuerRefName | default "discovery" }}
+    group: {{ $.Values.certificate.issuerRefGroup | default "cfssl-issuer.wikimedia.org" }}
+    kind: {{ $.Values.certificate.issuerRefKind | default "ClusterIssuer" }}

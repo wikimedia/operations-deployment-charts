@@ -328,7 +328,7 @@ spec:
     tls:
       {{- if .Values.opensearchCluster.security.tls.transport }}
       transport:
-        {{- if .Values.opensearchCluster.security.tls.http.generate }}
+        {{- if .Values.opensearchCluster.security.tls.transport.generate }}
         generate: {{ .Values.opensearchCluster.security.tls.transport.generate }}
         {{- end }}
         {{- if .Values.opensearchCluster.security.tls.transport.secret }}
@@ -352,6 +352,10 @@ spec:
         {{- if .Values.opensearchCluster.security.tls.http.secret }}
         secret:
           name: {{ .Values.opensearchCluster.security.tls.http.secret.name }}
+        {{- end }}
+        {{- if .Values.opensearchCluster.security.tls.http.caSecret }}
+        caSecret:
+          name: {{ .Values.opensearchCluster.security.tls.http.caSecret.name }}
         {{- end }}
       {{- end }}
     {{- end }}

@@ -7,7 +7,6 @@ opensearchCluster:
     imagePullPolicy: Never
     httpPort: "9200"
     version: 2.7.0
-    serviceName: "wmf-opensearch"
     drainDataNodes: true
     setVMMaxMapCount: false
 # The following securityContext values are required by policy on all WMF k8s clusters, ref T362978
@@ -97,19 +96,19 @@ opensearchCluster:
                   opster.io/opensearch-nodepool: masters
               topologyKey: kubernetes.io/hostname
   security:
-  # https://github.com/opensearch-project/opensearch-k8s-operator/blob/v2.7.0/docs/userguide/main.md#securityconfig
+    # https://github.com/opensearch-project/opensearch-k8s-operator/blob/v2.7.0/docs/userguide/main.md#securityconfig
     config:  # Everything related to the securityconfig
       securityConfigSecret:
-        name:  securityconfig-secret # Name of the secret that contains the securityconfig files
-      # adminSecret:
-      #   name:  # Name of a secret that contains the admin client certificate
+        # Name of the Secret containing the securityconfig files (roles, role mappings, users, config)
+        name:  securityconfig-secret
+      adminSecret:
+        # Name of the Secret containing the admin client certificate, used by the security plugin pod
+        # to connect to the opensearch service and authenticate via mTLS
+        name:  opensearch-wmf-admin
       adminCredentialsSecret:
-        name: opensearch-cluster-cluster-secret-config # Name of a secret that contains username/password for admin access
-    tls:
-      transport:
-        generate: true
-      http:
-        generate: true
+        # Name of the Secret containing username/password for admin access
+        name: config-secret
+
 app:
   port: 9200
   protocol: TCP

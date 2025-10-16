@@ -92,7 +92,10 @@ opensearchCluster:
       transport:
         generate: true
       http:
-        generate: true
+        generate: false
+        secret:
+          name: opensearch-wmf
+
 # begin WMF-specific config
 
 monitoring:
@@ -106,5 +109,7 @@ config:
     password: secret
     hashed_password: secret
 
-certificates:
-  - name: 'wmf-opensearch'
+certificate:
+  name: opensearch-wmf
+  extraFQDNs:
+  - override_me.discovery.wmnet

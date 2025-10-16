@@ -13,7 +13,7 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [cluster]
+      - releases: [opensearch-test]
     missingFileHandler: Warn
 
 ---
@@ -35,7 +35,7 @@ hooks:
       ]
 
 releases:
-  - name: cluster
+  - name: opensearch-test
     chart: wmf-stable/opensearch-cluster
     namespace: opensearch-test
     missingFileHandler: Warn

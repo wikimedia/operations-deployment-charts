@@ -29,3 +29,13 @@ opensearchCluster:
         limits:
           memory: "2000Mi"
           cpu: "500m"
+
+config:
+  private:
+    username: opensearch
+    password: secret
+    hashed_password: '$2y$05$RLQTr3.eZ1irNfr9Zl8nheG3IeP.S5TBA/JuwboUWWisWqQ2NBqEO'
+
+certificate:
+  extraFQDNs:
+  - my-cluster.discovery.wmnet

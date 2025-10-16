@@ -1,0 +1,43 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    {{- range $fqdn := $.Values.certificate.extraFQDNs }}
+      - {{ $fqdn }}
+    {{- end }}
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: PASSTHROUGH
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  gateways:
+  - {{ template "base.meta.name" (dict "Root" .) }}
+  hosts:
+  {{- range $fqdn := $.Values.certificate.extraFQDNs }}
+    - {{ $fqdn }}
+  {{- end }}
+  tls:
+  - match:
+    - sniHosts:
+    {{- range $fqdn := $.Values.certificate.extraFQDNs }}
+      - {{ $fqdn }}
+    {{- end }}
+    route:
+    - destination:
+        host: {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local
+        port:
+          number: {{ $.Values.opensearchCluster.general.httpPort }}

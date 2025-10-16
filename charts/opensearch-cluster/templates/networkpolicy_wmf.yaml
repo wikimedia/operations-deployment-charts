@@ -8,7 +8,7 @@ spec:
     - action: Allow
       protocol: TCP
       source:
-        namespaceSelector: 'kubernetes.io/metadata.name == "{{ $.Release.Namespace }}"'
+        namespaceSelector: 'kubernetes.io/metadata.name in {"{{ $.Release.Namespace }}", "istio-system", "opensearch-operator"}'
       destination:
         ports:
           # REST API
