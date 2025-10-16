@@ -372,6 +372,15 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 80
+      # an-web1001.eqiad.wmnet (analytics-web.discovery.wmnet)
+      - cidr: 10.64.21.14/32
+        ports:
+        - port: 8443
+          protocol: tcp
+      - cidr: 2620:0:861:105:10:64:21:14/128
+        ports:
+        - port: 8443
+          protocol: tcp
 
 kafka:
   allowed_clusters:
