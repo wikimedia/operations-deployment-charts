@@ -15,3 +15,26 @@ spec:
         services:
           name: kubernetes
           namespace: default
+
+{{- if $.Values.manager.watchNamespace }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $.Chart.Name }}-to-clusters
+spec:
+  selector: "control-plane == 'controller-manager'"
+  egress:
+  {{- range $watchNamespace := $.Values.manager.watchNamespace }}
+  - action: Allow
+    protocol: TCP
+    destination:
+      selector: 'has(opster.io/opensearch-cluster)'
+      namespaceSelector: 'kubernetes.io/metadata.name == "{{ $watchNamespace }}"'
+      ports:
+        # REST API
+        - 9200
+        # transport (cluster state)
+        - 9300
+  {{- end }}
+{{- end }}

@@ -1,7 +1,10 @@
+{{- if .Values.manager.watchNamespace }}
+{{- range $watchedNamespace := .Values.manager.watchNamespace }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "opensearch-operator.fullname" . }}-leader-election-role
+  name: {{ include "opensearch-operator.fullname" $ }}-leader-election-role
+  namespace: {{ $watchedNamespace }}
 rules:
 - apiGroups:
   - ""
@@ -46,3 +49,5 @@ rules:
   - patch
   - update
   - watch
+{{- end }}
+{{- end }}

@@ -18,19 +18,19 @@ releases:
       - kube-system/namespaces
 
     # Currently, we need to deploy a release of the operator in each namespace where we want to use opensearch clusters.
-  - name: test
+  - name: opensearch-operator
     chart: wmf-stable/opensearch-operator
     {{- $version := .Values.chartVersions | get "wmf-stable/opensearch-operator" "" }}
     {{- if $version }}
     version: {{ $version }}
     {{- end }}
     <<: *default
-    namespace: opensearch-test
+    namespace: opensearch-operator
     values:
       - "values/common.yaml"                                                   # Generic default values for all environments
       - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
       - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
-      - "opensearch-operator/values-common.yaml"                               # Overrides that apply to all releases of opensearch-operator
+      - "opensearch-operator/values.yaml"                               # Overrides that apply to all releases of opensearch-operator
       - "opensearch-operator/values-{{`{{ .Release.Name }}`}}.yaml"            # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
