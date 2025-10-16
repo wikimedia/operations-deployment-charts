@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.0.8-wmf]
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+- Scoped the leader election role/rolebinding resources to the operator namespace, instead of the tenant namespaces.
+### Security
+
 ## [0.0.7-wmf]
 ### Added
 ### Changed
