@@ -4,7 +4,7 @@ resources:
 config:
   public:
     TEGOLA_BROKER_URL: "kafka://kafka-main-eqiad.external-services.svc.cluster.local:9092"
-    TEGOLA_QUEUE_NAME: "eqiad.maps.tiles_change"
+    TEGOLA_QUEUE_NAME: "eqiad.maps.tiles_change_bookworm.v1"
 
 # Temporarily we will use envoy as a L4 tcp proxy until envoy's
 # Postgres proxy filter is production ready
@@ -13,21 +13,18 @@ tcp_services_proxy:
   maps_postgres:
     upstreams:
       # read replicas (the master node is left out on purpose to deal with data imports)
-      - address: maps1005.eqiad.wmnet
+      # read replicas (the master node is left out on purpose to deal with data imports)
+      - address: maps1012.eqiad.wmnet
         port: 5432
-      - address: maps1006.eqiad.wmnet
+      - address: maps1013.eqiad.wmnet
         port: 5432
-      - address: maps1007.eqiad.wmnet
-        port: 5432
-      - address: maps1008.eqiad.wmnet
-        port: 5432
-      - address: maps1010.eqiad.wmnet
+      - address: maps1014.eqiad.wmnet
         port: 5432
 
 tileCaching:
   enabled: true
   config:
-    bucket: tegola-swift-eqiad-v002
+    bucket: tegola-swift-eqiad-v003
 
 # avoid concurrency with codfw when pushing data to Swift
 tilePregeneration:
@@ -40,6 +37,6 @@ kafka:
 
 external_services:
   postgresql:
-  - maps-read-replicas-eqiad
+  - maps-bookworm-read-replicas-eqiad
   kafka:
     - main-eqiad
