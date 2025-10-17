@@ -338,6 +338,42 @@ main_app:
         - name: lists
           in: '/+([^/]+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
+        # T397203: non-restbase replacement for the old /?spec path that returned JSON
+        - name: spec-json-wikimedia
+          in: '/wikimedia\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-wikimedia.json'
+          params:
+            - spec
+        - name: spec-json-wikidata
+          in: '/(www|test)\.wikidata\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-wikidata.json'
+          params:
+            - spec
+        - name: spec-json-commons
+          in: '/(commons|test-commons)\.wikimedia\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-commons.json'
+          params:
+            - spec
+        - name: spec-json-wikipedia
+          in: '/[^./]+\.wikipedia\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-wikipedia.json'
+          params:
+            - spec
+        - name: spec-json-wiktionary
+          in: '/[^./]+\.wiktionary\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-wiktionary.json'
+          params:
+            - spec
+        - name: spec-json-wikivoyage
+          in: '/[^./]+\.wikivoyage\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-wikivoyage.json'
+          params:
+            - spec
+        - name: spec-json-default
+          in: '/(wikisource|www\.mediawiki|[^./]+\.(wikisource|wikibooks|wikiversity|wikiquote|wikimedia))\.org/v1/'
+          out: '/api/restbase_specs/rest_v1-default.json'
+          params:
+            - spec
       rb_response_headers: true
 
     - name: mw-rest-php

@@ -27,6 +27,13 @@
                     string_match:
                       exact: '{{ $endpoint.domain }}'
                   {{- end }}
+                  {{- if $route.params}}
+                  query_parameters:
+                  {{- range $param := $route.params }}
+                  - name: {{ $param }}
+                    present_match: true
+                  {{- end }}
+                  {{- end }}
                 {{- if not $route.disable_route_stats }}
                 {{- if $endpoint.stat_prefix }}
                 stat_prefix: {{ $endpoint.stat_prefix }}_{{ $route.name }}
@@ -90,13 +97,6 @@
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- end }}
                 {{- end }}
-                  {{- if $endpoint.params}}
-                  query_parameters:
-                  {{- range $param := $endpoint.params }}
-                  - name: $param
-                    present_match: true
-                  {{- end }}
-                  {{- end }}
                 route:
                   regex_rewrite:
                     pattern:
