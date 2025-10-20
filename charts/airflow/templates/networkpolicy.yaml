@@ -88,7 +88,7 @@ metadata:
 spec:
   types:
     - Egress
-  {{- include "networkpolicy.selector.component" (dict "root" $ "components" (list "scheduler" "webserver")) | indent 2 }}
+  {{- include "networkpolicy.selector.component" (dict "root" $ "components" (list "scheduler" "webserver" "triggerer")) | indent 2 }}
   egress:
     - action: Allow
       destination:

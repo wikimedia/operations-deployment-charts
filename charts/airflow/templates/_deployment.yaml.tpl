@@ -431,6 +431,7 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      serviceAccountName: {{ template "release.name" . }}
       containers:
         {{- include "app.airflow.triggerer" $ | indent 8 }}
       volumes:
