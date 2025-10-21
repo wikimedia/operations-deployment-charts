@@ -1,0 +1,152 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: repos/data-engineering/ferretdb
+  version: latest # we use latest everywhere in the defaults.
+  port: 27017 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint. Type is arrays
+  # Not necessary unless you want to change the entrypoint defined in the docker image
+  # Example:
+  # command: ["node"]
+  # args: ["bin/server.js", "--param1", "arg1"]
+  command: ["/usr/bin/ferretdb"]
+  args:
+  - --postgresql-url-file=/etc/postgresql/uri
+  requests:
+    cpu: 1 # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 1Gi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 1Gi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 27017
+  readiness_probe:
+    tcpSocket:
+      port: 27017
+  volumes:
+    - name: postgresql-connection
+      emptyDir: {}
+  volumeMounts:
+    - name: postgresql-connection
+      mountPath: /etc/postgresql
+  initcontainer:
+    env_from:
+      - secretRef:
+          name: postgresql-growthbook-app
+    volumeMounts:
+      - name: postgresql-connection
+        mountPath: /etc/postgresql
+    command: ["/bin/bash"]
+    # the username/password/dbname env vars are injected via the envFrom.secretRef, and the SERVICE_HOST/PORT envs are
+    # automatically injected by Kubernetes
+    args: ["-c", "echo postgres://${username}:${password}@${host}:${port}/${dbname} > /etc/postgresql/uri"]
+    requests:
+      cpu: 200m
+      memory: 200Mi
+    limits:
+      cpu: 200m
+      memory: 200Mi
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 27017 # the number or name of the exposed port on the container
+    port: 27017 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public:
+    FERRETDB_LISTEN_ADDR: "0.0.0.0:27017"
+    FERRETDB_STATE_DIR: /tmp
+    FERRETDB_TELEMETRY: disabled
+  private: {} # Add here all the keys that should be private but still available as env variables
+  initcontainer:
+    public: {}
+    private: {}
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+cronjobs: {}
+#    my-cron-hourly:
+#      name: my-cron-hourly
+#      enabled: true
+#      command:
+#        - /bin/cowsay
+#        - "hello"
+#      schedule: "@hourly"
+#      concurrency: Replace
+#      image_versioned: my-app:1.1.1
+#      resources:
+#        requests:
+#          cpu: 500m
+#           memory: 200M
+#        limits:
+#          cpu: 500m
+#          memory: 200M
+#      volumeMounts:
+#        - mountPath: "/tmp/acow"
+#          name: tmp-cow-memory
+#      volumes:
+#        - name: tmp-cow-memory
+#          emptyDir:
+#            medium: Memory
+#            sizeLimit: "10Gi"
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false
+
+mesh:
+  enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+
+# The set of external services to allow egress to
+# Example:
+# kafka:
+# - main-codfw
+# - main-eqiad
+# presto:
+# - analytics
+#
+# See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services
+external_services: {}
