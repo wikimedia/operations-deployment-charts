@@ -317,12 +317,12 @@ main_app:
         - name: page-html-title
           in: '/+([^/]+)/v1/page/html/(.+)'
           out: '/w/rest.php/v1/page/\2/html'
-        - name: lint-revision
+        - name: page-lint-revision
           in: '/+([^/]+)/v1/page/lint/([^\/]+)/(.+)'
-          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2/\3'
-        - name: lint-title
+          out: '/w/rest.php/v1/revision/\3/lint'
+        - name: page-lint-title
           in: '/+([^/]+)/v1/page/lint/([^\/]+)'
-          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
+          out: '/w/rest.php/v1/page/\2/lint'
         - name: transform_wikitext_to_html
           in: '/+([^/]+)/v1/transform/wikitext/to/html(.*)'
           out: '/w/rest.php/v1/transform/wikitext/to/html\2'
