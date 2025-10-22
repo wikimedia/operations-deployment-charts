@@ -242,6 +242,8 @@ data:
           proxy_pass http://superset;
           proxy_set_header Connection "";
           proxy_http_version 1.1;
+          proxy_read_timeout {{ .Values.assets.proxy_read_timeout}};
+          proxy_send_timeout {{ .Values.assets.proxy_send_timeout}};
         }
       }
     }
