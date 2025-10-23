@@ -27,4 +27,7 @@ spec:
       {{- include "default.containers" . | indent 8}}
       {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
-      {{- include "wmf.volumes" . | indent 8}}
+      {{- include "mesh.deployment.volume" . | indent 8}}
+      {{ with .Values.main_app.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
