@@ -43,15 +43,22 @@ function envoy_on_response(response_handle)
 end
 
 function wmf_csp_header(response_handle)
-   local headers = response_handle:headers()
-   local csp
+    local headers = response_handle:headers()
+    local csp
+    -- Toggle for handling csp values is set through envoy.filters.http.set_metadata
+    local meta = streamInfo:dynamicMetadata()
+    local meta_csp = meta:get("wmf.rest_gateway.csp")
+    if meta_csp["enabled"] then
+        if headers:get("content-security-policy") ~=nil then
+            csp = headers:get("content-security-policy")
+        else
+            csp = "default-src 'none'; frame-ancestors 'none'"
+        end
 
-   if headers:get("content-security-policy") ~=nil then
-      csp = headers:get("content-security-policy")
-   else
-      csp = "default-src 'none'; frame-ancestors 'none'"
-   end
-
-   headers:replace('content-security-policy', csp)
+        headers:replace('content-security-policy', csp)
+    else then
+        # Disabled csp header handling, empty block for clarity
+        do return end
+    end
 end
 {{- end }}

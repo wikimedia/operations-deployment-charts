@@ -61,15 +61,6 @@
                 {{- else }}
                 stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
                 {{- end }}
-                {{- /* TODO: make apply_rate_limiting default to true */}}
-                {{- if $.Values.main_app.ratelimiter.enabled }}
-                {{- if not ( $endpoint.apply_rate_limiting | default false ) }}
-                typed_per_filter_config:
-                  envoy.filters.http.ratelimit:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
-                    vh_rate_limits: IGNORE
-                {{- end }}
-                {{- end }}
                 {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
@@ -137,11 +128,28 @@
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
-                {{- if $endpoint.no_csp }}
+                {{- /* Per route filter config overrides */}}
                 typed_per_filter_config:
-                  envoy.filters.http.lua:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
-                    disabled: true
+                  {{- /* CSP header handling */}}
+                  envoy.filters.http.set_metadata:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.set_metadata.v3.Config
+                    metadata:
+                      - metadata_namespace: wmf.rest_gateway.csp
+                        allow_overwrite: true
+                        value:
+                          {{- if hasKey $endpoint "csp_enabled" }}
+                          enabled: {{ $endpoint.csp_enabled }}
+                          {{- else }}
+                          enabled: true
+                          {{- end }}
+                {{- /* Rate limiting override */}}
+                {{- /* TODO: make apply_rate_limiting default to true */ -}}
+                {{- if $.Values.main_app.ratelimiter.enabled }}
+                {{- if not ( $endpoint.apply_rate_limiting | default false ) }}
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
+                {{- end }}
                 {{- end }}
 
 {{- end }}
