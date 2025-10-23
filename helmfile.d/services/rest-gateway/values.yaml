@@ -340,7 +340,7 @@ main_app:
           out: '/w/rest.php/readinglists/v0/lists/\2'
         # T397203: non-restbase replacement for the old /?spec path that returned JSON
         - name: spec-json-wikimedia
-          in: '/wikimedia\.org/v1/'
+          in: '/www\.wikimedia\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikimedia.json'
           params:
             - spec
