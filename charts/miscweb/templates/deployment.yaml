@@ -44,4 +44,7 @@ spec:
             name: {{ $.Release.Name }}-{{ $configName }}
         {{- end }}
         {{- end }}
+        {{ with .Values.main_app.volumes -}}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- include "mesh.deployment.volume" . | indent 8}}
