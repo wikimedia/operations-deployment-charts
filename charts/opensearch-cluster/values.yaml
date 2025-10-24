@@ -102,6 +102,7 @@ opensearchCluster:
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: true
+  port: 9200
 
 config:
 # secrets live here; they are merged via helmfile. See also .fixtures/secrets.yaml

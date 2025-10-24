@@ -1,3 +1,7 @@
+{{/*
+  Permit port 9300 (cluster state) information between clusters, the operator, istio etc.
+*/}}
+---
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
@@ -11,7 +15,28 @@ spec:
         namespaceSelector: 'kubernetes.io/metadata.name in {"{{ $.Release.Namespace }}", "istio-system", "opensearch-operator"}'
       destination:
         ports:
-          # REST API
-          - 9200
           # transport (cluster state)
           - 9300
+
+{{/*
+  Permit port 9200 without restrictions.
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Namespace }}-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector: 'has(opster.io/opensearch-cluster)'
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+      # OpenSearch REST API
+        ports:
+          - 9200

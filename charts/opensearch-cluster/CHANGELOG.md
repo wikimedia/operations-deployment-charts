@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.8]
+### Added
+  - Calico network policy to open port 9200 (REST API) globally, while reducing access to port 9300 (cluster state).
+### Deprecated
+### Removed
+### Fixed
+### Security
+
 
 ## [0.0.7]
 ### Added
