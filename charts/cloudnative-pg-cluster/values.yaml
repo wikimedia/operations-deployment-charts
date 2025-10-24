@@ -77,7 +77,7 @@ cluster:
   # -- Name of the container image, supporting both tags (<image>:<tag>) and digests for deterministic and repeatable deployments:
   # <image>:<tag>@sha256:<digestValue>
   imageName: "docker-registry.discovery.wmnet/repos/data-engineering/postgresql-kubernetes/postgresql"
-  imageTag:
+  imageTag: override_me
 
   # -- Image pull policy. One of Always, Never or IfNotPresent. If not defined, it defaults to IfNotPresent. Cannot be updated.
   # More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
@@ -185,15 +185,19 @@ cluster:
   postgresql: {}
     # max_connections: 300
 
+  shared_preload_libraries: []
+
   # -- BootstrapInitDB is the configuration of the bootstrap process when initdb is used.
   # See: https://cloudnative-pg.io/documentation/current/bootstrap/
   # See: https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/#postgresql-cnpg-io-v1-bootstrapinitdb
-  initdb: {}
+  initdb:
     # database: app
     # owner: "" # Defaults to the database name
     # secret: "" # Name of the secret containing the initial credentials for the owner of the user database. If empty a new secret will be created from scratch
     # postInitApplicationSQL:
     #  - CREATE EXTENSION IF NOT EXISTS vector;
+    postInitApplicationSQL: []  # SQL queries executed post bootstrap in the application database
+    postInitSQL: [] # SQL queries executed post bootstrap in the postgres database
 
   additionalLabels: {}
   annotations:

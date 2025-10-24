@@ -18,7 +18,7 @@ spec:
       containers:
         - name: database-ping-test
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
-          image: {{ $.Values.cluster.imageName }}:{{ $.Values.cluster.version }}
+          image: {{ $.Values.cluster.imageName }}:{{ get (get $.Values.common_images (last (splitList "/" $.Values.cluster.imageName))) (toString $.Values.cluster.version) }}
           command: [ 'sh' ]
           env:
             - name: PGUSER

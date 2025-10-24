@@ -67,6 +67,9 @@ spec:
     {{- if eq .Values.type "timescaledb" }}
     shared_preload_libraries:
     - timescaledb
+    {{- else if $.Values.cluster.shared_preload_libraries }}
+    shared_preload_libraries:
+{{ toYaml $.Values.cluster.shared_preload_libraries | indent 4 }}
     {{- else }}
     shared_preload_libraries: []
     {{- end }}
