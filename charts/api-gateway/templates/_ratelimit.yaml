@@ -7,6 +7,8 @@ descriptors:
 {{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
   # rest-gateway limits, experimental but enforced
   # Keep in sync with the "experiment-2025-shadow" variant below.
+  # NOTE: when changing the descriptor structure,
+  #       also update the matcher rules in ratelimiter_metrics.yaml!
   - key: policy
     value: "experiment-2025"
     descriptors:

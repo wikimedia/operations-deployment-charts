@@ -1,5 +1,16 @@
 ---
 mappings:
+  # Mappings for the REST gateway
+  - match: "ratelimit.service.rate_limit.wikimedia.policy_(.*).user_class_(.*).user_id.(.*)"
+    match_type: regex
+    name: "ratelimit_service_rest_gateway_$3"
+    labels:
+      policy: "$1"
+      user_class: "$2"
+      unit: HOUR # TODO: template this, or put it in the descriptor (T408132)
+
+  ################################################################
+  # Old broken rules for the API Gateway, see T408183
   - match: "ratelimit.service.rate_limit.*.*.near_limit"
     name: "ratelimit_service_rate_limit_near_limit"
     timer_type: "histogram"
