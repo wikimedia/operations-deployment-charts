@@ -108,6 +108,8 @@ cluster:
   # See https://github.com/cloudnative-pg/cloudnative-pg/issues/5420#issuecomment-2345461860
   env:
     TMPDIR: /run
+    AWS_REQUEST_CHECKSUM_CALCULATION: WHEN_REQUIRED
+    AWS_RESPONSE_CHECKSUM_VALIDATION: WHEN_REQUIRED
 
   # -- Resources requirements of every generated Pod.
   # Please refer to https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ for more information.
