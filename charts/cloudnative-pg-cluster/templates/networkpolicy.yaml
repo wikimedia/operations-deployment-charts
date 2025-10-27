@@ -18,6 +18,7 @@ spec:
           name: kubernetes
           namespace: default
 
+{{- if $.Values.pooler.enabled }}
 ---
 {{/*
   Allow the pooler (pgboucner) pods to be reached out to on port 5432
@@ -35,28 +36,6 @@ spec:
   ingress:
     - ports:
       - port: 5432
-        protocol: TCP
-
----
-{{/*
-  Allow the PG pods to be reached out to on port 8000, which exposes an API
-  used by the operator to enquire about the pod status.
-*/}}
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ include "cluster.fullname" . }}-ingress-instance
-spec:
-  podSelector:
-    matchLabels:
-      cnpg.io/podRole: instance
-  policyTypes:
-    - Ingress
-  ingress:
-    - ports:
-      - port: 8000 {{/* API port */}}
-        protocol: TCP
-      - port: 9187 {{/* prometheus port */}}
         protocol: TCP
 
 ---
@@ -85,6 +64,34 @@ spec:
           app.kubernetes.io/component == 'database-ping-test'
       destination:
         ports: [5432]
+{{- end }}
+
+---
+{{/*
+  Allow the PG pods to be reached out to on port 8000, which exposes an API
+  used by the operator to enquire about the pod status.
+*/}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "cluster.fullname" . }}-ingress-instance
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/podRole: instance
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+      - port: 8000 {{/* API port */}}
+        protocol: TCP
+      - port: 9187 {{/* prometheus port */}}
+        protocol: TCP
+      {{- if not $.Values.pooler.enabled }}
+      - port: 5432
+        protocol: TCP
+      {{- end }}
+
 
 {{- if $.Values.external_services }}
 {{- range $serviceType, $serviceNames := $.Values.external_services }}
