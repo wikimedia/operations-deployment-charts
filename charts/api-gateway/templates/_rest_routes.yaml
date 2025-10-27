@@ -127,6 +127,12 @@
                     append_action: OVERWRITE_IF_EXISTS_OR_ADD
                 {{- end }}
                 {{- end }}
+                {{- if (or $endpoint.csp_enabled (not (hasKey $endpoint "csp_enabled"))) }}
+                  - header:
+                      key: "content-security-policy"
+                      value: "default-src 'none'; frame-ancestors 'none'"
+                    append_action: ADD_IF_ABSENT
+                {{- end }}
                 route:
                   regex_rewrite:
                     pattern:
@@ -137,7 +143,20 @@
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
-                {{- if $endpoint.no_csp }}
+                {{- /* Per route filter config overrides */}}
+                {{- /* Rate limiting override */}}
+                {{- /* TODO: make apply_rate_limiting default to true */ -}}
+                {{- if $.Values.main_app.ratelimiter.enabled }}
+                {{- if not ( $endpoint.apply_rate_limiting | default false ) }}
+                typed_per_filter_config:
+                  envoy.filters.http.ratelimit:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    vh_rate_limits: IGNORE
+                  envoy.filters.http.lua:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
+                    disabled: true
+                {{- end }}
+                {{- else }}
                 typed_per_filter_config:
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute

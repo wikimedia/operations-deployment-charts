@@ -37,21 +37,4 @@ function wmf_ratelimit_info(request_handle)
     meta:set( "wmf.rest_gateway.rate_limit", "user_class", user_class )
     meta:set( "wmf.rest_gateway.rate_limit", "user_id", user_id )
 end
-
-function envoy_on_response(response_handle)
-    wmf_csp_header(response_handle)
-end
-
-function wmf_csp_header(response_handle)
-   local headers = response_handle:headers()
-   local csp
-
-   if headers:get("content-security-policy") ~=nil then
-      csp = headers:get("content-security-policy")
-   else
-      csp = "default-src 'none'; frame-ancestors 'none'"
-   end
-
-   headers:replace('content-security-policy', csp)
-end
 {{- end }}
