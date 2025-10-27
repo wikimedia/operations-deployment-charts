@@ -47,7 +47,7 @@ main_app:
       apply_rate_limiting: true
     - name: other_mobileapps
       cluster: mobileapps
-      csp_enabled: false
+      no_csp: true
       urls:
         - name: random
           in: '(.+)/v1/page/oh-no/(.+)/(.+)'
