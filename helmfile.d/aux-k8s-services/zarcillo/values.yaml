@@ -66,37 +66,23 @@ networkpolicy:
           port: 443
     # # idp.wikimedia.org # #
     # See https://phabricator.wikimedia.org/T398640
-    # idp1005:
+    # idp1005 IPv4:
     - cidr: 208.80.155.104/32
       ports:
         - protocol: TCP
           port: 443
+    # idp1005 IPv6:
     - cidr: 2620:0:861:4:208:80:155:104/128
       ports:
         - protocol: TCP
           port: 443
-    # idp2005:
+    # idp2005 IPv4:
     - cidr: 208.80.153.77/32
       ports:
         - protocol: TCP
           port: 443
+    # idp2005 IPv6:
     - cidr: 2620:0:860:3:208:80:153:77/128
-      ports:
-        - protocol: TCP
-          port: 443
-    - cidr: 2620:0:861:3:208:80:154:80/128
-      ports:
-        - protocol: TCP
-          port: 443
-    - cidr: 208.80.153.12/32
-      ports:
-        - protocol: TCP
-          port: 443
-    - cidr: 208.80.154.80/32
-      ports:
-        - protocol: TCP
-          port: 443
-    - cidr: 2620:0:860:1:208:80:153:12/128
       ports:
         - protocol: TCP
           port: 443
