@@ -5,7 +5,7 @@
 domain: wikimedia
 descriptors:
 {{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
-  - key: limit_group
+  - key: policy
     value: "experiment-2025"
     descriptors:
       # Limit for anonymous users. user_id is going to be the IP address or a cookie value.
