@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.9-wmf]
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+- Added a --- separator between the Role and RoleBinding resources, causing all resources to be created and not just a single one
+### Security
 
 ## [0.0.8-wmf]
 ### Added
