@@ -77,6 +77,10 @@ spec:
     parameters:
       {{- toYaml . | nindent 6 }}
     {{ end }}
+    {{- with .Values.cluster.pg_hba }}
+    pg_hba:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 
   managed:
     {{- if not .Values.cluster.roles }}
