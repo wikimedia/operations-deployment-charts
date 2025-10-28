@@ -5,11 +5,7 @@ config:
   public: # See https://docs.growthbook.io/self-host/env
     APP_ORIGIN: 'growthbook.discovery.wmnet:3000'
     API_HOST: 'growthbook-backend.discovery.wmnet:3100'
-    MONGODB_DBNAME: growthbook
-    MONGODB_USERNAME: growthbook
-
-mongodb:
-  version: xxxx-ci
+    MONGODB_URI: mongodb://ci:password@ferretdb-ci:217017/ci
 
 ingress:
   gatewayHosts:

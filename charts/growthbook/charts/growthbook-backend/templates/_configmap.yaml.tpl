@@ -1,6 +1,3 @@
-{{/*
-  This configmap is used to define the gunicorn and superset configuration
-*/}}
 {{- define "configmap.growthbook-backend" }}
 ---
 apiVersion: v1

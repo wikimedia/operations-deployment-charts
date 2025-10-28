@@ -1,5 +1,4 @@
-version: &app_version 2024-08-22-120740-2ebe4d3cfd4266afd0a3883b949e79d1c58e744a@sha256:ed1b43dfec59ac756a5f19b4990d4187cc18ad539bf3f2c09c9efd82a0438f7a
-
+version: &app_version 2025-10-28-093646-51d21ed9782e24169c12a348742308d47f5898dc@sha256:df372a0f12da4ea3a1a457c05139cd64093268ca591f5b4fc07385e10366f98e
 app_origin: &app_origin https://growthbook.discovery.wmnet:3000
 api_host: &api_host https://growthbook-backend.discovery.wmnet:3100
 
@@ -11,20 +10,6 @@ growthbook-backend:
     public: # See https://docs.growthbook.io/self-host/env
       APP_ORIGIN: *app_origin
       API_HOST: *api_host
-      MONGODB_HOST: growthbook-backend-production-mongodb
-      MONGODB_DBNAME: growthbook
-      MONGODB_USERNAME: growthbook
-
-  mongodb:
-    # Even if mongodb is shipped as part of the growthbook image
-    # we don't correlate the growthbook version with the mongodb image
-    # version, to avoid redeploying the DB at the slightest growthbook
-    # image update.
-    auth:
-      enabled: true
-    version: 2024-08-22-154123-2e75b412380e89e34b5630512fbdc04f21618581@sha256:fb70a7d712e23f2cdeda0aab55351275bd385cc03138ede68627c806e904e068
-    disk_size: 30Gi  # We manually resized the PVC and thus can't go back to the default 10Gi value
-
   ingress:
     gatewayHosts:
       default: "growthbook-backend"

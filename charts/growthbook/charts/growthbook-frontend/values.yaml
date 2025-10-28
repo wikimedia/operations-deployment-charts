@@ -5,8 +5,8 @@ app:
   image: repos/data-engineering/growthbook
   version: latest # we use latest everywhere in the defaults.
   port: &app_port 3000 # port exposed as a Service, also used by service-checker.
-  command: ['/opt/growthbook/node_modules/wsrun/bin/wsrun.js']
-  args: ['-p', 'front-end', '--no-prefix', '-c', 'start']
+  command:  [npx, wsrun, -p, front-end, --no-prefix, -c]
+  args: [start]
   requests:
     cpu: 2
     memory: 4Gi

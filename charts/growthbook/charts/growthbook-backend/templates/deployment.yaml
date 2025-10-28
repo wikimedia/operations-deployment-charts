@@ -24,5 +24,3 @@ spec:
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
-
-{{ include "mongodb.deployment" . }}

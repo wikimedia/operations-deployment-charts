@@ -1,12 +1,10 @@
-# Default values.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+
 app:
   image: repos/data-engineering/growthbook
   version: latest # we use latest everywhere in the defaults.
   port: &app_port 3100 # port exposed as a Service, also used by service-checker.
-  command: ['/opt/growthbook/node_modules/wsrun/bin/wsrun.js']
-  args: ['-p', 'back-end', '--no-prefix', '-c', 'start']
+  command:  [npx, wsrun, -p, back-end, --no-prefix, -c]
+  args: [start]
   requests:
     cpu: 2
     memory: 4Gi
@@ -28,55 +26,12 @@ app:
   - name: growthbook-backend-config-volume
     mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
 
-
-mongodb:
-  image: repos/data-engineering/growthbook
-  version: latest
-  port: &mongodb_port 27017
-  resources:
-    requests:
-      cpu: 1
-      memory: 1Gi
-    limits:
-      cpu: 1
-      memory: 1Gi
-    replicas: 1
-  liveness_probe:
-    tcpSocket:
-      port: *mongodb_port
-  readiness_probe:
-    tcpSocket:
-      port: *mongodb_port
-  volumes:
-  - name: mongodb-config-volume
-    configMap:
-      name: mongodb-config
-  - name: mongodb-data
-    persistentVolumeClaim:
-        claimName: mongodb-pvc
-        readOnly: false
-  volumeMounts:
-  - name: mongodb-config-volume
-    mountPath: /etc/mongodb/
-  - name: mongodb-data
-    mountPath: /data/db
-  disk_size: 10Gi
-  storageclass_name: ceph-rbd-ssd
-  auth:
-    enabled: false
-  config: # See https://www.mongodb.com/docs/manual/reference/configuration-options/
-    net:
-      port: *mongodb_port
-      bindIpAll: true
-    storage:
-      dbPath: /data/db
-
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  deployment: production # valid values are "production" and "minikube"
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
@@ -95,16 +50,17 @@ config:
     NODE_ENV: production
     APP_ORIGIN: override_me
     API_HOST: override_me
-    MONGODB_USERNAME: override_me
-    MONGODB_HOST: override_me
-    MONGODB_PORT: 27017
-    MONGODB_DBNAME: override_me
-    MONGODB_EXTRA_ARGS: "?authSource=admin"
-
+    EMAIL_ENABLED: "false"
+    UPLOAD_METHOD: s3
+    S3_BUCKET: override_me
+    S3_REGION: override_me
+    S3_DOMAIN: override_me
   private:
+    AWS_ACCESS_KEY_ID: secret
+    AWS_SECRET_ACCESS_KEY: secret
+    MONGODB_URI: secret
     JWT_SECRET: override_me
     ENCRYPTION_KEY: override_me
-    MONGODB_PASSWORD: override_me
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -172,7 +128,7 @@ mesh:
   # in dictionary form.
   request_headers_to_add: []
   # Timeout of a request to the local service
-  upstream_timeout: "185s"
+  upstream_timeout: "60s"
   # Enabling telemetry, telemetry port.
   telemetry:
     enabled: true
