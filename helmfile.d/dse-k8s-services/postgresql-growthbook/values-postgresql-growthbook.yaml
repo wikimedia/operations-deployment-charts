@@ -15,6 +15,10 @@ cluster:
     documentdb.enableBackgroundWorker: 'true'
     documentdb.enableBackgroundWorkerJobs: 'true'
 
+  pg_hba:
+    - host app app 127.0.0.1/32 trust
+    - host app app ::1/128 trust
+
   initdb:
     # database: postgres
     # owner: postgres
