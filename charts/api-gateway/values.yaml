@@ -66,7 +66,7 @@ main_app:
     # The rate limiting class to apply if the user identity is not know.
     # This can be set to "no-limit" for testing, when we only want to enforce rate limits
     # under special circumstances.
-    fallback_class: "anon"
+    fallback_policy: "anon"
     # The name of a cookie that will be trusted to contain the user's identity for use in
     # rate limiting. The empty string means trust no cookie. Trusting a cookie to contain
     # the correct identity is generally unsafe, but can be good enough for testing and

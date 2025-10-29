@@ -8,7 +8,7 @@ function wmf_ratelimit_info(request_handle)
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
     local user_id = "unknown"
-    local user_class = "{{ .Values.main_app.ratelimiter.fallback_class }}"
+    local user_class = "{{ .Values.main_app.ratelimiter.fallback_policy }}"
     local trusted_identity_cookie = "{{ .Values.main_app.ratelimiter.user_id_cookie }}"
 
     if headers:get("x-wmf-user-id") then
