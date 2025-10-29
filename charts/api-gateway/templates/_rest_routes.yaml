@@ -23,15 +23,6 @@
               # Default rate limits, can be overridden per route.
               rate_limits:
               - actions:
-                - generic_key:
-                    descriptor_key: policy
-                    descriptor_value: "experiment-2025"
-                - request_headers:
-                    descriptor_key: user_class
-                    header_name: x-wmf-user-class
-                - request_headers:
-                    descriptor_key: user_id
-                    header_name: x-wmf-user-id
                   {{- include "restgateway.rate_limit_actions" (dict "policy" .Values.main_app.ratelimiter.default_policy "Values" .Values) | nindent 16 }}
 {{- end }}
               routes:
