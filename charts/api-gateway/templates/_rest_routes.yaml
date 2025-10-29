@@ -68,7 +68,9 @@
                 typed_per_filter_config:
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    {{- if not $apply_rate_limiting }}
                     vh_rate_limits: IGNORE
+                    {{- end }}
                     {{- if (and $use_rate_limit_policy $apply_rate_limiting ) }}
                     rate_limits:
                       - actions:
