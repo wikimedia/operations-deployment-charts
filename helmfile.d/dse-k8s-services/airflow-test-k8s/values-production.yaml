@@ -8,6 +8,9 @@ config:
         worker_pods_creation_batch_size: 32
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
+    local_settings:
+      xcom_sidecar:
+        tag: '20251026'
 
   oidc:
     idp_server: idp-test.wikimedia.org
@@ -17,6 +20,10 @@ app: # the webserver
     memory: 4Gi
   limits:
     memory: 4Gi
+  version: &base-image-version airflow-2.10.5-py3.11-2025-10-28-180625-408f1c807543d41aa2aac21673c993bd4b40dc12@sha256:88d819a52931c85a58c4f485c51646f35dc016f63f9f734c98be63297baf17ac
+  executor_pod_image_version: *base-image-version
+  image: &airflow_image repos/data-engineering/airflow-dags
+  executor_pod_image: *airflow_image
 
 scheduler:
   requests:
