@@ -72,7 +72,7 @@
                     {{- if (and $use_rate_limit_policy $apply_rate_limiting ) }}
                     rate_limits:
                       - actions:
-                          {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" .Values ) | nindent 22 }}
+                          {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" .Values ) | nindent 24}}
                     {{- end }}
                 {{- end }}
 

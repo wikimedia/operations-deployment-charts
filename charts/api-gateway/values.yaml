@@ -56,7 +56,7 @@ main_app:
     # The default value for the group key in the rate limit descriptor.
     # This can be used to switch between different rate limiting regimes
     # defined in _ratelimit.yaml.
-    # Individual routes can override this by setting the use_rate_limit_group value.
+    # Individual routes can override this by setting the use_rate_limit_policy value.
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
     default_policy: experiment-2025
     # Whether routes need to opt into rate limiting.
