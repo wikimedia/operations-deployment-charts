@@ -73,7 +73,7 @@ main_app:
       requests_per_unit: 10
       unit: MINUTE
     # Manual testing
-    default_opt_in: true
+    require_opt_in: true
     fallback_policy: "no-limit"
     user_id_cookie: "testing_User"
     allow_client_headers: true
