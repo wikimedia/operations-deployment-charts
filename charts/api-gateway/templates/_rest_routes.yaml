@@ -153,6 +153,7 @@
                 typed_per_filter_config:
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
+                    {{- /* NOTE: Overriding rate limits is broken in Envoy until version 1.33, see https://github.com/envoyproxy/envoy/issues/34605  */}}
                     rate_limits:
                       - actions:
                           {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" .Values ) | nindent 24}}

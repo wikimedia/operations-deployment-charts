@@ -43,7 +43,11 @@ spec:
       containers:
         # The main application container
         - name: {{ template "base.name.release" . }}
+          {{- if .Values.main_app.image_override }}
+          image: "{{ .Values.main_app.image_override }}"
+          {{- else }}
           image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           {{- if .Values.main_app.command }}
           command:

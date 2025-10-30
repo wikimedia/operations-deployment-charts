@@ -7,6 +7,8 @@ resources:
 main_app:
   image: envoy
   version: latest
+  # Image override for manual testing. Use the form <registry>/<name>:<tag>
+  image_override: false
   port: 8087
   # change this in values files if you want to avoid running the
   # default envoy image entrypoint
@@ -61,6 +63,8 @@ main_app:
     # This can be used to switch between different rate limiting regimes
     # defined in _ratelimit.yaml.
     # Individual routes can override this by setting the use_rate_limit_policy value.
+    # NOTE: per-route policy overrides require Envoy 1.33 or later,
+    #       see https://github.com/envoyproxy/envoy/issues/34605.
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
     default_policy: experiment-2025
     # Whether routes need to opt into rate limiting.
