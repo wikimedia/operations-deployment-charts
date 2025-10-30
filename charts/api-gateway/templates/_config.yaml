@@ -234,12 +234,15 @@ static_resources:
                 # make a cookie for identifying the user available in Lua via metadata
                 {{ include "config.app.cookie_to_metadata" .Values.main_app.ratelimiter.user_id_cookie | indent 16 }}
           {{- end }}
+{{- /* Since we use Lua only for rate limiting, disable it if rate limiting is disabled. */ -}}
+{{- if $.Values.main_app.ratelimiter.enabled }}
           - name: envoy.filters.http.lua
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
               default_source_code:
                 inline_string: |
 {{ include "restgateway.lua" . | indent 18 }}
+{{- end }}
 {{- end }}
 {{- if .Values.main_app.ratelimiter.enabled }}
           - name: envoy.filters.http.ratelimit
