@@ -86,6 +86,8 @@ opensearchCluster:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9200"
         prometheus.io/path: "/_prometheus/metrics"
+        prometheus.io/scheme: "https"
+
     # prevent 2 masters from being scheduled on the same k8s worker
       affinity:
         podAntiAffinity:

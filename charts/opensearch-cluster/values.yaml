@@ -73,12 +73,13 @@ opensearchCluster:
         limits:
           memory: "2Gi"
           cpu: "500m"
-    # These annotations enable/configure metrics scrapes
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9200"
-        prometheus.io/path: "/_prometheus/metrics"
-        prometheus.io/scheme: "https"
+    # I've commented out these annotations as they seem to be clobbered rather than merged with higher-priority values files.
+    # We probably won't fix this before we migrate to a newer chart, so let's disable them and rely on the values files completely.
+      # annotations:
+      #   prometheus.io/scrape: "true"
+      #   prometheus.io/port: "9200"
+      #   prometheus.io/path: "/_prometheus/metrics"
+      #   prometheus.io/scheme: "https"
     # prevent 2 masters from being scheduled on the same k8s worker
       affinity:
         podAntiAffinity:
