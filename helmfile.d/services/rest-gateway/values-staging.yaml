@@ -63,7 +63,7 @@ main_app:
     log_level: debug
     redis_host: localhost
     redis_port: 6379
-    key_prefix: "restgw"
+    key_prefix: "restgw_"
     key_log_format: "%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_class)%:%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_id)%"
     envoy_timeout: 0.5
     anon_limit:
@@ -73,8 +73,9 @@ main_app:
       requests_per_unit: 10
       unit: MINUTE
     # Manual testing
-    require_opt_in: true
-    fallback_policy: "no-limit"
+    require_opt_in: false
+    default_policy: 'experiment-2025-shadow'
+    fallback_policy: "anon"
     user_id_cookie: "testing_User"
     allow_client_headers: true
 
@@ -258,6 +259,7 @@ main_app:
           out: '/w/rest.php/readinglists/v0/lists/\2'
       rb_response_headers: true
       apply_rate_limiting: true
+      use_rate_limit_policy: 'experiment-2025'
 
     - name: mw-rest-php
       timeout: 15s

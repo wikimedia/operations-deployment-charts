@@ -138,25 +138,21 @@
                 {{- /* If use_rate_limit_policy is set, ignore global rate limits and generate rate limit actions  */}}
                 {{- $apply_rate_limiting := ternary $endpoint.apply_rate_limiting (not $.Values.main_app.ratelimiter.require_opt_in) (hasKey $endpoint "apply_rate_limiting") }}
                 {{- $use_rate_limit_policy := ternary $endpoint.use_rate_limit_policy false (hasKey $endpoint "use_rate_limit_policy") }}
-
                 {{- /* Opt out (or missing opt-in) */ -}}
                 {{- if not $apply_rate_limiting }}
                 typed_per_filter_config:
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     vh_rate_limits: IGNORE
-
                   # Because we use Lua only for rate limiting, we can disable it if rate limiting is not applied
                   envoy.filters.http.lua:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute
                     disabled: true
-
                 {{- /* Policy override */ -}}
                 {{- else if $use_rate_limit_policy }}
                 typed_per_filter_config:
                   envoy.filters.http.ratelimit:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
-                    vh_rate_limits: IGNORE
                     rate_limits:
                       - actions:
                           {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" .Values ) | nindent 24}}
