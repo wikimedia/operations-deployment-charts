@@ -58,6 +58,9 @@ the `charts/` directory.
 The changes should include incrementing the chart's version in the respective
 `Chart.yaml` file.
 
+To avoid changes without version bump, a pre-commit hook is available at the
+repository root. You can symlink it to `.git/hooks/`.
+
 The resulting files and changes should then be uploaded to
 [Gerrit](https://gerrit.wikimedia.org) for code review.
 
