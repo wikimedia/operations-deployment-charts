@@ -5,6 +5,11 @@ config:
       core:
         dag_file_processor_timeout: 600  # T394459: we observed DAG processing timeouts
 
+  connections:
+    spurus:
+      host: https://feeds.spur.us
+      extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
+
 gitsync:
   # Some DAGS in platform_eng import functions from the main folder
   extra_dags_folders: [main]
