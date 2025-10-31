@@ -13,6 +13,8 @@ app:
       recommendation-create-stream: mediawiki.revision-recommendation-create
       page-weighted-tags-change-stream: mediawiki.cirrussearch.page_weighted_tags_change.v1
       bypass-optimization-wikiids: wikidatawiki
+      # temporary excluce loginwiki (the cirrus config dump is not correct for this one)
+      wikiids: -loginwiki
 
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
