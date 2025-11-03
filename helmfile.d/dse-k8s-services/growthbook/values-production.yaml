@@ -10,12 +10,17 @@ growthbook-backend:
     public: # See https://docs.growthbook.io/self-host/env
       APP_ORIGIN: *app_origin
       API_HOST: *api_host
+      EMAIL_ENABLED: 'true'
+      EMAIL_HOST: mx-out1001.wikimedia.org
+      EMAIL_FROM: "growthbook@wikimedia.org"
   ingress:
     gatewayHosts:
       default: "growthbook-api"
       extraFQDNs:
       - growthbook-api.wikimedia.org
 
+  external_services:
+    wikimail: [mx]
 
 growthbook-frontend:
   app:
