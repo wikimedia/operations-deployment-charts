@@ -14,6 +14,14 @@ cluster:
     cron.database_name: app
     documentdb.enableBackgroundWorker: 'true'
     documentdb.enableBackgroundWorkerJobs: 'true'
+    documentdb.enableBypassDocumentValidation: 'true'
+    documentdb.enableCompact: 'true'
+    documentdb.enableLetAndCollationForQueryMatch: 'true'
+    documentdb.enableNowSystemVariable: 'true'
+    documentdb.enableSchemaValidation: 'true'
+    documentdb.enableSortbyIdPushDownToPrimaryKey: 'true'
+    documentdb.enableUserCrud: 'true'
+    documentdb.maxUserLimit: '100'
 
   pg_hba:
     - host app app 127.0.0.1/32 trust
