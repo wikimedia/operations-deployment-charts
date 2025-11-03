@@ -22,9 +22,14 @@ app:
   - name: growthbook-backend-config-volume
     configMap:
       name: growthbook-backend-config
+  - name: growthbook-backend-uploads-volume
+    persistentVolumeClaim:
+      claimName: growthbook-backend-uploads
   volumeMounts:
   - name: growthbook-backend-config-volume
     mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
+  - name: growthbook-backend-uploads-volume
+    mountPath: /opt/growthbook/packages/back-end/uploads # cf https://docs.growthbook.io/self-host/production#local
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -51,16 +56,18 @@ config:
     APP_ORIGIN: override_me
     API_HOST: override_me
     EMAIL_ENABLED: "false"
-    UPLOAD_METHOD: s3
-    S3_BUCKET: override_me
-    S3_REGION: override_me
-    S3_DOMAIN: override_me
+    UPLOAD_METHOD: local
   private:
     AWS_ACCESS_KEY_ID: secret
     AWS_SECRET_ACCESS_KEY: secret
     MONGODB_URI: secret
     JWT_SECRET: override_me
     ENCRYPTION_KEY: override_me
+
+uploads:
+  volume:
+    size: 1Gi
+    storage_class: override_me
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
