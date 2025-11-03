@@ -1,6 +1,6 @@
 version: &app_version 2025-10-28-093646-51d21ed9782e24169c12a348742308d47f5898dc@sha256:df372a0f12da4ea3a1a457c05139cd64093268ca591f5b4fc07385e10366f98e
-app_origin: &app_origin https://growthbook.discovery.wmnet:3000
-api_host: &api_host https://growthbook-backend.discovery.wmnet:3100
+app_origin: &app_origin https://growthbook.wikimedia.org
+api_host: &api_host https://growthbook-api.wikimedia.org
 
 growthbook-backend:
   app:
@@ -12,7 +12,9 @@ growthbook-backend:
       API_HOST: *api_host
   ingress:
     gatewayHosts:
-      default: "growthbook-backend"
+      default: "growthbook-api"
+      extraFQDNs:
+      - *api_host
 
 
 growthbook-frontend:
@@ -27,3 +29,5 @@ growthbook-frontend:
   ingress:
     gatewayHosts:
       default: "growthbook"
+      extraFQDNs:
+      - *app_origin
