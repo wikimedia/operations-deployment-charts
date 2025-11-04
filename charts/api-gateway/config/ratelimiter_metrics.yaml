@@ -1,5 +1,7 @@
 ---
 mappings:
+  # Limit metrics ##############################################################
+
   # Mappings for the REST gateway
   - match: "ratelimit.service.rate_limit.wikimedia.policy_(.*).user_class_(.*).user_id.(.*)"
     match_type: regex
@@ -9,62 +11,27 @@ mappings:
       user_class: "$2"
       unit: HOUR # TODO: template this, or put it in the descriptor (T408132)
 
-  ################################################################
-  # Old broken rules for the API Gateway, see T408183
-  - match: "ratelimit.service.rate_limit.*.*.near_limit"
-    name: "ratelimit_service_rate_limit_near_limit"
-    timer_type: "histogram"
+  # Mappings for the API gateway (anon)
+  - match: "ratelimit.service.rate_limit.wikimedia.route_name_(.*).user_class_anon_fallback_(.*).client_ip.(.*)"
+    match_type: regex
+    name: "ratelimit_service_api_gateway_$3"
     labels:
-      domain: "$1"
+      route_name: "$1"
       user_class: "$2"
-  - match: "ratelimit.service.rate_limit.*.*.over_limit"
-    name: "ratelimit_service_rate_limit_over_limit"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-  - match: "ratelimit.service.rate_limit.*.*.total_hits"
-    name: "ratelimit_service_rate_limit_total_hits"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-  - match: "ratelimit.service.rate_limit.*.*.within_limit"
-    name: "ratelimit_service_rate_limit_within_limit"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
+      client_id: "none"
+      user_id: "none"
 
-  - match: "ratelimit.service.rate_limit.*.*.*.near_limit"
-    name: "ratelimit_service_rate_limit_near_limit"
-    timer_type: "histogram"
+  # Mappings for the API gateway (JWT)
+  - match: "ratelimit.service.rate_limit.wikimedia.route_name_(.*).client_id_(.*).user_id_(.*).(.*)"
+    match_type: regex
+    name: "ratelimit_service_api_gateway_$4"
     labels:
-      domain: "$1"
-      user_class: "$2"
-      key2: "$3"
-  - match: "ratelimit.service.rate_limit.*.*.*.over_limit"
-    name: "ratelimit_service_rate_limit_over_limit"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-      key2: "$3"
-  - match: "ratelimit.service.rate_limit.*.*.*.total_hits"
-    name: "ratelimit_service_rate_limit_total_hits"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-      key2: "$3"
-  - match: "ratelimit.service.rate_limit.*.*.*.within_limit"
-    name: "ratelimit_service_rate_limit_within_limit"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-      key2: "$3"
+      route_name: "$1"
+      user_class: "jwt-user"
+      client_id: "$2"
+      user_id: "$3"
 
+  # Service metrics ##############################################################
   - match: "ratelimit.service.call.should_rate_limit.*"
     name: "ratelimit_service_should_rate_limit_error"
     match_metric_type: counter
@@ -89,11 +56,3 @@ mappings:
   - match: "ratelimit.service.config_load_error"
     name: "ratelimit_service_config_load_error"
     match_metric_type: counter
-
-  - match: "ratelimit.service.rate_limit.*.*.*.shadow_mode"
-    name: "ratelimit_service_rate_limit_shadow_mode"
-    timer_type: "histogram"
-    labels:
-      domain: "$1"
-      user_class: "$2"
-      key2: "$3"
