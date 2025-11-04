@@ -251,7 +251,9 @@ static_resources:
               domain: wikimedia
               stage: 0
               timeout: {{ .Values.main_app.ratelimiter.envoy_timeout }}s
+              {{- if .Values.main_app.ratelimiter.enable_x_ratelimit_headers }}
               enable_x_ratelimit_headers: DRAFT_VERSION_03
+              {{- end }}
               rate_limit_service:
                 transport_api_version: V3
                 grpc_service:

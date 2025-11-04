@@ -51,6 +51,8 @@ main_app:
     # stripped by default. Setting this to true will reuse the original headers instead,
     # which is useful for testing. This should be set to false in production.
     allow_client_headers: false
+    # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
+    enable_x_ratelimit_headers: true
     # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about
     # which ones would have been denied ("dry run").
     # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode
