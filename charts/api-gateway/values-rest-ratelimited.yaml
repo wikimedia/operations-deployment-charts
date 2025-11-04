@@ -11,7 +11,7 @@ main_app:
     redis_port: 6380 # nutcracker
     redis_pass: ""
     key_prefix: "restgw"
-    key_log_format: "%REQ(x-wmf-user-class)%:%REQ(x-wmf-user-id)%"
+    key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
     envoy_timeout: 0.5
 
 nutcracker:

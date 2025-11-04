@@ -63,7 +63,7 @@ main_app:
     redis_host: localhost
     redis_port: 6379
     key_prefix: "restgw_"
-    key_log_format: "%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_class)%:%DYNAMIC_METADATA(wmf.rest_gateway.rate_limit:user_id)%"
+    key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
     envoy_timeout: 0.5
     anon_limit:
       requests_per_unit: 3
@@ -74,7 +74,7 @@ main_app:
     # Manual testing
     require_opt_in: false
     default_policy: 'experiment-2025-shadow'
-    fallback_policy: "anon"
+    fallback_class: "anon"
     user_id_cookie: "testing_User"
     allow_client_headers: true
 

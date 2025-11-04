@@ -224,7 +224,7 @@ static_resources:
               mutations:
                 request_mutations: # strip headers used to decide how to ratelimit this request
                   - remove: "x-wmf-user-id"
-                  - remove: "x-wmf-user-class"
+                  - remove: "x-wmf-ratelimit-class"
           {{- end }}
           {{- if .Values.main_app.ratelimiter.user_id_cookie }}
           - name: envoy.filters.http.header_to_metadata
