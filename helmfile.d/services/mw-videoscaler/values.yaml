@@ -1,6 +1,6 @@
 mesh:
   enabled: true
-  image_version: 1.29.12-1
+  image_version: 1.32.12-1
 
 mw:
   httpd:
@@ -31,7 +31,7 @@ mercurius:
     max.poll.interval.ms: "7200000"
   # Bump the generation number whenever updating the pod template, in order to
   # force a new Helm release.
-  generation: 4
+  generation: 5
   # workers *roughly* corresponds to maximum parallel encodes per-job.
   workers: 6
 
