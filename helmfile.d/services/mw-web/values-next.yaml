@@ -6,7 +6,9 @@
 
 resources:
   # NOTE: Keep 1 replica running to satisfy pybal checks, etc. when not in use.
-  replicas: 136  # Scaled to 40% of main multi-DC size (T405955)
+  # NOTE: The summed size of the next and main releases may be greater then the
+  # nominal multi-DC size of main in the absence of an ongoing migration.
+  replicas: 170  # Scaled to 50% of nominal main multi-DC size (340) (T405955)
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) in order to improve
