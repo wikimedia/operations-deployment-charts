@@ -12,25 +12,28 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-web-deploy-%s.config" .Environment.Name) }}
 
-# kubernetesVersion is hard-coded here -- T388969. Remember to change it when upgrading k8s!
 environments:
   eqiad:
     values:
       - releases: [main,next,migration,canary,prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [main,next,migration,canary,prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   # These are non-production development environments used for testing
   # scap and related deployment tooling.
   traindev:
     values:
       - releases: [main,canary]
+      # do not load clusterinfo for non-prod environments, just hard-code necessary values
       - kubernetesVersion: '1.31'
   traindev-staging:
     values:
       - releases: [main]
+      # do not load clusterinfo for non-prod environments, just hard-code necessary values
       - kubernetesVersion: '1.31'
 
 ---

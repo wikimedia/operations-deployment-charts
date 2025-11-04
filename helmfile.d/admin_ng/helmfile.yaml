@@ -4,6 +4,7 @@ environments:
       - "values/common.yaml"
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
@@ -22,6 +23,7 @@ environments:
       - "values/common.yaml"
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
@@ -40,6 +42,7 @@ environments:
       - "values/common.yaml"
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
@@ -57,6 +60,7 @@ environments:
       - "values/common.yaml"
       - "values/main.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
@@ -75,6 +79,7 @@ environments:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
@@ -92,6 +97,7 @@ environments:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
@@ -110,6 +116,7 @@ environments:
       - "values/common.yaml"
       - "values/ml-serve.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
@@ -128,6 +135,7 @@ environments:
       - "values/common.yaml"
       - "values/dse-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # We are not installing knative and kserve yet, but may do so in the near future.
@@ -152,6 +160,7 @@ environments:
       - "values/common.yaml"
       - "values/dse-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # We are not installing knative and kserve yet, but may do so in the near future.
@@ -172,6 +181,7 @@ environments:
       - "values/common.yaml"
       - "values/aux-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup
@@ -188,6 +198,7 @@ environments:
       - "values/common.yaml"
       - "values/aux-k8s.yaml"
       - "values/{{ .Environment.Name }}/values.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       # Deploy network policies for a istio ingresscontroller setup

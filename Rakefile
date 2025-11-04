@@ -46,6 +46,7 @@ desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
   check_binary('helm3.11')
+  check_binary('helm3.17')
   check_binary('helmfile')
   check_binary('semver-cli')
 
@@ -520,6 +521,9 @@ task :refresh_fixtures do
     data = hiera['profile::kubernetes::deployment_server::general']
 
     write_env_fixtures = lambda do |env_name, cluster_values|
+      File.open(".fixtures/clusterinfo-#{env_name}.yaml", 'w') do |out|
+        YAML.dump({'kubernetesVersion' => kubernetes_clusters[env_name]['version']}, out)
+      end
       File.open(".fixtures/general-#{env_name}.yaml", 'w') do |out|
         res = [
           data['default'],

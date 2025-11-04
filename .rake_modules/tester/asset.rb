@@ -573,6 +573,7 @@ module Tester
     end
 
     # Patch helmfiles so that .fixtures.yaml is used instead of
+    # * /etc/helmfile-defaults/clusterinfo-#{env}.yaml
     # * /etc/helmfile-defaults/general-#{env}.yaml
     # * /etc/helmfile-defaults/services-#{env}.yaml
     # * /etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml for admin_ng helmfiles
@@ -585,14 +586,27 @@ module Tester
       charts_dir = File.join dir, 'charts'
       helmfile_glob = File.join(dir, '**/helmfile*.yaml')
       fixtures_file = File.join(dir, '.fixtures.yaml')
-      # generated_fixtures_files will contain the megred content of
+      # generated_fixtures_file will contain the megred content of
       # general environment fixtures and local fixtures (for services)
       generated_fixtures_file = File.join(dir, '.generated_fixtures.yaml')
+      generated_clusterinfo_file = File.join(dir, '.generated_clusterinfo.yaml')
       FileList.new(helmfile_glob).each do |helmfile_path|
         # Replace references to charts in the repository with local ones
         # to also catch changes to charts that are not released yet.
         content_lines = patch_charts(helmfile_path, env, charts_dir)
         content = change_helm_args(content_lines)
+
+        # Patch the clusterinfo path, then copy the fixtures file.
+        # Create a generic one if an env-specific one doesn't exist.
+        clusterinfo_file = ".fixtures/clusterinfo-#{env}.yaml"
+        content.gsub!(%r{/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml}, clusterinfo_file)
+        if File.exist? clusterinfo_file
+          FileUtils.cp clusterinfo_file, generated_clusterinfo_file
+        else
+          File.open(generated_clusterinfo_file, 'w') do |out|
+            YAML.dump({'kubernetesVersion' => KUBERNETES_VERSIONS[0]}, out)
+          end
+        end
 
         # Read the general environment fixtures if there are any
         general_fixtures_file = ".fixtures/general-#{env}.yaml"
@@ -739,7 +753,7 @@ module Tester
         admin_helmfile = File.join(tmpdir, @helmfile)
         content = File.read(admin_helmfile)
         content.gsub!(
-          %r{/etc/helmfile-defaults/(?<filename>(general|services)-{{ .Environment.Name }}.yaml)},
+          %r{/etc/helmfile-defaults/(?<filename>(general|services|clusterinfo)-{{ .Environment.Name }}.yaml)},
           '.fixtures/\k<filename>')
         File.write admin_helmfile, content
         super(env, tmpdir)
@@ -752,7 +766,7 @@ module Tester
     # kubernetesVersion of the environment.
     def collect_kube_version(path)
       fixtures.reduce({}) do |memo, (fixture, env)|
-        env_vals_path = ".fixtures/general-#{env}.yaml"
+        env_vals_path = ".fixtures/clusterinfo-#{env}.yaml"
         if File.exist?(env_vals_path)
           env_vals = yaml_load_file(env_vals_path)
           if env_vals and env_vals.has_key?('kubernetesVersion')

@@ -12,16 +12,17 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-wikifunctions-deploy-%s.config" .Environment.Name) }}
 
-# kubernetesVersion is hard-coded here -- T388969. Remember to change it when upgrading k8s!
 environments:
   eqiad:
     values:
       - releases: [prometheus, group0, group1, group2]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [prometheus, group0, group1, group2]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
 
 ---
 
