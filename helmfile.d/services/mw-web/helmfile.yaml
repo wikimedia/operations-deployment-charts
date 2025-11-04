@@ -2,7 +2,8 @@ helmDefaults:
   createNamespace: false
   verify: false
   atomic: true
-  timeout: 600
+  # TODO: T405955 - Temporarily increase timeout to 15m.
+  timeout: 900
   recreatePods: false
   force: false
   args:
@@ -104,8 +105,6 @@ releases:
   - name: main
     <<: *default
   - name: next
-    # TODO: T405955 - Temporarily increase timeout to 15m.
-    timeout: 900
     <<: *default
   - name: migration
     <<: *default
