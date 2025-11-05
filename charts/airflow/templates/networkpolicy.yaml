@@ -152,6 +152,31 @@ spec:
 {{- end }}
 {{- end }}
 
+{{/*
+  Only allow task pods that are labeled `proxy=urldownloader` to egress the urldownloader hosts.
+
+  We do this to avoid piercing too large a hole in our firewall. Only the jobs requiring access will
+  get access. The rest will not, thus following principle of least privilege.
+*/}}
+{{- if $.Values.worker.proxy.urldownloader.enabled }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.meta.name" (dict "Root" $) }}-egress-urldownloader-task-pod
+  {{- include "base.meta.labels" $ | indent 2 }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector: "app == '{{ template "base.name.chart" $ }}' && release == '{{ $.Release.Name }}' && component == 'task-pod' && proxy == 'urldownloader'"
+  types:
+  - Egress
+  egress:
+    - action: Allow
+      destination:
+        services:
+          name: urldownloader-wikimedia
+          namespace: external-services
+{{- end }}
 
 {{- if $.Values.mesh.enabled }}
 {{/* This networkpolicy allows ingress on the envoy pod for every port associated with the registered discovery listeners */}}
