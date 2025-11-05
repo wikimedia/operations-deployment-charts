@@ -3,7 +3,7 @@ mappings:
   # Limit metrics ##############################################################
 
   # Mappings for the REST gateway
-  - match: "ratelimit.service.rate_limit.wikimedia.policy_(.*).user_class_(.*).user_id.(.*)"
+  - match: "ratelimit\\.service\\.rate_limit\\.wikimedia\\.policy_(.*)\\.user_class_(.*)\\.user_id\\.(.*)"
     match_type: regex
     name: "ratelimit_service_rest_gateway_$3"
     labels:
@@ -12,7 +12,7 @@ mappings:
       unit: HOUR # TODO: template this, or put it in the descriptor (T408132)
 
   # Mappings for the API gateway (anon)
-  - match: "ratelimit.service.rate_limit.wikimedia.route_name_(.*).user_class_anon_fallback_(.*).client_ip.(.*)"
+  - match: "ratelimit\\.service\\.rate_limit.wikimedia\\.route_name_(.*)\\.user_class_anon_fallback_(\\w+)\\.client_ip\\.(.*)"
     match_type: regex
     name: "ratelimit_service_api_gateway_$3"
     labels:
@@ -22,7 +22,7 @@ mappings:
       user_id: "none"
 
   # Mappings for the API gateway (JWT)
-  - match: "ratelimit.service.rate_limit.wikimedia.route_name_(.*).client_id_(.*).user_id_(.*).(.*)"
+  - match: "ratelimit\\.service\\.rate_limit\\.wikimedia\\.route_name_(.*)\\.client_id_(\\w+)\\.user_id_(\\w+)\\.(.*)"
     match_type: regex
     name: "ratelimit_service_api_gateway_$4"
     labels:
