@@ -20,6 +20,7 @@ ingress:
     extraFQDNs:
     - airflow-platform-eng.wikimedia.org
 
-external_services:
-  task-pod:
-    urldownloader: [wikimedia]
+worker:
+  proxy:
+    urldownloader:
+      enabled: true
