@@ -1,4 +1,23 @@
 inference_services:
+
+  revise-tone-task-generator:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
+      image_version: "2025-11-04-123803-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/edit-check/peacock/"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
+
   revertrisk-wikidata:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
