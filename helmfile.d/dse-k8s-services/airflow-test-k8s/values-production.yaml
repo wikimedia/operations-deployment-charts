@@ -17,6 +17,10 @@ app: # the webserver
     memory: 4Gi
   limits:
     memory: 4Gi
+  version: &base-image-version airflow-2.10.5-py3.11-2025-11-04-144729-15a48fbbf17c764c194e0acf87df0e389226d59d@sha256:de985e6946b2a66a49a567700e92bdbf5e1a2b744d84cfa14d65e6c7f8f6cb69
+  executor_pod_image_version: *base-image-version
+  image: &airflow_image repos/data-engineering/airflow-dags
+  executor_pod_image: *airflow_image
 
 scheduler:
   requests:
