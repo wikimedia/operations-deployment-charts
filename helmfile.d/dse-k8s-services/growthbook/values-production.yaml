@@ -14,7 +14,7 @@ growthbook-backend:
     gatewayHosts:
       default: "growthbook-api"
       extraFQDNs:
-      - *api_host
+      - growthbook-api.wikimedia.org
 
 
 growthbook-frontend:
@@ -30,4 +30,4 @@ growthbook-frontend:
     gatewayHosts:
       default: "growthbook"
       extraFQDNs:
-      - *app_origin
+      - growthbook.wikimedia.org
