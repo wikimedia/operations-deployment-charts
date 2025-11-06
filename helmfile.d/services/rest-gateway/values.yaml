@@ -25,11 +25,11 @@ main_app:
     redis_host: localhost
     redis_port: 6379
 
-    # T406498 phase 1:
+    # T406498 phase 2:
     # Deploy the ratelimit infrastructure, but do not apply any rate limiting.
     # Allow manual testing.
     enabled: true
-    shadow_mode: false
+    shadow_mode: true
     default_policy: experiment-2025
     user_id_cookie: ""
     fallback_class: no-limit
