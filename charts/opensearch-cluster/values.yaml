@@ -97,6 +97,8 @@ opensearchCluster:
         generate: false
         secret:
           name: opensearch-wmf
+        caSecret:
+          name: opensearch-wmf
 
 # begin WMF-specific config
 
@@ -108,10 +110,15 @@ monitoring:
 config:
 # secrets live here; they are merged via helmfile. See also .fixtures/secrets.yaml
   private:
-    username: secret
-    password: secret
-    hashed_password: secret
-
+    users:
+      operator:
+        username: secret
+        password: secret
+        hashed_password: secret
+      opensearch:
+        username: secret
+        password: secret
+        hashed_password: secret
 certificate:
   name: opensearch-wmf
   extraFQDNs:
