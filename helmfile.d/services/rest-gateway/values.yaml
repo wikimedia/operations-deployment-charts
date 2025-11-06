@@ -20,6 +20,20 @@ main_app:
     cpu: 2
     memory: 2Gi
 
+  ratelimiter:
+    # use nutcracker sidecar
+    redis_host: localhost
+    redis_port: 6379
+
+    # T406498 phase 0:
+    # Deploy the ratelimit infrastructure, but do not apply any rate limiting
+    enabled: true
+    shadow_mode: false
+    default_policy: experiment-2025
+    user_id_cookie: ""
+    fallback_policy: no-limit
+    require_opt_in: true
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*
@@ -747,3 +761,8 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 6379
+
+# Needed by the ratelimit sidecar
+nutcracker:
+  enabled: true
+  version: 0.0.4
