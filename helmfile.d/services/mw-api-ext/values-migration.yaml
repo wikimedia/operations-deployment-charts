@@ -13,6 +13,7 @@ resources:
 # TODO: T405955 - Temporarily increase maxUnavailable.
 strategy:
   rollingUpdate:
+    maxSurge: 3%  # Default
     maxUnavailable: 20%
 
 # Override local cluster name (defaults to namespace) to disambiguate in
