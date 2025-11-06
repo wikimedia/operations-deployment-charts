@@ -25,14 +25,18 @@ main_app:
     redis_host: localhost
     redis_port: 6379
 
-    # T406498 phase 0:
-    # Deploy the ratelimit infrastructure, but do not apply any rate limiting
+    # T406498 phase 1:
+    # Deploy the ratelimit infrastructure, but do not apply any rate limiting.
+    # Allow manual testing.
     enabled: true
     shadow_mode: false
     default_policy: experiment-2025
     user_id_cookie: ""
-    fallback_policy: no-limit
+    fallback_class: no-limit
     require_opt_in: true
+    allow_client_headers: true # Untrusted! Test phase only!
+    enable_x_ratelimit_headers: true # Remove after test phase.
+    key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
   domains:
     - rest-gateway.discovery.wmnet
@@ -203,6 +207,7 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
+      apply_rate_limiting: true # T406498: opt-in for testing
 
     - name: geo-analytics
       timeout: 15s
@@ -260,6 +265,7 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/registered-users/(.+)'
           out: '/metrics/registered-users/\1'
       rb_response_headers: true
+      apply_rate_limiting: true # T406498: opt-in for testing
 
     - name: page-analytics
       timeout: 5s
