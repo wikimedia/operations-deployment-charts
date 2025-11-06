@@ -1,7 +1,14 @@
+## configuration 1.15.0
+
+- Allow the envoyproxy local cluster to forward to an alternative
+  `local_upstream_port`. This may be useful if an additional reverse proxy
+  is required in the chain.
+
 ## configuration 1.14.4
 
 - When tracing is enabled, set `pack_trace_reason: false` to avoid `X-Request-Id`
   mangling. T407826
+
 ## networkpolicy 1.2.1
 
 - When tracing is enabled, also allow egress to otelcol port 4318 (http).

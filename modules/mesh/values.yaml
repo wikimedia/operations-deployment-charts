@@ -38,6 +38,10 @@ mesh:
   # Headers to add to a local request,
   # in dictionary form.
   request_headers_to_add: []
+  # Allow users to override the port that the tls termination sidecar uses as an upstream.
+  # This might be useful for additional reverse proxy components, such as oauth2-proxy.
+  # The default behaviour, if this is not set is to use .Values.app.port.
+  upstream_local_port: ~
   # Timeout of a request to the local service
   upstream_timeout: "60s"
   # timeout for an idle upstream connection - 300s is the envoy default
