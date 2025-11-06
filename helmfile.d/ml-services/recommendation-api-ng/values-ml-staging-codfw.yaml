@@ -25,6 +25,8 @@ config:
     API_CONCURRENCY_LIMIT: "10"
     EVENT_LOGGER_API: "http://localhost:6004/v1/events?hasty=true"
     EVENT_LOGGER_API_HEADER: "intake-analytics.wikimedia.org"
+    LANGUAGE_PAIRS_API: "http://localhost:6015/v2/list/languagepairs"
+    LANGUAGE_PAIRS_API_HEADER: "cxserver.wikimedia.org"
     WIKIDATA_API: "http://localhost:6500/w/api.php"
     WIKIDATA_API_HEADER: "www.wikidata.org"
     WIKIMEDIA_API: "http://localhost:6500/w/api.php"
@@ -37,7 +39,7 @@ resources:
 
 app:
   image: wikimedia/research-recommendation-api
-  version: "2025-11-05-230545-production"
+  version: "2025-10-22-134201-production"
   command: [ "./entrypoint.sh" ]
   limits:
     cpu: 2
