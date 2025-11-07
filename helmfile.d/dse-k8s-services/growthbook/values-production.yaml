@@ -12,7 +12,8 @@ growthbook-backend:
       API_HOST: *api_host
       EMAIL_ENABLED: 'true'
       EMAIL_HOST: mx-out1001.wikimedia.org
-      EMAIL_FROM: "growthbook@wikimedia.org"
+      EMAIL_PORT: '25'
+      EMAIL_FROM: "noreply@wikimedia.org"
   ingress:
     gatewayHosts:
       default: "growthbook-api"
