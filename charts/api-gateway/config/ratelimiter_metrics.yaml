@@ -11,6 +11,16 @@ mappings:
       user_class: "$2"
       unit: HOUR # TODO: template this, or put it in the descriptor (T408132)
 
+  # Mappings for the REST gateway's catch-all rule
+  # Unfortunately needed because of https://github.com/envoyproxy/ratelimit/issues/994
+  - match: "ratelimit\\.service\\.rate_limit\\.wikimedia\\.policy_(.*)\\.user_class\\.user_id\\.(.*)"
+    match_type: regex
+    name: "ratelimit_service_rest_gateway_$2"
+    labels:
+      policy: "$1"
+      user_class: "other"
+      unit: HOUR # TODO: template this, or put it in the descriptor (T408132)
+
   # Mappings for the API gateway (anon)
   - match: "ratelimit\\.service\\.rate_limit.wikimedia\\.route_name_(.*)\\.user_class_anon_fallback_(\\w+)\\.client_ip\\.(.*)"
     match_type: regex

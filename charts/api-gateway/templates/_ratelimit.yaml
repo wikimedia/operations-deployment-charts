@@ -30,31 +30,16 @@ descriptors:
             rate_limit:
               requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
               unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
-  # rest-gateway limits, experimental and not enforced.
-  # Should be the same as the ones above, except for shadow_mode being enabled.
-  - key: policy
-    value: "experiment-2025-shadow"
-    descriptors:
-      # Limit for anonymous users. user_id is going to be the IP address or a cookie value.
+      # Catch-all for all classes that don't have their own limits defined above.
       - key: user_class
-        value: anon
+        # Separate metric for each class (but not each user)
+        # Doesn't work, see https://github.com/envoyproxy/ratelimit/issues/994
+        detailed_metric: true
         descriptors:
           - key: user_id
             rate_limit:
               requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
               unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
-            shadow_mode: true # <---- this is the bit that is different from above!
-      # Limit for users that have a user ID cookie, so we assume that they are logged in.
-      # Later we will reduce this rate limit and provide better limits for users that
-      # for whom we have a trusted user ID from a JWT.
-      - key: user_class
-        value: cookie-user
-        descriptors:
-          - key: user_id
-            rate_limit:
-              requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
-              unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
-            shadow_mode: true # <---- this is the bit that is different from above!
 {{- else }}
   - key: route_name
     value: default_rate
