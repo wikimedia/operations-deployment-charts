@@ -63,16 +63,9 @@ admin:
   ignore_global_conn_limit: true
 layered_runtime:
   layers:
-    # Limit the total number of allowed active connections per envoy instance.
-    # Envoys configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
-    # which is still essentially unlimited in our use case.
-    - name: static_layer_0
-      static_layer:
-        overload:
-          global_downstream_max_connections: 50000
-    # Include an empty admin_layer *after* the static layer, so we can
-    # continue to make changes via the admin console and they'll overwrite
-    # values from the previous layer.
+    # If inserting a static layer, add it *before* the empty admin_layer, so
+    # we can continue to make changes via the admin console and they'll
+    # overwrite values from the previous layer.
     - name: admin_layer_0
       admin_layer: {}
 {{- if hasKey .Values.mesh "envoy_stats_config" | default dict -}}
@@ -145,6 +138,15 @@ stats_config:
         60000
       ]
 {{- end }}
+overload_manager:
+  resource_monitors:
+    # Limit the total number of allowed active connections per envoy instance.
+    # Envoy's configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
+    # which is still essentially unlimited in our use case.
+    - name: envoy.resource_monitors.global_downstream_max_connections
+      typed_config:
+        '@type': type.googleapis.com/envoy.extensions.resource_monitors.downstream_connections.v3.DownstreamConnectionsConfig
+        max_active_downstream_connections: 50000
 static_resources:
   clusters:
   {{- if .Values.mesh.public_port -}}
@@ -772,6 +774,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
             prefix_len: 32
           - address_prefix: "::1"
             prefix_len: 128
+  # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
+  ignore_global_conn_limit: true
 {{- end }}
 
 {{- define "mesh.configuration._admin_cluster" }}
