@@ -23,7 +23,18 @@ admin:
       protocol: TCP
       address: 127.0.0.1
       port_value: 1666
+  # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
+  ignore_global_conn_limit: true
 {{ end -}}
+overload_manager:
+  resource_monitors:
+    # Limit the total number of allowed active connections per envoy instance.
+    # Envoy's configuration best practice "Configuring Envoy as an edge proxy" uses 50k connections
+    # which is still essentially unlimited in our use case.
+    - name: envoy.resource_monitors.global_downstream_max_connections
+      typed_config:
+        '@type': type.googleapis.com/envoy.extensions.resource_monitors.downstream_connections.v3.DownstreamConnectionsConfig
+        max_active_downstream_connections: 50000
 static_resources:
   listeners:
 {{- if .Values.main_app.telemetry_port }}
@@ -81,6 +92,8 @@ static_resources:
               prefix_len: 32
             - address_prefix: ::1
               prefix_len: 128
+    # Don't apply global connection limits to the admin listener so we can still get metrics when overloaded
+    ignore_global_conn_limit: true
 {{- end }}
   - name: listener_0
     address:
