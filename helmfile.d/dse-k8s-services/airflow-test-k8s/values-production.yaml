@@ -33,9 +33,6 @@ external_services:
   task-pod:
     dumps: [wikimedia]
 
-    # required by the WMDE dumps to push some prometheus metrics - T403482
-    prometheus-pushgateway: [eqiad]
-
 ingress:
   gatewayHosts:
     default: "airflow-test-k8s"
