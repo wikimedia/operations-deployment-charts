@@ -28,11 +28,11 @@ opensearchCluster:
 #           Specify pod security context for OSD pods
     resources:
       requests:
-        memory: "1Gi"
-        cpu: "500m"
+        memory: "4Gi"
+        cpu: "2000m"
       limits:
-        memory: "1Gi"
-        cpu: "500m"
+        memory: "4Gi"
+        cpu: "2000m"
 # The chart version we are currently using in production (2.7.0) cannot set the
 # WMF-required securityContext for the initHelper container.
 # Luckily, this is OK because we don't run the initHelper at WMF.
@@ -68,11 +68,11 @@ opensearchCluster:
         - "data"
       resources:
         requests:
-          memory: "2Gi"
-          cpu: "500m"
+          memory: "4Gi"
+          cpu: "2000m"
         limits:
-          memory: "2Gi"
-          cpu: "500m"
+          memory: "4Gi"
+          cpu: "2000m"
     # I've commented out these annotations as they seem to be clobbered rather than merged with higher-priority values files.
     # We probably won't fix this before we migrate to a newer chart, so let's disable them and rely on the values files completely.
       # annotations:
