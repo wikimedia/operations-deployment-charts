@@ -2,7 +2,7 @@ docker:
   registry: docker-registry.discovery.wmnet
 
 app:
-  version: &base-image-version 2025-06-23-122527-798105179248020e79ffe44a8cb442d8675e9db7@sha256:5a0e0a126a58cd4eed38b570843b144fdfdde2258abce0180e6ac255a26bef8e
+  version: &base-image-version airflow-2.10.5-py3.11-2025-11-04-144729-15a48fbbf17c764c194e0acf87df0e389226d59d@sha256:de985e6946b2a66a49a567700e92bdbf5e1a2b744d84cfa14d65e6c7f8f6cb69
   executor_pod_image_version: *base-image-version
 
 service:
