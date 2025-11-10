@@ -3,7 +3,7 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 52  # Scaled to 25% of 208 replicas total (T405955)
+  replicas: 104  # Scaled to 50% of 208 replicas total (T405955)
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) in order to improve
@@ -13,8 +13,8 @@ resources:
 # TODO: T405955 - Temporarily increase maxUnavailable.
 strategy:
   rollingUpdate:
-    maxSurge: 3%  # Default
-    maxUnavailable: 20%
+    maxSurge: 10%
+    maxUnavailable: 10%
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
