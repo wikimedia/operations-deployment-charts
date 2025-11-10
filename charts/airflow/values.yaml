@@ -13,7 +13,7 @@ _vars:
   hdfs_principal: &hdfs_principal hdfs/_HOST@WIKIMEDIA
 
 app:
-  image: &base-image repos/data-engineering/airflow
+  image: &base-image repos/data-engineering/airflow-dags
   version: &base-image-version latest # we use latest everywhere in the defaults.
   executor_pod_image: *base-image
   executor_pod_image_version: *base-image-version
