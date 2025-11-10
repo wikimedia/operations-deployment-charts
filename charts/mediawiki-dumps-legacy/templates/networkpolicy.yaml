@@ -19,6 +19,7 @@ spec:
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
   {{- end }}
+
 {{- if .Values.dumps.rsync.ssh_egress_hosts }}
 ---
 apiVersion: networking.k8s.io/v1
@@ -42,3 +43,5 @@ spec:
       - port: 22
         protocol: TCP
 {{- end }}
+
+{{ include "base.networkpolicy.egress.external-services" . }}

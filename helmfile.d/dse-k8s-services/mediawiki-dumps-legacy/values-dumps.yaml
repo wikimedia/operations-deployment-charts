@@ -42,3 +42,7 @@ networkpolicy:
 discovery:
   listeners:
     - mw-api-int
+
+external_services_selector: "app == 'mediawiki' && release == 'production'"
+external_services:
+  prometheus-pushgateway: [eqiad]
