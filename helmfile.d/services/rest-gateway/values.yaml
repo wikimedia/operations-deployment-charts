@@ -568,11 +568,6 @@ main_app:
     mw-api-ext:
       tls: true
       port: 4447
-      # T405955: Divert requests with the PHP_ENGINE=8.3 cookie to mw-api-ext-next.
-      php_engine_routing:
-        "8.3":
-          service_name: mw-api-ext-next
-          port: 4455
 
 service:
   deployment: production
