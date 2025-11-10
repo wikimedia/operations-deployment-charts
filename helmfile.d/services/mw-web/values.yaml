@@ -3,10 +3,7 @@ resources:
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
   # October 2025 sizing for *multi-DC* serving:
-  #replicas: 340
-  # T405955: With the next release serving ~ 30% of traffic, the nominal size
-  # of main for serving residual traffic is 80% of its normal size: 272.
-  replicas: 272
+  replicas: 340
   # September 2025 Switchover sizing for *single-DC* serving:
   #replicas: 450
 

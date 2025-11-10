@@ -4,10 +4,7 @@ resources:
 # We aim for ~3% of the deployment for canaries, rounding up.
   # October 2025 sizing for *multi-DC* serving:
   # TODO: This needs tuned as rest-gateway routed traffic migrates from mw-api-int.
-  #replicas: 260
-  # T405955: With the next release serving ~ 30% of traffic, the nominal size
-  # of main for serving residual traffic is 80% of its normal size: 208.
-  replicas: 208
+  replicas: 260
   # September 2025 Switchover sizing for *single-DC* serving:
   #replicas: 260
 
