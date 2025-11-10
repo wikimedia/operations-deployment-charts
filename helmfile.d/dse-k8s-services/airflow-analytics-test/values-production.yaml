@@ -21,9 +21,6 @@ config:
       resources: ["jobs"]
       verbs: ["get"]
 
-app:
-  version: 2025-06-11-123150-aa24e2974c855c9c59c33dcd92b3310330b46272-airflow-refinery-0_2_65
-
 scheduler:
   # With 8GB of memory, the LocalExecutor can run beside the scheduler with a
   # parallelism of ~16 achieved through Airflow pools.
