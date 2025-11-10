@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: growthbook-backend-uploads
+  {{- include "base.meta.labels" . | indent 2 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ $.Values.uploads.volume.size }}
+  storageClassName: {{ $.Values.uploads.volume.storage_class }}
