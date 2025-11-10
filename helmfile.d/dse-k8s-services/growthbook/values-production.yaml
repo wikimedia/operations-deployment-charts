@@ -15,6 +15,17 @@ growthbook-backend:
       EMAIL_PORT: '25'
       EMAIL_FROM: "noreply@wikimedia.org"
 
+    growthbook:  # see https://docs.growthbook.io/self-host/config
+      datasources:
+        growthbook_test:
+          type: postgres
+          name: Synthetic data
+          params:
+            host: postgresql-growthbook-rw
+            port: 5432
+            user: growthbook_test
+            database: growthbook_test
+
   uploads:
     volume:
       storage_class: ceph-cephfs-ssd
