@@ -7,20 +7,9 @@ resources:
   #replicas: 260
   # T405955: With the next release serving ~ 30% of traffic, the nominal size
   # of main for serving residual traffic is 80% of its normal size: 208.
-  replicas: 104  # Scaled to 50% of 208 replicas total (T405955)
+  replicas: 208
   # September 2025 Switchover sizing for *single-DC* serving:
   #replicas: 260
-
-# TODO: T405955 - Temporarily increase maxUnavailable and maxSurge.
-# With a sizable majority of MediaWiki pods (across all services) now running
-# 8.3 images, we're now experiencing the "complement" of the issue we typically
-# hit at the start of the migration: cache reuse is poor for the 8.1 image.
-# As a work around, just as we do with the next release, relax maxUnavailable
-# and maxSurge.
-strategy:
-  rollingUpdate:
-    maxUnavailable: 10%
-    maxSurge: 10%
 
 mesh:
   image_version: 1.32.12-1
