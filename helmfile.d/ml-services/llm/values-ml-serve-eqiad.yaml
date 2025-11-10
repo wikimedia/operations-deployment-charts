@@ -28,21 +28,22 @@ inference_services:
             cpu: "8"
             memory: 35Gi
             amd.com/gpu: "1"
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoSchedule"
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoExecute"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "kubernetes.io/hostname"
-                    operator: "In"
-                    values:
-                      - "ml-serve1012.eqiad.wmnet"
+      config:
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        - "ml-serve1012.eqiad.wmnet"
