@@ -25,17 +25,16 @@ main_app:
     redis_host: localhost
     redis_port: 6379
 
-    # T406498 phase 2:
-    # Deploy the ratelimit infrastructure, but do not apply any rate limiting.
-    # Allow manual testing.
+    # T406498 phase 3:
+    # Enable ratelimit in shadow mode for all users, but only on certain routes.
     enabled: true
-    shadow_mode: true
+    shadow_mode: true                  # default: false
     default_policy: experiment-2025
-    user_id_cookie: ""
-    fallback_class: no-limit
-    require_opt_in: true
-    allow_client_headers: true # Untrusted! Test phase only!
-    enable_x_ratelimit_headers: true # Remove after test phase.
+    user_id_cookie: "centralauth_User" # insecure! replace with JWT soon (T405578)
+    fallback_class: anon               # default: anon
+    require_opt_in: true               # default: false
+    allow_client_headers: false        # default: false
+    enable_x_ratelimit_headers: true   # default: true
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
   domains:
