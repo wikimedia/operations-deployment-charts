@@ -51,6 +51,10 @@ BGPPeers:
     ipv4: 10.64.156.1
     ipv6: 2620:0:861:124::1
     nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-e7')
+  lsw1-e8-eqiad:
+    ipv4: 10.64.158.1
+    ipv6: 2620:0:861:126::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-e8')
   lsw1-f1-eqiad:
     ipv4: 10.64.134.1
     ipv6: 2620:0:861:10d::1
