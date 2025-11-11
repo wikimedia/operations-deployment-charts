@@ -25,14 +25,16 @@ main_app:
     redis_host: localhost
     redis_port: 6379
 
-    # T406498 phase 3:
-    # Enable ratelimit in shadow mode for all users, but only on certain routes.
+    # T406498 phase 4: API ratelimit dry run.
+    # Enable ratelimit in shadow mode for all users.
+    # TODO: after testing opt-out, remove apply_rate_limiting lines
+    # with "opt-out for testing" from the route definitions below.
     enabled: true
     shadow_mode: true                  # default: false
     default_policy: experiment-2025
     user_id_cookie: "centralauth_User" # insecure! replace with JWT soon (T405578)
     fallback_class: anon               # default: anon
-    require_opt_in: true               # default: false
+    require_opt_in: false              # default: false
     allow_client_headers: false        # default: false
     enable_x_ratelimit_headers: true   # default: true
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
@@ -206,7 +208,7 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
-      apply_rate_limiting: true # T406498: opt-in for testing
+      apply_rate_limiting: false # T406498: opt-out for testing
 
     - name: geo-analytics
       timeout: 15s
@@ -264,7 +266,7 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/registered-users/(.+)'
           out: '/metrics/registered-users/\1'
       rb_response_headers: true
-      apply_rate_limiting: true # T406498: opt-in for testing
+      apply_rate_limiting: false # T406498: opt-out for testing
 
     - name: page-analytics
       timeout: 5s
