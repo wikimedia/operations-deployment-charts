@@ -15,10 +15,14 @@ main_app:
     cpu: 1
     memory: 1Gi
   limits:
-    cpu: 2
-    memory: 2Gi
+    cpu: ~
+    memory: ~
 
   ratelimiter:
+    # Disable cpu/ram limits
+    limits:
+      cpu: ~
+      memory: ~
     # use nutcracker sidecar
     redis_host: localhost
     redis_port: 6379

@@ -618,7 +618,28 @@ namespaces:
           memory: "7.5Gi"
           cpu: "10"
   recommendation-api: {}
-  rest-gateway: {}
+  rest-gateway:
+    resourcequota:
+      compute:
+        requests:
+          cpu: ~
+          memory: ~
+        limits:
+          cpu: ~
+          memory: ~
+    # Don't enforce ranges for containers or pods
+    limitranges:
+      container:
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default: ~
+        min: ~
+        max: ~
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
   sessionstore: {}
   shellbox: {}
   shellbox-constraints:
