@@ -1,8 +1,6 @@
 resources:
-  # replicas: 4
-  # Temporary bump for T402412 until ATS changes are merged to send
-  # read traffic to the secondary datacentre.
-  replicas: 6
+  # Bump to accomodate enwiki action API routing
+  replicas: 8
 
 main_app:
   version: 1.32.12-1
