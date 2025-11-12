@@ -56,7 +56,7 @@ main_app:
     - "localhost:6033"
   ratelimiter:
     enabled: true
-    shadow_mode: false
+    shadow_mode: true
     lua_hook_enabled: true
     version: 9.0.3-20250704.bf8fb04
     log_level: debug
@@ -73,7 +73,7 @@ main_app:
       unit: MINUTE
     # Manual testing
     require_opt_in: false
-    default_policy: 'experiment-2025-shadow'
+    default_policy: 'experiment-2025'
     fallback_class: "anon"
     user_id_cookie: "testing_User"
     allow_client_headers: true
