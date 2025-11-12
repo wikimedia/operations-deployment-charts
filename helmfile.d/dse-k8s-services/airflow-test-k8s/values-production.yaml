@@ -13,6 +13,8 @@ config:
     idp_server: idp-test.wikimedia.org
 
 app: # the webserver
+  version: &airflow_tag airflow-2.10.5-py3.11-2025-11-12-120424-1acd4ea022931acc9595aba4539ba5ad63aee6ca@sha256:bb570f4af725c4fae8046af0d753cd60112cd1852d20bc5b438e9a59c4d129f4
+  executor_pod_image_version: *airflow_tag
   requests:
     memory: 4Gi
   limits:
