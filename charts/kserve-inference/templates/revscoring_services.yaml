@@ -67,7 +67,12 @@ spec:
         value: {{ $s3_storage_base_uri }}/{{ $model }}/{{ $s3_storage_wiki_name }}/{{ .version }}/
       {{- range $final_predictor_env }}
       - name: {{ .name }}
+        {{- if .value }}
         value: {{ .value | quote }}
+        {{- else if .valueFrom }}
+        valueFrom:
+          {{- toYaml .valueFrom | nindent 10 }}
+        {{- end }}
       {{- end }}
       {{- $container_config := merge ($custom_predictor.container | default dict) ($generic_predictor.container | default dict) }}
       {{- if $container_config }}
