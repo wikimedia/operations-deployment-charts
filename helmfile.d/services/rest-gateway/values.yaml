@@ -307,6 +307,12 @@ main_app:
 
     - name: mw-api-ext
       timeout: 15s
+      # The name is misleading, as it's not a different deployment than mw-api-ext
+      # However, in normal operation, it always points to the DC-local deployment.
+      # As long as ATS multi-DC routing does the right thing, this will allow requests
+      # sent from ATS to the secondary datacenter to stay there instead of crossing back
+      # to the primary.
+      cluster: mw-api-ext-ro
       request_headers_to_add:
         - key: x-restbase-compat
           value: true
@@ -406,7 +412,13 @@ main_app:
       # we will either need to put in a more specific set of headers
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
-      cluster: mw-api-ext
+
+      # The name is misleading, as it's not a different deployment than mw-api-ext
+      # However, in normal operation, it always points to the DC-local deployment.
+      # As long as ATS multi-DC routing does the right thing, this will allow requests
+      # sent from ATS to the secondary datacenter to stay there instead of crossing back
+      # to the primary.
+      cluster: mw-api-ext-ro
       csp_enabled: false
       urls:
         # *** BEGIN rest.php APIs ***
@@ -514,7 +526,13 @@ main_app:
       # we will either need to put in a more specific set of headers
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
-      cluster: mw-api-ext
+
+      # The name is misleading, as it's not a different deployment than mw-api-ext
+      # However, in normal operation, it always points to the DC-local deployment.
+      # As long as ATS multi-DC routing does the right thing, this will allow requests
+      # sent from ATS to the secondary datacenter to stay there instead of crossing back
+      # to the primary.
+      cluster: mw-api-ext-ro
       csp_enabled: false
       urls:
         # *** BEGIN action API routes ***
@@ -566,7 +584,7 @@ main_app:
       ingress: true
       port: 30443 # ingress
       tls: true
-    mw-api-ext:
+    mw-api-ext-ro:
       tls: true
       port: 4447
 
