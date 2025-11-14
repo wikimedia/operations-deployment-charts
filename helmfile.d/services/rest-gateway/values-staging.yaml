@@ -65,12 +65,18 @@ main_app:
     key_prefix: "restgw_"
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
     envoy_timeout: 0.5
-    anon_limit:
-      requests_per_unit: 3
-      unit: MINUTE
-    default_limit:
-      requests_per_unit: 10
-      unit: MINUTE
+    units: [ MINUTE, SECOND ]
+    policies:
+      "experiment-2025":
+        "*": # catch-all limits
+          MINUTE: 3
+          SECOND: 1
+        "anon":
+          MINUTE: 3
+          SECOND: 1
+        "cookie-user":
+          MINUTE: 30
+          SECOND: 10
     # Manual testing
     require_opt_in: false
     default_policy: 'experiment-2025'

@@ -95,12 +95,24 @@ main_app:
       memory: 1000Mi
     key_prefix: ""
     key_log_format: "" # TODO: define log format usable with old api gateway rate limiting
-    anon_limit:
+    anon_limit: # used with api-gateway, not rest-gateway
       requests_per_unit: 500
       unit: HOUR
-    default_limit:
+    default_limit: # used with api-gateway, not rest-gateway
       requests_per_unit: 5000
       unit: HOUR
+    units: [ HOUR, MINUTE, SECOND ]
+    policies: # used with the rate-gateway, not the api-gateway
+    #   "EXAMPLE":
+    #     "*": # catch-all limits
+    #       HOUR: 500
+    #       MINUTE: 100
+    #       SECOND: 10
+    #     "cookie-user": # "cookie-user" class
+    #       HOUR: 5000
+    #       MINUTE: 1000
+    #       SECOND: 100
+
     prefixes_without_required_jwt:
       - prefix: "/wiki/"
       - prefix: "/w/"

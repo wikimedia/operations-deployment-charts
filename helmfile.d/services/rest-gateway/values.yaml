@@ -40,6 +40,23 @@ main_app:
     enable_x_ratelimit_headers: false  # default: true
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
+    units: [ HOUR ]
+    #units: [ MINUTE, SECOND ]
+    policies:
+      "experiment-2025":
+        "*": # catch-all limits
+          HOUR: 500
+          #MINUTE: 100
+          #SECOND: 10
+        "anon":
+          HOUR: 500
+          #MINUTE: 100
+          #SECOND: 10
+        "cookie-user":
+          HOUR: 5000
+          #MINUTE: 600
+          #SECOND: 10
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*

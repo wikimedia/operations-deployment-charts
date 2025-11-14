@@ -14,6 +14,19 @@ main_app:
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
     envoy_timeout: 0.5
 
+    units: [ MINUTE, SECOND ]
+    policies:
+      "experiment-2025":
+        "*": # catch-all limits
+          MINUTE: 5
+          SECOND: 2
+        "anon":
+          MINUTE: 5
+          SECOND: 2
+        "cookie-user":
+          MINUTE: 10
+          # no per-second limit
+
 nutcracker:
   enabled: true
   port: 6380 # use different port here because local redis uses 6379

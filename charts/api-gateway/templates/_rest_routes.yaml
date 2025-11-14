@@ -1,14 +1,21 @@
 {{- define "restgateway.rate_limit_actions" }}
+{{ $policy := .policy }}
 # NOTE: If one of the headers referenced below is not set, the rate limit is not applied.
-- generic_key: # Select the rate limit regime to apply
-    descriptor_key: policy
-    descriptor_value: {{ .policy }}
-- request_headers: # Specify the rate limit class.
-    descriptor_key: user_class
-    header_name: x-wmf-ratelimit-class
-- request_headers: # Provide the user's identity as the counter key.
-    descriptor_key: user_id
-    header_name: x-wmf-user-id
+{{- range $unit := .Values.main_app.ratelimiter.units }}
+- actions: # per {{ $unit }}
+  - generic_key: # Select the rate limit regime to apply
+      descriptor_key: policy
+      descriptor_value: {{ $policy }}
+  - request_headers: # Specify the rate limit class.
+      descriptor_key: user_class
+      header_name: x-wmf-ratelimit-class
+  - request_headers: # Provide the user's identity as the counter key.
+      descriptor_key: user_id
+      header_name: x-wmf-user-id
+  - generic_key: # The time window the limit applies to.
+      descriptor_key: unit
+      descriptor_value: {{ $unit }}
+{{- end }}
 {{- end }}
 
 {{- define "restgateway.routes" }}
@@ -22,8 +29,7 @@
 {{- if .Values.main_app.ratelimiter.enabled }}
               # Default rate limits, can be overridden per route.
               rate_limits:
-              - actions:
-                  {{- include "restgateway.rate_limit_actions" (dict "policy" .Values.main_app.ratelimiter.default_policy "Values" .Values) | nindent 16 }}
+              {{- include "restgateway.rate_limit_actions" (dict "policy" .Values.main_app.ratelimiter.default_policy "Values" .Values) | nindent 16 }}
 {{- end }}
               routes:
               - name: rest_gateway_root
@@ -155,8 +161,7 @@
                     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute
                     {{- /* NOTE: Overriding rate limits is broken in Envoy until version 1.33, see https://github.com/envoyproxy/envoy/issues/34605  */}}
                     rate_limits:
-                      - actions:
-                          {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" .Values ) | nindent 24}}
+                      {{- include "restgateway.rate_limit_actions" ( dict "policy" $use_rate_limit_policy "Values" $.Values ) | nindent 24}}
                 {{- end }}
                 {{- end }}
 

@@ -5,41 +5,33 @@
 domain: wikimedia
 descriptors:
 {{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
-  # rest-gateway limits, experimental but enforced
-  # Keep in sync with the "experiment-2025-shadow" variant below.
   # NOTE: when changing the descriptor structure,
   #       also update the matcher rules in ratelimiter_metrics.yaml!
+  {{- range $policy, $classes := $.Values.main_app.ratelimiter.policies }}
   - key: policy
-    value: "experiment-2025"
+    value: {{ $policy }}
     descriptors:
-      # Limit for anonymous users. user_id is going to be the IP address or a cookie value.
+      {{- range $class, $units := $classes }}
       - key: user_class
-        value: anon
+        {{- if ne $class "*" }}
+        value: {{ $class }}
+        {{- else}}
+        # TODO: set value_to_metrics: true
+        # See https://github.com/envoyproxy/ratelimit/pull/996
+        # Adjust ratelimiter_metrics.yaml accordingly.
+        {{- end }}
         descriptors:
           - key: user_id
-            rate_limit:
-              requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
-              unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
-      # Limit for users that have a user ID cookie, so we assume that they are logged in.
-      # Later we will reduce this rate limit and provide better limits for users that
-      # for whom we have a trusted user ID from a JWT.
-      - key: user_class
-        value: cookie-user
-        descriptors:
-          - key: user_id
-            rate_limit:
-              requests_per_unit: {{ .Values.main_app.ratelimiter.default_limit.requests_per_unit }}
-              unit: {{ .Values.main_app.ratelimiter.default_limit.unit }}
-      # Catch-all for all classes that don't have their own limits defined above.
-      - key: user_class
-        # Separate metric for each class (but not each user)
-        # Doesn't work, see https://github.com/envoyproxy/ratelimit/issues/994
-        detailed_metric: true
-        descriptors:
-          - key: user_id
-            rate_limit:
-              requests_per_unit: {{ .Values.main_app.ratelimiter.anon_limit.requests_per_unit }}
-              unit: {{ .Values.main_app.ratelimiter.anon_limit.unit }}
+            descriptors:
+              {{- range $unit, $req := $units }}
+              - key: unit
+                value: {{ $unit }}
+                rate_limit:
+                  requests_per_unit: {{ $req }}
+                  unit: {{ $unit }}
+              {{- end }}
+      {{- end }}
+  {{- end }}
 {{- else }}
   - key: route_name
     value: default_rate
