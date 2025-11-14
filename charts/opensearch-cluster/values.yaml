@@ -22,17 +22,7 @@ opensearchCluster:
     enable: false
     replicas: 1
     version: 2.3.0
-#        securityContext:
-#           Specify container security context for OSD pods
-#        podSecurityContext:
-#           Specify pod security context for OSD pods
-    resources:
-      requests:
-        memory: "4Gi"
-        cpu: "2000m"
-      limits:
-        memory: "4Gi"
-        cpu: "2000m"
+
 # The chart version we are currently using in production (2.7.0) cannot set the
 # WMF-required securityContext for the initHelper container.
 # Luckily, this is OK because we don't run the initHelper at WMF.
