@@ -26,8 +26,11 @@ app:
     persistentVolumeClaim:
       claimName: growthbook-backend-uploads
   volumeMounts:
-  - name: growthbook-backend-config-volume
-    mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
+  # We are temporarily avoiding to mount the config.yml file in the backend pod
+  # while we're iterating over a custom PG data source with synthetic data (cf T409591)
+  # as the mere presence of that file prevents us from manually editing that datasource.
+  # - name: growthbook-backend-config-volume
+  #   mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
   - name: growthbook-backend-uploads-volume
     mountPath: /opt/growthbook/packages/back-end/uploads # cf https://docs.growthbook.io/self-host/production#local
 
