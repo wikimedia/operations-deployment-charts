@@ -31,7 +31,8 @@ config:
     ORCHESTRATOR_HEAP_SIZE: "2048"
     # Top-level request timeout at the orchestrator level (in milliseconds)
     # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
-    ORCHESTRATOR_TIMEOUT_MS: "10000"
+    # This needs to be a bit less than the 10s k8s bucket
+    ORCHESTRATOR_TIMEOUT_MS: "9700"
     ORCHESTRATOR_CONFIG: |
       {
         "addNestedMetadata": false,
