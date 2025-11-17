@@ -1,9 +1,11 @@
-version: &app_version 2025-10-28-093646-51d21ed9782e24169c12a348742308d47f5898dc@sha256:df372a0f12da4ea3a1a457c05139cd64093268ca591f5b4fc07385e10366f98e
+image: &app_image repos/data-engineering/growthbook/next
+version: &app_version 2025-11-21-070713-8e67c37ca4651abfb13c1ea491ede029aa88836b@sha256:a9c28316954eb45446d761db0b803201c463eb8c7cea2d37c31e280a770813a9
 app_origin: &app_origin https://growthbook.wikimedia.org
 api_host: &api_host https://growthbook-api.wikimedia.org
 
 growthbook-backend:
   app:
+    image: *app_image
     version: *app_version
 
   config:
@@ -30,9 +32,16 @@ growthbook-backend:
 
   external_services:
     wikimail: [mx]
+    kerberos: [kdc]
+    presto: [analytics]
+
+  common_images:
+    kerberos:
+      version: 45377f59c5bdf8bae1b967c49ee29a144c5cba44-production
 
 growthbook-frontend:
   app:
+    image: *app_image
     version:  *app_version
 
   config:

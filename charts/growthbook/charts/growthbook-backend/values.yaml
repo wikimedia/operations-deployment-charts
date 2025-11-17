@@ -25,6 +25,14 @@ app:
   - name: growthbook-backend-uploads-volume
     persistentVolumeClaim:
       claimName: growthbook-backend-uploads
+  - name: growthbook-kerberos-cache-volume
+    emptyDir: {}
+  - name: growthbook-kerberos-config-volume
+    configMap:
+      name: growthbook-kerberos-config
+  - name: growthbook-kerberos-keytab-volume
+    secret:
+      secretName: growthbook-kerberos-keytab
   volumeMounts:
   # We are temporarily avoiding to mount the config.yml file in the backend pod
   # while we're iterating over a custom PG data source with synthetic data (cf T409591)
@@ -33,6 +41,13 @@ app:
   #   mountPath: /opt/growthbook/config/  # cf https://docs.growthbook.io/self-host/config
   - name: growthbook-backend-uploads-volume
     mountPath: /opt/growthbook/packages/back-end/uploads # cf https://docs.growthbook.io/self-host/production#local
+  - name: growthbook-kerberos-cache-volume
+    mountPath: /etc/kerberos/tgt
+  - name: growthbook-kerberos-config-volume
+    mountPath: /etc/krb5.conf
+    subPath: krb5.conf
+  - name: growthbook-kerberos-keytab-volume
+    mountPath: /etc/kerberos/keytabs
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -60,9 +75,9 @@ config:
     API_HOST: override_me
     EMAIL_ENABLED: "false"
     UPLOAD_METHOD: local
+    KRB5CCNAME: DIR:/etc/kerberos/tgt
+    KRB5_CONFIG: /etc/krb5.conf
   private:
-    AWS_ACCESS_KEY_ID: secret
-    AWS_SECRET_ACCESS_KEY: secret
     MONGODB_URI: secret
     JWT_SECRET: override_me
     ENCRYPTION_KEY: override_me
@@ -151,6 +166,19 @@ mesh:
       cpu: 500m
       memory: 500Mi
 
+kerberos:
+  admin: override_me
+  servers: [override_me]
+  ticket_renewal_interval_minutes: 60
+  keytab: override_me
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 400Mi
+
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
@@ -208,3 +236,8 @@ cronjobs: []
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
 external_services: {}
+
+common_images:
+  kerberos:
+    image: repos/data-engineering/kerberos-kinit
+    version: latest
