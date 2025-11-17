@@ -2,7 +2,7 @@ inference_services:
   aya-llm:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2025-11-14-134056-publish"
+      image_version: "2025-11-17-110422-publish"
       custom_env:
         - name: MODEL_NAME
           value: "aya-expanse-8B"
@@ -23,11 +23,11 @@ inference_services:
           limits:
             cpu: "6"
             memory: 8Gi
-            # amd.com/gpu.vram: "24G"
+            amd.com/gpu.vram: "24G"
           requests:
             cpu: "6"
             memory: 8Gi
-            # amd.com/gpu.vram: "24G"
+            amd.com/gpu.vram: "24G"
       config:
         tolerations:
           - key: "dedicated"
