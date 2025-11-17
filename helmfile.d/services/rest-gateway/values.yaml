@@ -504,7 +504,8 @@ main_app:
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
     - name: mw-action-api
-      timeout: 15s
+      # We set a higher timeout to allow for long queries on the search API
+      timeout: 53s
       # This set of routes uses the same cluster as mw-api-ext - however
       # it does NOT use the restbase compability headers as this will
       # lead to incorrect responses from the mw APIs.
