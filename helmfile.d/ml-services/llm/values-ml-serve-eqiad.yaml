@@ -23,11 +23,11 @@ inference_services:
           limits:
             cpu: "6"
             memory: 8Gi
-            amd.com/gpu.vram: "24G"
+            amd.com/gpu: "1"
           requests:
             cpu: "6"
             memory: 8Gi
-            amd.com/gpu.vram: "24G"
+            amd.com/gpu: "1"
       config:
         tolerations:
           - key: "dedicated"
