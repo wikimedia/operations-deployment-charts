@@ -21,6 +21,7 @@ function wmf_ratelimit_info(request_handle)
         return
     end
 
+    -- get client IP
     if headers:get("x-client-ip") then
         -- The x-client-ip header is set in the edge tier of the WMF network.
         user_id = headers:get("x-client-ip")
@@ -31,9 +32,9 @@ function wmf_ratelimit_info(request_handle)
         user_id = string.match(addr, "([^:]+)")
     end
 
-    -- relevant cookies have been copied to metadata using envoy.filters.http.header_to_metadata
-    local meta = streamInfo:dynamicMetadata()
-    local cookies = meta:get("envoy.wmf_cookies")
+    -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
+    local streamMeta = streamInfo:dynamicMetadata()
+    local cookies = streamMeta:get("envoy.wmf_cookies")
     if cookies then
         -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon.
         if cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
@@ -42,22 +43,32 @@ function wmf_ratelimit_info(request_handle)
         end
     end
 
-    request_handle:logDebug("WMF rate_limit subject: " .. ratelimit_class
-            .. ", user id: " ..  user_id
+    -- Determine policy to apply, based on route meta data
+    local routeMeta = request_handle:metadata()
+    local ratelimit_policy = routeMeta:get("wmf_ratelimit")["policy"]
+
+    request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
+            .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
     )
 
     headers:replace("x-wmf-user-id", user_id)
     headers:replace("x-wmf-ratelimit-class", ratelimit_class)
+    headers:replace("x-wmf-ratelimit-policy", ratelimit_policy)
 end
 
 function wmf_ratelimit_cleanup(request_handle)
     local headers = request_handle:headers()
 
-    if headers:get("x-wmf-ratelimit-class") == "no-limit" then
-        -- removing the header completely disables rate limiting, because
-        -- the "request_headers" directive of the rate_limits section will
-        -- fail to construct a rate limit descriptor if the header is missing.
-        headers:remove("x-wmf-ratelimit-class")
+    -- These headers are required for rate limiting. We remove them below if their value is
+    -- "no-limit", because removing them disables rate limiting entirely.
+    -- This works because the "request_headers" directive of the rate_limits filter
+    -- will fail to construct a descriptor if the header is missing.
+    local names = { "x-wmf-ratelimit-class", "x-wmf-ratelimit-policy" }
+
+    for _, hname in ipairs(names) do
+        if headers:get(hname) == "no-limit" then
+            headers:remove(hname)
+        end
     end
 end
 {{- end }}

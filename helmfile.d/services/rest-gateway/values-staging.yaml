@@ -56,14 +56,14 @@ main_app:
     - "localhost:6033"
   ratelimiter:
     enabled: true
-    shadow_mode: true
+    shadow_mode: false
     lua_hook_enabled: true
     version: 9.0.3-20250704.bf8fb04
     log_level: debug
     redis_host: localhost
     redis_port: 6379
-    key_prefix: "restgw_"
-    key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
+    key_prefix: "staging_restgw_"
+    key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%@%REQ(x-wmf-ratelimit-policy)%"
     envoy_timeout: 0.5
     units: [ MINUTE, SECOND ]
     policies:
@@ -83,10 +83,11 @@ main_app:
     fallback_class: "anon"
     user_id_cookie: "testing_User"
     allow_client_headers: true
+    enable_x_ratelimit_headers: true
 
   access_log:
     debug: true
-
+    sample_percentage: 100
 
   rest_gateway_routes:
     - name: mobileapps
@@ -123,7 +124,7 @@ main_app:
           in: '/+([^/]+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
       rb_response_headers: true
-      apply_rate_limiting: true
+      use_rate_limit_policy: "other-policy"
 
     - name: wikifeeds
       timeout: 15s
@@ -132,7 +133,6 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: geo-analytics
       timeout: 15s
@@ -145,7 +145,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/editors/by-country/(.+)'
           out: '/metrics/editors/by-country/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: media-analytics
       timeout: 15s
@@ -158,7 +157,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: edit-analytics
       timeout: 5s
@@ -171,7 +169,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/edits/(.+)'
           out: '/metrics/edits/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: editor-analytics
       timeout: 5s
@@ -184,7 +181,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/editors/(.+)'
           out: '/metrics/editors/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: page-analytics
       timeout: 5s
@@ -200,7 +196,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/legacy/(.+)'
           out: '/metrics/legacy/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: device-analytics
       timeout: 15s
@@ -212,7 +207,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/unique-devices/(.+)'
           out: '/metrics/unique-devices/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: commons-impact-analytics
       timeout: 15s
@@ -225,7 +219,6 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/commons-analytics/(.+)'
           out: '/metrics/commons-analytics/\1'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: mw-api-ext
       timeout: 15s
@@ -269,8 +262,6 @@ main_app:
           in: '/+([^/]+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
       rb_response_headers: true
-      apply_rate_limiting: true
-      use_rate_limit_policy: 'experiment-2025'
 
     - name: mw-rest-php
       timeout: 15s
@@ -327,7 +318,6 @@ main_app:
           in: '/+w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
-      apply_rate_limiting: true
 
   discovery_endpoints:
     citoid:

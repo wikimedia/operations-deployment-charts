@@ -1,0 +1,49 @@
+# Use together with values-staging.yaml from ../../helmfile.d/services/rest-gateway/
+# or ../../helmfile.d/services/api-gateway/
+main_app:
+  command: ~
+  args: ["-l", "debug"]
+  #version: "1.26.8-1"
+  telemetry_port: 8089
+
+  # Use fake backend
+  http_https_echo: true
+
+  # Use redis sidecar
+  dev_redis: true
+  redis_port: 6380 # nutcracker
+
+  domains:
+    - localhost
+    - localhost:*
+    - 127.0.0.1
+    - 127.0.0.1:*
+    - restgateway.discovery.wmnet
+    - mytestdomain.discovery.wmnet
+
+  discovery_endpoints:
+    mobileapps:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    citoid:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    proton:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+
+  jwks:
+    kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="
+    key: "wpQqfUk_vTLbbthUWhLaJ9wo4YZXWJjGmO8SFaEb0opgEXu_sP98dWzErQ04W2u0WpImfn1gqUEuAlnrgPXFyrIHD_WAJ5hFhdse5zNscJ9979yNDoXPlu20JQ91inYj592tFRHJQ9R9-jfSS2wgslWFXSZuOpY74EpHJcoGiCSwghLQDIdp5dl_VurfHNhOpWOAfp5zxVL-Ix5PuRzDvze0zA9GZH5-PEX1UgCNS0WyKW5Zt7hoRGNWU6hMNfVY6n6HThwLMq41GcyMwQ_zqOARGFOUrVQZY5yoCkxetTWHUj3qsfx_oq_ZQ3O_k95waKYMtgYwTKeBxbiunFfthw"
+
+nutcracker:
+  enabled: true
+  port: 6380 # use different port here because local redis uses 6379
+  servers:
+    - localhost:6379:1 "cp-1" # dev_redis sidecar
