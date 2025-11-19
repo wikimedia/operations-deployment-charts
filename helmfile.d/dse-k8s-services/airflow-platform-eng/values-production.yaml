@@ -9,6 +9,11 @@ config:
     spurus:
       host: https://feeds.spur.us
       extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
+    opensearch_test:
+      type: opensearch
+      host: https://opensearch-test.discovery.wmnet
+      port: 30443
+      login: opensearch
 
 gitsync:
   # Some DAGS in platform_eng import functions from the main folder
