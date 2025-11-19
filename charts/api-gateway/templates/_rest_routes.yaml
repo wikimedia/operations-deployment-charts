@@ -132,6 +132,12 @@
                     pattern:
                       regex: '^{{ $route.in }}$'
                     substitution: '{{ $route.out }}'
+                {{- if $route.to }}
+                  host_rewrite_path_regex:
+                    pattern:
+                      regex: '^{{ $route.in }}$'
+                      substitution: '{{ $route.to }}'
+                {{- end }}
                   timeout: {{ $endpoint.timeout | default "15s" }}
                   cluster: {{ $cluster_name }}_cluster
                   {{- if $endpoint.ingress }}
