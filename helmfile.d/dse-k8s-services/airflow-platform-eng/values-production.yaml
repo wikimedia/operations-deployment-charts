@@ -14,6 +14,10 @@ config:
       host: opensearch-test.discovery.wmnet
       port: 30443
       login: opensearch
+      extra_dejson:
+        verify_certs: True
+        use_ssl: True
+
 
 gitsync:
   # Some DAGS in platform_eng import functions from the main folder
