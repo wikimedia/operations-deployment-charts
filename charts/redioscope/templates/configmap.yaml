@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-surveys
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  rest_gateway.yaml: |- {{ include "redioscope.rest_gateway.ratelimit.survey" . | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-base-config
+  labels:
+    app: {{ template "base.name.chart" . }}
+    chart: {{ template "base.name.chartid" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{- if .Values.config.public }}
+{{- range $k := (keys .Values.config.public | sortAlpha) }}
+  {{ $k }}: {{ get $.Values.config.public $k | b64enc | quote }}
+{{- end -}}
+{{- end -}}
+{{- if (.Values.mesh.certmanager | default dict).enabled }}
+  tls_certificate_sds_secret.yaml: |-
+    {{- include "mesh.configuration.tls_certificate_sds_secret" . | nindent 4 }}
+{{- end }}
+---
+{{ include "mesh.configuration.configmap" . }}

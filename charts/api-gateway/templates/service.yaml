@@ -21,3 +21,9 @@ spec:
       {{- if .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
+    {{- if .Values.main_app.dev_redis }}
+    # expose the redis port so we can test the redioscope chart
+    - name: {{ .Values.service.port.name }}-redis
+      targetPort: 6379
+      port: 6379
+    {{- end }}

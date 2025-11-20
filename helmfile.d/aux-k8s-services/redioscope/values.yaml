@@ -1,0 +1,30 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+
+resources:
+  replicas: 1
+
+config:
+  public:
+    GOMAXPROCS: "2" # Align with CPU limit to avoid throttling
+
+app:
+  version: 2026-01-07-110713-candidate-v0.10.0-dev
+  limits:
+    cpu: 2000m
+    memory: 4G  # FIXME: it will get OOM killed if it goes over this limit, so this should be generous, edit accordingly.
+  requests:
+    cpu: 1000m
+    memory: 1G  # FIXME: This should be the minimum or typical memory usage, edit to reflect that.
+
+external_services:
+  redis-6380: [misc]
+
+networkpolicy:
+  egress:
+    enabled: true
+  ingress:
+    enabled: true
+  # selectors:
+  #   service.istio.io/canonical-name: istio-ingressgateway-services
+  #   istio: ingressgateway

@@ -1,0 +1,15 @@
+app:
+  image: repos/mediawiki/services/redioscope
+  surveys:
+    rest_gateway:
+      interval: 10s
+      prefix: "staging_restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit"
+      sources:
+      - redis://api-gateway-restgw:6379 # for dev_redis defined in charts/api-gateway
+docker:
+  registry: docker-registry.wikimedia.org
+  #pull_policy: Always
+
+smokepy:
+  redioscope:
+    target_url: http://localhost:8099

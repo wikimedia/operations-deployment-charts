@@ -1,0 +1,137 @@
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 123.123.123.123/24
+    extraRules:
+    - to:
+      - podSelector:
+          matchLabels:
+            nicepod: 'true'
+      ports:
+      - protocol: TCP
+        port: 1234
+
+# The discovery stuff adds networkpolicies.
+mesh:
+  enabled: true
+  public_port: 4004 # the port where TLS will be exposed
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+discovery:
+  listeners:
+    - mw-parsoid
+    - mathoid
+    - eventgate-analytics
+  ratelimit_listeners:
+    mathoid: {}
+    mw-parsoid:
+      domain: parsoid
+      by: user-agent
+services_proxy:
+  mw-parsoid:
+    port: 6505
+    timeout: 8s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    xfp: https
+    upstream:
+      ips:
+        - 1.2.1.1/32
+        - 2.3.1.1/32
+      address: mw-parsoid.discovery.wmnet
+      port: 4452
+      encryption: true
+      sets_sni: true
+      keepalive: 4s
+    split:
+      percentage: 55
+      address: mw-api-int.discovery.wmnet
+      port: 4448
+      encryption: true
+      keepalive: "5s"
+      ips:
+        - 3.2.1.1/32
+        - 1.1.2.3/32
+  mathoid:
+    port: 6003
+    timeout: 3s
+    upstream:
+      ips:
+        - 10.2.1.1/32
+        - 20.3.1.1/32
+      address: mathoid.discovery.wmnet
+      port: 10042
+      encryption: false
+  eventgate-analytics:
+    port: 6004
+    timeout: 10s
+    retry_policy:
+      retry_on: 5xx
+      num_retries: 1
+    upstream:
+      keepalive: 4.5s
+      ips:
+        - 100.2.1.1/32
+        - 200.3.1.1/32
+      address: eventgate-analytics.discovery.wmnet
+      port: 4592
+      encryption: true
+# Kafka brokers also enable additional networkpolicy templates
+kafka_brokers:
+  test:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  test1:
+    - 4.3.2.1/32
+kafka:
+  allowed_clusters:
+    - test
+
+zookeeper_clusters:
+  test:
+    - 1.2.3.4/32
+    - 2620::8:102:1:2:3:4/128
+  test1:
+    - 4.3.2.1/32
+zookeeper:
+  allowed_clusters:
+    - test
+
+mariadb:
+  # Copied verbatim from hieradata/common/profile/mariadb.yaml
+  section_ports:
+    s1: 3311
+    s2: 3312
+    s3: 3313
+    s4: 3314
+    s5: 3315
+    s6: 3316
+    s7: 3317
+    s8: 3318
+    s9: 3319
+    x1: 3320
+    x2: 3330
+    m1: 3321
+    m2: 3322
+    m3: 3323
+    m4: 3324
+    m5: 3325
+    m6: 3326
+    m7: 3327
+    m8: 3328
+    m9: 3329
+    staging: 3350
+    matomo: 3351
+    analytics_meta: 3352
+    backup1-eqiad: 3360
+    backup1-codfw: 3361
+  # NOTE:
+  # * es (External Storage) only listens on 3306
+  # * pc (ParserCache) only listens on 3306
+  egress:
+    # Supported values: s1 to s8, x1 to x2, m1 to m5
+    sections: ["s1", "x1"]

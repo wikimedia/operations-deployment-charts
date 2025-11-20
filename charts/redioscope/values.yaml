@@ -1,0 +1,93 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: repos/mediawiki/services/redioscope
+  version: INVALID # overwritten in the helmfile service definition. See https://docker-registry.wikimedia.org/repos/mediawiki/services/redioscope/tags/
+  port: 8099 # port exposed as a Service, also used by service-checker.
+  # Use command and args below to override the entrypoint.
+  command: [/bin/redioscope]
+  args: [-config, "/etc/redioscope/surveys", -wallet, "/etc/redioscope/.wallet.yaml", -port, "8099", -bind, "0.0.0.0"]
+  requests:
+    cpu: 1m # Just some sample, edit these - 100m is the minimum for deployment
+    memory: 200Mi # Just some sample, edit these
+  limits:
+    cpu: 1 # Just some sample, edit these
+    memory: 400Mi # Just some sample, edit these
+  liveness_probe:
+    tcpSocket:
+      port: 8099 # container port
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 8099 # container port
+  volumeMounts:
+    - name: survey-volume # defined in deployment.yaml
+      mountPath: /etc/redioscope/surveys
+    - name: wallet-volume # defined in deployment.yaml
+      mountPath: /etc/redioscope/.wallet.yaml # from .Values.config.private, see below
+      subPath: .wallet.yaml
+  surveys:
+    rest_gateway:
+      prefix: "restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit"
+      sources:
+        # Include a placeholder to make CI happy.
+        # Real values will be set in the helmfile service definition.
+        - redis://redis.example.intranet
+      labels:
+        ratelimit_policy: "$1"
+        ratelimit_class: "$2"
+      time_bucket: 15m
+      quantiles: {0.5: 0.05, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001}
+      buckets: [ 10, 100, 1000, 10000, 100000, 1000000 ]
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8099 # the number or name of the exposed port on the container
+    port: 8099 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+  public: # Add here all the keys that can be publicly available as a ConfigMap
+    GOMAXPROCS: "2" # Align with CPU limit to avoid throttling
+  private: # Add here all the keys that should be private but still available as env variables
+    # In the helmfile service definition, the wallet will be overwritten
+    # from /etc/helmfile-defaults/private/main_services/redioscope/XXXX.yaml which
+    # comes from the private puppet repo.
+    .wallet.yaml: |-
+      redis:
+        password: a7ebadf00d
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+
+external_services: {}
+
+mesh:
+  enabled: false

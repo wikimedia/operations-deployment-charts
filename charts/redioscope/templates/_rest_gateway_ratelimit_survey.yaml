@@ -1,0 +1,45 @@
+{{- define "redioscope.rest_gateway.ratelimit.survey" -}}
+## A survey definition
+
+## The survey name, used in logs and metrics names
+name: rate-gateway-ratelimit
+
+## Redis hosts used by the rest-gateway ratelimit service,
+## see services/rest-gateway/values*.yaml
+{{ $sources := required "No sources defined for rest_gateway.ratelimit.survey" .Values.app.surveys.rest_gateway.sources }}
+sources:
+  {{- with $sources }}
+  {{ toYaml . }}
+  {{- end}}
+
+## The scan interval, specifying how often the given sources should be scanned.
+## A scan of the ratelimit keys takes up to ten minutes. Counters get reset at
+## the full hour (or minute, or day).
+interval: {{ default "15m" .Values.app.surveys.rest_gateway.interval }}
+
+## The redis key prefix used by rest-gateway ratelimit service,
+## see services/rest-gateway/values*.yaml and charts/api-gateway/config/
+## staging_restgw_wikimedia_policy_experiment-2025_user_class_anon_user_id_Youser-7-292_unit_MINUTE_1767692220
+prefix: {{ .Values.app.surveys.rest_gateway.prefix }}wikimedia_policy_(.+)_user_class_(.+)_user_id_(.+)_unit_([A-Z]+)_
+
+## Label mappings assign label values to the metrics. The values can use
+## placeholders like $1 or ${12} to refer to capture groups in the prefix
+## match pattern. This way, label values can be extracted from keys.
+labels:
+  policy: "$1"
+  class: "$2"
+  unit: "$4"
+
+## Value buckets to use for the histogram metric,
+## see <https://prometheus.io/docs/specs/om/open_metrics_spec/#histogram>
+## and <https://prometheus.io/docs/practices/histograms/>.
+buckets: [ 10, 100, 1000, 10000, 100000, 1000000 ]
+
+## Quantiles and error values to use for the summary metrics
+## see <https://prometheus.io/docs/specs/om/open_metrics_spec/#summary>
+## and <https://prometheus.io/docs/practices/histograms/#quantiles>.
+## For instance, the 0.5 quantile gives the median, and the 0.99 quantile
+## gives the 99th percentile. Good error values depend on the use case,
+## but (1-q)/10 will generally work.
+quantiles: { 0.5: 0.05, 0.75: 0.025, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001 }
+{{- end -}}
