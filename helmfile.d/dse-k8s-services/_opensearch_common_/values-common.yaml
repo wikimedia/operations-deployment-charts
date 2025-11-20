@@ -63,8 +63,6 @@ opensearchCluster:
   nodePools:
     - component: masters
       diskSize: "30Gi"
-      # Needed to avoid OOMKills due to JVM cgroup detection bug, see T405361
-      jvm: -Xmx1024M -Xms1024M
       persistence:
         pvc:
           storageClass: ceph-rbd-ssd
