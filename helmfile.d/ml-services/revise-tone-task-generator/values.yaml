@@ -1,0 +1,113 @@
+docker:
+  registry: docker-registry.discovery.wmnet/wikimedia
+  imagePullPolicy: IfNotPresent
+
+networkpolicy:
+  egress:
+    enabled: true
+    # These endpoints should be reachable by Istio proxy sidecars.
+    dst_nets:
+      - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.54/32 # thanos-swift.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.22/32 # api-ro.svc.codfw.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.2.22/32 # api-ro.svc.eqiad.wmnet
+        ports:
+        - port: 443
+          protocol: tcp
+      - cidr: 10.2.1.81/32 # mw-api-int-ro.svc.codfw.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
+      - cidr: 10.2.2.81/32 # mw-api-int-ro.svc.eqiad.wmnet
+        ports:
+        - port: 4446
+          protocol: tcp
+      - cidr: 10.2.1.45/32 # eventgate-main.svc.codfw.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.2.45/32 # eventgate-main.svc.eqiad.wmnet
+        ports:
+        - port: 4492
+          protocol: tcp
+      - cidr: 10.2.1.82/32 # rest-gateway.svc.codfw.wmnet
+        ports:
+        - port: 4113
+          protocol: tcp
+      - cidr: 10.2.2.82/32 # rest-gateway.svc.eqiad.wmnet
+        ports:
+        - port: 4113
+          protocol: tcp
+
+monitoring:
+  enabled: true
+
+inference:
+  annotations:
+    sidecar.istio.io/inject: "true"
+    proxy.istio.io/config: '{"readiness.status.sidecar.istio.io/periodSeconds": "600" }'
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: "8080"
+    prometheus.kserve.io/path: "/metrics"
+
+
+inference_services:
+
+  revise-tone-task-generator:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
+      image_version: "2025-11-20-092815-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/edit-check/peacock/"
+        - name: USE_CACHE
+          value: "True"
+        - name: CASSANDRA_DATACENTER
+          value: "codfw"
+        - name: CASSANDRA_SERVERS
+          value: "aqs1010-a.eqiad.wmnet;aqs1010-b.eqiad.wmnet;aqs1011-a.eqiad.wmnet;aqs1011-b.eqiad.wmnet;aqs1012-a.eqiad.wmnet;aqs1012-b.eqiad.wmnet;aqs1014-a.eqiad.wmnet;aqs1014-b.eqiad.wmnet;aqs1015-a.eqiad.wmnet;aqs1015-b.eqiad.wmnet;aqs1016-a.eqiad.wmnet;aqs1016-b.eqiad.wmnet;aqs1017-a.eqiad.wmnet;aqs1017-b.eqiad.wmnet;aqs1018-a.eqiad.wmnet;aqs1018-b.eqiad.wmnet;aqs1019-a.eqiad.wmnet;aqs1019-b.eqiad.wmnet;aqs1020-a.eqiad.wmnet;aqs1020-b.eqiad.wmnet;aqs1021-a.eqiad.wmnet;aqs1021-b.eqiad.wmnet;aqs1022-a.eqiad.wmnet;aqs1022-b.eqiad.wmnet"
+        - name: CASSANDRA_KEYSPACE
+          value: "ml_cache"
+        - name: CASSANDRA_TABLE
+          value: "page_paragraph_tone_scores"
+        - name: CASSANDRA_USER
+          valueFrom:
+            secretKeyRef:
+              name: revise-tone-task-generator-cassandra-credentials
+              key: CASSANDRA_USER
+        - name: CASSANDRA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: revise-tone-task-generator-cassandra-credentials
+              key: CASSANDRA_PASSWORD
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
+
+external_services_app_label_selector: app-wmf
+external_services:
+  cassandra:
+  - ml-cache-a-eqiad
+  - ml-cache-a-codfw
+  - cassandra-dev-a-codfw
+  - cassandra-dev-b-codfw
+  - analytics-query-service-storage-a-codfw
+  - analytics-query-service-storage-b-codfw
+  - analytics-query-service-storage-a-eqiad
+  - analytics-query-service-storage-b-eqiad

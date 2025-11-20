@@ -114,6 +114,7 @@ namespaces:
       - '*.article-models.wikimedia.org'
       - '*.revision-models.wikimedia.org'
       - '*.edit-check.wikimedia.org'
+      - '*.revise-tone-task-generator.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -196,6 +197,11 @@ namespaces:
     labels:
       istio-injection: enabled
   articletopic-outlink:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
+  revise-tone-task-generator:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
     labels:
