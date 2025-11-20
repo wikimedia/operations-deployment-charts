@@ -2,8 +2,7 @@ helmDefaults:
   createNamespace: false
   verify: false
   atomic: true
-  # TODO: T405955 - Temporarily increase timeout to 15m.
-  timeout: 900
+  timeout: 600
   recreatePods: false
   force: false
   args:

@@ -9,18 +9,18 @@ resources:
   replicas: 1
 
 # During the early phases of a migration when the number of replicas is small,
-# it may be useful to increase maxUnavailable (default: 6%) in order to improve
-# deployment speed if the next release is using a different mediawiki image
-# than main (as the image is then unlikely to be cached).
+# it may be useful to increase maxUnavailable (default: 6%) and / or maxSurge
+# (default: 3%) in order to improve deployment speed if the next release is
+# using a different mediawiki image than main (as the image is unlikely to
+# be cached). See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
+# During the PHP 8.3 migration, we've found that a moving window of ~ 20% in
+# flight pulls (e.g., maxSurge = maxUnavailable = 10%) is sufficient.
 # As an alternative or in addition, it may be useful to temporarily increase
 # the deployment timeout value in helmfile.yaml.
-# See, e.g., https://phabricator.wikimedia.org/T383845#10612223.
-# TODO: T405955 - Temporarily increase maxUnavailable and maxSurge. Update the
-# comment above with revised guidance when cleaning up.
-strategy:
-  rollingUpdate:
-    maxUnavailable: 10%
-    maxSurge: 10%
+#strategy:
+#  rollingUpdate:
+#    maxSurge: 10%
+#    maxUnavailable: 10%
 
 mesh:
   public_port: 4455
