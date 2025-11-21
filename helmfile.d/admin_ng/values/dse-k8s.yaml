@@ -111,6 +111,10 @@ namespaces:
       istio-injection: disabled
   sidecar-controller:
     systemNamespace: true
+  analytics:
+    deployClusterRole: deploy-spark-support
+    labels:
+      istio-injection: disabled
   analytics-test:
     deployClusterRole: deploy-spark-support
     labels:
