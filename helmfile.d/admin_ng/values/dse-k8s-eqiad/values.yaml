@@ -129,6 +129,7 @@ namespaces:
           memory: "16Gi"
           cpu: "8"
   spark:
+    deployClusterRole: deploy-spark-support
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
