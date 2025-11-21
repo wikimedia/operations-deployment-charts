@@ -3,12 +3,16 @@ inference_services:
   revise-tone-task-generator:
     predictor:
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
-      image_version: "2025-11-20-092815-publish"
+      image_version: "2025-11-21-085710-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: WIKI_URL
           value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM
+          value: "mediawiki.cirrussearch.page_weighted_tags_change.v1"
         - name: USE_CACHE
           value: "True"
         - name: CASSANDRA_DATACENTER
