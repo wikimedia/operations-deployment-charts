@@ -268,6 +268,45 @@ releases:
               verbs: ["*"]
 
       {{- end }}
+      {{- if eq . "spark-support" }}
+        ## Used by deploy users
+        ## In namespace where spark applications should be run, the deploy users need the
+        ## ability to create roles and rolebindings, in addition to the other types of object.
+        - apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: deploy-spark-support
+          rules:
+            ## Note: all rules until the next comment are taken from the `deploy`
+            ## ClusterRole. The additional rules are appended below the next comment.
+            - apiGroups: ["", "extensions", "apps", "networking.k8s.io", "batch"]
+              resources: ["*"]
+              verbs: ["*"]
+            {{- if hasKey $.Environment.Values "istio_gateways" }}
+            - apiGroups: ["networking.istio.io"]
+              resources: ["gateways", "virtualservices", "destinationrules"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey $.Environment.Values "install_cert_manager" }}
+            - apiGroups: ["cert-manager.io"]
+              resources: ["certificates"]
+              verbs: ["*"]
+            {{- end }}
+            {{- if hasKey $.Environment.Values "install_spark_operator" }}
+            - apiGroups: ["sparkoperator.k8s.io"]
+              resources: ["sparkapplications", "sparkapplications/status", "scheduledsparkapplications", "scheduledsparkapplications/status"]
+              verbs: ["*"]
+            {{- end }}
+            - apiGroups: ["crd.projectcalico.org"]
+              resources: ["networkpolicies"]
+              verbs: ["*"]
+            ## End of the permissions taken from the `deploy` ClusterRole and start
+            ## of the extra permissions.
+            - apiGroups: ["rbac.authorization.k8s.io"]
+              resources: ["roles", "rolebindings"]
+              verbs: ["*"]
+
+      {{- end }}
       {{- if eq . "mediawiki-dumps-legacy" }}
         ## Used by deploy users
         ## mediawiki-dumps-legacy deploy users need the ability to create role/rolebindings
