@@ -69,6 +69,8 @@ inference_services:
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: USE_CACHE
           value: "True"
         - name: CASSANDRA_DATACENTER
