@@ -53,7 +53,7 @@ main_app:
         # Test for T408538
         revise-tone-task-generator:
           concurrency: 2
-          match_config_need_quotes: ['page_change_kind', 'wiki_id']
+          match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
           match_config:
             match:
               wiki_id: /^(en|fr|ar|pt|test)wiki$/
@@ -61,6 +61,8 @@ main_app:
               page:
                 is_redirect: false
                 namespace_id: 0
+              meta:
+                domain: /^(.*).wikipedia.org$/
             match_not:
               meta:
                 domain: canary

@@ -52,6 +52,24 @@ main_app:
                 domain: canary
           namespace: articletopic-outlink
           kafka_topic: 'mediawiki.page_change.v1'
+        # See T408538 for more info
+        revise-tone-task-generator:
+          concurrency: 5
+          match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
+          match_config:
+            match:
+              wiki_id: testwiki
+              page_change_kind: edit
+              page:
+                is_redirect: false
+                namespace_id: 0
+              meta:
+                domain: /^(.*).wikipedia.org$/
+            match_not:
+              meta:
+                domain: canary
+          namespace: revise-tone-task-generator
+          kafka_topic: 'mediawiki.page_change.v1'
         # See T382295 for more info
         article-country:
           concurrency: 5
