@@ -16,6 +16,7 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases: [production]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---
