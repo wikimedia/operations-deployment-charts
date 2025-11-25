@@ -117,6 +117,35 @@ networkpolicy:
       ports:
         - protocol: TCP
           port: 443
+    # # etcd/dbctl # #
+    # conf1007.eqiad.wmnet
+    - cidr: 10.64.0.207/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:861:101:10:64:0:207/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # conf1008.eqiad.wmnet
+    - cidr: 10.64.16.110/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:861:102:10:64:16:110/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # conf1009.eqiad.wmnet
+    - cidr: 10.64.48.154/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:861:107:10:64:48:154/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # # end of etcd # #
 
 ingress:
   enabled: true
