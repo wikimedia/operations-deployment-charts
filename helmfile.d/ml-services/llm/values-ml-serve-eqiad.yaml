@@ -18,6 +18,8 @@ inference_services:
           value: "flash_attention_2"
         - name: DTYPE
           value: "bfloat16"
+        - name: PYTORCH_HIP_ALLOC_CONF
+          value: "expandable_segments:True"
       container:
         resources:
           limits:
