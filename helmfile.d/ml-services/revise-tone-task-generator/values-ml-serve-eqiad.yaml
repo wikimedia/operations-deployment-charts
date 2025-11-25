@@ -1,0 +1,61 @@
+# The `revise-tone-task-generator` deployments are disentangled into separate
+# values files for eqiad (ml-serve-eqiad) and codfw (ml-serve-codfw).
+#
+# This is done to make sure we co-locate our service with the Cassandra
+# datacenter we are communicating with. This is done via setting the
+# `CASSANDRA_DATACENTER` and `CASSANDRA_SERVERS` env variables.
+# Make sure the deplyoments for eqiad and codfw are in sync besides this!
+# 1. `helmfile.d/ml-services/revise-tone-task-generator/values-ml-serve-eqiad.yaml`
+# 2. `helmfile.d/ml-services/revise-tone-task-generator/values-ml-serve-codfw.yaml`
+
+inference_services:
+
+  revise-tone-task-generator:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
+      image_version: "2025-11-26-103834-publish"
+      custom_env:
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/edit-check/peacock/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM
+          value: "mediawiki.cirrussearch.page_weighted_tags_change.v1"
+        - name: OUTLINK_TOPIC_MODEL_URL
+          value: "http://outlink-topic-model.articletopic-outlink/v1/models/outlink-topic-model:predict"
+        - name: OUTLINK_TOPIC_MODEL_HEADER
+          value: "outlink-topic-model-predictor.articletopic-outlink.svc.cluster.local"
+        - name: USE_CACHE
+          value: "True"
+        - name: CASSANDRA_TTL
+          value: "0" # Non-expiring
+        - name: CASSANDRA_DATACENTER
+          value: "eqiad"
+        - name: CASSANDRA_SERVERS
+          value: "aqs1010-a.eqiad.wmnet;aqs1010-b.eqiad.wmnet;aqs1011-a.eqiad.wmnet;aqs1011-b.eqiad.wmnet;aqs1012-a.eqiad.wmnet;aqs1012-b.eqiad.wmnet;aqs1014-a.eqiad.wmnet;aqs1014-b.eqiad.wmnet;aqs1015-a.eqiad.wmnet;aqs1015-b.eqiad.wmnet;aqs1016-a.eqiad.wmnet;aqs1016-b.eqiad.wmnet;aqs1017-a.eqiad.wmnet;aqs1017-b.eqiad.wmnet;aqs1018-a.eqiad.wmnet;aqs1018-b.eqiad.wmnet;aqs1019-a.eqiad.wmnet;aqs1019-b.eqiad.wmnet;aqs1020-a.eqiad.wmnet;aqs1020-b.eqiad.wmnet;aqs1021-a.eqiad.wmnet;aqs1021-b.eqiad.wmnet;aqs1022-a.eqiad.wmnet;aqs1022-b.eqiad.wmnet"
+        - name: CASSANDRA_KEYSPACE
+          value: "ml_cache"
+        - name: CASSANDRA_TABLE
+          value: "page_paragraph_tone_scores"
+        - name: CASSANDRA_USER
+          valueFrom:
+            secretKeyRef:
+              name: revise-tone-task-generator-cassandra-credentials
+              key: CASSANDRA_USER
+        - name: CASSANDRA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: revise-tone-task-generator-cassandra-credentials
+              key: CASSANDRA_PASSWORD
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "4"
+            memory: 8Gi
+            amd.com/gpu: "1"
