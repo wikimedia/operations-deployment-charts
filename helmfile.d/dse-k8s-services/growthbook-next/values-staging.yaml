@@ -1,7 +1,7 @@
 image: &app_image repos/data-engineering/growthbook/next
 version: &app_version 2025-11-21-070713-8e67c37ca4651abfb13c1ea491ede029aa88836b@sha256:a9c28316954eb45446d761db0b803201c463eb8c7cea2d37c31e280a770813a9
-app_origin: &app_origin https://growthbook.wikimedia.org
-api_host: &api_host https://growthbook-api.wikimedia.org
+app_origin: &app_origin https://growthbook-next.wikimedia.org
+api_host: &api_host https://growthbook-api-next.wikimedia.org
 
 growthbook-backend:
   app:
@@ -14,13 +14,13 @@ growthbook-backend:
       API_HOST: *api_host
 
   external_services:
-    presto: [analytics]
+    presto: [analytics-test]
 
   ingress:
     gatewayHosts:
-      default: "growthbook-api"
+      default: "growthbook-api-next"
       extraFQDNs:
-      - growthbook-api.wikimedia.org
+      - growthbook-api-next.wikimedia.org
 
 growthbook-frontend:
   app:
@@ -34,6 +34,6 @@ growthbook-frontend:
 
   ingress:
     gatewayHosts:
-      default: "growthbook"
+      default: "growthbook-next"
       extraFQDNs:
-      - growthbook.wikimedia.org
+      - growthbook-next.wikimedia.org

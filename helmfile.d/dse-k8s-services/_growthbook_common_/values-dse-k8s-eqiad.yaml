@@ -1,0 +1,22 @@
+growthbook-backend:
+  config:
+    public: # See https://docs.growthbook.io/self-host/env
+      EMAIL_ENABLED: 'true'
+      EMAIL_HOST: mx-out1001.wikimedia.org
+      EMAIL_PORT: '25'
+      EMAIL_FROM: "noreply@wikimedia.org"
+
+    # growthbook:  # see https://docs.growthbook.io/self-host/config
+    # NOTE: Temporarily using GrowthBook UI for managing data sources
+
+  uploads:
+    volume:
+      storage_class: ceph-cephfs-ssd
+
+  external_services:
+    wikimail: [mx]
+    kerberos: [kdc]
+
+  common_images:
+    kerberos:
+      version: 45377f59c5bdf8bae1b967c49ee29a144c5cba44-production
