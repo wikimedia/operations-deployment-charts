@@ -19,7 +19,7 @@ inference_services:
         - name: DTYPE
           value: "bfloat16"
         - name: PYTORCH_HIP_ALLOC_CONF
-          value: "expandable_segments:True"
+          value: "garbage_collection_threshold:0.9,max_split_size_mb:512"
       container:
         resources:
           limits:
