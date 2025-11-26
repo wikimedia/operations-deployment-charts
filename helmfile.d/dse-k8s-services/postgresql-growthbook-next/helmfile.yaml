@@ -11,13 +11,13 @@ helmDefaults:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     # temporarily hard-coded
     - --kubeconfig
-    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/postgresql-growthbook-deploy-%s.config" .Environment.Name) }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/postgresql-growthbook-next-deploy-%s.config" .Environment.Name) }}
 
 environments:
   dse-k8s-eqiad:
     values:
       - releases:
-        - postgresql-growthbook
+        - postgresql-growthbook-next
     missingFileHandler: Warn
 
 ---
@@ -28,19 +28,19 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/postgresql-growthbook: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/postgresql-growthbook-next: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/postgresql-growthbook: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/postgresql-growthbook-next: {{`{{.HelmfileCommand}}`}}",
       ]
 
 releases:
-  - name: postgresql-growthbook
-    namespace: growthbook
+  - name: postgresql-growthbook-next
+    namespace: growthbook-next
     chart: wmf-stable/cloudnative-pg-cluster
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
@@ -52,4 +52,4 @@ releases:
       - "values-postgresql-documentdb.yaml"  # values common to PG/documentdb instances
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
-      - fullnameOverride: "postgresql-growthbook"
+      - fullnameOverride: "postgresql-growthbook-next"
