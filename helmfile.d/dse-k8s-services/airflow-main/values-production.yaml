@@ -13,6 +13,10 @@ config:
           max_tis_per_query: 512  # How many TaskInstances the scheduler picks up per DB query loop
       kerberos:
         principal: analytics/airflow.discovery.wmnet
+  connections:
+    spurus:
+      host: https://feeds.spur.us
+      extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
   extra_secrets:
     datahub_ingest_superset.yaml: |
       source:
