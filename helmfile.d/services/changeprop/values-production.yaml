@@ -58,7 +58,7 @@ main_app:
           match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
           match_config:
             match:
-              wiki_id: testwiki
+              wiki_id: /^(en|pt|test)wiki$/
               page_change_kind: edit
               page:
                 is_redirect: false
