@@ -11,13 +11,13 @@ helmDefaults:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     # temporarily hard-coded
     - --kubeconfig
-    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/growthbook-deploy-%s.config" .Environment.Name) }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/growthbook-next-deploy-%s.config" .Environment.Name) }}
 
 environments:
   dse-k8s-eqiad:
     values:
       - releases:
-        - ferretdb-growthbook
+        - ferretdb-growthbook-next
     missingFileHandler: Warn
 
 ---
@@ -28,19 +28,19 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/ferretdb-growthbook: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/ferretdb-growthbook-next: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/ferretdb-growthbook: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/ferretdb-growthbook-next: {{`{{.HelmfileCommand}}`}}",
       ]
 
 releases:
-  - name: ferretdb-growthbook
-    namespace: growthbook
+  - name: ferretdb-growthbook-next
+    namespace: growthbook-next
     chart: wmf-stable/ferretdb
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
