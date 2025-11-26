@@ -2,7 +2,7 @@ inference_services:
   aya-llm:
     predictor:
       image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2025-11-24-161108-publish"
+      image_version: "2025-11-26-084212-publish"
       custom_env:
         - name: MODEL_NAME
           value: "aya-expanse-8B"
@@ -11,15 +11,13 @@ inference_services:
         - name: LLM_CLASS
           value: "llm.Aya"
         - name: BITSANDBYTES_DTYPE
-          value: "None"
+          value: "int4"
         - name: DEVICE
           value: "auto"
         - name: ATTN_IMPLEMENTATION
           value: "flash_attention_2"
         - name: DTYPE
           value: "bfloat16"
-        - name: PYTORCH_HIP_ALLOC_CONF
-          value: "garbage_collection_threshold:0.9,max_split_size_mb:512"
       container:
         resources:
           limits:
