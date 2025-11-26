@@ -1,2 +1,5 @@
 app:
-  version: 2.5.0-2025-10-21-095716-0213fdca17adf4a9638c5146a9499e334e3bcd98@sha256:89f5b8e6d00cb31e3a1f389cb6e9187433c316295ad862a58f7b8779d5ae9dc9
+  initcontainer:
+    env_from:
+    - secretRef:
+        name: postgresql-growthbook-next-app
