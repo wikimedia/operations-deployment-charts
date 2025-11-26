@@ -15,12 +15,12 @@ tileCaching:
   enabled: true
   config:
     basepath: "staging-v0.0.1"
-    bucket: "tegola-swift-staging-container"
+    bucket: "tegola-swift-staging-codfw-v001"
 
 config:
   public:
-    TEGOLA_BROKER_URL: "kafka://kafka-test-eqiad.external-services.svc.cluster.local:9092"
-    TEGOLA_QUEUE_NAME: "tegola-staging"
+    TEGOLA_BROKER_URL: "kafka://kafka-main-codfw.external-services.svc.cluster.local:9092"
+    TEGOLA_QUEUE_NAME: "codfw.maps.tiles_change_staging.v1"
 
 tilePregeneration:
   cronJobEnabled: false
@@ -28,9 +28,8 @@ tilePregeneration:
 
 kafka:
   allowed_clusters:
-    - test-eqiad
-  kafka:
-    - test-eqiad
+    - main-codfw
+
 external_services:
   postgresql:
     - maps-staging-master-codfw
