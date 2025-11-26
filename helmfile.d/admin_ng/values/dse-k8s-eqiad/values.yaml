@@ -274,6 +274,13 @@ namespaces:
     tlsExtraSANs:
       - growthbook.wikimedia.org
       - growthbook-api.wikimedia.org
+  growthbook-next:
+    tlsHostnames:
+      - growthbook-next
+      - growthbook-api-next
+    tlsExtraSANs:
+      - growthbook-next.wikimedia.org
+      - growthbook-api-next.wikimedia.org
   cloudnative-pg-operator:
     systemNamespace: true
   postgresql-test: {}
