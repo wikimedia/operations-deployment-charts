@@ -12,6 +12,7 @@ growthbook-backend:
     public: # See https://docs.growthbook.io/self-host/env
       APP_ORIGIN: *app_origin
       API_HOST: *api_host
+      EMAIL_FROM: "growthbook@wikimedia.org"
 
   external_services:
     presto: [analytics]
