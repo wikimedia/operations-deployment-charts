@@ -1,7 +1,5 @@
 resources:
   replicas: 1
-  postgres:
-    max_connections: 5
 
 # Temporarily we will use envoy as a L4 tcp proxy until envoy's
 # Postgres proxy filter is production ready
@@ -9,12 +7,8 @@ resources:
 tcp_services_proxy:
   maps_postgres:
     upstreams:
-      # read replicas (the master node is left out on purpose to deal with data imports)
-      - address: maps2012.codfw.wmnet
-        port: 5432
-      - address: maps2013.codfw.wmnet
-        port: 5432
-      - address: maps2014.codfw.wmnet
+      # Single master node, no read replicas
+      - address: maps-test2001.codfw.wmnet
         port: 5432
 
 tileCaching:
@@ -39,4 +33,4 @@ kafka:
     - test-eqiad
 external_services:
   postgresql:
-    - maps-bookworm-read-replicas-codfw
+    - maps-staging-master-codfw
