@@ -1,4 +1,9 @@
 {{- define "restgateway.lua" }}
+
+-- -----------------------------------------------------------------------
+-- Use test cases in tests/test.lua to protect the logic in this file!
+-- -----------------------------------------------------------------------
+
 function envoy_on_request(request_handle)
     wmf_ratelimit_info(request_handle)
     wmf_ratelimit_cleanup(request_handle)
@@ -20,6 +25,13 @@ function wmf_ratelimit_info(request_handle)
     -- Use the client IP as the fallback use ID.
     local user_id = client_ip
 
+    -- Determine policy to apply, based on route meta data
+    local routeMeta = request_handle:metadata()
+    local routeMeta_ratelimit = routeMeta:get("wmf_ratelimit") or {}
+    local ratelimit_policy = routeMeta_ratelimit["policy"] or "MISSING"
+    headers:replace("x-wmf-ratelimit-policy", ratelimit_policy)
+
+    -- Use headers that are already set
     if headers:get("x-wmf-user-id") then
         -- Proxy strips x-wmf-user-id and x-wmf-ratelimit-class passed from the client
         -- This code reinjects the appropriate rate-limiter headers.
@@ -27,6 +39,10 @@ function wmf_ratelimit_info(request_handle)
         if not headers:get("x-wmf-ratelimit-class") then
             headers:add("x-wmf-ratelimit-class", ratelimit_class)
         end
+
+        request_handle:logDebug("WMF rate_limit early exit: class=" .. ( ratelimit_class or "~" )
+                .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
+        )
         return
     end
 
@@ -41,17 +57,12 @@ function wmf_ratelimit_info(request_handle)
         end
     end
 
-    -- Determine policy to apply, based on route meta data
-    local routeMeta = request_handle:metadata()
-    local ratelimit_policy = routeMeta:get("wmf_ratelimit")["policy"]
-
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
             .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
     )
 
     headers:replace("x-wmf-user-id", user_id)
     headers:replace("x-wmf-ratelimit-class", ratelimit_class)
-    headers:replace("x-wmf-ratelimit-policy", ratelimit_policy)
 end
 
 function wmf_ratelimit_cleanup(request_handle)
