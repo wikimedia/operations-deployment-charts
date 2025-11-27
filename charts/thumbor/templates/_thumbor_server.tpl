@@ -148,10 +148,6 @@ SUBPROCESS_TIMEOUT_KILL_AFTER = {{ .Values.main_app.subprocess_timeout.kill_afte
 
 VIPS_ENGINE_MIN_PIXELS = 10000000
 
-# Refuse to generate svgs larger than this in either dimension. This
-# should be the same as $wgSVGMaxSize
-SVG_MAX_SIZE = 4096
-
 CHROMA_SUBSAMPLING = '4:2:0'
 QUALITY_LOW = 40
 DEFAULT_FILTERS_JPEG = 'conditional_sharpen(0.0,0.8,1.0,0.0,0.85)'
