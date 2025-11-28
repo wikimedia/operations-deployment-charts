@@ -214,11 +214,17 @@ namespaces:
           memory: "16Gi"
           cpu: "8"
   mpic:
+    tlsHostnames:
+      - test-kitchen
     tlsExtraSANs:
       - mpic.wikimedia.org
+      - test-kitchen.wikimedia.org
   mpic-next:
+    tlsHostnames:
+      - test-kitchen-next
     tlsExtraSANs:
       - mpic-next.wikimedia.org
+      - test-kitchen-next.wikimedia.org
   flink-operator:
     systemNamespace: true
     labels:
