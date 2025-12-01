@@ -7,9 +7,18 @@ end
 function wmf_ratelimit_info(request_handle)
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
-    local user_id = "unknown"
     local ratelimit_class = "{{ .Values.main_app.ratelimiter.fallback_class }}"
     local trusted_identity_cookie = "{{ .Values.main_app.ratelimiter.user_id_cookie }}"
+
+    -- The x-client-ip header is set in the edge tier of the WMF network.
+    -- If it not present, the request is internal and should not be limited.
+    local client_ip = headers:get("x-client-ip")
+    if not client_ip then
+        return
+    end
+
+    -- Use the client IP as the fallback use ID.
+    local user_id = client_ip
 
     if headers:get("x-wmf-user-id") then
         -- Proxy strips x-wmf-user-id and x-wmf-ratelimit-class passed from the client
@@ -19,17 +28,6 @@ function wmf_ratelimit_info(request_handle)
             headers:add("x-wmf-ratelimit-class", ratelimit_class)
         end
         return
-    end
-
-    -- get client IP
-    if headers:get("x-client-ip") then
-        -- The x-client-ip header is set in the edge tier of the WMF network.
-        user_id = headers:get("x-client-ip")
-    elseif streamInfo.downstreamRemoteAddress then
-        -- downstreamRemoteAddress() was not available in older versions of Envoy.
-        -- In that case, just keep user_id = "unknown".
-        local addr = streamInfo:downstreamRemoteAddress()
-        user_id = string.match(addr, "([^:]+)")
     end
 
     -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
