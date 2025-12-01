@@ -215,15 +215,17 @@ namespaces:
           cpu: "8"
   mpic:
     tlsHostnames:
+      - mpic
       - test-kitchen
     tlsExtraSANs:
-      - mpic.wikimedia.org
+      - mpic.discovery.wmnet
       - test-kitchen.wikimedia.org
   mpic-next:
     tlsHostnames:
+      - mpic-next
       - test-kitchen-next
     tlsExtraSANs:
-      - mpic-next.wikimedia.org
+      - mpic-next.discovery.wmnet
       - test-kitchen-next.wikimedia.org
   flink-operator:
     systemNamespace: true
