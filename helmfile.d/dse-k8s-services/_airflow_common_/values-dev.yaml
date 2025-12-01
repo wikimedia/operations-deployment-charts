@@ -57,3 +57,8 @@ ingress:
 gitsync:
   # We want fast DAG updates after a git push happened
   period: 30
+
+worker:
+  proxy:
+    urldownloader:
+      enabled: true
