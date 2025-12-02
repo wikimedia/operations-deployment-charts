@@ -22,30 +22,15 @@ config:
 
   hadoop:
     hdfs:
-      dfs.permissions.superusergroup: hadoop
-      dfs.datanode.failed.volumes.tolerated: '2'
       dfs.ha.automatic-failover.enabled: 'true'
-      dfs.namenode.service.handler.count: '100'
       dfs.nameservices: override_me
       dfs.internal.nameservices: override_me
-      dfs.namenode.shared.edits.dir: override_me
-      dfs.journalnode.edits.dir: /var/lib/hadoop/journal
-      dfs.ha.fencing.methods: shell(/bin/true)
-      dfs.namenode.name.dir: file:///var/lib/hadoop/name
-      dfs.namenode.handler.count: '127'
-      dfs.namenode.quota.init-threads: '16'
-      dfs.block.size: '268435456'
-      dfs.blocksize: '268435456'
-      dfs.datanode.hdfs-blocks-metadata.enabled: 'true'
-      dfs.datanode.fsdataset.volume.choosing.policy: org.apache.hadoop.hdfs.server.datanode.fsdataset.AvailableSpaceVolumeChoosingPolicy
       dfs.webhdfs.enabled: 'false'
-      dfs.namenode.audit.log.async: 'true'
       dfs.block.access.token.enable: 'true'
       dfs.data.transfer.protection: privacy
       dfs.encrypt.data.transfer: 'true'
       dfs.encrypt.data.transfer.cipher.key.bitlength: '128'
       dfs.encrypt.data.transfer.cipher.suites: AES/CTR/NoPadding
-      dfs.http.policy: HTTPS_ONLY
     core:
       fs.defaultFS: override_me
       ha.zookeeper.quorum: override_me
@@ -54,46 +39,19 @@ config:
       hadoop.proxyuser.mapred.groups: '*'
       fs.trash.checkpoint.interval: '1440'
       fs.trash.interval: '43200'
-      net.topology.script.file.name: /usr/local/bin/generate_net_topology.sh
       fs.permissions.umask-mode: '027'
-      hadoop.http.staticuser.user: yarn
       hadoop.rpc.protection: privacy
       hadoop.security.authentication: kerberos
       hadoop.ssl.enabled.protocols: TLSv1.2
     yarn:
       spark.authenticate: 'true'
       spark.network.crypto.enabled: 'true'
-      yarn.acl.enable: 'true'
-      yarn.admin.acl: yarn analytics-admins
-      yarn.app.mapreduce.am.env: LD_LIBRARY_PATH=/usr/lib/hadoop/lib/native
-      yarn.app.mapreduce.am.scheduler.connection.wait.interval-ms: '5000'
-      yarn.app.mapreduce.am.staging-dir: /user
       yarn.application.classpath: $HADOOP_CONF_DIR,$HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,$HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,$HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,$HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
       yarn.log-aggregation-enable: 'true'
       yarn.log-aggregation.retain-check-interval-seconds: '86400'
       yarn.log-aggregation.retain-seconds: '5184000'
-      yarn.node-labels.enabled: 'true'
-      yarn.node-labels.fs-store.root-dir: override_me
-      yarn.nodemanager.log-dirs: ''
-      yarn.nodemanager.remote-app-log-dir: /var/log/hadoop-yarn/apps
-      yarn.nodemanager.log-aggregation.compression-type: gz
-      yarn.resourcemanager.am.max-attempts: '6'
-      yarn.resourcemanager.cluster-id: override_me
-      yarn.resourcemanager.connect.retry-interval.ms: '2000'
-      yarn.resourcemanager.ha.automatic-failover.embedded: 'true'
-      yarn.resourcemanager.ha.automatic-failover.enabled: 'true'
-      yarn.resourcemanager.ha.enabled: 'true'
       yarn.resourcemanager.ha.rm-ids: override_me
-      yarn.resourcemanager.max-completed-applications: '5000'
       yarn.resourcemanager.principal: yarn/_HOST@WIKIMEDIA
-      yarn.resourcemanager.recovery.enabled: 'true'
-      yarn.resourcemanager.scheduler.class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
-      yarn.resourcemanager.scheduler.monitor.enable: 'true'
-      yarn.resourcemanager.store.class: org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore
-      yarn.resourcemanager.work-preserving-recovery.enabled: 'true'
-      yarn.resourcemanager.zk-address: override_me
-      yarn.resourcemanager.zk-state-store.parent-path: /yarn-rmstore/analytics-hadoop
-      yarn.resourcemanager.zk-timeout-ms: '20000'
       yarn.scheduler.maximum-allocation-mb: '49152'
       yarn.scheduler.maximum-allocation-vcores: '32'
       yarn.scheduler.minimum-allocation-mb: '1'
@@ -102,11 +60,7 @@ config:
       hive.metastore.uris: override_me
       hive.metastore.kerberos.keytab.file: override_me
       hive.metastore.kerberos.principal: override_me
-      hive.server2.authentication.kerberos.principal: override_me
-      hive.server2.authentication.kerberos.keytab: override_me
-      hive.cluster.delegation.token.store.class: org.apache.hadoop.hive.thrift.DBTokenStore
       hive.metastore.sasl.enabled: 'true'
-      hive.server2.thrift.sasl.qop: auth-conf
       hive.support.concurrency: 'false'
       hive.metastore.disallow.incompatible.col.type.changes: 'false'
       hive.metastore.execute.setugi: 'true'
@@ -120,7 +74,6 @@ config:
       hive.exec.parallel.thread.number: '8'
       hive.stats.autogather: 'false'
       hive.variable.substitute.depth: '10000'
-      hive.aux.jars.path: file:///usr/lib/hive-hcatalog/share/hcatalog/hive-hcatalog-core.jar
       hive.default.fileformat: parquet
       parquet.compression: SNAPPY
       hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
@@ -130,27 +83,15 @@ config:
       hive.server2.logging.operation.enabled: 'true'
   spark:
     spark:
-      spark.yarn.historyServer.address: override_me
       spark.dynamicAllocation.enabled: true
-      spark.shuffle.service.enabled: true
       spark.dynamicAllocation.executorIdleTimeout: 60s
       spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
-      spark.shuffle.io.maxRetries: 10
-      spark.shuffle.io.retryWait: 10s
-      spark.executorEnv.LD_LIBRARY_PATH: /usr/lib/hadoop/lib/native
       spark.sql.catalogImplementation: hive
       spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
       spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
       spark.sql.catalog.spark_catalog.type: hive
-      spark.driver.port: 12000
-      spark.port.maxRetries: 100
-      spark.ui.port: 4040
-      spark.driver.blockManager.port: 13000
       spark.sql.files.maxPartitionBytes: '268435456'
       spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
-      spark.yarn.archive: hdfs:///user/spark/share/lib/spark-3.1.2-assembly.jar
-      spark.driver.defaultJavaOptions: -Djava.net.useSystemProxies=True
-      spark.executor.defaultJavaOptions: -Djava.net.useSystemProxies=True
       spark.authenticate: true
       spark.network.crypto.enabled: true
       spark.network.crypto.keyFactoryAlgorithm: PBKDF2WithHmacSHA256

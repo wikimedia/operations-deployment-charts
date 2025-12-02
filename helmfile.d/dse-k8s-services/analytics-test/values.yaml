@@ -32,14 +32,7 @@ config:
     core:
       fs.defaultFS: hdfs://analytics-test-hadoop/
     yarn:
-      yarn.node-labels.fs-store.root-dir: hdfs://analytics-test-hadoop/user/yarn/node-labels
-      yarn.resourcemanager.cluster-id: analytics-test-hadoop
       yarn.resourcemanager.ha.rm-ids: an-test-master1001-eqiad-wmnet,an-test-master1002-eqiad-wmnet
-      yarn.resourcemanager.hostname.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet
-      yarn.resourcemanager.hostname.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet
-      yarn.resourcemanager.webapp.address.an-test-master1001-eqiad-wmnet: an-test-master1001.eqiad.wmnet:8088
-      yarn.resourcemanager.webapp.address.an-test-master1002-eqiad-wmnet: an-test-master1002.eqiad.wmnet:8088
     hive:
       hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
       hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083
-      hive.server2.authentication.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
