@@ -16,7 +16,7 @@ external_services:
   kerberos:
   - kdc
 
-external_services_selector: "spark-role in (driver, executor)"
+external_services_selector: "spark-role in { 'driver', 'executor' }"
 
 config:
   hadoop:
