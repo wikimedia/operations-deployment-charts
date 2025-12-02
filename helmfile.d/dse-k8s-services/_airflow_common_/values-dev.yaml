@@ -30,6 +30,7 @@ config:
       email:
         # We don't want to alert for development instances to avoid adding noise
         # to ops week.
+        from_email: airflow-{{ $.Release.Name }} <noreply@wikimedia.org>
         default_email_on_failure: false
       logging:
         # Each airflow dev instance will send their logs to a subfolder of the airflow-dev
