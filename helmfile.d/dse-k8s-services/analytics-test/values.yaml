@@ -7,9 +7,10 @@ orchestrator:
     airflow-dev: [airflow-dev-btullis]
 
 external_services:
-  hadoop:
-  - analytics-test-hadoop-master
-  - analytics-test-hadoop-worker
+  hadoop-master:
+  - analytics-test
+  hadoop-worker:
+  - analytics-test
   hive:
   - analytics-test
   kerberos:
