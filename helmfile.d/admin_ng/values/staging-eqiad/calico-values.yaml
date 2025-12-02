@@ -8,8 +8,12 @@ IPPools:
   ipv6:
     cidr: "2620:0:861:babe::/64"
 
+# remove calico limits and raise requests to prevent OOM conditions, see T393636
 calicoNode:
   resources:
+    requests:
+      cpu: 700m
+      memory: 1Gi
     limits:
       memory: ~
 
@@ -18,8 +22,12 @@ typha:
     limits:
       memory: ~
 
+# remove calico limits and raise requests to prevent OOM conditions, see T393636
 kubeControllers:
   resources:
+    requests:
+      cpu: 300m
+      memory: 1Gi
     limits:
       cpu: ~
       memory: ~
