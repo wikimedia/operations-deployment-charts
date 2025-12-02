@@ -22,27 +22,27 @@ config:
 
   hadoop:
     hdfs:
-      dfs.ha.automatic-failover.enabled: 'true'
-      dfs.nameservices: override_me
-      dfs.internal.nameservices: override_me
-      dfs.webhdfs.enabled: 'false'
       dfs.block.access.token.enable: 'true'
       dfs.data.transfer.protection: privacy
       dfs.encrypt.data.transfer: 'true'
       dfs.encrypt.data.transfer.cipher.key.bitlength: '128'
       dfs.encrypt.data.transfer.cipher.suites: AES/CTR/NoPadding
+      dfs.ha.automatic-failover.enabled: 'true'
+      dfs.internal.nameservices: override_me
+      dfs.nameservices: override_me
+      dfs.webhdfs.enabled: 'false'
     core:
       fs.defaultFS: override_me
-      ha.zookeeper.quorum: override_me
-      io.file.buffer.size: '131072'
-      hadoop.proxyuser.mapred.hosts: '*'
-      hadoop.proxyuser.mapred.groups: '*'
+      fs.permissions.umask-mode: '027'
       fs.trash.checkpoint.interval: '1440'
       fs.trash.interval: '43200'
-      fs.permissions.umask-mode: '027'
+      ha.zookeeper.quorum: override_me
+      hadoop.proxyuser.mapred.groups: '*'
+      hadoop.proxyuser.mapred.hosts: '*'
       hadoop.rpc.protection: privacy
       hadoop.security.authentication: kerberos
       hadoop.ssl.enabled.protocols: TLSv1.2
+      io.file.buffer.size: '131072'
     yarn:
       spark.authenticate: 'true'
       spark.network.crypto.enabled: 'true'
@@ -57,50 +57,50 @@ config:
       yarn.scheduler.minimum-allocation-mb: '1'
       yarn.scheduler.minimum-allocation-vcores: '1'
     hive:
-      hive.metastore.uris: override_me
-      hive.metastore.kerberos.keytab.file: override_me
-      hive.metastore.kerberos.principal: override_me
-      hive.metastore.sasl.enabled: 'true'
-      hive.support.concurrency: 'false'
-      hive.metastore.disallow.incompatible.col.type.changes: 'false'
-      hive.metastore.execute.setugi: 'true'
       hive.cli.print.current.db: 'true'
       hive.cli.print.header: 'true'
-      hive.mapred.mode: strict
-      hive.start.cleanup.scratchdir: 'true'
-      hive.exec.stagingdir: /tmp/hive-staging
+      hive.default.fileformat: parquet
       hive.error.on.empty.partition: 'true'
       hive.exec.parallel: 'true'
       hive.exec.parallel.thread.number: '8'
-      hive.stats.autogather: 'false'
-      hive.variable.substitute.depth: '10000'
-      hive.default.fileformat: parquet
-      parquet.compression: SNAPPY
-      hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
-      hive.resultset.use.unique.column.names: 'false'
+      hive.exec.stagingdir: /tmp/hive-staging
       hive.exec.submit.local.task.via.child: 'false'
+      hive.mapred.mode: strict
+      hive.metastore.disallow.incompatible.col.type.changes: 'false'
+      hive.metastore.execute.setugi: 'true'
+      hive.metastore.kerberos.keytab.file: override_me
+      hive.metastore.kerberos.principal: override_me
+      hive.metastore.sasl.enabled: 'true'
+      hive.metastore.uris: override_me
+      hive.resultset.use.unique.column.names: 'false'
       hive.server2.authentication: KERBEROS
+      hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
       hive.server2.logging.operation.enabled: 'true'
+      hive.start.cleanup.scratchdir: 'true'
+      hive.stats.autogather: 'false'
+      hive.support.concurrency: 'false'
+      hive.variable.substitute.depth: '10000'
+      parquet.compression: SNAPPY
   spark:
     spark:
+      spark.authenticate: true
+      spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
       spark.dynamicAllocation.enabled: true
       spark.dynamicAllocation.executorIdleTimeout: 60s
-      spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
-      spark.sql.catalogImplementation: hive
-      spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
-      spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
-      spark.sql.catalog.spark_catalog.type: hive
-      spark.sql.files.maxPartitionBytes: '268435456'
-      spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
-      spark.authenticate: true
+      spark.eventLog.compress: true
+      spark.eventLog.dir: hdfs:///var/log/spark
+      spark.eventLog.enabled: true
+      spark.kubernetes.authenticate.driver.serviceAccountName: spark
       spark.network.crypto.enabled: true
       spark.network.crypto.keyFactoryAlgorithm: PBKDF2WithHmacSHA256
       spark.network.crypto.keyLength: 256
       spark.network.crypto.saslFallback: false
-      spark.eventLog.enabled: true
-      spark.eventLog.dir: hdfs:///var/log/spark
-      spark.eventLog.compress: true
-      spark.kubernetes.authenticate.driver.serviceAccountName: spark
+      spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
+      spark.sql.catalog.spark_catalog.type: hive
+      spark.sql.catalogImplementation: hive
+      spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+      spark.sql.files.maxPartitionBytes: '268435456'
+      spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
