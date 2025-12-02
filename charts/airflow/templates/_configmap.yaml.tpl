@@ -168,7 +168,7 @@ data:
     {{- end }}
     {{- if $.Values.devenv.enabled }}
         UIAlert(
-          """This is an ephemeral airflow development instance. Please destroy it with <code>airflow-devenv destroy airflow-{{ $.Values.config.airflow.instance_name }}</code> when you're done.""",
+          """This is an ephemeral airflow development instance. Please destroy it with <code>airflow-devenv destroy {{ $.Release.Name }}</code> when you're done.""",
           html=True,
           category="info",
         ),
