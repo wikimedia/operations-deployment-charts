@@ -1,23 +1,13 @@
 # Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-_vars:
-  hadoop_conf_dir: &hadoop_conf_dir /etc/hadoop/conf
-
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 resources:
   replicas: 1
 
-app:
-  port: 8080 # Not required
-
 config:
-  public:
-    "HADOOP_CONF_DIR": *hadoop_conf_dir
-    "HIVE_CONF_DIR": *hadoop_conf_dir
   private: {}
 
   hadoop:
@@ -82,25 +72,26 @@ config:
       hive.variable.substitute.depth: '10000'
       parquet.compression: SNAPPY
   spark:
-    spark:
-      spark.authenticate: true
-      spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
-      spark.dynamicAllocation.enabled: true
-      spark.dynamicAllocation.executorIdleTimeout: 60s
-      spark.eventLog.compress: true
-      spark.eventLog.dir: hdfs:///var/log/spark
-      spark.eventLog.enabled: true
-      spark.kubernetes.authenticate.driver.serviceAccountName: spark
-      spark.network.crypto.enabled: true
-      spark.network.crypto.keyFactoryAlgorithm: PBKDF2WithHmacSHA256
-      spark.network.crypto.keyLength: 256
-      spark.network.crypto.saslFallback: false
-      spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
-      spark.sql.catalog.spark_catalog.type: hive
-      spark.sql.catalogImplementation: hive
-      spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
-      spark.sql.files.maxPartitionBytes: '268435456'
-      spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
+    spark.kubernetes.master: k8s://https://kubernetes.default.cluster.svc
+    spark.kubernetes.container.image: docker-registry.discovery.wmnet/repos/data-engineering/spark:latest
+    spark.authenticate: true
+    spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
+    spark.dynamicAllocation.enabled: true
+    spark.dynamicAllocation.executorIdleTimeout: 60s
+    spark.eventLog.compress: true
+    spark.eventLog.dir: hdfs:///var/log/spark
+    spark.eventLog.enabled: true
+    spark.kubernetes.authenticate.driver.serviceAccountName: spark
+    spark.network.crypto.enabled: true
+    spark.network.crypto.keyFactoryAlgorithm: PBKDF2WithHmacSHA256
+    spark.network.crypto.keyLength: 256
+    spark.network.crypto.saslFallback: false
+    spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
+    spark.sql.catalog.spark_catalog.type: hive
+    spark.sql.catalogImplementation: hive
+    spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+    spark.sql.files.maxPartitionBytes: '268435456'
+    spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.

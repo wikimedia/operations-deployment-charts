@@ -1,3 +1,6 @@
+_vars:
+  spark-image: &spark-image "docker-registry.discovery.wmnet/repos/data-engineering/spark:3.5.7-2025-12-02-125107-be10f36a8bbc2d0ad5728d2659d137324aa4fc0d"
+
 orchestrator:
   service_accounts:
     airflow-test-k8s: [airflow]
@@ -12,9 +15,7 @@ external_services:
   kerberos:
   - kdc
 
-# The following value causes the external service network policies deployed by this chart to match airflow
-# task pods that are deployed from the given namespaces, as opposed to any other resources in this chart.
-external_services_selector: "app == 'airflow' && release in (airflow-test-k8s, airflow-dev-btullis)"
+external_services_selector: "role in (spark-driver, spark-executor)"
 
 config:
   hadoop:
@@ -36,3 +37,6 @@ config:
     hive:
       hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
       hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083
+  spark:
+    spark.kubernetes.container.image: *spark-image
+    spark.kubernetes.namespace: analytics-test

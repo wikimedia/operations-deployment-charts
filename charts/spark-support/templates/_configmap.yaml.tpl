@@ -26,10 +26,8 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  hive-site.xml: |
-    {{- include "render_xml_file" ( dict "config" .Values.config.hadoop.hive ) | nindent 4 }}
   spark-defaults.conf: |
-    {{- include "render_dotconf_file" ( dict "config" .Values.config.spark.spark ) | nindent 4 }}
+    {{- include "render_dotconf_file" ( dict "config" .Values.config.spark ) | nindent 4 }}
 {{- end }}
 
 {{- define "configmap.kerberos-client-config" }}
