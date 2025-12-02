@@ -6,6 +6,12 @@
 
 */}}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark
+  {{- include "base.meta.labels" . | indent 2 }}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -44,3 +50,53 @@ subjects:
   namespace: {{ $namespace }}
 {{- end }}
 {{- end }}
+{{/*
+  Spark driver pods are required to have additional permissions within a namespace.
+  See: https://spark.apache.org/docs/3.5.7/running-on-kubernetes.html#rbac for more details
+
+* We create a ServiceAccount named spark.
+* We create a Role defining the required and any optional permissions that we wish to use.
+* We create a RoleBinding that binds this role to the spark ServiceAccount in the namespace.
+
+  This ServiceAccount will be configured for use automatically by the spark-defaults.conf configmap.
+*/}}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: spark-driver-role
+  namespace: {{ $.Release.Namespace }}
+  {{- include "base.meta.labels" . | indent 2 }}
+rules:
+# The spark driver is required to create and manage executor pods.
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "pods/status"]
+  verbs: ["get", "create", "list", "watch", "delete"]
+# The spark driver will create a headless service for the driver, when run in cluster mode.
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "create", "delete"]
+# The spark driver can manage configmaps for dependencies. [optional]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "create", "delete"]
+# The spark driver can check the limits of the namespace. [optional]
+- apiGroups: [""]
+  resources: ["resourcequotas", "limitranges"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spark-driver-rolebinding
+  namespace: {{ $.Release.Namespace }}
+  {{- include "base.meta.labels" . | indent 2 }}
+roleRef:
+  kind: Role
+  name: spark-driver-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: spark
+  namespace: {{ $.Release.Namespace }}

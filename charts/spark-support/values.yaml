@@ -159,6 +159,7 @@ config:
       spark.eventLog.enabled: true
       spark.eventLog.dir: hdfs:///var/log/spark
       spark.eventLog.compress: true
+      spark.kubernetes.authenticate.driver.serviceAccountName: spark
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
