@@ -22,3 +22,10 @@ mesh:
     extraFQDNs:
       - staging.svc.eqiad.wmnet
       - staging.svc.codfw.wmnet
+
+ingress:
+  enabled: true
+  keepNodePort: true
+  gatewayHosts:
+    extraFQDNs:
+    - maps-staging.wikimedia.org
