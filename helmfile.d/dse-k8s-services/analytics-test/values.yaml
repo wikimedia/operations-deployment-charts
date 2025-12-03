@@ -41,3 +41,5 @@ config:
   spark:
     spark.kubernetes.container.image: *spark-image
     spark.kubernetes.namespace: analytics-test
+    spark.kerberos.keytab: /etc/security/keytabs/analytics.keytab
+    spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
