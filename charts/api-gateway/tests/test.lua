@@ -117,23 +117,37 @@ describe("rest_hooks", function()
             end)
         end)
         describe("header handling", function()
-            it("should use the x-wmf-user-id header if given", function()
+            it("should ignore x-wmf-user-id header if x-client-ip is set", function()
                 local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
-                local headers = { ["x-wmf-user-id"] = "Cindy", ["x-client-ip"] = "192.168.1.1" }
+                local headers = {
+                    ["x-wmf-user-id"] = "Cindy",
+                    ["x-client-ip"] = "192.168.1.1"
+                }
                 local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "just-a-test", result:get("x-wmf-ratelimit-policy") )
+                assert.are_not.equal( "Cindy", result:get("x-wmf-user-id") )
             end)
-            it("should use the x-wmf-ratelimit-class header if given", function()
+            it("should ignore the x-wmf-ratelimit-class header if x-client-ip is set", function()
+                local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
+                local headers = {
+                    ["x-wmf-ratelimit-class"] = "SpecialClass",
+                    ["x-client-ip"] = "192.168.1.1",
+                }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are_not.equal( "SpecialClass", result:get("x-wmf-ratelimit-class") )
+            end)
+            it("should use the x-wmf-xxx headers if given", function()
                 local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
                 local headers = {
                     ["x-wmf-user-id"] = "Cindy",
                     ["x-wmf-ratelimit-class"] = "CindysClass",
-                    ["x-client-ip"] = "192.168.1.1",
+                    ["x-wmf-ratelimit-policy"] = "TestPolicy",
+                    -- do not set "x-client-ip", so the request is treated as internal
                 }
                 local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
                 wmf_ratelimit_info(req)
@@ -141,7 +155,7 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "CindysClass", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "just-a-test", result:get("x-wmf-ratelimit-policy") )
+                assert.are.equal( "TestPolicy", result:get("x-wmf-ratelimit-policy") )
             end)
         end)
         describe("cookie handling", function()

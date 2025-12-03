@@ -48,11 +48,6 @@ main_app:
   http_https_echo: false
   ratelimiter:
     enabled: false
-    # Envoy uses wmf-user-id and wmf-ratelimit-class headers to pass information about user
-    # identity and ratelimit class to the ratelimit service. Those headers should be
-    # stripped by default. Setting this to true will reuse the original headers instead,
-    # which is useful for testing. This should be set to false in production.
-    allow_client_headers: false
     # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
     enable_x_ratelimit_headers: true
     # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about

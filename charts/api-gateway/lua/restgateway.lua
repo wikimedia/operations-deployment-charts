@@ -19,8 +19,16 @@ function wmf_ratelimit_info(request_handle)
     -- If it not present, the request is internal and should not be limited.
     local client_ip = headers:get("x-client-ip")
     if not client_ip then
+        -- The early exit keeps "x-wmf-" headers intact, which allows rate limit behavior
+        -- to be tested from an internal network by setting the headers explicitly.
+        request_handle:logDebug("WMF rate_limit: no x-client-ip, exit early")
         return
     end
+
+    -- strip all readers related to rate limiting from external requests
+    headers:remove("x-wmf-ratelimit-policy")
+    headers:remove("x-wmf-ratelimit-class")
+    headers:remove("x-wmf-user-id")
 
     -- Use the client IP as the fallback use ID.
     local user_id = client_ip
@@ -31,30 +39,13 @@ function wmf_ratelimit_info(request_handle)
     local ratelimit_policy = routeMeta_ratelimit["policy"] or "MISSING"
     headers:replace("x-wmf-ratelimit-policy", ratelimit_policy)
 
-    -- Use headers that are already set
-    if headers:get("x-wmf-user-id") then
-        -- Proxy strips x-wmf-user-id and x-wmf-ratelimit-class passed from the client
-        -- This code reinjects the appropriate rate-limiter headers.
-        -- When ratelimit.allow_client_headers is enabled, clients may pass their own disabling this logic
-        if not headers:get("x-wmf-ratelimit-class") then
-            headers:add("x-wmf-ratelimit-class", ratelimit_class)
-        end
-
-        request_handle:logDebug("WMF rate_limit early exit: class=" .. ( ratelimit_class or "~" )
-                .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
-        )
-        return
-    end
-
     -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
     local streamMeta = streamInfo:dynamicMetadata()
-    local cookies = streamMeta:get("envoy.wmf_cookies")
-    if cookies then
+    local cookies = streamMeta:get("envoy.wmf_cookies") or {}
+    if cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
         -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon.
-        if cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-            user_id = cookies[trusted_identity_cookie]
-            ratelimit_class = "cookie-user"
-        end
+        user_id = cookies[trusted_identity_cookie]
+        ratelimit_class = "cookie-user"
     end
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
