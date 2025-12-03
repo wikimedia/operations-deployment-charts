@@ -31,7 +31,7 @@ function wmf_ratelimit_info(request_handle)
     headers:remove("x-wmf-user-id")
 
     -- Use the client IP as the fallback use ID.
-    local user_id = client_ip
+    local user_id = "x-client-ip:" .. client_ip
 
     -- Determine policy to apply, based on route meta data
     local routeMeta = request_handle:metadata()
@@ -42,9 +42,26 @@ function wmf_ratelimit_info(request_handle)
     -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
     local streamMeta = streamInfo:dynamicMetadata()
     local cookies = streamMeta:get("envoy.wmf_cookies") or {}
-    if cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon.
-        user_id = cookies[trusted_identity_cookie]
+
+    -- see https://wikitech.wikimedia.org/wiki/CDN/Backend_api
+    local trust = headers:get("x-trusted-request")
+
+    if trust == "A" and headers:get("user-agent") then
+        -- This is mostly WMCS but could include stray requests from MW, see T410198 and T411503.
+        -- NOTE: this currently includes WME. We could look into x-provenance to check.
+        -- Identify by user agent. Clients using a generic agents will share a counter.
+        user_id = "user-agent:" .. headers:get("user-agent")
+
+        -- Assign "approved-bot" class. Ideally we'd only do that for "good" user agent strings.
+        ratelimit_class = "approved-bot"
+    elseif trust == "B" and headers:get("x-provenance") then
+        -- Known bots (e.g. googlebot), see https://wikitech.wikimedia.org/wiki/Bot_traffic
+        -- Identified by provenance. We could probably pick out the "client" or "id" field.
+        user_id = "x-provenance:" .. headers:get("x-provenance")
+        ratelimit_class = "known-client"
+    elseif cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
+        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
+        user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
         ratelimit_class = "cookie-user"
     end
 

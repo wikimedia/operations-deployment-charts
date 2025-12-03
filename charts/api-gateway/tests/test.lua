@@ -111,12 +111,12 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "203.0.113.222", result:get("x-wmf-user-id") )
+                assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
                 assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
         end)
-        describe("header handling", function()
+        describe("x-wmf header handling", function()
             it("should ignore x-wmf-user-id header if x-client-ip is set", function()
                 local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
                 local headers = {
@@ -158,6 +158,36 @@ describe("rest_hooks", function()
                 assert.are.equal( "TestPolicy", result:get("x-wmf-ratelimit-policy") )
             end)
         end)
+        describe("x-trusted-request handling", function()
+            it("should use the user-agent header for trust level A", function()
+                local headers = {
+                    ["x-trusted-request"] = "A",
+                    ["user-agent"] = "CindyBot 2.0 (User:Cindy)",
+                    ["x-provenance"] = "client=cindy",
+                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
+                }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "user-agent:CindyBot 2.0 (User:Cindy)", result:get("x-wmf-user-id") )
+                assert.are.equal( "approved-bot", result:get("x-wmf-ratelimit-class") )
+            end)
+            it("should use the x-provenance header for trust level B", function()
+                local headers = {
+                    ["x-trusted-request"] = "B",
+                    ["user-agent"] = "CindyBot 2.0 (User:Cindy)",
+                    ["x-provenance"] = "client=cindy",
+                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
+                }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "x-provenance:client=cindy", result:get("x-wmf-user-id") )
+                assert.are.equal( "known-client", result:get("x-wmf-ratelimit-class") )
+            end)
+        end)
         describe("cookie handling", function()
             it("should use the user ID from the cookie", function()
                 -- cookie values are expected to be stored in stream metadata
@@ -166,7 +196,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "Cindy", result:get("x-wmf-user-id") )
+                assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "cookie-user", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
