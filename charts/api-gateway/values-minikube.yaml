@@ -47,3 +47,19 @@ nutcracker:
   port: 6380 # use different port here because local redis uses 6379
   servers:
     - localhost:6379:1 "cp-1" # dev_redis sidecar
+
+# Settings for the end-to-end tests defined under tests/e2e.
+# Local overrides go into tests/e2e/values-tests.local.yaml.
+smokepy:
+  gateway:
+    # The target URL to use for end-to-end tests.
+    # Can also be set using $GATEWAY_TEST_TARGET_URL.
+    target_url: http://localhost:8087
+
+    # The path of the endpoint to probe when testing rate limits.
+    probe_path: "/enwiki/v1/page/pdf/xyz"
+
+    # The header to send with every request
+    headers:
+      Host: localhost
+

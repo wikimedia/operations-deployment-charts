@@ -3,7 +3,7 @@
 local thisdir = debug.getinfo(1).source:match("@?(.*/)") or "."
 
 -- Load code under test.
-local codeFile = thisdir .. "/../lua/restgateway.lua"
+local codeFile = thisdir .. "/../../lua/restgateway.lua"
 local codeFunc = loadfile( codeFile )
 
 if not codeFunc then

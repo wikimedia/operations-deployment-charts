@@ -47,6 +47,9 @@ production are not kept here.
 The `_scaffold/` directory is used by the `create_new_service.sh` script, it's
 best to leave it alone.
 
+The `python/` directory holds utility code for use with charts. It can be
+included in PYTHONPATH to make these utilities available.
+
 Further documenation can be found on [Wikitech](https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts)
 
 Updating a Chart
@@ -94,6 +97,10 @@ during a deployment are *not* present in the testing environment. You can
 provide necessary values for testing by creating
 a `helmfile.d/services/$SERVICE/.fixtures.yaml` file to simulate production
 data.
+
+Some charts and service definitions provide a Makefile that defines targets
+for integration testing on the staging cluster and local minikube environments.
+This practice is still experimental.
 
 License
 -------

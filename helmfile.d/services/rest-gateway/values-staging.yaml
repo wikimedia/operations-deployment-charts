@@ -1,6 +1,20 @@
 resources:
   replicas: 1
 
+# Settings for the end-to-end tests defined under tests/e2e.
+smokepy:
+  gateway:
+    # The target URL to use for end-to-end tests.
+    # Can also be set using $GATEWAY_TEST_TARGET_URL.
+    target_url: https://staging.svc.eqiad.wmnet:4113
+
+    # The path of the endpoint to probe when testing rate limits.
+    probe_path: "/en.wikipedia.org/v1/page/html/X"
+
+    # The headers to send with every request
+    headers:
+      Host: en.wikipedia.org
+
 main_app:
   # enable debug logging in staging
   args: ["-l", "debug"]
