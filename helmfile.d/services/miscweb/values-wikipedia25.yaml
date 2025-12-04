@@ -1,0 +1,20 @@
+main_app:
+  image: repos/sre/miscweb/wikipedia25-years-of-wikipedia
+  version: 2025-12-19-063303
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+mesh:
+  enabled: true
+  public_port: 4111
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+    - wikipedia25.org
+    - www.wikipedia25.org
