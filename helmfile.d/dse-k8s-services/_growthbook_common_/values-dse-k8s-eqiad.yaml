@@ -5,6 +5,20 @@ growthbook-backend:
       EMAIL_HOST: mx-out1001.wikimedia.org
       EMAIL_PORT: '25'
 
+    oidc:
+      # See https://docs.growthbook.io/sso
+      # These values were taken from the output of `curl -s https://idp.wikimedia.org/oidc/.well-known | jq .`
+      # on an idp host.
+      emailDomains: [wikimedia.org]
+      additionalScope: "groups"
+      metadata:
+        authorization_endpoint: https://idp.wikimedia.org/oidc/oidcAuthorize
+        code_challenge_methods_supported: ["plain", "S256"]
+        id_token_signing_alg_values_supported: [ "none", "RS256", "RS384", "RS512", "PS256", "PS384", "PS512", "ES256", "ES384", "ES512", "HS256", "HS384", "HS512" ]
+        issuer: https://idp.wikimedia.org/oidc
+        jwks_uri: https://idp.wikimedia.org/oidc/jwks
+        token_endpoint: https://idp.wikimedia.org/oidc/oidcAccessToken
+
     # growthbook:  # see https://docs.growthbook.io/self-host/config
     # NOTE: Temporarily using GrowthBook UI for managing data sources
 

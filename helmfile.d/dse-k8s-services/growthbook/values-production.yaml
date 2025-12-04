@@ -13,6 +13,8 @@ growthbook-backend:
       APP_ORIGIN: *app_origin
       API_HOST: *api_host
       EMAIL_FROM: "growthbook@wikimedia.org"
+    oidc:
+      clientId: growthbook
 
   external_services:
     presto: [analytics]
