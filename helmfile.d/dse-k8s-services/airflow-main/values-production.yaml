@@ -79,15 +79,3 @@ external_services:
     druid:
     - analytics
     - public
-
-# This extra egress rule is required in order to allow Airflow task pods to
-# upload pageview_hourly data to the fundraising team's minio server.
-networkpolicy:
-  egress:
-    extraRules:
-    - ports:
-      - protocol: TCP
-        port: 9000
-      to:
-      - ipBlock:
-          cidr: 10.195.0.46/32
