@@ -17,6 +17,13 @@ config:
     spurus:
       host: https://feeds.spur.us
       extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
+    frtech_s3:
+      conn_type: aws
+      extra:
+        endpoint_url: https://franio2001.frack.codfw.wmnet:9000
+        verify: /etc/ssl/certs/frtech/frtech-ca.pem
+      login: "{{ $.Values.config.connections.frtech_s3.aws_access_key_id }}"
+      password: "{{ $.Values.config.connections.frtech_s3.aws_secret_access_key }}"
   extra_secrets:
     datahub_ingest_superset.yaml: |
       source:
@@ -65,6 +72,40 @@ worker:
           eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
           eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
           eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
+      "/etc/ssl/certs/frtech":
+        "frtech-ca.pem": |
+          -----BEGIN CERTIFICATE-----
+          MIIFczCCA1ugAwIBAgIBATANBgkqhkiG9w0BAQsFADAwMS4wLAYDVQQDDCVQdXBw
+          ZXQgQ0E6IGZycG0xMDAyLmZyYWNrLmVxaWFkLndtbmV0MB4XDTIzMTAzMTE3MzM0
+          M1oXDTI4MTAzMDE3MzM0M1owMDEuMCwGA1UEAwwlUHVwcGV0IENBOiBmcnBtMTAw
+          Mi5mcmFjay5lcWlhZC53bW5ldDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoC
+          ggIBAKkRZjquw4hgm7r81bOMUDeloGr81VjatlYVO4pAXygzHfNAPqsXAtjuDWcf
+          Qg5Pdhdc22jknKzLCej3/rSfKETYCgW9eZBaNJnsD+BWJSUkgS2mRICn8uxtOQn2
+          9i93JY5ceNeKgFObXLXd2V/vtfQSZ3EHJiP3TP0Lr0npwU59Tjcxd+FaZhe+qIAR
+          gGR9jGc3n+bz8yqI24UOMBw2poB0YJBsNa/GEQBbzHXB59KiYTmw+0bqfN/IDY4F
+          iR/kkdxqM00GHraw2yMlMvZrhhex45CBu0sCUcTaeXSwZ3JUoHBjHfa9W8rGDNLO
+          5aGI/frmDdtYMW2YtJDmoOjcZZtdC4NSJnBUDvdTz8bWiRpL1xeqEIDvCa5/PfpI
+          3zsvOFuw5gGtnAS+fowCyU3iqe8Q4EpBRq6HI7I8tWJTh0W69GSRnRY4Ecle73nD
+          9Mjt1FgQgoRiiN8KqbGa+kQxHt9dC9QYTiae74F8OsT7az9vV4akkQ2OqMSUdef7
+          j97rfEhv1CTErYbtcXVjoTiBTJur3GV1OWEN+HURR7V7CHNLOeY9HYd2+yJjX6hK
+          RLQ11FPn5yUTFBoVYuKVcHMTfcjNmgQXw4TnIkFd63oXv7pJiKh7mom1lr89N2Bo
+          jOreOD9Th7gcMRDu+F0n1pEoxpx88bDXezX8cWUvKRLzOYdDAgMBAAGjgZcwgZQw
+          MQYJYIZIAYb4QgENBCQWIlB1cHBldCBTZXJ2ZXIgSW50ZXJuYWwgQ2VydGlmaWNh
+          dGUwHwYDVR0jBBgwFoAUSl6C1nE7t1QiqWaGKFsQY27hbeEwHQYDVR0OBBYEFEpe
+          gtZxO7dUIqlmhihbEGNu4W3hMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQD
+          AgEGMA0GCSqGSIb3DQEBCwUAA4ICAQBqtryQUmfRIcROXXLsvOQZu6CC1kZVeEsl
+          qaAX+DFCREW4j9AbPMfQMEOcohQJZoNWtg/oAxRJtcZ0GtoMDsa3biRFs5x4GwEJ
+          9iuKArvCSZ6vxTdd5db3LOdCrojJ/7uXRjEVNxnkZODVC164EVOefUdeN89jJBoj
+          SjoJP0YjxCHhA4TOMO/6AthwpQIvHBpbxmwAblbFloiXKZXkf/HpQWmhYhPoN/D0
+          C7HCXhpqwWOu5qr+4ZVOdkZ6jBkNE8+HFqV2jUxJ2eH84jQ5HAOGi7BZl2KoFh2G
+          j4zhUl6x5Na4yQ3y0ik+loDb03cPRP0BF1MeRQm3EGfSTCsK+Lp4B6QfGAdylazc
+          1zM3V4E3O42VgwEuwGw3tZfcZHGayC0MPrtu0lsARRjCXmSbcmXyd5XgbFk5G4YH
+          2tCT/XfeWse+fRwnwotGnSVKxcK7IDOhgb2FM53EmX2mofcPYCnQd3aAlrRB+WSl
+          /hmCYB6zP2utw1tsz53XcrtER0sQPihgrgCenbfm8RNGtfD30Omdc0FrMnV8fivW
+          WNYhlyyMwpj5hqX2XWT5TCnQ0JqDWzYSGHcA60c8QeKpg375aTYza66t0wIrspjQ
+          P3FDu9eWKeJuc7E+3gHcmT3kBRW4Sn/ZMs6lrsD1kNbg0Ycc3siLAPd7b2vCKm2S
+          aG1HwBJmjw==
+          -----END CERTIFICATE-----
   proxy:
     urldownloader:
       enabled: true
