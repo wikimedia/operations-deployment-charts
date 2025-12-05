@@ -63,16 +63,13 @@ config:
       hive.metastore.sasl.enabled: 'true'
       hive.metastore.uris: override_me
       hive.resultset.use.unique.column.names: 'false'
-      hive.server2.authentication: KERBEROS
-      hive.server2.builtin.udf.blacklist: xpath,xpath_string,xpath_boolean,xpath_number,xpath_double,xpath_float,xpath_long,xpath_int,xpath_short
-      hive.server2.logging.operation.enabled: 'true'
       hive.start.cleanup.scratchdir: 'true'
       hive.stats.autogather: 'false'
       hive.support.concurrency: 'false'
       hive.variable.substitute.depth: '10000'
       parquet.compression: SNAPPY
   spark:
-    spark.kubernetes.master: k8s://https://kubernetes.default.cluster.svc
+    spark.kubernetes.master: k8s://https://kubernetes.default
     spark.kubernetes.container.image: docker-registry.discovery.wmnet/repos/data-engineering/spark:latest
     spark.authenticate: true
     spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
