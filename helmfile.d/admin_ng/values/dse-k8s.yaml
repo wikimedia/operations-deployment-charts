@@ -44,11 +44,15 @@ GlobalNetworkPolicies:
           nets:
             # eqiad
             - "10.67.24.0/21"
+            # codfw
+            - "10.192.96.0/21"
       - action: Allow
         destination:
           nets:
             # eqiad
             - "2620:0:861:302::/64"
+            # codfw
+            - "2620:0:860:308::/64"
 
 # Context: https://knative.dev/docs/serving/tag-resolution/
 docker:
