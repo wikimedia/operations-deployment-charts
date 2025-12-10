@@ -69,7 +69,7 @@ config:
       hive.variable.substitute.depth: '10000'
       parquet.compression: SNAPPY
   spark:
-    spark.kubernetes.master: k8s://https://kubernetes.default
+    spark.master: k8s://https://kubernetes.default.svc.cluster.local:443
     spark.kubernetes.container.image: docker-registry.discovery.wmnet/repos/data-engineering/spark:latest
     spark.authenticate: true
     spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
