@@ -62,3 +62,44 @@ data:
       .wikimedia = WIKIMEDIA
       wikimedia = WIKIMEDIA
 {{- end }}
+
+{{- define "configmap.spark-pod-templates" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-spark-pod-templates
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  driver.yaml: |
+    apiVersion: v1
+    Kind: Pod
+    spec:
+      containers:
+      - name: spark-driver-template
+        image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+              drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+  executor.yaml: |
+    apiVersion: v1
+    Kind: Pod
+    spec:
+      containers:
+      - name: spark-executor-template
+        image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+              drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+{{- end }}
