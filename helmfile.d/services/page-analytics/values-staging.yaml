@@ -6,9 +6,14 @@ main_app:
   limits:
     cpu: 500m
     memory: 500Mi
+  data_gateway_uri: http://127.0.0.1:6510/public/analytics
 
 resources:
   replicas: 1
 
 ingress:
   staging: true
+
+discovery:
+  listeners:
+    - data-gateway-staging

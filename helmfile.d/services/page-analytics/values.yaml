@@ -5,6 +5,8 @@ main_app:
   args: ["-config", "/etc/aqs-http-gateway/config.yaml"]
   service_name: page-analytics
 
+  data_gateway_uri: http://127.0.0.1:6038/public/analytics
+
   consistency: localQuorum
 
   # note the "_"
@@ -38,3 +40,7 @@ service:
 
 monitoring:
   enabled: true
+
+discovery:
+  listeners:
+    - data-gateway
