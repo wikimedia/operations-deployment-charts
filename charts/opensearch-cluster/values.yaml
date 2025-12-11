@@ -13,6 +13,7 @@ opensearchCluster:
   # 'additionalConfig' for adding config to opensearch.yml, ref https://github.com/opensearch-project/opensearch-k8s-operator/blob/v2.7.0/docs/userguide/main.md#configuring-opensearchyml
     additionalConfig:
       cluster.default_number_of_replicas: "2"
+      plugins.security.ssl.certificates_hot_reload.enabled: "true"
 # The following securityContext values are required by policy on all WMF k8s clusters, ref T362978
     securityContext:
       capabilities:

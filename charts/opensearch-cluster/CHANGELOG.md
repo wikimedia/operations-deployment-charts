@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.15]
+### Added
+  - Enable [certificate hot reloading]( https://docs.opensearch.org/2.19/security/configuration/tls/#hot-reloading-tls-certificates) to see if it works (ref https://phabricator.wikimedia.org/T412447).
+### Deprecated
+### Removed
+### Fixed
+
 ## [0.0.14]
 ### Added
   - Set default number of replicas to "2" in order to match design doc.
