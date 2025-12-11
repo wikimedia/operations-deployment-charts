@@ -97,7 +97,12 @@ main_app:
       requests_per_unit: 5000
       unit: HOUR
     units: [ HOUR, MINUTE, SECOND ]
-    policies: # used with the rate-gateway, not the api-gateway
+
+    # Rate limit policies are used with the REST gateway, not the API gateway.
+    # A rate limit policy defines the limits for each rate limit class.
+    # For a description of the available rate limit classes and their meaning and purpose,
+    # see the comment on the wmf_ratelimit_info method in restgateway.lua.
+    policies:
     #   "EXAMPLE":
     #     "*": # catch-all limits
     #       HOUR: 500

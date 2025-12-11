@@ -183,6 +183,35 @@ class RateLimitTest(unittest.TestCase):
         requestHeaders["x-provenance"] = "client=" + env.nextName("yyy")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
 
+    def test_trust_level_D(self):
+        requestHeaders = {
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "D", # compliant bot
+            "x-ua-contact": "bob@acme.test", # compliant bot contact
+        }
+
+        limits = getRateLimits("ua-bot")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
+
+    def test_trust_level_F(self):
+        requestHeaders = {
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "F", # suspicious/abusive
+        }
+
+        limits = getRateLimits("anon-sus")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
+
+    def test_anon_browsers(self):
+        requestHeaders = {
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "E", # general fallback
+            "x-is-browser": "100", # >= 80 is good
+        }
+
+        limits = getRateLimits("anon-browser")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
+
 def init():
     default_value_files = [
         "../../../../charts/api-gateway/values.yaml", # chart defaults

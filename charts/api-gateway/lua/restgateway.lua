@@ -9,6 +9,51 @@ function envoy_on_request(request_handle)
     wmf_ratelimit_cleanup(request_handle)
 end
 
+-- -----------------------------------------------------------------------
+-- wmf_ratelimit_info determins the rate limit class to be applied for the
+-- current request, and the user ID to use as the key for the rate limit
+-- counter.
+--
+-- Limits for each rate limit class are defined in main_app.ratelimiter.policies.
+-- The following classes are currently assigned by wmf_ratelimit_info:
+--
+-- * approved-bot indicates that the request is coming from a vetted bot.
+--   The user-agent header is used as the rate limit key.
+--   This is currently applied to requests with x-trusted-request: A, which is for
+--   requests from networks controlled by WMF (including WMCS an WME).
+--   In the future, this class may also be assigned based on privileges of an
+--   authenticated users (such as the global bot flag).
+--
+-- * known-clients indicates that the request is coming from a well known source.
+--   The x-provenance header is used as the rate limit key.
+--   This is currently applied to requests with x-trusted-request: B, which is for
+--   things like googlebot, bingbot, internet archive, etc.
+--
+-- * cookie-user indicates an authenticated request from a browser.
+--   This is equivalent to x-trusted-request: C.
+--   It is assigned to requests that have a user ID cookie set. In the future,
+--   this cookie will be required to contain a valid JWT.
+--   The ID from the cookie is used as the rate limit key.
+--
+-- * ua-bot indicates a bot using a compliant user-agent header.
+--   It is applied to requests with x-trusted-request: D.
+--   The x-ua-contact header is used as the rate limit key.
+--
+-- * anon-browser indicates a organic browser traffic from interactive UI
+--   elements and Gadgets.
+--   It is applied to requests with x-is-browser >= 80 and is will cover
+--   part of the requests with x-trusted-request: E.
+--   The client's IP address is used as the rate limit key.
+--
+-- * anon-sus indicates that the origin of the request is suspect.
+--   It is applied to requests with x-trusted-request: F.
+--   The client's IP address is used as the rate limit key.
+--
+-- * anon: Anything else, especially non-compliant bots.
+--   This will apply requests with x-trusted-request: E but a low score
+--   in x-is-browser.
+--   The client's IP address is used as the rate limit key.
+--- -----------------------------------------------------------------------
 function wmf_ratelimit_info(request_handle)
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
@@ -45,8 +90,13 @@ function wmf_ratelimit_info(request_handle)
 
     -- see https://wikitech.wikimedia.org/wiki/CDN/Backend_api
     local trust = headers:get("x-trusted-request")
+    local browserScore = headers:get("x-is-browser") and tonumber( headers:get("x-is-browser") )
 
-    if trust == "A" and headers:get("user-agent") then
+    if cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
+        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
+        user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
+        ratelimit_class = "cookie-user"
+    elseif trust == "A" and headers:get("user-agent") then
         -- This is mostly WMCS but could include stray requests from MW, see T410198 and T411503.
         -- NOTE: this currently includes WME. We could look into x-provenance to check.
         -- Identify by user agent. Clients using a generic agents will share a counter.
@@ -59,10 +109,21 @@ function wmf_ratelimit_info(request_handle)
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
         user_id = "x-provenance:" .. headers:get("x-provenance")
         ratelimit_class = "known-client"
-    elseif cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
-        user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
-        ratelimit_class = "cookie-user"
+    elseif trust == "D" and headers:get("x-ua-contact") then
+        -- Unidentified traffic from suspicious sources
+        ratelimit_class = "ua-bot"
+
+        -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
+        user_id = "x-ua-contact:" .. headers:get("x-ua-contact")
+    elseif browserScore and browserScore >= 80 then
+        -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
+        -- This is typically trust level E, but we allow level F as well (untile that gets abused)
+        -- TODO: Use JA3N + JA4H as the user ID when available
+        ratelimit_class = "anon-browser"
+    elseif trust == "F" then
+        -- Unidentified traffic from suspicious sources
+        -- TODO: Use JA3N + JA4H as the user ID when available
+        ratelimit_class = "anon-sus"
     end
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )

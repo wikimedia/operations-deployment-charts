@@ -83,20 +83,29 @@ main_app:
     policies:
       "experiment-2025":
         "*": # catch-all limits
-          MINUTE: 3
+          MINUTE: 5
           SECOND: 1
         "anon":
-          MINUTE: 3
-          SECOND: 1
+          MINUTE: 15
+          SECOND: 3
+        "ua-bot":
+          MINUTE: 25
+          SECOND: 5
+        "anon-browser":
+          MINUTE: 35
+          SECOND: 7
+        "anon-sus":
+          MINUTE: 45
+          SECOND: 9
         "cookie-user":
-          MINUTE: 10
-          SECOND: 2
+          MINUTE: 55
+          SECOND: 11
         "approved-bot":
-          MINUTE: 20
-          SECOND: 5
+          MINUTE: 65
+          SECOND: 13
         "known-client":
-          MINUTE: 20
-          SECOND: 5
+          MINUTE: 75
+          SECOND: 15
     # Manual testing
     require_opt_in: false
     default_policy: 'experiment-2025'

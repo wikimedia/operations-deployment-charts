@@ -6,7 +6,7 @@ service ?= rest-gateway
 
 servicedir := $(chartdir)/../../helmfile.d/services/$(service)
 
-uninstall: ## install rest gateway
+uninstall: ## install gateway
 	helm uninstall "$(name)"
 
 	@echo
@@ -15,7 +15,7 @@ uninstall: ## install rest gateway
 
 	@echo "$(name) is uninstalled."
 
-install: ## uninstall rest gateway
+install: ## uninstall gateway
 	helm install "$(name)" "$(chartdir)" -f "$(servicedir)/values-staging.yaml" -f "$(chartdir)/values-minikube.yaml"
 
 	@echo
@@ -23,6 +23,8 @@ install: ## uninstall rest gateway
 
 	kubectl wait --for=condition=Ready pod -l app=api-gateway -l "release=$(name)" --timeout=60s
 	@echo "$(name) is up"
+
+reinstall: uninstall install ## uninstall then install
 
 port-forward: ## start port forwarding
 	kubectl port-forward $$( kubectl get pod -l app=api-gateway -l "release=$(name)" -o name ) 8087 1666

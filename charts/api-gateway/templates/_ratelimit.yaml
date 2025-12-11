@@ -8,9 +8,13 @@ descriptors:
   # NOTE: when changing the descriptor structure,
   #       also update the matcher rules in ratelimiter_metrics.yaml!
   {{- range $policy, $classes := $.Values.main_app.ratelimiter.policies }}
+  # Rate limit policies for use by te REST gateway.
+  # A policy defines the limits for each rate limit class.
   - key: policy
     value: {{ $policy }}
     descriptors:
+      # For a description of the available rate limit classes and their meaning and purpose,
+      # see the comment on the wmf_ratelimit_info method in restgateway.lua.
       {{- range $class, $units := $classes }}
       - key: user_class
         {{- if ne $class "*" }}
@@ -33,6 +37,7 @@ descriptors:
       {{- end }}
   {{- end }}
 {{- else }}
+  # Per-route limits for use by the API gateway.
   - key: route_name
     value: default_rate
     descriptors:
