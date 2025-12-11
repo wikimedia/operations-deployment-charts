@@ -72,15 +72,15 @@ rules:
 # The spark driver is required to create and manage executor pods.
 - apiGroups: [""]
   resources: ["pods", "pods/log", "pods/status"]
-  verbs: ["get", "create", "list", "watch", "delete"]
+  verbs: ["*"]
 # The spark driver will create a headless service for the driver, when run in cluster mode.
 - apiGroups: [""]
   resources: ["services"]
-  verbs: ["get", "create", "delete"]
+  verbs: ["*"]
 # The spark driver can manage configmaps for dependencies. [optional]
 - apiGroups: [""]
   resources: ["configmaps"]
-  verbs: ["get", "create", "delete"]
+  verbs: ["*"]
 # The spark driver can check the limits of the namespace. [optional]
 - apiGroups: [""]
   resources: ["resourcequotas", "limitranges"]
