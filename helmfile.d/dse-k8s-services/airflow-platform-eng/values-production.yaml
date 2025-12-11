@@ -9,6 +9,14 @@ config:
     spurus:
       host: https://feeds.spur.us
       extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
+    opensearch_test:
+      conn_type: opensearch
+      host: opensearch-test.discovery.wmnet
+      port: 30443
+      login: opensearch
+      extra_dejson:
+        verify_certs: True
+        use_ssl: True
     opensearch_ipoid_eqiad: &opensearch-ipoid
       conn_type: opensearch
       host: opensearch-ipoid.svc.eqiad.wmnet
