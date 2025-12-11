@@ -49,3 +49,13 @@ worker:
   proxy:
     urldownloader:
       enabled: true
+
+# Enable traffic to egress to the dse-k8s-codfw ingress VIP. This is useful for the spur DAG
+# which have to double write to opensearch clusters running in dse-k8s-{eqiad, codfw}
+networkpolicy:
+  egress:
+    dst_nets:
+    - cidr: 10.2.1.91/32
+      ports:
+      - port: 30443
+        protocol: TCP
