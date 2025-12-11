@@ -37,7 +37,7 @@ config:
       hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
       hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083
       hive.server2.authentication.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
-      hive.server2.authentication.kerberos.keytab: hive.server2.authentication.kerberos.keytab
+      hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/analytics.keytab
 
   spark:
     spark.kubernetes.container.image: *spark-image
