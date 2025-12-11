@@ -33,8 +33,6 @@ config:
       dfs.nameservices: analytics-test-hadoop
     core:
       fs.defaultFS: hdfs://analytics-test-hadoop/
-    yarn:
-      yarn.resourcemanager.ha.rm-ids: an-test-master1001-eqiad-wmnet,an-test-master1002-eqiad-wmnet
     hive:
       hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
       hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083

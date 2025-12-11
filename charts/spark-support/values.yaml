@@ -26,26 +26,12 @@ config:
       fs.permissions.umask-mode: '027'
       fs.trash.checkpoint.interval: '1440'
       fs.trash.interval: '43200'
-      ha.zookeeper.quorum: override_me
       hadoop.proxyuser.mapred.groups: '*'
       hadoop.proxyuser.mapred.hosts: '*'
       hadoop.rpc.protection: privacy
       hadoop.security.authentication: kerberos
       hadoop.ssl.enabled.protocols: TLSv1.2
       io.file.buffer.size: '131072'
-    yarn:
-      spark.authenticate: 'true'
-      spark.network.crypto.enabled: 'true'
-      yarn.application.classpath: $HADOOP_CONF_DIR,$HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,$HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,$HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,$HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
-      yarn.log-aggregation-enable: 'true'
-      yarn.log-aggregation.retain-check-interval-seconds: '86400'
-      yarn.log-aggregation.retain-seconds: '5184000'
-      yarn.resourcemanager.ha.rm-ids: override_me
-      yarn.resourcemanager.principal: yarn/_HOST@WIKIMEDIA
-      yarn.scheduler.maximum-allocation-mb: '49152'
-      yarn.scheduler.maximum-allocation-vcores: '32'
-      yarn.scheduler.minimum-allocation-mb: '1'
-      yarn.scheduler.minimum-allocation-vcores: '1'
     hive:
       hive.cli.print.current.db: 'true'
       hive.cli.print.header: 'true'
@@ -58,7 +44,6 @@ config:
       hive.mapred.mode: strict
       hive.metastore.disallow.incompatible.col.type.changes: 'false'
       hive.metastore.execute.setugi: 'true'
-      hive.metastore.kerberos.keytab.file: override_me
       hive.metastore.kerberos.principal: override_me
       hive.metastore.sasl.enabled: 'true'
       hive.metastore.uris: override_me

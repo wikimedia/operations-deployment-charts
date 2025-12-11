@@ -11,8 +11,6 @@ data:
     {{- include "render_xml_file" ( dict "config" .Values.config.hadoop.core ) | nindent 4 }}
   hdfs-site.xml: |
     {{- include "render_xml_file" ( dict "config" .Values.config.hadoop.hdfs ) | nindent 4 }}
-  yarn-site.xml: |
-    {{- include "render_xml_file" ( dict "config" .Values.config.hadoop.yarn ) | nindent 4 }}
   hive-site.xml: |
     {{- include "render_xml_file" ( dict "config" .Values.config.hadoop.hive ) | nindent 4 }}
 {{- end }}
