@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 ## [0.0.15]
 ### Added
-  - Enable [certificate hot reloading]( https://docs.opensearch.org/2.19/security/configuration/tls/#hot-reloading-tls-certificates) to see if it works (ref https://phabricator.wikimedia.org/T412447).
+  - Enable [Reload Certificates API]( https://docs.opensearch.org/2.19/security/configuration/tls/#using-the-reload-certificates-api) to see if it works (ref https://phabricator.wikimedia.org/T412447).
 ### Deprecated
 ### Removed
 ### Fixed
