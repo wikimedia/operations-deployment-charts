@@ -16,9 +16,15 @@ growthbook-backend:
     oidc:
       clientId: growthbook
 
+      # Delete that whole block when hooking growthbook back onto idp production
+      authorization_endpoint: https://idp-test.wikimedia.org/oidc/oidcAuthorize
+      issuer: https://idp-test.wikimedia.org/oidc
+      jwks_uri: https://idp-test.wikimedia.org/oidc/jwks
+      token_endpoint: https://idp-test.wikimedia.org/oidc/oidcAccessToken
+
   external_services:
     presto: [analytics]
-    cas: [idp]
+    cas: [idp-test] # set back to idp when hooking growthbook back to idp production
 
   ingress:
     gatewayHosts:
