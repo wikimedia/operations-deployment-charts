@@ -73,9 +73,13 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "pods/log", "pods/status"]
   verbs: ["*"]
-# The spark driver will create a headless service for the driver, when run in cluster mode.
+# The spark driver will create a headless service for the driver, when run in client mode.
 - apiGroups: [""]
   resources: ["services"]
+  verbs: ["*"]
+# The spark driver can manage persistent volume claims. [optional]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
   verbs: ["*"]
 # The spark driver can manage configmaps for dependencies. [optional]
 - apiGroups: [""]
