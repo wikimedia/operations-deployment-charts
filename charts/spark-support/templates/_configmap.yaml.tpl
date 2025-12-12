@@ -100,4 +100,11 @@ data:
           runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
+        resources:
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
 {{- end }}
