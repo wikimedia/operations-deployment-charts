@@ -74,11 +74,11 @@ opensearchCluster:
         - "data"
       resources:
         requests:
-          memory: "2Gi"
-          cpu: "500m"
+          memory: "8Gi"
+          cpu: "2000m"
         limits:
-          memory: "2Gi"
-          cpu: "500m"
+          memory: "8Gi"
+          cpu: "2000m"
     # These annotations enable/configure metrics scrapes
       annotations:
         prometheus.io/scrape: "true"
