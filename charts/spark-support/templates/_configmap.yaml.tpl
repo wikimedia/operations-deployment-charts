@@ -126,9 +126,8 @@ data:
           type: spark
           method: thrift
           schema: "btullis"
-          host: localhost
+          host: analytics-test.discovery.wmnet
           port: 10000
-          user: "analytics"
           auth: "KERBEROS"
           kerberos_service_name: "analytics"
           server_side_parameters:
