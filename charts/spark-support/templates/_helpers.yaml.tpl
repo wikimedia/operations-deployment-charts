@@ -16,3 +16,15 @@
 {{ $k }}  {{ $v}}
 {{- end }}
 {{- end }}
+
+{{- define "spark.toolbox.volumes" }}
+{{- with .Values.volumes }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{- define "spark.toolbox.volumemounts" }}
+{{- with .Values.volumemounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}

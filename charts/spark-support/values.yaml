@@ -79,6 +79,48 @@ config:
     spark.sql.files.maxPartitionBytes: '268435456'
     spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
 
+volumes:
+  - name: &spark-pod-templates '{{ template "base.name.release" . }}-spark-pod-templates'
+    configMap:
+      name: *spark-pod-templates
+  - name: &spark-configuration '{{ template "base.name.release" . }}-spark-configuration'
+    configMap:
+      name: *spark-configuration
+  - name: &hadoop-configuration '{{ template "base.name.release" . }}-hadoop-configuration'
+    configMap:
+      name: *hadoop-configuration
+  - name: &kerberos-client-configuration '{{ template "base.name.release" . }}-kerberos-client-config'
+    configMap:
+      name: *kerberos-client-configuration
+  - name: &kerberos-keytabs '{{ template "base.name.release" . }}-kerberos-keytabs'
+    secret:
+      secretName: *kerberos-keytabs
+
+volumemounts:
+  - mountPath: /opt/spark/pod_templates
+    name: *spark-pod-templates
+  - mountPath: /opt/spark/conf/spark-defaults.conf
+    subPath: spark-defaults.conf
+    name: *spark-configuration
+  - mountPath: /opt/spark/conf/hive-site.xml
+    subPath: hive-site.xml
+    name: *hadoop-configuration
+  - mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+    subPath: core-site.xml
+    name: *hadoop-configuration
+  - mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+    subPath: hdfs-site.xml
+    name: *hadoop-configuration
+  - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
+    subPath: hive-site.xml
+    name: *hadoop-configuration
+  - mountPath: /etc/krb5.conf
+    subPath: krb5.conf
+    name: *kerberos-client-configuration
+  - mountPath: /etc/security/keytabs
+    name: *kerberos-keytabs
+
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
