@@ -108,3 +108,32 @@ data:
             cpu: "2"
             memory: "4Gi"
 {{- end }}
+
+{{- define "configmap.dbt-profiles" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-dbt-profiles
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  profiles.yml: |
+    datalake:
+      target: dev
+      outputs:
+        dev:
+          type: spark
+          method: thrift
+          schema: "btullis"
+          host: localhost
+          port: 10000
+          user: "analytics"
+          auth: "KERBEROS"
+          kerberos_service_name: "analytics"
+          server_side_parameters:
+            "spark.driver.memory": "2g"
+            "spark.executor.memory": "8g"
+            "spark.executor.cores": "4"
+            "spark.dynamicAllocation.maxExecutors": "64"
+{{- end }}
