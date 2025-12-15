@@ -3,13 +3,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "base.name.release" . }}-spark-toolbox
+  name: spark-toolbox
   {{- include "base.meta.labels" . | indent 2 }}
     spark-role: driver
 spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
-  replicas: 1
+  replicas: {{ .Values.toolbox.replicas }}
   template:
     metadata:
       labels:
@@ -29,6 +29,7 @@ spec:
           volumeMounts:
           {{- include "spark.toolbox.volumemounts" . | indent 10 }}
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
+          {{- include "base.helper.resources" $.Values.toolbox.resources | indent 10 }}
       volumes:
         {{- include "spark.toolbox.volumes" . | indent 8 }}
 
