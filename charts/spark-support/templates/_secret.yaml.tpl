@@ -5,7 +5,7 @@ apiVersion: v1
 kind: Secret
 type: Opaque
 metadata:
-  name: {{ template "base.name.release" . }}-kerberos-keytabs
+  name: kerberos-keytabs
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
