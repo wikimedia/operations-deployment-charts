@@ -58,6 +58,9 @@ config:
     spark.master: k8s://https://kubernetes.default.svc.cluster.local:443
     spark.kubernetes.container.image: docker-registry.discovery.wmnet/repos/data-engineering/spark:latest
     spark.authenticate: true
+    spark.blockManager.port: 7079
+    spark.driver.port: 7078
+    spark.driver.bindAddress: 0.0.0.0
     spark.dynamicAllocation.cachedExecutorIdleTimeout: 3600s
     spark.dynamicAllocation.enabled: true
     spark.dynamicAllocation.executorIdleTimeout: 60s
