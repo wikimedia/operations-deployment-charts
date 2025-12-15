@@ -1,6 +1,6 @@
 
 {{- /*
-Allow all executor pods to access the block manager and spark driver ports
+Allow all executor pods to access the spark driver ports
 on all driver pods in each of the job namespaces.
 */}}
 {{ range $jobNamespace := $.Values.spark.jobNamespaces }}
@@ -22,11 +22,10 @@ spec:
       destination:
         ports:
           - 7078 # Driver port
-          - 7079 # Block manager port
 {{- end }}
 
 {{- /*
-Allow the executor pods to contact each other on the block manager port
+Allow all driver and executor pods to contact each other on the block manager port
 in each of the job namespaces. This is required when performing data shuffling.
 */}}
 {{ range $jobNamespace := $.Values.spark.jobNamespaces }}
@@ -34,17 +33,17 @@ in each of the job namespaces. This is required when performing data shuffling.
 apiVersion: crd.projectcalico.org/v1
 kind: NetworkPolicy
 metadata:
-  name: spark-executor-to-executor
+  name: spark-block-manager
   namespace: {{ $jobNamespace }}
   labels:
     {{- include "spark-operator.labels" $ | nindent 4 }}
 spec:
-  selector: 'spark-role == "executor"'
+  selector: 'spark-role in { "driver", "executor" }'
   ingress:
     - action: Allow
       protocol: TCP
       source:
-        selector: 'spark-role == "executor"'
+        selector: 'spark-role in { "driver", "executor" }'
       destination:
         ports:
           - 7079 # Block manager port
