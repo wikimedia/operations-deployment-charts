@@ -4,6 +4,7 @@
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
+
 toolbox:
   replicas: 1
   resources:
@@ -104,21 +105,21 @@ volumes:
       secretName: kerberos-keytabs
 
 volumemounts:
-  - mountPath: /opt/spark/pod_templates
+  - mountPath: /etc/spark/pod_templates
     name: spark-pod-templates
-  - mountPath: /opt/spark/conf/spark-defaults.conf
+  - mountPath: /etc/spark/conf/spark-defaults.conf
     subPath: spark-defaults.conf
     name: spark-configuration
-  - mountPath: /opt/spark/conf/hive-site.xml
+  - mountPath: /etc/spark/conf/hive-site.xml
     subPath: hive-site.xml
     name: hadoop-configuration
-  - mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+  - mountPath: /etc/hadoop/conf/core-site.xml
     subPath: core-site.xml
     name: hadoop-configuration
-  - mountPath: /opt/hadoop/etc/hadoop/hdfs-site.xml
+  - mountPath: /etc/hadoop/conf/hdfs-site.xml
     subPath: hdfs-site.xml
     name: hadoop-configuration
-  - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
+  - mountPath: /etc/hadoop/conf/hive-site.xml
     subPath: hive-site.xml
     name: hadoop-configuration
   - mountPath: /etc/krb5.conf

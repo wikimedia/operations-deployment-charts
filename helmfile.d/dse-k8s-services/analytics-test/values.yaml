@@ -44,5 +44,5 @@ config:
     spark.kubernetes.namespace: analytics-test
     spark.kerberos.keytab: /etc/security/keytabs/analytics.keytab
     spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
-    spark.kubernetes.driver.podTemplateFile: local:///opt/spark/pod_templates/driver.yaml
-    spark.kubernetes.executor.podTemplateFile: local:///opt/spark/pod_templates/executor.yaml
+    spark.kubernetes.driver.podTemplateFile: local:///etc/spark/pod_templates/driver.yaml
+    spark.kubernetes.executor.podTemplateFile: local:///etc/spark/pod_templates/executor.yaml

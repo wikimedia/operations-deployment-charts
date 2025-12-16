@@ -77,6 +77,11 @@ data:
       containers:
       - name: spark-driver-template
         image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
+        env:
+          - name: HADOOP_CONF_DIR
+            value: /etc/hadoop/conf
+          - name: SPARK_CONF_DIR
+            value: /etc/spark/conf
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -92,6 +97,19 @@ data:
           limits:
             cpu: "2"
             memory: "4Gi"
+        volumeMounts:
+          - mountPath: /etc/krb5.conf
+            name: kerberos-client-config
+            subPath: krb5.conf
+          - mountPath: /etc/security/keytabs
+            name: kerberos-keytabs
+      volumes:
+        - name: kerberos-client-config
+          configMap:
+            name: kerberos-client-config
+        - name: kerberos-keytabs
+          secret:
+            secretName: kerberos-keytabs
   executor.yaml: |
     apiVersion: v1
     Kind: Pod
@@ -99,6 +117,11 @@ data:
       containers:
       - name: spark-executor-template
         image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
+        env:
+          - name: HADOOP_CONF_DIR
+            value: /etc/hadoop/conf
+          - name: SPARK_CONF_DIR
+            value: /etc/spark/conf
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -114,6 +137,15 @@ data:
           limits:
             cpu: "2"
             memory: "4Gi"
+        volumeMounts:
+          - mountPath: /etc/krb5.conf
+            name: kerberos-client-config
+            subPath: krb5.conf
+      volumes:
+        - name: kerberos-client-config
+          configMap:
+            name: kerberos-client-config
+
 {{- end }}
 
 {{- define "configmap.dbt-profiles" }}

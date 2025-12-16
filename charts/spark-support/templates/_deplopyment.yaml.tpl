@@ -26,6 +26,11 @@ spec:
           args: ["infinity"]
           image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          env:
+            - name: HADOOP_CONF_DIR
+              value: /etc/hadoop/conf
+            - name: SPARK_CONF_DIR
+              value: /etc/spark/conf
           volumeMounts:
           {{- include "spark.toolbox.volumemounts" . | indent 10 }}
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
