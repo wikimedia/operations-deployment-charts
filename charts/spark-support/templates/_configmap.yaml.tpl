@@ -85,6 +85,13 @@ data:
           runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
+        resources:
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
   executor.yaml: |
     apiVersion: v1
     Kind: Pod
@@ -131,8 +138,5 @@ data:
           auth: "KERBEROS"
           kerberos_service_name: "analytics"
           server_side_parameters:
-            "spark.driver.memory": "2g"
-            "spark.executor.memory": "8g"
-            "spark.executor.cores": "4"
             "spark.dynamicAllocation.maxExecutors": "64"
 {{- end }}
