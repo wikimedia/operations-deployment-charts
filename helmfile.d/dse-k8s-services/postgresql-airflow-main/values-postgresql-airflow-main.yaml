@@ -13,3 +13,11 @@ cluster:
     size: 100Gi
   walStorage:
     size: 30Gi
+
+pooler:
+  # Set default_pool_size to 50 (3 * 50 = 150 connections).
+  # The default number of instances is 3, which gives us a total of 150 connections.
+  # This matches the PostgreSQL max_connections of 200, leaving 50 connections
+  # available for direct connections or other uses
+  parameters:
+    default_pool_size: "50"
