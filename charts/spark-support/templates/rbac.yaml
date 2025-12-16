@@ -77,15 +77,19 @@ rules:
 - apiGroups: [""]
   resources: ["services"]
   verbs: ["*"]
-# The spark driver can manage persistent volume claims. [optional]
+# The spark driver can manage persistent volume claims.
 - apiGroups: [""]
   resources: ["persistentvolumeclaims"]
   verbs: ["*"]
-# The spark driver can manage configmaps for dependencies. [optional]
+# The spark driver can manage configmaps for dependencies.
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["*"]
-# The spark driver can check the limits of the namespace. [optional]
+# The spark driver can manage secrets to include kerberos delegation tokens.
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["*"]
+# The spark driver can check the limits of the namespace.
 - apiGroups: [""]
   resources: ["resourcequotas", "limitranges"]
   verbs: ["get", "list"]
