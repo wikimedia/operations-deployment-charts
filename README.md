@@ -50,6 +50,8 @@ best to leave it alone.
 The `python/` directory holds utility code for use with charts. It can be
 included in PYTHONPATH to make these utilities available.
 
+The `makefile/` directory contains reusable makefile snippets.
+
 Further documenation can be found on [Wikitech](https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts)
 
 Updating a Chart

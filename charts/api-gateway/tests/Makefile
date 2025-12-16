@@ -1,10 +1,10 @@
-dir := $(dir $(lastword $(MAKEFILE_LIST)))
-chartdir := $(dir)/../..
-
+# Parameters may be overwritten from the command line
 name ?= restgw
 service ?= rest-gateway
 
-servicedir := $(chartdir)/../../helmfile.d/services/$(service)
+include ../../../makefiles/chart.mk
+include ../../../makefiles/help.mk
+include ../../../makefiles/phony.mk
 
 uninstall: ## install gateway
 	helm uninstall "$(name)"
@@ -16,7 +16,7 @@ uninstall: ## install gateway
 	@echo "$(name) is uninstalled."
 
 install: ## uninstall gateway
-	helm install "$(name)" "$(chartdir)" -f "$(servicedir)/values-staging.yaml" -f "$(chartdir)/values-minikube.yaml"
+	helm install "$(name)" "$(chartdir)" $(valuefiles)
 
 	@echo
 	@echo "Waiting for $(name) to come up..."
@@ -29,12 +29,9 @@ reinstall: uninstall install ## uninstall then install
 port-forward: ## start port forwarding
 	kubectl port-forward $$( kubectl get pod -l app=api-gateway -l "release=$(name)" -o name ) 8087 1666
 
-test-minikube: ## run minikube tests
-	cd "$(servicedir)/tests" && \
-		$(MAKE) test-minikube
+test: ## run unit tests
+	busted $(dir)/lua/test*.lua
 
-help: ## displays help for this makefile.
-	$(info Available targets:)
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}'
-
-.PHONY: install uninstall port-forward test-minikube help
+check: ## check minikube environment
+	@cd "$(servicedir)/tests" && \
+		$(MAKE) check env=minikube

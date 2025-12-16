@@ -14,6 +14,11 @@ helmDefaults:
 # Please note: you might not need to declare all of these releases. Most applications
 # might be fine just declaring "main" everywhere.
 environments:
+  minikube:
+    values:
+      - releases: [local]
+      - kubernetesVersion: '1.31'
+    missingFileHandler: Warn
   staging:
     values:
       - releases: [main]
