@@ -187,7 +187,7 @@ class RateLimitTest(unittest.TestCase):
         requestHeaders = {
             "x-client-ip": env.nextIp(), # external request
             "x-trusted-request": "D", # compliant bot
-            "x-ua-contact": "bob@acme.test", # compliant bot contact
+            "x-ua-contact": env.nextName("bob") + "@acme.test", # compliant bot contact
         }
 
         limits = getRateLimits("ua-bot")

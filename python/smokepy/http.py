@@ -2,6 +2,7 @@
 import urllib.request
 import urllib.error
 import ssl
+import threading
 
 class NonRaisingHTTPErrorProcessor(urllib.request.HTTPErrorProcessor):
     http_response = https_response = lambda self, request, response: response
@@ -77,7 +78,7 @@ class Target:
                     print("DEBUG: body: ", resp.body)
 
                 return resp
-        except urllib.error.URLError as e:
+        except (OSError, ConnectionError) as e:
             if debug and "error" in debug:
                 print("DEBUG: error: ", e)
 
@@ -87,11 +88,30 @@ class Target:
             resp.body = f"CONNECTION ERROR: {e}"
             return resp
 
+    def mget(self, paths, headers = {}, debug = []):
+        """
+        Perform multiple HTTP GET requests in parallel and returns a list of responses,
+        one for each path.
+        """
 
-    # Perform `n` HTTP GET requests to `url` and return a dict counting responses by status.
+        threads = [None] * len(paths)
+        responses = [None] * len(paths)
+
+        def target(p, i):
+            responses[i] = self.get(p, headers=headers, debug=debug)
+
+        for i in range(len(paths)):
+            threads[i] = threading.Thread(target=target, args=(paths[i], i, ))
+            threads[i].start()
+
+        for thread in threads:
+            thread.join()
+
+        return responses
+
     def count_get(self, path, n = 10, predicates = {}, headers = {}, debug = []):
         """
-        Perform n HTTP GET requests to url and return a dict that indicates how often each predicate
+        Perform n HTTP GET requests and return a dict that indicates how often each predicate
         matched a response.
         """
         counts = {}
@@ -102,8 +122,9 @@ class Target:
         predicates["4xx"] = Predicates.has_status_between(400, 499)
         predicates["5xx"] = Predicates.has_status_between(500, 599)
 
-        for _ in range(max(0, n)):
-            resp = self.get(path, debug = debug, headers = headers )
+        responses = self.mget([path] * n, headers=headers, debug=debug)
+
+        for resp in responses:
             for key, p in predicates.items():
                 if p(resp):
                     counts[key] = counts.get(key, 0) + 1
