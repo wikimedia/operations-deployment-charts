@@ -16,6 +16,12 @@ data:
 {{- end }}
 
 {{- define "configmap.spark-config" }}
+{{/*
+See the following links regarding these optimization parameters for S3
+https://spark.apache.org/docs/3.5.7/cloud-integration.html#recommended-settings-for-writing-to-object-stores
+https://spark.apache.org/docs/3.5.7/cloud-integration.html#parquet-io-settings
+https://spark.apache.org/docs/3.5.7/cloud-integration.html#hadoop-s3a-committers
+*/}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -24,8 +30,23 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  spark-defaults.conf: |
-    {{- include "render_dotconf_file" ( dict "config" .Values.config.spark ) | nindent 4 }}
+  spark-defaults.conf: |-
+    {{- include "render_dotconf_file" ( dict "config" .Values.config.spark ) | indent 4 }}
+    {{- if and $.Values.config.private.aws_access_key_id $.Values.config.private.aws_secret_access_key }}
+    spark.hadoop.fs.s3a.access.key: {{ $.Values.config.private.aws_access_key_id }}
+    spark.hadoop.fs.s3a.secret.key: {{ $.Values.config.private.aws_secret_access_key }}
+    spark.fs.s3a.endpoint: https://rgw.eqiad.dpe.anycast.wmnet/
+    spark.fs.s3a.path.style.access: true
+    spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version: 2
+    spark.hadoop.mapreduce.fileoutputcommitter.cleanup-failures.ignored: true
+    spark.hadoop.parquet.enable.summary-metadata: false
+    spark.sql.parquet.mergeSchema: false
+    spark.sql.parquet.filterPushdown: true
+    spark.sql.hive.metastorePartitionPruning: true
+    spark.hadoop.fs.s3a.committer.name: directory
+    spark.sql.sources.commitProtocolClass: org.apache.spark.internal.io.cloud.PathOutputCommitProtocol
+    spark.sql.parquet.output.committer.class: org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter
+    {{- end }}
 {{- end }}
 
 {{- define "configmap.kerberos-client-config" }}

@@ -15,3 +15,15 @@ data:
   {{- end }}
 {{- end }}
 {{- end }}
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "secrets"
+type: Opaque
+{{- if .Values.config.private }}
+data: {{- range $k := (keys .Values.config.private | sortAlpha) }}
+  {{ $k }}: {{ get $.Values.config.private $k | b64enc | quote }}
+{{- end -}}
+{{- end }}
+
