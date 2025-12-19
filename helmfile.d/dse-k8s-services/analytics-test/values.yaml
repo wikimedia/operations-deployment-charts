@@ -38,13 +38,13 @@ config:
     hive:
       hive.metastore.kerberos.principal: hive/analytics-test-hive.eqiad.wmnet@WIKIMEDIA
       hive.metastore.uris: thrift://analytics-test-hive.eqiad.wmnet:9083
-      hive.server2.authentication.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
+      hive.server2.authentication.kerberos.principal: analytics/spark-thrift.internal@WIKIMEDIA
       hive.server2.authentication.kerberos.keytab: /etc/security/keytabs/analytics.keytab
 
   spark:
     spark.kubernetes.container.image: *spark-image
     spark.kubernetes.namespace: analytics-test
     spark.kerberos.keytab: /etc/security/keytabs/analytics.keytab
-    spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
+    spark.kerberos.principal: analytics/spark-thrift.internal@WIKIMEDIA
     spark.kubernetes.driver.podTemplateFile: local:///etc/spark/pod_templates/driver.yaml
     spark.kubernetes.executor.podTemplateFile: local:///etc/spark/pod_templates/executor.yaml
