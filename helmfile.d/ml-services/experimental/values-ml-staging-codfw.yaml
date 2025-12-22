@@ -143,52 +143,6 @@ inference_services:
             cpu: "4"
             memory: 8Gi
 
-  revise-tone-task-generator:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
-      image_version: "2025-12-09-130550-publish"
-      custom_env:
-        - name: NUM_WORKERS
-          value: "2"
-        - name: NUM_THREADS # Used per each worker
-          value: "2"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/edit-check/peacock/"
-        - name: WIKI_URL
-          value: "http://mw-api-int-ro.discovery.wmnet:4680"
-        - name: OUTLINK_TOPIC_MODEL_URL
-          value: "http://outlink-topic-model.articletopic-outlink/v1/models/outlink-topic-model:predict"
-        - name: OUTLINK_TOPIC_MODEL_HEADER
-          value: "outlink-topic-model-predictor.articletopic-outlink.svc.cluster.local"
-        - name: USE_CACHE
-          value: "True"
-        - name: CASSANDRA_DATACENTER
-          value: "codfw"
-        - name: CASSANDRA_SERVERS
-          value: "cassandra-dev2001-a.codfw.wmnet;cassandra-dev2001-b.codfw.wmnet;cassandra-dev2002-a.codfw.wmnet;cassandra-dev2002-b.codfw.wmnet;cassandra-dev2003-a.codfw.wmnet;cassandra-dev2003-b.codfw.wmnet"
-        - name: CASSANDRA_KEYSPACE
-          value: "ml_cache"
-        - name: CASSANDRA_TABLE
-          value: "page_paragraph_tone_scores"
-        - name: CASSANDRA_USER
-          valueFrom:
-            secretKeyRef:
-              name: revise-tone-task-generator-cassandra-credentials
-              key: CASSANDRA_USER
-        - name: CASSANDRA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: revise-tone-task-generator-cassandra-credentials
-              key: CASSANDRA_PASSWORD
-      container:
-        resources:
-          limits:
-            cpu: "4"
-            memory: 8Gi
-          requests:
-            cpu: "4"
-            memory: 8Gi
-
   embeddings:
     predictor:
       config:
