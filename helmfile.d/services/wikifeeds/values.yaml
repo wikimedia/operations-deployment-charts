@@ -12,6 +12,7 @@ main_app:
   mwrest_uri: http://localhost:6500/w/rest.php
   restbase_uri: http://localhost:6503
   rest_gateway_uri: http://localhost:6033
+  page_analytics_uri: http://localhost:6073
   mobileapps_uri: http://localhost:6012
   usecorepagehtml: true
   use_service_mesh: true
@@ -54,6 +55,7 @@ discovery:
   - restbase-for-services
   - rest-gateway
   - mobileapps
+  - page-analytics
 networkpolicy:
   egress:
     enabled: true

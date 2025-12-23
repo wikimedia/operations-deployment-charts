@@ -102,6 +102,14 @@ services:
         headers: {{ "'{{" }}request.headers{{ "}}'" }}
         body: {{ "'{{" }}request.body{{ "}}'" }}
         timeout: 60000
+      # the template used for contacting the Page Analytics API via service mesh
+      page_analytics_req:
+        method: {{ "'{{" }}request.method{{ "}}'" }}
+        uri: {{ .Values.main_app.page_analytics_uri }}/metrics/{+path}
+        query: {{ "'{{" }} default(request.query, {}) {{ "}}'" }}
+        headers: {{ "'{{" }}request.headers{{ "}}'" }}
+        body: {{ "'{{" }}request.body{{ "}}'" }}
+        timeout: 60000
       # the template used for requesting a page from a MediaWiki appserver
       mw_req:
         method: get
