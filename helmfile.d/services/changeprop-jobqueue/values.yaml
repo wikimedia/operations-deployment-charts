@@ -60,9 +60,10 @@ main_app:
         enabled: true
         concurrency: 50
         consumer_batch_size: 10
-      wikibase-addUsagesForPage:
-        enabled: true
-        concurrency: 20
+# Moved to partitioned jobs to try and limit db impact
+#      wikibase-addUsagesForPage:
+#        enabled: true
+#        concurrency: 20
       constraintsRunCheck:
         enabled: true
         concurrency: 30
@@ -162,6 +163,17 @@ main_app:
           # higher overall concurrency then needed.
           concurrency: 4
           # Abandon jobs which root job is more than 1 week long
+          root_claim_ttl: 604800
+      wikibase-addUsagesForPage:
+        enabled: true
+        partitioner_kind: mediawiki_database
+        partitioner_concurrency: 20
+        partition:
+          # Higher overall concurrency than the 20 when it was not partitioned
+          # 8*5 = 40
+          # but it should limit the amount of jobs running concurrently for 
+          # one section
+          concurrency: 5
           root_claim_ttl: 604800
 
     # Similar to the high_traffic_jobs_config, all jobs listed here get their
