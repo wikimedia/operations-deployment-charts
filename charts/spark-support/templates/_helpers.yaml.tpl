@@ -17,13 +17,13 @@
 {{- end }}
 {{- end }}
 
-{{- define "spark.toolbox.volumes" }}
+{{- define "spark.volumes" }}
 {{- with .Values.volumes }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
 
-{{- define "spark.toolbox.volumemounts" }}
+{{- define "spark.volumemounts" }}
 {{- with .Values.volumemounts }}
 {{ toYaml . }}
 {{- end }}
