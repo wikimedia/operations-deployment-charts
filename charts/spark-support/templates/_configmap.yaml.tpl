@@ -54,7 +54,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kerberos-client-config
+  name: kerberos-client-configuration
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
