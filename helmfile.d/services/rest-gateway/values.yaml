@@ -439,14 +439,6 @@ main_app:
           out: '/api/restbase_specs/rest_v1-default.json'
           params:
             - spec
-        # T396807: REST API sandbox migration (these routes must go after the /?spec routes)
-        - name: rest_sandbox_global
-          in: '/wikimedia\.org/v1/'
-          out: '/wiki/Special:RestSandbox/wmf-restbase-global'
-          to: 'meta.wikimedia.org'
-        - name: rest_sandbox_project
-          in: '/[^/]+/v1/'
-          out: '/wiki/Special:RestSandbox/wmf-restbase'
       rb_response_headers: true
 
     - name: mw-rest-php
@@ -562,6 +554,21 @@ main_app:
           in: '/+w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
+        #
+        # *** START REST API sandbox ***
+        # T396807: REST API sandbox migration (these routes must go after the /?spec routes)
+        #
+        # It may seem strange to have these here rather than in the mw-api-ext restbase compatible
+        # block, but these are not so much APIs as they are webpages, and the host rewriting causes
+        # CSP issues that we can't override per-route, breaking JS and CSS.
+        - name: rest_sandbox_global
+          in: '/wikimedia\.org/v1/'
+          out: '/wiki/Special:RestSandbox/wmf-restbase-global'
+          to: 'meta.wikimedia.org'
+        - name: rest_sandbox_project
+          in: '/[^/]+/v1/'
+          out: '/wiki/Special:RestSandbox/wmf-restbase'
+        # *** END REST API sandbox ***
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s
