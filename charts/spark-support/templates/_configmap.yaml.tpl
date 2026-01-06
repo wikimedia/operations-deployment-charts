@@ -119,18 +119,9 @@ data:
             cpu: "2"
             memory: "4Gi"
         volumeMounts:
-          - mountPath: /etc/krb5.conf
-            name: kerberos-client-config
-            subPath: krb5.conf
-          - mountPath: /etc/security/keytabs
-            name: kerberos-keytabs
+          {{- include "kerberos.volumemounts" . | indent 10 }}
       volumes:
-        - name: kerberos-client-config
-          configMap:
-            name: kerberos-client-config
-        - name: kerberos-keytabs
-          secret:
-            secretName: kerberos-keytabs
+          {{- include "kerberos.volumes" . | indent 8 }}
   executor.yaml: |
     apiVersion: v1
     Kind: Pod

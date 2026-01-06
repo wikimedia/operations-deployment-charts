@@ -5,27 +5,6 @@ docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 
-kyuubi:
-  replicas: 1
-  image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
-  resources:
-    requests:
-      cpu: 500m
-      memory: 2Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
-
-toolbox:
-  replicas: 1
-  resources:
-    requests:
-      cpu: 500m
-      memory: 2Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
-
 config:
   private: {}
 
@@ -102,32 +81,40 @@ config:
     kyuubi.engine.single.spark.session: true
     kyuubi.zookeeper.embedded.data.log.dir: /tmp
 
-volumes:
-  - name: spark-pod-templates
-    configMap:
+spark:
+  toolbox:
+    replicas: 1
+    affinity: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+  volumes:
+    - name: spark-pod-templates
+      configMap:
+        name: spark-pod-templates
+    - name: spark-configuration
+      configMap:
+        name: spark-configuration
+  volumemounts:
+    - mountPath: /etc/spark/pod_templates
       name: spark-pod-templates
-  - name: spark-configuration
-    configMap:
+    - mountPath: /etc/spark/conf/spark-defaults.conf
+      subPath: spark-defaults.conf
       name: spark-configuration
-  - name: hadoop-configuration
-    configMap:
+    - mountPath: /etc/spark/conf/hive-site.xml
+      subPath: hive-site.xml
       name: hadoop-configuration
-  - name: kerberos-client-config
-    configMap:
-      name: kerberos-client-config
-  - name: kerberos-keytabs
-    secret:
-      secretName: kerberos-keytabs
 
-volumemounts:
-  - mountPath: /etc/spark/pod_templates
-    name: spark-pod-templates
-  - mountPath: /etc/spark/conf/spark-defaults.conf
-    subPath: spark-defaults.conf
-    name: spark-configuration
-  - mountPath: /etc/spark/conf/hive-site.xml
-    subPath: hive-site.xml
-    name: hadoop-configuration
+hadoop:
+  volumes:
+    - name: hadoop-configuration
+      configMap:
+        name: hadoop-configuration
+  volumemounts:
   - mountPath: /etc/hadoop/conf/core-site.xml
     subPath: core-site.xml
     name: hadoop-configuration
@@ -137,12 +124,44 @@ volumemounts:
   - mountPath: /etc/hadoop/conf/hive-site.xml
     subPath: hive-site.xml
     name: hadoop-configuration
-  - mountPath: /etc/krb5.conf
-    subPath: krb5.conf
-    name: kerberos-client-config
-  - mountPath: /etc/security/keytabs
-    name: kerberos-keytabs
 
+kerberos:
+  keytabs: ~ # Overridden in the private repo.
+  servers: ['override_me'] # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
+  admin: 'override_me' # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
+  volumes:
+    - name: kerberos-client-config
+      configMap:
+        name: kerberos-client-config
+    - name: kerberos-keytabs
+      secret:
+        secretName: kerberos-keytabs
+  volumemounts:
+    - mountPath: /etc/krb5.conf
+      subPath: krb5.conf
+      name: kerberos-client-config
+    - mountPath: /etc/security/keytabs
+      name: kerberos-keytabs
+
+kyuubi:
+  toolbox:
+    replicas: 1
+    image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
+    affinity: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+  volumes:
+    - name: kyuubi-config
+      configMap:
+        name: kyuubi-config
+  volumemounts:
+    - mountPath: /etc/kyuubi/conf
+      name: kyuubi-config
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -156,28 +175,6 @@ networkpolicy:
 kafka:
   allowed_clusters: []
 
-# Optional affinity settings
-affinity: {}
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: some-key
-#                operator: In
-#                values:
-#                  - some-value
-#  nodeSelector:
-#    node.kubernetes.io/some-key: some-value
-
-# The set of external services to allow egress to
-# Example:
-# kafka:
-# - main-codfw
-# - main-eqiad
-# presto:
-# - analytics
-#
 # See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
 # for the list of supported services
 external_services: {}
@@ -196,8 +193,3 @@ orchestrator:
 # IP to its an-masterxxxx.eqiad.wmnet name and to avoid the coredns service ip reverse
 # DNS, to validate Kerberos identity.
 host_aliases: {}
-
-kerberos:
-  keytabs: ~ # Overridden in the private repo.
-  servers: ['override_me'] # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
-  admin: 'override_me' # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
