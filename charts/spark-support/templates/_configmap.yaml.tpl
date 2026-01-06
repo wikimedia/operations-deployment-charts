@@ -186,10 +186,25 @@ data:
           type: spark
           method: thrift
           schema: "btullis"
-          host: spark-thrift.internal
-          port: 10000
-          auth: "KERBEROS"
-          kerberos_service_name: "analytics"
+          host: localhost
+          port: 10009
           server_side_parameters:
             "spark.dynamicAllocation.maxExecutors": "64"
+{{- end }}
+
+{{- define "configmap.kyuubi-config" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kyuubi-configuration
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  kyuubi-defaults.conf: |-
+    {{- include "render_dotconf_file" ( dict "config" .Values.config.kyuubi ) | indent 4 }}
+  kyuubi-env.sh: |-
+    export KYUUBI_LOG_DIR=/tmp
+    export KYUUBI_PID_DIR=/tmp
+    export KYUUBI_WORK_DIR_ROOT=/tmp
 {{- end }}

@@ -7,6 +7,7 @@ docker:
 
 kyuubi:
   replicas: 1
+  image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
   resources:
     requests:
       cpu: 500m
@@ -96,7 +97,10 @@ config:
     spark.sql.files.maxPartitionBytes: '268435456'
     spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
   kyuubi:
-    image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
+    kyuubi.authentication: NONE
+    kyuubi.engine.share.level: CONNECTION
+    kyuubi.engine.single.spark.session: true
+    kyuubi.zookeeper.embedded.data.log.dir: /tmp
 
 volumes:
   - name: spark-pod-templates

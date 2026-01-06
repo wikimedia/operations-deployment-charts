@@ -61,7 +61,7 @@ spec:
         - name: "kyuubi"
           command: ["sleep"]
           args: ["infinity"]
-          image: {{ $.Values.config.kyuubi.image }}
+          image: {{ $.Values.kyuubi.image }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
           volumeMounts:
           {{- include "spark.volumemounts" . | indent 10 }}

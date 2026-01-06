@@ -21,6 +21,9 @@ external_services:
 
 external_services_selector: "spark-role in { 'driver', 'executor' }"
 
+kyuubi:
+  image: *kyuubi-image
+
 config:
   hadoop:
     hdfs:
@@ -49,6 +52,3 @@ config:
     spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
     spark.kubernetes.driver.podTemplateFile: local:///etc/spark/pod_templates/driver.yaml
     spark.kubernetes.executor.podTemplateFile: local:///etc/spark/pod_templates/executor.yaml
-
-  kyuubi:
-    image: *kyuubi-image

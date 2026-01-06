@@ -1,5 +1,6 @@
-{{- include "configmap.hadoop-config" . }}
-{{- include "configmap.spark-config" . }}
-{{- include "configmap.kerberos-client-config" . }}
-{{- include "configmap.spark-pod-templates" . }}
 {{- include "configmap.dbt-profiles" . }}
+{{- include "configmap.hadoop-config" . }}
+{{- include "configmap.kerberos-client-config" . }}
+{{- include "configmap.kyuubi-config" . }}
+{{- include "configmap.spark-config" . }}
+{{- include "configmap.spark-pod-templates" . }}
