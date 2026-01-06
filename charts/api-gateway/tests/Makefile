@@ -6,6 +6,8 @@ include ../../../makefiles/chart.mk
 include ../../../makefiles/help.mk
 include ../../../makefiles/phony.mk
 
+name := $(strip $(name))
+
 uninstall: ## install gateway
 	helm uninstall "$(name)"
 

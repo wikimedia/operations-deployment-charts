@@ -14,6 +14,8 @@ ifndef service
   $(error service must be set to the name of the service directoy under helmfile.d/services)
 endif
 
+service := $(strip $(service))
+
 dir := $(dir $(firstword $(MAKEFILE_LIST)))
 chartdir := $(dir)/..
 servicedir := $(chartdir)/../../helmfile.d/services/$(service)

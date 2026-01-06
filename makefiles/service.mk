@@ -13,6 +13,8 @@ ifndef env
   $(error env must be set to the name of a helmfile environment)
 endif
 
+env := $(strip $(env))
+
 # setup
 dir := $(dir $(firstword $(MAKEFILE_LIST)))
 servicedir := $(dir)/..
