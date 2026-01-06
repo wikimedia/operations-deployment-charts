@@ -148,12 +148,14 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-embeddings"
-      image_version: "2026-01-05-113056-publish"
+      image_version: "2026-01-06-082802-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen3-embedding"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
+        - name: MODEL_VERSION
+          value: "Qwen3-Embedding-0.6B"
         - name: LOCAL_FILES_ONLY
           value: "True"
         - name: DTYPE
