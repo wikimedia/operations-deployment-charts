@@ -130,16 +130,16 @@ kerberos:
   servers: ['override_me'] # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
   admin: 'override_me' # Overridden in the /etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml file.
   volumes:
-    - name: kerberos-client-config
+    - name: kerberos-client-configuration
       configMap:
-        name: kerberos-client-config
+        name: kerberos-client-configuration
     - name: kerberos-keytabs
       secret:
         secretName: kerberos-keytabs
   volumemounts:
     - mountPath: /etc/krb5.conf
       subPath: krb5.conf
-      name: kerberos-client-config
+      name: kerberos-client-configuration
     - mountPath: /etc/security/keytabs
       name: kerberos-keytabs
 
@@ -156,12 +156,12 @@ kyuubi:
         cpu: 2000m
         memory: 4Gi
   volumes:
-    - name: kyuubi-config
+    - name: kyuubi-configuration
       configMap:
-        name: kyuubi-config
+        name: kyuubi-configuration
   volumemounts:
     - mountPath: /etc/kyuubi/conf
-      name: kyuubi-config
+      name: kyuubi-configuration
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.

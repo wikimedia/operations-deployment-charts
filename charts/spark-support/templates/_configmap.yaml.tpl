@@ -151,12 +151,12 @@ data:
             memory: "4Gi"
         volumeMounts:
           - mountPath: /etc/krb5.conf
-            name: kerberos-client-config
+            name: kerberos-client-configuration
             subPath: krb5.conf
       volumes:
-        - name: kerberos-client-config
+        - name: kerberos-client-configuration
           configMap:
-            name: kerberos-client-config
+            name: kerberos-client-configuration
 
 {{- end }}
 
