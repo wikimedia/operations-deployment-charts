@@ -261,6 +261,48 @@ class RateLimitTest(unittest.TestCase):
         rest = self.target.get(self.default_endpoint, headers = headers)
         self.assertEqual(401, rest.status, "expired token should be rejected")
 
+    def test_jwt_cookie_limit(self):
+        ip = env.nextIp()
+        token = jwtools.getValidJwtOrSkip(self)
+
+        anonHeaders = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+
+        limits = getRateLimits("cookie-user")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+
+        # try again with a different payload, to check that it is used as the rate limit key
+        token = jwtools.createJwtOrSkip(self, sub = env.nextName("Testorator") )
+        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+
+    def test_jwt_cookie_limit_uses_rlc_claim(self):
+        ip = env.nextIp()
+        token = jwtools.createJwtOrSkip(self,
+            sub = env.nextName("Tester"),
+            rlc = "approved-bot"
+        )
+        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+
+        # should apply approved-bot limits, not jwt-user limits
+        limits = getRateLimits("approved-bot")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+
+    def test_expired_jwt_cookie(self):
+        token = jwtools.createJwtOrSkip(self,
+            sub = env.nextName("Tester"),
+            exp = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4)
+        )
+
+        requestHeaders = {
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "E", # general fallback
+            "x-is-browser": "100", # >= 80 is good
+            "cookie": "sessionJwt=" + token
+        }
+
+        limits = getRateLimits("anon-browser")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
+
 def init():
     default_value_files = [
         "../../../../charts/api-gateway/values.yaml", # chart defaults
