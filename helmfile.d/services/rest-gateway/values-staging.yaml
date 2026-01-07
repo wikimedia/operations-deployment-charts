@@ -402,8 +402,8 @@ nutcracker:
   enabled: true
   version: 0.0.4
   servers:
-    - rdb1011.eqiad.wmnet:6379:1 "cp-1"
-    - rdb1013.eqiad.wmnet:6379:1 "cp-2"
+    - rdb1011.eqiad.wmnet:6380:1 "ratelimit-1"
+    - rdb1013.eqiad.wmnet:6380:1 "ratelimit-2"
 
 # Only used by ratelimiter for metrics - envoy uses prometheus native metrics
 monitoring:
