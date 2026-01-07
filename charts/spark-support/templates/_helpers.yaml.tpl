@@ -65,3 +65,20 @@
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{- define "kyuubi.frontend.protocols" -}}
+  {{- $protocols := list }}
+  {{- range $name, $frontend := .Values.kyuubi.server }}
+    {{- if $frontend.enabled }}
+      {{- $protocols = $name | snakecase | upper | append $protocols }}
+    {{- end }}
+  {{- end }}
+  {{- if not $protocols }}
+    {{ fail "At least one frontend protocol must be enabled!" }}
+  {{- end }}
+  {{- $protocols |  join "," }}
+{{- end }}
+
+{{- define "kyuubi.selectorLabels" -}}
+component: kyuubi
+{{- end -}}

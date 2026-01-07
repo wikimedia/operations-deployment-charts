@@ -18,6 +18,8 @@ external_services:
   - kdc
   s3:
   - eqiad-dpe
+  zookeeper:
+  - test-eqiad
 
 external_services_selector: "spark-role in { 'driver', 'executor' }"
 
@@ -52,3 +54,11 @@ config:
     spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
     spark.kubernetes.driver.podTemplateFile: local:///etc/spark/pod_templates/driver.yaml
     spark.kubernetes.executor.podTemplateFile: local:///etc/spark/pod_templates/executor.yaml
+
+  kyuubi:
+    kyuubi.kinit.principal: analytics/_HOST@WIKIMEDIA
+    kyuubi.kinit.keytab: /etc/security/keytabs/analytics.keytab
+    kyuubi.ha.addresses: zookeeper-test-eqiad:2181
+    kyuubi.zookeeper.embedded.data.log.dir: ~
+    kyuubi.zookeeper.embedded.data.dir: ~
+

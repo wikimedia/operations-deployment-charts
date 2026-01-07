@@ -76,10 +76,19 @@ config:
     spark.sql.files.maxPartitionBytes: '268435456'
     spark.sql.warehouse.dir: hdfs:///user/hive/warehouse
   kyuubi:
-    kyuubi.authentication: NONE
+    kyuubi.authentication: KERBEROS
     kyuubi.engine.share.level: CONNECTION
     kyuubi.engine.single.spark.session: true
+    kyuubi.kinit.principal: override_me
+    kyuubi.kinit.keytab: override_me
+    ## TODO - Use a production JDBC URL to enable high-availability for Kyuubi. See the following:
+    ## https://kyuubi.readthedocs.io/en/master/configuration/settings.html#metadata
+    ## https://kyuubi.readthedocs.io/en/master/deployment/high_availability_guide.html#production-mode
+    kyuubi.metadata.store.jdbc.url: jdbc:sqlite:/tmp/kyuubi_state_store.db
+    kyuubi.ha.addresses: ~
     kyuubi.zookeeper.embedded.data.log.dir: /tmp
+    kyuubi.zookeeper.embedded.data.dir: /tmp
+
 
 spark:
   toolbox:
@@ -144,17 +153,16 @@ kerberos:
       name: kerberos-keytabs
 
 kyuubi:
-  toolbox:
-    replicas: 1
-    image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
-    affinity: {}
-    resources:
-      requests:
-        cpu: 500m
-        memory: 2Gi
-      limits:
-        cpu: 2000m
-        memory: 4Gi
+  replicas: 1
+  image: docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:latest
+  affinity: {}
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
   volumes:
     - name: kyuubi-configuration
       configMap:
@@ -162,6 +170,86 @@ kyuubi:
   volumemounts:
     - mountPath: /etc/kyuubi/conf
       name: kyuubi-configuration
+
+  service:
+    headless:
+      annotations: {}
+
+  server:
+    # Thrift Binary protocol (HiveServer2 compatible)
+    thriftBinary:
+      enabled: true
+      port: 10009
+      service:
+        type: ClusterIP
+        port: "{{ .Values.kyuubi.server.thriftBinary.port }}"
+        nodePort: ~
+        annotations: {}
+        sessionAffinity: ~
+        sessionAffinityConfig: {}
+
+    # Thrift HTTP protocol (HiveServer2 compatible)
+    thriftHttp:
+      enabled: false
+      port: 10010
+      service:
+        type: ClusterIP
+        port: "{{ .Values.kyuubi.server.thriftHttp.port }}"
+        nodePort: ~
+        annotations: {}
+        sessionAffinity: ~
+        sessionAffinityConfig: {}
+
+    # REST API protocol (experimental)
+    rest:
+      enabled: false
+      port: 10099
+      service:
+        type: ClusterIP
+        port: "{{ .Values.kyuubi.server.rest.port }}"
+        nodePort: ~
+        annotations: {}
+        sessionAffinity: ~
+        sessionAffinityConfig: {}
+
+    # MySQL compatible text protocol (experimental)
+    mysql:
+      enabled: false
+      port: 3309
+      service:
+        type: ClusterIP
+        port: "{{ .Values.kyuubi.server.mysql.port }}"
+        nodePort: ~
+        annotations: {}
+        sessionAffinity: ~
+        sessionAffinityConfig: {}
+
+  # Liveness probe
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 10
+    successThreshold: 1
+
+  # Readiness probe
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 10
+    successThreshold: 1
+
+  # Metrics configuration
+  metrics:
+    # Enable metrics system, used for 'kyuubi.metrics.enabled' property
+    enabled: true
+    # A comma-separated list of metrics reporters, used for 'kyuubi.metrics.reporters' property
+    reporters: PROMETHEUS
+    # Prometheus port, used for 'kyuubi.metrics.prometheus.port' property
+    prometheusPort: 10019
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
