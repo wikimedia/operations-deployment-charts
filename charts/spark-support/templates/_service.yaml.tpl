@@ -1,6 +1,7 @@
 {{- define "service.kyuubi" }}
 {{- range $name, $frontend := .Values.kyuubi.server }}
 {{- if $frontend.enabled }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -27,7 +28,6 @@ spec:
   {{- with $frontend.service.sessionAffinityConfig }}
   sessionAffinityConfig: {{- toYaml . | nindent 4 }}
   {{- end }}
----
 {{- end }}
 {{- end }}
 {{- end }}
