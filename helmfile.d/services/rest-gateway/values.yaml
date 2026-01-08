@@ -31,6 +31,7 @@ main_app:
     # T406498 phase 5: API ratelimit dry run.
     # Enable ratelimit in shadow mode for all users.
     enabled: true
+    version: 9.0.4-20260107.e9ce92c
     shadow_mode: true                  # default: false
     default_policy: experiment-2025
     user_id_cookie: "centralauth_User" # insecure! replace with JWT soon (T405578)
