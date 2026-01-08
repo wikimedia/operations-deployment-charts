@@ -12,7 +12,7 @@ spec:
     - action: Allow
       protocol: TCP
       source:
-        selector: "spark-role == 'driver"
+        selector: "spark-role == 'driver'"
         namespaceSelector: 'kubernetes.io/metadata.name == "{{ $.Release.Namespace }}"'
       destination:
         ports:
