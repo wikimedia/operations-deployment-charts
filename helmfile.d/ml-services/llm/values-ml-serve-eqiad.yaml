@@ -65,6 +65,8 @@ inference_services:
           value: "float16"
         - name: ATTN_IMPLEMENTATION
           value: "flash_attention_2"
+        - name: MAX_LENGTH
+          value: "500"
       container:
         resources:
           limits:
