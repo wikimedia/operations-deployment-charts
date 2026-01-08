@@ -58,7 +58,7 @@ config:
   kyuubi:
     kyuubi.kinit.principal: analytics/_HOST@WIKIMEDIA
     kyuubi.kinit.keytab: /etc/security/keytabs/analytics.keytab
-    kyuubi.ha.addresses: zookeeper-test-eqiad:2181
+    kyuubi.ha.addresses: zookeeper-test-eqiad.external-services.svc.cluster.local:2181
     kyuubi.zookeeper.embedded.data.log.dir: ~
     kyuubi.zookeeper.embedded.data.dir: ~
 
