@@ -1,0 +1,64 @@
+config:
+  private:
+    somePrivateKey: snakeoil
+    anotherPrivateKey: evenMoreSnakeoil
+  public:
+    somePublicKey: truth
+    anotherPublicKey: evenMoreTruth
+cronjobs:
+    my-cron-hourly:
+      enabled: true
+      activeDeadlineSeconds: 600
+      command:
+        - /bin/cowsay
+        - "hello"
+      schedule: "@hourly"
+      concurrency: Replace
+      image_versioned: my-app:1.1.1
+      volumeMounts:
+        - mountPath: "/tmp/acow"
+          name: tmp-cow-memory
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M
+      volumes:
+        - name: tmp-cow-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: "10Gi"
+# Remove root every day, disabled
+    delete-all:
+      enabled: false
+      command:
+        - /bin/rm
+        - "-rf"
+        - /
+      schedule: "@daily"
+      concurrency: Allow
+      image_versioned: my-app:1.1.1
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M
+    one-more:
+      enabled: true
+      command:
+        - fortune
+      schedule: "@daily"
+      concurrency: Allow
+      image_versioned: my-app:1.1.1
+      resources:
+        requests:
+          cpu: 500m
+          memory: 200M
+        limits:
+          cpu: 500m
+          memory: 200M
+

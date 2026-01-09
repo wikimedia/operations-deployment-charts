@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-config
+data:
+  service.yaml: |-
+    service::catalog:
+{{ get .Values "service::catalog" | toYaml | indent 6 }}
+  listeners.yaml: |-
+    profile::services_proxy::envoy::listen_ipv6: {{ get .Values "profile::services_proxy::envoy::listen_ipv6" | toYaml }}
+    profile::services_proxy::envoy::listeners:
+{{ get .Values "profile::services_proxy::envoy::listeners" | toYaml | indent 6 }}
+    profile::services_proxy::envoy::enabled_listeners:
+{{ get .Values "profile::services_proxy::envoy::enabled_listeners" | toYaml | indent 6 }}
+    profile::services_proxy::envoy::local_otel_reporting_pct: {{ get .Values "profile::services_proxy::envoy::local_otel_reporting_pct" | toYaml }}

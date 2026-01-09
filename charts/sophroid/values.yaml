@@ -1,0 +1,51 @@
+app:
+  image: repos/sre/sophroid
+  version: latest
+  port: 4252
+  requests:
+    cpu: 100m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 400Mi
+  liveness_probe:
+    tcpSocket:
+      port: 4252
+  readiness_probe:
+    httpGet:
+      path: /
+      port: 4252
+
+monitoring:
+  enabled: false
+
+service:
+  deployment: minikube
+  port:
+    name: http
+    targetPort: 4252
+    port: 4252
+    nodePort: null
+
+config:
+  public: {}
+  private: {}
+
+debug:
+  enabled: false
+  ports: []
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+networkpolicy:
+  egress:
+    enabled: false
+
+external_services: {}
+
+mesh:
+  enabled: false
