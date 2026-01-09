@@ -79,8 +79,11 @@ config:
     kyuubi.authentication: KERBEROS
     kyuubi.engine.share.level: CONNECTION
     kyuubi.engine.single.spark.session: true
+    kyuubi.engine.session.user.impersonation: false
     kyuubi.kinit.principal: override_me
     kyuubi.kinit.keytab: override_me
+    kyuubi.server.auth.kerberos.principal: override_me
+    kyuubi.server.auth.kerberos.keytab: override_me
     ## TODO - Use a production JDBC URL to enable high-availability for Kyuubi. See the following:
     ## https://kyuubi.readthedocs.io/en/master/configuration/settings.html#metadata
     ## https://kyuubi.readthedocs.io/en/master/deployment/high_availability_guide.html#production-mode
