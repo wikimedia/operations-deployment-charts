@@ -127,6 +127,14 @@
                       value: "default-src 'none'; frame-ancestors 'none'"
                     append_action: ADD_IF_ABSENT
                 {{- end }}
+              {{- if $route.redirect }}
+                redirect:
+                  path_redirect: '{{ $route.out }}'
+                {{- if $route.to }}
+                  host_redirect: '{{ $route.to }}'
+                {{- end }}
+                  response_code: '{{ $route.redirect_code | default 308 }}'
+              {{- else }}
                 route:
                   regex_rewrite:
                     pattern:
@@ -143,6 +151,7 @@
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
+              {{- end }}
                 {{- if $.Values.main_app.ratelimiter.enabled }}
                 {{- /* Opt-in / opt-out */ -}}
                 {{- $apply_rate_limiting := ternary $endpoint.apply_rate_limiting (not $.Values.main_app.ratelimiter.require_opt_in) (hasKey $endpoint "apply_rate_limiting") }}
