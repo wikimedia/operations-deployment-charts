@@ -1,6 +1,10 @@
 config:
   airflow:
     instance_name: search
+  extra_secrets:
+    wikimedia_enterprise.yaml: |
+      username: {{ $.Values.config.connections.wikimedia_enterprise.username }}
+      password: {{ $.Values.config.connections.wikimedia_enterprise.password }}
 
 ingress:
   gatewayHosts:
