@@ -19,6 +19,7 @@ main_app:
       - path: "/"
       - prefix: "/service/lw/inference"
     envoy_timeout: 0.5
+    enable_x_ratelimit_headers: true
 
   strip_api_cookies: true
 

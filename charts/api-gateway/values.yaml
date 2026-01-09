@@ -49,7 +49,7 @@ main_app:
   ratelimiter:
     enabled: false
     # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
-    enable_x_ratelimit_headers: true
+    enable_x_ratelimit_headers: false
     # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about
     # which ones would have been denied ("dry run").
     # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode

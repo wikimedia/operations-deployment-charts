@@ -38,7 +38,7 @@ main_app:
     fallback_class: anon               # default: anon
     require_opt_in: false              # default: false
     allow_client_headers: false        # default: false
-    enable_x_ratelimit_headers: false  # default: true
+    enable_x_ratelimit_headers: false  # default: false
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
     units: [ HOUR ]

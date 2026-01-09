@@ -59,6 +59,7 @@ class RateLimitTest(unittest.TestCase):
         predicates = {
             "429": Predicates.has_status(429),
             "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
+            "retry-after": Predicates.has_header("retry-after"),
         }
 
         counts = self.target.count_get(path, n=n, predicates = predicates, headers = headers, debug = debug )
@@ -66,8 +67,13 @@ class RateLimitTest(unittest.TestCase):
         countErrors = counts.get("error", 0)
         self.assertEqual( countErrors, 0, "expected no connection errors" )
 
-        countHeaders = counts.get("x-ratelimit-remaining", 0)
-        self.assertEqual( countHeaders, n, "expected all responses to contain an x-ratelimit-remaining header")
+        xrlCount = counts.get("x-ratelimit-remaining", 0)
+        raCount = counts.get("retry-after", 0)
+
+        if env.values.main_app.ratelimiter.enable_x_ratelimit_headers:
+            self.assertEqual( xrlCount, n, "expected all responses to contain an x-ratelimit-remaining header")
+        else:
+            self.assertEqual( xrlCount, 0, "expected no response to contain an x-ratelimit-remaining header")
 
         count2xx = counts.get("2xx", 0)
         self.assertGreaterEqual( count2xx, allowed, f"expected at least {allowed} requests to be allowed")
@@ -75,6 +81,7 @@ class RateLimitTest(unittest.TestCase):
 
         count429 = counts.get("429", 0)
         self.assertEqual( count429, n - count2xx, f"expected requests to be denied using status 429")
+        self.assertEqual( raCount, count429, f"expected all requests with status 429 to have a retry-after header")
 
     def assert_rate_limit_bypassed( self, path, allowed, headers = {}, debug = []):
         # Try three times as many requests as allowed.

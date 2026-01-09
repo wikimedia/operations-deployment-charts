@@ -6,7 +6,11 @@
 
 function envoy_on_request(request_handle)
     wmf_ratelimit_info(request_handle)
-    wmf_ratelimit_cleanup(request_handle)
+    wmf_request_cleanup(request_handle)
+end
+
+function envoy_on_response(response_handle)
+    wmf_set_retry_after(response_handle)
 end
 
 -- -----------------------------------------------------------------------
@@ -134,7 +138,7 @@ function wmf_ratelimit_info(request_handle)
     headers:replace("x-wmf-ratelimit-class", ratelimit_class)
 end
 
-function wmf_ratelimit_cleanup(request_handle)
+function wmf_request_cleanup(request_handle)
     local headers = request_handle:headers()
 
     -- These headers are required for rate limiting. We remove them below if their value is
@@ -147,5 +151,27 @@ function wmf_ratelimit_cleanup(request_handle)
         if headers:get(hname) == "no-limit" then
             headers:remove(hname)
         end
+    end
+end
+
+function wmf_set_retry_after(response_handle)
+    local headers = response_handle:headers()
+
+    if headers:get("retry-after") then
+        return
+    end
+
+    local s = headers:get(":status")
+    local status = s and tonumber(s) or -1
+
+    local retryable = {
+        [429]=true, -- RFC 6585, section 4
+        [503]=true, -- RFC 7231, section 6.6.4
+    }
+
+    if retryable[status] then
+        -- Use time to reset supplied by the ratelimit service, or fall back to one minute.
+        local reset = headers:get("x-ratelimit-reset") or "60"
+        headers:replace("retry-after", reset)
     end
 end

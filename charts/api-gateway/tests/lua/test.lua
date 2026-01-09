@@ -278,14 +278,14 @@ describe("rest_hooks", function()
         end)
     end)
 
-    describe("wmf_ratelimit_cleanup", function()
+    describe("wmf_request_cleanup", function()
         function assertHeaderUpate( headerName, headerValue, expectedResult )
             local headers = { test = "foobar" }
             headers[headerName] = headerValue
 
             local req = fake_request_handle{headers = headers}
 
-            wmf_ratelimit_cleanup( req )
+            wmf_request_cleanup( req )
 
             local result = req:headers()
             assert.are.equal("foobar", result:get("test"))
@@ -310,6 +310,57 @@ describe("rest_hooks", function()
 
         it("should preserve x-something-else header even if it is 'no-limit'", function()
             assertHeaderUpate("x-something-else", "no-limit", "no-limit")
+        end)
+    end)
+
+    describe("wmf_set_retry_after", function()
+        function assertHeaderUpate( headers, headerName, expectedResult )
+            local req = fake_request_handle{headers = headers}
+
+            wmf_set_retry_after( req )
+
+            local result = req:headers()
+            assert.are.equal(expectedResult, result:get(headerName))
+        end
+
+        local retryable = { 429, 503 }
+
+        for _, status in ipairs(retryable) do
+            it("should use x-ratelimit-reset for status " .. status, function()
+                local headers = {
+                    [":status"] = "" .. status,
+                    ["x-ratelimit-reset"] = "11",
+                }
+
+                assertHeaderUpate(headers, "retry-after", "11")
+            end)
+
+            it("should fall back to 60 seconds for status " .. status, function()
+                local headers = {
+                    [":status"] = "" .. status,
+                }
+
+                assertHeaderUpate(headers, "retry-after", "60")
+            end)
+
+            it("should preserve retry-after for status " .. status, function()
+                local headers = {
+                    [":status"] = "" .. status,
+                    ["x-ratelimit-reset"] = "11",
+                    ["retry-after"] = "5",
+                }
+
+                assertHeaderUpate(headers, "retry-after", "5")
+            end)
+        end
+
+        it("should ignore x-ratelimit-reset for status 200", function()
+            local headers = {
+                [":status"] = "200",
+                ["x-ratelimit-reset"] = "11",
+            }
+
+            assertHeaderUpate(headers, "retry-after", nil)
         end)
     end)
 end)

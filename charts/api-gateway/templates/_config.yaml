@@ -238,6 +238,20 @@ static_resources:
               rules:
 {{ include "apigateway.ratelimit_rules" . }}
 {{- end }}
+{{- if not .Values.main_app.ratelimiter.enable_x_ratelimit_headers }}
+          - name: envoy.filters.http.header_mutation
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.header_mutation.v3.HeaderMutation
+              # Strip the DRAFT_VERSION_03 headers injected by ratelimiter.
+              # We need them in Lua to set the retry-after header to the correct value.
+              # After the Lua filter is complete we can remove them (note that filters are invoked
+              # in reverse order for response handling).
+              mutations:
+                response_mutations:
+                  - remove: "x-ratelimit-limit"
+                  - remove: "x-ratelimit-remaining"
+                  - remove: "x-ratelimit-reset"
+{{- end }}
 {{- if .Values.main_app.rest_gateway_routes }}
           {{- if .Values.main_app.ratelimiter.user_id_cookie }}
           - name: envoy.filters.http.header_to_metadata
@@ -264,9 +278,7 @@ static_resources:
               domain: wikimedia
               stage: 0
               timeout: {{ .Values.main_app.ratelimiter.envoy_timeout }}s
-              {{- if .Values.main_app.ratelimiter.enable_x_ratelimit_headers }}
               enable_x_ratelimit_headers: DRAFT_VERSION_03
-              {{- end }}
               rate_limit_service:
                 transport_api_version: V3
                 grpc_service:
