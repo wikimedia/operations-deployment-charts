@@ -1,33 +1,56 @@
 import os
 import sys
 import yaml
+from io import StringIO
 
 class Values:
-    def __init__(self, v = {}):
+    def __init__(self, v = None):
+        if v is None:
+            v = {}
+
+        if isinstance(v, Values):
+            v = v.values
+
+        if not isinstance(v, dict):
+            raise ValueError( f"Struct values must be given as a dict, got {type(v)}" )
+
         self.values = v
 
+    def _wrap_value(self, v):
+        if isinstance(v, dict):
+            return self.__class__(v)
+        else:
+            return v
+
     def __getitem__(self, key):
-        return self.__getattr__(key)
+        try:
+            return self.__getattr__(key)
+        except AttributeError as ex:
+            raise KeyError(f"{key} not found") from ex
 
     def __getattr__(self, key):
         if not key in self.values:
             keys = self.values.keys()
-            raise KeyError(f"{key} not in {keys}")
+            raise AttributeError(f"{key} not in {keys}")
 
-        v = self.values[key]
-        if isinstance(v, dict):
-            return Values(v)
-        else:
-            return v
+        return self._wrap_value( self.values[key] )
 
     def __str__(self):
         return f"Values({self.values})"
 
-    def __dict__(self):
-        return self.values
+    def __iter__(self):
+        for key in self.values.keys():
+            yield key
+
+    def __contains__(self, key):
+        return key in self.values
 
     def keys(self):
         return self.values.keys()
+
+    def items(self):
+        # TODO: wrap dict values?
+        return self.values.items()
 
     def get(self, key, default = None):
         path = key.split(".", 1)
@@ -49,36 +72,60 @@ class Values:
         else:
             return v
 
-    # Recursive merge: dicts are merged by key, lists are concatenated, scalars are replaced by b
-    def merge(self, moreValues: dict):
-        self.values = _merge(self.values, moreValues)
+    def update(self, moreValues):
+        """
+        Merge moreValues into this Values object recursively:
+        If both values are dicts, they are merged by key,
+        otherwise the old value is replaced by the new value.
+        """
+        if isinstance(moreValues, Values):
+            moreValues = moreValues.values
+
+        if not isinstance(moreValues, dict):
+            raise TypeError(f"merge() expects a dict or a Values object, got a {type(moreValues)}")
+
+        self.values = _update_dict(self.values, moreValues)
+
+    def empty(self):
+        return len(self.values.keys()) == 0
+
+    def dump(self):
+        return yaml.dump(self.values)
+
+    def load_yaml_data(self, data: str):
+        with StringIO(data) as s:
+            self.update( yaml.safe_load(s) )
 
     def load_yaml_file(self, path: str):
         if not os.path.isfile(path):
             raise Exception(f"YAML file not found: {path}")
 
         with open(path, "r") as f:
-            self.merge( yaml.safe_load(f) )
+            values = yaml.safe_load(f)
 
-def _merge(a, b):
+            if values is None:
+                # empty file
+                return
+
+            self.update( values )
+
+def _update_dict(a, b):
     if a is None:
         return b
     if b is None:
         return a
 
-    # dict + dict => merge keys
+    # if both values are dicts, merge recursively
     if isinstance(a, dict) and isinstance(b, dict):
         out = dict(a)  # shallow copy of a
         for k, vb in b.items():
             if k in out:
-                out[k] = _merge(out[k], vb)
+                out[k] = _update_dict(out[k], vb)
             else:
                 out[k] = vb
         return out
 
-    # list + list => concatenate
-    if isinstance(a, list) and isinstance(b, list):
-        return a + b
+    # NOTE: Lists get replaced like scalars, not concatenated. That's how helm does it.
 
     # different types or scalars: override with b
     return b

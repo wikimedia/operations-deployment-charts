@@ -29,7 +29,8 @@ class RateLimitTest(unittest.TestCase):
     default_endpoint = None
     probe_config = None
 
-    def setUpClass():
+    @classmethod
+    def setUpClass(cls):
         RateLimitTest.probe_config = env.values.get("smokepy.gateway")
 
         if RateLimitTest.probe_config is None:

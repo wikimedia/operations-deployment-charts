@@ -15,17 +15,14 @@ endif
 
 env := $(strip $(env))
 
-# setup
-dir := $(dir $(firstword $(MAKEFILE_LIST)))
-servicedir := $(dir)/..
+# Expect the main script to be in a subdirectory of the service definition.
+entrypoint_dir := $(dir $(firstword $(MAKEFILE_LIST)))
+servicedir := $(entrypoint_dir)/..
 
-# python
-pydir := $(servicedir)/../../../python
-PYTHONPATH := $(abspath $(pydir))
-export PYTHONPATH
+# pyunit and valuefiles for smokepy
+thisdir := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(thisdir)/pyunit.mk
 
-# pyunit and smokepy
-pyunit_options := -vv
 valuefiles := $(servicedir)/values.yaml
 
 stagingfile := $(servicedir)/values-staging.yaml

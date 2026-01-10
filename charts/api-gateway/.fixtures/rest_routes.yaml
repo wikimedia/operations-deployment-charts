@@ -1,0 +1,28 @@
+main_app:
+  rest_gateway_routes:
+    - name: main_services
+      timeout: 120s
+      urls:
+        - name: foo_bar
+          in: 'main/foo/bar/(.+)'
+          out: '/foo/bar/\2'
+      rb_response_headers: true
+      apply_rate_limiting: false
+
+    - name: other_endpoints
+      timeout: 15s
+      cluster: other
+      csp_enabled: false
+      urls:
+        - name: dummy
+          in: '/other/(.*)'
+          out: '/service/\1'
+
+  discovery_endpoints:
+    main_services:
+      port: 1234
+      host: localhost
+    other:
+      tls: true
+      port: 5678
+      host: localhost

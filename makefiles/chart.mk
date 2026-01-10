@@ -29,6 +29,10 @@ ifeq (,$(wildcard $(servicedir)))
   $(error service directoy not found: $(servicedir))
 endif
 
+# pyunit
+thisdir := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(thisdir)/pyunit.mk
+
 # values to be used with minikube
 valuefiles := -f $(servicedir)/values.yaml
 

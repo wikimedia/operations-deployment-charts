@@ -18,3 +18,12 @@ main_app:
     default_limit:
       requests_per_unit: 5000
       unit: HOUR
+    units: [ HOUR ]
+    policies:
+      "experiment-2025":
+        "*": # catch-all limits
+          HOUR: 500
+        "anon":
+          HOUR: 500
+        "approved-bot":
+          HOUR: 5000
