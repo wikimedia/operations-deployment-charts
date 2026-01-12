@@ -41,3 +41,4 @@ spec:
           port: {{ $.Values.main_app.mw_api.port }}
     {{- end }}{{- end }}
 {{- end }}
+{{ include "base.networkpolicy.egress.external-services" $ }}

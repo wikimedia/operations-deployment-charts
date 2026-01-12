@@ -797,68 +797,11 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4455
-    - cidr: 10.192.0.198/32 # rdb2007
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.192.16.213/32 # rdb2008
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:860:101:10:192:0:198/128 # rdb2007
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:860:102:10:192:16:213/128 # rdb2008
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.192.32.8/32 # rdb2009
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.192.48.6/32 # rdb2010
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:860:103:10:192:32:8/128 # rdb2009
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:860:104:10:192:48:6/128 # rdb2010
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.64.0.36/32 # rdb1011
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:861:101:10:64:0:36/64 # rdb1011
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.64.48.49/32 # rdb1012
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:861:102:10:64:16:18/64 # rdb1013
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.64.16.18/32 # rdb1013
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 2620:0:861:107:10:64:48:42/128 # rdb1014
-      ports:
-      - protocol: tcp
-        port: 6380
-    - cidr: 10.64.48.42/32 # rdb1014
-      ports:
-      - protocol: tcp
-        port: 6380
 
 # Needed by the ratelimit sidecar
 nutcracker:
   enabled: true
   version: 0.0.4
+
+external_services:
+  redis-6380: [misc]

@@ -312,3 +312,15 @@ smokepy:
   # A valid token to use for testing.
   # Can also be set using $SMOKEPY_VALID_JWT.
   valid_jwt: ~
+
+# The set of external services to allow egress to
+# Example:
+# kafka:
+# - main-codfw
+# - main-eqiad
+# presto:
+# - analytics
+#
+# See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services
+external_services: {}
