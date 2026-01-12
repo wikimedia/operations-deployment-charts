@@ -13,12 +13,14 @@ inference_services:
   revise-tone-task-generator:
     predictor:
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
-      image_version: "2026-01-07-151000-publish"
+      image_version: "2026-01-12-112313-publish"
       custom_env:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: FORCE_HTTP
           value: "True"
+        - name: AIOHTTP_CLIENT_TIMEOUT
+          value: "10"
         - name: EVENTGATE_URL
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM

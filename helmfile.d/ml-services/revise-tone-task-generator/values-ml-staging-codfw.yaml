@@ -3,12 +3,18 @@ inference_services:
   revise-tone-task-generator:
     predictor:
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
-      image_version: "2026-01-07-151000-publish"
+      image_version: "2026-01-12-112313-publish"
       custom_env:
+        - name: NUM_WORKERS
+          value: "2"
+        - name: NUM_THREADS # Used per each worker
+          value: "2"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: FORCE_HTTP
           value: "True"
+        - name: AIOHTTP_CLIENT_TIMEOUT
+          value: "10"
         - name: OUTLINK_TOPIC_MODEL_URL
           value: "http://outlink-topic-model.articletopic-outlink/v1/models/outlink-topic-model:predict"
         - name: OUTLINK_TOPIC_MODEL_HEADER
@@ -38,8 +44,6 @@ inference_services:
           limits:
             cpu: "4"
             memory: 8Gi
-            amd.com/gpu: "1"
           requests:
             cpu: "4"
             memory: 8Gi
-            amd.com/gpu: "1"
