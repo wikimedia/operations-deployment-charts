@@ -8,8 +8,11 @@ smokepy:
     # Can also be set using $GATEWAY_TEST_TARGET_URL.
     target_url: https://staging.svc.eqiad.wmnet:4113
 
-    # The path of the endpoint to probe when testing rate limits.
-    probe_path: "/en.wikipedia.org/v1/page/title/X"
+    # The path of the endpoint to probe when testing the default rate limit policy.
+    default_policy_endpoint: "/en.wikipedia.org/v1/page/title/X"
+
+    # The path of the endpoint to probe when testing the shadow rate limit policy.
+    shadow_policy_endpoint: "/enwiki/v1/page/random/main"
 
     # The headers to send with every request
     headers:
@@ -70,7 +73,6 @@ main_app:
     - "localhost:6033"
   ratelimiter:
     enabled: true
-    shadow_mode: false
     lua_hook_enabled: true
     log_level: debug
     redis_host: localhost
@@ -80,49 +82,54 @@ main_app:
     envoy_timeout: 0.5
     units: [ MINUTE, SECOND ]
     policies:
-      "Feb2026":
-        "*": # catch-all limits
-          SECOND: 1
-        "anon": # no auth, not a browser, no good User-Agent, no known IP
-          SECOND: 1
-        "anon-browser": # no auth, but looks like a browser
-          SECOND: 3
-        "authed-browser": # authed, looks like a browser
-          SECOND: 5
-        "authed-other": # authed, but not a browser, and has no bot flag
-          SECOND: 7
-        "authed-bot": # authed using an API key, but no community approval
-          SECOND: 9
-        "unauthed-bot": # no auth, but good User-Agent
-          SECOND: 11
-        "approved-bot": # bot approved by the community
-          SECOND: 13
-        "known-client": # no auth, network associated with a known client
-          SECOND: 15
-        "known-network": # no auth, network under outbound control (WMCS, WME)
-          SECOND: 17
-
       "Mar2026":
-        "*": # catch-all limits
-          SECOND: 2
-        "anon": # no auth, not a browser, no good User-Agent, no known IP
-          SECOND: 2
-        "anon-browser": # no auth, but looks like a browser
-          SECOND: 4
-        "authed-browser": # authed, looks like a browser
-          SECOND: 6
-        "authed-other": # authed, but not a browser, and has no bot flag
-          SECOND: 8
-        "authed-bot": # authed using an API key, but no community approval
-          SECOND: 10
-        "unauthed-bot": # no auth, but good User-Agent
-          SECOND: 12
-        "approved-bot": # bot approved by the community
-          SECOND: 14
-        "known-client": # no auth, network associated with a known client
-          SECOND: 16
-        "known-network": # no auth, network under outbound control (WMCS, WME)
-          SECOND: 18
+        shadow_mode: false # enable on staging for testing
+        limits:
+          "*": # catch-all limits
+            SECOND: 2
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            SECOND: 2
+          "anon-browser": # no auth, but looks like a browser
+            SECOND: 4
+          "authed-browser": # authed, looks like a browser
+            SECOND: 6
+          "authed-other": # authed, but not a browser, and has no bot flag
+            SECOND: 8
+          "authed-bot": # authed using an API key, but no community approval
+            SECOND: 10
+          "unauthed-bot": # no auth, but good User-Agent
+            SECOND: 12
+          "approved-bot": # bot approved by the community
+            SECOND: 14
+          "known-client": # no auth, network associated with a known client
+            SECOND: 16
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            SECOND: 18
+
+      "Apr2026":
+        shadow_mode: true
+        limits:
+          "*": # catch-all limits
+            SECOND: 1
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            SECOND: 1
+          "anon-browser": # no auth, but looks like a browser
+            SECOND: 3
+          "authed-browser": # authed, looks like a browser
+            SECOND: 5
+          "authed-other": # authed, but not a browser, and has no bot flag
+            SECOND: 7
+          "authed-bot": # authed using an API key, but no community approval
+            SECOND: 9
+          "unauthed-bot": # no auth, but good User-Agent
+            SECOND: 11
+          "approved-bot": # bot approved by the community
+            SECOND: 13
+          "known-client": # no auth, network associated with a known client
+            SECOND: 15
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            SECOND: 17
+
     # Manual testing
     require_opt_in: false
     fallback_class: "anon"
@@ -182,6 +189,7 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
+      use_rate_limit_policy: "Apr2026"
 
     - name: geo-analytics
       timeout: 15s

@@ -13,7 +13,7 @@ import jwtools
 def getRateLimits(rlc):
     try:
         policy = env.values.main_app.ratelimiter.default_policy
-        limits = env.values.main_app.ratelimiter.policies[policy][rlc]
+        limits = env.values.main_app.ratelimiter.policies[policy].limits[rlc]
         return limits
     except TypeError:
         pass
@@ -27,6 +27,8 @@ class RateLimitTest(unittest.TestCase):
 
     target_url = None
     default_endpoint = None
+    shadow_endpoint = None
+    shadow_policy_name = None
     probe_config = None
 
     @classmethod
@@ -46,8 +48,10 @@ class RateLimitTest(unittest.TestCase):
             raise ValueError("No value set for smokepy.gateway.target_url! " +
                 "Specify one in a value file or set GATEWAY_TEST_TARGET_URL")
 
-        RateLimitTest.default_endpoint = RateLimitTest.probe_config.probe_path
+        RateLimitTest.default_endpoint = RateLimitTest.probe_config.default_policy_endpoint
         print(f"Running tests on {RateLimitTest.target_url}{RateLimitTest.default_endpoint}")
+
+        RateLimitTest.shadow_endpoint = RateLimitTest.probe_config.shadow_policy_endpoint
 
     def setUp(self):
         headers = RateLimitTest.probe_config.get("headers", {})
@@ -111,6 +115,28 @@ class RateLimitTest(unittest.TestCase):
         countHeaders = counts.get("x-ratelimit-remaining", 0)
         self.assertEqual(  countHeaders, 0, "expected no response to contain an x-ratelimit-remaining header")
 
+    def assert_rate_limit_shadowed( self, path, allowed, headers = {}, debug = []):
+        # Try three times as many requests as allowed.
+        # At most twice as many requests as allowed can pass (when crossing a window boundary).
+        # The last third of requests must fail, assuming the requests can be performed within
+        # the span of one window (so in at most two windows).
+        n = allowed*3
+        predicates = {
+            "429": Predicates.has_status(429),
+            "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
+        }
+
+        counts = self.target.count_get(path, n=n, predicates = predicates, headers = headers, debug = debug )
+
+        countErrors = counts.get("error", 0)
+        self.assertEqual( countErrors, 0, "expected no connection errors" )
+
+        count429 = counts.get("429", 0)
+        self.assertEqual( count429, 0, "expected no request to be denied")
+
+        countHeaders = counts.get("x-ratelimit-remaining", 0)
+        self.assertEqual( countHeaders, n, "expected all responses to contain an x-ratelimit-remaining header")
+
     def test_anon_limit(self):
         anonHeaders = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
@@ -160,6 +186,14 @@ class RateLimitTest(unittest.TestCase):
         localHeaders = {} # no x-client-ip!
         limits = getRateLimits("anon")
         self.assert_rate_limit_bypassed(self.default_endpoint, limits.SECOND, headers = localHeaders)
+
+    def test_shadow_policy(self):
+        if not self.shadow_endpoint:
+            self.skipTest("shadow_endpoint is not set")
+
+        anonHeaders = { "x-client-ip": env.nextIp() }
+        limits = getRateLimits("anon")
+        self.assert_rate_limit_shadowed(self.shadow_endpoint, limits.SECOND, headers = anonHeaders)
 
     def test_setting_headers_allowed_locally(self):
         policy = env.values.main_app.ratelimiter.default_policy

@@ -7,19 +7,20 @@ descriptors:
 {{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
   # NOTE: when changing the descriptor structure,
   #       also update the matcher rules in ratelimiter_metrics.yaml!
-  {{- range $policy, $classes := $.Values.main_app.ratelimiter.policies }}
+  {{- range $name, $policy := $.Values.main_app.ratelimiter.policies }}
   # Rate limit policies for use by te REST gateway.
   # A policy defines the limits for each rate limit class.
   - key: policy
-    value: {{ $policy }}
+    value: {{ $name }}
     descriptors:
       # For a description of the available rate limit classes and their meaning and purpose,
       # see the comment on the wmf_ratelimit_info method in restgateway.lua.
-      {{- range $class, $units := $classes }}
+      {{- range $class, $units := $policy.limits }}
       - key: user_class
         {{- if ne $class "*" }}
         value: {{ $class }}
         {{- else}}
+        # Fallback for unknown classes.
         # TODO: set value_to_metrics: true
         # See https://github.com/envoyproxy/ratelimit/pull/996
         # Adjust ratelimiter_metrics.yaml accordingly.
@@ -33,6 +34,9 @@ descriptors:
                 rate_limit:
                   requests_per_unit: {{ int $req }}
                   unit: {{ $unit }}
+                {{- if ( $policy.shadow_mode | default false ) }}
+                shadow_mode: true
+                {{- end }}
               {{- end }}
       {{- end }}
   {{- end }}

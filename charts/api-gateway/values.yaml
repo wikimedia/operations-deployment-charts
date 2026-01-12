@@ -50,10 +50,6 @@ main_app:
     enabled: false
     # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
     enable_x_ratelimit_headers: false
-    # "shadow mode" instructs the rate limiter to allow all requests but generate metrics about
-    # which ones would have been denied ("dry run").
-    # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode
-    shadow_mode: false
     # The default value for the group key in the rate limit descriptor.
     # This can be used to switch between different rate limiting regimes
     # defined in _ratelimit.yaml.
@@ -106,16 +102,21 @@ main_app:
     # A rate limit policy defines the limits for each rate limit class.
     # For a description of the available rate limit classes and their meaning and purpose,
     # see the comment on the wmf_ratelimit_info method in restgateway.lua.
+    # Enabling shadow_mode for a policy instructs the rate limiter to allow all requests
+    # but generate metrics about which ones would have been denied ("dry run").
+    # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode
     policies:
     #   "EXAMPLE":
-    #     "*": # catch-all limits
-    #       HOUR: 500
-    #       MINUTE: 100
-    #       SECOND: 10
-    #     "cookie-user": # "cookie-user" class
-    #       HOUR: 5000
-    #       MINUTE: 1000
-    #       SECOND: 100
+    #     shadow_mode: false
+    #     limits:
+    #       "*": # catch-all limits
+    #         HOUR: 500
+    #         MINUTE: 100
+    #         SECOND: 10
+    #       "cookie-user": # "cookie-user" class
+    #         HOUR: 5000
+    #         MINUTE: 1000
+    #         SECOND: 100
 
     prefixes_without_required_jwt:
       - prefix: "/wiki/"

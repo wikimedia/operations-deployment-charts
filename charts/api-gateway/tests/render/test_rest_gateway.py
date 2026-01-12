@@ -70,12 +70,15 @@ class RestGatewayTest(unittest.TestCase):
         self.assert_ratelimit_config_valid(ratelimit_config)
 
         # Shadow mode
-        data_path = [ "descriptors", { "value": "experiment-2025" },
+        data_path = [ "descriptors", { "value": "active-policy" },
                  "descriptors", { "value": "anon" },
                  "descriptors", { "key": "user_id" },
                  "descriptors", { "value": "HOUR" },
                  "shadow_mode" ]
         self.assertIsNone( ratelimit_config.get( data_path ) )
+
+        data_path[1] = { "value": "shadow-policy" }
+        self.assertTrue( ratelimit_config.get( data_path ) )
 
     def assert_deployment_common(self, deployment):
         #volumes

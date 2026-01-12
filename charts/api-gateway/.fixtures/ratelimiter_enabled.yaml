@@ -12,18 +12,28 @@ main_app:
     redis_host: localhost
     redis_port: 6380
     redis_pass: "foo"
-    anon_limit:
-      requests_per_unit: 500
-      unit: HOUR
-    default_limit:
-      requests_per_unit: 5000
-      unit: HOUR
+
+    default_policy: active-policy
+    require_opt_in: false              # default: false
+    allow_client_headers: false        # default: false
+    enable_x_ratelimit_headers: false  # default: true
+
     units: [ HOUR ]
     policies:
-      "experiment-2025":
-        "*": # catch-all limits
-          HOUR: 500
-        "anon":
-          HOUR: 500
-        "approved-bot":
-          HOUR: 5000
+      "active-policy":
+        limits:
+          "*": # catch-all limits
+            HOUR: 500
+          "anon":
+            HOUR: 500
+          "approved-bot":
+            HOUR: 5000
+      "shadow-policy":
+        shadow_mode: true
+        limits:
+          "*": # catch-all limits
+            HOUR: 100
+          "anon":
+            HOUR: 100
+          "approved-bot":
+            HOUR: 1000
