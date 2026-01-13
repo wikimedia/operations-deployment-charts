@@ -567,12 +567,12 @@ main_app:
           out: '/wiki/Special:RestSandbox/wmf-restbase-global'
           to: 'meta.wikimedia.org'
           redirect: true
-          redirect_code: 301
+          redirect_code: MOVED_PERMANENTLY
         - name: rest_sandbox_project
           in: '/[^/]+/v1/'
           out: '/wiki/Special:RestSandbox/wmf-restbase'
           redirect: true
-          redirect_code: 301
+          redirect_code: MOVED_PERMANENTLY
         # *** END REST API sandbox ***
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
