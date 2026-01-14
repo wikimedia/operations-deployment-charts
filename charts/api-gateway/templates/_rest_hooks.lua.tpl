@@ -11,6 +11,7 @@ HelmValues = {
         ratelimiter = {
             fallback_class = "{{ .Values.main_app.ratelimiter.fallback_class }}",
             user_id_cookie = "{{ .Values.main_app.ratelimiter.user_id_cookie }}",
+            ratelimit_notice_text = "{{ replace "\n" "\\\n" .Values.main_app.ratelimiter.ratelimit_notice_text }}"
         }
     }
 }

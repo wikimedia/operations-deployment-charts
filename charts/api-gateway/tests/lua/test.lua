@@ -17,6 +17,7 @@ _G.HelmValues = {
         ratelimiter = {
             fallback_class = "test-fallback-class",
             user_id_cookie = "TestUserID",
+            ratelimit_notice_text = "ratelimit notice text",
         }
     }
 }
@@ -59,6 +60,18 @@ describe("rest_hooks", function()
         }
     end
 
+    function fake_body(bytes)
+        return {
+            bytes = bytes,
+            getBytes = function(self)
+                return self.bytes
+            end,
+            setBytes = function(self, bytes)
+                self.bytes = bytes
+            end
+        }
+    end
+
     function fake_stream_info(address, metadata)
         return add_getters( {},{
             downstreamRemoteAddress = address,
@@ -80,6 +93,19 @@ describe("rest_hooks", function()
             streamInfo = fake_stream_info(arg.address or "127.0.0.1",
                     arg.streamMetadata or {}),
             metadata = fake_metadata(arg.routeMetadata or {}),
+        })
+    end
+
+    function fake_response_handle(arg)
+        local headers = arg.headers or { ["content-type"] = "unknown/unknown" }
+
+        return add_getters( {
+            logDebug = noop,
+            logInfo = noop,
+            logWarning = noop,
+        },{
+            headers = fake_headers(headers),
+            body = fake_body("Lorem ipsum"),
         })
     end
 
@@ -315,11 +341,11 @@ describe("rest_hooks", function()
 
     describe("wmf_set_retry_after", function()
         function assertHeaderUpate( headers, headerName, expectedResult )
-            local req = fake_request_handle{headers = headers}
+            local res = fake_response_handle{headers = headers}
 
-            wmf_set_retry_after( req )
+            wmf_set_retry_after( res )
 
-            local result = req:headers()
+            local result = res:headers()
             assert.are.equal(expectedResult, result:get(headerName))
         end
 
@@ -361,6 +387,34 @@ describe("rest_hooks", function()
             }
 
             assertHeaderUpate(headers, "retry-after", nil)
+        end)
+
+        it("should set response body when x-ratelimit-remaining is 0", function()
+            local headers = {
+                [":status"] = "429",
+                ["x-ratelimit-reset"] = "11",
+                ["x-ratelimit-remaining"] = "0", -- envoy caused the 429
+            }
+
+            local res = fake_response_handle{headers = headers}
+            wmf_set_retry_after( res )
+
+            assert.are.equal("ratelimit notice text", res:body():getBytes())
+            assert.are.equal("text/plain", res:headers():get( "content-type" ))
+        end)
+
+        it("should not set response body when x-ratelimit-remaining is not 0", function()
+            local headers = {
+                [":status"] = "429",
+                ["x-ratelimit-reset"] = "11",
+                ["x-ratelimit-remaining"] = "2", -- something else caused the 429
+            }
+
+            local res = fake_response_handle{headers = headers}
+            wmf_set_retry_after( res )
+
+            local result = res:body():getBytes()
+            assert.are_not.equal("ratelimit notice text", result)
         end)
     end)
 end)

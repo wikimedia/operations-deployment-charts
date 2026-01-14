@@ -60,6 +60,7 @@ class RateLimitTest(unittest.TestCase):
             "429": Predicates.has_status(429),
             "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
             "retry-after": Predicates.has_header("retry-after"),
+            "notice": Predicates.body_contains("bot-traffic@wikimedia.org")
         }
 
         counts = self.target.count_get(path, n=n, predicates = predicates, headers = headers, debug = debug )
@@ -69,6 +70,7 @@ class RateLimitTest(unittest.TestCase):
 
         xrlCount = counts.get("x-ratelimit-remaining", 0)
         raCount = counts.get("retry-after", 0)
+        noticeCount = counts.get("notice", 0)
 
         if env.values.main_app.ratelimiter.enable_x_ratelimit_headers:
             self.assertEqual( xrlCount, n, "expected all responses to contain an x-ratelimit-remaining header")
@@ -82,6 +84,7 @@ class RateLimitTest(unittest.TestCase):
         count429 = counts.get("429", 0)
         self.assertEqual( count429, n - count2xx, f"expected requests to be denied using status 429")
         self.assertEqual( raCount, count429, f"expected all requests with status 429 to have a retry-after header")
+        self.assertEqual( noticeCount, count429, f"expected all requests with status 429 to contain the notice")
 
     def assert_rate_limit_bypassed( self, path, allowed, headers = {}, debug = []):
         # Try three times as many requests as allowed.
@@ -108,7 +111,7 @@ class RateLimitTest(unittest.TestCase):
     def test_anon_limit(self):
         anonHeaders = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders )
 
         # try again with a different IP, to check that it is used as the rate limit key
         anonHeaders = { "x-client-ip": env.nextIp() }

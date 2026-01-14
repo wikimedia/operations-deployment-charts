@@ -20,6 +20,9 @@ class Predicates:
     def header_is ( header, value ):
         return lambda resp: resp.headers.get(header) == value
 
+    def body_contains ( substring ):
+        return lambda resp: substring in resp.body
+
     def untrue ( predicate ):
         return lambda resp: not predicate(resp)
 
