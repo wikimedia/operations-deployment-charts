@@ -1,0 +1,50 @@
+resources:
+  replicas: 11 # Start with 1 ratelimit pod per ms-fe
+app:
+  # ratelimit configuration
+  # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
+  # Array keys are ratelimit domains (they need to be unique), the value
+  # needs is one or many descriptors.
+  #
+  #
+  # This dummy (but should be valid) config sets limits for two policies,
+  # originals and thumbnails (to be defined at the route level in envoy config)
+  # The user_class should be set in envoy based on the values of X-Trusted-Request and X-Is-Browser
+  # We only define anon for now
+  # The user_id should be X-Client-Ip
+  #
+  # This limits to:
+  #   5MB of total BYTES_SENT per second **FIXED WINDOW** on originals
+  #   10MB of total BYTES_SENT per second **FIXED WINDOW** on thumbnails
+  #
+  # The tally is done at the end of the request, so a single request exceeding the quota would go
+  # through, but the next one would not.
+  configuration:
+    upload:
+      - key: policy
+        value: originals
+        descriptors:
+          - key: user_class
+            value: anon
+            descriptors:
+              - key: user_id
+                descriptors:
+                  - key: unit
+                    value: SECOND
+                    rate_limit:
+                      requests_per_unit: 5000000
+                    shadow_mode: true
+      - key: policy
+        value: thumbnails
+        descriptors:
+          - key: user_class
+            value: anon
+            descriptors:
+              - key: user_id
+                descriptors:
+                  - key: unit
+                    value: SECOND
+                    rate_limit:
+                      requests_per_unit: 10000000
+                    shadow_mode: true
+# TODO metrics config

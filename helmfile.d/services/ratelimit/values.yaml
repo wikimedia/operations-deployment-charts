@@ -12,13 +12,3 @@ app:
   version: 9.0.4-20260107.e9ce92c-20260111
   limits:
     cpu: 1000m
-  # ratelimit configuration
-  # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
-  # Array keys are ratelimit domains (they need to be unique), the value
-  # needs is one or many descriptors.
-  configuration:
-    mw-api-int:
-      - key: user-agent
-        rate_limit:
-          unit: second
-          requests_per_unit: 1000
