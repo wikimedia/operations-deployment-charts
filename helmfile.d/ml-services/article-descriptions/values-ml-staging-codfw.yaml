@@ -13,3 +13,11 @@ inference_services:
           value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: REST_GATEWAY_ENDPOINT
           value: "http://rest-gateway.discovery.wmnet:4111"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 5Gi
+          requests:
+            cpu: "2"
+            memory: 5Gi
