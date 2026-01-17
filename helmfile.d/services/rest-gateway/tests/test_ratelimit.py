@@ -7,14 +7,23 @@ import datetime
 
 from smokepy.http import *
 from smokepy import env
+from smokepy import values
 
 import jwtools
 
-def getRateLimits(rlc):
+def getRateLimits(rlc, policies = None):
     try:
-        policy = env.values.main_app.ratelimiter.default_policy
-        limits = env.values.main_app.ratelimiter.policies[policy].limits[rlc]
-        return limits
+        policies = env.values.main_app.ratelimiter.default_policies if policies is None else policies
+
+        if not policies:
+            return None
+
+        minLimits = {}
+        for p in policies:
+            pLimits = env.values.main_app.ratelimiter.policies[p].limits[rlc]
+            for k in pLimits:
+                minLimits[k] = pLimits[k] if k not in minLimits or pLimits[k] < minLimits[k] else minLimits[k]
+        return values.Values(minLimits)
     except TypeError:
         pass
     except AttributeError:
@@ -138,13 +147,13 @@ class RateLimitTest(unittest.TestCase):
         self.assertEqual( countHeaders, n, "expected all responses to contain an x-ratelimit-remaining header")
 
     def test_anon_limit(self):
-        anonHeaders = { "x-client-ip": env.nextIp() }
+        headers = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders )
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers )
 
         # try again with a different IP, to check that it is used as the rate limit key
-        anonHeaders = { "x-client-ip": env.nextIp() }
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+        headers = { "x-client-ip": env.nextIp() }
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
     def test_authed_browser_limit(self):
         cookie = env.values.main_app.ratelimiter.user_id_cookie
@@ -191,32 +200,32 @@ class RateLimitTest(unittest.TestCase):
         if not self.shadow_endpoint:
             self.skipTest("shadow_endpoint is not set")
 
-        anonHeaders = { "x-client-ip": env.nextIp() }
+        headers = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
-        self.assert_rate_limit_shadowed(self.shadow_endpoint, limits.SECOND, headers = anonHeaders)
+        self.assert_rate_limit_shadowed(self.shadow_endpoint, limits.SECOND, headers = headers)
 
     def test_setting_headers_allowed_locally(self):
-        policy = env.values.main_app.ratelimiter.default_policy
+        policy = env.values.main_app.ratelimiter.default_policies[0]
 
         testingHeaders = {
             # no x-client-ip, it's a "local" request
             "x-wmf-user-id": env.nextName("Youser"),
             "x-wmf-ratelimit-class": "anon",
-            "x-wmf-ratelimit-policy": policy,
+            "x-wmf-ratelimit-policy-1": policy,
         }
-        limits = getRateLimits("anon")
+        limits = getRateLimits("anon", [ policy ])
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = testingHeaders)
 
     def test_setting_headers_blocked_externally(self):
-        policy = env.values.main_app.ratelimiter.default_policy
+        policy = env.values.main_app.ratelimiter.default_policies[0]
 
         testingHeaders = {
             "x-client-ip": env.nextIp(), # external request
             "x-wmf-user-id": env.nextName("Xyzzy"),
             "x-wmf-ratelimit-class": "approved-bot",
-            "x-wmf-ratelimit-policy": policy,
+            "x-wmf-ratelimit-policy-1": policy,
         }
-        limits = getRateLimits("anon")
+        limits = getRateLimits("anon", [ policy ])
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = testingHeaders)
 
     def test_trust_level_A(self):
@@ -282,10 +291,10 @@ class RateLimitTest(unittest.TestCase):
         ip = env.nextIp()
         token = jwtools.getValidJwtOrSkip(self)
 
-        anonHeaders = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
 
         limits = getRateLimits("authed-bot")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
         #if we can,  try again with a different payload, to check that it is used as the rate limit key
         token = jwtools.createJwt(sub = env.nextName("Testorator") )
@@ -320,10 +329,10 @@ class RateLimitTest(unittest.TestCase):
         ip = env.nextIp()
         token = jwtools.getValidJwtOrSkip(self)
 
-        anonHeaders = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 
         limits = getRateLimits("authed-other")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
         # if we can, try again with a different payload, to check that it is used as the rate limit key
         token = jwtools.createJwt(sub = env.nextName("Testorator") )

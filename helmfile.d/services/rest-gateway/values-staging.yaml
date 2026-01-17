@@ -130,10 +130,6 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             SECOND: 17
 
-    # Manual testing
-    require_opt_in: false
-    fallback_class: "anon"
-    user_id_cookie: ""
     enable_x_ratelimit_headers: true
 
   access_log:
@@ -179,8 +175,7 @@ main_app:
           in: '/+([^/]+)/v1/data/citation/(.+)/(.+)'
           out: '/\2/\3'
       rb_response_headers: true
-      use_rate_limit_policy: "other-policy"
-      use_secondary_rate_limit_policy: "other-policy"
+      rate_limit_policies: [ "other-policy", "yet_another_policy" ]
 
     - name: wikifeeds
       timeout: 15s
@@ -189,7 +184,7 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
-      use_rate_limit_policy: "Apr2026"
+      rate_limit_policies: [ "Apr2026", "nothing" ]
 
     - name: geo-analytics
       timeout: 15s

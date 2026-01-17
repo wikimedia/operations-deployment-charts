@@ -18,6 +18,11 @@ _G.HelmValues = {
             fallback_class = "anon",
             user_id_cookie = "TestUserID",
             ratelimit_notice_text = "ratelimit notice text",
+            default_policies = {
+                "DefaultPolicy1",
+                "DefaultPolicy2",
+                "DefaultPolicy3",
+            },
         }
     }
 }
@@ -112,12 +117,38 @@ describe("rest_hooks", function()
     describe("wmf_ratelimit_info", function()
         describe("policy handling", function()
             it("should set x-wmf-ratelimit-policy based on route metadata", function()
-                local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
-                local req = fake_request_handle( { routeMetadata = routeMeta } )
+                local headers = {
+                    ["x-client-ip"] = "1.2.3.4",
+                    ["x-wmf-ratelimit-policy-1"] = "xyzzy1",
+                    ["x-wmf-ratelimit-policy-2"] = "xyzzy2",
+                    ["x-wmf-ratelimit-policy-3"] = "xyzzy3",
+                }
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "one", "two" } } }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "just-a-test", result:get("x-wmf-ratelimit-policy") )
+                assert.are.equal( "one", result:get("x-wmf-ratelimit-policy-1") )
+                assert.are.equal( "two", result:get("x-wmf-ratelimit-policy-2") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-3") )
+            end)
+            it("should unset x-wmf-ratelimit-policy based on route metadata", function()
+                local headers = {
+                    ["x-client-ip"] = "1.2.3.4",
+                    ["x-wmf-ratelimit-policy-1"] = "xyzzy1",
+                    ["x-wmf-ratelimit-policy-2"] = "xyzzy2",
+                    ["x-wmf-ratelimit-policy-3"] = "xyzzy3",
+                }
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = {} } }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-2") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-3") )
             end)
         end)
         describe("address handling", function()
@@ -139,12 +170,12 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
         end)
         describe("x-wmf header handling", function()
             it("should ignore x-wmf-user-id header if x-client-ip is set", function()
-                local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "just-a-test" } } }
                 local headers = {
                     ["x-wmf-user-id"] = "Cindy",
                     ["x-client-ip"] = "192.168.1.1"
@@ -156,7 +187,7 @@ describe("rest_hooks", function()
                 assert.are_not.equal( "Cindy", result:get("x-wmf-user-id") )
             end)
             it("should ignore the x-wmf-ratelimit-class header if x-client-ip is set", function()
-                local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "just-a-test" } } }
                 local headers = {
                     ["x-wmf-ratelimit-class"] = "SpecialClass",
                     ["x-client-ip"] = "192.168.1.1",
@@ -168,11 +199,11 @@ describe("rest_hooks", function()
                 assert.are_not.equal( "SpecialClass", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use the x-wmf-xxx headers if given", function()
-                local routeMeta = { ["wmf_ratelimit"] = { ["policy"] = "just-a-test" } }
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "just-a-test" } } }
                 local headers = {
                     ["x-wmf-user-id"] = "Cindy",
                     ["x-wmf-ratelimit-class"] = "CindysClass",
-                    ["x-wmf-ratelimit-policy"] = "TestPolicy",
+                    ["x-wmf-ratelimit-policy-1"] = "TestPolicy",
                     -- do not set "x-client-ip", so the request is treated as internal
                 }
                 local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
@@ -181,7 +212,7 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "CindysClass", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "TestPolicy", result:get("x-wmf-ratelimit-policy") )
+                assert.are.equal( "TestPolicy", result:get("x-wmf-ratelimit-policy-1") )
             end)
         end)
 
@@ -285,7 +316,6 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the rlc claim if present", function()
                 -- The JWT payload is stored in stream metadata
@@ -300,7 +330,6 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should not use the rlc claim if the sub claim is not present", function()
                 -- The JWT payload is stored in stream metadata
@@ -328,7 +357,6 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the rlc claim if present", function()
                 -- The JWT payload is stored in stream metadata
@@ -343,7 +371,6 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should not use the rlc claim if the sub claim is not present", function()
                 -- The JWT payload is stored in stream metadata
@@ -368,7 +395,6 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the user ID from the cookie", function()
                 -- cookie values are expected to be stored in stream metadata
@@ -387,7 +413,7 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
             it("should use the user ID from the cookie even for trust level A", function()
                 -- cookie values are expected to be stored in stream metadata
@@ -432,14 +458,6 @@ describe("rest_hooks", function()
 
         it("should preserve x-wmf-ratelimit-class header if it is 'some-class'", function()
             assertHeaderUpate("x-wmf-ratelimit-class", "some-class", "some-class")
-        end)
-
-        it("should unset x-wmf-ratelimit-policy header if it is 'no-limit'", function()
-            assertHeaderUpate("x-wmf-ratelimit-policy", "no-limit", nil)
-        end)
-
-        it("should preserve x-wmf-ratelimit-policy header if it is 'some-policy'", function()
-            assertHeaderUpate("x-wmf-ratelimit-policy", "some-policy", "some-policy")
         end)
 
         it("should preserve x-something-else header even if it is 'no-limit'", function()

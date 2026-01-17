@@ -7,7 +7,7 @@ main_app:
           in: 'main/foo/bar/(.+)'
           out: '/foo/bar/\2'
       rb_response_headers: true
-      apply_rate_limiting: false
+      rate_limit_policies: []
 
     - name: other_endpoints
       timeout: 15s

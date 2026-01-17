@@ -49,19 +49,12 @@ main_app:
   ratelimiter:
     enabled: false
     # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
-    enable_x_ratelimit_headers: false
-    # The default value for the group key in the rate limit descriptor.
-    # This can be used to switch between different rate limiting regimes
-    # defined in _ratelimit.yaml.
-    # Individual routes can override this by setting the use_rate_limit_policy value.
-    # NOTE: per-route policy overrides require Envoy 1.33 or later,
-    #       see https://github.com/envoyproxy/envoy/issues/34605.
+    enable_x_ratelimit_headers: true
+    # The rate limit policies to apply for rest routes.
+    # Individual routes can override the default by specifying a rate_limit_policies value.
+    # An empty list of policies means no rate limit.
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
-    default_policy: EXAMPLE
-    # Whether routes need to opt into rate limiting.
-    # Individual routes can opt in or out by setting the apply_rate_limiting value.
-    # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
-    require_opt_in: false
+    default_policies: []
     # The rate limiting class to apply if the user identity is not know.
     # This can be set to "no-limit" for testing, when we only want to enforce rate limits
     # under special circumstances.

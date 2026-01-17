@@ -73,19 +73,24 @@ function wmf_ratelimit_info(request_handle)
         return
     end
 
-    -- strip all readers related to rate limiting from external requests
-    headers:remove("x-wmf-ratelimit-policy")
+    -- strip all headers related to rate limiting from external requests
     headers:remove("x-wmf-ratelimit-class")
     headers:remove("x-wmf-user-id")
+    for i, _ in ipairs(HelmValues.main_app.ratelimiter.default_policies) do
+        headers:remove("x-wmf-ratelimit-policy-" .. tostring(i))
+    end
 
     -- Use the client IP as the fallback use ID.
     local user_id = "x-client-ip:" .. client_ip
 
-    -- Determine policy to apply, based on route meta data
+    -- Determine policies to apply, based on route meta data
     local routeMeta = request_handle:metadata()
     local routeMeta_ratelimit = routeMeta:get("wmf_ratelimit") or {}
-    local ratelimit_policy = routeMeta_ratelimit["policy"] or "MISSING"
-    headers:replace("x-wmf-ratelimit-policy", ratelimit_policy)
+
+    local ratelimit_policies = routeMeta_ratelimit["policies"] or {}
+    for i, p in ipairs(ratelimit_policies) do
+        headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
+    end
 
     -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
     local streamMeta = streamInfo:dynamicMetadata()
@@ -171,7 +176,7 @@ function wmf_request_cleanup(request_handle)
     -- "no-limit", because removing them disables rate limiting entirely.
     -- This works because the "request_headers" directive of the rate_limits filter
     -- will fail to construct a descriptor if the header is missing.
-    local names = { "x-wmf-ratelimit-class", "x-wmf-ratelimit-policy" }
+    local names = { "x-wmf-ratelimit-class" }
 
     for _, hname in ipairs(names) do
         if headers:get(hname) == "no-limit" then

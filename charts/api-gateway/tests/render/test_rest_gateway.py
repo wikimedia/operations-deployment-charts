@@ -161,7 +161,8 @@ class RestGatewayTest(unittest.TestCase):
         self.assertIsNotNone( vhost, "restgateway_vhost")
         self.assertIsNotNone( vhost.get("rate_limits"), "rate_limits")
 
-        self.assertIsNotNone( vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policy"]), "wmf_ratelimit.policy")
+        policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])
+        self.assertIsInstance( policies, list, "wmf_ratelimit.policies")
 
     def assert_ratelimit_config_valid(self, config):
         self.assertIsNotNone(config.get("domain"))

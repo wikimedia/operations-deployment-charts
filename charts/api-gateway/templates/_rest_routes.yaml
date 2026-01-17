@@ -1,10 +1,12 @@
 {{- define "restgateway.rate_limit_actions" }}
-# NOTE: If one of the headers referenced below is not set, the rate limit is not applied.
-{{- range $unit := .Values.main_app.ratelimiter.units }}
+{{- /* The number of items in default_policies determines how many policy headers we support */}}
+{{- range $index, $_ := $.Values.main_app.ratelimiter.default_policies }}
+{{- range $unit := $.Values.main_app.ratelimiter.units }}
 - actions: # per {{ $unit }}
+  # NOTE: If one of the headers s not set, the rate limit is not applied.
   - request_headers: # Specify the rate limit policy.
       descriptor_key: policy
-      header_name: x-wmf-ratelimit-policy
+      header_name: x-wmf-ratelimit-policy-{{ add1 $index }}
   - request_headers: # Specify the rate limit class.
       descriptor_key: user_class
       header_name: x-wmf-ratelimit-class
@@ -14,6 +16,7 @@
   - generic_key: # The time window the limit applies to.
       descriptor_key: unit
       descriptor_value: {{ $unit }}
+{{- end }}
 {{- end }}
 {{- end }}
 
@@ -153,18 +156,15 @@
                   {{- end }}
               {{- end }}
                 {{- if $.Values.main_app.ratelimiter.enabled }}
-                {{- /* Opt-in / opt-out */ -}}
-                {{- $apply_rate_limiting := ternary $endpoint.apply_rate_limiting (not $.Values.main_app.ratelimiter.require_opt_in) (hasKey $endpoint "apply_rate_limiting") }}
-                {{- /* The special value "no-limit" is used in Lua to prevent requests to the ratelimit service */ -}}
-                {{- $ratelimit_policy := "no-limit" }}
-                {{- if $apply_rate_limiting }}
-                  {{- $ratelimit_policy = default $.Values.main_app.ratelimiter.default_policy $endpoint.use_rate_limit_policy }}
-                {{- end }}
                 metadata:
                   filter_metadata:
                     envoy.filters.http.lua:
                       wmf_ratelimit:
-                        policy: {{ $ratelimit_policy }}
+                        {{ $policies := default $.Values.main_app.ratelimiter.default_policies $endpoint.rate_limit_policies }}
+                        {{ if ne (len $policies) (len $.Values.main_app.ratelimiter.default_policies) }}
+                        {{ fail (printf "The rate_limit_policies for route %s must be the same length as default_policies." $route.name) }}
+                        {{ end }}
+                        policies: {{ toJson $policies }}
                 {{- end }}
 
 {{- end }}
