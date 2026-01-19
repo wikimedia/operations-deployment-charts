@@ -1,0 +1,9 @@
+config:
+  airflow:
+    instance_name: sre
+
+ingress:
+  gatewayHosts:
+    default: "airflow-sre"
+    extraFQDNs:
+    - airflow-sre.wikimedia.org
