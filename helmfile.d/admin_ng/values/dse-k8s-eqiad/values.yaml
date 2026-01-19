@@ -231,6 +231,11 @@ namespaces:
     tlsExtraSANs:
       - mpic-next.wikimedia.org
       - test-kitchen-next.wikimedia.org
+  test-kitchen-next:
+    tlsHostnames:
+      - test-kitchen-next
+    tlsExtraSANs:
+      - test-kitchen-next.wikimedia.org
   flink-operator:
     systemNamespace: true
     labels:
