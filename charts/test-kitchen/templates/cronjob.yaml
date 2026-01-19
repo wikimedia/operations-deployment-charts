@@ -1,0 +1,26 @@
+{{ $root := . }}
+{{ range $cronjob := .Values.cronjobs }}
+{{- if $cronjob.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+{{- include "base.meta.metadata" (dict "Root" $root "Name" $cronjob.name ) | indent 2 }}
+spec:
+  {{- include "app.job.cron_properties" $cronjob | indent 2 }}
+  jobTemplate:
+    metadata:
+      {{- include "base.meta.labels" $root | indent 6 }}
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: {{ template "base.name.chart" $root }}
+            release: {{ $root.Release.Name }}
+        spec:
+          restartPolicy: Never
+          containers:
+          {{- include "app.job.container" (dict "Root" $root "Job" $cronjob) | indent 10 }}
+{{- end }}
+{{- end }}
