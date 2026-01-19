@@ -1,0 +1,27 @@
+app:
+  version: v1.1.6
+
+  logging:
+    level: info
+
+  database:
+    database: test_kitchen_staging
+    username: test_kitchen_staging
+
+  listeners:
+    action_api_basepath: http://127.0.0.1:6500
+
+  idp:
+    oidc_url: https://idp.wikimedia.org/oidc
+    client_id: test_kitchen_next
+    redirect_uri: https://test-kitchen-next.wikimedia.org/login/callback
+
+ingress:
+  gatewayHosts:
+    extraFQDNs:
+    - test-kitchen-next.discovery.wmnet
+    - test-kitchen-next.wikimedia.org
+
+discovery:
+  listeners:
+     - mw-api-int-async-ro
