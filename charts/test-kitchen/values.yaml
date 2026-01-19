@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
-  image: repos/data-engineering/mpic
+  image: repos/data-engineering/test-kitchen
   version: latest # we use latest everywhere in the defaults.
   port: 8080 # port exposed as a Service, also used by service-checker.
   # Use command and args below to override the entrypoint. Type is arrays
@@ -11,7 +11,7 @@ app:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
   command: ["node"]
-  args: ["server.js", "--config", "/etc/mpic/config.yaml"]
+  args: ["server.js", "--config", "/etc/test-kitchen/config.yaml"]
   requests:
     cpu: 100m # Just some sample, edit these - 100m is the minimum for deployment
     memory: 200Mi # Just some sample, edit these
@@ -37,16 +37,16 @@ app:
   volumes:
     - name: config-volume
       configMap:
-        name: mpic-base-config
+        name: test-kitchen-base-config
   volumeMounts:
     - name: config-volume
-      mountPath: /etc/mpic/
+      mountPath: /etc/test-kitchen/
 
   logging:
     level: trace
 
   service:
-    name: mpic
+    name: test-kitchen
     port: 8080
     cors: "*"
     max_body_size: 100kb
@@ -58,14 +58,14 @@ app:
   database:
     engine: mysql
     host: localhost
-    database: mpic
-    username: mpic
+    database: test_kitchen
+    username: test_kitchen
     port: 3306
 
   idp:
     oidc_url: https://idp-test.wikimedia.org/oidc
-    client_id: mpic_next
-    redirect_uri: http://mpic-next.wikimedia.org/login/callback
+    client_id: test_kitchen_next
+    redirect_uri: http://test-kitchen-next.wikimedia.org/login/callback
     response_type: code
 
 monitoring:
