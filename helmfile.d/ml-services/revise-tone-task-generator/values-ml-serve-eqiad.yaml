@@ -15,6 +15,10 @@ inference_services:
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
       image_version: "2026-01-12-112313-publish"
       custom_env:
+        - name: NUM_WORKERS
+          value: "2"
+        - name: NUM_THREADS # Used per each worker
+          value: "2"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/edit-check/peacock/"
         - name: FORCE_HTTP
