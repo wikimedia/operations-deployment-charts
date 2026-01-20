@@ -216,10 +216,31 @@ namespaces:
       compute:
         requests:
           cpu: "140"
-          memory: "130Gi"
+          memory: "200Gi"
         limits:
           cpu: "140"
-          memory: "130Gi"
+          memory: "200Gi"
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
   readability:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
