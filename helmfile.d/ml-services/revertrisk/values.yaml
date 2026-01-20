@@ -146,7 +146,8 @@ inference_services:
       autoscaling.knative.dev/target: "3"
     predictor:
       config:
-        minReplicas: 2
+        minReplicas: 7
+        maxReplicas: 10
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
       image_version: "2026-01-12-112314-publish"
       custom_env:
@@ -157,12 +158,12 @@ inference_services:
         - name: FORCE_HTTP
           value: "True"
         - name: WORKERS
-          value: "2"
+          value: "8"
       container:
         resources:
           limits:
-            cpu: "2"
-            memory: 4Gi
+            cpu: "8"
+            memory: 16Gi
           requests:
-            cpu: "2"
-            memory: 4Gi
+            cpu: "8"
+            memory: 16Gi
