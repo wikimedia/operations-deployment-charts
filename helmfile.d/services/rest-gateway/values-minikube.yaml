@@ -77,5 +77,32 @@ smokepy:
     headers:
       Host: localhost
 
-    # Override with a valid JWT in values-minikube.local.yaml
-    #valid_jwt: a7ebadf00d
+
+service:
+  deployment: minikube
+  port:
+    name: api-gateway
+    targetPort: 8087
+    port: 8087
+    nodePort: null
+config:
+  public: {}
+  private: {}
+
+# This chart does not actually use the tls-proxy/service mesh like others do
+# but it incorporates parts of it (for TLS termination), so we use the same
+# config structure here.
+mesh:
+  enabled: false
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  certmanager:
+    enabled: false
+  # public_port must be set in order for the cert-manager certificate to be
+  # rendered. It is not used for anything else.
+  public_port: "Value that evaluates to true but is not a valid port"
+
+networkpolicy:
+  egress:
+    enabled: false

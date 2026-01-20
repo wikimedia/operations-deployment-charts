@@ -30,16 +30,17 @@ ifeq (,$(wildcard $(servicedir)))
 endif
 
 # values to be used with minikube
-valuefiles = -f "$(servicedir)/values-minikube.yaml"
+valuefiles := -f $(servicedir)/values.yaml
 
 stagingfile := $(servicedir)/values-staging.yaml
-localfile := $(servicedir)/values-minikube.local.yaml
-
 ifneq (,$(wildcard $(stagingfile)))
   $(info Using staging values from $(stagingfile))
-  valuefiles := -f $(stagingfile) $(valuefiles)
+  valuefiles := $(valuefiles) -f $(stagingfile)
 endif
 
+valuefiles := $(valuefiles) -f $(servicedir)/values-minikube.yaml
+
+localfile := $(servicedir)/values-minikube.local.yaml
 ifneq (,$(wildcard $(localfile)))
   $(info Using local overrides from $(localfile))
   valuefiles := $(valuefiles) -f $(localfile)

@@ -307,8 +307,9 @@ class RateLimitTest(unittest.TestCase):
 
 def init():
     default_value_files = [
+        # Relevant value files from the service directory need to be specified
+        # using the SMOKEPY_VALUE_FILES environment variable.
         "../../../../charts/api-gateway/values.yaml", # chart defaults
-        "../values.yaml", # service defaults
     ]
 
     env.init(__file__, default_value_files)

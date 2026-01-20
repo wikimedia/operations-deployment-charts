@@ -26,17 +26,22 @@ export PYTHONPATH
 
 # pyunit and smokepy
 pyunit_options := -vv
-stagingfile := $(servicedir)/values-staging.yaml
-valuefiles := $(servicedir)/values-$(env).yaml
-localfile := $(servicedir)/values-$(env).local.yaml
+valuefiles := $(servicedir)/values.yaml
 
+stagingfile := $(servicedir)/values-staging.yaml
 ifeq ($(env),minikube)
   ifneq (,$(wildcard $(stagingfile)))
     $(info Using staging values from $(stagingfile))
-    valuefiles := $(stagingfile):$(valuefiles)
+    valuefiles := $(valuefiles):$(stagingfile)
   endif
 endif
 
+envfile := $(servicedir)/values-$(env).yaml
+ifneq (,$(wildcard $(envfile)))
+  valuefiles := $(valuefiles):$(envfile)
+endif
+
+localfile := $(servicedir)/values-$(env).local.yaml
 ifneq (,$(wildcard $(localfile)))
   $(info Using local overrides from $(localfile))
   valuefiles := $(valuefiles):$(localfile)
