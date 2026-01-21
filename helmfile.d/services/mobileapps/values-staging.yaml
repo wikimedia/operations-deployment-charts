@@ -27,13 +27,5 @@ main_app:
       storageTable: mobile_html
   limits:
     cpu: 1.5
-#  DEBUG: enable profiler on staging
-  command:
-  - "node"
-  args:
-  - "profile.js"
-  - "server.js"
-  - "/etc/mobileapps/config.yaml"
-
 logging:
   level: info
