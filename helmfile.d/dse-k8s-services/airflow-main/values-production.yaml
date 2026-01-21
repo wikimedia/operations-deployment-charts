@@ -65,6 +65,19 @@ worker:
           eventgate-logging-external: https://eventgate-logging-external.discovery.wmnet:4392/v1/events
           eventgate-logging-external-eqiad: https://eventgate-logging-external.svc.eqiad.wmnet:4392/v1/events
           eventgate-logging-external-codfw: https://eventgate-logging-external.svc.codfw.wmnet:4392/v1/events
+        event_intake_service_urls_envoy.yaml: |
+          eventgate-main: https://airflow-envoy:6005/v1/events
+          eventgate-main-eqiad: https://airflow-envoy:6109/v1/events
+          eventgate-main-codfw: https://airflow-envoy:6209/v1/events
+          eventgate-analytics: https://airflow-envoy:6004/v1/events
+          eventgate-analytics-eqiad: https://airflow-envoy:6110/v1/events
+          eventgate-analytics-codfw: https://airflow-envoy:6210/v1/events
+          eventgate-analytics-external: https://airflow-envoy:6013/v1/events
+          eventgate-analytics-external-eqiad: https://airflow-envoy:6110/v1/events
+          eventgate-analytics-external-codfw: https://airflow-envoy:6210/v1/events
+          eventgate-logging-external: https://airflow-envoy:6043/v1/events
+          eventgate-logging-external-eqiad: https://airflow-envoy:6111/v1/events
+          eventgate-logging-external-codfw: https://airflow-envoy:6211/v1/events
   proxy:
     urldownloader:
       enabled: true
