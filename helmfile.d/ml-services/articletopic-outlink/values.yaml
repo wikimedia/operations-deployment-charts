@@ -47,7 +47,7 @@ inference:
   annotations:
     sidecar.istio.io/inject: "true"
     autoscaling.knative.dev/metric: "rps"
-    autoscaling.knative.dev/target: "20"
+    autoscaling.knative.dev/target: "5"
     prometheus.kserve.io/scrape: "true"
     prometheus.kserve.io/port: "8080"
     prometheus.kserve.io/path: "/metrics"
@@ -70,5 +70,5 @@ inference_services:
   outlink-topic-model:
     predictor:
       config:
-        minReplicas: 1
+        minReplicas: 2
         maxReplicas: 5
