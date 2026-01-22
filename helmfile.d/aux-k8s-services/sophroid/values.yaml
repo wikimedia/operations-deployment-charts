@@ -1,5 +1,6 @@
 app:
   image: repos/sre/sophroid
   version: 2025-12-05-173947
+  command: [/srv/app/sophroid, --listeners=/etc/sophroid/listeners.yaml, --services=/etc/sophroid/service.yaml]
 resources:
   replicas: 1
