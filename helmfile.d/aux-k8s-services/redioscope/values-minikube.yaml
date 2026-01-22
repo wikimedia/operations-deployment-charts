@@ -3,12 +3,45 @@ app:
   surveys:
     rest_gateway:
       interval: 10s
+      time_bucket: 1m
       prefix: "staging_restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit"
       sources:
       - redis://api-gateway-restgw:6379 # for dev_redis defined in charts/api-gateway
 docker:
   registry: docker-registry.wikimedia.org
   #pull_policy: Always
+
+service:
+  deployment: minikube
+  port:
+    name: redioscope
+    targetPort: 8099
+    port: 8099
+    nodePort: null
+config:
+  public: {}
+  private: {}
+
+# This chart does not actually use the tls-proxy/service mesh like others do
+# but it incorporates parts of it (for TLS termination), so we use the same
+# config structure here.
+mesh:
+  enabled: false
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  certmanager:
+    enabled: false
+  # public_port must be set in order for the cert-manager certificate to be
+  # rendered. It is not used for anything else.
+  public_port: "Value that evaluates to true but is not a valid port"
+
+networkpolicy:
+  egress:
+    enabled: false
+
+external_services:
+  redis-6380: []
 
 smokepy:
   redioscope:

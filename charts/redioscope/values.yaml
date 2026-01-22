@@ -30,19 +30,17 @@ app:
   surveys:
     rest_gateway:
       name: rate-gateway-ratelimit
-      prefix: "restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit"
       sources:
         # Include a placeholder to make CI happy.
         # Real values will be set in the helmfile service definition.
         - redis://redis.example.intranet
+      time_bucket: 1h # NOTE: consider only the current hour
+      prefix: "restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit_HOUR"
       labels:
         ratelimit_policy: "$1"
         ratelimit_class: "$2"
-      # FIXME: enable the time bucket filter once it's fixed
-      #time_bucket: 1h
       interval: 15m
-      # FIXME: fix unmarshall of float keys
-      #quantiles: {0.5: 0.05, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001}
+      quantiles: {0.5: 0.05, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001}
       buckets: [ 10, 100, 1000, 10000, 100000, 1000000 ]
 
 service:
