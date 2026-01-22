@@ -1,7 +1,7 @@
 app:
   image: "repos/sre/httpbin"
   version: "v0.0.1-b2-8f572b98@sha256:4d73aebc09807c57a21d0e9311a990d7bb33ef2e385ecb6447b0feb79edd11af"
-  port: 4999
+  port: 80
   command: ["gunicorn"]
   args:
     - "--capture-output"
@@ -12,7 +12,7 @@ app:
     - "--access-logformat"
     - "'%(h)s %(t)s %(r)s %(s)s Host: %({Host}i)s}'"
     - "-b"
-    - "0.0.0.0:4999"
+    - "0.0.0.0:80"
     - "httpbin:app"
     - "-k"
     - "gevent"
@@ -24,11 +24,11 @@ app:
     memory: 400Mi
   liveness_probe:
     tcpSocket:
-      port: 4999
+      port: 80
   readiness_probe:
     httpGet:
       path: /
-      port: 4999
+      port: 80
 
 service:
   deployment: production
