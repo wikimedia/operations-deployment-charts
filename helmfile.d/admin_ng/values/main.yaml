@@ -119,7 +119,28 @@ namespaces:
   external-services:
     systemNamespace: true
     deployTLSCertificate: false
-  failoid-ng: {}
+  failoid-ng:
+    limitranges:
+      container:
+        min:
+          memory: "5Mi"
+          cpu: "100m"
+        max:
+          memory: "2Gi"
+          cpu: "1"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "3Gi"
+          cpu: "2"
   geo-analytics: {}
   image-suggestion: {}
   ipoid:

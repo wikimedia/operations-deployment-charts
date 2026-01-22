@@ -1,6 +1,6 @@
 app:
-  image: "repos/sre/httpbin"
-  version: "v0.0.1-b2-8f572b98@sha256:4d73aebc09807c57a21d0e9311a990d7bb33ef2e385ecb6447b0feb79edd11af"
+  image: "sre/httpbin"
+  version: "latest"
   port: 80
   command: ["gunicorn"]
   args:
@@ -18,16 +18,16 @@ app:
     - "gevent"
   requests:
     cpu: 100m
-    memory: 200Mi
+    memory: 5Mi
   limits:
-    cpu: 1
+    cpu: 10
     memory: 400Mi
   liveness_probe:
     tcpSocket:
-      port: 80
+      port: 8000
   readiness_probe:
     httpGet:
-      path: /
+      path: /delay/2
       port: 80
 
 service:

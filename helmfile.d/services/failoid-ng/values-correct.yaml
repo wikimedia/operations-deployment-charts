@@ -1,0 +1,19 @@
+app:
+  image: "repos/sre/httpbin"
+  version: "v0.0.1-b2-8f572b98@sha256:4d73aebc09807c57a21d0e9311a990d7bb33ef2e385ecb6447b0feb79edd11af"
+
+  requests:
+    memory: 200Mi
+  limits:
+    cpu: 1
+
+  liveness_probe:
+    tcpSocket:
+      port: 80
+  readiness_probe:
+    httpGet:
+      port: 80
+    timeoutSeconds: 3
+
+mesh:
+  public_port: 5001

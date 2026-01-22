@@ -54,22 +54,22 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
 
-hooks:
-  - events: ["prepare"]
-    command: "helmfile_log_sal"
-    args:
-      [
-        "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/failoid-ng: {{`{{.HelmfileCommand}}`}}",
-      ]
-  - events: ["cleanup"]
-    command: "helmfile_log_sal"
-    args:
-      [
-        "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/failoid-ng: {{`{{.HelmfileCommand}}`}}",
-
-      ]
+#hooks:
+#  - events: ["prepare"]
+#    command: "helmfile_log_sal"
+#    args:
+#      [
+#        "{{`{{.HelmfileCommand}}`}}",
+#        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/services/failoid-ng: {{`{{.HelmfileCommand}}`}}",
+#      ]
+#  - events: ["cleanup"]
+#    command: "helmfile_log_sal"
+#    args:
+#      [
+#        "{{`{{.HelmfileCommand}}`}}",
+#        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/failoid-ng: {{`{{.HelmfileCommand}}`}}",
+#
+#      ]
 
 
 releases:
