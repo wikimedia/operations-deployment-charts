@@ -11,10 +11,6 @@ app:
   liveness_probe:
     tcpSocket:
       port: 4252
-  readiness_probe:
-    httpGet:
-      path: /
-      port: 4252
 
 monitoring:
   enabled: false
