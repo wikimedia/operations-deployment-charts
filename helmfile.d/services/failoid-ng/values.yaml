@@ -1,7 +1,21 @@
 app:
   image: "repos/sre/httpbin"
-  version: latest  # FIXME: use a specific version
+  version: "v0.0.1-b2-8f572b98@sha256:4d73aebc09807c57a21d0e9311a990d7bb33ef2e385ecb6447b0feb79edd11af"
   port: 4999
+  command: ["gunicorn"]
+  args:
+    - "--capture-output"
+    - "--error-logfile"
+    - "-"
+    - "--access-logfile"
+    - "-"
+    - "--access-logformat"
+    - "'%(h)s %(t)s %(r)s %(s)s Host: %({Host}i)s}'"
+    - "-b"
+    - "0.0.0.0:4999"
+    - "httpbin:app"
+    - "-k"
+    - "gevent"
   requests:
     cpu: 100m
     memory: 200Mi
