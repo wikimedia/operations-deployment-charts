@@ -11,6 +11,9 @@ app:
   liveness_probe:
     tcpSocket:
       port: 4252
+  readiness_probe:
+    grpc:
+      port: 4252
 
 monitoring:
   enabled: false
