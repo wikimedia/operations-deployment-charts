@@ -1,8 +1,8 @@
 app:
   image: "sre/httpbin"
   version: "latest"
-  port: 80
-  command: ["gunicorn"]
+  port: 4999
+  command: ["gunicorm"]
   args:
     - "--capture-output"
     - "--error-logfile"
@@ -12,7 +12,7 @@ app:
     - "--access-logformat"
     - "'%(h)s %(t)s %(r)s %(s)s Host: %({Host}i)s}'"
     - "-b"
-    - "0.0.0.0:80"
+    - "0.0.0.0:4999"
     - "httpbin:app"
     - "-k"
     - "gevent"

@@ -1,19 +1,35 @@
 app:
   image: "repos/sre/httpbin"
-  version: "v0.0.1-b2-8f572b98@sha256:4d73aebc09807c57a21d0e9311a990d7bb33ef2e385ecb6447b0feb79edd11af"
+  version: "v0.0.1-b2-8f572b98" # Correct image tag
+  port: 80 # Correct port
+  command: ["gunicorn"] # Correct command
+  args:
+    - "--capture-output"
+    - "--error-logfile"
+    - "-"
+    - "--access-logfile"
+    - "-"
+    - "--access-logformat"
+    - "'%(h)s %(t)s %(r)s %(s)s Host: %({Host}i)s}'"
+    - "-b"
+    - "0.0.0.0:80" # Correct port
+    - "httpbin:app"
+    - "-k"
+    - "gevent"
 
   requests:
     memory: 200Mi
+    cpu: 100m
   limits:
     cpu: 1
 
   liveness_probe:
     tcpSocket:
-      port: 80
+      port: 80 # Correct probe port
   readiness_probe:
     httpGet:
-      port: 80
-    timeoutSeconds: 3
+      port: 80 # Correct probe port
+    timeoutSeconds: 3 # Correct probe timeout for the path
 
 mesh:
-  public_port: 5001
+  public_port: 4999 # Correct (different than all other releases) mesh port

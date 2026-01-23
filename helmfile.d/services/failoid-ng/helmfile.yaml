@@ -1,8 +1,9 @@
 helmDefaults:
   createNamespace: false
   verify: false
-  atomic: true
-  timeout: 600
+  atomic: false
+  timeout: 60
+  cleanupOnFail: false
   recreatePods: false
   force: false
   args:
