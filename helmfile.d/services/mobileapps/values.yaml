@@ -8,7 +8,7 @@ main_app:
   version: 2026-01-20-155553-production
 
   # Use 90% of 1GiB as max nodejs memory size
-  args: [ "--max-old-space-size=922", "server.js", "-c", "/etc/mobileapps/config.yaml" ]
+  args: [ "--max-old-space-size=922", "--max-semi-space-size=16", "server.js", "-c", "/etc/mobileapps/config.yaml" ]
 
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
