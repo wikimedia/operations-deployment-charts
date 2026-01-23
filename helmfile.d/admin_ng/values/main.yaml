@@ -141,6 +141,14 @@ namespaces:
         max:
           memory: "3Gi"
           cpu: "2"
+    resourcequota:
+      compute:
+        requests:
+          cpu: "50"
+          memory: "30"
+        limits:
+          cpu: "50"
+          memory: "30Gi"
   geo-analytics: {}
   image-suggestion: {}
   ipoid:
