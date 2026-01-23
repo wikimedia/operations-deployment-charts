@@ -18,7 +18,7 @@ helmDefaults:
 environments:
   staging:
     values:
-      - releases: [horse, bear, dolphin, octopus, dog, unicorn, rabbit, goat, cat, fox]
+      - releases: [correct, horse, bear, dolphin, octopus, dog, unicorn, rabbit, goat, cat, fox]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   # eqiad:
@@ -74,6 +74,8 @@ templates:
 
 
 releases:
+  - name: correct
+    <<: *default
   - name: horse
     <<: *default
   - name: bear
