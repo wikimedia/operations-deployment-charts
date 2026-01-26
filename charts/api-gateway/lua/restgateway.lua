@@ -95,6 +95,7 @@ function wmf_ratelimit_info(request_handle)
     -- bearer token payload from envoy.filters.http.jwt_authn
     local jwtMeta = streamMeta:get("envoy.filters.http.jwt_authn") or {}
     local jwtPayload = jwtMeta.jwt_payload or {}
+    local cookiePayload = jwtMeta.cookie_payload or {}
 
     -- see https://wikitech.wikimedia.org/wiki/CDN/Backend_api
     local trust = headers:get("x-trusted-request")
@@ -109,8 +110,17 @@ function wmf_ratelimit_info(request_handle)
             -- fallback class for clients using API keys
             ratelimit_class = "jwt-user"
         end
+    elseif cookiePayload.sub then
+        user_id = "cookie-sub:" .. cookiePayload.sub
+
+        if cookiePayload.rlc then
+            ratelimit_class = cookiePayload.rlc
+        else
+            -- fallback class for clients using cookie auth
+            ratelimit_class = "cookie-user"
+        end
     elseif cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
+        -- NOTE: This is totally unsafe. It should only be used for testing.
         user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
         ratelimit_class = "cookie-user"
     elseif trust == "A" and headers:get("user-agent") then
