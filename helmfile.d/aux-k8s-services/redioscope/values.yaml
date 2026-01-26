@@ -12,10 +12,10 @@ app:
   version: 2026-01-07-110713-candidate-v0.10.0-dev
   limits:
     cpu: 2000m
-    memory: 3G  # FIXME: it will get OOM killed if it goes over this limit, so this should be generous, edit accordingly.
+    memory: 1Gi
   requests:
-    cpu: 1000m
-    memory: 1G  # FIXME: This should be the minimum or typical memory usage, edit to reflect that.
+    cpu: 400m
+    memory: 100Mi
 
 external_services:
   redis-6380: [misc]
