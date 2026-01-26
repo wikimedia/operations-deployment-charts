@@ -38,9 +38,17 @@ main_app:
       internal_host: localhost
       host: localhost
 
+  jwt:
+    enabled: true
+    issuer: http://dev.wikipedia.org
+
   jwks:
-    kid: "FafStFaO5aapFjOjHhz9cWifF5pr17Ymi5dskSi6QP0="
-    key: "wpQqfUk_vTLbbthUWhLaJ9wo4YZXWJjGmO8SFaEb0opgEXu_sP98dWzErQ04W2u0WpImfn1gqUEuAlnrgPXFyrIHD_WAJ5hFhdse5zNscJ9979yNDoXPlu20JQ91inYj592tFRHJQ9R9-jfSS2wgslWFXSZuOpY74EpHJcoGiCSwghLQDIdp5dl_VurfHNhOpWOAfp5zxVL-Ix5PuRzDvze0zA9GZH5-PEX1UgCNS0WyKW5Zt7hoRGNWU6hMNfVY6n6HThwLMq41GcyMwQ_zqOARGFOUrVQZY5yoCkxetTWHUj3qsfx_oq_ZQ3O_k95waKYMtgYwTKeBxbiunFfthw"
+    # Use OCT for testing, so we can easily generate tokens.
+    # Production must use RSA.
+    type: "OCT"
+    kid: "testkey"
+    # the key is "testsecret" stored as base64
+    key: "dGVzdHNlY3JldA=="
 
 nutcracker:
   enabled: true
@@ -63,3 +71,5 @@ smokepy:
     headers:
       Host: localhost
 
+    # Override with a valid JWT in values-minikube.local.yaml
+    #valid_jwt: a7ebadf00d

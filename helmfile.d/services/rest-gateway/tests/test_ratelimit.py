@@ -8,6 +8,8 @@ import datetime
 from smokepy.http import *
 from smokepy import env
 
+import jwtools
+
 def getRateLimits(rlc):
     try:
         policy = env.values.main_app.ratelimiter.default_policy
@@ -221,6 +223,43 @@ class RateLimitTest(unittest.TestCase):
 
         limits = getRateLimits("anon-browser")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
+
+    def test_bearer_token_limit(self):
+        ip = env.nextIp()
+        token = jwtools.getValidJwtOrSkip(self)
+
+        anonHeaders = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+
+        limits = getRateLimits("jwt-user")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
+
+        # try again with a different payload, to check that it is used as the rate limit key
+        token = jwtools.createJwtOrSkip(self, sub = env.nextName("Testorator") )
+        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+
+    def test_bearer_token_limit_uses_rlc_claim(self):
+        ip = env.nextIp()
+        token = jwtools.createJwtOrSkip(self,
+            sub = env.nextName("Tester"),
+            rlc = "approved-bot"
+        )
+        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+
+        # should apply approved-bot limits, not jwt-user limits
+        limits = getRateLimits("approved-bot")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+
+    def test_expired_bearer_token(self):
+        ip = env.nextIp()
+        token = jwtools.createJwtOrSkip(self,
+            sub = env.nextName("Tester"),
+            exp = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4)
+        )
+
+        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+        rest = self.target.get(self.default_endpoint, headers = headers)
+        self.assertEqual(401, rest.status, "expired token should be rejected")
 
 def init():
     default_value_files = [

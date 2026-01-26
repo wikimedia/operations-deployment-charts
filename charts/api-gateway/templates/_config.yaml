@@ -221,7 +221,36 @@ static_resources:
           - name: envoy.filters.http.cors
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+
 {{- if .Values.main_app.jwt.enabled }}
+{{- if .Values.main_app.rest_gateway_routes }}
+          - name: envoy.filters.http.jwt_authn
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+              providers:
+                wikimedia:
+                  issuer: {{ .Values.main_app.jwt.issuer }}
+                  local_jwks:
+                    filename: /etc/jwks/jwks.json
+                  forward: true
+                  from_headers:
+                    name: Authorization
+                    value_prefix: Bearer
+                  payload_in_metadata: "jwt_payload"
+              rules:
+                - match:
+                    headers:
+                      - name: ":method"
+                        string_match:
+                          safe_regex:
+                            regex: "(GET|POST|PUT|DELETE|PATCH)"
+                    prefix: /
+                  requires:
+                    requires_any:
+                      requirements:
+                        - provider_name: wikimedia
+                        - allow_missing: {}
+{{- else }}
           - name: envoy.filters.http.jwt_authn
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
@@ -237,6 +266,7 @@ static_resources:
                   payload_in_metadata: "jwt_payload"
               rules:
 {{ include "apigateway.ratelimit_rules" . }}
+{{- end }}
 {{- end }}
 {{- if not .Values.main_app.ratelimiter.enable_x_ratelimit_headers }}
           - name: envoy.filters.http.header_mutation

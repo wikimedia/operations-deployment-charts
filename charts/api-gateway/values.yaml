@@ -144,6 +144,8 @@ main_app:
 
   # populated from secrets - JSON web key sets
   jwks:
+    # can use OCT for testing, prod keys have to be RSA
+    type: "RSA"
     kid: ""
     key: ""
 
@@ -305,3 +307,14 @@ common_images:
 
 app:
   port: 8087
+
+# Settings for the end-to-end tests defined under tests/e2e.
+# Local overrides go into tests/e2e/values-tests.local.yaml.
+smokepy:
+  # The target URL to use for end-to-end tests.
+  # Can also be set using $SMOKEPY_TARGET_URL.
+  target_url: ~
+
+  # A valid token to use for testing.
+  # Can also be set using $SMOKEPY_VALID_JWT.
+  valid_jwt: ~
