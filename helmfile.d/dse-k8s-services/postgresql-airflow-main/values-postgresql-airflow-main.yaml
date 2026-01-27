@@ -14,6 +14,17 @@ cluster:
   walStorage:
     size: 30Gi
 
+  # We don't want the postgresql pods to be scheduled on pods with a 1G NIC.
+  # See T415635 and https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - matchExpressions:
+        - key: capabilities.nic
+          operator: NotIn
+          values:
+          - 1G
+
 pooler:
   # Set default_pool_size to 50 (3 * 50 = 150 connections).
   # The default number of instances is 3, which gives us a total of 150 connections.
