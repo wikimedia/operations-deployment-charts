@@ -19,11 +19,12 @@ cluster:
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
-      - matchExpressions:
-        - key: capabilities.nic
-          operator: NotIn
-          values:
-          - 1G
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: capabilities.nic
+            operator: NotIn
+            values:
+            - 1G
 
 pooler:
   # Set default_pool_size to 50 (3 * 50 = 150 connections).
