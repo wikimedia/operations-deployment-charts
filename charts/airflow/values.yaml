@@ -2,6 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# This chart defines the k8s resources needed for Airflow, but NOT for its database.
+# A database needs to be deployed alongside with its own mechanism
+
 _vars:
   krb5ccdir: /tmp/airflow_krb5_ccache
   krb5ccname: &krb5ccname /tmp/airflow_krb5_ccache/krb5cc
