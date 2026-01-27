@@ -21,6 +21,8 @@ scheduler:
 config:
   airflow:
     config:
+      common.io:
+        xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/{{ $.Release.Name }}/xcoms
       core:
         # Fallback to the default auth manager
         auth_manager: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager

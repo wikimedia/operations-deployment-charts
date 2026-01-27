@@ -102,6 +102,12 @@ config:
         parallelism: 64
         test_connection: enabled
         auth_manager: webserver_config.CustomAuthManager
+        xcom_backend: airflow.providers.common.io.xcom.backend.XComObjectStorageBackend
+      common.io:
+        # Store XCOMs larger than 500KB in S3 instead of database - T415661
+        xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/xcoms
+        xcom_objectstorage_threshold: "524288" # 500KB
+        xcom_objectstorage_compression: ~ # We are planning to enable compression at the Ceph level down the road
       database:
         load_default_connections: false
       kerberos:
