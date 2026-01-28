@@ -119,7 +119,7 @@ class RateLimitTest(unittest.TestCase):
         anonHeaders = { "x-client-ip": env.nextIp() }
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
 
-    def test_coookie_user_limit(self):
+    def test_authed_browser_limit(self):
         cookie = env.values.main_app.ratelimiter.user_id_cookie
 
         if cookie is None or cookie == "":
@@ -128,8 +128,27 @@ class RateLimitTest(unittest.TestCase):
         cookieHeaders = {
             "x-client-ip": env.nextIp(),
             "cookie": f"{cookie}=" + env.nextName("Eva"),
+            "x-is-browser": "100", # >= 80 is good
         }
-        limits = getRateLimits("cookie-user")
+        limits = getRateLimits("authed-browser")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = cookieHeaders)
+
+        # try again with a different cookie value, to check that it is used as the rate limit key
+        cookieHeaders["cookie"] = f"{cookie}=" + env.nextName("Lea")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = cookieHeaders)
+
+    def test_authed_other_limit(self):
+        cookie = env.values.main_app.ratelimiter.user_id_cookie
+
+        if cookie is None or cookie == "":
+            self.skipTest("user_id_cookie is not set")
+
+        cookieHeaders = {
+            "x-client-ip": env.nextIp(),
+            "cookie": f"{cookie}=" + env.nextName("Eva"),
+            "x-is-browser": "20", # <= 80 is good
+        }
+        limits = getRateLimits("authed-other")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = cookieHeaders)
 
         # try again with a different cookie value, to check that it is used as the rate limit key
@@ -159,7 +178,7 @@ class RateLimitTest(unittest.TestCase):
         testingHeaders = {
             "x-client-ip": env.nextIp(), # external request
             "x-wmf-user-id": env.nextName("Xyzzy"),
-            "x-wmf-ratelimit-class": "cookie-user",
+            "x-wmf-ratelimit-class": "approved-bot",
             "x-wmf-ratelimit-policy": policy,
         }
         limits = getRateLimits("anon")
@@ -173,7 +192,7 @@ class RateLimitTest(unittest.TestCase):
             "user-agent": env.nextName("CoolBot/1.0"), # used as key
         }
 
-        limits = getRateLimits("approved-bot")
+        limits = getRateLimits("known-network")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
 
         # try again with a different user-agent, to check that it is used as the rate limit key
@@ -202,7 +221,7 @@ class RateLimitTest(unittest.TestCase):
             "x-ua-contact": env.nextName("bob") + "@acme.test", # compliant bot contact
         }
 
-        limits = getRateLimits("ua-bot")
+        limits = getRateLimits("unauthed-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
 
     def test_trust_level_F(self):
@@ -211,7 +230,7 @@ class RateLimitTest(unittest.TestCase):
             "x-trusted-request": "F", # suspicious/abusive
         }
 
-        limits = getRateLimits("anon-sus")
+        limits = getRateLimits("anon")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = requestHeaders)
 
     def test_anon_browsers(self):
@@ -230,7 +249,7 @@ class RateLimitTest(unittest.TestCase):
 
         anonHeaders = { "x-client-ip": ip, "Authorization": "Bearer " + token }
 
-        limits = getRateLimits("jwt-user")
+        limits = getRateLimits("authed-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
 
         #if we can,  try again with a different payload, to check that it is used as the rate limit key
@@ -247,7 +266,7 @@ class RateLimitTest(unittest.TestCase):
         )
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
 
-        # should apply approved-bot limits, not jwt-user limits
+        # should apply approved-bot limits, not authed-bot limits
         limits = getRateLimits("approved-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
@@ -268,7 +287,7 @@ class RateLimitTest(unittest.TestCase):
 
         anonHeaders = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 
-        limits = getRateLimits("cookie-user")
+        limits = getRateLimits("authed-other")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
 
         # if we can, try again with a different payload, to check that it is used as the rate limit key
@@ -285,7 +304,7 @@ class RateLimitTest(unittest.TestCase):
         )
         headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 
-        # should apply approved-bot limits, not jwt-user limits
+        # should apply approved-bot limits, not authed-bot limits
         limits = getRateLimits("approved-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 

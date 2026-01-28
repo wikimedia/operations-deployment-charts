@@ -61,7 +61,7 @@ main_app:
     # NOTE: per-route policy overrides require Envoy 1.33 or later,
     #       see https://github.com/envoyproxy/envoy/issues/34605.
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
-    default_policy: experiment-2025
+    default_policy: EXAMPLE
     # Whether routes need to opt into rate limiting.
     # Individual routes can opt in or out by setting the apply_rate_limiting value.
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
