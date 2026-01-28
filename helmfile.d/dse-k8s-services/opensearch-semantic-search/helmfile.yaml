@@ -1,0 +1,50 @@
+helmBinary: helm3
+helmDefaults:
+  createNamespace: false
+  verify: false
+  atomic: true
+  timeout: 600
+  force: false
+  args:
+    - --kubeconfig
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/opensearch-semantic-search-deploy-%s.config" .Environment.Name) }}
+
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [opensearch-semantic-search]
+    missingFileHandler: Warn
+  dse-k8s-codfw:
+    values:
+      - releases: [opensearch-semantic-search]
+    missingFileHandler: Warn
+---
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/opensearch-semantic-search: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/opensearch-semantic-search: {{`{{.HelmfileCommand}}`}}",
+      ]
+
+releases:
+  - name: opensearch-semantic-search
+    chart: wmf-stable/opensearch-cluster
+    namespace: opensearch-semantic-search
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values-common.yaml"                                          # Values that are common to all opensearch clusters
+      - "values.yaml"                                                 # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/dse-k8s_services/opensearch-semantic-search/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml"                         # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml"                       # release-specific overrides
