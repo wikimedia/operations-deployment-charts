@@ -5,6 +5,7 @@
 # as expected during deployments.
 
 function testServices {
+        # Show command name
         echo -n ' - '
         printf %-20s "$1"
         echo -n ': '
@@ -12,6 +13,8 @@ function testServices {
         command+="${3//_/ }"
         command+=',"doValidate":false}'
         response=$(curl $2 --silent --header "Content-type: application/json" -X POST --data "$command")
+
+        # Show result value, coloured by success
         if grep -q -v "Z22" <<< "$response"; then
                 echo -e '\e[34mFailed response\e[0m:' $response
                 return
@@ -31,6 +34,8 @@ function testServices {
                 echo -ne "\e[34m"
         fi
         printf %-10s "$value"
+
+        # Show timing metadata, coloured by performance
         echo -ne "\e[0m – "
         timing=$(echo $response | jq '.Z22K2.K1[] | select(.K1 == "orchestrationDuration") | .K2' | tr -dc '0-9')
         if [[ $timing -lt 100 ]]
@@ -49,7 +54,11 @@ function testServices {
                         fi
                 fi
         fi
-        echo -e $timing ms"\e[0m"
+        echo -ne $timing ms"\e[0m"
+
+        # Show memory usage metadata
+        memory=$(echo $response | jq '.Z22K2.K1[] | select(.K1 == "orchestrationMemoryUsage") | .K2')
+        echo -e "\e[0m ~ $memory\e[0m"
 }
 
 basicecho='{"Z1K1":"Z7","Z7K1":"Z801","Z801K1":"foo"}'
