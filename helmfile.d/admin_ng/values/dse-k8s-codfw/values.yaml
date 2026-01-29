@@ -99,3 +99,25 @@ namespaces:
         max:
           memory: "20Gi"
           cpu: "12"
+  opensearch-semantic-search-test:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
