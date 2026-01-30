@@ -19,9 +19,6 @@ spec:
       {{- end }}
       containers:
         {{- include "sophroid.container" . | indent 8 }}
-          volumeMounts:
-          - name: {{ template "base.name.release" . }}-config-vol
-            mountPath: /etc/sophroid
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}
         - name: {{ template "base.name.release" . }}-config-vol
@@ -78,8 +75,10 @@ spec:
   {{- end}}
 {{ include "base.helper.resources" .Values.app | indent 2 }}
 {{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
-{{- with .Values.app.volumeMounts }}
   volumeMounts:
+    - name: {{ template "base.name.release" . }}-config-vol
+      mountPath: /etc/sophroid
+{{- with .Values.app.volumeMounts }}
 {{ toYaml . | indent 4 }}
 {{- end }}
 {{- end }}
