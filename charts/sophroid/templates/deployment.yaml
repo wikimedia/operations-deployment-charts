@@ -18,7 +18,7 @@ spec:
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
-        {{- include "app.generic.container" . | indent 8 }}
+        {{- include "sophroid.container" . | indent 8 }}
           volumeMounts:
           - name: {{ template "base.name.release" . }}-config-vol
             mountPath: /etc/sophroid
@@ -32,3 +32,54 @@ spec:
               path: service.yaml
             - key: listeners.yaml
               path: listeners.yaml
+
+{{- define "sophroid.container" }}
+{{- /* This is modified from app.generic.container 1.0.4. */}}
+# The main application container
+- name: {{ template "base.name.release" . }}
+  image: {{ template "app.generic._image" . }}
+  imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- include "app.generic._command" . | indent 2 }}
+  ports:
+    - containerPort: {{ .Values.app.port }}
+  {{- with .Values.app.metricsPort }}
+    - containerPort: {{ . }}
+      name: app-metrics
+  {{- end }}
+  {{- if .Values.debug.enabled }}
+  {{- range .Values.debug.ports }}
+    - containerPort: {{ . }}
+  {{- end }}{{ end }}
+  {{- if .Values.app.liveness_probe }}
+  livenessProbe:
+  {{- toYaml .Values.app.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- if .Values.app.readiness_probe }}
+  readinessProbe:
+  {{- toYaml .Values.app.readiness_probe | nindent 4 }}
+  {{- end }}
+  env:
+    - name: SERVICE_IDENTIFIER
+      value: {{ template "base.name.release" . }}
+  {{- range $k, $v := .Values.config.public }}
+    - name: {{ $k | upper }}
+      value: {{ $v | quote }}
+  {{- end }}
+  {{- range $k, $v := .Values.config.private }}
+    - name: {{ $k | upper }}
+      valueFrom:
+        secretKeyRef:
+          name: {{ template "base.name.release" $ }}-secret-config
+          key: {{ $k }}
+  {{- end }}
+  {{- if .Values.app.env_from }}
+  envFrom:
+  {{- toYaml .Values.app.env_from | nindent 4 }}
+  {{- end}}
+{{ include "base.helper.resources" .Values.app | indent 2 }}
+{{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
+{{- with .Values.app.volumeMounts }}
+  volumeMounts:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- end }}
