@@ -36,7 +36,14 @@ spec:
 - name: {{ template "base.name.release" . }}
   image: {{ template "app.generic._image" . }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- include "app.generic._command" . | indent 2 }}
+  command: [/srv/app/sophroid]
+  args:
+  - --listeners=/etc/sophroid/listeners.yaml
+  - --services=/etc/sophroid/service.yaml
+  - --port={{ .Values.app.port }}
+  {{- range .Values.app.extra_args }}
+  - {{ . | quote }}
+  {{- end }}
   ports:
     - containerPort: {{ .Values.app.port }}
   {{- with .Values.app.metricsPort }}
