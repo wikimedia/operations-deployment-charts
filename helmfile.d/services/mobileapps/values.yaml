@@ -4,8 +4,8 @@ resources:
   replicas: 300
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
-  # T410296: Temporarily revert to 2025-10-13-122439-production from 2025-11-13-122825-production
-  version: 2026-01-26-163519-production
+  version: 2026-02-03-161229-production
+  args: [ "--max-old-space-size=4096", "--max-semi-space-size=16", "server.js", "-c", "/etc/mobileapps/config.yaml" ]
   # Use the service proxy to connect to MediaWiki and restbase
   mwapi_uri: http://localhost:6500/w/api.php
   mwrestapi_uri: http://localhost:6500/w/rest.php
