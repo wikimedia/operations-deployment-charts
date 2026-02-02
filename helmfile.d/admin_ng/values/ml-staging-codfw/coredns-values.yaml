@@ -2,3 +2,7 @@ replicaCount: 2
 
 service:
   clusterIP: 10.194.62.3
+
+# Unset the image tag to use the default image from the chart
+image:
+  tag: ""
