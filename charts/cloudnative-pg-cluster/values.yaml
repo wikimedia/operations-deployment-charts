@@ -88,13 +88,13 @@ cluster:
   imagePullSecrets: []
 
   storage:
-    size: 5Gi
+    size: 15Gi
     storageClass: "ceph-rbd-ssd"
 
   walStorage:
-    # See full reasoning in T375846 but TLDR, this should give us 3 days of s3 being down until
-    # the WAL volume fills up.
-    size: 15Gi
+    # The WAL volume usage can increase rapidly when performing operations such as a large delete
+    # or upsert, so we need to ensure that we have capacity for these spikes, in between the WAL archiving period.
+    size: 30Gi
     storageClass: "ceph-rbd-ssd"
 
   # -- The UID of the postgres user inside the image, cf https://gitlab.wikimedia.org/repos/data-engineering/postgresql-kubernetes/-/blob/main/blubber-postgresql.yaml?ref_type=heads#L16
