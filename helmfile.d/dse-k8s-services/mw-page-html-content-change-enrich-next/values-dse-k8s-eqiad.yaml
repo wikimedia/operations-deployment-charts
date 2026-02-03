@@ -1,0 +1,46 @@
+# NOTE: values-dse-k8s-eqiad.yaml is configured to be deployed in dse-k8s-eqiad k8s.
+
+service:
+  deployment: production
+
+app:
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # Input stream mediawiki.page_change.v1 is made up of 2 topics,
+    # each of which have one partition, so a total of 2 topic-partitions.
+    # This flink app is a single datacenter deployment,
+    # so it consumes from both topics.
+    replicas: 2
+    resource:
+      cpu: 2
+      memory: 6000m
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Configure sources and sinks.
+        source:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            # We run in 'active/active single compute' Multi DC mode, so this
+            # app in eqiad should only process the eqiad prefixed topic of the
+            # mediawiki.page_change.v1 stream.
+            topics: [eqiad.mediawiki.page_change.v1, codfw.mediawiki.page_change.v1]
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw-page-html-content-change-enrich-next__dse-k8s-eqiad.000
+
+        sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: eqiad.
+
+        error_sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: eqiad.
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet

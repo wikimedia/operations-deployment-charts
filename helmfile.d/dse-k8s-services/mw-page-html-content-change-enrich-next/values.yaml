@@ -1,0 +1,67 @@
+# We are trying to keep this base values.yaml files useable in minikube developemnt enviroments.
+# Please put overrides for production in other values files.
+
+app:
+  image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
+  version: v1.44.0.dev0-html
+  flinkVersion: v1_20
+
+  config_files:
+
+    # Will be rendered into /srv/conf/app.config.yaml by flink-app chart.
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      # Other configs are in release / cluster specific values files.
+      stream_manager:
+        job_name: mw-page-html-content-change-enrich-next
+
+        # Get stream config from MW EventStreamConfig API.
+        stream_config_uri: https://meta.wikimedia.org/w/api.php
+
+        schema_uris:
+          # Load schema from local path baked into the image.
+          - file:///srv/app/event-schemas/primary/jsonschema
+
+        # NOTE: Make sure source and sink are configured in other values files.
+
+  flinkConfiguration:
+    jobmanager.memory.off-heap.size: 512m
+
+  job:
+    # Desired state for the job., either 'running' or 'suspended'.
+    # Alter this property to trigger a restart.
+    state: running
+
+    pythonEntryPoint: /srv/app/mediawiki_event_enrichment/python/page_html_content_change.py
+
+    args: [
+      --config, /srv/app/conf/app.config.yaml,
+      --config, /srv/app/conf/python.log.config.yaml
+    ]
+
+  # (job|task)Manager.resource are k8s Resource configs, and used by the
+  # flink-kubernetes-operator to request resources from k8s.
+  # These should be the 'limit' requests.
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#resource
+  jobManager:
+    resource:
+      memory: 1500m
+
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # Input mediawiki.page_change topic has only 1 Kafka topic-partitions (eqiad or codfw).
+    # Increasing the parallelism (replicas) can still help process things faster, as
+    # there are more tasks running that can process the messages.
+    # The app keys messages by (wiki_id, page_id), so we can be sure that parallelizing
+    # still produces messages in the proper order, per page.
+    replicas: 1
+    resource:
+      # Default lower value for development.
+      memory: 1500m
+
+  env:
+    # Disable use of jemalloc, we've mostly seen it just cause more memory use
+    # https://phabricator.wikimedia.org/T332948#8792955
+    - name: DISABLE_JEMALLOC
+      value: "true"

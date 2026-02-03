@@ -1,0 +1,120 @@
+# WMF production main release specific values.
+#
+# These are kept out of the primary values.yaml just so that it is easier to use
+# with local development.
+#
+# Settings in this file should apply for all WMF production k8s clusters & enviroments.
+# cluster/environment/release specific settings belong in env specific values files.
+
+app:
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for the page_html_content_change enrichment job.
+      enrich:
+        # MW API requests should go to local envoy service proxy 'mwapi-async'.
+        # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
+        mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php
+        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Production requests to stream_config_uri should
+        # be routed via local envoy service proxy 'mwapi-async'.
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
+
+        # Configure sources and sinks.
+        # NOTE: Make sure to set kafka options in environment specific values files.
+        source:
+          stream: mediawiki.page_change.v1:1.3.0
+          connector: kafka
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+        sink:
+          stream: mediawiki.page_html_content_change.dev0:1.3.0
+          connector: kafka
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+
+        # By convention we set job_name equal to k8s namespace.
+        # Since this naming will contain hyphens, set the error_sink
+        # stream name explicitly for production deployments.
+        error_sink:
+          stream: mw_page_html_content_change_enrich.error:2.1.0
+          connector: kafka
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+  job:
+    # TODO: we might consider setting
+    # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
+    # to fallback on savepoints if checkpoints are too old.
+    # This might require changing checkpoint retention policy.
+    upgradeMode: last-state
+
+
+  flinkConfiguration:
+    "restart-strategy.type": fixed-delay
+    # delay * attempts should be higher than the usual downtime we see.
+    # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
+    # to err on the side of caution.
+    "restart-strategy.fixed-delay.attempts": "10"
+    "restart-strategy.fixed-delay.delay": "180"
+    "state.backend": hashmap
+    "state.checkpoint-storage": filesystem
+    "state.checkpoints.num-retained": "10"
+    "s3.path.style.access": "true"
+    # We need to set an interval in order to trigger checkpointing.
+    # TODO: after gaining some operational experience, set this value to something
+    # meaningful. Given the small size of kafka offsets (KBs), 30 seconds seems a reasonable
+    # default.
+    "execution.checkpointing.interval": "10000" # 10 seconds.
+    # Have flink-operator periodic savepoints for handling job restarts and upgrades.
+    "kubernetes.operator.periodic.savepoint.interval": 5m
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 24h
+    # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
+    "high-availability": KUBERNETES
+    # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
+    "high-availability.storageDir": "s3://mw-page-html-content-change-enrich-next.dse-k8s-eqiad/staging/high-availability"
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+# Enable mwapi-async envoy service proxy.
+# This will forward requests to https://localhost:6500 to mw-api-int.discovery.wmnet.
+discovery:
+  listeners:
+    - mw-api-int-async
+
+external_services:
+  kafka:  [test-eqiad]
+  s3: [eqiad-dpe]
+
+flink:
+  object_store:
+    swift_bucket: mw-page-html-content-change-enrich-next.dse-k8s-eqiad
