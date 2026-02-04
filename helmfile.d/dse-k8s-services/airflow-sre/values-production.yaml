@@ -7,3 +7,38 @@ ingress:
     default: "airflow-sre"
     extraFQDNs:
     - airflow-sre.wikimedia.org
+
+rsync:
+  enabled: true
+  ssh:
+    targets:
+      puppetservers:
+        user: analytics-sre-rsync
+        known_hosts:
+          - puppetserver1001.eqiad.wmnet,10.64.32.39,2620:0:861:103:10:64:32:39 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBK1z9vF5Kn+AvmvhWWUWyyLCICo2M7wutyY1OdLvcThGA1Wsov2XOX4Y7NAgzFQp0hxHcxnYZalmHXnyP0CFDGE=
+          - puppetserver1002.eqiad.wmnet,10.64.16.19,2620:0:861:102:10:64:16:19 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIoT1cE+tU9Y+8yfCFyDs3WdB9VIGxEM0cLYbGM0W/+/KfChN8IQ+SzC48YuSRyX8N2dLGRe1UEMc2Lc6is7r4o=
+          - puppetserver1003.eqiad.wmnet,10.64.0.23,2620:0:861:101:10:64:0:23 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBJOwCx9qffRbhRFIzvz7KVEMLU/fPQUT3uRolOUuvqHij9uNfvudhLYzXCCJYbbNqmjM0Vg9VL6ITu2oluT3PsQ=
+          - puppetserver2001.codfw.wmnet,10.192.32.10,2620:0:860:103:10:192:32:10 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEW4vkynF15zQLH2bzzjD3zhK6p8GrHxh3lFVJM3AScPf/X+OTP/PIBvnPfj+1pwz8go5y3XdAfSM9fbiw31658=
+          - puppetserver2002.codfw.wmnet,10.192.0.19,2620:0:860:101:10:192:0:19 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNv9KG4VTQnyeozpkF2AyVgQoVfeN99j3Zyees1jBsCYPxqAIURjwwDJgzxd5IPGwYTtsJleW3FQdkIW+yfBYgk=
+          - puppetserver2004.codfw.wmnet,10.192.43.9,2620:0:860:122:10:192:43:9 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBD53pkTXiE+uANoSLbD5xC7rUZUDIAdur5ne7DIgHN2Na0CFfrG3wvYYlQ+aBBCt31GKHokrgvcikh7DXhHs1g4
+        private_key:
+          filename: id_ed25519
+        hosts_cidrs:
+        # puppetserver1001
+        -  10.64.32.39/32
+        -  2620:0:861:103:10:64:32:39/128
+        # puppetserver1002
+        -  10.64.16.19/32
+        -  2620:0:861:102:10:64:16:19/128
+        # puppetserver1003
+        -  10.64.0.23/32
+        -  2620:0:861:101:10:64:0:23/128
+        # puppetserver2001
+        -  10.192.32.10/32
+        -  2620:0:860:103:10:192:32:10/128
+        # puppetserver2002
+        -  10.192.0.19/32
+        -  2620:0:860:101:10:192:0:19/128
+        # puppetserver2004
+        -  10.192.43.9/32
+        -  2620:0:860:122:10:192:43:9/128

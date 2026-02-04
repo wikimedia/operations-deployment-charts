@@ -42,17 +42,9 @@ hooks:
       ]
 
 releases:
-  - name: service-secrets
-    namespace: airflow-sre
-    chart: "wmf-stable/secrets"
-    missingFileHandler: Warn
-    values:
-      - "/etc/helmfile-defaults/private/dse-k8s_services/airflow-sre/{{ .Environment.Name }}.yaml"
   - name: production
     namespace: airflow-sre
     chart: wmf-stable/airflow
-    needs:
-      - airflow-sre/service-secrets
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
     # This template gets applied for every release, all of which are applied in every environment
