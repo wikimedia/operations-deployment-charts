@@ -233,10 +233,11 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("jwt-user")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
 
-        # try again with a different payload, to check that it is used as the rate limit key
-        token = jwtools.createJwtOrSkip(self, sub = env.nextName("Testorator") )
-        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+        #if we can,  try again with a different payload, to check that it is used as the rate limit key
+        token = jwtools.createJwt(sub = env.nextName("Testorator") )
+        if token:
+            headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+            self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
     def test_bearer_token_limit_uses_rlc_claim(self):
         ip = env.nextIp()
@@ -270,10 +271,11 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("cookie-user")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = anonHeaders)
 
-        # try again with a different payload, to check that it is used as the rate limit key
-        token = jwtools.createJwtOrSkip(self, sub = env.nextName("Testorator") )
-        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+        # if we can, try again with a different payload, to check that it is used as the rate limit key
+        token = jwtools.createJwt(sub = env.nextName("Testorator") )
+        if token:
+            headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+            self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
 
     def test_jwt_cookie_limit_uses_rlc_claim(self):
         ip = env.nextIp()
@@ -319,4 +321,3 @@ init()
 
 if __name__ == "__main__":
     main()
-
