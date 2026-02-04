@@ -31,3 +31,18 @@ worker:
 
 triggerer:
   enabled: true
+
+rsync:
+  enabled: true
+  ssh:
+    targets:
+      ciservers:
+        user: ciuser
+        known_hosts:
+          - ci1001.eqiad.wmnet,1.2.3.4,2620:0:861:103:1.2.4.5 ecdsa-sha2-nistp256 abcdef1345=
+        private_key:
+          filename: id_ed25519
+          content: supersecret
+        hosts_cidrs:
+        - 1.2.3.4
+        - 2620:0:861:103:1.2.4.5

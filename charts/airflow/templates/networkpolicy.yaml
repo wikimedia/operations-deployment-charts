@@ -229,3 +229,31 @@ spec:
       - {{ $.Values.monitoring.statsd.port }}
 
 {{- end }}
+
+{{- if $.Values.rsync.enabled }}
+{{- range $target, $ssh_config := $.Values.rsync.ssh.targets }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "base.name.release" $ }}-task-pod-egress-ssh-{{ $target }}
+spec:
+  egress:
+  - to:
+    {{- range $cidr := $ssh_config.hosts_cidrs }}
+    - ipBlock:
+        cidr: {{ $cidr }}
+    {{- end }}
+    ports:
+    - protocol: TCP
+      port: 22
+  podSelector:
+    matchLabels:
+      app: {{ $.Chart.Name }}
+      release: {{ $.Release.Name }}
+      component: task-pod
+  policyTypes:
+  - Egress
+
+{{- end }}
+{{- end }}

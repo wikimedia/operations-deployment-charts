@@ -685,3 +685,20 @@ devenv:
     name: override_me
   kerberos:
     ticket_renewal_interval_minutes: 60
+
+# These values define ssh configuration used by rsync/parallel-rsync
+# to enable specific task pods running the repos/data-engineering/sync-utils image
+# ssh access of to remote hosts, to be able to copy files.
+rsync:
+  enabled: false
+  ssh:
+    config: |
+      Cipher es128-gcm@openssh.com
+    # this dict contains dictionaries of the following structure
+    # key: name # name of the target, to be used in kubernetes resource names. ex: pupperservers
+    # value: dict componsed of the following keys:
+    #   user: override_me # the ssh user used to ssh to the remote hosts
+    #   private_key: {}  # the ssh secret key to ssh to the remote hosts. dict with keys `filename` and `content`
+    #   known_hosts: override_me  # the content of the ssh known_hosts file
+    #   hosts_cidrs: []  # the IP CIDRs of the remote hosts to be ssh-ed into
+    targets: {}

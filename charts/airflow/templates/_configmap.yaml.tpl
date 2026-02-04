@@ -377,3 +377,38 @@ data:
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "configmap.rsync.config" }}
+{{- if $.Values.rsync.enabled }}
+{{- range $target, $ssh_config := $.Values.rsync.ssh.targets }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "release.name" $ }}-ssh-{{ $target }}
+  {{- include "base.meta.labels" $ | indent 2 }}
+  namespace: {{ $.Release.Namespace }}
+data:
+  config: |
+    {{ $.Values.rsync.ssh.config | nindent 4 }}
+  known_hosts: |
+    {{- range $ssh_config.known_hosts }}
+    {{- . | nindent 4 }}
+    {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "release.name" $ }}-rsync-{{ $target }}
+  {{- include "base.meta.labels" $ | indent 2 }}
+  namespace: {{ $.Release.Namespace }}
+data:
+  rsync_targets: |
+    {{- range $ssh_config.known_hosts }}
+    {{ $ssh_config.user }}@{{ . | regexFind "[^,]*" }}
+    {{- end }}
+
+{{- end }}
+{{- end }}
+{{- end }}
