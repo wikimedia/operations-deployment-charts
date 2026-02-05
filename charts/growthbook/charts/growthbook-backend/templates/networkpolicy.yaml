@@ -26,25 +26,3 @@ spec:
 {{- end }}
 
 {{ include "base.networkpolicy.egress.external-services" . }}
-
-{{/*
-  Allow the backend pod to egress the urldownloader hosts, to have requests proxied out to the internet.
-  This is required to validate the license.
-*/}}
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ template "base.meta.name" (dict "Root" $) }}-egress-urldownloader
-  {{- include "base.meta.labels" $ | indent 2 }}
-  namespace: {{ $.Release.Namespace }}
-spec:
-  selector: "app == 'growthbook-backend' && release == '{{ $.Release.Name }}'"
-  types:
-  - Egress
-  egress:
-    - action: Allow
-      destination:
-        services:
-          name: urldownloader-wikimedia
-          namespace: external-services
