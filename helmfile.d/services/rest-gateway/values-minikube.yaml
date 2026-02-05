@@ -13,6 +13,12 @@ main_app:
   dev_redis: true
   redis_port: 6380 # nutcracker
 
+  ratelimiter:
+    policies:
+      "very-high-limit": # just to check if high numbers get re-serializer properly
+        "super-user":
+          SECOND: 9999999
+
   domains:
     - localhost
     - localhost:*

@@ -31,7 +31,7 @@ descriptors:
               - key: unit
                 value: {{ $unit }}
                 rate_limit:
-                  requests_per_unit: {{ $req }}
+                  requests_per_unit: {{ int $req }}
                   unit: {{ $unit }}
               {{- end }}
       {{- end }}
