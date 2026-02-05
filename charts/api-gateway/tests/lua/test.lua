@@ -15,7 +15,7 @@ end
 _G.HelmValues = {
     main_app = {
         ratelimiter = {
-            fallback_class = "anon",
+            fallback_class = "test-fallback-class",
             user_id_cookie = "TestUserID",
             ratelimit_notice_text = "ratelimit notice text",
         }
@@ -138,7 +138,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
         end)
@@ -184,7 +184,6 @@ describe("rest_hooks", function()
                 assert.are.equal( "TestPolicy", result:get("x-wmf-ratelimit-policy") )
             end)
         end)
-
         describe("x-trusted-request handling", function()
             it("should use the user-agent header for trust level A", function()
                 local headers = {
@@ -199,7 +198,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "user-agent:CindyBot 2.0 (User:Cindy)", result:get("x-wmf-user-id") )
-                assert.are.equal( "known-network", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "approved-bot", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use the x-provenance header for trust level B", function()
                 local headers = {
@@ -229,7 +228,7 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 -- NOTE: Using the user-agent is unsafe but useful for visibility. Go back to IP later.
                 assert.are.equal( "x-ua-contact:User:Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "unauthed-bot", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "ua-bot", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use the x-is-browser header to recognize organic traffic", function()
                 local headers = {
@@ -257,7 +256,7 @@ describe("rest_hooks", function()
                 assert.are.equal( "x-client-ip:192.168.1.1", result:get("x-wmf-user-id") )
 
                 -- should not be "anon-browser", since the score was too low
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
             end)
             it("should recognize trust level F", function()
                 local headers = {
@@ -269,7 +268,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "anon-sus", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("jwt_payload handling", function()
@@ -284,7 +283,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "jwt-user", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the rlc claim if present", function()
@@ -312,7 +311,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("cookie_payload handling", function()
@@ -327,7 +326,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "cookie-user", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the rlc claim if present", function()
@@ -355,7 +354,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "test-fallback-class", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("cookie handling", function()
@@ -367,26 +366,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
-                assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
-            end)
-            it("should use the user ID from the cookie", function()
-                -- cookie values are expected to be stored in stream metadata
-                streamMetadata = { ["envoy.wmf_cookies"] = { ["TestUserID"] = "Cindy" } }
-
-                -- make the request appear to come from a browser
-                local headers = {
-                    ["x-is-browser"] = "100", -- above 80
-                    ["x-trusted-request"] = "C",
-                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
-                }
-
-                local req = fake_request_handle( { streamMetadata = streamMetadata, headers = headers } )
-                wmf_ratelimit_info(req)
-
-                local result = req:headers()
-                assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "cookie-user", result:get("x-wmf-ratelimit-class") )
                 assert.are.equal( "MISSING", result:get("x-wmf-ratelimit-policy") )
             end)
             it("should use the user ID from the cookie even for trust level A", function()
@@ -395,7 +375,6 @@ describe("rest_hooks", function()
 
                 -- make the request appear to come from a trusted network
                 local headers = {
-                    ["x-is-browser"] = "20", -- below 80
                     ["x-trusted-request"] = "A",
                     ["user-agent"] = "CindyBot 2.0 (User:Cindy)",
                     ["x-provenance"] = "client=cindy",
@@ -407,7 +386,6 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
             end)
         end)
     end)

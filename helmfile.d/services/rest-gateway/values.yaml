@@ -37,8 +37,7 @@ main_app:
     enabled: true
     version: 9.0.4-20260107.e9ce92c
     shadow_mode: true                  # default: false
-    default_policy: Feb2026
-    user_id_cookie: ""                 # insecure! replace with JWT soon (T405578)
+    default_policy: experiment-2025
     fallback_class: anon               # default: anon
     require_opt_in: false              # default: false
     allow_client_headers: false        # default: false
@@ -48,51 +47,43 @@ main_app:
     units: [ HOUR ]
     #units: [ MINUTE, SECOND ]
     policies:
-      # NOTE: the policy name should change when the name or semantics of classes change,
-      # to avoid confusing the metrics.
-      "Feb2026":
+      "experiment-2025":
         "*": # catch-all limits
           HOUR: 500
-        "anon": # no auth, not a browser, no good User-Agent, no known IP
+          #MINUTE: 100
+          #SECOND: 10
+        "anon":
           HOUR: 500
-        "unauthed-bot": # no auth, but good User-Agent
-          HOUR: 9999999 # 5000
-        "anon-browser": # no auth, but looks like a browser
+          #MINUTE: 100
+          #SECOND: 10
+        "ua-bot":
           HOUR: 500
-        "authed-browser": # authed, looks like a browser
+          #MINUTE: 100
+          #SECOND: 10
+        "anon-browser":
+          HOUR: 500
+          #MINUTE: 100
+          #SECOND: 10
+        "anon-sus":
+          HOUR: 500
+          #MINUTE: 100
+          #SECOND: 10
+        "cookie-user":
           HOUR: 5000
-        "known-network": # no auth, network under outbound control (WMCS, WME)
-          HOUR: 9999999 # 10000
-        "authed-bot": # authed using an API key, but no community approval
-          HOUR: 9999999 # 10000
-        "authed-other": # authed, but not a browser, and has no bot flag
-          HOUR: 9999999 # 10000
-        "approved-bot": # community approved bot, based on jwt auth
-          HOUR: 9999999
-        "known-client": # no auth, network associated with a known client
-          HOUR: 9999999
-
-      "Mar2026":
-        "*": # catch-all limits
-          HOUR: 500
-        "anon": # no auth, not a browser, no good User-Agent, no known IP
-          HOUR: 500
-        "unauthed-bot": # no auth, but good User-Agent
+          #MINUTE: 300
+          #SECOND: 50
+        "jwt-user":
           HOUR: 5000
-        "anon-browser": # no auth, but looks like a browser
-          HOUR: 500
-        "authed-browser": # authed, looks like a browser
+          #MINUTE: 600
+          #SECOND: 10
+        "approved-bot":
           HOUR: 5000
-        "known-network": # no auth, network under outbound control (WMCS, WME)
-          HOUR: 10000
-        "authed-bot": # authed using an API key, but no community approval
-          HOUR: 10000
-        "authed-other": # authed, but not a browser, and has no bot flag
-          HOUR: 10000
-        "approved-bot": # community approved bot, based on jwt auth
-          HOUR: 9999999
-        "known-client": # no auth, network associated with a known client
-          HOUR: 9999999
+          #MINUTE: 600
+          #SECOND: 10
+        "known-client":
+          HOUR: 5000
+          #MINUTE: 600
+          #SECOND: 10
 
   domains:
     - rest-gateway.discovery.wmnet

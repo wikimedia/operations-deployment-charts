@@ -21,29 +21,26 @@ end
 -- Limits for each rate limit class are defined in main_app.ratelimiter.policies.
 -- The following classes are currently assigned by wmf_ratelimit_info:
 --
--- * authed-bot indicates an authenticated client using a JWT bearer token.
---
--- * authed-browser: indicates an authenticated request from a browser.
---   These are likely wiki contributors using gadgets or the search bar.
---   This is equivalent to x-trusted-request: C and a browser score >= 80.
---   The ID is assigned based on the authentication token.
---
--- * authed-other: indicates an authenticated request that does not come from a browser.
---   This is equivalent to x-trusted-request: C and a browser score < 80.
---   The ID is assigned based on the authentication token.
---
--- * known-network indicates that the request is coming from a network under our control,
---   such as WMCS or WME.
+-- * approved-bot indicates that the request is coming from a vetted bot.
 --   The user-agent header is used as the rate limit key.
---   This is currently applied to requests with x-trusted-request: A.
+--   This is currently applied to requests with x-trusted-request: A, which is for
+--   requests from networks controlled by WMF (including WMCS an WME).
+--   In the future, this class may also be assigned based on privileges of an
+--   authenticated users (such as the global bot flag).
 --
 -- * known-clients indicates that the request is coming from a well known source.
 --   The x-provenance header is used as the rate limit key.
 --   This is currently applied to requests with x-trusted-request: B, which is for
 --   things like googlebot, bingbot, internet archive, etc.
 --
--- * unauthed-bot indicates an unauthenticated client using a compliant user-agent header.
---   This is applied to requests with x-trusted-request: D.
+-- * cookie-user indicates an authenticated request from a browser.
+--   This is equivalent to x-trusted-request: C.
+--   It is assigned to requests that have a user ID cookie set. In the future,
+--   this cookie will be required to contain a valid JWT.
+--   The ID from the cookie is used as the rate limit key.
+--
+-- * ua-bot indicates a bot using a compliant user-agent header.
+--   It is applied to requests with x-trusted-request: D.
 --   The x-ua-contact header is used as the rate limit key.
 --
 -- * anon-browser indicates a organic browser traffic from interactive UI
@@ -52,8 +49,12 @@ end
 --   part of the requests with x-trusted-request: E.
 --   The client's IP address is used as the rate limit key.
 --
+-- * anon-sus indicates that the origin of the request is suspect.
+--   It is applied to requests with x-trusted-request: F.
+--   The client's IP address is used as the rate limit key.
+--
 -- * anon: Anything else, especially non-compliant bots.
---   This will apply requests with x-trusted-request E or F and a low score
+--   This will apply requests with x-trusted-request: E but a low score
 --   in x-is-browser.
 --   The client's IP address is used as the rate limit key.
 --- -----------------------------------------------------------------------
@@ -100,8 +101,6 @@ function wmf_ratelimit_info(request_handle)
     local trust = headers:get("x-trusted-request")
     local browserScore = headers:get("x-is-browser") and tonumber( headers:get("x-is-browser") )
 
-    -- NOTE: the policy name should change when the name or semantics of classes change,
-    -- to avoid confusing the metrics.
     if jwtPayload.sub then
         user_id = "bearer-sub:" .. jwtPayload.sub
 
@@ -109,43 +108,37 @@ function wmf_ratelimit_info(request_handle)
             ratelimit_class = jwtPayload.rlc
         else
             -- fallback class for clients using API keys
-            ratelimit_class = "authed-bot"
+            ratelimit_class = "jwt-user"
         end
     elseif cookiePayload.sub then
         user_id = "cookie-sub:" .. cookiePayload.sub
 
         if cookiePayload.rlc then
             ratelimit_class = cookiePayload.rlc
-        elseif browserScore and browserScore >= 80 then
-            ratelimit_class = "authed-browser"
         else
-            ratelimit_class = "authed-other"
+            -- fallback class for clients using cookie auth
+            ratelimit_class = "cookie-user"
         end
     elseif cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
+        -- NOTE: This is totally unsafe. It should only be used for testing.
         user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
-
-        if browserScore and browserScore >= 80 then
-            ratelimit_class = "authed-browser"
-        else
-            ratelimit_class = "authed-other"
-        end
+        ratelimit_class = "cookie-user"
     elseif trust == "A" and headers:get("user-agent") then
         -- This is mostly WMCS but could include stray requests from MW, see T410198 and T411503.
         -- NOTE: this currently includes WME. We could look into x-provenance to check.
         -- Identify by user agent. Clients using a generic agents will share a counter.
         user_id = "user-agent:" .. headers:get("user-agent")
 
-        -- Assign "known-network" class.
-        ratelimit_class = "known-network"
+        -- Assign "approved-bot" class. Ideally we'd only do that for "good" user agent strings.
+        ratelimit_class = "approved-bot"
     elseif trust == "B" and headers:get("x-provenance") then
         -- Known bots (e.g. googlebot), see https://wikitech.wikimedia.org/wiki/Bot_traffic
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
         user_id = "x-provenance:" .. headers:get("x-provenance")
         ratelimit_class = "known-client"
     elseif trust == "D" and headers:get("x-ua-contact") then
-        -- We have a well-formed User-Agent string
-        ratelimit_class = "unauthed-bot"
+        -- Unidentified traffic from suspicious sources
+        ratelimit_class = "ua-bot"
 
         -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
         user_id = "x-ua-contact:" .. headers:get("x-ua-contact")
@@ -154,6 +147,10 @@ function wmf_ratelimit_info(request_handle)
         -- This is typically trust level E, but we allow level F as well (untile that gets abused)
         -- TODO: Use JA3N + JA4H as the user ID when available
         ratelimit_class = "anon-browser"
+    elseif trust == "F" then
+        -- Unidentified traffic from suspicious sources
+        -- TODO: Use JA3N + JA4H as the user ID when available
+        ratelimit_class = "anon-sus"
     end
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
