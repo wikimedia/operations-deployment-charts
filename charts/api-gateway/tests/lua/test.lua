@@ -16,7 +16,6 @@ _G.HelmValues = {
     main_app = {
         ratelimiter = {
             fallback_class = "anon",
-            user_id_cookie = "TestUserID",
             ratelimit_notice_text = "ratelimit notice text",
             default_policies = {
                 "DefaultPolicy1",
@@ -384,21 +383,9 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
             end)
-        end)
-        describe("cookie handling", function()
-            it("should use the user ID from the cookie", function()
-                -- cookie values are expected to be stored in stream metadata
-                local streamMetadata = { ["envoy.wmf_cookies"] = { ["TestUserID"] = "Cindy" } }
-                local req = fake_request_handle( { streamMetadata = streamMetadata } )
-                wmf_ratelimit_info(req)
-
-                local result = req:headers()
-                assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
-            end)
-            it("should use the user ID from the cookie", function()
-                -- cookie values are expected to be stored in stream metadata
-                streamMetadata = { ["envoy.wmf_cookies"] = { ["TestUserID"] = "Cindy" } }
+            it("should make use of the x-is-browser header", function()
+                local payload = { sub = "12345" }
+                local streamMetadata = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
 
                 -- make the request appear to come from a browser
                 local headers = {
@@ -411,13 +398,13 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
+                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
             it("should use the user ID from the cookie even for trust level A", function()
-                -- cookie values are expected to be stored in stream metadata
-                streamMetadata = { ["envoy.wmf_cookies"] = { ["TestUserID"] = "Cindy" } }
+                local payload = { sub = "12345" }
+                local streamMetadata = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
 
                 -- make the request appear to come from a trusted network
                 local headers = {
@@ -432,7 +419,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "TestUserID:Cindy", result:get("x-wmf-user-id") )
+                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
             end)
         end)

@@ -61,7 +61,6 @@ function wmf_ratelimit_info(request_handle)
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
     local ratelimit_class = HelmValues.main_app.ratelimiter.fallback_class
-    local trusted_identity_cookie = HelmValues.main_app.ratelimiter.user_id_cookie
 
     -- The x-client-ip header is set in the edge tier of the WMF network.
     -- If it not present, the request is internal and should not be limited.
@@ -122,15 +121,6 @@ function wmf_ratelimit_info(request_handle)
         if cookiePayload.rlc then
             ratelimit_class = cookiePayload.rlc
         elseif browserScore and browserScore >= 80 then
-            ratelimit_class = "authed-browser"
-        else
-            ratelimit_class = "authed-other"
-        end
-    elseif cookies[trusted_identity_cookie] and cookies[trusted_identity_cookie] ~= "#NONE#" then
-        -- NOTE: This is totally unsafe. We will get the user ID from jwt_authn soon (T405578).
-        user_id = trusted_identity_cookie .. ":" .. cookies[trusted_identity_cookie]
-
-        if browserScore and browserScore >= 80 then
             ratelimit_class = "authed-browser"
         else
             ratelimit_class = "authed-other"

@@ -149,42 +149,6 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": env.nextIp() }
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
-    def test_authed_browser_limit(self):
-        cookie = env.values.main_app.ratelimiter.user_id_cookie
-
-        if cookie is None or cookie == "":
-            self.skipTest("user_id_cookie is not set")
-
-        cookieHeaders = {
-            "x-client-ip": env.nextIp(),
-            "cookie": f"{cookie}=" + env.nextName("Eva"),
-            "x-is-browser": "100", # >= 80 is good
-        }
-        limits = getRateLimits("authed-browser")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = cookieHeaders)
-
-        # try again with a different cookie value, to check that it is used as the rate limit key
-        cookieHeaders["cookie"] = f"{cookie}=" + env.nextName("Lea")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = cookieHeaders)
-
-    def test_authed_other_limit(self):
-        cookie = env.values.main_app.ratelimiter.user_id_cookie
-
-        if cookie is None or cookie == "":
-            self.skipTest("user_id_cookie is not set")
-
-        cookieHeaders = {
-            "x-client-ip": env.nextIp(),
-            "cookie": f"{cookie}=" + env.nextName("Eva"),
-            "x-is-browser": "20", # <= 80 is good
-        }
-        limits = getRateLimits("authed-other")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = cookieHeaders)
-
-        # try again with a different cookie value, to check that it is used as the rate limit key
-        cookieHeaders["cookie"] = f"{cookie}=" + env.nextName("Lea")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = cookieHeaders)
-
     def test_local_requests_bypass_limit(self):
         localHeaders = {} # no x-client-ip!
         limits = getRateLimits("anon")
@@ -319,20 +283,37 @@ class RateLimitTest(unittest.TestCase):
         rest = self.target.get(self.default_endpoint, headers = headers)
         self.assertEqual(401, rest.status, "expired token should be rejected")
 
-    def test_jwt_cookie_limit(self):
+    def test_authed_browser_limit(self):
         ip = env.nextIp()
         token = jwtools.getValidJwtOrSkip(self)
 
-        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+        headers = {
+            "x-client-ip": ip,
+            "cookie": "sessionJwt=" + token,
+            "x-is-browser": "100", # >= 80 is good
+        }
 
-        limits = getRateLimits("authed-other")
+        limits = getRateLimits("authed-browser")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
         # if we can, try again with a different payload, to check that it is used as the rate limit key
         token = jwtools.createJwt(sub = env.nextName("Testorator") )
         if token:
-            headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+            headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token,  "x-is-browser": "100" }
             self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+
+    def test_authed_other_limit(self):
+        ip = env.nextIp()
+        token = jwtools.getValidJwtOrSkip(self)
+
+        headers = {
+            "x-client-ip": ip,
+            "cookie": "sessionJwt=" + token,
+            "x-is-browser": "20", # >= 80 is good
+        }
+
+        limits = getRateLimits("authed-other") # not a browser
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
     def test_jwt_cookie_limit_uses_rlc_claim(self):
         ip = env.nextIp()
