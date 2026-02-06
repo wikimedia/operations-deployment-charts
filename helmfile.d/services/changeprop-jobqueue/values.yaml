@@ -26,15 +26,12 @@ main_app:
 
     # jobs we don't want to process at all
     # The videotranscode jobs have been moved to use mw-videoscaler and mercurius
-    excluded_jobs: ["webVideoTranscode", "webVideoTranscodePrioritized"]
+    excluded_jobs: ["ThumbnailRender", "webVideoTranscode", "webVideoTranscodePrioritized"]
 
     # All the jobs listed below get their own rule, which transfers to
     # their own processing unit - each type of job listed explicitly is processed
     # by a separate worker in change-prop.
     high_traffic_jobs_config:
-      ThumbnailRender:
-        enabled: true
-        concurrency: 10
       categoryMembershipChange:
         enabled: true
         concurrency: 200
