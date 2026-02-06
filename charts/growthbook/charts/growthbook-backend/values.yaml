@@ -3,8 +3,7 @@ app:
   image: repos/data-engineering/growthbook
   version: latest # we use latest everywhere in the defaults.
   port: &app_port 3100 # port exposed as a Service, also used by service-checker.
-  command:  [npx, wsrun, -p, back-end, --no-prefix, -c]
-  args: [start]
+  args: [back-end]
   requests:
     cpu: 2
     memory: 4Gi
