@@ -27,18 +27,64 @@ main_app:
     - restgateway.discovery.wmnet
     - mytestdomain.discovery.wmnet
 
+  # Override upstream server config to use http_https_echo
   discovery_endpoints:
-    mobileapps:
-      tls: false
-      port: 8888
-      internal_host: localhost
-      host: localhost
     citoid:
       tls: false
       port: 8888
       internal_host: localhost
       host: localhost
+    geo-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    media-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    mobileapps:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
     proton:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    wikifeeds:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    device-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    page-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    edit-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    editor-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    commons-impact-analytics:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    mw-api-ext-ro:
       tls: false
       port: 8888
       internal_host: localhost
@@ -71,12 +117,11 @@ smokepy:
     target_url: http://localhost:8087
 
     # The path of the endpoint to probe when testing rate limits.
-    probe_path: "/enwiki/v1/page/pdf/xyz"
+    # probe_path: "/enwiki/v1/page/pdf/xyz"
 
     # The header to send with every request
     headers:
       Host: localhost
-
 
 service:
   deployment: minikube

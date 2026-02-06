@@ -9,7 +9,7 @@ smokepy:
     target_url: https://staging.svc.eqiad.wmnet:4113
 
     # The path of the endpoint to probe when testing rate limits.
-    probe_path: "/en.wikipedia.org/v1/page/html/X"
+    probe_path: "/en.wikipedia.org/v1/page/title/X"
 
     # The headers to send with every request
     headers:
@@ -80,44 +80,63 @@ main_app:
     envoy_timeout: 0.5
     units: [ MINUTE, SECOND ]
     policies:
-      "experiment-2025":
+      "Feb2026":
         "*": # catch-all limits
-          MINUTE: 5
           SECOND: 1
-        "anon":
-          MINUTE: 15
+        "anon": # no auth, not a browser, no good User-Agent, no known IP
+          SECOND: 1
+        "anon-browser": # no auth, but looks like a browser
           SECOND: 3
-        "ua-bot":
-          MINUTE: 25
+        "authed-browser": # authed, looks like a browser
           SECOND: 5
-        "anon-browser":
-          MINUTE: 35
+        "authed-other": # authed, but not a browser, and has no bot flag
           SECOND: 7
-        "anon-sus":
-          MINUTE: 45
+        "authed-bot": # authed using an API key, but no community approval
           SECOND: 9
-        "cookie-user":
-          MINUTE: 55
+        "unauthed-bot": # no auth, but good User-Agent
           SECOND: 11
-        "jwt-user":
-          MINUTE: 20
-          SECOND: 5
-        "approved-bot":
-          MINUTE: 65
+        "approved-bot": # bot approved by the community
           SECOND: 13
-        "known-client":
-          MINUTE: 75
+        "known-client": # no auth, network associated with a known client
           SECOND: 15
+        "known-network": # no auth, network under outbound control (WMCS, WME)
+          SECOND: 17
+
+      "Mar2026":
+        "*": # catch-all limits
+          SECOND: 2
+        "anon": # no auth, not a browser, no good User-Agent, no known IP
+          SECOND: 2
+        "anon-browser": # no auth, but looks like a browser
+          SECOND: 4
+        "authed-browser": # authed, looks like a browser
+          SECOND: 6
+        "authed-other": # authed, but not a browser, and has no bot flag
+          SECOND: 8
+        "authed-bot": # authed using an API key, but no community approval
+          SECOND: 10
+        "unauthed-bot": # no auth, but good User-Agent
+          SECOND: 12
+        "approved-bot": # bot approved by the community
+          SECOND: 14
+        "known-client": # no auth, network associated with a known client
+          SECOND: 16
+        "known-network": # no auth, network under outbound control (WMCS, WME)
+          SECOND: 18
     # Manual testing
     require_opt_in: false
-    default_policy: 'experiment-2025'
     fallback_class: "anon"
+    user_id_cookie: ""
     enable_x_ratelimit_headers: true
 
   access_log:
     debug: true
     sample_percentage: 100
 
+  # NOTE: Ideally, we would not override the production endpoint definitions here.
+  # But we want to change some values for testing, such as apply_rate_limiting.
+  # Since it's not possible to update members of the list when merging value files,
+  # we have to copy rest_gateway_routes from values.yaml and make changes to it here.
   rest_gateway_routes:
     - name: mobileapps
       timeout: 120s
@@ -276,21 +295,33 @@ main_app:
         # In case a non URL encoded page with slashes is submitted, it's the
         # duty of MediaWiki to return the appropriate response (and MediaWiki
         # does return a 404)
+        - name: page-metadata-revision
+          in: '/+([^/]+)/v1/page/title/([^\/]+)/(.+)'
+          out: '/w/rest.php/v1/revision/\3/bare'
+        - name: page-metadata-title
+          in: '/+([^/]+)/v1/page/title/(.+)'
+          out: '/w/rest.php/v1/page/\2/bare'
+        - name: page-html-revision
+          in: '/+([^/]+)/v1/page/html/([^\/]+)/(.+)'
+          out: '/w/rest.php/v1/revision/\3/html'
         - name: page-html-title
           in: '/+([^/]+)/v1/page/html/(.+)'
           out: '/w/rest.php/v1/page/\2/html'
-        - name: lint-no-revision
+        - name: page-lint-revision
+          in: '/+([^/]+)/v1/page/lint/([^\/]+)/(.+)'
+          out: '/w/rest.php/v1/revision/\3/lint'
+        - name: page-lint-title
           in: '/+([^/]+)/v1/page/lint/([^\/]+)'
-          out: '/w/rest.php/v1/transform/wikitext/to/lint/\2'
+          out: '/w/rest.php/v1/page/\2/lint'
+        - name: transform_wikitext_to_html
+          in: '/+([^/]+)/v1/transform/wikitext/to/html(.*)'
+          out: '/w/rest.php/v1/transform/wikitext/to/html\2'
         - name: transform_html_to_wikitext
           in: '/+([^/]+)/v1/transform/html/to/wikitext(.*)'
           out: '/w/rest.php/v1/transform/html/to/wikitext\2'
-        # reading lists endpoint - supports all HTTP verbs for various options
-        # Note use of * rather than + in regex - needed to match base
-        # `/v1/data/lists/` requests which requires the trailing slash
-        - name: lists
-          in: '/+([^/]+)/v1/data/lists/(.*)'
-          out: '/w/rest.php/readinglists/v0/lists/\2'
+        - name: transform_wikitext_to_lint
+          in: '/+([^/]+)/v1/transform/wikitext/to/lint(.*)'
+          out: '/w/rest.php/v1/transform/wikitext/to/lint\2'
       rb_response_headers: true
 
     - name: mw-rest-php
