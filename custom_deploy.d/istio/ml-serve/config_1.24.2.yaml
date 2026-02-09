@@ -1,0 +1,215 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  hub: docker-registry.discovery.wmnet/istio
+  tag: 1.24.2-1
+  meshConfig:
+    # This enables access logging in istio-proxy, which means all sidecars
+    # as well as all ingress and egress gateways.
+    # https://istio.io/latest/docs/tasks/observability/logs/
+    accessLogFile: /dev/stdout
+    accessLogEncoding: JSON
+    outboundTrafficPolicy:
+      mode: 'REGISTRY_ONLY'
+    # Disable zipkin
+    # See https://github.com/istio/istio/issues/33968
+    enableTracing: false
+  values:
+    # CNI-CONFIG:
+    # This config is deployed via puppet, the following settings are not really
+    # used. They are meant to be used by the install-cni DaemonSet that upstream
+    # provides, but that we don't really want to use for security reasons.
+    # See the other CNI-CONFIG tags for more info.
+    cni:
+      cniBinDir: /opt/cni/bin
+      cniConfDir: /etc/cni/net.d
+      cniConfFileName: 10-calico.conflist
+      chained: true
+      excludeNamespaces:
+        - istio-system
+        - kube-system
+        - knative-serving
+        - cert-manager
+    global:
+      imagePullPolicy: IfNotPresent
+      priorityClassName: "system-cluster-critical"
+      logAsJson: true
+      proxy:
+        # CNI-CONFIG:
+        # The Istio sidecar is meant to support the containers that run
+        # after it, and it can't work work with init-containers.
+        # In the case of Kserve, every pod runs an init-container
+        # called "storage-initializer", that pulls the model binary from
+        # Swift and adds it to a volume (to be later used by
+        # the kserve-container). The excludeIPRanges setting instructs
+        # the iptables rules injected by the CNI when the pods comes up
+        # to skip any traffic re-routing for certain IPs (in our case,
+        # the Thanos ones).
+        excludeIPRanges: "10.2.2.54/32,10.2.1.54/32"
+        componentLogLevel: "misc:info"
+        logLevel: info
+        # See https://github.com/istio/istio/issues/33968#issuecomment-881910850
+        # We need this setting to fully disable any tracing and
+        # stop DNS queries for zipkin when the service is disabled.
+        tracer: openCensusAgent
+    pilot:
+      autoscaleEnabled: false # overwritten
+      replicaCount: 2
+  components:
+    pilot:
+      enabled: true
+      k8s:
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+    # CNI-CONFIG:
+    # This hack is meant to avoid deploying the install-cni upstream
+    # DaemonSet, since we prefer to deploy the cni binaries and config
+    # via puppet.
+    cni:
+      enabled: true
+      k8s:
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        overlays:
+        - apiVersion: apps/v1
+          kind: DaemonSet
+          name: istio-cni-node
+          patches:
+          - path: kind
+            value: Deployment
+          - path: spec.replicas
+            value: 0
+          - path: spec.strategy
+            value:
+              type: Recreate
+          - path: spec.updateStrategy
+    ingressGateways:
+      # This is the KServe/Knative Ingress Gateway installed via istioctl.
+      # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
+      # but we override the list to:
+      # 1) Change the default service type from LoadBalancer to NodePort
+      # 2) Add fixed nodePort configurations (easier to configure LVS endpoints).
+      # 3) Remove config for port 80 since it is not needed. This option has been
+      #    temporarily re-enabled to ease testing.
+      # 4) Add replicas to istio pods since we don't have autoscaling enabled
+      #    (needs a metrics server etc..).
+      # Please note that Istio needs specific Gateway, VirtualHost, Routes, etc..
+      # configs to implement a L7 reverse proxy, and those needs to be configured
+      # separately. In the Kubeflow use case, Knative-serving takes care of these
+      # configurations (see the related helm chart).
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: istio-ingressgateway
+            patches:
+            - path: kind
+              value: DaemonSet
+            # Delete spec.strategy
+            # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
+            - path: spec.update
+              value:
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
+          service:
+            type: NodePort
+            externalTrafficPolicy: Local
+            ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+              protocol: TCP
+              nodePort: 15021
+            - port: 443
+              targetPort: 8443
+              name: https
+              protocol: TCP
+              nodePort: 30443
+            selector:
+              service.istio.io/canonical-name: istio-ingressgateway
+              istio: ingressgateway
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "1.5Gi"
+            limits:
+              cpu: "3000m"
+              memory: "2Gi"
+      # This is another Ingress Gateway installed via istioctl, aimed for ML services
+      # that are not KServe related.
+      # The standard ports are defined in https://github.com/istio/istio/blob/master/manifests/charts/gateways/istio-ingress/values.yaml,
+      # but we override the list to:
+      # 1) Change the default service type from LoadBalancer to NodePort
+      # 2) Add fixed nodePort configurations (easier to configure LVS endpoints).
+      # 3) Remove config for port 80 since it is not needed. This option has been
+      #    temporarily re-enabled to ease testing.
+      # 4) Add replicas to istio pods since we don't have autoscaling enabled
+      #    (needs a metrics server etc..).
+      # Please note that Istio needs specific Gateway, VirtualHost, Routes, etc..
+      # configs to implement a L7 reverse proxy, and those needs to be configured
+      # separately. In the Kubeflow use case, Knative-serving takes care of these
+      # configurations (see the related helm chart).
+      - name: istio-ingressgateway-services
+        enabled: true
+        k8s:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          overlays:
+          - apiVersion: apps/v1
+            kind: Deployment
+            name: istio-ingressgateway-services
+            patches:
+            - path: kind
+              value: DaemonSet
+            # Delete spec.strategy
+            # https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#K8sObjectOverlay-PathValue
+            - path: spec.strategy
+              value:
+            - path: spec.update
+              value:
+            - path: spec.updateStrategy
+              value:
+                rollingUpdate:
+                  maxUnavailable: 50%
+                type: RollingUpdate
+          service:
+            type: NodePort
+            externalTrafficPolicy: Local
+            ports:
+            - port: 15021
+              targetPort: 15021
+              name: status-port
+              protocol: TCP
+              nodePort: 16021
+            - port: 443
+              targetPort: 8443
+              name: https
+              protocol: TCP
+              nodePort: 31443
+            selector:
+              service.istio.io/canonical-name: istio-ingressgateway-services
+              istio: ingressgateway
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "1.5Gi"
+            limits:
+              cpu: "3000m"
+              memory: "1.5Gi"
