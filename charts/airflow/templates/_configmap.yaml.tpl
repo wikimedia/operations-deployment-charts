@@ -240,6 +240,24 @@ data:
         else:
             print(f"{host}:{port} is closed")
             sys.exit(1)
+  {{/* This python script fetches the content of an XCOM stored in S3 */}}
+  get-xcom-from-s3: |
+    #!/usr/bin/env python3
+    import sys
+    from airflow.configuration import conf
+    from wmf_airflow_common.clients.s3 import get_s3_client
+
+    if len(sys.argv) == 1:
+        print("usage: get-xcom-from-s3 s3://<s3_conn_id>@<bucket>/<path>")
+        sys.exit(0)
+
+    uri = sys.argv[1]
+    _, _, fullpath = uri.partition('@')
+    bucket, _, path = fullpath.partition('/')
+    s3_conn_id = conf['logging']['remote_log_conn_id']
+    s3_client =  get_s3_client(s3_conn_id)
+    response = s3_client.get_object(Bucket=bucket, Key=path)
+    print(response['Body'].read().decode('utf-8'))
 
 
 {{- end }}
