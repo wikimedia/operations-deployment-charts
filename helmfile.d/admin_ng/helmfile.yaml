@@ -111,15 +111,15 @@ environments:
       - "values/{{ .Environment.Name }}/values.yaml"
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - install_knative: false
-      - install_kserve: false
+      - install_knative: true
+      - install_kserve: true
       - install_cert_manager: true
       - install_kube_state_metrics: true
       - namespace_certificates: true
       # Deploy network policies for a Istio setup
       - istio_gateways: true
       # Experiments currently ongoing in T297612
-      - istio_sidecar_proxy: false
+      - istio_sidecar_proxy: true
       - install_external_services: true
   dse-k8s-eqiad:
     values:
