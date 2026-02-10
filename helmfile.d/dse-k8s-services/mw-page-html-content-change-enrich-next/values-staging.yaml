@@ -15,7 +15,7 @@ app:
       enrich:
         # MW API requests should go to local envoy service proxy 'mwapi-async'.
         # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
-        mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php
+        mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php/v1
         ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
 
       # Configs for eventutilities python stream_manager.
