@@ -1,15 +1,15 @@
-# Over-ride values for the Node-based JavaScript evaluator
+# Over-ride values for the Rust-based Python evaluator
 
 main_app:
-  image: repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all
-  version: 2026-02-11-123504
+  image: repos/abstract-wiki/wikifunctions/function-evaluator/wasm-python3-all
+  version: 2026-01-27-063404
 
 config:
   public:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
-    OTEL_SERVICE_NAME: wikifunctions-evaluator-javascript
+    OTEL_SERVICE_NAME: wikifunctions-evaluator-rust-python
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
-    WASM_BINARY: /srv/service/programming-languages/wasmedge_quickjs.so
+    WASM_BINARY: /srv/service/programming-languages/rustpython.so
     PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
     WASMEDGE_HOME: /srv/service/programming-languages/wasmedge
     EXECUTOR_PROCESS_POOL_SIZE: "5"
