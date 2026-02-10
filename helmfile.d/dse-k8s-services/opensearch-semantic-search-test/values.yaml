@@ -48,3 +48,16 @@ opensearchCluster:
 certificate:
   extraFQDNs:
   - opensearch-semantic-search-test.discovery.wmnet
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
