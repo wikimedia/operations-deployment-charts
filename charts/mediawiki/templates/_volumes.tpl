@@ -65,6 +65,11 @@
   hostPath:
     path: /srv/mediawiki
 {{- end }}
+{{- if .Values.mw.parsoid.testing }}
+- name: {{ $release }}-parsoid-testing-mediawiki
+  hostPath:
+    path: /srv/parsoid-testing
+{{- end -}}
 {{- if .Values.php.envvars }}
 - name: {{ $release }}-php-envvars
   configMap:

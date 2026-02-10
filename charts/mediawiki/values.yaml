@@ -318,6 +318,10 @@ mw:
   # This feature is only enabled in the mw-experimental service
   experimental:
     enabled: false
+  # If true, this mounts /srv/parsoid-testing from the wikikube host
+  # This feature is only enabled in the mw-parsoid service T386246
+  parsoid:
+    testing: false
   # Feature flags enabled / disabled based on specific traits.
   helpers:
     feature_flags:

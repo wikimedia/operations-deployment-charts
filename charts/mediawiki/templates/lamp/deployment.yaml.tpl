@@ -310,6 +310,12 @@
     mountPath: /srv/mediawiki
     readOnly: true
   {{- end -}}
+  {{- if .Values.mw.parsoid.testing }}
+  # Mount /srv/parsoid-testing if parsoid is enabled
+  - name: {{ $release }}-parsoid-testing-mediawiki
+    mountPath: /srv/parsoid-testing
+    readOnly: true
+  {{- end -}}
   {{- if .Values.php.envvars }}
   # PHP environment variables
   - name: {{ $release }}-php-envvars
