@@ -116,3 +116,11 @@ certificate:
   name: opensearch-wmf
   extraFQDNs:
   - override_me.discovery.wmnet
+
+# WMF specific values
+networkpolicy:
+  egress:
+    enabled: false
+
+mesh:
+  enabled: false

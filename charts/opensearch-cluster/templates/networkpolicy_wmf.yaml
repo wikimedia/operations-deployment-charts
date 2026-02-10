@@ -40,3 +40,21 @@ spec:
       # OpenSearch REST API
         ports:
           - 9200
+
+{{- if .Values.networkpolicy.egress.enabled }}
+{{/* NetworkPolicy for ingress/egress traffic managed via our internal templates */}}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  podSelector:
+    matchExpressions:
+    - key: opster.io/opensearch-cluster
+      operator: Exists
+  policyTypes:
+    - Egress
+  egress:
+    {{- include "base.networkpolicy.egress-basic" .Values }}
+{{- end }}
