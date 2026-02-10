@@ -50,7 +50,6 @@ spec:
         # See https://github.com/istio/istio/issues/33968#issuecomment-881910850
         # We need this setting to fully disable any tracing and
         # stop DNS queries for zipkin when the service is disabled.
-        tracer: openCensusAgent
     pilot:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
