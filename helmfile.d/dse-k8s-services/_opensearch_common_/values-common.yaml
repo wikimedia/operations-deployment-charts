@@ -86,8 +86,18 @@ opensearchCluster:
         prometheus.io/path: "/_prometheus/metrics"
         prometheus.io/scheme: "https"
 
-    # prevent 2 masters from being scheduled on the same k8s worker
+    # We don't want the opensearch pods to be scheduled on pods with a 1G NIC.
+    # See T415635, T416345 and https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+      # prevent 2 masters from being scheduled on the same k8s worker
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
