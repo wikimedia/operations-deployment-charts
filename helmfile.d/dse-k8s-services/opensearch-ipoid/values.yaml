@@ -28,6 +28,15 @@ opensearchCluster:
         prometheus.io/scheme: "https"
     # prevent 2 masters from being scheduled on the same k8s worker
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+      # prevent 2 masters from being scheduled on the same k8s worker
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
