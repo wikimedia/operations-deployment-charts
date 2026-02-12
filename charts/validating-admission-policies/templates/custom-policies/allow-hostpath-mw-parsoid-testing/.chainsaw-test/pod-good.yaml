@@ -1,0 +1,237 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01-mediawiki
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: mediawiki-source
+      mountPath: /srv/mediawiki
+  volumes:
+  - name: mediawiki-source
+    hostPath:
+      path: /srv/mediawiki
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - name: udev
+      mountPath: /data
+  volumes:
+  - name: udev
+    emptyDir: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod03
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - name: mysettings
+      mountPath: /settings
+  volumes:
+  - name: mysettings
+    configMap:
+      name: settings
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod05
+  labels:
+    foo: bar
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - name: labels
+      mountPath: /labels
+  volumes:
+  - name: labels
+    downwardAPI:
+      items:
+      - path: labels
+        fieldRef:
+          fieldPath: metadata.labels
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod06
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - name: ephem
+      mountPath: /ephem
+  volumes:
+  - name: ephem
+    ephemeral:
+      volumeClaimTemplate:
+        metadata:
+          labels:
+            type: my-frontend-volume
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "scratch-storage-class"
+          resources:
+            requests:
+              storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod07
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - name: foo
+      mountPath: /foo
+  volumes:
+  - name: foo
+    persistentVolumeClaim:
+      claimName: fooclaim
+      readOnly: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod08
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: vault-token
+  volumes:
+  - name: vault-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: vault-token
+          expirationSeconds: 7200
+          audience: vault
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod09
+spec:
+  containers:
+  - name: container01
+    image: busybox:1.35
+    volumeMounts:
+    - mountPath: /mysecret
+      name: mysecret
+  volumes:
+  - name: mysecret
+    secret:
+      secretName: mysecret
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod10
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: geoipinfo
+      mountPath: /usr/share/GeoIPInfo
+  volumes:
+  - name: geoipinfo
+    hostPath:
+      path: /usr/share/GeoIPInfo
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod11
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: geoip
+      mountPath: /usr/share/GeoIP
+  volumes:
+  - name: geoip
+    hostPath:
+      path: /usr/share/GeoIP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod12
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: geoip
+      mountPath: /usr/share/GeoIP
+    - name: geoipinfo
+      mountPath: /usr/share/GeoIPInfo
+  volumes:
+  - name: geoip
+    hostPath:
+      path: /usr/share/GeoIP
+  - name: geoipinfo
+    hostPath:
+      path: /usr/share/GeoIPInfo
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod13
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: geoip
+      mountPath: /usr/share/GeoIP
+    - name: geoipinfo
+      mountPath: /usr/share/GeoIPInfo
+    - name: foo
+      mountPath: /etc/foo
+    - name: mediawiki-source
+      mountPath: /srv/mediawiki
+  volumes:
+  - name: foo
+    emptyDir: {}
+  - name: geoip
+    hostPath:
+      path: /usr/share/GeoIP
+  - name: geoipinfo
+    hostPath:
+      path: /usr/share/GeoIPInfo
+  - name: mediawiki-source
+    hostPath:
+      path: /srv/mediawiki
