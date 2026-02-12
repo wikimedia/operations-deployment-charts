@@ -42,6 +42,23 @@ hooks:
       ]
 
 releases:
+  - name: webrequest-to-cdn-pvc
+    chart: wmf-stable/raw
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: airflow-sre-webrequest-to-cdn
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          volumeMode: Filesystem
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: ceph-rbd-ssd
+
   - name: production
     namespace: airflow-sre
     chart: wmf-stable/airflow
