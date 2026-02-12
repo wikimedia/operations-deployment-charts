@@ -460,11 +460,20 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-parsoid:
+  # In mw-parsoid we need to mount via hostPath both geoip data + /srv/parsoid-testing
+  # All hostPaths are included in the allow-hostpath-mw-parsoid-testing
+  # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
+  # Please note that allow-hostpath-mw-parsoid-testing allows mounting /srv/mediawiki
+  # via hostPath as well. 
     pspClusterRole: allow-mediawiki-psp
-    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
-      <<: *mw-pss-labels
-    # Don't set a quota
+      pod-security.wmf.org/profile: restricted
+      pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+      pod-security.wmf.org/disallow-host-path: exclude
+      pod-security.wmf.org/disallow-capabilities-strict-adding-capabilities-strict: exclude
+      pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
+      pod-security.wmf.org/disallow-capabilities-except-ptrace: include
+      pod-security.wmf.org/allow-hostpath-mw-parsoid-testing: include
     resourcequota:
       compute:
         requests:
