@@ -146,10 +146,10 @@ inference_services:
       autoscaling.knative.dev/target: "3"
     predictor:
       config:
-        minReplicas: 7
-        maxReplicas: 7
+        minReplicas: 1
+        maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
-      image_version: "2026-02-09-130239-publish"
+      image_version: "2026-02-13-111428-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-wikidata"
@@ -157,13 +157,16 @@ inference_services:
           value: "s3://wmf-ml-models/revertrisk/wikidata/20251104121312/"
         - name: FORCE_HTTP
           value: "True"
+        # For a single GPU, we must use a single worker to manage it.
         - name: WORKERS
-          value: "8"
+          value: "1"
       container:
         resources:
           limits:
             cpu: "8"
             memory: 16Gi
+            amd.com/gpu: "1"
           requests:
             cpu: "8"
             memory: 16Gi
+            amd.com/gpu: "1"
