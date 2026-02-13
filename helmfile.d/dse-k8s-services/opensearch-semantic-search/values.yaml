@@ -2,7 +2,48 @@ opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search"
     image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2026-02-03-212519-70e19086545c5f33b67dde8506c9ffea81761132-production3@sha256:6e746ee4dad5f3fbd5f6c671fa44b7964f5b516c994d4990842bc5eed7839579
-
+  nodePools:
+    - component: masters
+      diskSize: "40Gi"
+      persistence:
+        pvc:
+          storageClass: ceph-rbd-ssd
+          accessModes:
+            - ReadWriteOnce
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
+      resources:
+        requests:
+          memory: "8Gi"
+          cpu: "4000m"
+        limits:
+          memory: "8Gi"
+          cpu: "4000m"
+    # These annotations enable/configure metrics scrapes
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+        prometheus.io/path: "/_prometheus/metrics"
+        prometheus.io/scheme: "https"
+    # prevent 2 masters from being scheduled on the same k8s worker
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+      # prevent 2 masters from being scheduled on the same k8s worker
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-nodepool: masters
 certificate:
   extraFQDNs:
   - opensearch-semantic-search.discovery.wmnet
