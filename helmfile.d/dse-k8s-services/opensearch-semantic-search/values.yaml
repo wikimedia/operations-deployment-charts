@@ -44,6 +44,7 @@ opensearchCluster:
                 matchLabels:
                   opster.io/opensearch-cluster: opensearch-cluster
                   opster.io/opensearch-nodepool: masters
+              topologyKey: kubernetes.io/hostname
 certificate:
   extraFQDNs:
   - opensearch-semantic-search.discovery.wmnet
