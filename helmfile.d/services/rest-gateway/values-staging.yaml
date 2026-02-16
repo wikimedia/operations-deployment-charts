@@ -80,55 +80,55 @@ main_app:
     key_prefix: "staging_restgw_"
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%@%REQ(x-wmf-ratelimit-policy)%"
     envoy_timeout: 0.5
-    units: [ MINUTE, SECOND ]
+    units: [ MINUTE ]
     policies:
       "Mar2026":
         shadow_mode: false # enable on staging for testing
         limits:
           "*": # catch-all limits
-            SECOND: 2
+            MINUTE: 2
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            SECOND: 2
+            MINUTE: 2
           "anon-browser": # no auth, but looks like a browser
-            SECOND: 4
+            MINUTE: 4
           "authed-browser": # authed, looks like a browser
-            SECOND: 6
+            MINUTE: 6
           "authed-other": # authed, but not a browser, and has no bot flag
-            SECOND: 8
+            MINUTE: 8
           "authed-bot": # authed using an API key, but no community approval
-            SECOND: 10
+            MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent
-            SECOND: 12
+            MINUTE: 12
           "approved-bot": # bot approved by the community
-            SECOND: 14
+            MINUTE: 14
           "known-client": # no auth, network associated with a known client
-            SECOND: 16
+            MINUTE: 16
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            SECOND: 18
+            MINUTE: 18
 
       "Apr2026":
         shadow_mode: true
         limits:
           "*": # catch-all limits
-            SECOND: 1
+            MINUTE: 1
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            SECOND: 1
+            MINUTE: 1
           "anon-browser": # no auth, but looks like a browser
-            SECOND: 3
+            MINUTE: 3
           "authed-browser": # authed, looks like a browser
-            SECOND: 5
+            MINUTE: 5
           "authed-other": # authed, but not a browser, and has no bot flag
-            SECOND: 7
+            MINUTE: 7
           "authed-bot": # authed using an API key, but no community approval
-            SECOND: 9
+            MINUTE: 9
           "unauthed-bot": # no auth, but good User-Agent
-            SECOND: 11
+            MINUTE: 11
           "approved-bot": # bot approved by the community
-            SECOND: 13
+            MINUTE: 13
           "known-client": # no auth, network associated with a known client
-            SECOND: 15
+            MINUTE: 15
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            SECOND: 17
+            MINUTE: 17
 
     enable_x_ratelimit_headers: true
 
