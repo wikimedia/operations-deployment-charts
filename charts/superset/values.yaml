@@ -134,7 +134,7 @@ config:
     LC_ALL: 'C.UTF-8'
     SUPERSET_ENV: 'production'
     FLASK_APP: 'superset.app:create_app()'
-    PYTHONPATH: '/app:/home/superset/.local/lib/python3.9/site-packages/:/etc/superset'
+    PYTHONPATH: '/app:/home/superset/.local/lib/python3.11/site-packages/:/etc/superset'
     SUPERSET_HOME: '/home/runuser'
     SUPERSET_PORT: *gunicorn_port
 
