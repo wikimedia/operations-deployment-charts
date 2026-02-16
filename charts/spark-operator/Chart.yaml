@@ -1,17 +1,7 @@
 apiVersion: v2
 appVersion: 2.2.1
 description: A Helm chart for Spark on Kubernetes operator.
-home: https://github.com/kubeflow/spark-operator
-keywords:
-- apache spark
-- big data
-maintainers:
-- email: yuchaoran2011@gmail.com
-  name: yuchaoran2011
-  url: https://github.com/yuchaoran2011
-- email: github@chenyicn.net
-  name: ChenYi015
-  url: https://github.com/ChenYi015
+home: https://wikitech.wikimedia.org/wiki/Data_Platform/Systems/Spark
 name: spark-operator
 version: 2.2.7
 
@@ -19,3 +9,13 @@ annotations:
   # This annotation reflects the last upstream version that we imported.
   # See https://wikitech.wikimedia.org/wiki/Kubernetes/Upstream_Helm_charts_policy
   wmf/upstreamVersion: v2.2.1
+
+keywords:
+  - spark
+  - operator
+sources:
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/docker-images/production-images/+/refs/heads/master/images/spark/3.4/operator/
+team: https://www.mediawiki.org/wiki/Data_Platform_Engineering/Data_Platform_SRE
+maintainers:
+  - name: Ben Tullis
+    email: btullis@wikimedia.org
