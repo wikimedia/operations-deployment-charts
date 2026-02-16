@@ -451,3 +451,19 @@ spec:
   - name: foo
     hostPath:
       path: /mnt/mediawiki
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod26-parsoid-testing-invalid
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.35
+    volumeMounts:
+    - name: foo
+      mountPath: /mnt/parsoid-testing
+  volumes:
+  - name: foo
+    hostPath:
+      path: /mnt/parsoid-testing

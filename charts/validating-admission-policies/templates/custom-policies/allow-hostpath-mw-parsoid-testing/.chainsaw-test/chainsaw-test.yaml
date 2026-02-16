@@ -1,7 +1,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: allow-hostpath-mw-experimental
+  name: allow-hostpath-mw-parsoid-testing
 spec:
   namespaceTemplate:
     metadata:
@@ -9,12 +9,12 @@ spec:
         pod-security.kubernetes.io/enforce: privileged
         pod-security.wmf.org/profile: restricted
         pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
-        pod-security.wmf.org/allow-hostpath-mw-experimental: include
+        pod-security.wmf.org/allow-hostpath-mw-parsoid-testing: include
   steps:
-  - name: prepare_allow-hostpath-mw-experimental
+  - name: prepare_allow-hostpath-mw-parsoid-testing
     try:
     - apply:
-        file: ../allow-hostpath-mw-experimental.yaml
+        file: ../allow-hostpath-mw-parsoid-testing.yaml
   - name: test
     try:
     - create:

@@ -1,7 +1,7 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: allow-hostpath-mw-experimental
+  name: allow-hostpath-mw-parsoid-testing
 spec:
   matchConstraints:
     resourceRules:
@@ -28,23 +28,23 @@ spec:
       !has(object.spec.volumes) ||
       object.spec.volumes.all(volume, (
           !has(volume.hostPath) ||
-          volume.hostPath.path in ["/usr/share/GeoIP", "/usr/share/GeoIPInfo", "/srv/mediawiki"
+          volume.hostPath.path in ["/usr/share/GeoIP", "/usr/share/GeoIPInfo", "/srv/mediawiki", "/srv/parsoid-testing"
           ]
       ))
     message: >-
-      HostPath volumes are allowed for, /usr/share/GeoIP, /usr/share/GeoIPInfo, and
-      /srv/mediawiki only.
+      HostPath volumes are allowed for, /usr/share/GeoIP, /usr/share/GeoIPInfo,
+      /srv/mediawiki, and /srv/parsoid-testing only.
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: allow-hostpath-mw-experimental
+  name: allow-hostpath-mw-parsoid-testing
 spec:
-  policyName: allow-hostpath-mw-experimental
+  policyName: allow-hostpath-mw-parsoid-testing
   matchResources:
     namespaceSelector:
       matchExpressions:
-      - key: pod-security.wmf.org/allow-hostpath-mw-experimental
+      - key: pod-security.wmf.org/allow-hostpath-mw-parsoid-testing
         operator: In
         values:
         - include
