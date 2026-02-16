@@ -157,16 +157,15 @@ inference_services:
           value: "s3://wmf-ml-models/revertrisk/wikidata/20251104121312/"
         - name: FORCE_HTTP
           value: "True"
-        # For a single GPU, we must use a single worker to manage it.
         - name: WORKERS
-          value: "1"
+          value: "4"
       container:
         resources:
           limits:
             cpu: "8"
-            memory: 16Gi
+            memory: 32Gi
             amd.com/gpu: "1"
           requests:
             cpu: "8"
-            memory: 16Gi
+            memory: 32Gi
             amd.com/gpu: "1"
