@@ -1,6 +1,17 @@
 config:
   airflow:
     instance_name: research
+    config:
+      # T417190: we had recently changed the default Airflow behavior by having it
+      # store the large XCOMs in S3. The client used to do this broke the expectations
+      # that JSON-encoded strings fetched from the XCOM backend would be retrieved as
+      # str objects, and instead were fetched as dict. This didn't play nice with pydantic
+      # which caused these XCOM values to be JSON encoded multiple times. We revert to using
+      # the core XCOM backend (aka the DB) for all XCOMs. We've observed that their size
+      # didn't exceed the threshold, so they were all stored in DB anyway.
+      core:
+        xcom_backend: airflow.models.xcom.BaseXCom
+      common.io: ~
 
 ingress:
   gatewayHosts:
