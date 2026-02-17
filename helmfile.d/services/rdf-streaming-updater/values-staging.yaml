@@ -15,9 +15,6 @@ app:
     resource:
       memory: 2Gb
       cpu: 1
-  image: docker-registry.discovery.wmnet/repos/wikidata-platform/flink-rdf-streaming-updater
-  version: flink-1.20.2-rdf-0.3.160
-  flinkVersion: v1_20
 flink:
   object_store:
     swift_bucket: rdf-streaming-updater-staging

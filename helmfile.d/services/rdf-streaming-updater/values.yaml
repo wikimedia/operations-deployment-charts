@@ -29,9 +29,9 @@ app:
       kafka_producer_config.client.dns.lookup: use_all_dns_ips
       kafka_consumer_config.security.protocol: SSL
       kafka_consumer_config.client.dns.lookup: use_all_dns_ips
-  image: docker-registry.discovery.wmnet/repos/search-platform/flink-rdf-streaming-updater
-  version: flink-1.17.1-rdf-0.3.154
-  flinkVersion: v1_17
+  image: docker-registry.discovery.wmnet/repos/wikidata-platform/flink-rdf-streaming-updater
+  version: flink-1.20.2-rdf-0.3.162-scala-2.12.21
+  flinkVersion: v1_20
   env:
     # disable JEMALLOC for testing
     - name: "DISABLE_JEMALLOC"
