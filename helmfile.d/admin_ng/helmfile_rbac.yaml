@@ -30,7 +30,7 @@ releases:
             {{- end }}
             {{- if hasKey .Environment.Values "install_flink_operator" }}
             - apiGroups: ["flink.apache.org"]
-              resources: ["flinkdeployments", "flinksessionjobs", "flinkstatesnapshots"]
+              resources: ["flinkdeployments", "flinksessionjobs", "flinkstatesnapshots", "flinkbluegreendeployments"]
               verbs: ["get", "list", "watch"]
             {{- end }}
             {{- if hasKey .Environment.Values "install_kserve" }}
@@ -125,7 +125,7 @@ releases:
             {{- end }}
             {{- if hasKey .Environment.Values "install_flink_operator" }}
             - apiGroups: ["flink.apache.org"]
-              resources: ["flinkdeployments", "flinksessionjobs", "flinkstatesnapshots"]
+              resources: ["flinkdeployments", "flinksessionjobs", "flinkstatesnapshots", "flinkbluegreendeployments"]
               verbs: ["*"]
             {{- end }}
             {{- if hasKey .Environment.Values "install_cloudnative_pg_operator" }}
