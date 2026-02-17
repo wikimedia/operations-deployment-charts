@@ -90,6 +90,8 @@ rules:
       - flinksessionjobs/finalizers
       - flinkstatesnapshots
       - flinkstatesnapshots/finalizers
+      - flinkbluegreendeployments
+      - flinkbluegreendeployments/finalizers
     verbs:
       - get
       - list
@@ -104,6 +106,7 @@ rules:
       - flinkdeployments/status
       - flinksessionjobs/status
       - flinkstatesnapshots/status
+      - flinkbluegreendeployments/status
     verbs:
       - get
       - update
