@@ -34,12 +34,12 @@ class Response:
 CONNECTION_ERROR = -1
 
 class Target:
-    def __init__(self, url, headers = {}, timeout=5):
+    def __init__(self, url, headers = None, timeout=5):
         self.url = url
         self.timeout = timeout
         self.headers = {
             "user-agent":  "smokepy/0.1 (dkinzler at wikimedia.org)",
-            **headers
+            **( headers or {} )
         }
 
         # create an opener that accepts invalid certificates and doesn't throw on
@@ -52,10 +52,13 @@ class Target:
             urllib.request.HTTPSHandler(context=ctx)
         )
 
-    def get(self, path, headers= {}, debug = []):
+    def get(self, path, headers = None, debug = None):
         """
         Perform <n> HTTP GET requests to url and return a response object.
         """
+
+        headers = headers or {}
+        debug = debug or []
 
         url = self.url + path
         headers = { **self.headers, **headers }
@@ -91,7 +94,7 @@ class Target:
             resp.body = f"CONNECTION ERROR: {e}"
             return resp
 
-    def mget(self, paths, headers = {}, debug = []):
+    def mget(self, paths, headers = None, debug = None):
         """
         Perform multiple HTTP GET requests in parallel and returns a list of responses,
         one for each path.
@@ -112,13 +115,14 @@ class Target:
 
         return responses
 
-    def count_get(self, path, n = 10, predicates = {}, headers = {}, debug = []):
+    def count_get(self, path, n = 10, predicates = None, headers = None, debug = None):
         """
         Perform n HTTP GET requests and return a dict that indicates how often each predicate
         matched a response.
         """
         counts = {}
 
+        predicates = predicates or {}
         predicates["error"] = Predicates.has_status(CONNECTION_ERROR)
         predicates["2xx"] = Predicates.has_status_between(200, 299)
         predicates["3xx"] = Predicates.has_status_between(300, 399)
