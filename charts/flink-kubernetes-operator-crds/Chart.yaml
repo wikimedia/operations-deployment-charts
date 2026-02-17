@@ -6,8 +6,8 @@ type: application
 # appVersion should be the upstream version.
 # (We cannot use a '-wmf0' prerelease suffix in helm charts.
 # Helm considers these 'development' versions.)
-version: 2.4.0
-appVersion: 1.12.0
+version: 2.5.0
+appVersion: 1.14.0
 icon: https://flink.apache.org/img/logo/png/50/color_50.png
 keywords:
   - flink
@@ -15,7 +15,7 @@ keywords:
   - crds
 home: https://wikitech.wikimedia.org/wiki/Event_Platform/Stream_Processing/Flink
 sources:
-  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/docker-images/production-images/+/refs/heads/master/images/flink/flink
+  - https://github.com/apache/flink-kubernetes-operator/tree/main/helm/flink-kubernetes-operator/crds
 team: https://www.mediawiki.org/wiki/Data_Platform_Engineering/Data_Platform_SRE
 maintainers:
   - name: Balthazar Rouberol
