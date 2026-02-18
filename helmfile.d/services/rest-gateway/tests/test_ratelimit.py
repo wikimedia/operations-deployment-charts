@@ -75,6 +75,7 @@ class RateLimitTest(unittest.TestCase):
         predicates = {
             "429": Predicates.has_status(429),
             "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
+            "x-wmf-ratelimit-class": Predicates.has_header("x-wmf-ratelimit-class"),
             "retry-after": Predicates.has_header("retry-after"),
             "notice": Predicates.body_contains("bot-traffic@wikimedia.org")
         }
@@ -94,6 +95,9 @@ class RateLimitTest(unittest.TestCase):
                 self.assertEqual( xrl_count, submitted, "expected all responses to contain an x-ratelimit-remaining header")
             else:
                 self.assertEqual( xrl_count, 0, "expected no response to contain an x-ratelimit-remaining header")
+
+            rlc_count = counts.get("x-wmf-ratelimit-class", 0)
+            self.assertEqual( rlc_count, submitted, "expected all responses to contain an x-wmf-ratelimit-class header")
 
         def assert_good_response(allowed, submitted, counts):
             count_2xx = counts.get("2xx", 0)
@@ -122,6 +126,9 @@ class RateLimitTest(unittest.TestCase):
             count_headers = counts.get("x-ratelimit-remaining", 0)
             self.assertEqual(  count_headers, 0, "expected no response to contain an x-ratelimit-remaining header")
 
+            rlc_count = counts.get("x-wmf-ratelimit-class", 0)
+            self.assertEqual( rlc_count, 0, "expected no responses to contain an x-wmf-ratelimit-class header")
+
         assertions = (assert_no_denied_responses, assert_no_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
 
@@ -136,6 +143,9 @@ class RateLimitTest(unittest.TestCase):
                 self.assertEqual( xrl_count, submitted, "expected all responses to contain an x-ratelimit-remaining header")
             else:
                 self.assertEqual( xrl_count, 0, "expected no response to contain an x-ratelimit-remaining header")
+
+            rlc_count = counts.get("x-wmf-ratelimit-class", 0)
+            self.assertEqual( rlc_count, submitted, "expected all responses to contain an x-wmf-ratelimit-class header")
 
         assertions = (assert_no_denied_responses, assert_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)

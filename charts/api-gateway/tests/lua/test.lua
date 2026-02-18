@@ -25,12 +25,42 @@ _G.HelmValues = {
                 "DefaultPolicy2",
                 "DefaultPolicy3",
             },
+            exposed_headers = {
+                "x-wmf-user-id",
+                "x-wmf-ratelimit-class",
+            },
         }
     }
 }
 
 -- Run the code under test to define functions to test.
 codeFunc()
+
+-- Recursive dump for debugging, don't delete if unused.
+-- Based on https://github.com/ToxicFrog/luautil/blob/master/table.lua
+-- by Ben "ToxicFrog" Kelly (MIT license).
+function var_str(T)
+    if not type(v) == 'table' then
+        return "" .. v
+    end
+
+    local buf = {}
+    local done = {}
+    local function tstr(T, prefix)
+        for k,v in pairs(T) do
+            table.insert(buf, prefix..tostring(k)..'\t=\t'..tostring(v))
+            if type(v) == 'table' then
+                if not done[v] then
+                    done[v] = true
+                    tstr(v, prefix.."  ")
+                end
+            end
+        end
+    end
+    done[T] = true
+    tstr(T, "")
+    return string.gsub( table.concat(buf, "\n"), "^%s*(.-)%s*$", "%1")
+end
 
 -- This uses the Busted test framework, see https://lunarmodules.github.io/busted/.
 -- The structure is similar to Mocha tests.
@@ -53,17 +83,24 @@ describe("rest_hooks", function()
 
         -- fake methods
         -- Note that add() is implemented like replace(). Good enough for now.
-        headers.get = function(h, k) return h.values[k] end
-        headers.add = function(h, k, v) h.values[k] = v end
-        headers.replace = function(h, k, v) h.values[k] = v end
-        headers.remove = function(h, k) h.values[k] = nil end
+        headers.get = function(self, k) return self.values[k] end
+        headers.add = function(self, k, v) self.values[k] = v end
+        headers.replace = function(self, k, v) self.values[k] = v end
+        headers.remove = function(self, k) self.values[k] = nil end
 
         return headers
     end
 
     function fake_metadata(values)
         return {
-            get = function(h, k) return values[k] end
+            get = function(self, name) return values[name] end,
+            set = function(self, name, k, v)
+                if not values[name] then
+                    values[name] = {}
+                end
+
+                values[name][k] = v
+            end,
         }
     end
 
@@ -112,6 +149,9 @@ describe("rest_hooks", function()
             logWarning = noop,
         },{
             headers = fake_headers(headers),
+            streamInfo = fake_stream_info(arg.address or "127.0.0.1",
+                    arg.streamMetadata or {}),
+            metadata = fake_metadata(arg.routeMetadata or {}),
             body = fake_body("Lorem ipsum"),
         })
     end
@@ -619,6 +659,36 @@ describe("rest_hooks", function()
 
             local result = res:body():getBytes()
             assert.are_not.equal("ratelimit notice text", result)
+        end)
+    end)
+
+    describe("wmf_stash_headers and wmf_expose_headers", function()
+        it("should expose the configured headers", function()
+            local headers = {
+                ["something"] = "429",
+                ["x-wmf-user-id"] = "Shawn",
+                ["x-wmf-ratelimit-class"] = "user",
+            }
+
+            local streamMetadata = {}
+
+            local req = fake_request_handle{
+                headers = headers,
+                streamMetadata = streamMetadata
+            }
+
+            wmf_stash_headers( req )
+
+            local res = fake_response_handle{
+                streamMetadata = streamMetadata
+            }
+
+            wmf_expose_headers( res )
+            local result = res:headers()
+
+            assert.is.equal(nil, result:get("something"))
+            assert.is.equal("Shawn", result:get("x-wmf-user-id"))
+            assert.is.equal("user", result:get("x-wmf-ratelimit-class"))
         end)
     end)
 end)

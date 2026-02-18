@@ -6,10 +6,12 @@
 
 function envoy_on_request(request_handle)
     wmf_ratelimit_info(request_handle)
+    wmf_stash_headers(request_handle)
     wmf_request_cleanup(request_handle)
 end
 
 function envoy_on_response(response_handle)
+    wmf_expose_headers(response_handle)
     wmf_set_retry_after(response_handle)
 end
 
@@ -208,6 +210,30 @@ function wmf_request_cleanup(request_handle)
         if headers:get(hname) == "no-limit" then
             headers:remove(hname)
         end
+    end
+end
+
+function wmf_stash_headers(request_handle)
+    local headers = request_handle:headers()
+    local streamMeta = request_handle:streamInfo():dynamicMetadata()
+
+    for _, hname in ipairs(HelmValues.main_app.ratelimiter.exposed_headers) do
+        hvalue = headers:get(hname)
+        streamMeta:set("envoy.wmf_headers", hname, hvalue)
+    end
+end
+
+function wmf_expose_headers(response_handle)
+    local headers = response_handle:headers()
+    local streamMeta = response_handle:streamInfo():dynamicMetadata()
+    local wmf_headers = streamMeta:get("envoy.wmf_headers")
+
+    if not wmf_headers then
+        return
+    end
+
+    for hname, hvalue in pairs(wmf_headers) do
+        headers:replace(hname, hvalue)
     end
 end
 

@@ -64,6 +64,10 @@ main_app:
 
     log_level: info
 
+    # Request headers to expose in the response, including x-wmf-* headers set by restgateway.lua
+    # See T417780
+    exposed_headers: [ "x-wmf-ratelimit-class" ]
+
     ratelimit_notice_text: |
       You are making too many requests.
       Please reduce your request rate or contact <bot-traffic@wikimedia.org>.

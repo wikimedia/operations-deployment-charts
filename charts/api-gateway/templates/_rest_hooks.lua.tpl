@@ -20,6 +20,11 @@ HelmValues = {
                 "{{ $policy }}",
                 {{- end }}
             },
+            exposed_headers = {
+                {{ range $header := .Values.main_app.ratelimiter.exposed_headers -}}
+                "{{ $header }}",
+                {{- end }}
+            },
             ratelimit_notice_text = "{{ replace "\n" "\\\n" .Values.main_app.ratelimiter.ratelimit_notice_text }}"
         }
     }
