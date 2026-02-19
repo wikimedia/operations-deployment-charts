@@ -11,23 +11,19 @@ helmDefaults:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-parsoid-deploy-%s.config" .Environment.Name) }}
-
 # kubernetesVersion is hard-coded here -- T388969. Remember to change it when upgrading k8s!
 environments:
   eqiad:
     values:
-      - releases: [main,migration,canary, prometheus]
+      - releases:  [pinkllama,prometheus]
       - kubernetesVersion: '1.31'
   codfw:
     values:
-      - releases: [main,migration,canary, prometheus]
+      - releases: [pinkllama,prometheus]
       - kubernetesVersion: '1.31'
-
 ---
-
 bases:
   - ../global.yaml
-
 templates:
   default: &default
     namespace: mw-parsoid
@@ -54,7 +50,7 @@ templates:
       - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
       - name: php.servergroup
-        value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if eq .Release.Name "migration" }}-{{ .Release.Name }}{{end}}`}}'
+        value: "kube-{{`{{ .Release.Namespace }}`}}"
   statsd-exporter: &statsd
     namespace: mw-parsoid
     chart: wmf-stable/statsd-exporter
@@ -71,7 +67,6 @@ templates:
       - "statsd-global.yaml"
       - "values-statsd-{{ .Environment.Name }}.yaml" # dc-specific overrides
       - "values-statsd.yaml"
-
 hooks:
   - events: ["prepare"]
     command: "helmfile_log_sal"
@@ -86,16 +81,9 @@ hooks:
       [
         "{{`{{.HelmfileCommand}}`}}",
         "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/services/mw-parsoid: {{`{{.HelmfileCommand}}`}}",
-
       ]
-
-
 releases:
-  - name: main
-    <<: *default
-  - name: migration
-    <<: *default
-  - name: canary
+  - name: pinkllama
     <<: *default
   - name: prometheus
     <<: *statsd
