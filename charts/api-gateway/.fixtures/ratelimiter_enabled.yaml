@@ -13,7 +13,7 @@ main_app:
     redis_port: 6380
     redis_pass: "foo"
 
-    default_policies: [ active-policy ]
+    default_policies: [ active-policy, shadow-policy ]
     allow_client_headers: false        # default: false
     enable_x_ratelimit_headers: false  # default: true
 

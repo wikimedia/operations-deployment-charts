@@ -52,6 +52,9 @@ class HelmData (values.Values):
                     continue
                 except (KeyError, TypeError) as ex:
                     raise KeyError( f"Failed to resolve path {path} at step {i} with key {k}: {ex}" )
+            else:
+                if isinstance(k, dict):
+                    raise KeyError( f"Failed to resolve path {path} at step {i} with seletor {k}: expected list to scan, got {type(v)}" )
 
             try:
                 # EAFP: If v is not dict-like, just catch and continue.

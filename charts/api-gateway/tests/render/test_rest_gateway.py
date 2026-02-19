@@ -152,15 +152,30 @@ class RestGatewayTest(unittest.TestCase):
         connection_manager = listener.get(["filter_chains", 0, "filters", { "name": "envoy.filters.network.http_connection_manager"} ])
         self.assertIsNotNone( connection_manager, "http_connection_manager" )
 
+        # access log filter
+        access_log = connection_manager.typed_config.access_log.typed_config
+        self.assertIsNotNone(access_log, "access_log")
+        self.assertIsNotNone(access_log.log_format.json_format.http)
+        self.assertIsNotNone(access_log.get("log_format.json_format.http.request_headers.user-agent"))
+        self.assertIsNotNone(access_log.get("log_format.json_format.http.request_headers.x-wmf-ratelimit-policy"))
+        self.assertEqual(
+            access_log.get("log_format.json_format.http.request_headers.x-wmf-ratelimit-policy").strip(),
+            r"%REQ(X-WMF-RATELIMIT-POLICY-1)% %REQ(X-WMF-RATELIMIT-POLICY-2)%",
+        )
+
         # http filters
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.lua"}]), )
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.ratelimit"}]), )
 
-        # route_config
+        # vhost
         vhost = connection_manager.get("typed_config.route_config.virtual_hosts.name=restgateway_vhost")
         self.assertIsNotNone( vhost, "restgateway_vhost")
-        self.assertIsNotNone( vhost.get("rate_limits"), "rate_limits")
 
+        # ratelimit rules
+        self.assertIsNotNone( vhost.rate_limits, "rate_limits")
+        self.assertEqual( len(vhost.rate_limits), 2, "rate_limits count") # policies x units
+
+        # route_config
         policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])
         self.assertIsInstance( policies, list, "wmf_ratelimit.policies")
 
