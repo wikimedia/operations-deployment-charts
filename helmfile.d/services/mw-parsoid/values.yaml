@@ -1,49 +1,16 @@
 resources:
-# mw-parsoid has a single release, and a single pod.
-  replicas: 1
-
-# This is a single pod service, recreate is ok
-strategy:
-  type: Recreate
-  rollingUpdate: ~
+  # When ramping up replicas in the main release, please remember
+  # to raise the number of canary replicas as well.
+  # We aim for ~3% of the deployment for canaries, rounding up.
+  # Multi-DC size: 10
+  replicas: 10
 
 mesh:
+  image_version: 1.35.7-1
   public_port: 4452
   tracing:
-    enabled: false
-    sampling: 1
+    enabled: true
+    sampling: 0.1
 
 monitoring:
   statsd: ~
-
-main_app:
-  requests:
-    auto_compute: false
-    cpu: 1000m
-    memory: 3500Mi
-  limits:
-    enforce: false
-    auto_compute: false
-    cpu: 2000m
-    memory: 4000Mi
-
-# enabling experimental mounts /srv/mediawiki from the node
-# via hostPath
-mw:
-  experimental:
-    enabled: false
-# enabling mounting of /srv/parsoid-testing from the node
-# via hostPath for parsoid test support.
-  parsoid:
-    testing: true
-# mw-experimetal and mw-parsoid run only on specific nodes
-tolerations:
-  - key: dedicated
-    value: mw-experimental
-    effect: NoExecute
-  - key: dedicated
-    value: mw-experimental
-    effect: NoSchedule
-affinity:
-  nodeSelector:
-    dedicated: mw-experimental

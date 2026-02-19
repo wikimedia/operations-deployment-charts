@@ -16,11 +16,11 @@ helmDefaults:
 environments:
   eqiad:
     values:
-      - releases:  [pinkllama,prometheus]
+      - releases: [main,migration,canary, prometheus]
       - kubernetesVersion: '1.31'
   codfw:
     values:
-      - releases: [pinkllama,prometheus]
+      - releases: [main,migration,canary, prometheus]
       - kubernetesVersion: '1.31'
 
 ---
@@ -54,7 +54,7 @@ templates:
       - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
       - name: php.servergroup
-        value: "kube-{{`{{ .Release.Namespace }}`}}"
+        value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if eq .Release.Name "migration" }}-{{ .Release.Name }}{{end}}`}}'
   statsd-exporter: &statsd
     namespace: mw-parsoid
     chart: wmf-stable/statsd-exporter
@@ -91,7 +91,11 @@ hooks:
 
 
 releases:
-  - name: pinkllama
+  - name: main
+    <<: *default
+  - name: migration
+    <<: *default
+  - name: canary
     <<: *default
   - name: prometheus
     <<: *statsd
