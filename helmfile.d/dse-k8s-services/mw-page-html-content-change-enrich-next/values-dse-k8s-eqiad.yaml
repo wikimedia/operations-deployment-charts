@@ -35,6 +35,8 @@ app:
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
+            # Kafka Topic compression is "producer" by default, we want to compress the HTML.
+            compression.type: snappy
 
         error_sink:
           options:
