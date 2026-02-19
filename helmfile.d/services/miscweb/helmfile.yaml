@@ -28,6 +28,7 @@ environments:
         - design-strategy
         - security-landing-page
         - wikipedia25
+        - status
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
@@ -113,4 +114,6 @@ releases:
   - name: os-reports
     <<: *default
   - name: wikipedia25
+    <<: *default
+  - name: status
     <<: *default
