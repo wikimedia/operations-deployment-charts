@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        {{- include "app.generic.container" . | indent 8 }}
+        {{- include "httpd_cas.container" . | indent 8 }}
+        {{- include "mesh.deployment.container" . | indent 8 }}
+      volumes:
+        {{- include "app.generic.volume" . | indent 8 }}
+        {{- include "httpd_cas.volume" . | indent 8 }}
+        {{- include "mesh.deployment.volume" . | indent 8 }}
+
+
+

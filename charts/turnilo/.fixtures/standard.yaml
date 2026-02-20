@@ -1,0 +1,23 @@
+docker:
+  registry: docker-registry.discovery.wmnet
+
+app:
+  version: 12345
+
+config:
+  turnilo:
+    trustProxy: always
+    url: override_me
+    clusters:
+      - name: fake_druidcluster
+        host: fake_druidhost
+        sourceListRefreshInterval: 15000
+        sourceListScan: auto
+        sourceReintrospectInterval: 120000
+        type: druid
+
+    # This datacubes definition is very long and is copied as-is using toYaml
+    datacubes:
+      - name: fake_data_cube
+        title: Fake datacube
+        clusterName: fake_data_cube
