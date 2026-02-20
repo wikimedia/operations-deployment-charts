@@ -1,0 +1,60 @@
+helmBinary: helm3
+helmDefaults:
+  createNamespace: false
+  verify: false
+  atomic: true
+  timeout: 600
+  force: false
+  args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
+    - --kubeconfig
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/turnilo-next-deploy-%s.config" .Environment.Name) }}
+
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [staging]
+    missingFileHandler: Warn
+
+---
+
+templates:
+  default: &default
+    chart: wmf-stable/turnilo
+    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
+    # This template gets applied for every release, all of which are applied in every environment
+    # The installedTemplate line below is how we guarantee we only install the appropriate release in each environment.
+    # If you don't define environment.values.releases for an environment, this template will fail and raise an error.
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values.yaml" # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/dse-k8s_services/turnilo-next/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      - environmentName: "{{ .Environment.Name }}"
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/turnilo: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/turnilo: {{`{{.HelmfileCommand}}`}}",
+      ]
+
+releases:
+  - name: staging
+    namespace: turnilo-next
+    <<: *default
