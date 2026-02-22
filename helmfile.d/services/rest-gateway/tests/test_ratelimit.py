@@ -262,13 +262,42 @@ class RateLimitTest(unittest.TestCase):
 
     def test_bearer_token_limit_uses_rlc_claim(self):
         ip = env.nextIp()
+        name = env.nextName("Tester")
         token = jwtools.createJwtOrSkip(self,
-            sub = env.nextName("Tester"),
-            rlc = "approved-bot"
+            sub = name,
+            rlc = "known-client" # should be used
         )
-        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
+        cookie_token = jwtools.createJwtOrSkip(self,
+            sub = name,
+            rlc = "approved-bot" # should be ignored
+        )
+        headers = {
+            "x-client-ip": ip,
+            "Authorization": "Bearer " + token,
+            "cookie": "sessionJwt=" + cookie_token
+        }
 
-        # should apply approved-bot limits, not authed-bot limits
+        # should apply known-client limits, not approved-bot limits
+        limits = getRateLimits("known-client")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+
+    def test_bearer_token_limit_uses_rlc_claim_from_cookie(self):
+        ip = env.nextIp()
+        name = env.nextName("Tester")
+        token = jwtools.createJwtOrSkip(self,
+            sub = name,
+        )
+        cookie_token = jwtools.createJwtOrSkip(self,
+            sub = name,
+            rlc = "approved-bot" # should be used
+        )
+        headers = {
+            "x-client-ip": ip,
+            "Authorization": "Bearer " + token,
+            "cookie": "sessionJwt=" + cookie_token
+        }
+
+        # should apply approved-bot limits
         limits = getRateLimits("approved-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 

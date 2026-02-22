@@ -110,9 +110,16 @@ function wmf_ratelimit_info(request_handle)
         user_id = "bearer-sub:" .. jwtPayload.sub
 
         if jwtPayload.rlc then
+            -- We trust that long-lived tokens don't have an rlc field.
+            -- Ideally, we should check if exp or iat are more than a day away,
+            -- and ignore the rlc if they are.
             ratelimit_class = jwtPayload.rlc
+        elseif cookiePayload.rlc then
+            -- T418042: Use the rlc field from a session cookie if is also present.
+            ratelimit_class = cookiePayload.rlc
         else
-            -- fallback class for clients using API keys
+            -- Fallback class for clients using API keys (owner-only tokens) without
+            -- session cookies.
             ratelimit_class = "authed-bot"
         end
     elseif cookiePayload.sub then

@@ -316,19 +316,51 @@ describe("rest_hooks", function()
                 assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
             end)
-            it("should use the rlc claim if present", function()
-                -- The JWT payload is stored in stream metadata
+            it("should prefer the rlc claim from the token over the session cookie", function()
+                -- If the bearer token and the session cookie both have an rlc claim,
+                -- use the one from the bearer token.
                 local payload = {
                     sub = "12345",
                     rlc = "special-class"
                 }
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+                local cookie_payload = {
+                    rlc = "cookie-class"
+                }
+
+                -- The JWT payload is stored in stream metadata
+                local meta = { ["envoy.filters.http.jwt_authn"] = {
+                    ["jwt_payload"] = payload,
+                    ["cookie_payload"] = cookie_payload }
+                }
+
                 local req = fake_request_handle( { streamMetadata = meta } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
                 assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
+            end)
+            it("should fall back to the rlc claim from the session cookie (T418042)", function()
+                -- If the bearer token doesn't have an rlc claim, use the one from the cookie.
+                local payload = {
+                    sub = "12345",
+                }
+                local cookie_payload = {
+                    rlc = "updated-class"
+                }
+
+                -- The JWT payload is stored in stream metadata
+                local meta = { ["envoy.filters.http.jwt_authn"] = {
+                    ["jwt_payload"] = payload,
+                    ["cookie_payload"] = cookie_payload }
+                }
+
+                local req = fake_request_handle( { streamMetadata = meta } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "updated-class", result:get("x-wmf-ratelimit-class") )
             end)
             it("should not use the rlc claim if the sub claim is not present", function()
                 -- The JWT payload is stored in stream metadata
