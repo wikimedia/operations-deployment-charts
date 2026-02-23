@@ -8,6 +8,7 @@ service:
   cors: {{ .Values.app.service.cors | quote }}
   max_body_size: {{ .Values.app.service.max_body_size }}
   secure_cookie: {{ .Values.app.service.secure_cookie }}
+  user_agent: {{ .Values.app.service.user_agent }}
 
 listeners:
   action_api_basepath: {{ .Values.app.listeners.action_api_basepath }}
