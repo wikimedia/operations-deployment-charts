@@ -1,3 +1,7 @@
+## configuration 1.15.2
+
+- Ensure that local TLS listeners are correctly marked as `traffic_direction: INBOUND`.
+
 ## configuration 1.15.0
 
 - Allow the envoyproxy local cluster to forward to an alternative

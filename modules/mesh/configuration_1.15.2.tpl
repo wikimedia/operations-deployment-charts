@@ -404,6 +404,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
   - name: envoy.filters.listener.tls_inspector
     typed_config:
       "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
+  traffic_direction: INBOUND
 {{- end }}
 
 {{/* Mesh network configuration. */}}
