@@ -10,6 +10,7 @@ releases:
     <<: *default
     needs:
       - knative-serving/knative-serving
+      - cert-manager/cert-manager
     values:
       # Generic default values for all environments
       - "values/common.yaml"
