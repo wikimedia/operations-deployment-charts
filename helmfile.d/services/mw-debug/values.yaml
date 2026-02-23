@@ -21,7 +21,11 @@ service:
 
 mesh:
   enabled: true
-  image_version: 1.35.7-1
+  image_version: 1.35.7-3
+  drain: true
+  admin:
+    drain_time_s: 1 # Should be ignored since we're not using gradual draining, just override default
+    drain_strategy: "immediate"
   tracing:
     enabled: true
     sampling: 100
@@ -108,6 +112,13 @@ mesh:
   upstream_retry_policy:
     retry_on: 5xx
     num_retries: 1
+  # T364245: Experimental changes for envoy drain testing:
+  extra_env:
+    # Trigger inboundonly drain.
+    DRAIN_INBOUND_ONLY: true
+    # Ensure that the post-drain wait period (i.e., waiting active connections
+    # to drain) lasts at least as long as the previous pre-stop sleep hook.
+    DRAIN_WAIT_MINIMUM_S: 7
 monitoring:
   enabled: true
   statsd: ~
