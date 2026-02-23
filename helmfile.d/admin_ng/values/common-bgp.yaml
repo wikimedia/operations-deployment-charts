@@ -27,6 +27,61 @@ BGPPeers:
     ipv4: 208.80.154.197
     ipv6: 2620:0:861:ffff::2
     nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone in { 'row-a', 'row-b', 'row-c', 'row-d', 'pod-ab', 'pod-cd', 'ganeti-eqiad-a', 'ganeti-eqiad-b', 'ganeti-eqiad-c', 'ganeti-eqiad-d' })
+  # C1 will need to be added after T403031
+  lsw1-c2-eqiad:
+    ipv4: 10.64.133.1
+    ipv6: 2620:0:861:10c::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c2')
+  lsw1-c3-eqiad:
+    ipv4: 10.64.141.1
+    ipv6: 2620:0:861:113::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c3')
+  lsw1-c4-eqiad:
+    ipv4: 10.64.169.1
+    ipv6: 2620:0:861:119::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c4')
+  lsw1-c5-eqiad:
+    ipv4: 10.64.171.1
+    ipv6: 2620:0:861:131::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c5')
+  lsw1-c6-eqiad:
+    ipv4: 10.64.173.1
+    ipv6: 2620:0:861:133::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c6')
+  lsw1-c7-eqiad:
+    ipv4: 10.64.175.1
+    ipv6: 2620:0:861:135::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-c7')
+  # C8 is dedicated to WMCS
+  lsw1-d1-eqiad:
+    ipv4: 10.64.177.1
+    ipv6: 2620:0:861:137::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d1')
+  lsw1-d2-eqiad:
+    ipv4: 10.64.179.1
+    ipv6: 2620:0:861:139::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d2')
+  lsw1-d3-eqiad:
+    ipv4: 10.64.181.1
+    ipv6: 2620:0:861:13b::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d3')
+  lsw1-d4-eqiad:
+    ipv4: 10.64.183.1
+    ipv6: 2620:0:861:13d::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d4')
+  # D5 is dedicated to WMCS
+  lsw1-d6-eqiad:
+    ipv4: 10.64.185.1
+    ipv6: 2620:0:861:13f::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d6')
+  lsw1-d7-eqiad:
+    ipv4: 10.64.187.1
+    ipv6: 2620:0:861:142::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d7')
+  lsw1-d8-eqiad:
+    ipv4: 10.64.189.1
+    ipv6: 2620:0:861:144::1
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-d8')
   lsw1-e1-eqiad:
     ipv4: 10.64.130.1
     ipv6: 2620:0:861:109::1
