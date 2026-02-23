@@ -200,3 +200,7 @@ BGPPeers:
     ipv4: 10.192.43.1
     ipv6: 2620:0:860:122::1
     nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-d8')
+  lsw1-f4-codfw:
+    ipv4: 10.192.52.1
+    ipv6: 2620:0:860:127::1
+    nodeSelector: (topology.kubernetes.io/region == 'codfw' && topology.kubernetes.io/zone == 'row-f4')
