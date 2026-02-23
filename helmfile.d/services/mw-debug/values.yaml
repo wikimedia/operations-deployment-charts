@@ -21,7 +21,23 @@ service:
 
 mesh:
   enabled: true
-  image_version: 1.35.7-1
+  image_version: 1.35.7-4
+  # T364245: (begin) experimental changes (envoy drain testing)
+  drain: true
+  admin:
+    drain_time_s: 1 # Overrides default (600), but is not relevant outside gradual or graceful drain.
+    drain_strategy: "immediate"  # Overrides default (gradual).
+  extra_env:
+    # Use the tool, which supports admin-over-UDS.
+    DRAIN_VIA_TOOL: true
+    # Tell the tool where to find the socket.
+    ADMIN_SOCKET: /var/run/envoy/admin.sock
+    # Trigger inboundonly drain, leaving outbound mesh listeners running.
+    DRAIN_INBOUND_ONLY: true
+    # Ensure that the post-drain wait period (i.e., waiting active connections
+    # to drain) lasts at least as long as the previous pre-stop sleep hook.
+    DRAIN_WAIT_MINIMUM_S: 7
+  # T364245: (end) experimental changes
   tracing:
     enabled: true
     sampling: 100
