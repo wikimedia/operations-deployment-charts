@@ -94,6 +94,10 @@ mesh:
     # http_status: 503
     # pct: 0
 
+  # Additional environment variables that will be set in the envoy container,
+  # expressed as a map from variable name to value.
+  # extra_env: {}
+
 # Mesh-related discovery
 # TODO: move under mesh.* once we can
 discovery:
