@@ -33,7 +33,9 @@ inference_services:
           value: "revertrisk-multilingual"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
+        - name: WIKI_URL
+          value: https://mw-api-int-ro.discovery.wmnet:4446
         - name: FORCE_HTTP
-          value: "true"
+          value: "false"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"

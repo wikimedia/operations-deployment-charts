@@ -89,7 +89,9 @@ inference_services:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
         - name: WIKI_URL
-          value: "http://mw-api-int-ro.discovery.wmnet:4680"
+          value: https://mw-api-int-ro.discovery.wmnet:4446
+        - name: FORCE_HTTP
+          value: "false"
       container:
         resources:
           limits:
