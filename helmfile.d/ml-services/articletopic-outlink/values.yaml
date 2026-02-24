@@ -64,7 +64,9 @@ inference:
       - name: EVENTGATE_STREAM
         value: "mediawiki.page_outlink_topic_prediction_change.v1"
       - name: WIKI_URL
-        value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        value: "https://mw-api-int-ro.discovery.wmnet:4446"
+      - name: FORCE_HTTP
+        value: "false"
 
 inference_services:
   outlink-topic-model:
