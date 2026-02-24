@@ -13,6 +13,13 @@ cache:
         pool: wf-eqiad
         modifykey:
           prefix: "wforch:"
+      - route: /eqiad/wf-wan
+        pool: wf-eqiad
+        modifykey:
+          prefix: "wforch:"
+        replica:
+          route: /codfw/wf-wan
+          pool: wf-codfw
     pools:
       - name: wf-eqiad
         zone: eqiad
