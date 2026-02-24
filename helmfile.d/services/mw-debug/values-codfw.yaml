@@ -26,6 +26,12 @@ cache:
         pool: wf-codfw
         # No failover for wikifunction
         failover_time: 0
+      - route: /codfw/wf-wan
+        pool: wf-codfw
+        failover_time: 0
+        replica:
+          route: /eqiad/wf-wan
+          pool: wf-eqiad
 
 php:
   envvars:

@@ -34,6 +34,12 @@ cache:
         pool: wf-eqiad
         # No failover for wikifunction
         failover_time: 0
+      - route: /eqiad/wf-wan
+        pool: wf-eqiad
+        failover_time: 0
+        replica:
+          route: /codfw/wf-wan
+          pool: wf-codfw
 monitoring:
   enabled: false
 # T368366
