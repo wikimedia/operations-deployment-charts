@@ -420,11 +420,10 @@ main_app:
           in: '/+([^/]+)/v1/data/lists/(.*)'
           out: '/w/rest.php/readinglists/v0/lists/\2'
         # T397203: non-restbase replacement for the old /?spec path that returned JSON
-        # TODO: remove www.wikimedia.org support once $wgRestSandboxSpecs uses wikimedia.org
         - name: spec-json-wikimedia
-          in: '/(www\.)?wikimedia\.org/v1/'
+          in: '/wikimedia\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikimedia.json'
-          to: www.wikimedia.org
+          to: meta.wikimedia.org
           params:
             - spec
         - name: spec-json-wikidata
