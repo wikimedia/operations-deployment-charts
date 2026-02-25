@@ -117,6 +117,10 @@ function wmf_ratelimit_info(request_handle)
         elseif cookiePayload.rlc then
             -- T418042: Use the rlc field from a session cookie if is also present.
             ratelimit_class = cookiePayload.rlc
+        elseif trust == "A" then
+             ratelimit_class = "known-network"
+        elseif trust == "B" then
+             ratelimit_class = "known-client"
         else
             -- Fallback class for clients using API keys (owner-only tokens) without
             -- session cookies.
@@ -127,6 +131,10 @@ function wmf_ratelimit_info(request_handle)
 
         if cookiePayload.rlc then
             ratelimit_class = cookiePayload.rlc
+        elseif trust == "A" then
+             ratelimit_class = "known-network"
+        elseif trust == "B" then
+             ratelimit_class = "known-client"
         elseif browserScore and browserScore >= 80 then
             ratelimit_class = "authed-browser"
         else

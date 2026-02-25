@@ -60,8 +60,8 @@ main_app:
             HOUR: 500
           "authed-browser": # authed, looks like a browser
             HOUR: 5000
-          "known-network": # no auth, network under outbound control (WMCS, WME)
-            HOUR: 9999999 # 10000
+          "known-network": # no auth, network under our control (WMCS, WME)
+            HOUR: 9999999
           "authed-bot": # authed using an API key, but no community approval
             HOUR: 9999999 # 10000
           "authed-other": # authed, but not a browser, and has no bot flag
@@ -84,8 +84,8 @@ main_app:
             HOUR: 500
           "authed-browser": # authed, looks like a browser
             HOUR: 5000
-          "known-network": # no auth, network under outbound control (WMCS, WME)
-            HOUR: 10000
+          "known-network": # no auth, network under our control (WMCS, WME)
+            HOUR: 9999999
           "authed-bot": # authed using an API key, but no community approval
             HOUR: 10000
           "authed-other": # authed, but not a browser, and has no bot flag
