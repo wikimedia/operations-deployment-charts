@@ -4,23 +4,24 @@ opensearchCluster:
     image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2026-02-03-212519-70e19086545c5f33b67dde8506c9ffea81761132-production3@sha256:6e746ee4dad5f3fbd5f6c671fa44b7964f5b516c994d4990842bc5eed7839579
   nodePools:
     - component: masters
-      diskSize: "40Gi"
+      diskSize: "30Gi"
       persistence:
         pvc:
           storageClass: ceph-rbd-ssd
           accessModes:
             - ReadWriteOnce
-      replicas: 3
+      replicas: 7
+      jvm: -Xmx4G -Xms4G
       roles:
         - "master"
         - "data"
       resources:
         requests:
-          memory: "8Gi"
-          cpu: "4000m"
+          memory: "11Gi"
+          cpu: "1000m"
         limits:
-          memory: "8Gi"
-          cpu: "4000m"
+          memory: "11Gi"
+          cpu: "1000m"
     # These annotations enable/configure metrics scrapes
       annotations:
         prometheus.io/scrape: "true"
