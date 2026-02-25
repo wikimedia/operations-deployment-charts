@@ -12,7 +12,7 @@ smokepy:
     default_policy_endpoint: "/en.wikipedia.org/v1/page/title/X"
 
     # The path of the endpoint to probe when testing the shadow rate limit policy.
-    shadow_policy_endpoint: "/enwiki/v1/page/random/main"
+    shadow_policy_endpoint: "/w/api.php?action=query&meta=siteinfo&format=json"
 
     # The headers to send with every request
     headers:
@@ -137,7 +137,7 @@ main_app:
     sample_percentage: 100
 
   # NOTE: Ideally, we would not override the production endpoint definitions here.
-  # But we want to change some values for testing, such as apply_rate_limiting.
+  # But we want to change some values for testing, such as rate_limit_policies.
   # Since it's not possible to update members of the list when merging value files,
   # we have to copy rest_gateway_routes from values.yaml and make changes to it here.
   rest_gateway_routes:
@@ -152,7 +152,6 @@ main_app:
           in: '/+([^/]+)/v1/transform/wikitext/to/mobile-html/(.+)'
           out: '/\1/v1/transform/wikitext/to/mobile-html/\2'
       rb_response_headers: true
-      apply_rate_limiting: false
 
     - name: proton
       timeout: 150s
@@ -162,7 +161,6 @@ main_app:
           in: '/+([^/]+)/v1/page/pdf/([^/]+)'
           out: '/\1/v1/pdf/\2/a4'
       rb_response_headers: true
-      apply_rate_limiting: true
 
     - name: citoid
       timeout: 120s
@@ -184,7 +182,6 @@ main_app:
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
       rb_response_headers: true
-      rate_limit_policies: [ "Apr2026", "nothing" ]
 
     - name: geo-analytics
       timeout: 15s
@@ -382,6 +379,32 @@ main_app:
           in: '/+w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
+    - name: mw-action-api
+      # We set a higher timeout to allow for long queries on the search API
+      timeout: 53s
+      # This set of routes uses the same cluster as mw-api-ext - however
+      # it does NOT use the restbase compability headers as this will
+      # lead to incorrect responses from the mw APIs.
+
+      # These routes also do not use the restbase response headers as
+      # we will either need to put in a more specific set of headers
+      # befitting the mw apis, or to simply defer to the headers
+      # mediawiki sends.
+
+      # The name is misleading, as it's not a different deployment than mw-api-ext
+      # However, in normal operation, it always points to the DC-local deployment.
+      # As long as ATS multi-DC routing does the right thing, this will allow requests
+      # sent from ATS to the secondary datacenter to stay there instead of crossing back
+      # to the primary.
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      rate_limit_policies: [ "Apr2026", "nothing" ]
+      urls:
+        # *** BEGIN action API routes ***
+        - name: action_api_catchall
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+        # *** END action API routes ***
 
   discovery_endpoints:
     citoid:
