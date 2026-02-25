@@ -708,6 +708,14 @@ namespaces:
   sessionstore: {}
   shellbox: {}
   shellbox-constraints:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "90"
+          memory: "110Gi"
+        limits:
+          cpu: "90"
+          memory: "110Gi"
     # Bump max container memory limit to 4Gi, otherwise use the defaults
     limitranges:
       container:
