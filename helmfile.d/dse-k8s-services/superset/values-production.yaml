@@ -9,3 +9,16 @@ ingress:
     default: "superset"
     extraFQDNs:
     - superset.wikimedia.org
+
+# do not schedule on hosts with 1Gbps NIC
+# double "affinity" until we can fix the chart template itself
+affinity:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: capabilities.nic
+            operator: NotIn
+            values:
+            - 1G
