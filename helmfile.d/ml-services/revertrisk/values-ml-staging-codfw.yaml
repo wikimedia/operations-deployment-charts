@@ -1,5 +1,5 @@
 inference_services:
-  revertrisk-language-agnostic:
+  - revertrisk-language-agnostic:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
       image_version: "2026-01-08-091023-publish"
@@ -21,7 +21,7 @@ inference_services:
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_STREAM
           value: "mediawiki.page_prediction_change.rc0"
-  revertrisk-multilingual:
+  - revertrisk-multilingual:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
       image_version: "2026-01-15-110714-publish"
