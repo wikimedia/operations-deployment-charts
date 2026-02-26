@@ -80,6 +80,8 @@ main_app:
     key_prefix: "staging_restgw_"
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%@%REQ(x-wmf-ratelimit-policy)%"
     envoy_timeout: 0.5
+    anon_class_by_address:
+      "11.22.33.": "anon-cgnat"
     units: [ MINUTE ]
     policies:
       "Mar2026":
@@ -91,6 +93,8 @@ main_app:
             MINUTE: 2
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 4
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 5
           "authed-browser": # authed, looks like a browser
             MINUTE: 6
           "authed-other": # authed, but not a browser, and has no bot flag
@@ -115,6 +119,8 @@ main_app:
             MINUTE: 1
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 3
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 4
           "authed-browser": # authed, looks like a browser
             MINUTE: 5
           "authed-other": # authed, but not a browser, and has no bot flag

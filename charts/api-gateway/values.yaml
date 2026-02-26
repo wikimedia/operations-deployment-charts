@@ -59,6 +59,9 @@ main_app:
     # This can be set to "no-limit" for testing, when we only want to enforce rate limits
     # under special circumstances.
     fallback_class: "anon"
+    # classes to assign based on IP range (prefix match for now)
+    anon_class_by_address: {}
+
     log_level: info
 
     ratelimit_notice_text: |

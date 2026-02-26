@@ -60,7 +60,7 @@ end
 function wmf_ratelimit_info(request_handle)
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
-    local ratelimit_class = HelmValues.main_app.ratelimiter.fallback_class
+    local ratelimit_class = nil
 
     -- The x-client-ip header is set in the edge tier of the WMF network.
     -- If it not present, the request is internal and should not be limited.
@@ -159,11 +159,20 @@ function wmf_ratelimit_info(request_handle)
 
         -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
         user_id = "x-ua-contact:" .. headers:get("x-ua-contact")
-    elseif browserScore and browserScore >= 80 then
-        -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
-        -- This is typically trust level E, but we allow level F as well (untile that gets abused)
-        -- TODO: Use JA3N + JA4H as the user ID when available
-        ratelimit_class = "anon-browser"
+    end
+
+    -- fallback
+    if not ratelimit_class then
+        local fallback_class = HelmValues.main_app.ratelimiter.fallback_class
+
+        if browserScore and browserScore >= 80 then
+            -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
+            -- This is typically trust level E, but we allow level F as well (untile that gets abused)
+            -- TODO: Use JA3N + JA4H as the user ID when available
+            fallback_class = "anon-browser"
+        end
+
+        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, fallback_class)
     end
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
@@ -172,6 +181,18 @@ function wmf_ratelimit_info(request_handle)
 
     headers:replace("x-wmf-user-id", user_id)
     headers:replace("x-wmf-ratelimit-class", ratelimit_class)
+end
+
+function wmf_ratelimit_class_for_address( address, fallback )
+    for prefix, class in pairs( HelmValues.main_app.ratelimiter.anon_class_by_address ) do
+        -- NOTE: Use naive prefix matching for now. If we need proper range matching,
+        -- we could use <https://github.com/api7/lua-resty-ipmatcher> or similar.
+        if string.find( address, prefix, 1, true ) == 1 then
+            return class
+        end
+    end
+
+    return fallback
 end
 
 function wmf_request_cleanup(request_handle)

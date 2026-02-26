@@ -226,6 +226,22 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("unauthed-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
 
+    def test_anon_class_by_address(self):
+        for (ip, cls) in env.values.main_app.ratelimiter.anon_class_by_address.items():
+            break # just use the first entry
+
+        request_headers = {
+            "x-client-ip": ip + "66", # known network range
+            "x-trusted-request": "E", # generic anon
+        }
+
+        limits = getRateLimits(cls)
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+
+        # try again with a different IP, to check that it is used as the rate limit key
+        request_headers["x-client-ip"] = ip + "99"
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+
     def test_trust_level_F(self):
         request_headers = {
             "x-client-ip": env.nextIp(), # external request

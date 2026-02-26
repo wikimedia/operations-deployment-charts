@@ -17,6 +17,9 @@ _G.HelmValues = {
         ratelimiter = {
             fallback_class = "anon",
             ratelimit_notice_text = "ratelimit notice text",
+            anon_class_by_address = {
+                 ["11.22.33."] = "special-network",
+            },
             default_policies = {
                 "DefaultPolicy1",
                 "DefaultPolicy2",
@@ -170,6 +173,15 @@ describe("rest_hooks", function()
                 assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
+            end)
+            it("should assign a class based on anon_class_by_address", function()
+                local headers = { ["x-client-ip"] = "11.22.33.44" }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "x-client-ip:11.22.33.44", result:get("x-wmf-user-id") )
+                assert.are.equal( "special-network", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("x-wmf header handling", function()
