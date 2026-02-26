@@ -46,7 +46,7 @@
     preStop:
       exec:
         command:
-        - "/bin/sh"
+        - "/bin/bash"
         - "-c"
         - "/bin/drain-envoy.sh"
 {{- else if .Values.mesh.prestop_sleep }}
