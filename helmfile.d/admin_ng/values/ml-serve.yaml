@@ -434,6 +434,47 @@ net_istio:
         credentialName: knative-serving-tls-certificate
   mesh:
     service_entries:
+      mediawiki-api-proxied-domains:
+        spec:
+        # This list is needed to instruct the Istio sidecar that
+        # HTTP connections related to these domains on port X shouldn't
+        # be forwarded to their real upstreams, but handled via
+        # the virtual service config.
+        # As of April 2024 we connect from our model servers to
+        # the MediaWiki API in the following way:
+        # 1) We create a TCP connection to the discovery endpoint.
+        # 2) We set the right HTTP Host header
+        # Due to how Istio HTTP routing works, all the domains listed in
+        # the Host headers need to be allowed by ServiceEntry settings.
+        # In case we'll use the Istio dns-proxy, we'll not need to
+        # resolve and DNS query about these, hence the NONE setting below.
+        # More info: https://istio.io/latest/docs/ops/configuration/traffic-management/traffic-routing/
+          hosts: &mediawiki_api_domains
+          - '*.wikipedia.org'
+          - 'wikipedia.org'
+          - '*.wiktionary.org'
+          - 'wiktionary.org'
+          - '*.wikidata.org'
+          - 'wikidata.org'
+          - '*.wikiquote.org'
+          - 'wikiquote.org'
+          - '*.wikibooks.org'
+          - 'wikibooks.org'
+          - '*.wikisource.org'
+          - 'wikisource.org'
+          - 'commons.wikimedia.org'
+          - 'upload.wikimedia.org'
+          ports:
+          # We need to keep two ports since we support services explicitly
+          # setting a proxy (like a discovery endpoint and port) or simply
+          # the upstream domain directly (like en.wikipedia.org)
+          - name: http-port-k8s
+            number: 4680
+            protocol: HTTP
+          - name: http-port
+            number: 80
+            protocol: HTTP
+          resolution: NONE
       mw-api-int-ro:
         spec:
           hosts:
@@ -586,21 +627,7 @@ net_istio:
         spec:
           gateways:
           - mesh
-          hosts: &mediawiki_api_domains
-          - '*.wikipedia.org'
-          - 'wikipedia.org'
-          - '*.wiktionary.org'
-          - 'wiktionary.org'
-          - '*.wikidata.org'
-          - 'wikidata.org'
-          - '*.wikiquote.org'
-          - 'wikiquote.org'
-          - '*.wikibooks.org'
-          - 'wikibooks.org'
-          - '*.wikisource.org'
-          - 'wikisource.org'
-          - 'commons.wikimedia.org'
-          - 'upload.wikimedia.org'
+          hosts: *mediawiki_api_domains
           http:
           - match:
             - port: 4680

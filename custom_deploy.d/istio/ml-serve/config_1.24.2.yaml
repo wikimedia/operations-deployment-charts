@@ -9,6 +9,8 @@ spec:
     # https://istio.io/latest/docs/tasks/observability/logs/
     accessLogFile: /dev/stdout
     accessLogEncoding: JSON
+    outboundTrafficPolicy:
+      mode: 'REGISTRY_ONLY'
     # Disable zipkin
     # See https://github.com/istio/istio/issues/33968
   values:
