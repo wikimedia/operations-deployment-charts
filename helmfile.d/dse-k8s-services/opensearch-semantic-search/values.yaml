@@ -11,7 +11,7 @@ opensearchCluster:
           accessModes:
             - ReadWriteOnce
       replicas: 7
-      jvm: -Xmx4G -Xms4G
+      jvm: -Xmx4G -Xms4G -Djava.library.path=/usr/share/opensearch/plugins/opensearch-knn/lib
       roles:
         - "master"
         - "data"
