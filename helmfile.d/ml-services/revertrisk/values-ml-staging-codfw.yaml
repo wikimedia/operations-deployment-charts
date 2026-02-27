@@ -39,3 +39,11 @@ inference_services:
           value: "true"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 6Gi
+          requests:
+            cpu: "4"
+            memory: 6Gi
