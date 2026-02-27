@@ -36,7 +36,7 @@ app:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
-          stream: mediawiki.page_html_content_change.dev0:1.3.0
+          stream: mediawiki.page_html_content_change.dev1:1.3.0
           connector: kafka
           options:
             bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
