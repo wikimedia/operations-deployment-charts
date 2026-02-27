@@ -621,64 +621,66 @@ net_istio:
                 # See retries implemented in the Virtual Service settings
                 maxRetries: 0
     virtual_services:
+      # Please note: with Istio 1.24+ it is not possible to share the "hosts"
+      # values between two separate Virtual Services, since only one will
+      # be considered when generating the envoy config (leaving the other
+      # one to use the Passthrough cluster). In our case the overlapping is
+      # mostly happening for domains like *.wikipedia.org, so if you have
+      # to add a specific route handling for those use the virtual service
+      # below, do not add another one!
       mediawiki-api-vs:
-        # NOTE: Please keep mediawiki-api-vs and mediawiki-api-vs-transparent-proxy
-        # in sync.
         spec:
           gateways:
           - mesh
           hosts: *mediawiki_api_domains
           http:
+          - match:
+            - port: 4111
+              authority:
+                # This is a trick that we need to use to filter out
+                # the domains that we are interested for the Rest Gateway
+                # among the hosts list.
+                regex: '^(.*\.)?wikipedia\.org$'
+            headers:
+              request:
+                set:
+                  x-forwarded-proto: https
+            retries:
+              attempts: 3
+              retryOn: connect-failure,refused-stream,reset,503
+            route:
+            - destination:
+                host: rest-gateway.discovery.wmnet
+                port:
+                  number: 4111
           - match:
             - port: 4680
-            route:
-            - destination:
-                host: mw-api-int-ro.discovery.wmnet
-            retries:
-              # Rationale (may need to be revisited after upgrading Istio):
-              # https://phabricator.wikimedia.org/T320374#8338627
-              attempts: 3
-              retryOn: connect-failure,refused-stream,reset,503
             headers:
               request:
                 set:
-                  # The TLS egress origination settings (see the related destination
-                  # rule's comment) have the side effect of presenting
-                  # a 'x-forwarded-proto: http' header to the target API, that in turn
-                  # may return a warning in every response. To circumvent this problem,
-                  # let's explicitly set the header.
                   x-forwarded-proto: https
-      mediawiki-api-vs-transparent-proxy:
-        # NOTE: Please keep mediawiki-api-vs and mediawiki-api-vs-transparent-proxy
-        # in sync.
-        # This VS is aimed to support "transparent" proxy use cases for
-        # calls to the MediaWiki API (for example, http://en.wikipedia.org)
-        # We cannot use mediawiki-api-vs since the HTTP Route spec allow only
-        # one port, so for the time being we need to duplicate it.
-        spec:
-          gateways:
-          - mesh
-          hosts: *mediawiki_api_domains
-          http:
+            retries:
+              attempts: 3
+              retryOn: connect-failure,refused-stream,reset,503
+            route:
+            - destination:
+                host: mw-api-int-ro.discovery.wmnet
+                port:
+                  number: 4680
           - match:
             - port: 80
-            route:
-            - destination:
-                host: mw-api-int-ro.discovery.wmnet
-            retries:
-              # Rationale (may need to be revisited after upgrading Istio):
-              # https://phabricator.wikimedia.org/T320374#8338627
-              attempts: 3
-              retryOn: connect-failure,refused-stream,reset,503
             headers:
               request:
                 set:
-                  # The TLS egress origination settings (see the related destination
-                  # rule's comment) have the side effect of presenting
-                  # a 'x-forwarded-proto: http' header to the target API, that in turn
-                  # may return a warning in every response. To circumvent this problem,
-                  # let's explicitly set the header.
                   x-forwarded-proto: https
+            retries:
+              attempts: 3
+              retryOn: connect-failure,refused-stream,reset,503
+            route:
+            - destination:
+                host: mw-api-int-ro.discovery.wmnet
+                port:
+                  number: 80
       eventgate-main-vs:
         spec:
           gateways:
@@ -691,33 +693,8 @@ net_istio:
             route:
             - destination:
                 host: eventgate-main.discovery.wmnet
-            retries:
-              # Rationale (may need to be revisited after upgrading Istio):
-              # https://phabricator.wikimedia.org/T320374#8338627
-              attempts: 3
-              retryOn: connect-failure,refused-stream,reset,503
-            headers:
-              request:
-                set:
-                  # The TLS egress origination settings (see the related destination
-                  # rule's comment) have the side effect of presenting
-                  # a 'x-forwarded-proto: http' header to the target API, that in turn
-                  # may return a warning in every response. To circumvent this problem,
-                  # let's explicitly set the header.
-                  x-forwarded-proto: https
-      restgw-vs:
-        spec:
-          gateways:
-          - mesh
-          hosts:
-          - '*.wikipedia.org'
-          - 'wikipedia.org'
-          http:
-          - match:
-            - port: 4111
-            route:
-            - destination:
-                host: rest-gateway.discovery.wmnet
+                port:
+                  number: 4480
             retries:
               # Rationale (may need to be revisited after upgrading Istio):
               # https://phabricator.wikimedia.org/T320374#8338627
