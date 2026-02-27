@@ -12,9 +12,9 @@ inference_services:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/language-agnostic/20231117132654/"
         - name: WIKI_URL
-          value: https://mw-api-int-ro.discovery.wmnet:4446
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: FORCE_HTTP
-          value: "false"
+          value: "true"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"
         - name: EVENTGATE_URL
@@ -34,8 +34,8 @@ inference_services:
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
         - name: WIKI_URL
-          value: https://mw-api-int-ro.discovery.wmnet:4446
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: FORCE_HTTP
-          value: "false"
+          value: "true"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"
