@@ -1,0 +1,84 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: allow-hostpath-analytics
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+
+  validations:
+
+  #
+  # Only allow specific volume types
+  #
+  - expression: |-
+      !has(object.spec.volumes) ||
+      object.spec.volumes.all(v,
+        has(v.configMap) ||
+        has(v.csi) ||
+        has(v.downwardAPI) ||
+        has(v.emptyDir) ||
+        has(v.ephemeral) ||
+        has(v.persistentVolumeClaim) ||
+        has(v.projected) ||
+        has(v.secret) ||
+        has(v.hostPath)
+      )
+    message: >-
+      Only these volume types are permitted: configMap, csi, downwardAPI,
+      emptyDir, ephemeral, persistentVolumeClaim, projected, secret, hostPath.
+
+  #
+  # Restrict hostPath usage to approved paths
+  #
+  - expression: |-
+      !has(object.spec.volumes) ||
+      object.spec.volumes.all(v,
+        !has(v.hostPath) ||
+        v.hostPath.path in ["/srv/spark", "/usr/share/GeoIP"]
+      )
+    message: >-
+      hostPath volumes are allowed only for /srv/spark and /usr/share/GeoIP.
+
+  #
+  # Require readOnly mounts for /usr/share/GeoIP hostPath
+  #
+  - expression: |-
+      !has(object.spec.volumes) ||
+      object.spec.volumes.all(v,
+        !has(v.hostPath) ||
+        v.hostPath.path != "/usr/share/GeoIP" ||
+        (
+          (object.spec.containers +
+            (has(object.spec.initContainers) ? object.spec.initContainers : []) +
+            (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : [])
+          ).all
+            (c,
+              !has(c.volumeMounts) ||
+              c.volumeMounts.all(vm,
+                vm.name != v.name || vm.readOnly == true
+              )
+            )
+        )
+      )
+    message: >-
+      hostPath volume /usr/share/GeoIP must be mounted readOnly: true in all containers.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: allow-hostpath-analytics
+spec:
+  policyName: allow-hostpath-analytics
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/allow-hostpath-analytics
+        operator: In
+        values:
+        - include
+  validationActions: [Deny]
