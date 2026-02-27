@@ -68,6 +68,14 @@ deployExtraClusterRoles:
   - "amdgpu-node-labeller"
   - "spark-support"
 
+pod-security-labels: &analytics-pss-labels
+  pod-security.kubernetes.io/audit: restricted
+  pod-security.kubernetes.io/enforce: restricted
+  pod-security.kubernetes.io/warn: restricted
+  pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+  pod-security.wmf.org/disallow-host-path: exclude
+  pod-security.wmf.org/allow-hostpath-analytics: include
+
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
@@ -117,10 +125,12 @@ namespaces:
   analytics:
     deployClusterRole: deploy-spark-support
     labels:
+      <<: *analytics-pss-labels
       istio-injection: disabled
   analytics-test:
     deployClusterRole: deploy-spark-support
     labels:
+      <<: *analytics-pss-labels
       istio-injection: disabled
   opensearch-test: {}
   opensearch-ipoid: {}

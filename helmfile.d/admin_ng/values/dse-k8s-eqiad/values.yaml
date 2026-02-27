@@ -4,10 +4,22 @@ chartVersions:
   wmf-stable/coredns: ~
   wmf-stable/cert-manager: ~
 
+pod-security-labels: &analytics-pss-labels
+  pod-security.kubernetes.io/audit: restricted
+  pod-security.kubernetes.io/enforce: restricted
+  pod-security.kubernetes.io/warn: restricted
+  pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+  pod-security.wmf.org/disallow-host-path: exclude
+  pod-security.wmf.org/allow-hostpath-analytics: include
+
 namespaces:
   airflow-dev:
+    labels:
+      <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
   airflow-main:
+    labels:
+      <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow.wikimedia.org
@@ -75,6 +87,8 @@ namespaces:
           memory: "10Gi"
           cpu: "10"
   airflow-analytics-test:
+    labels:
+      <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-analytics-test.wikimedia.org
@@ -141,6 +155,7 @@ namespaces:
     deployClusterRole: deploy-spark-support
     deployTLSCertificate: false
     labels:
+      <<: *analytics-pss-labels
       istio-injection: disabled
   spark-history:
     labels:
