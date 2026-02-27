@@ -1,4 +1,15 @@
-{{- range $inference_name, $inference_settings := .Values.inference_services }}
+{{- $isList := kindIs "slice" .Values.inference_services -}}
+{{- range $index_or_key, $val := .Values.inference_services }}
+  {{- $inference_name := "" -}}
+  {{- $inference_settings := dict -}}
+  {{- if $isList }}
+    {{- $inference_name = $val.name -}}
+    {{- $inference_settings = $val -}}
+  {{- else }}
+    {{- $inference_name = $index_or_key -}}
+    {{- $inference_settings = $val -}}
+  {{- end }}
+
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:

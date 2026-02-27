@@ -1,0 +1,59 @@
+# In this fixture we test configuring inference_services as a list.
+
+docker:
+  registry: docker-registry.wikimedia.org/wikimedia
+  imagePullPolicy: IfNotPresent
+
+inference:
+  swift_s3_secret_name: "swift-s3-credentials"
+  annotations:
+    sidecar.istio.io/inject: "false"
+    autoscaling.knative.dev/metric: "rps"
+    autoscaling.knative.dev/target: "8"
+  labels:
+    controller-tools.k8s.io: "1.0"
+  predictor:
+    image: "machinelearning-liftwing-inference-services-editquality"
+    version: "2021-09-01-140944-production"
+    container:
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi
+        requests:
+          cpu: "1"
+          memory: 2Gi
+    base_env:
+      - name: WIKI_URL
+        value: "https://mw-api-int-ro.discovery.wmnet:4446"
+      - name: REQUESTS_CA_BUNDLE
+        value: "/etc/ssl/certs/wmf-ca-certificates.crt"
+
+inference_services:
+  - name: revertrisk-language-agnostic
+    annotations:
+      autoscaling.knative.dev/target: "15"
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 5
+      image: "machinelearning-liftwing-inference-services-revertrisk"
+      image_version: "2023-08-11-105206-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-language-agnostic"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/language-agnostic/20221026144108/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4446"
+  - name: revertrisk-multilingual
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+        timeout: 60
+        batcher:
+          maxBatchSize: 32
+          maxLatency: 500
+      image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
+      image_version: "2023-08-11-105206-publish"
