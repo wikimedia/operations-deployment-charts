@@ -15,7 +15,7 @@ config:
     trust_proxy: always
     clusters:
       - name: druid-analytics-eqiad
-        host: druid-analytics.external-services.svc.cluster.local
+        host: druid-analytics.external-services.svc.cluster.local:8082
         sourceListRefreshInterval: 15000
         sourceListScan: auto
         sourceReintrospectInterval: 120000
