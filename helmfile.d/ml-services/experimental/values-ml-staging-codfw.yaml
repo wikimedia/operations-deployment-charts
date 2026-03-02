@@ -145,27 +145,21 @@ inference_services:
             cpu: "4"
             memory: 8Gi
 
-  embeddings:
+  policy-violation:
     predictor:
       config:
         maxReplicas: 1
-      image: "machinelearning-liftwing-inference-services-embeddings"
-      image_version: "2026-01-06-082802-publish"
+      image: "machinelearning-liftwing-inference-services-policy-violation"
+      image_version: "2026-02-26-152647-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "qwen3-embedding"
+          value: "policy-violation"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
-        - name: MODEL_VERSION
-          value: "Qwen3-Embedding-0.6B"
-        - name: LOCAL_FILES_ONLY
-          value: "True"
-        - name: DTYPE
-          value: "float16"
-        - name: ATTN_IMPLEMENTATION
-          value: "flash_attention_2"
-        - name: MAX_LENGTH
-          value: "500"
+          value: "s3://wmf-ml-models/gpt-oss-safeguard-20b/"
+        - name: TIKTOKEN_ENCODINGS_BASE
+          value: "/mnt/models/tiktoken_encodings/"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
       container:
         resources:
           limits:
