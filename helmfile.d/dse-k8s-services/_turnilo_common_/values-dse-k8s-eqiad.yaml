@@ -1,11 +1,9 @@
 app:
   version: 1.41.0-WMF-2026-02-17-140210-6b8faa3c1402cd9db99731c851019edb67224cb0@sha256:5f3eceba4711ca5a2dc938046505bba091f34d91dd5fc917c3aa208b7e33164b
 
-# Remove access to druid while we are unsure of httpd config security
-# TODO: Uncomment after security validation
-#external_services:
-#  druid:
-#  - analytics
+external_services:
+ druid:
+ - analytics
 
 httpd_cas:
   version: 2.4.62-2
