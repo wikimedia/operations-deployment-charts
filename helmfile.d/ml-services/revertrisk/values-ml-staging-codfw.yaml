@@ -24,7 +24,7 @@ inference_services:
   - name: revertrisk-multilingual
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2026-01-15-110714-publish"
+      image_version: "2026-03-02-102735-publish"
       config:
         minReplicas: 1
         maxReplicas: 1
@@ -39,11 +39,17 @@ inference_services:
           value: "true"
         - name: ALLOW_REVISION_JSON_INPUT
           value: "true"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_prediction_change.rc0"
       container:
         resources:
           limits:
             cpu: "4"
-            memory: 6Gi
+            memory: 8Gi
+            amd.com/gpu: "1"
           requests:
             cpu: "4"
-            memory: 6Gi
+            memory: 8Gi
+            amd.com/gpu: "1"
