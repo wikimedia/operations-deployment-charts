@@ -18,6 +18,28 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      initContainers:
+      - name: {{ template "base.name.release" . }}-sed
+        image: {{ template "app.generic._image" . }}
+        imagePullPolicy: {{ .Values.docker.pull_policy }}
+        command: ['sh']
+        args:
+        - -c
+        - |
+          cp /etc/mirrormaker-tpl/*.properties /etc/mirrormaker/ && sed "s/env_HOSTNAME/${HOSTNAME}/g" /etc/mirrormaker-tpl/producer.properties > /etc/mirrormaker/producer.properties
+        resources:
+          requests:
+            cpu: 256m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
+        volumeMounts:
+        - name: kafka-mirrormaker-tpl
+          mountPath: /etc/mirrormaker-tpl
+        - name: kafka-mirrormaker-config
+          mountPath: /etc/mirrormaker
       containers:
         {{- include "app.generic.container" . | indent 8 }}
       volumes:

@@ -30,13 +30,16 @@ app:
 
   # add here any volumes to mount onto the pod. Example:
   volumes:
-  - name: kafka-mirrormaker-config
+  - name: kafka-mirrormaker-tpl
     configMap:
       name: kafka-mirrormaker-config
+  - name: kafka-mirrormaker-config
+    emptyDir: {}
   # add here any mounted volumes to make accessible to the container. Example:
   volumeMounts:
     - name: kafka-mirrormaker-config # the name from your volume above
       mountPath: /etc/mirrormaker # where it should live in your container
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false

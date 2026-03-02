@@ -6,13 +6,13 @@ metadata:
 data:
   consumer.properties: |
     bootstrap.servers = kafka-{{ $.Values.config.mm.source }}.external-services.svc.cluster.local:9093
-    group.id = mirrormaker-{{ $.Values.config.mm.source }}-to-{{ $.Values.config.mm.target }}
+    group.id = kafka-mirror-{{ $.Values.config.mm.source }}_to_{{ $.Values.config.mm.target }}
     {{- range $k, $v := $.Values.config.mm.consumer }}
     {{ $k }} = {{ $v }}
     {{- end }}
   producer.properties: |
     bootstrap.servers = kafka-{{ $.Values.config.mm.target }}.external-services.svc.cluster.local:9093
-    client.id = mirrormaker-{{ $.Values.config.mm.source }}-to-{{ $.Values.config.mm.target }}-producer
+    client.id = env_HOSTNAME
     {{- range $k, $v := $.Values.config.mm.producer }}
     {{ $k }} = {{ $v }}
     {{- end }}
