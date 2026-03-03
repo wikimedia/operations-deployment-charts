@@ -295,7 +295,7 @@ class RateLimitTest(unittest.TestCase):
 
         # should apply known-client limits, not approved-bot limits
         limits = getRateLimits("known-client")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.SECOND, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
     def test_bearer_token_limit_uses_rlc_claim_from_cookie(self):
         ip = env.nextIp()
