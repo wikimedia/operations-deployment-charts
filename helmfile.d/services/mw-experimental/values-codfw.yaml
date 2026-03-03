@@ -1,1 +1,31 @@
 # mw site-specific configurations
+# Temporarily enable in-pod mcrouter for T411807 experimentation
+cache:
+  mcrouter:
+    enabled: true
+    routes:
+      - route: /eqiad/mw
+        pool: eqiad-servers
+        failover_time: 600
+      - route: /codfw/mw
+        pool: codfw-servers
+        failover_time: 600
+      - route: /codfw/mw-wan
+        pool: codfw-servers
+        failover_time: 600
+        replica:
+          route: /eqiad/mw-wan
+          pool: eqiad-servers
+      - route: /local/wf
+        pool: wf-codfw
+        # No failover for wikifunction
+        failover_time: 0
+      - route: /codfw/wf-wan
+        pool: wf-codfw
+        failover_time: 0
+        replica:
+          route: /eqiad/wf-wan
+          pool: wf-eqiad
+php:
+  envvars:
+    MCROUTER_SERVER: "127.0.0.1:11213"
