@@ -18,7 +18,7 @@ data:
       # the shortner fails if it sees a port in the url, so the regex below is not quite perfect
       urlShortener: |
         const req = {
-          url: 'https://mw-api-int.discovery.wmnet:4446/w/api.php?format=json&action=shortenurl',
+          url: 'http://localhost:6501/w/api.php?format=json&action=shortenurl',
           form: { url: url.replace(/http:\/\/localhost[:0-9]*/, '{{ $.Values.config.turnilo.url }}') },
           headers: {
             'Host': 'meta.wikimedia.org',
