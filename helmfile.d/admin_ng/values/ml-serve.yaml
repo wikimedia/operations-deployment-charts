@@ -726,6 +726,11 @@ core:
     # This is needed to be able to configure the Pod's dnsConfig
     # from Kserve's InferenceService resources.
     kubernetes.podspec-dnsconfig: "enabled"
+  config_observability:
+    logging.enable-request-log: "false"
+    logging.enable-probe-request-log: "false"
+  config_logging:
+    zap-logger-config: '{ "level": "error" }'
 
 helmVersion: "helm3"
 
