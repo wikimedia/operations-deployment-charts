@@ -9,7 +9,7 @@ growthbook-backend:
       # See https://docs.growthbook.io/sso
       # These values were taken from the output of `curl -s https://idp.wikimedia.org/oidc/.well-known | jq .`
       # on an idp host.
-      emailDomains: [wikimedia.org, wikimedia.de]
+      emailDomains: [wikimedia.org]
       additionalScope: "groups"
       metadata:
         authorization_endpoint: https://idp.wikimedia.org/oidc/oidcAuthorize
