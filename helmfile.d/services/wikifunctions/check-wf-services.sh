@@ -92,10 +92,9 @@ testServices "String join" $cluster $strngjoin '"foobar"'
 testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
 
 echo -e "\n\e[97mProduction\e[0m tests, \e[97mv2\e[0m:"
-echo -e "\n\e[97mSkipped for now, see T414589\e[0m"
-# cluster="https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/"
-# testServices "Basic echo" $cluster $basicecho '"foo"'
-# testServices "JavaScript add" $cluster $jsaddcall '"33"'
-# testServices "Python lambda" $cluster "$pyaddcall" '"13"'
-# testServices "String join" $cluster $strngjoin '"foobar"'
-# testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
+cluster="https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/"
+testServices "Basic echo" $cluster $basicecho '"foo"'
+testServices "JavaScript add" $cluster $jsaddcall '"33"'
+testServices "Python lambda" $cluster "$pyaddcall" '"13"'
+testServices "String join" $cluster $strngjoin '"foobar"'
+testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
