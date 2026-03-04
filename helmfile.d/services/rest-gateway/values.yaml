@@ -59,11 +59,11 @@ main_app:
           "unauthed-bot": # no auth, but good User-Agent
             HOUR: 9999999 # 5000
           "anon-browser": # no auth, but looks like a browser
-            HOUR: 500
+            HOUR: 1000
           "anon-cgnat": # clients behind a CGNAT
             HOUR: 5000
           "authed-browser": # authed, looks like a browser
-            HOUR: 5000
+            HOUR: 9999999 # 5000
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
           "authed-bot": # authed using an API key, but no community approval
@@ -85,7 +85,7 @@ main_app:
           "unauthed-bot": # no auth, but good User-Agent
             HOUR: 5000
           "anon-browser": # no auth, but looks like a browser
-            HOUR: 500
+            HOUR: 1000
           "anon-cgnat": # clients behind a CGNAT
             HOUR: 5000
           "authed-browser": # authed, looks like a browser
