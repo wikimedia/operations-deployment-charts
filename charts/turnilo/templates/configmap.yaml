@@ -31,7 +31,7 @@ data:
     clusters:
       {{- toYaml $.Values.config.turnilo.clusters | nindent 6 }}
 
-    datacubes:
+    dataCubes:
       {{- toYaml $.Values.config.turnilo.datacubes | nindent 6 }}
 
 ---
