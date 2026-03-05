@@ -10,6 +10,7 @@ from smokepy import env
 from smokepy import values
 
 import jwtools
+import helpers
 
 def getRateLimits(rlc, policies = None):
     try:
@@ -43,39 +44,13 @@ class RateLimitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         RateLimitTest.probe_config = env.values.get("smokepy.gateway")
-
-        if RateLimitTest.probe_config is None:
-            raise ValueError("No smokepy.gateway section found! Add it to a value file.")
-
-        RateLimitTest.target_url = RateLimitTest.probe_config.get("target_url")
-
-        tgtvar = os.getenv("GATEWAY_TEST_TARGET_URL")
-        if tgtvar is not None and vfvar != "":
-            RateLimitTest.target_url = tgtvar
-
-        if RateLimitTest.target_url is None:
-            raise ValueError("No value set for smokepy.gateway.target_url! " +
-                "Specify one in a value file or set GATEWAY_TEST_TARGET_URL")
-
-        RateLimitTest.checkHealthz()
+        RateLimitTest.target_url = helpers.getTargetUrl(RateLimitTest.probe_config)
+        helpers.checkHealthz(RateLimitTest.target_url)
 
         RateLimitTest.default_endpoint = RateLimitTest.probe_config.default_policy_endpoint
-        print(f"Running tests on {RateLimitTest.target_url}{RateLimitTest.default_endpoint}")
+        print(f"Running ratelimit tests on {RateLimitTest.target_url}{RateLimitTest.default_endpoint}")
 
         RateLimitTest.shadow_endpoint = RateLimitTest.probe_config.shadow_policy_endpoint
-
-    @staticmethod
-    def checkHealthz():
-        target = Target(RateLimitTest.target_url)
-        resp = target.get("/healthz")
-
-        if resp.status == -1:
-            raise IOError( f"Cannot connect to {RateLimitTest.target_url}. " +
-                "Perhaps the service is not running or port-forwarding needs to be enabled." )
-
-        if resp.status != 200:
-            raise IOError( f"Health check failed for {RateLimitTest.target_url}: " +
-                resp.body )
 
     def setUp(self):
         headers = RateLimitTest.probe_config.get("headers", {})
@@ -167,9 +142,20 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("anon")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers )
 
-        # try again with a different IP, to check that it is used as the rate limit key
-        headers = { "x-client-ip": env.nextIp() }
+        # Try again with a different IP, to check that it is used as the rate limit key.
+        headers = {
+            "x-client-ip": env.nextIp(),
+        }
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+
+        # Make an additional request, with the origin header set, and check that we get CORS headers.
+        # NOTE: this may flake out due to a race condition
+        headers["origin"] = "http://just.a.test"
+        resp = self.target.get(self.default_endpoint, headers = headers)
+        self.assertEqual(429, resp.status, "expected rate limit to be exceeded by previous test (race condition?)")
+        self.assertEqual("http://just.a.test", resp.headers.get("Access-Control-Allow-Origin"), "Access-Control-Allow-Origin")
+        self.assertEqual("true", resp.headers.get("Access-Control-Allow-Credentials"), "Access-Control-Allow-Credentials")
+        self.assertIn("Retry-After,WWW-Authenticate", resp.headers.get("Access-Control-Expose-Headers"), "Access-Control-Expose-Headers")
 
     def test_local_requests_bypass_limit(self):
         localHeaders = {} # no x-client-ip!
@@ -459,20 +445,11 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("anon-browser")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
 
-def init():
-    default_value_files = [
-        # Relevant value files from the service directory need to be specified
-        # using the SMOKEPY_VALUE_FILES environment variable.
-        "../../../../charts/api-gateway/values.yaml", # chart defaults
-    ]
-
-    env.init(__file__, default_value_files)
-
 def main():
     unittest.main()
 
 #############################################
-init()
+helpers.initEnv()
 
 if __name__ == "__main__":
     main()

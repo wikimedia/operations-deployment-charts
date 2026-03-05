@@ -83,23 +83,24 @@ describe("rest_hooks", function()
 
         -- fake methods
         -- Note that add() is implemented like replace(). Good enough for now.
-        headers.get = function(self, k) return self.values[k] end
-        headers.add = function(self, k, v) self.values[k] = v end
-        headers.replace = function(self, k, v) self.values[k] = v end
-        headers.remove = function(self, k) self.values[k] = nil end
+        headers.get = function(self, k) return self.values[string.lower(k)] end
+        headers.add = function(self, k, v) self.values[string.lower(k)] = v end
+        headers.replace = function(self, k, v) self.values[string.lower(k)] = v end
+        headers.remove = function(self, k) self.values[string.lower(k)] = nil end
 
         return headers
     end
 
     function fake_metadata(values)
         return {
-            get = function(self, name) return values[name] end,
+            values = values,
+            get = function(self, name) return self.values[name] end,
             set = function(self, name, k, v)
-                if not values[name] then
-                    values[name] = {}
+                if not self.values[name] then
+                    self.values[name] = {}
                 end
 
-                values[name][k] = v
+                self.values[name][k] = v
             end,
         }
     end
@@ -116,10 +117,11 @@ describe("rest_hooks", function()
         }
     end
 
-    function fake_stream_info(address, metadata)
+    function fake_stream_info(address, metadata, extra)
         return add_getters( {},{
             downstreamRemoteAddress = address,
             dynamicMetadata = fake_metadata(metadata),
+            responseCodeDetails = (extra and extra.responseCodeDetails) or "local_reply",
         })
     end
 
@@ -144,6 +146,7 @@ describe("rest_hooks", function()
 
     function fake_response_handle(arg)
         local headers = arg.headers or { ["content-type"] = "unknown/unknown" }
+        headers[":status"] = headers[":status"] or "200"
 
         return add_getters( {
             logDebug = noop,
@@ -152,7 +155,8 @@ describe("rest_hooks", function()
         },{
             headers = fake_headers(headers),
             streamInfo = fake_stream_info(arg.address or "127.0.0.1",
-                    arg.streamMetadata or {}),
+                    arg.streamMetadata or {},
+                    { responseCodeDetails = arg.responseCodeDetails }),
             metadata = fake_metadata(arg.routeMetadata or {}),
             body = fake_body("Lorem ipsum"),
         })
@@ -702,16 +706,24 @@ describe("rest_hooks", function()
                 ["something"] = "429",
                 ["x-wmf-user-id"] = "Shawn",
                 ["x-wmf-ratelimit-class"] = "user",
+                [":method"] = "GET",
+                [":path"] = "/test/this",
             }
 
             local streamMetadata = {}
-
             local req = fake_request_handle{
                 headers = headers,
                 streamMetadata = streamMetadata
             }
 
             wmf_stash_headers( req )
+
+            local stashed = req:streamInfo():dynamicMetadata():get("envoy.wmf_headers")
+            assert.is_nil(stashed["something"])
+            assert.is_not_nil(stashed[":method"])
+            assert.is_not_nil(stashed[":path"])
+            assert.is_not_nil(stashed["x-wmf-user-id"])
+            assert.is_not_nil(stashed["x-wmf-ratelimit-class"])
 
             local res = fake_response_handle{
                 streamMetadata = streamMetadata
@@ -720,9 +732,88 @@ describe("rest_hooks", function()
             wmf_expose_headers( res )
             local result = res:headers()
 
-            assert.is.equal(nil, result:get("something"))
+            assert.is_nil(result:get("something"))
+            assert.is_nil(result:get(":method"))
+            assert.is_nil(result:get(":path"))
             assert.is.equal("Shawn", result:get("x-wmf-user-id"))
             assert.is.equal("user", result:get("x-wmf-ratelimit-class"))
+        end)
+    end)
+
+    describe("wmf_set_cors_access_control for CORS (T418969)", function()
+        local test_origin = "https://en.wikipedia.org"
+
+        it("should set Access-Control headers if the origin header is present", function()
+            local streamMetadata = {}
+            local req = fake_request_handle{ streamMetadata = streamMetadata, headers = {
+                ["origin"] = test_origin,
+            } }
+
+            -- Origin should be looped through by wmf_stash_headers
+            wmf_stash_headers( req )
+
+            -- No x-envoy-upstream-service-time: simulates a local (Envoy-generated) reply
+            local resp = fake_response_handle{ streamMetadata = streamMetadata }
+            wmf_set_cors_access_control(resp)
+
+            local result = resp:headers()
+            assert.is.equal( "true", result:get("access-control-allow-credentials") )
+            assert.is.equal( test_origin, result:get("access-control-allow-origin") )
+            assert.is.equal( "Retry-After,WWW-Authenticate", result:get("access-control-expose-headers") )
+        end)
+
+        it("should not set Access-Control headers if the Origin header is not present in request", function()
+            local streamMetadata = {}
+            local req = fake_request_handle{ streamMetadata = streamMetadata }
+            wmf_stash_headers( req )
+
+            -- No x-envoy-upstream-service-time: simulates a local (Envoy-generated) reply
+            local resp = fake_response_handle{ streamMetadata = streamMetadata }
+            wmf_set_cors_access_control(resp)
+
+            local result = resp:headers()
+            assert.is_nil( result:get("access-control-allow-credentials") )
+            assert.is_nil( result:get("access-control-allow-origin") )
+            assert.is_nil( result:get("access-control-expose-headers") )
+        end)
+
+        it("should not set Access-Control headers for OPTIONS requests", function()
+            local streamMetadata = {}
+            local req = fake_request_handle{ streamMetadata = streamMetadata, headers = {
+                [":method"] = "OPTIONS",
+                ["origin"] = test_origin,
+            } }
+
+            wmf_stash_headers( req )
+
+            -- No x-envoy-upstream-service-time: simulates a local (Envoy-generated) reply
+            local resp = fake_response_handle{ streamMetadata = streamMetadata }
+            wmf_set_cors_access_control(resp)
+
+            local result = resp:headers()
+            assert.is_nil( result:get("access-control-allow-credentials") )
+            assert.is_nil( result:get("access-control-allow-origin") )
+            assert.is_nil( result:get("access-control-expose-headers") )
+        end)
+
+        it("should not set Access-Control headers for upstream responses", function()
+            local streamMetadata = {}
+            local req = fake_request_handle{ streamMetadata = streamMetadata, headers = {
+                ["origin"] = test_origin,
+            } }
+
+            wmf_stash_headers( req )
+
+            -- x-envoy-upstream-service-time present: simulates a proxied upstream response
+            local resp = fake_response_handle{ streamMetadata = streamMetadata, headers = {
+                ["x-envoy-upstream-service-time"] = "1",
+            } }
+            wmf_set_cors_access_control(resp)
+
+            local result = resp:headers()
+            assert.is_nil( result:get("access-control-allow-credentials") )
+            assert.is_nil( result:get("access-control-allow-origin") )
+            assert.is_nil( result:get("access-control-expose-headers") )
         end)
     end)
 end)

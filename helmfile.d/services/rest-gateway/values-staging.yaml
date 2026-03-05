@@ -14,6 +14,12 @@ smokepy:
     # The path of the endpoint to probe when testing the shadow rate limit policy.
     shadow_policy_endpoint: "/w/api.php?action=query&meta=siteinfo&format=json"
 
+    # The path of the endpoint to probe when testing for RESTbase compatibility CORS behavior
+    cors_rb_compat_endpoint: "/en.wikipedia.org/v1/page/title/X"
+
+    # The path of the endpoint to probe when testing default CORS behavior for upstream responses
+    cors_upstream_endpoint: "/w/api.php?action=query&meta=siteinfo&format=json"
+
     # The headers to send with every request
     headers:
       Host: en.wikipedia.org

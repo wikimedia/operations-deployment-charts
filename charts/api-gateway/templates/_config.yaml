@@ -228,6 +228,7 @@ static_resources:
           - name: envoy.filters.http.cors
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+              {{/* TODO: Remove, doesn't seem to do anything. But double check first. */}}
 
 {{- if .Values.main_app.jwt.enabled }}
 {{- if .Values.main_app.rest_gateway_routes }}
