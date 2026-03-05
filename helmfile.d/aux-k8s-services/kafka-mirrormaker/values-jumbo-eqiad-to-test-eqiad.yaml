@@ -1,0 +1,18 @@
+config:
+  mm:
+    source: jumbo-eqiad
+    target: test-eqiad
+    topics: '^((eqiad|codfw)\.mediawiki\.revision-create)$'
+    flags:
+      # streams defines the number of consumer threads started by Mirrormaker.
+      # The puppetized MM instance runs 5, to consume only 2 partitions
+      # (https://phabricator.wikimedia.org/T417407#11676665). This means that as
+      # the 2 mirrormaker releases in both aux clusters will form a unified consumer group,
+      # we set the streams value to its per-instance minimum, aka 1.
+      # This will amount to a total of 2 streams for the unified consumer group.
+      streams: 1
+
+external_services:
+  kafka:
+  - jumbo-eqiad
+  - test-eqiad
