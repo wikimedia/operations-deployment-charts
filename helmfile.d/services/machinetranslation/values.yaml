@@ -29,7 +29,8 @@ config:
     USE_S3CMD: true
     CT2_INTER_THREADS: 4  # Match available CPUs
     CT2_INTRA_THREADS: 0  # Set to 0 so that CTranslate2 use a default value
-    GUNICORN_WORKERS: 4  # Match available CPUs
+    GUNICORN_WORKERS: 2  # Keep it low instead of matching to available CPUs (4)
+    GUNICORN_CMD_ARGS: "--preload"
     STATSD_HOST: localhost
     STATSD_PORT: 9125  # prometheus-statsd-exporter
 networkpolicy:
