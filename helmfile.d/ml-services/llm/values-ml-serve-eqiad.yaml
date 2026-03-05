@@ -51,7 +51,7 @@ inference_services:
   embeddings:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings"
-      image_version: "2026-03-04-145043-publish"
+      image_version: "2026-03-05-122907-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen3-embedding"
@@ -65,10 +65,14 @@ inference_services:
           value: "False"
         - name: MAX_MODEL_LEN
           value: "32768"
+        - name: MAX_NUM_BATCHED_TOKENS
+          value: "32768"
         - name: VLLM_ROCM_USE_AITER
           value: "1"
         - name: VLLM_USE_TRITON_FLASH_ATTN
           value: "0"
+        - name: HIP_DEVICE_LIB_PATH
+          value: "/opt/rocm-7.0.0/lib/llvm/lib/clang/20/lib/amdgcn/bitcode"
       container:
         resources:
           limits:
