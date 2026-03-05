@@ -362,8 +362,12 @@ class RateLimitTest(unittest.TestCase):
         )
 
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
-        rest = self.target.get(self.default_endpoint, headers = headers)
-        self.assertEqual(401, rest.status, "expired token should be rejected")
+        resp = self.target.get(self.default_endpoint, headers = headers)
+
+        # See RFC 6750 section 3
+        self.assertEqual(401, resp.status, "expired token should be rejected")
+        self.assertTrue('www-authenticate' in resp.headers, "response should have www-authenticate header")
+        self.assertTrue('error="invalid_token"' in resp.headers['www-authenticate'], "www-authenticate header should contain 'invalid_token' error")
 
     def test_authed_browser_limit(self):
         ip = env.nextIp()
