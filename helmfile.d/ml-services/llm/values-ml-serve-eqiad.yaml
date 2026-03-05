@@ -73,15 +73,19 @@ inference_services:
           value: "0"
         - name: HIP_DEVICE_LIB_PATH
           value: "/opt/rocm-7.0.0/lib/llvm/lib/clang/20/lib/amdgcn/bitcode"
+        - name: MAX_JOBS
+          value: "2"
+        - name: TORCHINDUCTOR_COMPILE_THREADS
+          value: "1"
       container:
         resources:
           limits:
             cpu: "6"
-            memory: 8Gi
+            memory: 16Gi
             amd.com/gpu: "1"
           requests:
             cpu: "6"
-            memory: 8Gi
+            memory: 16Gi
             amd.com/gpu: "1"
       config:
         maxReplicas: 1
