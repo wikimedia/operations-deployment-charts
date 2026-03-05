@@ -190,6 +190,49 @@ class RestGatewayTest(unittest.TestCase):
         policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])
         self.assertIsInstance( policies, list, "wmf_ratelimit.policies")
 
+    def test_jwt_route_overrides(self):
+        manifests = self.render( [ "jwt_enabled.yaml", "jwt_route_overrides.yaml" ] )
+
+        cm = manifests.find( { "kind": "ConfigMap", "metadata.name": "api-gateway-gwtest-base-config" } )
+        envoy_config = cm.get_decoded( ["data", "envoy.yaml"] )
+
+        listener = envoy_config.get("static_resources.listeners.name=listener_0")
+        connection_manager = listener.get(["filter_chains", 0, "filters", { "name": "envoy.filters.network.http_connection_manager"} ])
+
+        jwt_filter = connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.jwt_authn"}])
+        self.assertIsNotNone(jwt_filter, "jwt_authn filter")
+
+        # guard rule is present (first rule, prefix /)
+        guard = jwt_filter.get(["typed_config", "rules", 0])
+        self.assertIsNotNone(guard, "guard rule")
+        self.assertEqual(guard.get("match.prefix"), "/", "guard rule prefix")
+        self.assertEqual(guard.get("match.headers.name=:method.string_match.exact"), "OPTIONS", "guard rule method")
+        self.assertIsNotNone(guard.get("requires.allow_missing_or_failed"), "guard rule skips validation")
+
+        # catch-all rule is present (last rule, prefix /)
+        catchall = jwt_filter.get(["typed_config", "rules", -1])
+        self.assertIsNotNone(catchall, "catch-all rule")
+        self.assertEqual(catchall.get("match.prefix"), "/", "catch-all rule prefix")
+        self.assertIsNotNone(catchall.get("match.headers.name=:method.string_match.safe_regex"), "catch-all rule method regex")
+
+        # regular: no rule generated, fall through to catch-all rule
+        regular_rule = jwt_filter.get(["typed_config", "rules", {"match.safe_regex.regex": r"^/regular/(.*)$"}])
+        self.assertIsNone(regular_rule, "no jwt rule for regular_endpoint")
+
+        # exempt: both token and cookie use allow_missing_or_failed
+        exempt_rule = jwt_filter.get(["typed_config", "rules", {"match.safe_regex.regex": r"^/exempt/(.*)$"}])
+        self.assertIsNotNone(exempt_rule, "jwt rule for jwt_exempt_endpoint")
+        self.assertIsNotNone(exempt_rule.get("requires.allow_missing_or_failed"), "jwt rule for jwt_exempt_endpoint: allow_missing_or_failed")
+
+        # required: neither token nor cookie allow missing or failed
+        required_rule = jwt_filter.get(["typed_config", "rules", {"match.safe_regex.regex": r"^/w/api.php(.*)$"}])
+        self.assertIsNotNone(required_rule, "jwt rule for jwt_required_endpoint")
+        self.assertIsNone(required_rule.get("requires.requires_all"), "jwt rule for jwt_required_endpoint: no requires_all")
+        self.assertIsNotNone(required_rule.get("requires.requires_any.requirements.provider_name=wikimedia_token"), "jwt rule for jwt_required_endpoint has wikimedia_token")
+        self.assertIsNotNone(required_rule.get("requires.requires_any.requirements.provider_name=wikimedia_cookie"), "jwt rule for jwt_required_endpoint has wikimedia_cookie")
+
+        self.assertEqual(required_rule.get("match.query_parameters.name=action.string_match.exact"), "edit")
+
     def assert_ratelimit_config_valid(self, config):
         self.assertIsNotNone(config.get("domain"))
         self.assertIsNotNone(config.get("descriptors"))

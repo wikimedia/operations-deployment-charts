@@ -488,6 +488,16 @@ main_app:
               present_match: true
       rb_response_headers: true
 
+    - name: mw-rest-auth
+      timeout: 15s
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      jwt: allow_missing_or_failed
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
+      urls:
+        - name: oauth2
+          in: '/+w/rest.php/oauth2(.*)'
+          out: '/w/rest.php/oauth2\1'
     - name: mw-rest-php
       timeout: 15s
       # This set of routes uses the same cluster as mw-api-ext - however
@@ -532,10 +542,6 @@ main_app:
         - name: math_html
           in: '/+w/rest.php/math/v0/popup/html(.*)'
           out: '/w/rest.php/math/v0/popup/html\1'
-        # oauth
-        - name: oauth2
-          in: '/+w/rest.php/oauth2(.*)'
-          out: '/w/rest.php/oauth2\1'
         # reportincident
         - name: reportincident
           in: '/+w/rest.php/reportincident/v0/report'

@@ -20,6 +20,12 @@ smokepy:
     # The path of the endpoint to probe when testing default CORS behavior for upstream responses
     cors_upstream_endpoint: "/w/api.php?action=query&meta=siteinfo&format=json"
 
+    # Endpoint that should be exempt from JWT checks
+    jwt_exempt_endpoint: "/w/rest.php/oauth2/"
+
+    # Endpoint that should require a JWT
+    jwt_required_endpoint: "/w/api.php?action=compare&format=json"
+
     # The headers to send with every request
     headers:
       Host: en.wikipedia.org
@@ -337,6 +343,16 @@ main_app:
           out: '/w/rest.php/v1/transform/wikitext/to/lint\2'
       rb_response_headers: true
 
+    - name: mw-rest-auth
+      timeout: 15s
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      jwt: allow_missing_or_failed
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
+      urls:
+        - name: oauth2
+          in: '/+w/rest.php/oauth2(.*)'
+          out: '/w/rest.php/oauth2\1'
     - name: mw-rest-php
       timeout: 15s
       # This set of routes uses the same cluster as mw-api-ext - however
@@ -357,10 +373,6 @@ main_app:
       csp_enabled: false
       urls:
         # *** BEGIN rest.php APIs ***
-        # oauth
-        - name: oauth2
-          in: '/+w/rest.php/oauth2(.*)'
-          out: '/w/rest.php/oauth2\1'
         # sitemap
         - name: sitemap
           in: '/+w/rest.php/site/v1/sitemap(.*)'
@@ -436,6 +448,22 @@ main_app:
                 exact: 'tokens'
                 ignore_case: true
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
+    - name: mw-action-api-jwt-required
+      timeout: 53s
+      # Require JWT for action=compare, just to test the mechanism.
+      # The JWT can be provided as a bearer token or as a session cookie.
+      jwt: required
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      urls:
+        - name: compare
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'compare'
+                ignore_case: true
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s

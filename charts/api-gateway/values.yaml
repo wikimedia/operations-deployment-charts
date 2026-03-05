@@ -68,7 +68,7 @@ main_app:
     # See T417780
     exposed_headers: [ "x-wmf-ratelimit-class" ]
 
-    ratelimit_notice_text: |
+    ratelimit_notice_text: |-
       You are making too many requests.
       Please reduce your request rate or contact <bot-traffic@wikimedia.org>.
 
@@ -112,10 +112,12 @@ main_app:
     #         MINUTE: 1000
     #         SECOND: 100
 
+    # Prefixes that don't require a JWT in the APi gateway (ignored by REST gateway)
     prefixes_without_required_jwt:
       - prefix: "/wiki/"
       - prefix: "/w/"
       - path: "/"
+
     # timeout for connecting from envoy to ratelimit service in seconds
     envoy_timeout: 0.25
 
@@ -314,6 +316,10 @@ smokepy:
   # Can also be set using $SMOKEPY_VALID_JWT.
   valid_jwt: ~
 
+  default_policy_endpoint: ~
+  shadow_policy_endpoint: ~
+  jwt_exempt_endpoint: ~
+  jwt_required_endpoint: ~
   cors_upstream_endpoint: ~
   cors_rb_compat_endpoint: ~
 

@@ -1,0 +1,42 @@
+main_app:
+  jwt:
+    enabled: true
+    issuer: "foobar"
+  rest_gateway_routes:
+    - name: regular_endpoint
+      timeout: 15s
+      urls:
+        - name: regular_url
+          in: '/regular/(.*)'
+          out: '/service/\1'
+
+    - name: jwt_exempt_endpoint
+      timeout: 15s
+      jwt: allow_missing_or_failed
+      urls:
+        - name: exempt_url
+          in: '/exempt/(.*)'
+          out: '/service/\1'
+
+    - name: jwt_required_endpoint
+      timeout: 15s
+      jwt: required
+      urls:
+        - name: required_with_query
+          in: '/w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'edit'
+
+  discovery_endpoints:
+    regular_endpoint:
+      port: 1234
+      host: localhost
+    jwt_exempt_endpoint:
+      port: 1234
+      host: localhost
+    jwt_required_endpoint:
+      port: 1234
+      host: localhost

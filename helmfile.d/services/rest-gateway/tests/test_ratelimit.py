@@ -48,9 +48,12 @@ class RateLimitTest(unittest.TestCase):
         helpers.checkHealthz(RateLimitTest.target_url)
 
         RateLimitTest.default_endpoint = RateLimitTest.probe_config.default_policy_endpoint
-        print(f"Running ratelimit tests on {RateLimitTest.target_url}{RateLimitTest.default_endpoint}")
-
         RateLimitTest.shadow_endpoint = RateLimitTest.probe_config.shadow_policy_endpoint
+
+        print(f"Running ratelimit tests on {RateLimitTest.target_url}")
+        print(f"    rate limited endpoint: {RateLimitTest.default_endpoint}")
+        print(f"    shadow mode endpoint:  {RateLimitTest.shadow_endpoint}")
+
 
     def setUp(self):
         headers = RateLimitTest.probe_config.get("headers", {})
@@ -357,21 +360,6 @@ class RateLimitTest(unittest.TestCase):
         # should apply approved-bot limits
         limits = getRateLimits("approved-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
-
-    def test_expired_bearer_token(self):
-        ip = env.nextIp()
-        token = jwtools.createJwtOrSkip(self,
-            sub = env.nextName("Tester"),
-            exp = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4)
-        )
-
-        headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
-        resp = self.target.get(self.default_endpoint, headers = headers)
-
-        # See RFC 6750 section 3
-        self.assertEqual(401, resp.status, "expired token should be rejected")
-        self.assertTrue('www-authenticate' in resp.headers, "response should have www-authenticate header")
-        self.assertTrue('error="invalid_token"' in resp.headers['www-authenticate'], "www-authenticate header should contain 'invalid_token' error")
 
     def test_authed_browser_limit(self):
         ip = env.nextIp()

@@ -1,3 +1,17 @@
+{{- define "restgateway.route.match" -}}
+safe_regex:
+  regex: '^{{ .route.in }}$'
+  {{- if .endpoint.domain }}
+headers:
+  - name: ':authority'
+    string_match:
+      exact: '{{ .endpoint.domain }}'
+  {{- end }}
+  {{- if .route.query_parameters }}
+query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
+  {{- end }}
+{{- end -}}
+
 {{- define "restgateway.rate_limit_actions" }}
 {{- /* The number of items in default_policies determines how many policy headers we support */}}
 {{- range $index, $_ := $.Values.main_app.ratelimiter.default_policies }}
@@ -46,17 +60,7 @@
 {{- $cluster_name := ternary $endpoint.name $endpoint.cluster (not $endpoint.cluster) }}
               - name: {{ $endpoint.name }}_{{ $route.name }}
                 match:
-                  safe_regex:
-                    regex: '^{{ $route.in }}$'
-                  {{- if $endpoint.domain }}
-                  headers:
-                  - name: ':authority'
-                    string_match:
-                      exact: '{{ $endpoint.domain }}'
-                  {{- end }}
-                  {{- if $route.query_parameters }}
-                  query_parameters: {{ toYaml $route.query_parameters | nindent 18 }}
-                  {{- end }}
+                  {{- include "restgateway.route.match" (dict "route" $route "endpoint" $endpoint) | nindent 18 }}
                 {{- if not $route.disable_route_stats }}
                 {{- if $endpoint.stat_prefix }}
                 stat_prefix: {{ $endpoint.stat_prefix }}_{{ $route.name }}
