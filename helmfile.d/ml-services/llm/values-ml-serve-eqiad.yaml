@@ -59,14 +59,16 @@ inference_services:
           value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
         - name: MODEL_VERSION
           value: "Qwen3-Embedding-0.6B"
-        - name: LOCAL_FILES_ONLY
-          value: "True"
         - name: DTYPE
           value: "float16"
-        - name: ATTN_IMPLEMENTATION
-          value: "flash_attention_2"
-        - name: MAX_LENGTH
-          value: "500"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
+        - name: MAX_MODEL_LEN
+          value: "32768"
+        - name: VLLM_ROCM_USE_AITER
+          value: "1"
+        - name: VLLM_USE_TRITON_FLASH_ATTN
+          value: "0"
       container:
         resources:
           limits:
