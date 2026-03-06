@@ -12,8 +12,6 @@ releases:
         {{ $isBuiltinNamespace := or (eq (hasPrefix "kube-" $namespace_name) true) (eq $namespace_name "default") }}
         {{/* All builtin namespaces are system namespaces */}}
         {{ $isSystemNamespace := $values | get "systemNamespace" $isBuiltinNamespace }}
-        {{/* Fetch the PSP cluster role to be used for this namespace, default to "allow-restricted-psp" */}}
-        {{ $pspClusterRole := $values | get "pspClusterRole" "allow-restricted-psp" }}
         {{- if eq $isBuiltinNamespace false }}
           - |
             apiVersion: v1
@@ -21,12 +19,11 @@ releases:
             metadata:
               name: {{ $namespace_name }}
               {{- $labels := $values | get "labels" dict }}
-              {{- if and (eq $pspClusterRole "allow-restricted-psp") $.Values.PodSecurityStandard.enabled -}}
-                {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
-                {{- if ($.Values.PodSecurityStandard | get "enforce" false) -}}
-                {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/enforce" "restricted") }}
-                {{- $labels := mergeOverwrite $labels (dict "pod-security.kubernetes.io/warn" "restricted") }}
-                {{- end }}
+              {{/* If no pod-security.wmf.org/profile label is defined for this namespace, set default pod-security labels */}}
+              {{- if not (hasKey $labels "pod-security.wmf.org/profile") }}
+                {{- $labels := merge $labels (dict "pod-security.kubernetes.io/audit" "restricted") }}
+                {{- $labels := merge $labels (dict "pod-security.kubernetes.io/enforce" "restricted") }}
+                {{- $labels := merge $labels (dict "pod-security.kubernetes.io/warn" "restricted") }}
               {{- end }}
               {{- with $labels }}
               labels:
@@ -73,39 +70,6 @@ releases:
               kind: ClusterRole
               name: {{ $values | getOrNil "deployClusterRole" | default "deploy" }}
             subjects:
-              {{- range $usernames }}
-              {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
-              {{- if $isDeployUser }}
-              - apiGroup: rbac.authorization.k8s.io
-                kind: User
-                name: {{ .name }}
-              {{- end }}
-              {{- end }}
-          - |
-            # Bind the deploy user and all service account of this namespace to
-            # the allow-restricted-psp role, see helmfile_psp.yaml
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: RoleBinding
-            metadata:
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
-              name: disable-psp
-            {{- else }}
-              name: allow-psp
-            {{- end }}
-              namespace: {{ $namespace_name }}
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
-              {{/* Binding the namespace to the privileged PSP will effectively disable PSP validation */}}
-              name: allow-privileged-psp
-            {{- else }}
-              name: {{ $pspClusterRole }}
-            {{- end }}
-            subjects:
-              - apiGroup: rbac.authorization.k8s.io
-                kind: Group
-                name: system:serviceaccounts:{{ $namespace_name }}
               {{- range $usernames }}
               {{- $isDeployUser := or ( hasSuffix "-deploy" .name ) ( $values | getOrNil "deployUser" | eq .name ) }}
               {{- if $isDeployUser }}
@@ -186,34 +150,6 @@ releases:
                 {{- end }}
           {{- end }}
           {{- end }}
-        {{- else }}{{- /* else if eq $isSystemNamespace false */}}
-          - |
-            # Bind all service account of this namespace to the desired clusterrole.
-            # See helmfile_psp.yaml
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: RoleBinding
-            metadata:
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
-              name: disable-psp
-            {{- else }}
-              name: allow-psp
-            {{- end }}
-              namespace: {{ $namespace_name }}
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-            {{- if and (eq $pspClusterRole "allow-restricted-psp") ($.Values.PodSecurityStandard | get "disableRestrictedPSP" false) }}
-              {{/* Binding the namespace to the privileged PSP will effectively disable PSP validation */}}
-              name: allow-privileged-psp
-            {{- else }}
-              name: {{ $pspClusterRole }}
-            {{- end }}
-            subjects:
-              # If Pod's are created via a controller (deployment, replicaset) the Pod's service
-              # account needs access to the PSP.
-              - apiGroup: rbac.authorization.k8s.io
-                kind: Group
-                name: system:serviceaccounts:{{ $namespace_name }}
         {{- end }}{{- /* end if eq $isSystemNamespace false */}}
         {{- if $values | get "allowCriticalPods" false }}
           - |

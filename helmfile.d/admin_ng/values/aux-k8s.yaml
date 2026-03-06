@@ -60,7 +60,6 @@ namespaces:
   kube-system:
     systemNamespace: true
     allowCriticalPods: true
-    pspClusterRole: 'allow-privileged-psp'
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
@@ -89,8 +88,3 @@ namespaces:
   redioscope: {}
   sophroid: {}
   kafka-mirrromaker: {}
-
-PodSecurityStandard:
-  disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles
-  enforce: true              # Enforce the PodSecurityStandard profile "restricted"
-  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP

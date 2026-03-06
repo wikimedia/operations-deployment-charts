@@ -3,19 +3,12 @@
 # "admin_ng/values/<cluster_group>.yaml"
 cluster_group: main
 
-# Configure the default PodSecurityStandard settings, see: T273507
-PodSecurityStandard:
-  disablePSPMutations: true
-  enforce: true # Enforce the PodSecurityStandard profile "restricted"
-  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP as last step during the PSP migration
-
 # List all namespaces that should be created in every ServiceOps cluster
 # For info about what overrides are available, please check ./common.yaml.
 namespaces:
   kube-system:
     systemNamespace: true
     allowCriticalPods: true
-    pspClusterRole: allow-privileged-psp
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
@@ -272,7 +265,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-debug:
-    pspClusterRole: allow-mediawiki-psp
    # The pod-security.wmf.org labels are used on Kubernetes 1.31 to customise
    # Pod Security Standards.
    # If you add or remove any policies from mw-pss-labels, please ensure
@@ -308,10 +300,9 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-experimental:
-  # In mw-experimental we need to mount via hostPath both geoip data + /srv/mediawiki
-  # All hostPaths are included in the allow-hostpath-mw-experimental
-  # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
-    pspClusterRole: allow-mediawiki-psp
+    # In mw-experimental we need to mount via hostPath both geoip data + /srv/mediawiki
+    # All hostPaths are included in the allow-hostpath-mw-experimental
+    # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
     labels:
       pod-security.wmf.org/profile: restricted
       pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
@@ -342,14 +333,12 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-misc:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
     tlsExtraSANs:
       - noc.wikimedia.org
   mw-wikifunctions:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -380,7 +369,6 @@ namespaces:
       - www.wikifunctions.org
       - mw-wikifunctions-ro.discovery.wmnet
   mw-api-int:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -407,7 +395,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-api-ext:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -434,7 +421,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-jobrunner:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -461,12 +447,11 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-parsoid:
-  # In mw-parsoid we need to mount via hostPath both geoip data + /srv/parsoid-testing
-  # All hostPaths are included in the allow-hostpath-mw-parsoid-testing
-  # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
-  # Please note that allow-hostpath-mw-parsoid-testing allows mounting /srv/mediawiki
-  # via hostPath as well. 
-    pspClusterRole: allow-mediawiki-psp
+    # In mw-parsoid we need to mount via hostPath both geoip data + /srv/parsoid-testing
+    # All hostPaths are included in the allow-hostpath-mw-parsoid-testing
+    # ValidatingAdmissionPolicy, thus we can exclude allow-hostpath-geoip
+    # Please note that allow-hostpath-mw-parsoid-testing allows mounting /srv/mediawiki
+    # via hostPath as well. 
     labels:
       pod-security.wmf.org/profile: restricted
       pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
@@ -497,7 +482,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-script:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -525,7 +509,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-cron:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -553,7 +536,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-videoscaler:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels
@@ -581,7 +563,6 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   mw-web:
-    pspClusterRole: allow-mediawiki-psp
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
       <<: *mw-pss-labels

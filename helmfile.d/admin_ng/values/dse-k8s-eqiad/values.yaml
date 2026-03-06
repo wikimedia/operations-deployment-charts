@@ -1,8 +1,3 @@
-PodSecurityStandard:
-  disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles
-  enforce: true              # Enforce the PodSecurityStandard profile "restricted"
-  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP
-
 namespaces:
   airflow-dev:
     deployClusterRole: deploy-airflow
@@ -327,11 +322,14 @@ namespaces:
           cpu: "16"
   mediawiki-dumps-legacy:
     enableJobSidecarController: true
-    pspClusterRole: allow-mediawiki-psp
     deployClusterRole: deploy-mediawiki-dumps-legacy
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
+      # Workaround for T419259
+      pod-security.kubernetes.io/audit: "privileged"
+      pod-security.kubernetes.io/enforce: "privileged"
+      pod-security.kubernetes.io/warn: "privileged"
     resourcequota:
       compute:
         requests:

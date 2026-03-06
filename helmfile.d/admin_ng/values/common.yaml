@@ -12,13 +12,6 @@
 #   deployClusterRole: string
 #     Default: deploy
 #     ClusterRole to bind the deploy user to.
-#   pspClusterRole: string
-#     Default: allow-restricted-psp
-#     The name of the ClusterRole granting access to the PSP this namespace
-#     will use.
-#     Note: If the ClusterRoleBinding already exists in the namespace,
-#     it will need to be deleted first and then recreated with
-#     the new ClusterRole.
 #   systemNamespace: bool
 #     Default: false
 #     Don't deploy users or resource quota into this namespace.
@@ -58,13 +51,6 @@
 #     No effect yet, work in progress - T348284
 namespaces: {}
 GlobalNetworkPolicies: {}
-
-# Configure the default PodSecurityStandard settings, see: T273507
-PodSecurityStandard:
-  enabled: true
-  # disablePSPMutations: true # Disable PSP mutations
-  # enforce: true # Enforce the PodSecurityStandard profile "restricted"
-  # disableRestrictedPSP: true # Disable PSP binding for the restricted PSP as last step during the PSP migration
 
 IPAMConfig:
   # Prohibit nodes from borrowing IPs out of other nodes IPAM blocks (T296303)

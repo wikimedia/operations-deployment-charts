@@ -71,7 +71,6 @@ namespaces:
   kube-system:
     systemNamespace: true
     allowCriticalPods: true
-    pspClusterRole: allow-privileged-psp
     labels:
       istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
@@ -812,8 +811,3 @@ kubeControllers:
     limits:
       cpu: ~
       memory: 200Mi
-
-PodSecurityStandard:
-  disablePSPMutations: true  # Disable PSP mutation, allow all seccomp profiles
-  enforce: true              # Enforce the PodSecurityStandard profile "restricted"
-  disableRestrictedPSP: true # Disable PSP binding for the restricted PSP
