@@ -59,22 +59,14 @@ inference_services:
           value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
         - name: MODEL_VERSION
           value: "Qwen3-Embedding-0.6B"
+        - name: LOCAL_FILES_ONLY
+          value: "True"
         - name: DTYPE
           value: "float16"
-        - name: TRUST_REMOTE_CODE
-          value: "False"
-        - name: MAX_MODEL_LEN
-          value: "32768"
-        - name: MAX_NUM_BATCHED_TOKENS
-          value: "32768"
-        - name: VLLM_USE_TRITON_FLASH_ATTN
-          value: "1"
-        - name: HIP_DEVICE_LIB_PATH
-          value: "/opt/rocm-7.0.0/lib/llvm/lib/clang/20/lib/amdgcn/bitcode"
-        - name: MAX_JOBS
-          value: "2"
-        - name: TORCHINDUCTOR_COMPILE_THREADS
-          value: "1"
+        - name: ATTN_IMPLEMENTATION
+          value: "flash_attention_2"
+        - name: MAX_LENGTH
+          value: "500"
       container:
         resources:
           limits:
