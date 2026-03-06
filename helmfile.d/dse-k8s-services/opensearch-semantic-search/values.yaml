@@ -65,3 +65,7 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 30443
+    - cidr: 10.64.32.100/32 # relforge1008.eqiad.wmnet, for testing
+      ports:
+      - protocol: tcp
+        port: 8003
