@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.18]
+### Added
+  - Switch the ingressgateway TLS support from PASSTHROUGH to SIMPLE mode, so that we can get HTTP metrics from the gateway
+  in order to support defining an SLO for opensearch on kubernetes from these metrics.
+  - Remove the x-request-id HTTP header, if found. The reason for this is that OpenSearch currently does not work with the
+  header that MediaWiki adds.
+### Deprecated
+### Removed
+### Fixed
+
+
+## [0.0.17]
+### Added
+  - Support for defining NetworkPolicy objects for ingress/egress traffic managed via our internal templates
+### Deprecated
+### Removed
+### Fixed
+
+
 ## [0.0.16]
 ### Added
   - Enable [Reload Certificates API]( https://docs.opensearch.org/2.19/security/configuration/tls/#using-the-reload-certificates-api) (ref https://phabricator.wikimedia.org/T412447).

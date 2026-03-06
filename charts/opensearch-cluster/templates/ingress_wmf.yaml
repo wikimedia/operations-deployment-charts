@@ -16,7 +16,8 @@ spec:
       number: 443
       protocol: HTTPS
     tls:
-      mode: PASSTHROUGH
+      credentialName: {{ .Release.Namespace }}-tls-certificate
+      mode: SIMPLE
 
 ---
 apiVersion: networking.istio.io/v1beta1
@@ -30,14 +31,44 @@ spec:
   {{- range $fqdn := $.Values.certificate.extraFQDNs }}
     - {{ $fqdn }}
   {{- end }}
-  tls:
-  - match:
-    - sniHosts:
-    {{- range $fqdn := $.Values.certificate.extraFQDNs }}
-      - {{ $fqdn }}
-    {{- end }}
+  http:
+  - headers:
+      request:
+        remove:
+        - x-request-id
     route:
     - destination:
         host: {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local
         port:
           number: {{ $.Values.opensearchCluster.general.httpPort }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+{{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
+spec:
+  host: {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 5s
+      http:
+        # allow persistent HTTP/1.1 connections and control reuse
+        http1MaxPendingRequests: 1024
+        http2MaxRequests: 1024
+        # 0 means "unlimited" (keep-alive allowed). Setting to 1 disables keep-alive.
+        maxRequestsPerConnection: 0
+        # keep upstream connections idle for up to 1 minute before closing
+        idleTimeout: 1m
+    tls:
+      mode: SIMPLE
+      sni: opensearch-test.discovery.wmnet
+      caCertificates: /etc/ssl/certs/wmf-ca-certificates.crt
+      subjectAltNames:
+      # Default tls-service certificates
+      - {{ .Release.Namespace }}.discovery.wmnet
+      - {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local
+      {{- range $fqdn := $.Values.certificate.extraFQDNs }}
+      - {{ $fqdn }}
+      {{- end }}
