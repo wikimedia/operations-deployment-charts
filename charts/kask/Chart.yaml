@@ -1,21 +1,8 @@
 apiVersion: v2
 description: Helm chart for Kask on WMF Kubernetes infrastructure
+kubeVersion: ">=1.8"
 name: kask
 version: 0.2.11
-kubeVersion: ">=1.8"
-keywords:
-  - session
-  - store
-home: https://www.mediawiki.org/wiki/Kask
-sources:
-  - https://gitlab.wikimedia.org/repos/mediawiki/services/kask
-maintainers:
-  - name: Eric Evants
-    email: eevans@wikimedia.org
-  - name: Clara Andrew-Wani
-    email: candrew@wikimedia.org
-  - name: Alexandros Kosiaris
-    email: akosiaris@wikimedia.org
 dependencies:
   # cassandra can be deployed for developement purposes
   # Note we are using an incubator cassandra chart for this
@@ -27,3 +14,13 @@ dependencies:
   # Only require cassandra if subcharts.cassandra is set to true in values
   # or --set subcharts.cassandra=true
     condition: subcharts.cassandra
+keywords:
+  - session
+  - store
+home: https://wikitech.wikimedia.org/wiki/Kask
+sources:
+  - https://gitlab.wikimedia.org/repos/mediawiki/services/kask
+team: https://wikitech.wikimedia.org/wiki/SRE/Data_Persistence
+maintainers:
+  - name: Eric Evants
+    email: eevans@wikimedia.org
