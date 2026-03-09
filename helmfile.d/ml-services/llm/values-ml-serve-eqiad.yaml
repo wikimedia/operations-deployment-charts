@@ -113,6 +113,8 @@ inference_services:
           value: "float16"
         - name: TRUST_REMOTE_CODE
           value: "False"
+        - name: MAX_MODEL_LEN
+          value: "32768"
       container:
         resources:
           limits:
