@@ -19,10 +19,10 @@ app:
   - --offset.commit.interval.ms={{ $.Values.config.mm.flags.offset_commit_interval_ms }}
   requests:
     cpu: 4
-    memory: 8Gi
+    memory: 3Gi
   limits:
     cpu: 4
-    memory: 8Gi
+    memory: 3Gi
 
   # mirrormaker does not expose ports
   liveness_probe: {}
