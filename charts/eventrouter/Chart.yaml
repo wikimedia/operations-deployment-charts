@@ -3,11 +3,15 @@ description: A Helm chart for eventrouter (https://github.com/heptiolabs/eventro
 name: eventrouter
 version: 0.4.4
 appVersion: "0.4"
-home: https://github.com/heptiolabs/eventrouter
-sources:
-  - https://github.com/heptiolabs/eventrouter
 keywords:
   - eventrouter
+# Looking for replacement: https://phabricator.wikimedia.org/T343787
+home: https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters/New#Eventrouter
+sources:
+  - https://github.com/heptiolabs/eventrouter
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/software/heptiolabs/eventrouter/
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/docker-images/production-images/
+team: https://wikitech.wikimedia.org/wiki/SRE/Service_Operations
 maintainers:
-  - name: gianrubio
-    email: gianrubio@gmail.com
+  - name: Janis Mayboom
+    email:  jmeybohm@wikimedia.org
