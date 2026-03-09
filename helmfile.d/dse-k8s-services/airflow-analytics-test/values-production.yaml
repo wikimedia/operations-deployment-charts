@@ -65,3 +65,7 @@ external_services:
     # As we're running both KubernetesExecutor and LocalExecutor, the tasks run from the scheduler itself with
     # LocalExecutor will require the scheduler pod to run the task, and ergo to talk to Kerberos in some cases.
     kerberos: [kdc]
+
+app:
+  version: &base-image-version airflow-2.10.5-py3.11-2026-03-05-094904-1a79c3b28cb10b36d8c6d5407492fbd3f75a95f7@sha256:88f49c2017991dd8df6b6e5ccee3b0bf0682ea51f07fe4d98a7c7d3df2a6cb4c
+  executor_pod_image_version: *base-image-version
