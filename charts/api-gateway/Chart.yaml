@@ -1,12 +1,19 @@
 apiVersion: v2
 description: A Helm chart for the Envoy-based API Gateway
+kubeVersion: ">=1.23"
 name: api-gateway
 version: 0.14.36 # exposed_headers
-kubeVersion: ">=1.23"
 keywords:
+  - rest-gateway
   - api-gateway
   - envoy
-home: https://www.mediawiki.org/wiki/Core_Platform_Team/Initiatives/API_Gateway
+home: https://wikitech.wikimedia.org/wiki/REST_Gateway
+sources:
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/software/envoyproxy/ratelimiter/
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/docker-images/production-images/
+team: https://www.mediawiki.org/wiki/MediaWiki_Interfaces_Team
 maintainers:
-  - name: Hugh Nowlan
-    email: hnowlan@wikimedia.org
+  - name: Daniel Kinzler
+    email: dkinzler@wikimedia.org
+  - name: Clément Goubert
+    email: cgoubert@wikimedia.org
