@@ -322,6 +322,11 @@ networkpolicy:
         ports:
           - protocol: UDP
             port: 8420
+      # mwlog1003
+      - cidr: 10.64.185.2/32
+        ports:
+          - protocol: UDP
+            port: 8420
       # redis_lock
       # rdb1011 A1
       - cidr: 10.64.0.36/32
@@ -366,6 +371,11 @@ networkpolicy:
       # udp2log
       # mwlog2002
       - cidr: 10.192.32.9/32
+        ports:
+          - protocol: UDP
+            port: 8420
+      # mwlog2003
+      - cidr: 10.192.52.2/32
         ports:
           - protocol: UDP
             port: 8420
