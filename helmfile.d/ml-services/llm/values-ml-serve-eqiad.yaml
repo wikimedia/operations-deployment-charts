@@ -117,6 +117,12 @@ inference_services:
           value: "32768"
         - name: MAX_NUM_BATCHED_TOKENS
           value: "32768"
+        - name: VLLM_ROCM_USE_AITER
+          value: "1"
+        - name: VLLM_USE_TRITON_FLASH_ATTN
+          value: "0"
+        - name: MAX_JOBS
+          value: "1"
       container:
         resources:
           limits:
