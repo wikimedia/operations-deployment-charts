@@ -1,0 +1,41 @@
+# NOTE: values-dse-k8s-eqiad.yaml is configured to be deployed in dse-k8s-eqiad k8s.
+
+service:
+  deployment: production
+
+app:
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parellism.
+    # Input stream mediawiki.page_html_content_change.dev4 has 1 topic (1 partition).
+    replicas: 1
+    resource:
+      cpu: 1
+      memory: 6000m
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Configure sources and sinks.
+        source:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            # page_html_content_change is run only in eqiad, so we only consume from eqiad.             
+            topics: [eqiad.mediawiki.page_html_content_change.dev4]
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw-page-edit-type-enrich-next__dse-k8s-eqiad.000
+
+        sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: eqiad.
+
+        error_sink:
+          options:
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: eqiad.
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet
