@@ -101,7 +101,7 @@ inference_services:
   embeddings-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings"
-      image_version: "2026-03-04-145043-publish"
+      image_version: "2026-03-05-133809-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen3-embedding-staging"
@@ -109,14 +109,10 @@ inference_services:
           value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
         - name: MODEL_VERSION
           value: "Qwen3-Embedding-0.6B"
-        - name: LOCAL_FILES_ONLY
-          value: "True"
         - name: DTYPE
           value: "float16"
-        - name: ATTN_IMPLEMENTATION
-          value: "flash_attention_2"
-        - name: MAX_LENGTH
-          value: "500"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
       container:
         resources:
           limits:
