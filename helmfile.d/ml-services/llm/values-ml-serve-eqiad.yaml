@@ -115,6 +115,8 @@ inference_services:
           value: "False"
         - name: MAX_MODEL_LEN
           value: "32768"
+        - name: MAX_NUM_BATCHED_TOKENS
+          value: "32768"
       container:
         resources:
           limits:
