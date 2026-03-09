@@ -1,14 +1,17 @@
 apiVersion: v2
 description: Helm chart for eventstreams on WMF Kubernetes infrastructure
-name: eventstreams
 kubeVersion: ">=1.12"
-keywords:
-  - eventstreams
-home: https://wikitech.wikimedia.org/wiki/EventStreams
-sources:
-  - https://gitlab.wikimedia.org/repos/data-engineering/eventstreams
-maintainers:
-  - name: Andrew Otto
-    email: otto@wikimedia.org
+name: eventstreams
 version:  0.8.9
 appVersion: v0.9.0
+keywords:
+  - eventstreams
+home: https://wikitech.wikimedia.org/wiki/Event_Platform/EventStreams_HTTP_Service
+sources:
+  - https://gitlab.wikimedia.org/repos/data-engineering/eventstreams
+team: https://wikitech.wikimedia.org/wiki/SRE/Event_Platform
+maintainers:
+  - name: Thomas Chin
+    email: tchin@wikimedia.org
+  - name: Andrew Otto
+    email: aotto@wikimedia.org

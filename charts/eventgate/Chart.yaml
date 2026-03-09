@@ -2,7 +2,6 @@ apiVersion: v2
 description: >
   EventGate receives JSON events over HTTP, validates them against JSONSchemas, and
   produces them to Kafka.
-
 name: eventgate
 version: 0.16.9
 appVersion: v1.10.0
@@ -15,3 +14,13 @@ dependencies:
   # Only require kafka-dev if subcharts.kafka is set to true in values
   # or --set subcharts.kafka=true
     condition: subcharts.kafka
+home: https://wikitech.wikimedia.org/wiki/Event_Platform/EventGate
+sources:
+  - https://gitlab.wikimedia.org/repos/data-engineering/eventgate
+  - https://gitlab.wikimedia.org/repos/data-engineering/eventgate-wikimedia
+team: https://wikitech.wikimedia.org/wiki/SRE/Event_Platform
+maintainers:
+  - name: Thomas Chin
+    email: tchin@wikimedia.org
+  - name: Andrew Otto
+    email: aotto@wikimedia.org
