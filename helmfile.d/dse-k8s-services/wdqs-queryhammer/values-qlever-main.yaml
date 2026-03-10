@@ -1,0 +1,26 @@
+# main external: wdqs1011, wdqs1012, wdqs1013, wdqs1014, wdqs1015, wdqs1016, wdqs1017, wdqs1018, wdqs1019, wdqs1020, wdqs1021, wdqs1022, wdqs2007, wdqs2008, wdqs2010, wdqs2011, wdqs2012, wdqs2013, wdqs2014, wdqs2015, wdqs2021, wdqs2022
+# scholary external: wdqs1023, wdqs1024, wdqs2016, wdqs2023, wdqs2024
+app:
+  args: [
+    "-streaming",
+    "-duration", "-1",
+    "-kafka-brokers", "kafka-jumbo-eqiad.external-services.svc.cluster.local:9093",
+    "-kafka-topics", "eqiad.wdqs-external.sparql-query",
+    "-kafka-group", "eqiad.jumbo.qlever-main.wdqs1011",
+    "-filter-backend-hosts","wdqs1011",
+    "-endpoint", "http://10.64.48.8:7001/sparql?access-token=wdqs1029"
+  ]
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    # https://wikitech.wikimedia.org/wiki/Wikidata_Query_Service/Migration/Development_Infrastructure#eqiad_test_nodes
+    # wdqs1029 (10.64.48.8) -> qlever-main
+    # wdqs1030 (10.64.32.8) -> qlever-scholarly
+    # wdqs1031 -> virtuoso-main
+    # wdqs1032 -> virtuoso-scholarly
+    - cidr: 10.64.48.8
+      ports:
+        - protocol: TCP
+          port: 7001
