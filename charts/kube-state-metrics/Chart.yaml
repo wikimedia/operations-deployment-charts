@@ -1,26 +1,22 @@
+apiVersion: v2
+description: Install kube-state-metrics to generate and expose cluster-level metrics
+name: kube-state-metrics
+version: 5.10.3
 annotations:
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |
     - name: Chart Source
       url: https://github.com/prometheus-community/helm-charts
   wmf/upstreamVersion: 5.10.1
-apiVersion: v2
-description: Install kube-state-metrics to generate and expose cluster-level metrics
-home: https://github.com/kubernetes/kube-state-metrics/
 keywords:
 - metric
 - monitoring
 - prometheus
 - kubernetes
+home: https://wikitech.wikimedia.org/wiki/Kube-state-metrics
+team: https://wikitech.wikimedia.org/wiki/SRE/Service_Operations
 maintainers:
-- email: tariq.ibrahim@mulesoft.com
-  name: tariq1890
-- email: manuel@rueg.eu
-  name: mrueg
-- email: david@0xdc.me
-  name: dotdc
-name: kube-state-metrics
-sources:
-- https://github.com/kubernetes/kube-state-metrics/
-type: application
-version: 5.10.3
+  - name: ServiceOps SRE Team
+    email: sre-service-ops@wikimedia.org
+  - name: Raine Souček
+    email: ksouckova@wikimedia.org

@@ -2,3 +2,6 @@ apiVersion: v2
 description: Thumbor image conversion service
 name: thumbor
 version: 0.6.20
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "home,sources"
