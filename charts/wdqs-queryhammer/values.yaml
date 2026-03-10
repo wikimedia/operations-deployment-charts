@@ -1,0 +1,86 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  image: wikidata-platform/queryhammer
+  version: latest # we use latest everywhere in the defaults.
+  port: ~ # port exposed as a Service, also used by service-checker.
+  command: [ "/usr/bin/queryhammer" ]
+  args: []
+  requests:
+    cpu: 1m
+    memory: 200Mi
+  limits:
+    cpu: 1
+    memory: 512Mi
+  liveness_probe: {}
+  readiness_probe: {}
+  # add here any volumes to mount onto the pod. Example:
+  #volumes:
+  #- name: scratchdir
+  #  emptyDir: {}
+  # add here any mounted volumes to make accessible to the container. Example:
+  #volumeMounts:
+  #   - name: scratchdir # the name from your volume above
+  #     mountPath: /scratch/ # where it should live in your container
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+service: {}
+
+config:
+  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  private: {} # Add here all the keys that should be private but still available as env variables
+  mm: {}
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+mesh:
+  enabled: false
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+
+# The set of external services to allow egress to
+# Example:
+# kafka:
+# - main-codfw
+# - main-eqiad
+# presto:
+# - analytics
+#
+# See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services
+external_services: {}

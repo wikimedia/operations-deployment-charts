@@ -1,0 +1,21 @@
+Thank you for installing {{ template "base.name.chart" . }}.
+
+Your release is named {{ template "base.name.release" . }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ template "base.name.release" . }}
+  $ helm get {{ template "base.name.release" . }}
+
+{{- if eq .Values.service.deployment "minikube" }}
+You are using minikube, which means it's really easy to access your service. Run the following
+MINIKUBE_HOST=$(minikube ip)
+SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "base.name.release" . }} -o jsonpath='{.spec.ports[0].nodePort}')
+
+curl http://${MINIKUBE_HOST}:${SERVICE_PORT}/
+
+or alternatively in your browser using the following URL
+
+echo http://${MINIKUBE_HOST}:${SERVICE_PORT}/
+
+{{- end }}
