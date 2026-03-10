@@ -128,6 +128,11 @@ config:
         # Number of pods that the k8s executor can create in a single scheduler loop
         # See https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/configurations-ref.html#worker-pods-creation-batch-size
         worker_pods_creation_batch_size: 16
+        # DAGs have overloaded the kubernetes control plane in the past by creating 100s of mapped tasks
+        # each run, each of them failing (due to some configuration/deployment error), each task is retried
+        # X times, and all pods are kept "for investigation". This is a massive footgun, and we can investigate
+        # failed pods by looking at the logs in the UI.
+        delete_worker_pods_on_failure: true
       logging:
         colored_console_log: false
         remote_logging: true
