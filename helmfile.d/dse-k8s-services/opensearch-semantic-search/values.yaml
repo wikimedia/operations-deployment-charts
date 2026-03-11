@@ -3,27 +3,27 @@ opensearchCluster:
     serviceName: "opensearch-semantic-search"
     image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:3@sha256:95eea5d5bbd6ca958f53e120abe631b2e6f99c234339093627216a8fb34f217f
   nodePools:
-    - component: masters
-      diskSize: "50Gi"
+    - &node-pool-common
+      component: data
+      diskSize: "170Gi"
       persistence:
         pvc:
           storageClass: ceph-rbd-ssd
           accessModes:
             - ReadWriteOnce
-      replicas: 7
+      replicas: 9
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/share/opensearch/plugins/opensearch-knn/lib
-      jvm: -Xmx4G -Xms4G -Djava.library.path=/usr/share/opensearch/plugins/opensearch-knn/lib
+      jvm: -Xmx6G -Xms6G -Djava.library.path=/usr/share/opensearch/plugins/opensearch-knn/lib
       roles:
-        - "master"
         - "data"
       resources:
         requests:
-          memory: "21Gi"
+          memory: "38Gi"
           cpu: "4000m"
         limits:
-          memory: "21Gi"
+          memory: "38Gi"
           cpu: "4000m"
     # These annotations enable/configure metrics scrapes
       annotations:
@@ -31,7 +31,23 @@ opensearchCluster:
         prometheus.io/port: "9200"
         prometheus.io/path: "/_prometheus/metrics"
         prometheus.io/scheme: "https"
-    # prevent 2 masters from being scheduled on the same k8s worker
+      # prevent nodes from being scheduled on hosts with 1g networking
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+    - <<: *node-pool-common
+      component: masters
+      roles:
+        - "master"
+        - "data"
+      replicas: 7
+      # prevent nodes from being scheduled on hosts with 1g networking
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
