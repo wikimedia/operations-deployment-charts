@@ -12,6 +12,8 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/kafka-mirrormaker-deploy-%s.config" .Environment.Name) }}
 
+
+# See https://phabricator.wikimedia.org/T417407#11696599 for the mirrormaker placement rationale
 environments:
   aux-k8s-eqiad:
     values:
@@ -20,7 +22,7 @@ environments:
     missingFileHandler: Warn
   aux-k8s-codfw:
     values:
-    - releases: [jumbo-eqiad-to-test-eqiad]
+    - releases: []
     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
     missingFileHandler: Warn
 
