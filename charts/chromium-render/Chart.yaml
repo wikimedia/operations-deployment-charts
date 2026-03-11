@@ -1,14 +1,18 @@
 apiVersion: v2
 description: Helm chart for Chromium Render on WMF Kubernetes infrastructure
+kubeVersion: ">=1.12"
 name: chromium-render
 version: 0.2.12
 keywords:
   - PDF
   - chromium
   - Wikimedia
-home: https://www.mediawiki.org/wiki/Proton
+home: https://wikitech.wikimedia.org/wiki/Proton
 sources:
   - https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/services/chromium-render/
+team: https://wikitech.wikimedia.org/wiki/Content_Transform_Team
 maintainers:
-  - name: Wikimedia Product Infrastructure team <https://www.mediawiki.org/wiki/Wikimedia_Product/Wikimedia_Product_Infrastructure_team>
-kubeVersion: ">=1.12"
+  - name: Yiannis Giannelos
+    email: ygiannelos@wikimedia.org
+  - name: Isabelle Hurbain-Palatin
+    email: ihurbain@wikimedia.org

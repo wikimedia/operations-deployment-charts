@@ -2,3 +2,16 @@ apiVersion: v2
 description: A chart in charge of creating Kubernetes Services/Endpoints to reference systems running outside of Kubernetes
 name: external-services
 version: 0.0.3
+keywords:
+  - infrastructure
+annotations:
+  skip-checks: "sources"
+home: https://wikitech.wikimedia.org/wiki/External-services
+team: https://wikitech.wikimedia.org/wiki/SRE/Service_Operations
+sources:
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/
+maintainers:
+  - name: SRE Service Operations
+    email: sre-service-ops@wikimedia.org
+  - name: Janis Mayboom
+    email: jmeybohm@wikimedia.org

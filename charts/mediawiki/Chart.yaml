@@ -3,3 +3,6 @@ description: A Helm chart for running MediaWiki on Kubernetes
 name: mediawiki
 version: 0.12.1
 icon: https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/MediaWiki-2020-logo.svg/270px-MediaWiki-2020-logo.svg.png
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "team,maintainers,home,sources"

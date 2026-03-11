@@ -4,3 +4,6 @@ description: cfssl-issuer Custom Resource Definitions
 type: application
 version: 0.4.0
 appVersion: 0.4.0-1
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "team,maintainers,home,sources"

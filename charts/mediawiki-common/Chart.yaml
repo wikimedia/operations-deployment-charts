@@ -2,3 +2,6 @@ apiVersion: v2
 description: A collection of release-independent definitions for mw-on-k8s
 name: mediawiki-common
 version: 0.0.2
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "team,maintainers,home,sources"

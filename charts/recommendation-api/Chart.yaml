@@ -5,8 +5,9 @@ name: recommendation-api
 version: 0.1.24
 keywords:
   - recommendation-api
+home: https://wikitech.wikimedia.org/wiki/Services/Monitoring/recommendation_api
 sources:
   - https://gerrit.wikimedia.org/g/mediawiki/services/recommendation-api
-maintainers:
-  - name: Research Team
-    email: bmansurov@wikimedia.org
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "home,sources"

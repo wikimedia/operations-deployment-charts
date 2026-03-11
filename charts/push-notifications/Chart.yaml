@@ -1,5 +1,6 @@
 apiVersion: v2
 description: Helm chart for the Push Notifications Service on WMF Kubernetes infrastructure
+kubeVersion: ">=1.12"
 name: push-notifications
 version: 0.1.22
 keywords:
@@ -7,9 +8,10 @@ keywords:
   - push
   - notifications
   - Wikimedia
-home: https://www.mediawiki.org/wiki/Wikimedia_Product_Infrastructure_team/Push_Notifications_Infrastructure
+home: https://wikitech.wikimedia.org/wiki/Push_notifications
 sources:
   - https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/services/push-notifications/
+team: https://wikitech.wikimedia.org/wiki/Content_Transform_Team
 maintainers:
-  - name: Wikimedia Product Infrastructure team <https://www.mediawiki.org/wiki/Wikimedia_Product/Wikimedia_Product_Infrastructure_team>
-kubeVersion: ">=1.12"
+  - name: Yiannis Giannelos
+    email: ygiannelos@wikimedia.org

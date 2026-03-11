@@ -2,6 +2,13 @@ apiVersion: v2
 description: Thumbor image conversion service
 name: thumbor
 version: 0.6.20
+keywords:
+  - image
+  - thumbnails
+home: https://wikitech.wikimedia.org/wiki/Thumbor
+sources:
+  - https://gerrit.wikimedia.org/r/admin/repos/operations/software/thumbor-plugins,
+  - https://gerrit.wikimedia.org/r/admin/repos/operations/debs/python-thumbor-wikimedia
 # skip ci checks for this Chart.yaml
 annotations:
-  skip-checks: "home,sources"
+  skip-checks: "team,maintainers"

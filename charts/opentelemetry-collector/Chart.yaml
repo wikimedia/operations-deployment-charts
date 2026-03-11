@@ -1,15 +1,22 @@
 apiVersion: v2
+description: OpenTelemetry Collector Helm chart for Kubernetes
 name: opentelemetry-collector
 # Chart version from github.com/open-telemetry/opentelemetry-collector: 0.62.2
 version: 0.62.7
-description: OpenTelemetry Collector Helm chart for Kubernetes
+appVersion: 0.81.0
 type: application
-home: https://opentelemetry.io/
+keywords:
+  - telemetry
+  - infrastructure
+icon: https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png
+home: https://wikitech.wikimedia.org/wiki/Otelcol
 sources:
+  - https://gerrit.wikimedia.org/r/plugins/gitiles/operations/docker-images/production-images/
   - https://github.com/open-telemetry/opentelemetry-collector
   - https://github.com/open-telemetry/opentelemetry-collector-contrib
+team: https://wikitech.wikimedia.org/wiki/SRE/Infrastructure_Foundations
 maintainers:
-  - name: dmitryax
-  - name: TylerHelmuth
-icon: https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png
-appVersion: 0.81.0
+  - name: SRE Infrastructure Foundations
+    email: sre-infra-foundations@wikimedia.org
+  - name: Chris Danis
+    email: cdanis@wikimedia.org

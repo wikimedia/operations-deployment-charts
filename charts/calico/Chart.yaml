@@ -4,6 +4,8 @@ description: WMF Calico setup
 type: application
 version: 0.4.0
 appVersion: 3.29.1
+keywords:
+  - infrastructure
 # FIXME: Disabled Kubernetes version dependency.
 # I could not find a way to make helmfile pass ''--kube-version 1.31' down to helm calls.
 # Without that, the current helm version in use (v3.11.3) will default to validate
@@ -26,5 +28,5 @@ sources:
   - https://gerrit.wikimedia.org/r/admin/repos/operations/debs/calico
 team: https://wikitech.wikimedia.org/wiki/SRE/Service_Operations
 maintainers:
-  - name: ServiceOps SRE Team
+  - name: SRE Service Operations
     email: sre-service-ops@wikimedia.org

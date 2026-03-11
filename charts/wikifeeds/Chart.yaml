@@ -1,5 +1,6 @@
 apiVersion: v2
 description: A Helm chart for Kubernetes
+kubeVersion: ">=1.8"
 name: wikifeeds
 version: 0.2.6
 keywords:
@@ -9,9 +10,13 @@ keywords:
   - mobile apps
   - MediaWiki
   - Wikipedia
-home: https://phabricator.wikimedia.org/tag/wikifeeds
+  - extension
+home: https://wikitech.wikimedia.org/wiki/Wikifeeds
 sources:
   - https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/services/wikifeeds/
+team: https://wikitech.wikimedia.org/wiki/Content_Transform_Team
 maintainers:
-  - name: Wikimedia Product Infrastructure team <https://www.mediawiki.org/wiki/Wikimedia_Product/Wikimedia_Product_Infrastructure_team>
-kubeVersion: ">=1.8"
+  - name: Yiannis Giannelos
+    email: ygiannelos@wikimedia.org
+  - name: Dmitry Brant
+    email: dbrant@wikimedia.org

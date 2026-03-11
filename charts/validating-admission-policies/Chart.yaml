@@ -1,8 +1,21 @@
 apiVersion: v2
-name: validating-admission-policies
 description: Create Validating Admission Policies
+kubeVersion: ">= 1.30"
+name: validating-admission-policies
 type: application
 version: 0.4.0
 appVersion: "0.1.0"
 # ValidatingAdmissionPolicies v1 GA since 1.30
-kubeVersion: ">= 1.30"
+keywords:
+  - infrastructure
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "sources"
+home: https://wikitech.wikimedia.org/wiki/Validating-admission-policies
+team: https://wikitech.wikimedia.org/wiki/SRE/Service_Operations
+maintainers:
+  - name: SRE Service Operations
+    email: sre-service-ops@wikimedia.org
+  - name: Janis Mayboom
+    email: jmeybohm@wikimedia.org
+

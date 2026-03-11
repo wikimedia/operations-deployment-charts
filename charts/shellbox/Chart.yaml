@@ -7,10 +7,11 @@ keywords:
   - mediawiki
   - score
   - lilypond
-home: https://www.mediawiki.org/wiki/Shellbox
+  - extension
+icon: https://upload.wikimedia.org/wikipedia/commons/6/6f/Shellbox_logo.png
+home: https://wikitech.wikimedia.org/wiki/Shellbox
 sources:
   - https://gerrit.wikimedia.org/g/mediawiki/libs/Shellbox
-maintainers:
-  - name: Kunal Mehta
-    email: legoktm@wikimedia.org
-icon: https://upload.wikimedia.org/wikipedia/commons/6/6f/Shellbox_logo.png
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "team,maintainers"

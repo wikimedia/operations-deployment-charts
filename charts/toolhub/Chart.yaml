@@ -2,14 +2,21 @@ apiVersion: v2
 name: toolhub
 description: Helm chart for Toolhub, a catalog of Wikimedia tools
 version: 1.1.27
-home: https://meta.wikimedia.org/wiki/Toolhub
 icon: https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Toolhub_community_logo.svg/240px-Toolhub_community_logo.svg.png
-maintainers:
-  - name: Bryan Davis
-    email: bd808@wikimedia.org
-    url: https://wikitech.wikimedia.org/wiki/User:BryanDavis
+keywords:
+  - tools
+  - catalog
+  - community
 dependencies:
   - name: elasticsearch
     version: 6.8.18
     repository: https://helm.elastic.co
     condition: elasticsearch.enabled
+home: https://wikitech.wikimedia.org/wiki/Toolhub.wikimedia.org
+sources:
+  - https://gerrit.wikimedia.org/g/wikimedia/toolhub
+team: https://wikitech.wikimedia.org/wiki/Developer_Experience
+maintainers:
+  - name: Bryan Davis
+    email: bd808@wikimedia.org
+    url: https://wikitech.wikimedia.org/wiki/User:BryanDavis

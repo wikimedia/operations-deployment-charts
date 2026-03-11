@@ -4,3 +4,6 @@ name: raw
 home: https://github.com/helm/charts/blob/master/incubator/raw
 description: A place for all the Kubernetes resources which don't already have a home.
 version: 0.3.0
+# skip ci checks for this Chart.yaml
+annotations:
+  skip-checks: "team,maintainers,home,sources"
