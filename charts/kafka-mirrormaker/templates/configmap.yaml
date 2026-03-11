@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kafka-mirrormaker-config
+  name: {{ template "base.name.release" . }}
 {{- include "base.meta.labels" . | indent 2}}
 data:
   consumer.properties: |

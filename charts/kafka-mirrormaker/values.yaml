@@ -32,7 +32,7 @@ app:
   volumes:
   - name: kafka-mirrormaker-tpl
     configMap:
-      name: kafka-mirrormaker-config
+      name: '{{ template "base.name.release" . }}'
   - name: kafka-mirrormaker-config
     emptyDir: {}
   # add here any mounted volumes to make accessible to the container. Example:
