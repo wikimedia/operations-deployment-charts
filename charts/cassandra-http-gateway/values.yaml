@@ -35,15 +35,29 @@ main_app:
     - name: config-volume
       mountPath: /etc/cassandra-http-gateway/
 
-  druid:
-    host: http://localhost
-    port: 8082
+  # data_gateway_uri: http://dgw.discovery.wmnet
 
-  config_table: aqs.config
+  # druid:
+  #   host: http://localhost
+  #   port: 8082
+
+  # hoarde:
+  #   tables:
+  #     example_cache:
+  #       lambda:
+  #         type: grpc
+  #         hostname: localhost
+  #         port: 50501
+  #         timeout: 2000ms
+
+  # Cassandra settings
+  # config_table: aqs.config
   cassandra_user: "foo"
   consistency: "one"
   datacentre: "local"
   cassandra_hosts: []
+
+  service_name: unnamed_service
   log_level: "info"
 
 monitoring:
