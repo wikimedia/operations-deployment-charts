@@ -84,9 +84,9 @@ class RateLimitTest(unittest.TestCase):
     def assert_rate_limit_counts( self, path, allowed, assertions, headers = None, debug = None):
         # Try three times as many requests as allowed.
         # At most twice as many requests as allowed can pass (when crossing a window boundary).
-        # The last third of requests must fail, assuming the requests can be performed within
+        # At least the last two requests must fail, assuming the requests can be performed within
         # the span of one window (so in at most two windows).
-        n = allowed*3
+        n = allowed*2 + 2
         predicates = {
             "429": Predicates.has_status(429),
             "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
@@ -210,6 +210,24 @@ class RateLimitTest(unittest.TestCase):
         }
         limits = getRateLimits("anon", [ policy ])
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = testing_headers)
+
+    def test_deny_policy(self):
+        testing_headers = {
+            "x-wmf-user-id": env.nextName("Jane"),
+            "x-wmf-ratelimit-class": "anon",
+            "x-wmf-ratelimit-policy-1": "DENY",
+        }
+        self.assert_rate_limit_enforced(self.default_endpoint, 0, headers = testing_headers)
+
+    def test_deny_class(self):
+        policy = env.values.main_app.ratelimiter.default_policies[0]
+
+        testing_headers = {
+            "x-wmf-user-id": env.nextName("Judy"),
+            "x-wmf-ratelimit-class": "DENY",
+            "x-wmf-ratelimit-policy-1": policy,
+        }
+        self.assert_rate_limit_enforced(self.default_endpoint, 0, headers = testing_headers)
 
     def test_setting_headers_blocked_externally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
@@ -417,7 +435,7 @@ class RateLimitTest(unittest.TestCase):
         ip = env.nextIp()
         token = jwtools.createJwtOrSkip(self,
             sub = env.nextName("Tester"),
-            rlc = "no-limit" # magic value to bypass rate limiting entirely
+            rlc = "BYPASS" # magic value to bypass rate limiting entirely
         )
         headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 

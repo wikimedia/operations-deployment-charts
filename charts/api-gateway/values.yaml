@@ -56,7 +56,7 @@ main_app:
     # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
     default_policies: []
     # The rate limiting class to apply if the user identity is not know.
-    # This can be set to "no-limit" for testing, when we only want to enforce rate limits
+    # This can be set to "BYPASS" for testing, when we only want to enforce rate limits
     # under special circumstances.
     fallback_class: "anon"
     # classes to assign based on IP range (prefix match for now)

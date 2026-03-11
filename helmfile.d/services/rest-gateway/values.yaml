@@ -663,7 +663,7 @@ main_app:
               string_match:
                 exact: 'tokens'
                 ignore_case: true
-      rate_limit_policies: [ "no-limit", "no-limit" ]
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s

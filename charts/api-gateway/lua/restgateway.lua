@@ -96,10 +96,10 @@ function wmf_ratelimit_info(request_handle)
 
     local ratelimit_policies = routeMeta_ratelimit["policies"] or {}
     for i, p in ipairs(ratelimit_policies) do
-        -- No header for the "no-limit" policy, so rate limiting is bypassed entirely.
+        -- No header for the "BYPASS" policy, so rate limiting is bypassed entirely.
         -- This works because the "request_headers" directive of the rate_limits filter
         -- will not construct a descriptor if the header is missing.
-        if p ~= "no-limit" then
+        if p ~= "BYPASS" then
             headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
         end
     end
@@ -200,10 +200,10 @@ function wmf_ratelimit_info(request_handle)
 
     headers:replace("x-wmf-user-id", user_id)
 
-    -- No header for the "no-limit" policy, so rate limiting is bypassed entirely.
+    -- No header for the "BYPASS" policy, so rate limiting is bypassed entirely.
     -- This works because the "request_headers" directive of the rate_limits filter
     -- will not construct a descriptor if the header is missing.
-    if ratelimit_class ~= "no-limit" then
+    if ratelimit_class ~= "BYPASS" then
         headers:replace("x-wmf-ratelimit-class", ratelimit_class)
     end
 end

@@ -69,6 +69,17 @@ class RestGatewayTest(unittest.TestCase):
         ratelimit_config = cm.get_decoded( ["data", "config.yaml"] ) # this also ensures tha the YAML is valid
         self.assert_ratelimit_config_valid(ratelimit_config)
 
+        # DENY policy and DENY group
+        data_path = [ "descriptors", { "value": "DENY" },
+                 "descriptors", { "key": "user_class" },
+                 "descriptors", { "key": "user_id" } ]
+        self.assertIsNotNone( ratelimit_config.get( data_path ), "expect DENY policy" )
+
+        data_path = [ "descriptors", { "value": "active-policy" },
+                 "descriptors", { "key": "user_class", "value": "DENY" },
+                 "descriptors", { "key": "user_id" } ]
+        self.assertIsNotNone( ratelimit_config.get( data_path ), "expect DENY class" )
+
         # Shadow mode
         data_path = [ "descriptors", { "value": "active-policy" },
                  "descriptors", { "value": "anon" },
