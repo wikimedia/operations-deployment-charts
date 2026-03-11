@@ -1,0 +1,15 @@
+main_app:
+  datacentre: codfw
+  cassandra_hosts:
+    - cassandra-dev2001-a.codfw.wmnet:9042
+    - cassandra-dev2001-b.codfw.wmnet:9042
+    - cassandra-dev2002-a.codfw.wmnet:9042
+    - cassandra-dev2002-b.codfw.wmnet:9042
+    - cassandra-dev2003-a.codfw.wmnet:9042
+    - cassandra-dev2003-b.codfw.wmnet:9042
+
+external_services:
+  cassandra:
+    # The cassandra-dev cluster is only in codfw.
+    - cassandra-dev-a-codfw
+    - cassandra-dev-b-codfw

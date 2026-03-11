@@ -1,0 +1,17 @@
+main_app:
+  log_level: debug
+
+  hoarde:
+    tables:
+      echo:
+        lambda:
+          type: grpc
+          hostname: cassandra-dev2001.codfw.wmnet
+          port: 50051
+          timeout: 2000ms
+
+resources:
+  replicas: 1
+
+ingress:
+  staging: true

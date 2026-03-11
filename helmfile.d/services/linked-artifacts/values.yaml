@@ -1,0 +1,39 @@
+main_app:
+  image: repos/sre/hoarde
+  version: v1.0.0
+  command: ["./hoarde"]
+  args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
+  service_name: linked-artifacts
+  consistency: localQuorum
+
+  # note the "_"
+  cassandra_user: "linked_artifacts"
+  cassandra_keyspace: linked_artifacts
+
+  hoarde:
+    tables:
+      article_topics:
+        lambda:
+          type: grpc
+          hostname: localhost  # FIXME: placeholder
+          port: 50501  # FIXME: placeholder
+          timeout: 2000ms
+
+  requests:
+    cpu: 200m
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1024Mi
+
+resources:
+  replicas: 4
+
+mesh:
+  enabled: true
+
+ingress:
+  enabled: true
+
+monitoring:
+  enabled: true
