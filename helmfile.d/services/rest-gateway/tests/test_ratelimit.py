@@ -57,10 +57,25 @@ class RateLimitTest(unittest.TestCase):
             raise ValueError("No value set for smokepy.gateway.target_url! " +
                 "Specify one in a value file or set GATEWAY_TEST_TARGET_URL")
 
+        RateLimitTest.checkHealthz()
+
         RateLimitTest.default_endpoint = RateLimitTest.probe_config.default_policy_endpoint
         print(f"Running tests on {RateLimitTest.target_url}{RateLimitTest.default_endpoint}")
 
         RateLimitTest.shadow_endpoint = RateLimitTest.probe_config.shadow_policy_endpoint
+
+    @staticmethod
+    def checkHealthz():
+        target = Target(RateLimitTest.target_url)
+        resp = target.get("/healthz")
+
+        if resp.status == -1:
+            raise IOError( f"Cannot connect to {RateLimitTest.target_url}. " +
+                "Perhaps the service is not running or port-forwarding needs to be enabled." )
+
+        if resp.status != 200:
+            raise IOError( f"Health check failed for {RateLimitTest.target_url}: " +
+                resp.body )
 
     def setUp(self):
         headers = RateLimitTest.probe_config.get("headers", {})
