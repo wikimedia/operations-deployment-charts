@@ -50,7 +50,7 @@ main_app:
       # NOTE: the policy name should change when the name or semantics of classes change,
       # to avoid confusing the metrics.
       "Mar2026":
-        shadow_mode: true # do not enable in production just yet!
+        shadow_mode: false
         limits:
           "*": # catch-all limits
             HOUR: 500
