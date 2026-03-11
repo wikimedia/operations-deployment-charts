@@ -18,7 +18,7 @@ descriptors:
     value: {{ $name }}
     descriptors:
       # For a description of the available rate limit classes and their meaning and purpose,
-      # see the comment on the wmf_ratelimit_info method in restgateway.lua.
+      # see the comment on the wmf_ratelimit_info method in restgw_ratelimits.lua.
       {{/* Inject a DENY class that has a limit of 0 per minute (could be any time unit, doesn't matter). */}}
       {{- $limits := mustMerge $policy.limits (dict "DENY" (dict $deny_unit 0)) }}
       {{- range $class, $units := $limits }}

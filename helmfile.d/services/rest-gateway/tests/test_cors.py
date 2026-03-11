@@ -11,6 +11,9 @@ import helpers
 TEST_ORIGIN = "http://just.a.test"
 
 # Headers to force a request to be limited
+BAD_TOKEN = "8badbeef"
+
+# ratelimit headers that will force a 429 response
 DENY_LIMIT_HEADERS = {
     "x-wmf-user-id": "Danese",
     "x-wmf-ratelimit-class": "DENY",
@@ -69,7 +72,7 @@ class CorsTest(unittest.TestCase):
         for h in headers:
             self.assertIsNone(resp.headers.get(h), f"expected no {h} header")
 
-    def test_envoy_error_response_with_origin(self):
+    def test_ratelimit_error_response_with_origin(self):
         """Expect CORS headers for Envoy-generated responses (e.g. 429 for rate limits)."""
 
         headers = {
@@ -78,6 +81,27 @@ class CorsTest(unittest.TestCase):
         }
         resp = self.target.get(CorsTest.upstream_endpoint, headers=headers)
         self.assertEqual(429, resp.status, "expected 429 for forced rate limit")
+        self.assert_local_response_cors_headers_set(resp, TEST_ORIGIN)
+
+    def test_jwt_error_response_with_origin(self):
+        """Expect CORS headers for Envoy-generated responses (e.g. 401 for a bad token)."""
+
+        headers = {
+            "origin": TEST_ORIGIN, # should trigger CORS headers
+            "Authorization": "Bearer " + BAD_TOKEN
+        }
+        resp = self.target.get(CorsTest.upstream_endpoint, headers=headers)
+        self.assertEqual(401, resp.status, "expected 401 for a bad token")
+        self.assert_local_response_cors_headers_set(resp, TEST_ORIGIN)
+
+    def test_404_error_response_with_origin(self):
+        """Expect CORS headers for Envoy-generated responses (e.g. 404 for a bad path)."""
+
+        headers = {
+            "origin": TEST_ORIGIN, # should trigger CORS headers
+        }
+        resp = self.target.get("/this/does/not/exist", headers=headers)
+        self.assertEqual(404, resp.status, "expected 404 for a bad path")
         self.assert_local_response_cors_headers_set(resp, TEST_ORIGIN)
 
     def test_envoy_error_without_origin(self):

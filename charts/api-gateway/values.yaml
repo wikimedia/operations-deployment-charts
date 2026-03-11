@@ -67,7 +67,7 @@ main_app:
 
     log_level: info
 
-    # Request headers to expose in the response, including x-wmf-* headers set by restgateway.lua
+    # Request headers to expose in the response, including x-wmf-* headers set by restgw_ratelimits.lua
     # See T417780
     exposed_headers: [ "x-wmf-ratelimit-class" ]
 
@@ -98,7 +98,7 @@ main_app:
     # Rate limit policies are used with the REST gateway, not the API gateway.
     # A rate limit policy defines the limits for each rate limit class.
     # For a description of the available rate limit classes and their meaning and purpose,
-    # see the comment on the wmf_ratelimit_info method in restgateway.lua.
+    # see the comment on the wmf_ratelimit_info method in restgw_ratelimits.lua.
     # Enabling shadow_mode for a policy instructs the rate limiter to allow all requests
     # but generate metrics about which ones would have been denied ("dry run").
     # See https://github.com/envoyproxy/ratelimit?tab=readme-ov-file#shadowmode

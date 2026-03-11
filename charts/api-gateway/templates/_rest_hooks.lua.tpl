@@ -1,4 +1,9 @@
-{{- define "restgateway.lua" }}
+{{- define "restgw_headers.lua" }}
+-- From lua/restgw_headers.lua:
+{{ .Files.Get "lua/restgw_headers.lua" }}
+{{- end }}
+
+{{- define "restgw_ratelimits.lua" }}
 {{/*
  Generate a Lua table containing the relevant bits from .Values.
  This code runs once, in global scope.
@@ -31,7 +36,6 @@ HelmValues = {
     }
 }
 
--- From lua/restgateway.lua:
-
-{{ .Files.Get "lua/restgateway.lua" }}
+-- From lua/restgw_ratelimits.lua:
+{{ .Files.Get "lua/restgw_ratelimits.lua" }}
 {{- end }}

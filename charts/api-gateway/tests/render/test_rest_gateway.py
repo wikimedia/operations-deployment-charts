@@ -38,7 +38,7 @@ class RestGatewayTest(unittest.TestCase):
         except CalledProcessError as ex:
             raise Exception( "Helm failed to render the chart:\n" + ex.stdout + "\n" + ex.stderr ) from ex
 
-    def test_restgw(self):
+    def test_restgateway(self):
         manifests = self.render( [ "rest_routes.yaml" ] )
 
         # Deployment manifest
@@ -175,6 +175,7 @@ class RestGatewayTest(unittest.TestCase):
         )
 
         # http filters
+        self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.lua.headers"}]), )
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.lua"}]), )
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.ratelimit"}]), )
 
