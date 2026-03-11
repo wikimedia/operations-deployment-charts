@@ -1,3 +1,4 @@
+helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -12,24 +13,19 @@ helmDefaults:
     - --kubeconfig
     - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/kafka-mirrormaker-deploy-%s.config" .Environment.Name) }}
 
-
-# See https://phabricator.wikimedia.org/T417407#11696599 for the mirrormaker placement rationale
 environments:
-  aux-k8s-eqiad:
+  dse-k8s-eqiad:
     values:
-    - releases: [jumbo-eqiad-to-test-eqiad]
-    - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+    - releases:
+      - logging-eqiad-to-jumbo-eqiad
     missingFileHandler: Warn
-  aux-k8s-codfw:
+  dse-k8s-codfw:
     values:
-    - releases: []
-    - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+    - releases:
+      - logging-codfw-to-jumbo-eqiad
     missingFileHandler: Warn
 
 ---
-
-bases:
-  - ../global.yaml
 
 hooks:
   - events: ["prepare"]
@@ -37,14 +33,14 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/aux-k8s-services/kafka-mirrormaker: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/airflow-main: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/aux-k8s-services/kafka-mirrormaker: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/airflow-main: {{`{{.HelmfileCommand}}`}}",
       ]
 
 templates:
@@ -60,12 +56,15 @@ templates:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/aux-k8s_services/kafka-mirrormaker/{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/kafka-mirrormaker/{{ .Environment.Name }}.yaml"
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
 
 releases:
-  - name: jumbo-eqiad-to-test-eqiad
+  - name: logging-eqiad-to-jumbo-eqiad
+    namespace: kafka-mirrormaker
+    <<: *default
+  - name: logging-codfw-to-jumbo-eqiad
     namespace: kafka-mirrormaker
     <<: *default
 
