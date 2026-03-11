@@ -3,16 +3,16 @@ opensearchCluster:
     serviceName: "opensearch-semantic-search-test"
     image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2026-02-03-212519-70e19086545c5f33b67dde8506c9ffea81761132-production3@sha256:6e746ee4dad5f3fbd5f6c671fa44b7964f5b516c994d4990842bc5eed7839579
   nodePools:
-    - component: masters
+    - &node-pool-common
+      component: data
       diskSize: "40Gi"
       persistence:
         pvc:
           storageClass: ceph-rbd-ssd
           accessModes:
             - ReadWriteOnce
-      replicas: 3
+      replicas: 1
       roles:
-        - "master"
         - "data"
       resources:
         requests:
@@ -21,13 +21,13 @@ opensearchCluster:
         limits:
           memory: "8Gi"
           cpu: "4000m"
-    # These annotations enable/configure metrics scrapes
+      # These annotations enable/configure metrics scrapes
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9200"
         prometheus.io/path: "/_prometheus/metrics"
         prometheus.io/scheme: "https"
-    # prevent 2 masters from being scheduled on the same k8s worker
+      # prevent pods from being scheduled on hosts with 1G networking
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -37,7 +37,22 @@ opensearchCluster:
                 operator: NotIn
                 values:
                 - 1G
+    - <<: *node-pool-common
+      component: masters
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
       # prevent 2 masters from being scheduled on the same k8s worker
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
