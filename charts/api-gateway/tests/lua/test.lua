@@ -177,6 +177,21 @@ describe("rest_hooks", function()
                 assert.are.equal( "two", result:get("x-wmf-ratelimit-policy-2") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-3") )
             end)
+            it("should not set x-wmf-ratelimit-policy for no-limit policy", function()
+                local headers = {
+                    ["x-client-ip"] = "1.2.3.4",
+                }
+                local routeMeta = { ["wmf_ratelimit"] = {
+                    ["policies"] = { "no-limit", "some-limits" } -- "no-limit" is magical
+                } }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
+                assert.are.equal( "some-limits", result:get("x-wmf-ratelimit-policy-2") )
+            end)
             it("should unset x-wmf-ratelimit-policy based on route metadata", function()
                 local headers = {
                     ["x-client-ip"] = "1.2.3.4",
@@ -504,6 +519,20 @@ describe("rest_hooks", function()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
             end)
+            it("should not set x-wmf-ratelimit-class if rlc claim is no-limit", function()
+                -- The JWT payload is stored in stream metadata
+                local payload = {
+                    sub = "12345",
+                    rlc = "no-limit" -- magic value!
+                }
+                local meta = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
+                local headers = { ["x-client-ip"] = "1234", }
+                local req = fake_request_handle( { streamMetadata = meta, headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.is_nil( result:get("x-wmf-ratelimit-class") )
+            end)
             it("should not use the rlc claim if the sub claim is not present", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
@@ -570,33 +599,6 @@ describe("rest_hooks", function()
                 assert.is_nil( result:get("x-wmf-ratelimit-class") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
-        end)
-    end)
-
-    describe("wmf_request_cleanup", function()
-        function assertHeaderUpate( headerName, headerValue, expectedResult )
-            local headers = { test = "foobar" }
-            headers[headerName] = headerValue
-
-            local req = fake_request_handle{headers = headers}
-
-            wmf_request_cleanup( req )
-
-            local result = req:headers()
-            assert.are.equal("foobar", result:get("test"))
-            assert.are.equal(expectedResult, result:get(headerName))
-        end
-
-        it("should unset x-wmf-ratelimit-class header if it is 'no-limit'", function()
-            assertHeaderUpate("x-wmf-ratelimit-class", "no-limit", nil)
-        end)
-
-        it("should preserve x-wmf-ratelimit-class header if it is 'some-class'", function()
-            assertHeaderUpate("x-wmf-ratelimit-class", "some-class", "some-class")
-        end)
-
-        it("should preserve x-something-else header even if it is 'no-limit'", function()
-            assertHeaderUpate("x-something-else", "no-limit", "no-limit")
         end)
     end)
 

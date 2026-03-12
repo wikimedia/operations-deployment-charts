@@ -7,7 +7,6 @@
 function envoy_on_request(request_handle)
     wmf_ratelimit_info(request_handle)
     wmf_stash_headers(request_handle)
-    wmf_request_cleanup(request_handle)
 end
 
 function envoy_on_response(response_handle)
@@ -97,7 +96,12 @@ function wmf_ratelimit_info(request_handle)
 
     local ratelimit_policies = routeMeta_ratelimit["policies"] or {}
     for i, p in ipairs(ratelimit_policies) do
-        headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
+        -- No header for the "no-limit" policy, so rate limiting is bypassed entirely.
+        -- This works because the "request_headers" directive of the rate_limits filter
+        -- will not construct a descriptor if the header is missing.
+        if p ~= "no-limit" then
+            headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
+        end
     end
 
     -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
@@ -189,7 +193,13 @@ function wmf_ratelimit_info(request_handle)
     )
 
     headers:replace("x-wmf-user-id", user_id)
-    headers:replace("x-wmf-ratelimit-class", ratelimit_class)
+
+    -- No header for the "no-limit" policy, so rate limiting is bypassed entirely.
+    -- This works because the "request_headers" directive of the rate_limits filter
+    -- will not construct a descriptor if the header is missing.
+    if ratelimit_class ~= "no-limit" then
+        headers:replace("x-wmf-ratelimit-class", ratelimit_class)
+    end
 end
 
 function wmf_ratelimit_class_for_address( address, fallback )
@@ -202,22 +212,6 @@ function wmf_ratelimit_class_for_address( address, fallback )
     end
 
     return fallback
-end
-
-function wmf_request_cleanup(request_handle)
-    local headers = request_handle:headers()
-
-    -- These headers are required for rate limiting. We remove them below if their value is
-    -- "no-limit", because removing them disables rate limiting entirely.
-    -- This works because the "request_headers" directive of the rate_limits filter
-    -- will fail to construct a descriptor if the header is missing.
-    local names = { "x-wmf-ratelimit-class" }
-
-    for _, hname in ipairs(names) do
-        if headers:get(hname) == "no-limit" then
-            headers:remove(hname)
-        end
-    end
 end
 
 function wmf_stash_headers(request_handle)

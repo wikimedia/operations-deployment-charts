@@ -390,6 +390,18 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("approved-bot")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
+    def test_jwt_cookie_no_limit(self):
+        ip = env.nextIp()
+        token = jwtools.createJwtOrSkip(self,
+            sub = env.nextName("Tester"),
+            rlc = "no-limit" # magic value to bypass rate limiting entirely
+        )
+        headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
+
+        # should apply no rate limiting at all
+        limits = getRateLimits("anon")
+        self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = headers)
+
     def test_expired_jwt_cookie(self):
         token = jwtools.createJwtOrSkip(self,
             sub = env.nextName("Tester"),
