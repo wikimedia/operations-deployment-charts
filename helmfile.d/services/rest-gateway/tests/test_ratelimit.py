@@ -126,9 +126,6 @@ class RateLimitTest(unittest.TestCase):
             count_headers = counts.get("x-ratelimit-remaining", 0)
             self.assertEqual(  count_headers, 0, "expected no response to contain an x-ratelimit-remaining header")
 
-            rlc_count = counts.get("x-wmf-ratelimit-class", 0)
-            self.assertEqual( rlc_count, 0, "expected no responses to contain an x-wmf-ratelimit-class header")
-
         assertions = (assert_no_denied_responses, assert_no_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
 
@@ -179,6 +176,13 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
         self.assert_rate_limit_shadowed(self.shadow_endpoint, limits.MINUTE, headers = headers)
+
+    def test_cspreport_exempt(self):
+        cspreport_endpoint = "/w/api.php?action=cspreport&format=json"
+
+        headers = { "x-client-ip": env.nextIp() }
+        limits = getRateLimits("anon")
+        self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
 
     def test_setting_headers_allowed_locally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]

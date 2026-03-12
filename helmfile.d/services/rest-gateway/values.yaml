@@ -444,38 +444,45 @@ main_app:
           in: '/wikimedia\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikimedia.json'
           to: meta.wikimedia.org
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-wikidata
           in: '/(www|test)\.wikidata\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikidata.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-commons
           in: '/(commons|test-commons)\.wikimedia\.org/v1/'
           out: '/api/restbase_specs/rest_v1-commons.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-wikipedia
           in: '/[^./]+\.wikipedia\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikipedia.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-wiktionary
           in: '/[^./]+\.wiktionary\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wiktionary.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-wikivoyage
           in: '/[^./]+\.wikivoyage\.org/v1/'
           out: '/api/restbase_specs/rest_v1-wikivoyage.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
         - name: spec-json-default
           in: '/(wikisource|www\.mediawiki|[^./]+\.(wikisource|wikibooks|wikiversity|wikiquote|wikimedia))\.org/v1/'
           out: '/api/restbase_specs/rest_v1-default.json'
-          params:
-            - spec
+          query_parameters:
+            - name: spec
+              present_match: true
       rb_response_headers: true
 
     - name: mw-rest-php
@@ -610,6 +617,22 @@ main_app:
           redirect: true
           redirect_code: MOVED_PERMANENTLY
         # *** END REST API sandbox ***
+    - name: mw-action-api-cspreport
+      # We set a higher timeout to allow for long queries on the search API
+      timeout: 53s
+      # Exclude cspreports action API calls from rate limits
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      urls:
+        - name: cspreport
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'cspreport'
+                ignore_case: true
+      rate_limit_policies: [ "no-limit", "no-limit" ]
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s

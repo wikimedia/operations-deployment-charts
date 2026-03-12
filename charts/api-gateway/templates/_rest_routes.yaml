@@ -54,12 +54,8 @@
                     string_match:
                       exact: '{{ $endpoint.domain }}'
                   {{- end }}
-                  {{- if $route.params}}
-                  query_parameters:
-                  {{- range $param := $route.params }}
-                  - name: {{ $param }}
-                    present_match: true
-                  {{- end }}
+                  {{- if $route.query_parameters }}
+                  query_parameters: {{ toYaml $route.query_parameters | nindent 18 }}
                   {{- end }}
                 {{- if not $route.disable_route_stats }}
                 {{- if $endpoint.stat_prefix }}
