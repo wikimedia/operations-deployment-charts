@@ -39,7 +39,21 @@ main_app:
     default_policies: [ Mar2026, Apr2026 ]
     fallback_class: anon               # class to use when no rule matches
     anon_class_by_address:
-      "114.42.196.147": "anon-cgnat" # Chunghwa Telecom, Taiwan
+      "114.42.196.147":    "anon-cgnat" # Chunghwa Telecom, Taiwan
+      "109.169.115.209":   "anon-cgnat" # Obos Nett
+      "82.42.66.138":      "anon-cgnat" # Virgin Media
+      "178.88.101.75":     "anon-cgnat" # JSC Kazakhtelecom
+      "185.163.229.94":    "anon-cgnat" # Adista
+      "193.197.73.9":      "anon-cgnat" # BelWue University Network
+      "43.251.172.11":     "anon-cgnat" # Meghbela Broadband
+      "136.152.226.248":   "anon-cgnat" # University of California at Berkeley
+      "200.130.101.130":   "anon-cgnat" # Rede Nacional de Ensino e Pesquisa
+      "129.115.236.164":   "anon-cgnat" # University of Texas at San Antonio
+      "165.124.149.52":    "anon-cgnat" # Northwestern University
+      "137.99.79.133":     "anon-cgnat" # University of Connecticut
+      "131.230.106.129":   "anon-cgnat" # Southern Illinois University Carbondale
+      "193.147.165.55":    "anon-cgnat" # Entidad Publica Empresarial Red.es
+      "2001:6b0:17:2004::56:212": "anon-cgnat" # Swedish University Network
     allow_client_headers: false        # TESTING: allow clients to pass in rate limit headers
     enable_x_ratelimit_headers: false  # include x-ratelimit headers in responses
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
