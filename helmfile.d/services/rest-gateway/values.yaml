@@ -53,7 +53,9 @@ main_app:
       "137.99.79.133":     "anon-cgnat" # University of Connecticut
       "131.230.106.129":   "anon-cgnat" # Southern Illinois University Carbondale
       "193.147.165.55":    "anon-cgnat" # Entidad Publica Empresarial Red.es
-      "2001:6b0:17:2004::56:212": "anon-cgnat" # Swedish University Network
+      "35.129.119.150":    "anon-cgnat" # Spectrum
+      "240f:141:13fb:1:d61:1492:1020:9e5d": "anon-cgnat" # au one net
+      "2001:6b0:17:2004::56:212":           "anon-cgnat" # Swedish University Network
     allow_client_headers: false        # TESTING: allow clients to pass in rate limit headers
     enable_x_ratelimit_headers: false  # include x-ratelimit headers in responses
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
