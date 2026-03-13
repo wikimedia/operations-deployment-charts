@@ -117,12 +117,30 @@ static_resources:
 {{- else }}
               or_filter:
                 filters:
-                  - status_code_filter:
-                      comparison:
-                        op: "GE"
-                        value:
-                          default_value: 500
-                          runtime_key: rest_gateway_min_log_code
+                  - or_filter:
+                      filters:
+                        - status_code_filter:
+                            comparison:
+                              op: "GE"
+                              value:
+                                default_value: 500
+                                runtime_key: rest_gateway_min_log_code
+                        - and_filter:
+                            filters:
+                              - status_code_filter:
+                                  comparison:
+                                    op: "EQ"
+                                    value:
+                                      default_value: 429
+                                      runtime_key: ratelimit_log_code
+                              - runtime_filter:
+                                  # This is a required-optional value read from
+                                  # runtime that is used for overriding - we don't
+                                  # want to do that so use a junk value.
+                                  runtime_key: "key_never_used_optional_required_2"
+                                  percent_sampled:
+                                    numerator: {{ .Values.main_app.access_log.ratelimit_sample_percentage | default 1}}
+                                    denominator: HUNDRED
 {{- if .Values.main_app.access_log.sample_percentage }}
                   - runtime_filter:
                       # This is a required-optional value read from

@@ -141,6 +141,7 @@ main_app:
   access_log:
     debug: true
     sample_percentage: 100
+    ratelimit_sample_percentage: 100
 
   # NOTE: Ideally, we would not override the production endpoint definitions here.
   # But we want to change some values for testing, such as rate_limit_policies.
