@@ -20,12 +20,12 @@ environments:
     missingFileHandler: Warn
   eqiad:
     values:
-      - releases: [main,migration]
+      - releases: [main,migration,icu72]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main,migration]
+      - releases: [main,migration,icu72]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -75,4 +75,7 @@ releases:
   - name: main
     <<: *default
   - name: migration
+    <<: *default
+  # temporary release for icu 72 upgrade remote categorylinks writes (T419548, T419049)
+  - name: icu72
     <<: *default
