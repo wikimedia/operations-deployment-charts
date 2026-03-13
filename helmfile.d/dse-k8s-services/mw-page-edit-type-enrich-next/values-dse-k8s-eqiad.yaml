@@ -21,8 +21,8 @@ app:
         source:
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
-            # page_html_content_change is run only in eqiad, so we only consume from eqiad.             
-            topics: [eqiad.mediawiki.page_html_content_change.dev4]
+            # TODO: Will be reverted to [eqiad.mediawiki.page_html_content_change.dev4] for staging
+            topics: [eqiad.mediawiki.page_html_content_change.dev4, codfw.mediawiki.page_html_content_change.dev4]
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-edit-type-enrich-next__dse-k8s-eqiad.000
 

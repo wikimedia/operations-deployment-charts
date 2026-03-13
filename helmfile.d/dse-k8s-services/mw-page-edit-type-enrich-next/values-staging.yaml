@@ -23,7 +23,8 @@ app:
           stream: mediawiki.page_html_content_change.dev4:4.0.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # TODO: Will be reverted for staging
+            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -31,7 +32,8 @@ app:
           stream: mediawiki.page_edit_type_simple.dev0:2.0.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # TODO: Will be reverted for staging
+            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
@@ -45,7 +47,8 @@ app:
           stream: mw_page_edit_type_enrich.error:2.1.0
           connector: kafka
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # TODO: Will be reverted for staging
+            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
@@ -84,7 +87,8 @@ app:
     # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
     "high-availability": KUBERNETES
     # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
-    "high-availability.storageDir": "s3://mw-page-edit-type-enrich-next.dse-k8s-eqiad/staging/high-availability"
+    # TODO: Will be reverted to ".../staging/high-availability" for staging
+    "high-availability.storageDir": "s3://mw-page-edit-type-enrich-next.dse-k8s-eqiad/staging_000/high-availability"
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
@@ -104,7 +108,8 @@ discovery:
     - mw-api-int-async
 
 external_services:
-  kafka:  [test-eqiad]
+  # TODO: Will be reverted to [test-eqiad] for staging
+  kafka:  [jumbo-eqiad]
   s3: [eqiad-dpe]
 
 flink:
