@@ -1,0 +1,45 @@
+inference_services:
+
+  cope-a-9b:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-policy-violation-cope-a-9b"
+      image_version: "2026-03-12-152219-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "cope-a-9b"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/cope-a-9b-merged/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
+      container:
+        resources:
+          limits:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        - "ml-serve1012.eqiad.wmnet"
