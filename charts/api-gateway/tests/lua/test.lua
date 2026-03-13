@@ -127,6 +127,8 @@ describe("rest_hooks", function()
 
     function fake_request_handle(arg)
         local headers = arg.headers or { ["x-client-ip"] = "192.168.1.1" }
+        headers[":method"] = headers[":method"] or "GET"
+        headers[":path"] = headers[":path"] or "/"
 
         return add_getters( {
             logDebug = noop,
@@ -552,6 +554,21 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
+            end)
+        end)
+        describe("OPTIONS support for CORS (T418969, T419866)", function()
+            it("should bypass rate limiting for OPTIONS requests", function()
+                local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "just-a-test" } } }
+                local headers = {
+                    [":method"] = "OPTIONS",
+                    ["x-client-ip"] = "192.168.1.1",
+                }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.is_nil( result:get("x-wmf-ratelimit-class") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
         end)
     end)

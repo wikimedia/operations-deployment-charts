@@ -164,6 +164,14 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("anon")
         self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = localHeaders)
 
+    def test_options_requests_bypass_limit(self):
+        headers = {
+            "x-client-ip": env.nextIp(),
+            ":method": "OPTIONS"
+        }
+        limits = getRateLimits("anon")
+        self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = headers)
+
     def test_shadow_policy(self):
         if not self.shadow_endpoint:
             self.skipTest("shadow_endpoint is not set")
@@ -241,7 +249,7 @@ class RateLimitTest(unittest.TestCase):
             break # just use the first entry
 
         request_headers = {
-            "x-client-ip": ip + "66", # known network range
+            "x-client-ip": ip + "." + env.nextIp(), # known network range - not a valid IP address, but that doesn't matter
             "x-trusted-request": "E", # generic anon
         }
 
@@ -249,7 +257,7 @@ class RateLimitTest(unittest.TestCase):
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
 
         # try again with a different IP, to check that it is used as the rate limit key
-        request_headers["x-client-ip"] = ip + "99"
+        request_headers["x-client-ip"] = ip + "." + env.nextIp()
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
 
     def test_trust_level_F(self):

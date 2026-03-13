@@ -62,7 +62,14 @@ class Target:
 
         url = self.url + path
         headers = { **self.headers, **headers }
-        req = urllib.request.Request(url, method="GET", headers = headers )
+
+        method = "GET"
+        # hack for forcing the request method
+        if ":method" in headers:
+            method = headers[":method"]
+            del headers[":method"] # delete from local copy, not original param!
+
+        req = urllib.request.Request(url, method=method, headers = headers )
 
         try:
             with self.opener.open(req, timeout=self.timeout) as handle:

@@ -74,6 +74,13 @@ function wmf_ratelimit_info(request_handle)
         return
     end
 
+    -- no rate limit for OPTIONS requests (T418969)
+    if headers:get(":method") == "OPTIONS" then
+        -- instead of exiting early, we could allow a policy to be configured for use with OPTIONS.
+        request_handle:logDebug("WMF rate_limit: OPTIONS request, exit early")
+        return
+    end
+
     -- strip all headers related to rate limiting from external requests
     headers:remove("x-wmf-ratelimit-class")
     headers:remove("x-wmf-user-id")
