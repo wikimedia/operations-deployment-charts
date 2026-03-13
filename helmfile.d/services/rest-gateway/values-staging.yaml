@@ -385,7 +385,7 @@ main_app:
           in: '/+w/rest.php(.*)'
           out: '/w/rest.php\1'
         # *** END rest.php APIs ***
-    - name: mw-action-api-cspreport
+    - name: mw-action-api-nolimit
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s
       # Exclude cspreports action API calls from rate limits
@@ -399,6 +399,34 @@ main_app:
             - name: action
               string_match:
                 exact: 'cspreport'
+                ignore_case: true
+        - name: login
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'login'
+                ignore_case: true
+        - name: clientlogin
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'clientlogin'
+                ignore_case: true
+        - name: query_metatokens
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'query'
+                ignore_case: true
+            - name: meta
+              string_match:
+                exact: 'tokens'
                 ignore_case: true
       rate_limit_policies: [ "no-limit", "no-limit" ]
     - name: mw-action-api
