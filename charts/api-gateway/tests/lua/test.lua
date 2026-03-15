@@ -330,6 +330,21 @@ describe("rest_hooks", function()
                 assert.are.equal( "x-ua-contact:User:Cindy", result:get("x-wmf-user-id") )
                 assert.are.equal( "unauthed-bot", result:get("x-wmf-ratelimit-class") )
             end)
+            it("should treat trust level C as unauthed-bot if there is no valid token", function()
+                local headers = {
+                    ["x-trusted-request"] = "C",
+                    ["x-is-browser"] = "100", -- should be ignored
+                    ["x-ua-contact"] = "User:Cindy", -- used as key (for now)
+                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
+                }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                -- NOTE: Using the user-agent is unsafe but useful for visibility. Go back to IP later.
+                assert.are.equal( "x-ua-contact:User:Cindy", result:get("x-wmf-user-id") )
+                assert.are.equal( "unauthed-bot", result:get("x-wmf-ratelimit-class") )
+            end)
             it("should use the x-is-browser header to recognize organic traffic", function()
                 local headers = {
                     ["x-trusted-request"] = "E",
@@ -571,7 +586,7 @@ describe("rest_hooks", function()
                 -- make the request appear to come from a trusted network
                 local headers = {
                     ["x-is-browser"] = "20", -- below 80
-                    ["x-trusted-request"] = "D",
+                    ["x-trusted-request"] = "A",
                     ["user-agent"] = "CindyBot 2.0 (User:Cindy)",
                     ["x-provenance"] = "client=cindy",
                     ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
@@ -582,7 +597,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "known-network", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("OPTIONS support for CORS (T418969, T419866)", function()

@@ -166,8 +166,14 @@ function wmf_ratelimit_info(request_handle)
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
         user_id = "x-provenance:" .. headers:get("x-provenance")
         ratelimit_class = "known-client"
-    elseif trust == "D" and headers:get("x-ua-contact") then
+    elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
         -- We have a well-formed User-Agent string
+
+        -- NOTE: For trust == C we only get here if we DON'T have a valid token,
+        -- contrary to the expectations for C (T420106). This can happen if the token validation
+        -- at the CDN layer is less struct than Envoy's (e.g. more lenient about clock skew).
+        -- In that case, treat the request as if it had trust == D rather than E or F.
+
         ratelimit_class = "unauthed-bot"
 
         -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
