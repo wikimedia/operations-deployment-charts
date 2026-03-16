@@ -14,6 +14,8 @@ inference_services:
           value: "/mnt/models"
         - name: TRUST_REMOTE_CODE
           value: "False"
+        - name: MAX_MODEL_LEN
+          value: 4096
       container:
         resources:
           limits:
