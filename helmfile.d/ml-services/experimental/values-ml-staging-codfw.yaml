@@ -145,32 +145,6 @@ inference_services:
             cpu: "4"
             memory: 8Gi
 
-  policy-violation:
-    predictor:
-      config:
-        maxReplicas: 1
-      image: "machinelearning-liftwing-inference-services-policy-violation"
-      image_version: "2026-02-26-152647-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "policy-violation"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/gpt-oss-safeguard-20b/"
-        - name: TIKTOKEN_ENCODINGS_BASE
-          value: "/mnt/models/tiktoken_encodings/"
-        - name: TRUST_REMOTE_CODE
-          value: "False"
-      container:
-        resources:
-          limits:
-            cpu: "2"
-            memory: 8Gi
-            amd.com/gpu: "1"
-          requests:
-            cpu: "2"
-            memory: 8Gi
-            amd.com/gpu: "1"
-
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:

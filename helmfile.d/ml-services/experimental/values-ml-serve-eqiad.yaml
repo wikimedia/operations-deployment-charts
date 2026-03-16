@@ -1,5 +1,6 @@
 inference_services:
 
+  # policy-violation isvc
   cope-a-9b:
     predictor:
       image: "machinelearning-liftwing-inference-services-policy-violation-cope-a-9b"
@@ -22,6 +23,53 @@ inference_services:
           requests:
             cpu: "6"
             memory: 16Gi
+            amd.com/gpu: "1"
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        - "ml-serve1012.eqiad.wmnet"
+
+  # policy-violation isvc
+  gpt-oss-safeguard-20b:
+    predictor:
+      config:
+        maxReplicas: 1
+      image: "machinelearning-liftwing-inference-services-policy-violation"
+      image_version: "2026-02-26-152647-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "gpt-oss-safeguard-20b"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/gpt-oss-safeguard-20b/"
+        - name: TIKTOKEN_ENCODINGS_BASE
+          value: "/mnt/models/tiktoken_encodings/"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
+      container:
+        resources:
+          limits:
+            cpu: "2"
+            memory: 8Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "2"
+            memory: 8Gi
             amd.com/gpu: "1"
       config:
         maxReplicas: 1
