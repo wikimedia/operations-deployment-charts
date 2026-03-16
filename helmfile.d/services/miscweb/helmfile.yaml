@@ -37,12 +37,16 @@ environments:
     <<: *default_values
   aux-k8s-eqiad:
     values:
-      - releases: [os-reports]
+      - releases:
+        - os-reports
+        - wmf-navigator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   aux-k8s-codfw:
     values:
-      - releases: [os-reports]
+      - releases:
+        - os-reports
+        - wmf-navigator
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 ---
