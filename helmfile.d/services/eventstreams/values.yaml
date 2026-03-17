@@ -46,6 +46,10 @@ main_app:
       # NOTE: The kafka brokers list is set in site specific values files.
       #metadata.broker.list:
       queued.max.messages.kbytes: 32768
+      # NOTE: this was set to 10MB in T344688,
+      # but eventstreams public consumes from kafka main-* clusters, not kafka jumbo.
+      # Leaving this at 10MB, to not change things, but this could probably be lowered
+      # to match kafka main broker's max.message.bytes setting.
       fetch.message.max.bytes: 10485760
       queued.min.messages: 1000
       statistics.interval.ms: 60000

@@ -45,7 +45,8 @@ main_app:
     kafka:
       metadata.broker.list: kafka-jumbo1010.eqiad.wmnet:9093,kafka-jumbo1011.eqiad.wmnet:9093,kafka-jumbo1012.eqiad.wmnet:9093,kafka-jumbo1013.eqiad.wmnet:9093,kafka-jumbo1014.eqiad.wmnet:9093,kafka-jumbo1015.eqiad.wmnet:9093,kafka-jumbo1016.eqiad.wmnet:9093,kafka-jumbo1017.eqiad.wmnet:9093,kafka-jumbo1018.eqiad.wmnet:9093
       queued.max.messages.kbytes: 32768
-      fetch.message.max.bytes: 10485760
+      # Match fetch message.max.bytes to kafka jumbo-eqiad's. T420356
+      fetch.message.max.bytes: 20971520
       queued.min.messages: 1000
       statistics.interval.ms: 60000
       # Enable Kafka consumer TLS (no authentication, just encryption).
