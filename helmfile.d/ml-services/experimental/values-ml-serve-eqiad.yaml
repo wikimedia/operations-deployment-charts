@@ -53,7 +53,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
-      image_version: "2026-03-17-125010-publish"
+      image_version: "2026-03-17-160514-publish"
       custom_env:
         - name: MODEL_NAME
           value: "gpt-oss-safeguard-20b"
@@ -69,17 +69,23 @@ inference_services:
           value: "16384"
         - name: BLOCK_SIZE
           value: "64"
+        - name: ATTENTION_BACKEND
+          value: "ROCM_AITER_UNIFIED_ATTN"
+        - name: VLLM_ROCM_USE_AITER
+          value: "1"
+        - name: MAX_JOBS
+          value: "1"
         - name: AMDGCN_USE_BUFFER_OPS
           value: "0"
       container:
         resources:
           limits:
-            cpu: "2"
-            memory: 8Gi
+            cpu: "6"
+            memory: 16Gi
             amd.com/gpu: "1"
           requests:
-            cpu: "2"
-            memory: 8Gi
+            cpu: "6"
+            memory: 16Gi
             amd.com/gpu: "1"
       config:
         maxReplicas: 1
