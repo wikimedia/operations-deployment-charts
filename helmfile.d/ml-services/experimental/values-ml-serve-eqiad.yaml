@@ -53,7 +53,7 @@ inference_services:
       config:
         maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
-      image_version: "2026-03-17-085227-publish"
+      image_version: "2026-03-17-105530-publish"
       custom_env:
         - name: MODEL_NAME
           value: "gpt-oss-safeguard-20b"
@@ -65,6 +65,8 @@ inference_services:
           value: "False"
         - name: GPU_MEMORY_UTILIZATION
           value: "0.95"
+        - name: MAX_MODEL_LEN
+          value: "16384"
       container:
         resources:
           limits:
