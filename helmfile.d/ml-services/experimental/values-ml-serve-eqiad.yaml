@@ -69,6 +69,8 @@ inference_services:
           value: "16384"
         - name: BLOCK_SIZE
           value: "64"
+        - name: AMDGCN_USE_BUFFER_OPS
+          value: "0"
       container:
         resources:
           limits:
