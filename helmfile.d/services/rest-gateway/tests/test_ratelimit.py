@@ -380,7 +380,7 @@ class RateLimitTest(unittest.TestCase):
             headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token,  "x-is-browser": "100" }
             self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
-    def test_authed_other_limit(self):
+    def test_authed_bot_limit(self):
         ip = env.nextIp()
         token = jwtools.getValidJwtOrSkip(self)
 
@@ -390,7 +390,7 @@ class RateLimitTest(unittest.TestCase):
             "x-is-browser": "20", # >= 80 is good
         }
 
-        limits = getRateLimits("authed-other") # not a browser
+        limits = getRateLimits("authed-bot") # not a browser
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
 
     def test_jwt_cookie_limit_uses_rlc_claim(self):

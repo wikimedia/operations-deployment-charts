@@ -109,18 +109,16 @@ main_app:
             MINUTE: 5
           "authed-browser": # authed, looks like a browser
             MINUTE: 6
-          "authed-other": # authed, but not a browser, and has no bot flag
+          "authed-bot": # authed and not a browser
             MINUTE: 8
-          "authed-bot": # authed using an API key, but no community approval
-            MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent
-            MINUTE: 12
+            MINUTE: 10
           "approved-bot": # bot approved by the community
-            MINUTE: 14
+            MINUTE: 12
           "known-client": # no auth, network associated with a known client
-            MINUTE: 16
+            MINUTE: 14
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            MINUTE: 18
+            MINUTE: 16
 
       "Apr2026":
         shadow_mode: true
@@ -135,18 +133,16 @@ main_app:
             MINUTE: 4
           "authed-browser": # authed, looks like a browser
             MINUTE: 5
-          "authed-other": # authed, but not a browser, and has no bot flag
+          "authed-bot": # authed and not a browser
             MINUTE: 7
-          "authed-bot": # authed using an API key, but no community approval
-            MINUTE: 9
           "unauthed-bot": # no auth, but good User-Agent
-            MINUTE: 11
+            MINUTE: 9
           "approved-bot": # bot approved by the community
-            MINUTE: 13
+            MINUTE: 11
           "known-client": # no auth, network associated with a known client
-            MINUTE: 15
+            MINUTE: 13
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            MINUTE: 17
+            MINUTE: 15
 
     enable_x_ratelimit_headers: true
 

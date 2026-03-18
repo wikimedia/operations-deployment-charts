@@ -23,15 +23,15 @@ end
 -- Limits for each rate limit class are defined in main_app.ratelimiter.policies.
 -- The following classes are currently assigned by wmf_ratelimit_info:
 --
--- * authed-bot indicates an authenticated client using a JWT bearer token.
+-- * authed-bot indicates an authenticated client that has a JWT token
+--   but a browser score < 80. This includes bots that use a an OAuth
+--   bearer token but also clients that provide a sessionJwt cookie
+---  after authenticating with e.g. a bot password.
+--   The ID is assigned based on the authentication token.
 --
 -- * authed-browser: indicates an authenticated request from a browser.
 --   These are likely wiki contributors using gadgets or the search bar.
 --   This is equivalent to x-trusted-request: C and a browser score >= 80.
---   The ID is assigned based on the authentication token.
---
--- * authed-other: indicates an authenticated request that does not come from a browser.
---   This is equivalent to x-trusted-request: C and a browser score < 80.
 --   The ID is assigned based on the authentication token.
 --
 -- * known-network indicates that the request is coming from a network under our control,
@@ -152,7 +152,7 @@ function wmf_ratelimit_info(request_handle)
         elseif browserScore and browserScore >= 80 then
             ratelimit_class = "authed-browser"
         else
-            ratelimit_class = "authed-other"
+            ratelimit_class = "authed-bot"
         end
     elseif trust == "A" and headers:get("user-agent") then
         -- This is mostly WMCS but could include stray requests from MW, see T410198 and T411503.

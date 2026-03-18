@@ -499,7 +499,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-other", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-network for trust level A", function()
                 local payload = { sub = "12345" }

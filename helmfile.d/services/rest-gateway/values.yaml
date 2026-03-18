@@ -83,9 +83,7 @@ main_app:
             HOUR: 9999999 # 5000
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
-          "authed-bot": # authed using an API key, but no community approval
-            HOUR: 9999999 # 10000
-          "authed-other": # authed, but not a browser, and has no bot flag
+          "authed-bot": # authed and not a browser
             HOUR: 9999999 # 10000
           "approved-bot": # community approved bot, based on jwt auth
             HOUR: 9999999
@@ -109,9 +107,7 @@ main_app:
             HOUR: 5000
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
-          "authed-bot": # authed using an API key, but no community approval
-            HOUR: 10000
-          "authed-other": # authed, but not a browser, and has no bot flag
+          "authed-bot": # authed and not a browser
             HOUR: 10000
           "approved-bot": # community approved bot, based on jwt auth
             HOUR: 9999999
