@@ -2,20 +2,33 @@ Thank you for installing {{ template "base.name.chart" . }}.
 
 Your release is named {{ template "base.name.release" . }}.
 
+{{- if .Values.main_app.rest_gateway_routes }}
+This release is configured in REST gateway mode (main_app.rest_gateway_routes).
+{{- else }}
+This release is configured in API gateway mode (main_app.discovery_endpoints).
+{{- end }}
+
 To learn more about the release, try:
 
   $ helm status {{ template "base.name.release" . }}
   $ helm get {{ template "base.name.release" . }}
-
 {{- if eq .Values.service.deployment "minikube" }}
-You are using minikube, which means it's really easy to access your service. Run the following
-MINIKUBE_HOST=$(minikube ip)
-SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "base.name.release" . }} -o jsonpath='{.spec.ports[0].nodePort}')
 
-curl http://${MINIKUBE_HOST}:${SERVICE_PORT}/
+You have installed the api-gateway chart on minikube.
+To expose the gateway's ports from minikube on your local machine,
+change to the `tests` directory, then run:
 
-or alternatively in your browser using the following URL
+  make port-forward
 
-echo http://${MINIKUBE_HOST}:${SERVICE_PORT}/
+It's best to do this on a separate terminal, since this command doesn't return while
+port forwarding is active.
+{{ end -}}
+{{- if ( and .Values.smokepy .Values.smokepy.gateway .Values.smokepy.gateway.target_url ) }}
+You can now make requests to Envoy at {{ .Values.smokepy.gateway.target_url }}.
 
-{{- end }}
+To run the smoke tests, change to the `tests` directory, then run:
+
+  make check
+
+See the README file in the `tests` directory for more information.
+{{ end -}}

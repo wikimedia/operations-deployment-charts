@@ -1,3 +1,8 @@
+# Setup for the [staging cluster](https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#staging).
+# The staging cluster uses real upstream services, but not all are available.
+# Its purpose is to verify a release of the REST gateway before it gets applied to the
+# production clusters.
+
 resources:
   replicas: 1
 

@@ -1,7 +1,3 @@
--- -----------------------------------------------------------------------
--- Use test cases in tests/test.lua to protect the logic in this file!
--- -----------------------------------------------------------------------
-
 -- Note: HelmValues is defined in _rest_hooks.lua.tpl
 
 function envoy_on_request(request_handle)
@@ -21,43 +17,8 @@ end
 -- counter.
 --
 -- Limits for each rate limit class are defined in main_app.ratelimiter.policies.
--- The following classes are currently assigned by wmf_ratelimit_info:
---
--- * authed-bot indicates an authenticated client that has a JWT token
---   but a browser score < browser_threshold. This includes bots that use a an OAuth
---   bearer token but also clients that provide a sessionJwt cookie
----  after authenticating with e.g. a bot password.
---   The ID is assigned based on the authentication token.
---
--- * authed-browser: indicates an authenticated request from a browser.
---   These are likely wiki contributors using gadgets or the search bar.
---   This is equivalent to x-trusted-request: C and a browser score >= browser_threshold.
---   The ID is assigned based on the authentication token.
---
--- * known-network indicates that the request is coming from a network under our control,
---   such as WMCS or WME.
---   The user-agent header is used as the rate limit key.
---   This is currently applied to requests with x-trusted-request: A.
---
--- * known-clients indicates that the request is coming from a well known source.
---   The x-provenance header is used as the rate limit key.
---   This is currently applied to requests with x-trusted-request: B, which is for
---   things like googlebot, bingbot, internet archive, etc.
---
--- * unauthed-bot indicates an unauthenticated client using a compliant user-agent header.
---   This is applied to requests with x-trusted-request: D.
---   The x-ua-contact header is used as the rate limit key.
---
--- * anon-browser indicates a organic browser traffic from interactive UI
---   elements and Gadgets.
---   It is applied to requests with x-is-browser >= browser_threshold and is will cover
---   part of the requests with x-trusted-request: E.
---   The client's IP address is used as the rate limit key.
---
--- * anon: Anything else, especially non-compliant bots.
---   This will apply requests with x-trusted-request E or F and a low score
---   in x-is-browser.
---   The client's IP address is used as the rate limit key.
+-- For available rate limit classes and their meaning,
+-- see <https://wikitech.wikimedia.org/wiki/REST_Gateway/Rate_limiting>.
 --- -----------------------------------------------------------------------
 function wmf_ratelimit_info(request_handle)
     local browser_threshold = HelmValues.main_app.ratelimiter.browser_threshold
@@ -119,8 +80,14 @@ function wmf_ratelimit_info(request_handle)
     local trust = headers:get("x-trusted-request")
     local browserScore = headers:get("x-is-browser") and tonumber( headers:get("x-is-browser") )
 
-    -- NOTE: the policy name should change when the name or semantics of classes change,
-    -- to avoid confusing the metrics.
+    -- -----------------------------------------------------------------------------------
+    -- Request classification, assigns ratelimit_class and user_id.
+    -- Use test cases in tests/test.lua to protect the logic in this file.
+    -- NOTE: Update the documentation on Wikitech when making changes, see
+    --       <https://wikitech.wikimedia.org/wiki/REST_Gateway/Rate_limiting>.
+    -- NOTE: When making major changes to the classification, it can be useful to
+    --       use a new policy name at the same time, to keep the metrics separate.
+    -- -----------------------------------------------------------------------------------
     if jwtPayload.sub then
         user_id = "bearer-sub:" .. jwtPayload.sub
 

@@ -1,18 +1,32 @@
-# Use together with values-staging.yaml from ../../helmfile.d/services/rest-gateway/
-# or ../../helmfile.d/services/api-gateway/
+# Local development overrides for the rest-gateway service on minikube.
+#
+# These values are loaded on top of values.yaml and values-staging.yaml when
+# running `make check` from the `tests` directory, or `make install` or
+# `make check env=minikube` from the chart tests directory (charts/api-gateway/tests/).
+#
+# DO NOT make personal or machine-specific changes to this file.
+# Instead, put your local overrides in values-minikube.local.yaml (git-ignored).
+# the Makefile loads that file last so it takes precedence over this file.
+
 main_app:
   command: ~
+
+  # Enable debug-level logging in Envoy.
   args: ["-l", "debug"]
-  #version: "1.26.8-1"
+
+  # Expose a telemetry port for Envoy stats and health checks.
   telemetry_port: 8089
 
-  # Use fake backend
+  # Use the http-https-echo sidecar as a fake upstream. It echoes request headers
+  # back as a JSON response, which is useful for inspecting routing, JWT, and
+  # rate-limiting behaviour without a real upstream service.
   http_https_echo: true
 
-  # Use redis sidecar
+  # Spin up a Redis sidecar for the rate limiter, so no external Redis is needed.
   dev_redis: true
-  redis_port: 6380 # nutcracker
+  redis_port: 6380 # must match nutcracker.port below
 
+  # Accept requests from localhost and minikube addresses.
   domains:
     - localhost
     - localhost:*
@@ -21,7 +35,7 @@ main_app:
     - restgateway.discovery.wmnet
     - mytestdomain.discovery.wmnet
 
-  # Override upstream server config to use http_https_echo
+  # Point all discovery endpoints at the http-https-echo sidecar (port 8888).
   discovery_endpoints:
     citoid:
       tls: false
@@ -89,8 +103,8 @@ main_app:
     issuer: http://dev.wikipedia.org
 
   jwks:
-    # Use OCT for testing, so we can easily generate tokens.
-    # Production must use RSA.
+    # Use a symmetric OCT key for local testing so tokens can be generated easily.
+    # Production deployments must use RSA keys.
     type: "OCT"
     kid: "testkey"
     # the key is "testsecret" stored as base64
@@ -98,19 +112,16 @@ main_app:
 
 nutcracker:
   enabled: true
-  port: 6380 # use different port here because local redis uses 6379
+  port: 6380 # use a different port because the dev_redis sidecar listens on 6379
   servers:
     - localhost:6379:1 "cp-1" # dev_redis sidecar
 
-# Settings for the end-to-end tests defined under tests/e2e.
-# Local overrides go into tests/e2e/values-tests.local.yaml.
 smokepy:
   gateway:
-    # The target URL to use for end-to-end tests.
-    # Can also be set using $GATEWAY_TEST_TARGET_URL.
+    # The URL the smoke tests will send requests to.
+    # Can also be set via the $GATEWAY_TEST_TARGET_URL environment variable.
     target_url: http://localhost:8087
 
-    # The header to send with every request
     headers:
       Host: localhost
 
