@@ -10,7 +10,10 @@ app:
     # each of which have one partition, so a total of 2 topic-partitions.
     # This flink app is a single datacenter deployment,
     # so it consumes from both topics.
-    replicas: 2
+
+    # Otto: increase to 20 TaskManagers to test backfill throughput for our first deployment.
+    # TODO: reset this to something lower for regular operation.
+    replicas: 20
     resource:
       cpu: 2
       memory: 6000m
