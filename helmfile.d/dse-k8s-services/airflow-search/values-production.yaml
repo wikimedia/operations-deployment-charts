@@ -5,6 +5,12 @@ config:
     wikimedia_enterprise.yaml: |
       username: {{ $.Values.config.wikimedia_enterprise.username }}
       password: {{ $.Values.config.wikimedia_enterprise.password }}
+    opensearch_semantic_search_dse_k8s_eqiad.yaml: |
+      username: {{ $.Values.config.opensearch_semantic_search_eqiad.username }}
+      password: {{ $.Values.config.opensearch_semantic_search_eqiad.password }}
+    opensearch_semantic_search_dse_k8s_codfw.yaml: |
+      username: {{ $.Values.config.opensearch_semantic_search_codfw.username }}
+      password: {{ $.Values.config.opensearch_semantic_search_codfw.password }}
 
 ingress:
   gatewayHosts:
