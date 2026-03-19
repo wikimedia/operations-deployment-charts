@@ -1,0 +1,25 @@
+config:
+  mm:
+    source: main-eqiad
+    target: main-codfw
+    topics: '^eqiad\..+'
+    flags:
+      # As we run this MM in a multi-DC fashion (and ergo run 2 releases), we actually
+      # get 12 streams
+      streams: 6
+
+# We run 5*6=30 consumer threads in each DC
+resources:
+  replicas: 5
+
+# See: https://phabricator.wikimedia.org/T189464#4102048
+# These may not be necessary after upgrading Kafka MirrorMaker to 1.x
+config:
+  producer:
+    request.timeout.ms: "120000"
+    batch.size: "65536"
+
+external_services:
+  kafka:
+  - main-eqiad
+  - main-codfw

@@ -21,11 +21,13 @@ environments:
       - jumbo-eqiad-to-test-eqiad
       - logging-eqiad-to-jumbo-eqiad
       - logging-codfw-to-jumbo-eqiad
+      - main-eqiad-to-main-codfw
     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
     missingFileHandler: Warn
   aux-k8s-codfw:
     values:
-    - releases: []
+    - releases:
+      - main-eqiad-to-main-codfw
     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
     missingFileHandler: Warn
 
@@ -75,5 +77,8 @@ releases:
     namespace: kafka-mirrormaker
     <<: *default
   - name: logging-codfw-to-jumbo-eqiad
+    namespace: kafka-mirrormaker
+    <<: *default
+  - name: main-eqiad-to-main-codfw
     namespace: kafka-mirrormaker
     <<: *default
