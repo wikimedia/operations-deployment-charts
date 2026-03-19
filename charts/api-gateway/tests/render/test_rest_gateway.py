@@ -191,6 +191,45 @@ class RestGatewayTest(unittest.TestCase):
         policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])
         self.assertIsInstance( policies, list, "wmf_ratelimit.policies")
 
+    def test_lua_hooks(self):
+        """wmf_hooks metadata is rendered for endpoints that declare hooks."""
+        manifests = self.render( [ "lua_hooks.yaml" ] )
+
+        cm = manifests.find( { "kind": "ConfigMap", "metadata.name": "api-gateway-gwtest-base-config" } )
+        envoy_config = cm.get_decoded( ["data", "envoy.yaml"] )
+
+        vhost = envoy_config.get("static_resources.listeners.name=listener_0") \
+            .get(["filter_chains", 0, "filters", {"name": "envoy.filters.network.http_connection_manager"}]) \
+            .get("typed_config.route_config.virtual_hosts.name=restgateway_vhost")
+
+        # Route with hooks: wmf_hooks metadata must be present
+        hooks = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata",
+                           "filter_metadata", "envoy.filters.http.lua", "wmf_hooks"])
+        self.assertIsNotNone(hooks, "wmf_hooks metadata missing for hooked route")
+        self.assertEqual(hooks.get("request"), ["my_request_hook"])
+        self.assertEqual(hooks.get("response"), ["my_response_hook", "another_response_hook"])
+
+        # Route without hooks: no metadata block at all
+        no_hooks_meta = vhost.get(["routes", {"name": "other_endpoints_dummy"}, "metadata"])
+        self.assertIsNone(no_hooks_meta, "unexpected metadata on route without hooks or ratelimiter")
+
+    def test_lua_hooks_with_ratelimiter(self):
+        """wmf_hooks and wmf_ratelimit coexist in route metadata when both are configured."""
+        manifests = self.render( [ "lua_hooks.yaml", "ratelimiter_enabled.yaml" ] )
+
+        cm = manifests.find( { "kind": "ConfigMap", "metadata.name": "api-gateway-gwtest-base-config" } )
+        envoy_config = cm.get_decoded( ["data", "envoy.yaml"] )
+
+        vhost = envoy_config.get("static_resources.listeners.name=listener_0") \
+            .get(["filter_chains", 0, "filters", {"name": "envoy.filters.network.http_connection_manager"}]) \
+            .get("typed_config.route_config.virtual_hosts.name=restgateway_vhost")
+
+        lua_meta = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata",
+                              "filter_metadata", "envoy.filters.http.lua"])
+        self.assertIsNotNone(lua_meta.get("wmf_hooks"), "wmf_hooks should be present")
+        self.assertIsNotNone(lua_meta.get("wmf_ratelimit"), "wmf_ratelimit should be present")
+        self.assertIsInstance(lua_meta.get("wmf_ratelimit").get("policies"), list)
+
     def test_jwt_route_overrides(self):
         manifests = self.render( [ "jwt_enabled.yaml", "jwt_route_overrides.yaml" ] )
 

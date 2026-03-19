@@ -199,6 +199,13 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("anon")
         self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
 
+    def test_meta_tokens_exempt(self):
+        cspreport_endpoint = "/w/api.php?action=query&meta=tokens|userinfo&format=json"
+
+        headers = { "x-client-ip": env.nextIp() }
+        limits = getRateLimits("anon")
+        self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
+
     def test_setting_headers_allowed_locally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
 

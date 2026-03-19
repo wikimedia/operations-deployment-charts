@@ -1,6 +1,7 @@
 -- Note: HelmValues is defined in _rest_hooks.lua.tpl
 
 function envoy_on_request(request_handle)
+    wmf_run_hooks(request_handle, "request")
     wmf_ratelimit_info(request_handle)
     wmf_stash_headers_to_expose(request_handle)
 end
@@ -8,6 +9,25 @@ end
 function envoy_on_response(response_handle)
     wmf_expose_headers(response_handle)
     wmf_set_retry_after(response_handle)
+    wmf_run_hooks(response_handle, "response")
+end
+
+function wmf_run_hooks(handle, phase)
+    local hooks_meta = handle:metadata():get("wmf_hooks")
+    if not hooks_meta then return end
+    local hooks = hooks_meta[phase] or {}
+    for _, hook_name in ipairs(hooks) do
+        local hook_fn = _G[hook_name]
+        if type(hook_fn) == "function" then
+            -- NOTE: hook errors are not caught. A hook that raises a Lua error will abort
+            -- the filter and may result in a 500 or an unmodified pass-through, depending
+            -- on Envoy's error handling. This is intentional: hooks used for security-
+            -- sensitive logic (e.g. auth checks) should fail closed rather than silently.
+            hook_fn(handle)
+        else
+            handle:logWarn("WMF lua hooks: unknown hook function: " .. tostring(hook_name))
+        end
+    end
 end
 
 -- -----------------------------------------------------------------------
@@ -182,6 +202,8 @@ function wmf_ratelimit_info(request_handle)
     if ratelimit_class ~= "BYPASS" then
         headers:replace("x-wmf-ratelimit-class", ratelimit_class)
     end
+
+    wmf_run_hooks(request_handle, "ratelimit")
 end
 
 function wmf_ratelimit_class_for_address( address, fallback )
@@ -254,3 +276,121 @@ function wmf_set_retry_after(response_handle)
     end
 end
 
+-- Decode a percent-encoded string (application/x-www-form-urlencoded).
+function wmf_url_decode(str)
+    str = string.gsub(str, "+", " ")
+    str = string.gsub(str, "%%(%x%x)", function(h)
+        return string.char(tonumber(h, 16))
+    end)
+    return str
+end
+
+-- Parse a query string into a key→value table.
+-- On duplicate keys the last value wins.
+function wmf_parse_query_params(str)
+    local params = {}
+    for chunk in string.gmatch(str, "([^&]+)") do
+        if chunk ~= "" then
+            local key, value = string.match(chunk, "^([^=]+)=(.*)$")
+            if key then
+                params[wmf_url_decode(key)] = wmf_url_decode(value)
+            else
+                params[wmf_url_decode(chunk)] = ""
+            end
+        end
+    end
+    return params
+end
+
+-- Get query parameters from the request.
+-- Query parameters are stashed in dynamic metadata, so they will be parsed only once.
+function wmf_get_query_params(request_handle)
+    local streamMeta = request_handle:streamInfo():dynamicMetadata()
+    local params = streamMeta:get("envoy.wmf_query_params")
+
+    if params ~= nil then
+        return params
+    end
+
+    local headers = request_handle:headers()
+    local path = headers:get(":path") or ""
+    local query_string = string.match(path, "%?(.*)$") or ""
+    local params = wmf_parse_query_params(query_string)
+
+    for key, value in pairs(params) do
+        streamMeta:set("envoy.wmf_query_params", key, value)
+    end
+
+    return params
+end
+
+-- Split a pipe-separated string into a table, where the table keys are
+-- the names from the string, and all values are true.
+-- Note that MediaWiki also supports U+001F as a separator.
+-- This is not supported here.
+function wmf_split_multi_value_param(str)
+    if str == nil then
+        return nil
+    end
+
+    local set = {}
+    for value in string.gmatch(str, "([^|]+)") do
+        if value ~= "" then
+            set[value] = true
+        end
+    end
+    return set
+end
+
+-- hook handler for bypassing rate limits for certain action API calls
+function wmf_handle_action_api_nolimit(request_handle)
+    local headers = request_handle:headers()
+    local method = headers:get(":method")
+    local query_params = wmf_get_query_params(request_handle)
+
+    local action = query_params["action"]
+
+    if action == "cspreport" or action == "login" or action == "clientlogin" then
+        -- bypass rate limiting for certain actions (regardless of method)
+        headers:remove("x-wmf-ratelimit-class")
+        return
+    end
+
+    if action ~= "query" or method ~= "GET" then
+        -- keep rate limit if this isn't a GET request with action=query
+        return
+    end
+
+    local meta = wmf_split_multi_value_param( query_params["meta"] )
+    if not meta then
+        -- keep rate limit if this isn't a meta query
+       return
+    end
+
+    -- Unset allowed meta modules, check that no unallowed modules are left.
+    -- Note that all modules that are defined in the route config to this hook
+    -- should be listed here, but not all modules listed here need to trigger
+    -- exemption from rate limits. E.g. userinfo is not exempt from rate limits,
+    -- but should not cancel the exemption when present alongside a module that
+    -- is exempt.
+    meta["tokens"] = nil
+    meta["userinfo"] = nil
+    meta["authmanagerinfo"] = nil
+    if next(meta) then
+        -- keep rate limit because additional meta modules were requested
+       return
+    end
+
+    if query_params["list"] or query_params["generator"] or query_params["prop"] then
+        -- keep rate limit if there are expensive parameters in addition to the meta query
+        return
+    end
+
+    if query_params["titles"] or query_params["pageids"] or query_params["revids"] then
+        -- keep rate limit if there are expensive parameters in addition to the meta query
+        return
+    end
+
+    -- bypass rate limiting
+    headers:remove("x-wmf-ratelimit-class")
+end

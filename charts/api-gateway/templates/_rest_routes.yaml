@@ -162,16 +162,23 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
                   auto_host_rewrite: true
                   {{- end }}
               {{- end }}
-                {{- if $.Values.main_app.ratelimiter.enabled }}
+                {{- $hooks := default (dict) $endpoint.lua_hooks }}
+                {{- if or $.Values.main_app.ratelimiter.enabled $hooks }}
                 metadata:
                   filter_metadata:
                     envoy.filters.http.lua:
+                      {{- if $.Values.main_app.ratelimiter.enabled }}
                       wmf_ratelimit:
                         {{- $policies := default $.Values.main_app.ratelimiter.default_policies $endpoint.rate_limit_policies }}
                         {{- if ne (len $policies) (len $.Values.main_app.ratelimiter.default_policies) }}
                         {{ fail (printf "The rate_limit_policies for route %s must be the same length as default_policies." $route.name) }}
                         {{- end }}
                         policies: {{ toJson $policies }}
+                      {{- end }}
+                      {{- if $hooks }}
+                      wmf_hooks:
+                        {{ toJson $hooks }}
+                      {{- end }}
                 {{- end }}
               {{- if $endpoint.api_cors_enabled }}
                 typed_per_filter_config:

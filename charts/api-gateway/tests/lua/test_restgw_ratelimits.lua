@@ -674,4 +674,121 @@ describe("rest_hooks", function()
             assert.is.equal("user", result:get("x-wmf-ratelimit-class"))
         end)
     end)
+
+    describe("wmf_run_hooks", function()
+        it("should call a request hook", function()
+            local called = false
+            _G["test_hook_req"] = function(handle) called = true end
+
+            local req = fake_request_handle{
+                routeMetadata = { wmf_hooks = { request = {"test_hook_req"}, response = {} } }
+            }
+            wmf_run_hooks(req, "request")
+
+            assert.is_true(called)
+            _G["test_hook_req"] = nil
+        end)
+
+        it("should call a response hook", function()
+            local called = false
+            _G["test_hook_resp"] = function(handle) called = true end
+
+            local resp = fake_response_handle{
+                routeMetadata = { wmf_hooks = { request = {}, response = {"test_hook_resp"} } }
+            }
+            wmf_run_hooks(resp, "response")
+
+            assert.is_true(called)
+            _G["test_hook_resp"] = nil
+        end)
+
+        it("should call multiple hooks in order", function()
+            local calls = {}
+            _G["test_hook_a"] = function(handle) table.insert(calls, "a") end
+            _G["test_hook_b"] = function(handle) table.insert(calls, "b") end
+
+            local req = fake_request_handle{
+                routeMetadata = { wmf_hooks = { request = {"test_hook_a", "test_hook_b"} } }
+            }
+            wmf_run_hooks(req, "request")
+
+            assert.are.same({"a", "b"}, calls)
+            _G["test_hook_a"] = nil
+            _G["test_hook_b"] = nil
+        end)
+
+        it("should log a warning for unknown hook names and not error", function()
+            local warned = false
+            local req = fake_request_handle{
+                routeMetadata = { wmf_hooks = { request = {"no_such_hook"} } }
+            }
+            req.logWarn = function(self, msg) warned = true end
+
+            assert.has_no.errors(function() wmf_run_hooks(req, "request") end)
+            assert.is_true(warned)
+        end)
+
+        it("should log a warning for a hook name that resolves to a non-function and not error", function()
+            local warned = false
+            _G["not_a_function"] = "i am a string"
+            local req = fake_request_handle{
+                routeMetadata = { wmf_hooks = { request = {"not_a_function"} } }
+            }
+            req.logWarn = function(self, msg) warned = true end
+
+            assert.has_no.errors(function() wmf_run_hooks(req, "request") end)
+            assert.is_true(warned)
+            _G["not_a_function"] = nil
+        end)
+
+        it("should do nothing if wmf_hooks is not in metadata", function()
+            local req = fake_request_handle{ routeMetadata = {} }
+            assert.has_no.errors(function() wmf_run_hooks(req, "request") end)
+        end)
+
+        it("should do nothing for an empty hook list", function()
+            local req = fake_request_handle{
+                routeMetadata = { wmf_hooks = { request = {}, response = {} } }
+            }
+            assert.has_no.errors(function() wmf_run_hooks(req, "request") end)
+        end)
+    end)
+
+    describe("wmf_handle_action_api_nolimit", function()
+        local cases = {
+            [""] = "keep",
+            ["action=edit"] = "keep",
+            ["action=login"] = "bypass",
+            ["action=clientlogin"] = "bypass",
+            ["action=cspreport"] = "bypass",
+            ["action=query&meta=siteinfo"] = "keep",
+            ["action=query&meta=tokens"] = "bypass",
+            ["action=query&meta=userinfo|tokens"] = "bypass",
+            ["action=query&meta=authmanagerinfo"] = "bypass",
+            ["action=query&meta=siteinfo|tokens"] = "keep",
+            ["action=query&meta=tokens&list=allusers"] = "keep",
+            ["action=query&meta=tokens&%6c%69%73%74=allusers"] = "keep",
+            ["action=query&meta=tokens&generator=something"] = "keep",
+            ["action=query&meta=tokens&prop=wikitext"] = "keep",
+        }
+
+        for query, verb in pairs(cases) do
+            it("should " .. verb .. " rate limits for query ?" .. query, function()
+                local req = fake_request_handle{
+                    headers = {
+                        [":path"] = "/w/api.php?" .. query,
+                        ["x-wmf-ratelimit-class"] = "test",
+                    }
+                }
+                wmf_handle_action_api_nolimit(req)
+
+                local result = req:headers()
+                if verb == "bypass" then
+                    assert.are.equal( nil, result:get("x-wmf-ratelimit-class") )
+                else
+                    assert.are.equal( "test", result:get("x-wmf-ratelimit-class") )
+                end
+            end)
+        end
+    end)
 end)

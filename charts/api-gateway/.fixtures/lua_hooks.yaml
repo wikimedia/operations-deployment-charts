@@ -1,0 +1,27 @@
+main_app:
+  rest_gateway_routes:
+    - name: main_services
+      timeout: 120s
+      lua_hooks:
+        request: [ "my_request_hook" ]
+        response: [ "my_response_hook", "another_response_hook" ]
+      urls:
+        - name: foo_bar
+          in: 'main/foo/bar/(.+)'
+          out: '/foo/bar/\2'
+
+    - name: other_endpoints
+      timeout: 15s
+      cluster: other
+      urls:
+        - name: dummy
+          in: '/other/(.*)'
+          out: '/service/\1'
+
+  discovery_endpoints:
+    main_services:
+      port: 1234
+      host: localhost
+    other:
+      port: 5678
+      host: localhost
