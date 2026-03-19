@@ -228,6 +228,13 @@ main_app:
           out: '/\1/v1/transform/wikitext/to/mobile-html/\2'
       rb_response_headers: true
 
+    - name: mobileapps_core
+      timeout: 120s
+      urls:
+        - name: descriptions
+          in: '/+core/v1/(\w+)/(\w+)/page/(.*)/description'
+          out: '/\2.\1.org/v1/page/description/\3'
+
     - name: proton
       timeout: 150s
       urls:
@@ -703,6 +710,81 @@ main_app:
         - name: catchall
           in: '/+service/linkrecommendation(.*)'
           out: '/\1'
+    - name: mw-core-migrated
+      timeout: 15s
+      # This set of routes uses the same cluster as mw-api-ext - however
+      # it does NOT use the restbase compability headers as this will
+      # lead to incorrect responses from the mw APIs.
+
+      # These routes also do not use the restbase response headers as
+      # we will either need to put in a more specific set of headers
+      # befitting the mw apis, or to simply defer to the headers
+      # mediawiki sends.
+
+      # The name is misleading, as it's not a different deployment than mw-api-ext
+      # However, in normal operation, it always points to the DC-local deployment.
+      # As long as ATS multi-DC routing does the right thing, this will allow requests
+      # sent from ATS to the secondary datacenter to stay there instead of crossing back
+      # to the primary.
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: pathing_map_commons
+          in: '/+core/v1/commons/(.*)'
+          out: '/w/rest.php/v1/\1'
+          to: commons.wikimedia.org
+        - name: pathing_map_mediawiki
+          in: '/+core/v1/mediawiki/(.*)'
+          out: '/w/rest.php/v1/\1'
+          to: www.mediawiki.org
+        - name: pathing_map_wikidata
+          in: '/+core/v1/wikidata/(.*)'
+          out: '/w/rest.php/v1/\1'
+          to: www.wikidata.org
+        - name: pathing_map_meta
+          in: '/+core/v1/meta/(.*)'
+          out: '/w/rest.php/v1/\1'
+          to: meta.wikimedia.org
+        - name: pathing_map_wikibooks
+          in: '/+core/v1/wikibooks/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikibooks.org'
+        - name: pathing_map_wikinews
+          in: '/+core/v1/wikinews/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikinews.org'
+        - name: pathing_map_wikipedia
+          in: '/+core/v1/wikipedia/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikipedia.org'
+        - name: pathing_map_wikiquote
+          in: '/+core/v1/wikiquote/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikiquote.org'
+        - name: pathing_map_wikisource
+          in: '/+core/v1/wikisource/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikisource.org'
+        - name: pathing_map_wikispecies
+          in: '/+core/v1/wikispecies/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikispecies.org'
+        - name: pathing_map_wikiveristy
+          in: '/+core/v1/wikiveristy/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikiveristy.org'
+        - name: pathing_map_wikivoyage
+          in: '/+core/v1/wikivoyage/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wikivoyage.org'
+        - name: pathing_map_wiktionary
+          in: '/+core/v1/wiktionary/(\w+)/(.*)'
+          out: '/w/rest.php/v1/\2'
+          to: '\1.wiktionary.org'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
