@@ -1,0 +1,18 @@
+config:
+  mm:
+    source: main-eqiad
+    target: jumbo-eqiad
+    # Blacklist change-prop topics. We don't need them in jumbo.
+    # Also blacklist cirrusSearch related jobs.  These have unexplained HUGE messages.
+    topics: '^(?!.*change-prop\.|.*changeprop\.|.*cpjobqueue\.|.*mediawiki\.job\.cirrus).+$'
+    flags:
+      streams: 12
+
+# We run 5*12=60 consumer threads
+resources:
+  replicas: 5
+
+external_services:
+  kafka:
+  - main-eqiad
+  - jumbo-eqiad
