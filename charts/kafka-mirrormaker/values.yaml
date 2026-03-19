@@ -42,7 +42,8 @@ app:
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
-  enabled: false
+  enabled: true
+  prometheus_port: 9102
 
 service: {}
 
@@ -50,6 +51,7 @@ config:
   public: # Add here all the keys that can be publicly available through the environment
     KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"
     KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/mirrormaker/log4j.properties"
+    KAFKA_OPTS: "-javaagent:/usr/share/java/prometheus/jmx_prometheus_javaagent.jar=0.0.0.0:9102:/etc/mirrormaker/prometheus_jmx_exporter.yaml"
     LOG_DIR: /tmp/logs
   private: {} # Add here all the keys that should be private but still available as env variables
   mm:
@@ -114,10 +116,6 @@ resources:
   replicas: 1
 
 mesh:
-  enabled: false
-
-monitoring:
-  # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
 networkpolicy:
