@@ -691,6 +691,18 @@ main_app:
           in: '/+w/api.php(.*)'
           out: '/w/api.php\1'
         # *** END action API routes ***
+    - name: linkrecommendation
+      timeout: 30s
+      cluster: linkrecommendation
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: catchall
+          in: '/+service/linkrecommendation(.*)'
+          out: '/\1'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
@@ -738,6 +750,10 @@ main_app:
     mw-api-ext-ro:
       tls: true
       port: 4447
+    linkrecommendation:
+      tls: true
+      port: 4006
+      timeout: 30s
 
 service:
   deployment: production
@@ -872,6 +888,14 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4455
+    - cidr: 10.2.1.23/32 # linkrecommendation.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4006
+    - cidr: 10.2.2.23/32 # linkrecommendation.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4006
 
 # Needed by the ratelimit sidecar
 nutcracker:

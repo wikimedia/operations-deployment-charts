@@ -68,6 +68,12 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
                 stat_prefix: {{ $endpoint.name }}_{{ $route.name }}
                 {{- end }}
                 {{- end }}
+                {{- if $endpoint.request_headers_to_remove }}
+                request_headers_to_remove: {{ toYaml $endpoint.request_headers_to_remove | nindent 18 }}
+                {{- end }}
+                {{- if $endpoint.response_headers_to_remove }}
+                response_headers_to_remove: {{ toYaml $endpoint.response_headers_to_remove | nindent 18 }}
+                {{- end }}
                 {{- if $endpoint.request_headers_to_add }}
                 request_headers_to_add:
                 {{- range $rqh := $endpoint.request_headers_to_add }}
@@ -160,16 +166,21 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
                   filter_metadata:
                     envoy.filters.http.lua:
                       wmf_ratelimit:
-                        {{ $policies := default $.Values.main_app.ratelimiter.default_policies $endpoint.rate_limit_policies }}
-                        {{ if ne (len $policies) (len $.Values.main_app.ratelimiter.default_policies) }}
+                        {{- $policies := default $.Values.main_app.ratelimiter.default_policies $endpoint.rate_limit_policies }}
+                        {{- if ne (len $policies) (len $.Values.main_app.ratelimiter.default_policies) }}
                         {{ fail (printf "The rate_limit_policies for route %s must be the same length as default_policies." $route.name) }}
-                        {{ end }}
+                        {{- end }}
                         policies: {{ toJson $policies }}
                 {{- end }}
-
+              {{- if $endpoint.api_cors_enabled }}
+                typed_per_filter_config:
+                  envoy.filters.http.cors:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.CorsPolicy
+                    allow_origin_string_match:
+                      - prefix: "*"
+                    allow_headers: 'Api-User-Agent,Authorization,Content-type'
+              {{- end }}
 {{- end }}
 {{- end }}
 {{- /* END rest_gateway_routes definition */}}
-
-
 {{- end }}

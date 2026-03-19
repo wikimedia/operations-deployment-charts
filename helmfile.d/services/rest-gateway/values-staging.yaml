@@ -486,6 +486,18 @@ main_app:
           in: '/+w/api.php(.*)'
           out: '/w/api.php\1'
         # *** END action API routes ***
+    - name: linkrecommendation
+      timeout: 30s
+      cluster: linkrecommendation
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: catchall
+          in: '/+service/linkrecommendation(.*)'
+          out: '/\1'
 
   discovery_endpoints:
     citoid:
@@ -536,6 +548,10 @@ main_app:
     mw-api-ext-ro:
       tls: true
       port: 4447
+    linkrecommendation:
+      internal_host: linkrecommendation.k8s-staging.discovery.wmnet
+      tls: true
+      port: 30443
 
 nutcracker:
   enabled: true
