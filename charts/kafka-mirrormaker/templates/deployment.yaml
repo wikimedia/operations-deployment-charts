@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
+        mirror_name: {{ $.Release.Name }}
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- if $.Values.monitoring.enabled }}
