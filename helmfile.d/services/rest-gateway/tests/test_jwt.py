@@ -16,32 +16,35 @@ class JwtTest(unittest.TestCase):
     jwt_exempt_endpoint = None
     jwt_required_endpoint = None
     probe_config = None
+    uses_fake_backend = False
 
     @classmethod
     def setUpClass(cls):
-        JwtTest.probe_config = env.values.get("smokepy.gateway")
-        JwtTest.target_url = helpers.getTargetUrl(JwtTest.probe_config)
-        helpers.checkHealthz(JwtTest.target_url)
+        cls.probe_config = env.values.get("smokepy.gateway")
+        cls.target_url = helpers.getTargetUrl(cls.probe_config)
+        helpers.checkHealthz(cls.target_url)
 
-        JwtTest.default_endpoint = JwtTest.probe_config.default_policy_endpoint
-        JwtTest.jwt_exempt_endpoint = JwtTest.probe_config.jwt_exempt_endpoint
-        JwtTest.jwt_required_endpoint = JwtTest.probe_config.jwt_required_endpoint
+        cls.default_endpoint = cls.probe_config.default_policy_endpoint
+        cls.jwt_exempt_endpoint = cls.probe_config.jwt_exempt_endpoint
+        cls.jwt_required_endpoint = cls.probe_config.jwt_required_endpoint
 
-        print(f"Running JWT tests on {JwtTest.target_url}")
-        print(f"    standard endpoint: {JwtTest.default_endpoint}")
-        print(f"    exempt endpoint:   {JwtTest.jwt_exempt_endpoint}")
-        print(f"    strict endpoint:   {JwtTest.jwt_required_endpoint}")
+        cls.uses_fake_backend = env.values.main_app.http_https_echo
 
-        if not JwtTest.default_endpoint:
+        print(f"Running JWT tests on {cls.target_url}")
+        print(f"    standard endpoint: {cls.default_endpoint}")
+        print(f"    exempt endpoint:   {cls.jwt_exempt_endpoint}")
+        print(f"    strict endpoint:   {cls.jwt_required_endpoint}")
+
+        if not cls.default_endpoint:
             raise ValueError("default_policy_endpoint is not configured")
-        if not JwtTest.jwt_exempt_endpoint:
+        if not cls.jwt_exempt_endpoint:
             raise ValueError("jwt_exempt_endpoint is not configured")
-        if not JwtTest.jwt_required_endpoint:
+        if not cls.jwt_required_endpoint:
             raise ValueError("jwt_required_endpoint is not configured")
 
     def setUp(self):
-        headers = JwtTest.probe_config.get("headers", {})
-        self.target = Target(JwtTest.target_url, headers = headers)
+        headers = self.probe_config.get("headers", {})
+        self.target = Target(self.target_url, headers = headers)
 
     ###################################################################################
     ## Most endpoints don't require tokens but require bearer tokens to be valid.
@@ -99,7 +102,7 @@ class JwtTest(unittest.TestCase):
         rest = self.target.get(self.jwt_required_endpoint, headers = headers)
         self.assertEqual(rest.status, 200, "OPTIONS request should not require a token")
 
-    def test_valid_token_accepted(self):
+    def test_valid_bearer_token_accepted(self):
         """ Assert that endpoints that require a JWT accept a bearer token."""
 
         ip = env.nextIp()
@@ -107,6 +110,33 @@ class JwtTest(unittest.TestCase):
 
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
         rest = self.target.get(self.jwt_required_endpoint, headers = headers)
+        self.assertEqual(rest.status, 200, "valid token should be accepted")
+
+    def test_valid_centralauthtoken_header_accepted(self):
+        """ Assert that endpoints that require a JWT accept a CentralAuthToken."""
+
+        if not self.uses_fake_backend:
+            self.skipTest( "Cannot test centralauth token on real backend without logging in" )
+
+        ip = env.nextIp()
+        token = jwtools.getValidJwtOrSkip(self)
+
+        headers = { "x-client-ip": ip, "Authorization": "CentralAuthToken " + token }
+        rest = self.target.get(self.jwt_required_endpoint, headers = headers)
+        self.assertEqual(rest.status, 200, "valid token should be accepted")
+
+    def test_valid_centralauthtoken_param_accepted(self):
+        """ Assert that endpoints that require a JWT accept a centralauthtoken parameter."""
+
+        if not self.uses_fake_backend:
+            self.skipTest( "Cannot test centralauth token on real backend without logging in" )
+
+        ip = env.nextIp()
+        token = jwtools.getValidJwtOrSkip(self)
+
+        headers = { "x-client-ip": ip }
+        path = helpers.append_params(self.jwt_required_endpoint, 'centralauthtoken=' + token )
+        rest = self.target.get(path, headers = headers)
         self.assertEqual(rest.status, 200, "valid token should be accepted")
 
     def test_valid_cookie_accepted(self):
@@ -143,7 +173,7 @@ class JwtTest(unittest.TestCase):
         )
 
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
-        rest = self.target.get(JwtTest.jwt_exempt_endpoint, headers = headers)
+        rest = self.target.get(self.jwt_exempt_endpoint, headers = headers)
         self.assertEqual(rest.status, 200, "expired token should be allowed for this endpoint")
 
 def main():

@@ -250,9 +250,9 @@ static_resources:
                     filename: /etc/jwks/jwks.json
                   forward: true
                   from_headers:
-                    name: Authorization
-                    value_prefix: Bearer
-                  payload_in_metadata: "jwt_payload"
+                    - name: Authorization
+                      value_prefix: Bearer
+                  payload_in_metadata: "bearer_payload"
                 wikimedia_cookie:
                   issuer: {{ .Values.main_app.jwt.issuer }}
                   local_jwks:
@@ -261,6 +261,20 @@ static_resources:
                   from_cookies:
                     - sessionJwt
                   payload_in_metadata: "cookie_payload"
+                wikimedia_centralauth:
+                  issuer: {{ .Values.main_app.jwt.issuer }}
+                  local_jwks:
+                    filename: /etc/jwks/jwks.json
+                  forward: true
+                  # NOTE: Behavior for multiple auth schemes on the same request is unclear,
+                  # see https://github.com/httpwg/http-core/issues/180
+                  # and https://community.auth0.com/t/authorization-headers-on-request-with-multiple-schemes/8349.
+                  from_headers:
+                    - name: Authorization
+                      value_prefix: CentralAuthToken
+                  from_params:
+                    - centralauthtoken
+                  payload_in_metadata: "centralauth_payload"
               rules:
                 - match: # OPTIONS requests are always exempt from JWT authentication
                     prefix: /
@@ -284,6 +298,7 @@ static_resources:
                       requirements:
                         - provider_name: wikimedia_token
                         - provider_name: wikimedia_cookie
+                        - provider_name: wikimedia_centralauth
                     {{- else }}
                     {{- fail (printf "Unknown jwt value '%s' for endpoint '%s'" $endpoint.jwt $endpoint.name) }}
                     {{- end }}
@@ -307,6 +322,10 @@ static_resources:
                         - requires_any:
                             requirements:
                               - provider_name: wikimedia_cookie
+                              - allow_missing_or_failed: {} # ignore expired tokens in cookies
+                        - requires_any:
+                            requirements:
+                              - provider_name: wikimedia_centralauth
                               - allow_missing_or_failed: {} # ignore expired tokens in cookies
 {{- else }}
           - name: envoy.filters.http.jwt_authn

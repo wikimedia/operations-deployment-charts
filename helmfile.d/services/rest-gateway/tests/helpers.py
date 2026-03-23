@@ -43,3 +43,9 @@ def initEnv():
     ]
 
     env.init(__file__, default_value_files)
+
+def append_params(path, params):
+    if '?' in path:
+        return f"{path}&{params}"
+    else:
+        return f"{path}?{params}"

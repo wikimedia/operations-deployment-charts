@@ -40,24 +40,27 @@ class RateLimitTest(unittest.TestCase):
     shadow_endpoint = None
     shadow_policy_name = None
     probe_config = None
+    uses_fake_backend = False
 
     @classmethod
     def setUpClass(cls):
-        RateLimitTest.probe_config = env.values.get("smokepy.gateway")
-        RateLimitTest.target_url = helpers.getTargetUrl(RateLimitTest.probe_config)
-        helpers.checkHealthz(RateLimitTest.target_url)
+        cls.probe_config = env.values.get("smokepy.gateway")
+        cls.target_url = helpers.getTargetUrl(cls.probe_config)
+        helpers.checkHealthz(cls.target_url)
 
-        RateLimitTest.default_endpoint = RateLimitTest.probe_config.default_policy_endpoint
-        RateLimitTest.shadow_endpoint = RateLimitTest.probe_config.shadow_policy_endpoint
+        cls.uses_fake_backend = env.values.main_app.http_https_echo
 
-        print(f"Running ratelimit tests on {RateLimitTest.target_url}")
-        print(f"    rate limited endpoint: {RateLimitTest.default_endpoint}")
-        print(f"    shadow mode endpoint:  {RateLimitTest.shadow_endpoint}")
+        cls.default_endpoint = cls.probe_config.default_policy_endpoint
+        cls.shadow_endpoint = cls.probe_config.shadow_policy_endpoint
+
+        print(f"Running ratelimit tests on {cls.target_url}")
+        print(f"    rate limited endpoint: {cls.default_endpoint}")
+        print(f"    shadow mode endpoint:  {cls.shadow_endpoint}")
 
 
     def setUp(self):
-        headers = RateLimitTest.probe_config.get("headers", {})
-        self.target = Target(RateLimitTest.target_url, headers = headers)
+        headers = self.probe_config.get("headers", {})
+        self.target = Target(self.target_url, headers = headers)
 
     def assert_rate_limit_counts( self, path, allowed, assertions, headers = None, debug = None):
         # Try three times as many requests as allowed.
@@ -351,6 +354,42 @@ class RateLimitTest(unittest.TestCase):
         # should apply known-client limits, not approved-bot limits
         limits = getRateLimits("known-client")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+
+    def test_centralauthtoken_limit_uses_rlc_claim(self):
+        if not self.uses_fake_backend:
+            self.skipTest( "Cannot test centralauth token on real backend without logging in" )
+
+        ip = env.nextIp()
+        name = env.nextName("Tester")
+        token = jwtools.createJwtOrSkip(self,
+            sub = name,
+            rlc = "known-client"
+        )
+        headers = {
+            "x-client-ip": ip,
+            "Authorization": "CentralAuthToken " + token,
+        }
+
+        # should apply known-client limits, not approved-bot limits
+        limits = getRateLimits("known-client")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+
+    def test_centralauthtoken_param_limit_uses_rlc_claim(self):
+        if not self.uses_fake_backend:
+            self.skipTest( "Cannot test centralauth token on real backend without logging in" )
+
+        ip = env.nextIp()
+        name = env.nextName("Tester")
+        token = jwtools.createJwtOrSkip(self,
+            sub = name,
+            rlc = "known-client"
+        )
+        headers = { "x-client-ip": ip, }
+
+        # should apply known-client limits, not approved-bot limits
+        limits = getRateLimits("known-client")
+        path = helpers.append_params(self.default_endpoint, 'centralauthtoken=' + token )
+        self.assert_rate_limit_enforced(path, limits.MINUTE, headers = headers)
 
     def test_bearer_token_limit_uses_rlc_claim_from_cookie(self):
         ip = env.nextIp()

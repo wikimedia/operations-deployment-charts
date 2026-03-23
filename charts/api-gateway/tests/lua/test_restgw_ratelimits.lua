@@ -328,40 +328,40 @@ describe("rest_hooks", function()
                 assert.are.equal( "unauthed-mediawiki", result:get("x-wmf-ratelimit-class") )
             end)
         end)
-        describe("jwt_payload handling", function()
+        describe("bearer_payload handling", function()
             it("should use the sub claim if present", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
                     sub = "12345"
                 }
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+                local meta = { ["envoy.filters.http.jwt_authn"] = { ["bearer_payload"] = payload } }
                 local req = fake_request_handle( { streamMetadata = meta } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-network for trust level A", function()
                 local payload = { sub = "12345" }
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+                local meta = { ["envoy.filters.http.jwt_authn"] = { ["bearer_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "A" } -- should determine class
                 local req = fake_request_handle( { streamMetadata = meta, headers = headers } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "known-network", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-client for trust level B", function()
                 local payload = { sub = "12345" } -- bearer token with no rlc claim
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+                local meta = { ["envoy.filters.http.jwt_authn"] = { ["bearer_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "B" } -- should determine class
                 local req = fake_request_handle( { streamMetadata = meta, headers = headers } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") ) -- bearer token still used for ID
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") ) -- bearer token still used for ID
                 assert.are.equal( "known-client", result:get("x-wmf-ratelimit-class") )
             end)
             it("should prefer the rlc claim from the token over the session cookie", function()
@@ -377,7 +377,7 @@ describe("rest_hooks", function()
 
                 -- The JWT payload is stored in stream metadata
                 local meta = { ["envoy.filters.http.jwt_authn"] = {
-                    ["jwt_payload"] = payload,
+                    ["bearer_payload"] = payload,
                     ["cookie_payload"] = cookie_payload }
                 }
 
@@ -386,7 +386,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
             end)
             it("should fall back to the rlc claim from the session cookie (T418042)", function()
@@ -400,7 +400,7 @@ describe("rest_hooks", function()
 
                 -- The JWT payload is stored in stream metadata
                 local meta = { ["envoy.filters.http.jwt_authn"] = {
-                    ["jwt_payload"] = payload,
+                    ["bearer_payload"] = payload,
                     ["cookie_payload"] = cookie_payload }
                 }
 
@@ -409,20 +409,23 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "updated-class", result:get("x-wmf-ratelimit-class") )
             end)
-            it("should not use the rlc claim if the sub claim is not present", function()
-                -- The JWT payload is stored in stream metadata
-                local payload = {
-                    rls = "special-class" -- should be ignored
-                }
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+        end)
+        describe("centralauth_payload handling", function()
+            it("should use the centralauth payload over other payloads", function()
+                local meta = { ["envoy.filters.http.jwt_authn"] = {
+                    ["cookie_payload"] =      { sub = "111", rlc = "cookie-rlc" },
+                    ["bearer_payload"] =      { sub = "222", rlc = "bearer-rlc" },
+                    ["centralauth_payload"] = { sub = "333", rlc = "centralauth-rlc" },
+                } }
                 local req = fake_request_handle( { streamMetadata = meta } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "jwt-sub:333", result:get("x-wmf-user-id") )
+                assert.are.equal( "centralauth-rlc", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("cookie_payload handling", function()
@@ -436,7 +439,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-network for trust level A", function()
@@ -469,7 +472,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "special-class", result:get("x-wmf-ratelimit-class") )
             end)
             it("should ignore cookie rlc claim for known-network", function()
@@ -484,7 +487,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "known-network", result:get("x-wmf-ratelimit-class") )
             end)
             it("should ignore bearer rlc claim for known-client", function()
@@ -493,13 +496,13 @@ describe("rest_hooks", function()
                     sub = "12345",
                     rlc = "special-class"
                 }
-                local meta = { ["envoy.filters.http.jwt_authn"] = { ["jwt_payload"] = payload } }
+                local meta = { ["envoy.filters.http.jwt_authn"] = { ["bearer_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "B" } -- should be preferred
                 local req = fake_request_handle( { streamMetadata = meta, headers = headers } )
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "bearer-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "known-client", result:get("x-wmf-ratelimit-class") )
             end)
             it("should not set x-wmf-ratelimit-class if rlc claim is BYPASS", function()
@@ -543,7 +546,7 @@ describe("rest_hooks", function()
                 wmf_ratelimit_info(req)
 
                 local result = req:headers()
-                assert.are.equal( "cookie-sub:12345", result:get("x-wmf-user-id") )
+                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
                 assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)

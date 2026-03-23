@@ -70,10 +70,15 @@ function wmf_ratelimit_info(request_handle)
     local streamMeta = streamInfo:dynamicMetadata()
     local cookies = streamMeta:get("envoy.wmf_cookies") or {}
 
-    -- bearer token payload from envoy.filters.http.jwt_authn
+    -- Payload from sessionJwt cookie from envoy.filters.http.jwt_authn.
     local jwtMeta = streamMeta:get("envoy.filters.http.jwt_authn") or {}
-    local jwtPayload = jwtMeta.jwt_payload or {}
     local cookiePayload = jwtMeta.cookie_payload or {}
+
+    -- Authorization header payload (Bearer or CentralAuthToken) from envoy.filters.http.jwt_authn.
+    -- Only one of them should be present, see https://github.com/httpwg/http-core/issues/180
+    -- and https://community.auth0.com/t/authorization-headers-on-request-with-multiple-schemes/8349.
+    local bearerPayload = jwtMeta.bearer_payload or {}
+    local centralauthPayload = jwtMeta.centralauth_payload or {}
 
     -- see https://wikitech.wikimedia.org/wiki/CDN/Backend_api
     local trust = headers:get("x-trusted-request")
@@ -99,18 +104,22 @@ function wmf_ratelimit_info(request_handle)
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
         ratelimit_class = "known-client"
 
-    elseif jwtPayload.rlc then
+    elseif centralauthPayload.rlc then
+        -- T420280: Use rate limit class from centralauth token
+        ratelimit_class = centralauthPayload.rlc
+
+    elseif bearerPayload.rlc then
         -- We trust that long-lived tokens don't have an rlc field.
        -- TODO: Ignore stale rlc field if the token is older than a day (check iat field).
         -- That shouldn't happen, since long-lived tokens shouldn't have an rlc field.
         -- But if they do, we shouldn't use it, we should use the cookie's rlc instead.
-        ratelimit_class = jwtPayload.rlc
+        ratelimit_class = bearerPayload.rlc
 
     elseif cookiePayload.rlc then
         -- T418042: Use the rlc field from a session cookie if it is present.
         ratelimit_class = cookiePayload.rlc
 
-    elseif jwtPayload.sub then
+    elseif bearerPayload.sub then
         -- Fallback class for clients using API keys (owner-only tokens) without
         -- session cookies.
         ratelimit_class = "authed-bot"
@@ -145,10 +154,17 @@ function wmf_ratelimit_info(request_handle)
         ratelimit_class = wmf_ratelimit_class_for_address(client_ip, anon_class)
     end
 
-    if jwtPayload.sub then
-        user_id = "bearer-sub:" .. jwtPayload.sub
-    elseif cookiePayload.sub then
-        user_id = "cookie-sub:" .. cookiePayload.sub
+
+    if centralauthPayload.sub then
+        user_id = "jwt-sub:" .. centralauthPayload.sub
+    elseif bearerPayload.sub then
+        user_id = "jwt-sub:" .. bearerPayload.sub
+    elseif bearerPayload.sub and bearerPayload.rlc then -- has rlc field, it's an access token
+        user_id = "jwt-sub:" .. bearerPayload.sub
+    elseif cookiePayload.sub then -- preferred to owner-only
+        user_id = "jwt-sub:" .. cookiePayload.sub
+    elseif bearerPayload.sub then -- no rlc field, probably owner-only
+        user_id = "jwt-sub:" .. bearerPayload.sub
     elseif trust == "A" and userAgent ~= "" then
         user_id = "user-agent:" .. userAgent
     elseif trust == "B" and headers:get("x-provenance") then
