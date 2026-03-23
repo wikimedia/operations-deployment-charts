@@ -402,8 +402,8 @@ namespaces:
           memory: "100Mi"
           cpu: "100m"
         max:
-          memory: "40Gi"
-          cpu: "16"
+          memory: "128Gi"
+          cpu: "24"
         defaultRequest:
           memory: "100Mi"
           cpu: "100m"
@@ -415,17 +415,17 @@ namespaces:
           memory: "100Mi"
           cpu: "100m"
         max:
-          memory: "44Gi"
-          cpu: "24"
+          memory: "132Gi"
+          cpu: "28"
     resourcequota:
       pods: {}
       compute:
         requests:
           cpu: "90"
-          memory: "150Gi"
+          memory: "200Gi"
         limits:
           cpu: "90"
-          memory: "150Gi"
+          memory: "200Gi"
 
 net_istio:
   ingressgateway:
