@@ -13,6 +13,25 @@ mesh:
   tracing:
     enabled: true
     sampling: 0.01
+  # T364245: (begin) experimental changes (envoy drain testing)
+  drain: true
+  admin:
+    # Apply graceful drain (DRAIN_GRACEFUL) over a 3s window.
+    drain_time_s: 3 # Overrides default (600).
+    drain_strategy: "immediate"  # Overrides default (gradual).
+  extra_env:
+    # Use the tool, which supports admin-over-UDS.
+    DRAIN_VIA_TOOL: true
+    # Tell the tool where to find the socket.
+    ADMIN_SOCKET: /var/run/envoy/admin.sock
+    # Trigger graceful drain, applied over admin.drain_time_s.
+    DRAIN_GRACEFUL: true
+    # Trigger inboundonly drain, leaving outbound mesh listeners running.
+    DRAIN_INBOUND_ONLY: true
+    # Ensure that the post-drain wait period (i.e., waiting active connections
+    # to drain) lasts at least as long as mediawiki's pre-stop sleep hook.
+    DRAIN_WAIT_MINIMUM_S: 8
+  # T364245: (end) experimental changes
 
 php:
   apc:
