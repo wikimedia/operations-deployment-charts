@@ -32,6 +32,9 @@ tables:
 
 cassandra:
   port: 9042
+{{- if .Values.main_app.cassandra_keyspace }}
+  keyspace: {{ .Values.main_app.cassandra_keyspace }}
+{{- end }}
   consistency: {{ .Values.main_app.consistency }}
   hosts:
 {{- range $cassandra_host := .Values.main_app.cassandra_hosts }}
