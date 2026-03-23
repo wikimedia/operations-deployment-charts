@@ -229,6 +229,7 @@ main_app:
       rb_response_headers: true
 
     - name: mobileapps_core
+      cluster: mobileapps
       timeout: 120s
       urls:
         - name: descriptions
