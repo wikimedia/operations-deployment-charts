@@ -23,8 +23,6 @@ app:
           stream: mediawiki.page_html_content_change.dev4:4.0.0
           connector: kafka
           options:
-            # TODO: Will be reverted for staging
-            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -32,8 +30,6 @@ app:
           stream: mediawiki.page_edit_type_simple.dev0:2.0.0
           connector: kafka
           options:
-            # TODO: Will be reverted for staging
-            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL
@@ -47,8 +43,6 @@ app:
           stream: mw_page_edit_type_enrich.error:2.1.0
           connector: kafka
           options:
-            # TODO: Will be reverted for staging
-            # bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             delivery_guarantee: AT_LEAST_ONCE
             properties:
               security.protocol: SSL

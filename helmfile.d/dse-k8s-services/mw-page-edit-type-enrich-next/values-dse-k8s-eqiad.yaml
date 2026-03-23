@@ -21,6 +21,7 @@ app:
         # Configure sources and sinks.
         source:
           options:
+            # Revert to bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # TODO: Will be reverted to [eqiad.mediawiki.page_html_content_change.dev4] for staging
             topics: [eqiad.mediawiki.page_html_content_change.dev4, codfw.mediawiki.page_html_content_change.dev4]
@@ -29,11 +30,13 @@ app:
 
         sink:
           options:
+            # Revert to bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
 
         error_sink:
           options:
+            # Revert to bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
 
