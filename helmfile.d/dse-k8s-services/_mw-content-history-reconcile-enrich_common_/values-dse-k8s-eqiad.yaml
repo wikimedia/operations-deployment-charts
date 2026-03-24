@@ -4,6 +4,9 @@ service:
   deployment: production
 
 app:
+  # Temporarily suspend the application to allow the upgrade of dse-k8s-eqiad
+  job:
+    state: suspended
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
     # Input mediawiki.page_change topic has only 1 Kafka topic-partitions (eqiad or codfw).
