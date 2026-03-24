@@ -26,6 +26,9 @@ app:
         # NOTE: Make sure source and sink are configured in other values files.
 
   flinkConfiguration:
+    # TODO: remove this override. It was added to try to troubleshoot a JM OOM,
+    # but did not help and was not the cause.
+    # See: https://phabricator.wikimedia.org/T397330#11255344
     jobmanager.memory.off-heap.size: 512m
 
   job:
