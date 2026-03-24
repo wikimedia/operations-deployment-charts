@@ -414,8 +414,8 @@ main_app:
           in: '/+wikimedia.org/v1/metrics/unique-devices/api-spec.json'
           out: '/device-analytics/api-spec.json'
         - name: unique-devices
-          in: '/+(wikimedia.org/v1|service)/metrics/unique-devices/(.+)'
-          out: '/metrics/unique-devices/\2'
+          in: '/+wikimedia.org/v1/metrics/unique-devices/(.+)'
+          out: '/metrics/unique-devices/\1'
       rb_response_headers: true
 
     - name: commons-impact-analytics
