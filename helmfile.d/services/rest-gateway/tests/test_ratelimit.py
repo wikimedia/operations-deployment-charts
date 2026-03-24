@@ -299,7 +299,7 @@ class RateLimitTest(unittest.TestCase):
         request_headers = {
             "x-client-ip": env.nextIp(), # external request
             "x-trusted-request": "E", # general fallback
-            "x-is-browser": "100", # >= 80 is good
+            "x-is-browser": "100", # >= 80 is good (see browser_threshold value)
         }
 
         limits = getRateLimits("anon-browser")
@@ -368,7 +368,7 @@ class RateLimitTest(unittest.TestCase):
         headers = {
             "x-client-ip": ip,
             "cookie": "sessionJwt=" + token,
-            "x-is-browser": "100", # >= 80 is good
+            "x-is-browser": "100", # >= 80 is good (see browser_threshold value)
         }
 
         limits = getRateLimits("authed-browser")
@@ -387,7 +387,7 @@ class RateLimitTest(unittest.TestCase):
         headers = {
             "x-client-ip": ip,
             "cookie": "sessionJwt=" + token,
-            "x-is-browser": "20", # >= 80 is good
+            "x-is-browser": "15", # <= 20 is bad (see browser_threshold value)
         }
 
         limits = getRateLimits("authed-bot") # not a browser
@@ -426,7 +426,7 @@ class RateLimitTest(unittest.TestCase):
         request_headers = {
             "x-client-ip": env.nextIp(), # external request
             "x-trusted-request": "E", # general fallback
-            "x-is-browser": "100", # >= 80 is good
+            "x-is-browser": "100", # >= 80 is good (see browser_threshold value)
             "cookie": "sessionJwt=" + token
         }
 

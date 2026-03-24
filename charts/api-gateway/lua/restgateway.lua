@@ -24,14 +24,14 @@ end
 -- The following classes are currently assigned by wmf_ratelimit_info:
 --
 -- * authed-bot indicates an authenticated client that has a JWT token
---   but a browser score < 80. This includes bots that use a an OAuth
+--   but a browser score < browser_threshold. This includes bots that use a an OAuth
 --   bearer token but also clients that provide a sessionJwt cookie
 ---  after authenticating with e.g. a bot password.
 --   The ID is assigned based on the authentication token.
 --
 -- * authed-browser: indicates an authenticated request from a browser.
 --   These are likely wiki contributors using gadgets or the search bar.
---   This is equivalent to x-trusted-request: C and a browser score >= 80.
+--   This is equivalent to x-trusted-request: C and a browser score >= browser_threshold.
 --   The ID is assigned based on the authentication token.
 --
 -- * known-network indicates that the request is coming from a network under our control,
@@ -50,7 +50,7 @@ end
 --
 -- * anon-browser indicates a organic browser traffic from interactive UI
 --   elements and Gadgets.
---   It is applied to requests with x-is-browser >= 80 and is will cover
+--   It is applied to requests with x-is-browser >= browser_threshold and is will cover
 --   part of the requests with x-trusted-request: E.
 --   The client's IP address is used as the rate limit key.
 --
@@ -60,6 +60,7 @@ end
 --   The client's IP address is used as the rate limit key.
 --- -----------------------------------------------------------------------
 function wmf_ratelimit_info(request_handle)
+    local browser_threshold = HelmValues.main_app.ratelimiter.browser_threshold
     local headers = request_handle:headers()
     local streamInfo = request_handle:streamInfo()
     local ratelimit_class = nil
@@ -149,7 +150,7 @@ function wmf_ratelimit_info(request_handle)
              ratelimit_class = "known-network"
         elseif trust == "B" then
              ratelimit_class = "known-client"
-        elseif browserScore and browserScore >= 80 then
+        elseif browserScore and browserScore >= browser_threshold then
             ratelimit_class = "authed-browser"
         else
             ratelimit_class = "authed-bot"
@@ -184,8 +185,9 @@ function wmf_ratelimit_info(request_handle)
     -- fallback
     if not ratelimit_class then
         local fallback_class = HelmValues.main_app.ratelimiter.fallback_class
+        local browser_threshold = HelmValues.main_app.ratelimiter.browser_threshold
 
-        if browserScore and browserScore >= 80 then
+        if browserScore and browserScore >= browser_threshold then
             -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
             -- This is typically trust level E, but we allow level F as well (untile that gets abused)
             -- TODO: Use JA3N + JA4H as the user ID when available

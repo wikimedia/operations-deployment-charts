@@ -10,6 +10,7 @@ HelmValues = {
     main_app = {
         ratelimiter = {
             fallback_class = "{{ .Values.main_app.ratelimiter.fallback_class }}",
+            browser_threshold = {{ .Values.main_app.ratelimiter.browser_threshold }},
             anon_class_by_address = {
                 {{- range $addr, $class := .Values.main_app.ratelimiter.anon_class_by_address }}
                 ["{{ $addr }}"] = "{{ $class }}",

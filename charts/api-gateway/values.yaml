@@ -59,6 +59,9 @@ main_app:
     # This can be set to "BYPASS" for testing, when we only want to enforce rate limits
     # under special circumstances.
     fallback_class: "anon"
+    # Threshold value for x-is-browser, see <https://wikitech.wikimedia.org/wiki/CDN/Backend_api>
+    # If the score is below this value, we assume that the request does not come from a browser.
+    browser_threshold: 30
     # classes to assign based on IP range (prefix match for now)
     anon_class_by_address: {}
 

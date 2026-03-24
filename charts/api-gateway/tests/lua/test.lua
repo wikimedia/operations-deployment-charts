@@ -16,6 +16,7 @@ _G.HelmValues = {
     main_app = {
         ratelimiter = {
             fallback_class = "anon",
+            browser_threshold = 80,
             ratelimit_notice_text = "ratelimit notice text",
             anon_class_by_address = {
                  ["11.22.33."] = "special-network",
@@ -352,7 +353,7 @@ describe("rest_hooks", function()
             it("should use the x-is-browser header to recognize organic traffic", function()
                 local headers = {
                     ["x-trusted-request"] = "E",
-                    ["x-is-browser"] = "100", -- above 80
+                    ["x-is-browser"] = "100", -- above browser_threshold = 80
                     ["x-client-ip"] = "192.168.1.1",
                 }
                 local req = fake_request_handle( { headers = headers } )
@@ -365,7 +366,7 @@ describe("rest_hooks", function()
             it("should ignore the x-is-browser header if the value is too small", function()
                 local headers = {
                     ["x-trusted-request"] = "E",
-                    ["x-is-browser"] = "50", -- below 80
+                    ["x-is-browser"] = "15", -- below browser_threshold = 80
                     ["x-client-ip"] = "192.168.1.1",
                 }
                 local req = fake_request_handle( { headers = headers } )
@@ -570,7 +571,7 @@ describe("rest_hooks", function()
 
                 -- make the request appear to come from a browser
                 local headers = {
-                    ["x-is-browser"] = "100", -- above 80
+                    ["x-is-browser"] = "100", -- above browser_threshold = 80
                     ["x-trusted-request"] = "C",
                     ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
                 }
@@ -589,7 +590,7 @@ describe("rest_hooks", function()
 
                 -- make the request appear to come from a trusted network
                 local headers = {
-                    ["x-is-browser"] = "20", -- below 80
+                    ["x-is-browser"] = "15", -- below browser_threshold = 80
                     ["x-trusted-request"] = "A",
                     ["user-agent"] = "CindyBot 2.0 (User:Cindy)",
                     ["x-provenance"] = "client=cindy",
