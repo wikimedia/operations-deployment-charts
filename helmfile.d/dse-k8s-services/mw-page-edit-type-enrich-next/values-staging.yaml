@@ -34,7 +34,8 @@ app:
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
-              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+              # 20MB is probably not required for this sink, keeping for consistency for now.
+              max.request.size: "20971520" # The eventutilities_python p4j wrapper expects a string.
 
         # By convention we set job_name equal to k8s namespace.
         # Since this naming will contain hyphens, set the error_sink
@@ -47,7 +48,8 @@ app:
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
-              max.request.size: "10485760" # The eventutilities_python p4j wrapper expects a string.
+              # Entire html and diff are stored in error sink topic. So keeping this as 20MB, same as source topic.
+              max.request.size: "20971520" # The eventutilities_python p4j wrapper expects a string.
   job:
     # TODO: we might consider setting
     # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
@@ -83,6 +85,8 @@ app:
     # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
     # TODO: Will be reverted to ".../staging/high-availability" for staging
     "high-availability.storageDir": "s3://mw-page-edit-type-enrich-next.dse-k8s-eqiad/staging_000/high-availability"
+    # Added to help with large events passing through java <-> python serialization.
+    "taskmanager.memory.task.off-heap.size": 512m
 
 # Enable egress.  Specific egress policies should either be added in
 # environment/k8s cluster specific networkpolicy.egress.dst_nets,
