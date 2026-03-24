@@ -1,7 +1,6 @@
 # This helmfile defines the k8s resources needed for Airflow, but NOT the database.
 # The database is deployed from its own helmfile in helmfile.d/dse-k8s-services/postgresql-airflow-analytics-test
 
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -21,9 +20,13 @@ environments:
     values:
       - releases:
         - production
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---
+
+bases:
+  - ../global.yaml
 
 hooks:
   - events: ["prepare"]

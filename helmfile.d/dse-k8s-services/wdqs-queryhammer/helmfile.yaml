@@ -39,6 +39,9 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
 
+bases:
+  - ../global.yaml
+
 hooks:
   - events: ["prepare"]
     command: "helmfile_log_sal"

@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -18,9 +17,13 @@ environments:
     values:
       - releases:
         - postgresql-airflow-sre
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---
+
+bases:
+  - ../global.yaml
 
 hooks:
   - events: ["prepare"]

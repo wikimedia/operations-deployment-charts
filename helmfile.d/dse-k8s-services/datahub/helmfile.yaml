@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -51,22 +50,25 @@ templates:
         {{- $k | nindent 10 }}: {{ $v | toYaml | nindent 12 }}
       {{- end }}
       {{- end }}
-    hooks:
-      - events: ["prepare"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s_services/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
-          ]
-      - events: ["cleanup"]
-        command: "helmfile_log_sal"
-        args:
-          [
-            "{{`{{.HelmfileCommand}}`}}",
-            "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s_services/services/{{`{{ .Release.Namespace }}`}}: {{`{{.HelmfileCommand}}`}} on {{`{{ .Release.Name }}`}}",
 
-          ]
+bases:
+  - ../global.yaml
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s_services/services/datahub: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s_services/services/datahub: {{`{{.HelmfileCommand}}`}}}",
+      ]
 
 
 releases:
