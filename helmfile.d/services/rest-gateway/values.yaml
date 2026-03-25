@@ -81,19 +81,27 @@ main_app:
             HOUR: 500
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             HOUR: 500
-          "unauthed-bot": # no auth, but good User-Agent
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
             HOUR: 9999999 # 5000
           "unauthed-mediawiki": # InstantCommons and such
-            HOUR: 9999999 # 5000
+            HOUR: 9999999 # 10000
           "anon-browser": # no auth, but looks like a browser
             HOUR: 1000
-          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP -- deprecated
             HOUR: 250000 # needs high limit until we can distinguish clients
           "authed-browser": # authed, looks like a browser
             HOUR: 9999999 # 5000
+          "authed-newuser": # authed, looks like a new user
+            HOUR: 9999999 # 5000
+          "authed-user": # valid JWT
+            HOUR: 9999999 # 10000
+          "established-user": # valid JWT, meets age/edit count criteria
+            HOUR: 9999999 # 100000
+          "highlimits-user": # valid WT and member of specific global groups
+            HOUR: 9999999 # no limit
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
-          "authed-bot": # authed and not a browser
+          "authed-bot": # authed and not a browser -- deprecated
             HOUR: 9999999 # 10000
           "approved-bot": # community approved bot, based on jwt auth
             HOUR: 9999999
@@ -107,19 +115,27 @@ main_app:
             HOUR: 100
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             HOUR: 100
-          "unauthed-bot": # no auth, but good User-Agent
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
             HOUR: 5000
           "unauthed-mediawiki": # InstantCommons and such
-            HOUR: 5000
+            HOUR: 10000
           "anon-browser": # no auth, but looks like a browser
             HOUR: 1000
-          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP -- deprecated
             HOUR: 250000 # needs high limit until we can distinguish clients
           "authed-browser": # authed, looks like a browser
             HOUR: 5000
+          "authed-newuser": # authed, looks like a new user
+            HOUR: 5000
+          "authed-user": # valid JWT
+            HOUR: 10000
+          "established-user": # valid JWT, meets age/edit count criteria
+            HOUR: 100000
+          "highlimits-user": # valid WT and member of specific global groups
+            HOUR: 9999999
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
-          "authed-bot": # authed and not a browser
+          "authed-bot": # authed and not a browser -- deprecated
             HOUR: 10000
           "approved-bot": # community approved bot, based on jwt auth
             HOUR: 9999999
