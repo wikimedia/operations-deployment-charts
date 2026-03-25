@@ -39,6 +39,11 @@ spec:
     {{- if $final_predictor_config }}
     {{- toYaml $final_predictor_config | nindent 4 }}
     {{- end }}
+    {{- $predictor_volumes := concat ($generic_predictor.volumes | default list) ($custom_predictor.volumes | default list) }}
+    {{- if $predictor_volumes }}
+    volumes:
+    {{- toYaml $predictor_volumes | nindent 4 }}
+    {{- end }}
     containers:
     - name: kserve-predictor-{{ $inference_name }}
       image: {{ $.Values.docker.registry }}/{{ $custom_predictor.image | default $generic_predictor.image }}:{{ $custom_predictor.image_version | default $generic_predictor.version }}
