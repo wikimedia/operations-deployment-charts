@@ -85,12 +85,20 @@ inference_services:
         resources:
           limits:
             cpu: "6"
-            memory: 16Gi
+            memory: 24Gi
             amd.com/gpu: "1"
           requests:
             cpu: "6"
-            memory: 16Gi
+            memory: 24Gi
             amd.com/gpu: "1"
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "8Gi"
       config:
         maxReplicas: 1
         tolerations:
