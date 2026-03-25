@@ -274,27 +274,51 @@ main_app:
     - name: wikifeeds
       timeout: 15s
       urls:
+        - name: apiwo_announcements
+          in: '/+feed/v1/(\w+)/(\w+)/announcements'
+          out: '/\2.\1.org/v1/feed/announcements'
         - name: announcements
           in: '/+([^/]+)/v1/feed/announcements'
           out: '/\1/v1/feed/announcements'
+        - name: apiwo_onthisday_all
+          in: '/+feed/v1/(\w+)/(\w+)/onthisday/all/(.+)/(.+)'
+          out: '/\2.\1.org/v1/aggregated/onthisday/all/\3/\4'
         - name: onthisday_all
           in: '/+([^/]+)/v1/feed/onthisday/all/(.+)/(.+)'
           out: '/\1/v1/aggregated/onthisday/all/\2/\3'
+        - name: apiwo_onthisday
+          in: '/+feed/v1/(\w+)/(\w+)/onthisday/(.+)/(.+)/(.+)'
+          out: '/\2.\1.org/v1/feed/onthisday/\3/\4/\5'
         - name: onthisday
           in: '/+([^/]+)/v1/feed/onthisday/(.+)/(.+)/(.+)'
           out: '/\1/v1/feed/onthisday/\2/\3/\4'
+        - name: apiwo_featured
+          in: '/+feed/v1/(\w+)/(\w+)/featured/(.+)/(.+)/(.+)'
+          out: '/\2.\1.org/v1/aggregated/featured/\3/\4/\5'
         - name: featured
           in: '/+([^/]+)/v1/feed/featured/(.+)/(.+)/(.+)'
           out: '/\1/v1/aggregated/featured/\2/\3/\4'
+        - name: apiwo_availability
+          in: '/+feed/v1/(\w+)/(\w+)/availability'
+          out: '/\2.\1.org/v1/feed/availability'
         - name: availability
           in: '/+([^/]+)/v1/feed/availability'
           out: '/\1/v1/feed/availability'
+        - name: apiwo_configuration
+          in: '/+feed/v1/(\w+)/(\w+)/configuration'
+          out: '/\2.\1.org/v1/feed/configuration'
         - name: configuration
           in: '/+([^/]+)/v1/feed/configuration'
           out: '/\1/v1/feed/configuration'
+        - name: apiwo_dyk
+          in: '/+feed/v1/(\w+)/(\w+)/dyk'
+          out: '/\2.\1.org/v1/feed/dyk'
         - name: dyk
           in: '/+([^/]+)/v1/feed/did-you-know'
           out: '/\1/v1/feed/did-you-know'
+        - name: apiwo_random
+          in: '/+feed/v1/(\w+)/(\w+)/page/random/(.+)'
+          out: '/\2.\1.org/v1/page/random/redirect/\3'
         - name: random
           in: '/+([^/]+)/v1/page/random/(.+)'
           out: '/\1/v1/page/random/redirect/\2'
