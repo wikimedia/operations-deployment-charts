@@ -66,6 +66,7 @@ jsaddcall='{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z8","Z8K1":["Z17",{"Z1K1":"Z17","Z17K1":
 pyaddcall='{"Z1K1":"Z7","Z7K1":{"Z1K1":"Z8","Z8K1":["Z17"],"Z8K2":"Z1","Z8K3":["Z20"],"Z8K4":["Z14",{"Z1K1":"Z14","Z14K1":"Z400","Z14K3":{"Z1K1":"Z16","Z16K1":"Z610","Z16K2":"Z400=lambda:str(13)"}}],"Z8K5":"Z400"}}'
 strngjoin='{"Z1K1":"Z7","Z7K1":"Z10000","Z10000K1":"foo","Z10000K2":"bar"}'
 lexemeone='{"Z1K1":"Z7","Z7K1":"Z6825","Z6825K1":{"Z1K1":"Z6095","Z6095K1":"L2"}}'
+errorhndl='{"Z1K1":"Z7","Z7K1":"Z803","Z803K1":{"Z1K1":"Z39","Z39K1":"Z2K1"},"Z803K2":{"Z1K1":"Z7","Z7K1":"Z828","Z828K1":{"Z1K1":"Z99","Z99K1":{"Z1K1":"Z9","Z9K1":"Z4"}}}}'
 
 echo -e "\e[97mStaging\e[0m tests:"
 cluster="https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v1/evaluate/"
@@ -74,6 +75,7 @@ testServices "JavaScript add" $cluster $jsaddcall '"33"'
 testServices "Python lambda" $cluster "$pyaddcall" '"13"'
 testServices "String join" $cluster $strngjoin '"foobar"'
 testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
+testServices "Error handler" $cluser $errorhndl '{"Z1K1":"Z6","Z6K1":"Z4"}'
 
 echo -e "\n\e[97mStaging\e[0m tests, \e[97mv2\e[0m:"
 cluster="https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v2/evaluate/"
@@ -82,6 +84,7 @@ testServices "JavaScript add" $cluster $jsaddcall '"33"'
 testServices "Python lambda" $cluster "$pyaddcall" '"13"'
 testServices "String join" $cluster $strngjoin '"foobar"'
 testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
+testServices "Error handler" $cluser $errorhndl '{"Z1K1":"Z6","Z6K1":"Z4"}'
 
 echo -e "\n\e[97mProduction\e[0m tests:"
 cluster="https://wikifunctions.discovery.wmnet:30443/1/v1/evaluate/"
@@ -90,6 +93,7 @@ testServices "JavaScript add" $cluster $jsaddcall '"33"'
 testServices "Python lambda" $cluster "$pyaddcall" '"13"'
 testServices "String join" $cluster $strngjoin '"foobar"'
 testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
+testServices "Error handler" $cluser $errorhndl '{"Z1K1":"Z6","Z6K1":"Z4"}'
 
 echo -e "\n\e[97mProduction\e[0m tests, \e[97mv2\e[0m:"
 cluster="https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/"
@@ -98,3 +102,4 @@ testServices "JavaScript add" $cluster $jsaddcall '"33"'
 testServices "Python lambda" $cluster "$pyaddcall" '"13"'
 testServices "String join" $cluster $strngjoin '"foobar"'
 testServices "Lexeme fetch" $cluster $lexemeone '"first"' lexeme
+testServices "Error handler" $cluser $errorhndl '{"Z1K1":"Z6","Z6K1":"Z4"}'
