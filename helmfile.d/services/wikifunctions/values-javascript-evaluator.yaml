@@ -3,6 +3,12 @@
 main_app:
   image: repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all
   version: 2026-03-25-132409
+  requests:
+    cpu: 2
+    memory: 800Mi
+  limits:
+    cpu: 4
+    memory: 1Gi
 
 config:
   public:

@@ -4,6 +4,12 @@ main_app:
   # Re-stated image: for greppability.
   image: repos/abstract-wiki/wikifunctions/function-orchestrator
   version: 2026-03-25-132654
+  requests:
+    cpu: 2
+    memory: 400Mi
+  limits:
+    cpu: 4
+    memory: 3Gi
 
 ingress:
   enabled: true
