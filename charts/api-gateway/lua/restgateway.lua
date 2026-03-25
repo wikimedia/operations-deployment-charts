@@ -51,7 +51,7 @@ function wmf_ratelimit_info(request_handle)
     end
 
     -- Use the client IP as the fallback use ID.
-    local user_id = "x-client-ip:" .. client_ip
+    local user_id = nil
 
     -- Determine policies to apply, based on route meta data
     local routeMeta = request_handle:metadata()
@@ -88,53 +88,39 @@ function wmf_ratelimit_info(request_handle)
     -- NOTE: When making major changes to the classification, it can be useful to
     --       use a new policy name at the same time, to keep the metrics separate.
     -- -----------------------------------------------------------------------------------
-    if jwtPayload.sub then
-        user_id = "bearer-sub:" .. jwtPayload.sub
-
-        if jwtPayload.rlc then
-            -- We trust that long-lived tokens don't have an rlc field.
-            -- Ideally, we should check if exp or iat are more than a day away,
-            -- and ignore the rlc if they are.
-            ratelimit_class = jwtPayload.rlc
-        elseif cookiePayload.rlc then
-            -- T418042: Use the rlc field from a session cookie if is also present.
-            ratelimit_class = cookiePayload.rlc
-        elseif trust == "A" then
-             ratelimit_class = "known-network"
-        elseif trust == "B" then
-             ratelimit_class = "known-client"
-        else
-            -- Fallback class for clients using API keys (owner-only tokens) without
-            -- session cookies.
-            ratelimit_class = "authed-bot"
-        end
-    elseif cookiePayload.sub then
-        user_id = "cookie-sub:" .. cookiePayload.sub
-
-        if cookiePayload.rlc then
-            ratelimit_class = cookiePayload.rlc
-        elseif trust == "A" then
-             ratelimit_class = "known-network"
-        elseif trust == "B" then
-             ratelimit_class = "known-client"
-        elseif browserScore and browserScore >= browser_threshold then
-            ratelimit_class = "authed-browser"
-        else
-            ratelimit_class = "authed-bot"
-        end
-    elseif trust == "A" and headers:get("user-agent") then
+    if trust == "A" then
         -- This is mostly WMCS but could include stray requests from MW, see T410198 and T411503.
         -- NOTE: this currently includes WME. We could look into x-provenance to check.
         -- Identify by user agent. Clients using a generic agents will share a counter.
-        user_id = "user-agent:" .. headers:get("user-agent")
-
-        -- Assign "known-network" class.
         ratelimit_class = "known-network"
-    elseif trust == "B" and headers:get("x-provenance") then
+
+    elseif trust == "B" then
         -- Known bots (e.g. googlebot), see https://wikitech.wikimedia.org/wiki/Bot_traffic
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
-        user_id = "x-provenance:" .. headers:get("x-provenance")
         ratelimit_class = "known-client"
+
+    elseif jwtPayload.rlc then
+        -- We trust that long-lived tokens don't have an rlc field.
+       -- TODO: Ignore stale rlc field if the token is older than a day (check iat field).
+        -- That shouldn't happen, since long-lived tokens shouldn't have an rlc field.
+        -- But if they do, we shouldn't use it, we should use the cookie's rlc instead.
+        ratelimit_class = jwtPayload.rlc
+
+    elseif cookiePayload.rlc then
+        -- T418042: Use the rlc field from a session cookie if it is present.
+        ratelimit_class = cookiePayload.rlc
+
+    elseif jwtPayload.sub then
+        -- Fallback class for clients using API keys (owner-only tokens) without
+        -- session cookies.
+        ratelimit_class = "authed-bot"
+
+    elseif cookiePayload.sub and browserScore and browserScore >= browser_threshold then
+        ratelimit_class = "authed-browser"
+
+    elseif cookiePayload.sub then
+        ratelimit_class = "authed-bot"
+
     elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
         -- We have a well-formed User-Agent string
 
@@ -142,26 +128,33 @@ function wmf_ratelimit_info(request_handle)
         -- contrary to the expectations for C (T420106). This can happen if the token validation
         -- at the CDN layer is less struct than Envoy's (e.g. more lenient about clock skew).
         -- In that case, treat the request as if it had trust == D rather than E or F.
-
         ratelimit_class = "unauthed-bot"
 
-        -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
-        user_id = "x-ua-contact:" .. headers:get("x-ua-contact")
+    elseif browserScore and browserScore >= browser_threshold then
+        -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
+        -- This is typically trust level E, but we allow level F as well (untile that gets abused)
+        -- TODO: Use JA3N + JA4H as the user ID when available
+        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, "anon-browser")
+
+    else
+        local anon_class = HelmValues.main_app.ratelimiter.fallback_class -- defaults to "anon"
+        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, anon_class)
     end
 
-    -- fallback
-    if not ratelimit_class then
-        local fallback_class = HelmValues.main_app.ratelimiter.fallback_class
-        local browser_threshold = HelmValues.main_app.ratelimiter.browser_threshold
-
-        if browserScore and browserScore >= browser_threshold then
-            -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
-            -- This is typically trust level E, but we allow level F as well (untile that gets abused)
-            -- TODO: Use JA3N + JA4H as the user ID when available
-            fallback_class = "anon-browser"
-        end
-
-        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, fallback_class)
+    if jwtPayload.sub then
+        user_id = "bearer-sub:" .. jwtPayload.sub
+    elseif cookiePayload.sub then
+        user_id = "cookie-sub:" .. cookiePayload.sub
+    elseif trust == "A" and headers:get("user-agent") then
+        user_id = "user-agent:" .. headers:get("user-agent")
+    elseif trust == "B" and headers:get("x-provenance") then
+        user_id = "x-provenance:" .. headers:get("x-provenance")
+    elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
+        -- NOTE: Easy to spoof/mutate. Temporarily useful for visibility. Go back to IP later.
+        user_id = "x-ua-contact:" .. headers:get("x-ua-contact")
+    else
+        -- Use the client IP as the fallback use ID.
+        user_id = "x-client-ip:" .. client_ip
     end
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
