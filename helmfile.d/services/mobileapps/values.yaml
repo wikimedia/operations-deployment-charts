@@ -4,7 +4,7 @@ resources:
   replicas: 300
 main_app:
   image: wikimedia/mediawiki-services-mobileapps
-  version: 2026-02-09-170257-production
+  version: 2026-03-26-141239-production
   args: ["--max-old-space-size=4096", "--max-semi-space-size=16", "server.js", "-c",
     "/etc/mobileapps/config.yaml"]
   # Use the service proxy to connect to MediaWiki and restbase
