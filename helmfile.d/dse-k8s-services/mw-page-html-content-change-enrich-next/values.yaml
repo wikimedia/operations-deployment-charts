@@ -3,8 +3,10 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment
-  version: v1.44.0.dev12-html
+  version: v1.46.0
   flinkVersion: v1_20
+  logConfiguration:
+    rootLogger.level: INFO
 
   config_files:
 
