@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: serving-cert
+spec:
+  commonName: kserve-webhook-server-service.{{ .Release.Namespace }}.svc
+  dnsNames:
+  - kserve-webhook-server-service.{{ .Release.Namespace }}.svc
+  issuerRef:
+    name: discovery
+    group: cfssl-issuer.wikimedia.org
+    kind: ClusterIssuer

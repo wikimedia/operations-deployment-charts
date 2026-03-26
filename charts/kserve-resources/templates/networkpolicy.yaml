@@ -1,0 +1,61 @@
+# Network policies for kserve-resources (Calico-based)
+# These policies control ingress and egress for the KServe controller
+# in Standard deployment mode (no Knative queue-proxy sidecar)
+---
+# Ingress policy for kserve-controller-manager
+# Allows traffic from Kubernetes API server (webhooks) and Prometheus
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-calico-ingress
+  namespace: kserve
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  types:
+    - Ingress
+  selector: control-plane=="kserve-controller-manager"
+  ingress:
+    # Allow webhook traffic from Kubernetes API server
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - 9443  # webhook port
+    # Allow metrics scraping from Prometheus
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: matchLabels.name=="monitoring"
+      destination:
+        ports:
+          - 8080  # metrics port
+---
+# Egress policy for kserve-controller-manager
+# Allows traffic to Kubernetes API and model storage endpoints
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ template "wmf.releasename" . }}-calico-egress
+  namespace: kserve
+  labels:
+    app: {{ template "wmf.chartname" . }}
+    chart: {{ template "wmf.chartid" . }}
+    release: {{ .Release.Name }}
+spec:
+  types:
+    - Egress
+  selector: control-plane=="kserve-controller-manager"
+  egress:
+    # Allow traffic to Kubernetes API
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default

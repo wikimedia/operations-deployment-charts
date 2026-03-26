@@ -1,0 +1,140 @@
+apiVersion: v1
+data:
+  agent: |-
+    {
+        "image" : "kserve/agent:latest",
+        "memoryRequest": "100Mi",
+        "memoryLimit": "1Gi",
+        "cpuRequest": "100m",
+        "cpuLimit": "1"
+    }
+  autoscaler: |-
+    {
+      "scaleUpStabilizationWindowSeconds": "0",
+      "scaleDownStabilizationWindowSeconds": "300"
+    }
+  batcher: |-
+    {
+        "image" : "kserve/agent:latest",
+        "memoryRequest": "1Gi",
+        "memoryLimit": "1Gi",
+        "cpuRequest": "1",
+        "cpuLimit": "1",
+        "maxBatchSize": "32",
+        "maxLatency": "5000"
+    }
+  credentials: |-
+    {
+       "storageSpecSecretName": "storage-config",
+       "storageSecretNameAnnotation": "serving.kserve.io/storageSecretName",
+       "gcs": {
+           "gcsCredentialFileName": "gcloud-application-credentials.json"
+       },
+       "s3": {
+           "s3AccessKeyIDName": "AWS_ACCESS_KEY_ID",
+           "s3SecretAccessKeyName": "AWS_SECRET_ACCESS_KEY",
+           "s3Endpoint": "",
+           "s3UseHttps": "",
+           "s3Region": "",
+           "s3VerifySSL": "",
+           "s3UseVirtualBucket": "",
+           "s3UseAccelerate": "",
+           "s3UseAnonymousCredential": "",
+           "s3CABundleConfigMap": "",
+           "s3CABundle": ""
+       }
+    }
+  deploy: |-
+    {
+      "defaultDeploymentMode": "Serverless"
+    }
+  explainers: |-
+    {
+        "art": {
+            "image" : "kserve/art-explainer",
+            "defaultImageVersion": "latest"
+        }
+    }
+  inferenceService: |-
+    {
+      "resource": {
+          "cpuLimit": "1",
+          "memoryLimit": "2Gi",
+          "cpuRequest": "1",
+          "memoryRequest": "2Gi"
+        }
+    }
+  ingress: "{   \n    \"enableGatewayApi\": false,\n    \"kserveIngressGateway\":
+    \"kserve/kserve-ingress-gateway\",\n    \"ingressGateway\" : \"knative-serving/knative-ingress-gateway\",\n
+    \   \"localGateway\" : \"knative-serving/knative-local-gateway\",\n    \"localGatewayService\"
+    : \"knative-local-gateway.istio-system.svc.cluster.local\",\n    \"ingressDomain\"
+    \ : \"example.com\",\n    \"ingressClassName\" : \"istio\",\n    \"domainTemplate\":
+    \"{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}\",\n    \"urlScheme\": \"http\",\n
+    \   \"disableIstioVirtualHost\": false,\n    \"disableIngressCreation\": false\n}"
+  localModel: |-
+    {
+      "enabled": false,
+      "jobNamespace": "kserve-localmodel-jobs",
+      "defaultJobImage" : "kserve/storage-initializer:latest",
+      "fsGroup": 1000,
+      "jobTTLSecondsAfterFinished": 3600,
+      "reconcilationFrequencyInSecs": 60,
+      "disableVolumeManagement": false
+    }
+  logger: |-
+    {
+        "image" : "kserve/agent:latest",
+        "memoryRequest": "100Mi",
+        "memoryLimit": "1Gi",
+        "cpuRequest": "100m",
+        "cpuLimit": "1",
+        "defaultUrl": "http://default-broker"
+    }
+  metricsAggregator: |-
+    {
+      "enableMetricAggregation": "false",
+      "enablePrometheusScraping" : "false"
+    }
+  opentelemetryCollector: |-
+    {
+      "scrapeInterval": "5s",
+      "metricReceiverEndpoint": "keda-otel-scaler.keda.svc:4317",
+      "metricScalerEndpoint": "keda-otel-scaler.keda.svc:4318",
+      "resource": {
+          "cpuLimit": "1",
+          "memoryLimit": "2Gi",
+          "cpuRequest": "200m",
+          "memoryRequest": "512Mi"
+      }
+    }
+  router: |-
+    {
+        "image" : "kserve/router:latest",
+        "memoryRequest": "100Mi",
+        "memoryLimit": "1Gi",
+        "cpuRequest": "100m",
+        "cpuLimit": "1",
+        "imagePullPolicy": "IfNotPresent"
+    }
+  security: |-
+    {
+      "autoMountServiceAccountToken": true
+    }
+  storageInitializer: |-
+    {
+        "image" : "kserve/storage-initializer:latest",
+        "memoryRequest": "100Mi",
+        "memoryLimit": "1Gi",
+        "cpuRequest": "100m",
+        "cpuLimit": "1",
+        "caBundleConfigMapName": "",
+        "caBundleVolumeMountPath": "/etc/ssl/custom-certs",
+        "enableModelcar": true,
+        "cpuModelcar": "10m",
+        "memoryModelcar": "15Mi",
+        "uidModelcar": 1010
+    }
+kind: ConfigMap
+metadata:
+  name: inferenceservice-config
+  namespace: kserve

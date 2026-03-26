@@ -112,7 +112,7 @@ environments:
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
-      - install_kserve: true
+      - install_kserve_resources: true
       - install_cert_manager: true
       - install_kube_state_metrics: true
       - namespace_certificates: true
@@ -216,7 +216,8 @@ bases:
   - helmfile_istio-proxy.yaml
   - eventrouter/helmfile.yaml
   - knative-serving/helmfile.yaml
-  - kserve/helmfile.yaml
+  - kserve-crd-minimal/helmfile.yaml
+  - kserve-resources/helmfile.yaml
   - kube-state-metrics/helmfile.yaml
   - helm-state-metrics/helmfile.yaml
   - flink-operator/helmfile.yaml
