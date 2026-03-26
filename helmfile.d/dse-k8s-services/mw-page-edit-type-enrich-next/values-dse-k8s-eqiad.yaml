@@ -4,9 +4,6 @@ service:
   deployment: production
 
 app:
-  # Temporarily suspend the application to allow the upgrade of dse-k8s-eqiad
-  job:
-    state: suspended
   taskManager:
     # NOTE: taskManager.replicas takes precedence over job.parellism.
     # Input stream mediawiki.page_html_content_change.dev4 has 1 topic (1 partition).
