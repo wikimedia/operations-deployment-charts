@@ -1,0 +1,17 @@
+config:
+  turnilo:
+    url: https://turnilo.wikimedia.org
+  httpd_cas_site:
+    server_name: turnilo.wikimedia.org
+    cas_login_url: https://idp.wikimedia.org/login
+    cas_validate_url: https://idp.wikimedia.org/serviceValidate
+    cas_root_proxied_as: https://turnilo.wikimedia.org
+
+external_services:
+  cas: [ idp ]
+
+ingress:
+  gatewayHosts:
+    default: "turnilo"
+    extraFQDNs:
+    - turnilo.wikimedia.org
