@@ -391,6 +391,37 @@ describe("rest_hooks", function()
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
             end)
         end)
+        describe("MediaWiki client handling", function()
+            it("should recognize MediaWiki with trust-level D", function()
+                local headers = {
+                    ["user-agent"] = "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1",
+                    ["x-trusted-request"] = "D", -- should be ignored
+                    ["x-is-browser"] = "100", -- should be ignored
+                    ["x-ua-contact"] = "https://some.fandom.com", -- used as key (for now)
+                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
+                }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "x-ua-contact:https://some.fandom.com", result:get("x-wmf-user-id") )
+                assert.are.equal( "unauthed-mediawiki", result:get("x-wmf-ratelimit-class") )
+            end)
+            it("should recognize QuickInstantCommons with trust-level E", function()
+                local headers = {
+                    ["user-agent"] = "QuickInstantCommons/1.5 MediaWiki/1.39.5; Something",
+                    ["x-trusted-request"] = "E", -- should be ignored
+                    ["x-is-browser"] = "100", -- should be ignored
+                    ["x-client-ip"] = "203.0.113.222", -- should be used as key
+                }
+                local req = fake_request_handle( { headers = headers } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
+                assert.are.equal( "unauthed-mediawiki", result:get("x-wmf-ratelimit-class") )
+            end)
+        end)
         describe("jwt_payload handling", function()
             it("should use the sub claim if present", function()
                 -- The JWT payload is stored in stream metadata

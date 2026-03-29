@@ -305,6 +305,17 @@ class RateLimitTest(unittest.TestCase):
         limits = getRateLimits("anon-browser")
         self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
 
+    def test_unauthed_mediawiki(self):
+        request_headers = {
+            "user-agent": "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1", # InstantCommons
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "E", # general fallback
+            "x-is-browser": "20", # >= 80 is good (see browser_threshold value)
+        }
+
+        limits = getRateLimits("unauthed-mediawiki")
+        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+
     def test_bearer_token_limit(self):
         ip = env.nextIp()
         token = jwtools.getValidJwtOrSkip(self)

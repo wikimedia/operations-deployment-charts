@@ -79,6 +79,7 @@ function wmf_ratelimit_info(request_handle)
     -- see https://wikitech.wikimedia.org/wiki/CDN/Backend_api
     local trust = headers:get("x-trusted-request")
     local browserScore = headers:get("x-is-browser") and tonumber( headers:get("x-is-browser") )
+    local userAgent = headers:get("user-agent") or ""
 
     -- -----------------------------------------------------------------------------------
     -- Request classification, assigns ratelimit_class and user_id.
@@ -121,6 +122,10 @@ function wmf_ratelimit_info(request_handle)
     elseif cookiePayload.sub then
         ratelimit_class = "authed-bot"
 
+    elseif userAgent:find("^MediaWiki/") or userAgent:find("^QuickInstantCommons/") then
+        -- We have a MediaWiki User-Agent string
+        ratelimit_class = "unauthed-mediawiki"
+
     elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
         -- We have a well-formed User-Agent string
 
@@ -145,8 +150,8 @@ function wmf_ratelimit_info(request_handle)
         user_id = "bearer-sub:" .. jwtPayload.sub
     elseif cookiePayload.sub then
         user_id = "cookie-sub:" .. cookiePayload.sub
-    elseif trust == "A" and headers:get("user-agent") then
-        user_id = "user-agent:" .. headers:get("user-agent")
+    elseif trust == "A" and userAgent ~= "" then
+        user_id = "user-agent:" .. userAgent
     elseif trust == "B" and headers:get("x-provenance") then
         user_id = "x-provenance:" .. headers:get("x-provenance")
     elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
