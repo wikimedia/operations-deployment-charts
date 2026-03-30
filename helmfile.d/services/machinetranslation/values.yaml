@@ -37,22 +37,6 @@ networkpolicy:
   egress:
     enabled: true
     dst_nets:
-      - cidr: 10.64.48.163/32  # people1004
-        ports:
-          - port: 443
-            protocol: tcp
-      - cidr: 2620:0:861:107:10:64:48:163/128  # people1004
-        ports:
-          - port: 443
-            protocol: tcp
-      - cidr: 10.192.48.214/32  # people2003
-        ports:
-          - port: 443
-            protocol: tcp
-      - cidr: 2620:0:860:104:10:192:48:214/128 # people2003
-        ports:
-          - port: 443
-            protocol: tcp
       # This enables fetching the models from the Thanos/Swift S3 storage
       # also used by LiftWing services.
       - cidr: 10.2.1.54/32 # thanos-swift.svc.codfw.wmnet
