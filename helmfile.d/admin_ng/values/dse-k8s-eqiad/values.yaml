@@ -4,13 +4,20 @@ chartVersions:
   wmf-stable/coredns: ~
   wmf-stable/cert-manager: ~
 
-pod-security-labels: &analytics-pss-labels
-  pod-security.kubernetes.io/audit: restricted
-  pod-security.kubernetes.io/enforce: restricted
-  pod-security.kubernetes.io/warn: restricted
+analytics-pss-labels: &analytics-pss-labels
+  pod-security.wmf.org/profile: restricted
   pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
   pod-security.wmf.org/disallow-host-path: exclude
   pod-security.wmf.org/allow-hostpath-analytics: include
+
+mw-pss-labels: &mw-pss-labels
+  pod-security.wmf.org/profile: restricted
+  pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude
+  pod-security.wmf.org/disallow-host-path: exclude
+  pod-security.wmf.org/allow-hostpath-geoip: include
+  pod-security.wmf.org/disallow-capabilities-strict-adding-capabilities-strict: exclude
+  pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
+  pod-security.wmf.org/disallow-capabilities-except-ptrace: include
 
 namespaces:
   airflow-dev:
@@ -346,11 +353,8 @@ namespaces:
     deployClusterRole: deploy-mediawiki-dumps-legacy
     deployTLSCertificate: false
     labels:
+      <<: *mw-pss-labels
       istio-injection: disabled
-      # Workaround for T419259
-      pod-security.kubernetes.io/audit: "privileged"
-      pod-security.kubernetes.io/enforce: "privileged"
-      pod-security.kubernetes.io/warn: "privileged"
     resourcequota:
       compute:
         requests:
