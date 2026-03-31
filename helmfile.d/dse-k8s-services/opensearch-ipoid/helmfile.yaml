@@ -45,6 +45,7 @@ releases:
   - name: opensearch-ipoid
     chart: wmf-stable/opensearch-cluster
     namespace: opensearch-ipoid
+    version: 0.0.17
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
