@@ -130,6 +130,38 @@ main_app:
           "known-client": # no auth, network associated with a known client
             HOUR: 9999999
 
+      # Preliminary limits for WikiLambda (Abstract Wikipedia, Wikifunctions).
+      # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
+      # to avoid locking users out of other things inadvertently. We also set higher limits,
+      # but we need to be careful about that, since some of the endpoints are quite expensive.
+      "WikiLambda":
+        shadow_mode: false
+        limits:
+          "*": # catch-all limits
+            HOUR: 1000
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            HOUR: 1000
+          "unauthed-bot": # no auth, but good User-Agent
+            HOUR: 1000 # this is quite restrictive, but the endpoints are expensive
+          "unauthed-mediawiki": # InstantCommons and such
+            HOUR: 10000
+          "anon-browser": # no auth, but looks like a browser
+            HOUR: 10000 # a single page view can easily go over 1000 requests...
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            HOUR: 250000 # needs high limit until we can distinguish clients
+          "authed-user": # valid JWT
+            HOUR: 9999999 # 100_000
+          "established-user": # valid JWT, meets age/edit count criteria
+            HOUR: 9999999 # 1_000_000
+          "highlimits-user": # valid WT and member of specific global groups
+            HOUR: 9999999 # no limit
+          "known-network": # no auth, network under our control (WMCS, WME)
+            HOUR: 9999999
+          "approved-bot": # community approved bot, based on jwt auth
+            HOUR: 9999999
+          "known-client": # no auth, network associated with a known client
+            HOUR: 9999999
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*
@@ -676,6 +708,7 @@ main_app:
       # Exclude cspreports action API calls from rate limits
       cluster: mw-api-ext-ro
       csp_enabled: false
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
       urls:
         - name: cspreport
           in: '/+w/api.php(.*)'
@@ -713,7 +746,46 @@ main_app:
               string_match:
                 exact: 'tokens'
                 ignore_case: true
-      rate_limit_policies: [ "BYPASS", "BYPASS" ]
+    # Assign rate limit policy for WikiLambda (Abstract Wikipedia, Wikifunctions).
+    # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
+    # to avoid locking users out of other things inadvertently.
+    # NOTE: This will not catch POST requests that do not have the relevant query parameters!
+    - name: mw-action-api-wikilambda
+      # We set a higher timeout to allow for long queries
+      timeout: 53s
+      # Exclude cspreports action API calls from rate limits
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      rate_limit_policies: [ "WikiLambda", "BYPASS" ]
+      urls:
+        - name: abstractwiki
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                prefix: 'abstractwiki'
+                ignore_case: true
+        - name: wikilambda_action
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                prefix: 'wikilambda'
+                ignore_case: true
+        - name: wikilambda_list
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'query'
+                ignore_case: true
+            - name: list
+              string_match:
+                prefix: 'wikilambda'
+                ignore_case: true
     - name: mw-action-api
       # We set a higher timeout to allow for long queries on the search API
       timeout: 53s

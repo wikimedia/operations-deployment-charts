@@ -12,6 +12,8 @@ smokepy:
     # The target URL to use for end-to-end tests.
     # Can also be set using $GATEWAY_TEST_TARGET_URL.
     target_url: https://staging.svc.eqiad.wmnet:4113
+    host: en.wikipedia.org
+    headers: {}
 
     # The path of the endpoint to probe when testing the default rate limit policy.
     default_policy_endpoint: "/en.wikipedia.org/v1/page/title/X"
@@ -31,9 +33,8 @@ smokepy:
     # Endpoint that should require a JWT
     jwt_required_endpoint: "/w/api.php?action=compare&format=json"
 
-    # The headers to send with every request
-    headers:
-      Host: en.wikipedia.org
+    # Host for wikilambda tests
+    wikilambda_host: "www.wikifunctions.org"
 
 main_app:
   # enable debug logging in staging
@@ -156,6 +157,34 @@ main_app:
             MINUTE: 19
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 21
+
+      "WikiLambda":
+        shadow_mode: false
+        limits:
+          "*": # catch-all limits
+            MINUTE: 10
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 10
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 30
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 50
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 70
+          "unauthed-mediawiki": # InstantCommons and such
+            MINUTE: 90
+          "authed-user": # valid JWT
+            MINUTE: 110
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 130
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 150
+          "approved-bot": # bot approved by the community
+            MINUTE: 170
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 190
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 210
 
     enable_x_ratelimit_headers: true
 
@@ -457,6 +486,45 @@ main_app:
                 exact: 'tokens'
                 ignore_case: true
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
+    # Assign rate limit policy for WikiLambda (Abstract Wikipedia, Wikifunctions).
+    # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
+    # to avoid locking users out of other things inadvertently.
+    - name: mw-action-api-wikilambda
+      # We set a higher timeout to allow for long queries
+      timeout: 53s
+      # Exclude cspreports action API calls from rate limits
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      rate_limit_policies: [ "WikiLambda", "BYPASS" ]
+      urls:
+        - name: abstractwiki
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                prefix: 'abstractwiki'
+                ignore_case: true
+        - name: wikilambda_action
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                prefix: 'wikilambda'
+                ignore_case: true
+        - name: wikilambda_list
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'query'
+                ignore_case: true
+            - name: list
+              string_match:
+                prefix: 'wikilambda'
+                ignore_case: true
     - name: mw-action-api-jwt-required
       timeout: 53s
       # Require JWT for action=compare, just to test the mechanism.
