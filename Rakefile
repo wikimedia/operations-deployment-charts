@@ -29,13 +29,16 @@ JSON_SCHEMA = 'jsonschema/'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 
 # This returns a base64-encoded value.
-HIERADATA_BASE_URL = 'https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata'.freeze
+HIERADATA_BASE_URL = 'https://gerrit-replica.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata'.freeze
 DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/role/common/deployment_server/kubernetes.yaml?format=TEXT".freeze
 DEPLOYMENT_SERVER_YAML_URL = "#{HIERADATA_BASE_URL}/common/profile/kubernetes/deployment_server.yaml?format=TEXT".freeze
 LISTENERS_DEFINITIONS_URL = "#{HIERADATA_BASE_URL}/common/profile/services_proxy/envoy.yaml?format=TEXT".freeze
 MARIADB_SECTION_PORTS_URL = "#{HIERADATA_BASE_URL}/common/profile/mariadb.yaml?format=TEXT".freeze
 COMMON_HIERA_URL = "#{HIERADATA_BASE_URL}/common.yaml?format=TEXT".freeze
 COMMON_KUBERNETES_HIERA_URL = "#{HIERADATA_BASE_URL}/common/kubernetes.yaml?format=TEXT".freeze
+OPEN_URI_OPTIONS = {
+  'User-Agent' => 'wmf-deployment-charts-ci/1.0 (https://gerrit.wikimedia.org/g/operations/deployment-charts/)'
+}.freeze
 
 ## RAKE TASKS
 
@@ -353,7 +356,7 @@ desc 'Update global fixture (service-proxy listeners, deployment_server::general
 task :refresh_fixtures do
   # Download the services proxy file from puppet.
   service_proxy = {}
-  URI.open(LISTENERS_DEFINITIONS_URL) do |res|
+  URI.open(LISTENERS_DEFINITIONS_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
     # We don't really need an upstream to be accurate here.
@@ -405,7 +408,7 @@ task :refresh_fixtures do
   # Fetch mariadb section ports
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
   mariadb_sections = {}
-  URI.open(MARIADB_SECTION_PORTS_URL) do |res|
+  URI.open(MARIADB_SECTION_PORTS_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded, aliases: true)
     mariadb_sections = { 'mariadb' => { 'section_ports' => hiera['profile::mariadb::section_ports'] } }
@@ -413,7 +416,7 @@ task :refresh_fixtures do
 
   # Fetch hiera's common.yaml to extract lists of known clusters.
   common_clusters = {}
-  URI.open(COMMON_HIERA_URL) do |res|
+  URI.open(COMMON_HIERA_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded)
 
@@ -439,7 +442,7 @@ task :refresh_fixtures do
   # Read the kubernetes cluster information from hiera
   # merging defaults with cluster settings. Like modules/k8s/manifests/clusters.pp
   kubernetes_clusters = {}
-  URI.open(COMMON_KUBERNETES_HIERA_URL) do |res|
+  URI.open(COMMON_KUBERNETES_HIERA_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded, aliases: true)
     defaults = hiera['kubernetes::clusters_defaults']
@@ -511,7 +514,7 @@ task :refresh_fixtures do
 
   # Fetch general settings for all environment, similar to
   # puppet modules/profile/manifests/kubernetes/deployment_server/global_config.pp
-  URI.open(DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL) do |res|
+  URI.open(DEPLOYMENT_SERVER_KUBERNETES_HIERA_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded, aliases: true)
     data = hiera['profile::kubernetes::deployment_server::general']
@@ -541,7 +544,7 @@ task :refresh_fixtures do
   end
 
   # Fetch services definition per cluster
-  URI.open(DEPLOYMENT_SERVER_YAML_URL) do |res|
+  URI.open(DEPLOYMENT_SERVER_YAML_URL, OPEN_URI_OPTIONS) do |res|
     decoded = Base64.decode64(res.read)
     hiera = YAML.safe_load(decoded, aliases: true)
     user_defaults = hiera['profile::kubernetes::deployment_server::user_defaults']
