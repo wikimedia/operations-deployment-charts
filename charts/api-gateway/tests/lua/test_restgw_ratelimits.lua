@@ -340,7 +340,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "authed-user", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-network for trust level A", function()
                 local payload = { sub = "12345" }
@@ -427,6 +427,17 @@ describe("rest_hooks", function()
                 assert.are.equal( "jwt-sub:333", result:get("x-wmf-user-id") )
                 assert.are.equal( "centralauth-rlc", result:get("x-wmf-ratelimit-class") )
             end)
+            it("should recognize centralauth payload as authenticated even without rlc", function()
+                local meta = { ["envoy.filters.http.jwt_authn"] = {
+                    ["centralauth_payload"] = { sub = "333" },
+                } }
+                local req = fake_request_handle( { streamMetadata = meta } )
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.are.equal( "jwt-sub:333", result:get("x-wmf-user-id") )
+                assert.are.equal( "authed-user", result:get("x-wmf-ratelimit-class") )
+            end)
         end)
         describe("cookie_payload handling", function()
             it("should use the sub claim if present", function()
@@ -440,7 +451,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-bot", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "authed-user", result:get("x-wmf-ratelimit-class") )
             end)
             it("should use known-network for trust level A", function()
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "A", ["user-agent"] = "test" }
@@ -530,25 +541,6 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
-            end)
-            it("should make use of the x-is-browser header", function()
-                local payload = { sub = "12345" }
-                local streamMetadata = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
-
-                -- make the request appear to come from a browser
-                local headers = {
-                    ["x-is-browser"] = "100", -- above browser_threshold = 80
-                    ["x-trusted-request"] = "C",
-                    ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
-                }
-
-                local req = fake_request_handle( { streamMetadata = streamMetadata, headers = headers } )
-                wmf_ratelimit_info(req)
-
-                local result = req:headers()
-                assert.are.equal( "jwt-sub:12345", result:get("x-wmf-user-id") )
-                assert.are.equal( "authed-browser", result:get("x-wmf-ratelimit-class") )
-                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
         end)
         describe("OPTIONS support for CORS (T418969, T419866)", function()

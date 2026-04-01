@@ -105,35 +105,29 @@ main_app:
         shadow_mode: false # enable on staging for testing
         limits:
           "*": # catch-all limits
-            MINUTE: 2
+            MINUTE: 1
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            MINUTE: 2
+            MINUTE: 1
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 3
-          "anon-cgnat": # clients behind a CGNAT -- deprecated
+          "anon-cgnat": # clients behind a CGNAT
             MINUTE: 5
-          "authed-newuser": # authed, looks like a new user
-            MINUTE: 6
-          "authed-browser": # authed, looks like a browser
-            MINUTE: 7
-          "authed-bot": # authed and not a browser -- deprecated
-            MINUTE: 8
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 10
+            MINUTE: 7
           "unauthed-mediawiki": # InstantCommons and such
-            MINUTE: 11
-          "approved-bot": # bot approved by the community
-            MINUTE: 12
-          "known-client": # no auth, network associated with a known client
-            MINUTE: 13
+            MINUTE: 9
           "authed-user": # valid JWT
-            MINUTE: 14
+            MINUTE: 11
           "established-user": # valid JWT, meets age/edit count criteria
-            MINUTE: 15
+            MINUTE: 13
           "highlimits-user": # valid WT and member of specific global groups
-            MINUTE: 16
+            MINUTE: 15
+          "approved-bot": # bot approved by the community
+            MINUTE: 17
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 19
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            MINUTE: 18
+            MINUTE: 21
 
       "Apr2026":
         shadow_mode: true
@@ -143,31 +137,25 @@ main_app:
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             MINUTE: 1
           "anon-browser": # no auth, but looks like a browser
-            MINUTE: 2
-          "anon-cgnat": # clients behind a CGNAT -- deprecated
-            MINUTE: 4
-          "authed-newuser": # authed, looks like a new user
+            MINUTE: 3
+          "anon-cgnat": # clients behind a CGNAT
             MINUTE: 5
-          "authed-browser": # authed, looks like a browser
-            MINUTE: 6
-          "authed-bot": # authed and not a browser -- deprecated
-            MINUTE: 7
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 9
+            MINUTE: 7
           "unauthed-mediawiki": # InstantCommons and such
-            MINUTE: 10
-          "approved-bot": # bot approved by the community
-            MINUTE: 11
-          "known-client": # no auth, network associated with a known client
-            MINUTE: 13
+            MINUTE: 9
           "authed-user": # valid JWT
-            MINUTE: 14
+            MINUTE: 11
           "established-user": # valid JWT, meets age/edit count criteria
-            MINUTE: 15
+            MINUTE: 13
           "highlimits-user": # valid WT and member of specific global groups
-            MINUTE: 16
-          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 15
+          "approved-bot": # bot approved by the community
             MINUTE: 17
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 19
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 21
 
     enable_x_ratelimit_headers: true
 

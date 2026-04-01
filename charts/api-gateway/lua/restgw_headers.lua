@@ -10,7 +10,7 @@ function wmf_stash_request_info(request_handle)
     for _, hname in ipairs({ ":path", ":method", "origin" }) do
         local hvalue = req_headers:get(hname)
         if hvalue then
-            streamMeta:set("envoy.request_info", hname, hvalue)
+            streamMeta:set("envoy.wmf_request_info", hname, hvalue)
         end
     end
 end
@@ -32,7 +32,7 @@ function wmf_set_cors_access_control(response_handle)
 
     -- Get stashed request headers
     local streamMeta = response_handle:streamInfo():dynamicMetadata()
-    local request_info = streamMeta:get("envoy.request_info")
+    local request_info = streamMeta:get("envoy.wmf_request_info")
     if not request_info then return end
 
     -- OPTIONS have to be handled by the upstream service, not by this function.

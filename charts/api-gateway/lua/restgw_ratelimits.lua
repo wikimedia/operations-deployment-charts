@@ -119,16 +119,9 @@ function wmf_ratelimit_info(request_handle)
         -- T418042: Use the rlc field from a session cookie if it is present.
         ratelimit_class = cookiePayload.rlc
 
-    elseif bearerPayload.sub then
-        -- Fallback class for clients using API keys (owner-only tokens) without
-        -- session cookies.
-        ratelimit_class = "authed-bot"
-
-    elseif cookiePayload.sub and browserScore and browserScore >= browser_threshold then
-        ratelimit_class = "authed-browser"
-
-    elseif cookiePayload.sub then
-        ratelimit_class = "authed-bot"
+    elseif bearerPayload.sub or cookiePayload.sub or centralauthPayload.sub then
+        -- Fallback class for authenticated users with no explicit rlc claim.
+        ratelimit_class = "authed-user"
 
     elseif userAgent:find("^MediaWiki/") or userAgent:find("^QuickInstantCommons/") then
         -- We have a MediaWiki User-Agent string
