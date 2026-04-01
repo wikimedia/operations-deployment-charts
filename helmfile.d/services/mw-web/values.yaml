@@ -2,10 +2,10 @@ resources:
 # When ramping up replicas in the main release, please remember
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
-  # October 2025 sizing for *multi-DC* serving:
-  #replicas: 340
+  # March 2026 sizing for *multi-DC* serving:
+  replicas: 352
   # March 2026 Switchover sizing for *single-DC* serving:
-  replicas: 600
+  #replicas: 600
 
 mesh:
   image_version: 1.35.9-1
