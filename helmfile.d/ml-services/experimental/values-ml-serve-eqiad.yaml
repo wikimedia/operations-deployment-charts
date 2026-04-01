@@ -50,10 +50,8 @@ inference_services:
   # policy-violation isvc
   gpt-oss-safeguard-20b:
     predictor:
-      config:
-        maxReplicas: 1
       image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
-      image_version: "2026-03-20-092036-publish"
+      image_version: "2026-04-01-094300-publish"
       custom_env:
         - name: MODEL_NAME
           value: "gpt-oss-safeguard-20b"
@@ -76,6 +74,8 @@ inference_services:
         - name: ATTENTION_BACKEND
           value: "ROCM_AITER_UNIFIED_ATTN"
         - name: VLLM_ROCM_USE_AITER
+          value: "1"
+        - name: TENSOR_PARALLEL_SIZE
           value: "1"
         - name: MAX_JOBS
           value: "1"
