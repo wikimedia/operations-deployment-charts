@@ -26,14 +26,17 @@ mesh:
     port: 9361
 discovery:
   listeners:
-    - mw-parsoid
-    - mathoid
     - eventgate-analytics
+    - citoid
+  ratelimit_listeners:
+    citoid:
+      domain: citoid
+      by: user-agent
 services_proxy:
-  mw-parsoid:
+  citoid:
     keepalive: 4s
-    port: 6505
-    timeout: 8s
+    port: 6014
+    timeout: 10s
     retry_policy:
       retry_on: 5xx
       num_retries: 1
@@ -42,19 +45,10 @@ services_proxy:
       ips:
         - 1.2.1.1/32
         - 2.3.1.1/32
-      address: mw-parsoid.discovery.wmnet
-      port: 4452
+      address: citoid.discovery.wmnet
+      port: 4003
       encryption: true
-  mathoid:
-    port: 6003
-    timeout: 3s
-    upstream:
-      ips:
-        - 10.2.1.1/32
-        - 20.3.1.1/32
-      address: mathoid.discovery.wmnet
-      port: 10042
-      encryption: false
+        - 1.1.2.3/32
   eventgate-analytics:
     keepalive: 4.5s
     port: 6004
