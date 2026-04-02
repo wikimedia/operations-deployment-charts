@@ -25,7 +25,9 @@ app:
         # be routed via local envoy service proxy 'mwapi-async'.
         http_client_routes:
           "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
-
+        # This is forcing eventutilitites-python to use a single thread on the async part, faking a sync process.
+        process_max_workers_default: 1
+        process_batch_size_default: 1
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:

@@ -17,6 +17,7 @@ app:
         # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
         mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php/v1
         ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+        request_timeout: 65
 
       # Configs for eventutilities python stream_manager.
       stream_manager:
@@ -24,7 +25,8 @@ app:
         # be routed via local envoy service proxy 'mwapi-async'.
         http_client_routes:
           "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
-
+        process_max_workers_default: 1
+        process_batch_size_default: 1
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
@@ -68,21 +70,20 @@ app:
 
 
   flinkConfiguration:
-    "restart-strategy.type": fixed-delay
-    # delay * attempts should be higher than the usual downtime we see.
-    # Since we don't have any data yet, set this 30 minutes (180 seconds * 10)
-    # to err on the side of caution.
-    "restart-strategy.fixed-delay.attempts": "10"
-    "restart-strategy.fixed-delay.delay": "180"
+    # Increase task.off-heap.size for pyflink apps with large messages.
+    # Some extra memory is needed to account for large message passing to python.
+    "taskmanager.memory.task.off-heap.size": 512m
+    "restart-strategy.type": exponential-delay
     "state.backend": hashmap
     "state.checkpoint-storage": filesystem
     "state.checkpoints.num-retained": "10"
     "s3.path.style.access": "true"
     # We need to set an interval in order to trigger checkpointing.
     # TODO: after gaining some operational experience, set this value to something
-    # meaningful. Given the small size of kafka offsets (KBs), 30 seconds seems a reasonable
+    # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
     # default.
     "execution.checkpointing.interval": "10000" # 10 seconds.
+    "execution.checkpointing.interval-during-backlog": "120000" # 2 minutes
     # Have flink-operator periodic savepoints for handling job restarts and upgrades.
     "kubernetes.operator.periodic.savepoint.interval": 5m
     # Keep the last 24 hours of savepoints.  Savepoint cleanup happens

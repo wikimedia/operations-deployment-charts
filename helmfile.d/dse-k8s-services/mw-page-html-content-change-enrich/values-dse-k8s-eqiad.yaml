@@ -7,10 +7,10 @@ app:
   taskManager:
     # Otto: increase to 40 TaskManagers to test backfill throughput for our first deployment.
     # TODO: reset this to something lower for regular operation.
-    replicas: 40
+    replicas: 4
     resource:
       cpu: 2
-      memory: 3000m
+      memory: 6000m
 
   config_files:
     app.config.yaml:

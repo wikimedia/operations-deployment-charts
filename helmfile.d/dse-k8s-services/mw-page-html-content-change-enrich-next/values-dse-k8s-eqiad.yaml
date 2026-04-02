@@ -22,6 +22,10 @@ app:
       stream_manager:
         # Configure sources and sinks.
         source:
+          # This should probably be set to the number of input Kafka topic-partitions.
+          # mediawiki.page_change.v1 is made up of two topics, each of one partition
+          # (as of 2026-04)
+          parallelism: 2
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # We run in 'active/active single compute' Multi DC mode, so this
