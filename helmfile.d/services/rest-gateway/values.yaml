@@ -354,6 +354,9 @@ main_app:
         - name: mediarequests
           in: '/+wikimedia.org/v1/metrics/mediarequests/(.+)'
           out: '/metrics/mediarequests/\1'
+        - name: video_plays
+          in: '/+wikimedia.org/v1/metrics/video_plays/(.+)'
+          out: '/metrics/video_plays/\1'
       rb_response_headers: true
 
     - name: edit-analytics
