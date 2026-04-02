@@ -34,6 +34,7 @@ main_app:
     - 127.0.0.1:*
     - restgateway.discovery.wmnet
     - mytestdomain.discovery.wmnet
+    - "*.wikipedia.org" # needed for the abstract.wikipedia.org test
 
   # Point all discovery endpoints at the http-https-echo sidecar (port 8888).
   discovery_endpoints:
@@ -121,9 +122,7 @@ smokepy:
     # The URL the smoke tests will send requests to.
     # Can also be set via the $GATEWAY_TEST_TARGET_URL environment variable.
     target_url: http://localhost:8087
-
-    headers:
-      Host: localhost
+    host: localhost
 
 service:
   deployment: minikube

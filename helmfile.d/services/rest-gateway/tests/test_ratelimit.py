@@ -57,10 +57,8 @@ class RateLimitTest(unittest.TestCase):
         print(f"    rate limited endpoint: {cls.default_endpoint}")
         print(f"    shadow mode endpoint:  {cls.shadow_endpoint}")
 
-
     def setUp(self):
-        headers = self.probe_config.get("headers", {})
-        self.target = Target(self.target_url, headers = headers)
+        self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
 
     def assert_rate_limit_counts( self, path, allowed, assertions, headers = None, debug = None):
         # Try three times as many requests as allowed.
@@ -142,6 +140,16 @@ class RateLimitTest(unittest.TestCase):
 
         assertions = (assert_no_denied_responses, assert_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
+
+    def test_abstractwiki_policy(self):
+        abstractwiki_query = r'/w/api.php?action=abstractwiki_run_fragment&format=json&formatversion=2&abstractwiki_run_fragment_qid=Q188815'
+        headers = {
+            "x-client-ip": env.nextIp(),
+            "host": "abstract.wikipedia.org" # this triggers the different limit
+        }
+
+        limits = getRateLimits("anon", ["AbstractWiki"])
+        self.assert_rate_limit_enforced(abstractwiki_query, limits.MINUTE, headers = headers )
 
     def test_anon_limit(self):
         headers = { "x-client-ip": env.nextIp() }

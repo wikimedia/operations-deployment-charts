@@ -12,12 +12,15 @@ smokepy:
     # The target URL to use for end-to-end tests.
     # Can also be set using $GATEWAY_TEST_TARGET_URL.
     target_url: https://staging.svc.eqiad.wmnet:4113
+    host: en.wikipedia.org
+    headers: {}
 
     # The path of the endpoint to probe when testing the default rate limit policy.
     default_policy_endpoint: "/en.wikipedia.org/v1/page/title/X"
 
     # The path of the endpoint to probe when testing the shadow rate limit policy.
-    shadow_policy_endpoint: "/w/api.php?action=query&meta=siteinfo&format=json"
+    # Doesn't have to be an existing action API module since missing modules still produce status 200.
+    shadow_policy_endpoint: "/w/api.php?action=shadowed&format=json"
 
     # The path of the endpoint to probe when testing for RESTbase compatibility CORS behavior
     cors_rb_compat_endpoint: "/en.wikipedia.org/v1/page/title/X"
@@ -30,10 +33,6 @@ smokepy:
 
     # Endpoint that should require a JWT
     jwt_required_endpoint: "/w/api.php?action=compare&format=json"
-
-    # The headers to send with every request
-    headers:
-      Host: en.wikipedia.org
 
 main_app:
   # enable debug logging in staging
@@ -156,6 +155,34 @@ main_app:
             MINUTE: 19
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 21
+
+      "AbstractWiki":
+        shadow_mode: false
+        limits:
+          "*": # catch-all limits
+            MINUTE: 10
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 10
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 30
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 50
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 70
+          "unauthed-mediawiki": # InstantCommons and such
+            MINUTE: 90
+          "authed-user": # valid JWT
+            MINUTE: 110
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 130
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 150
+          "approved-bot": # bot approved by the community
+            MINUTE: 170
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 190
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 210
 
     enable_x_ratelimit_headers: true
 
@@ -422,6 +449,7 @@ main_app:
       # Exclude cspreports action API calls from rate limits
       cluster: mw-api-ext-ro
       csp_enabled: false
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
       urls:
         - name: cspreport
           in: '/+w/api.php(.*)'
@@ -459,7 +487,39 @@ main_app:
               string_match:
                 exact: 'tokens'
                 ignore_case: true
-      rate_limit_policies: [ "BYPASS", "BYPASS" ]
+    # Fake API module for testing test shadow mode
+    - name: mw-action-api-shadowed
+      # We set a higher timeout to allow for long queries on the search API
+      timeout: 53s
+      # Exclude cspreports action API calls from rate limits
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      urls:
+        - name: shadowed
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                # this does not exist in the real API
+                exact: 'shadowed'
+                ignore_case: true
+      rate_limit_policies: [ "Apr2026", "BYPASS" ]
+    # Assign rate limit policy for abstract.wikipedia.org.
+    # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
+    # to avoid locking users out of other things inadvertently.
+    # NOTE: This will not catch POST requests that do not have the relevant query parameters!
+    - name: mw-action-api-abstractwiki
+      # We set a higher timeout to allow for long queries
+      timeout: 53s
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      rate_limit_policies: [ "AbstractWiki", "BYPASS" ]
+      domain: abstract.wikipedia.org
+      urls:
+        - name: action_api_catchall
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
     - name: mw-action-api-jwt-required
       timeout: 53s
       # Require JWT for action=compare, just to test the mechanism.
@@ -495,7 +555,6 @@ main_app:
       # to the primary.
       cluster: mw-api-ext-ro
       csp_enabled: false
-      rate_limit_policies: [ "Apr2026", "nothing" ]
       urls:
         # *** BEGIN action API routes ***
         - name: action_api_catchall
