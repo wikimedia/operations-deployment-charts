@@ -38,14 +38,25 @@ app:
           # (as of 2026-04)
           parallelism: 2
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # OTTO: temporarily use staging release to tune and test backfilling.
+            #       allowing the production release to always consume from latest
+            #       (missing messages) after restarts.
+            #       Note that the topic prefixes we produce to are 'staging.', so we
+            #       won't collied with the 'production' 'eqiad.' prefixed topics.
+            #       https://phabricator.wikimedia.org/T421216
+            # TODO: reset this to jumbo-eqiad before we productionize.
+            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
-            consumer_group: mw-page-html-content-change-enrich-next__dse-k8s-eqiad.000
+            consumer_group: mw-page-html-content-change-enrich-next__dse-k8s-eqiad.001
 
         sink:
           stream: mediawiki.page_html_content_change.dev5:1.0.0
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # OTTO: See not above.
+            # TODO: reset this to jumbo-eqiad before we productionize.
+            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Prefix the output topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
@@ -54,7 +65,10 @@ app:
         error_sink:
           stream: mw_page_html_content_change_enrich.error:2.1.0
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # OTTO: See not above.
+            # TODO: reset this to jumbo-eqiad before we productionize.
+            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Prefix the error topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.

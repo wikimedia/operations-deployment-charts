@@ -40,7 +40,7 @@ app:
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
-            consumer_group: mw-page-html-content-change-enrich__dse-k8s-eqiad.000
+            consumer_group: mw-page-html-content-change-enrich__dse-k8s-eqiad.001
 
         sink:
           stream: mediawiki.page_html_content_change.dev5:1.0.0
@@ -60,7 +60,15 @@ app:
     # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
     # to fallback on savepoints if checkpoints are too old.
     # This might require changing checkpoint retention policy.
-    upgradeMode: last-state
+    #
+    # OTTO: While we tune for backfilling etc, set production release
+    #       to stateless upgrade mode. This means that it will not try to catch
+    #       up on missed messages after app restarts.  We will miss messages
+    #       while the app is offline.
+    #       https://phabricator.wikimedia.org/T421216
+    # TODO: reset this before we productionize.
+    #upgradeMode: last-state
+    upgradeMode: stateless
 
 
   flinkConfiguration:
