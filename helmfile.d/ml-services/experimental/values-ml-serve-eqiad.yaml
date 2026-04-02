@@ -51,7 +51,7 @@ inference_services:
   gpt-oss-safeguard-20b:
     predictor:
       image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
-      image_version: "2026-04-01-094300-publish"
+      image_version: "2026-04-02-072519-publish"
       custom_env:
         - name: MODEL_NAME
           value: "gpt-oss-safeguard-20b"
@@ -76,7 +76,9 @@ inference_services:
         - name: VLLM_ROCM_USE_AITER
           value: "1"
         - name: TENSOR_PARALLEL_SIZE
-          value: "1"
+          value: "2"
+        - name: DISABLE_CUSTOM_ALL_REDUCE
+          value: "True"
         - name: MAX_JOBS
           value: "1"
         - name: AMDGCN_USE_BUFFER_OPS
@@ -84,13 +86,13 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "6"
-            memory: 24Gi
-            amd.com/gpu: "1"
+            cpu: "16"
+            memory: 80Gi
+            amd.com/gpu: "2"
           requests:
-            cpu: "6"
-            memory: 24Gi
-            amd.com/gpu: "1"
+            cpu: "16"
+            memory: 80Gi
+            amd.com/gpu: "2"
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
