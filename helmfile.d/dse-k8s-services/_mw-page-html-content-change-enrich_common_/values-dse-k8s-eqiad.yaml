@@ -1,0 +1,84 @@
+# This file contains settings shared by all apps deployed in dse-k8s-eqiad.
+#
+# NOTE: This file is shared between production and staging (-next) releases.
+#       In the helmfile directory, this is a symlink into a _*_common_/ values file.
+#       Edits here affect both staging and production.
+#       Release specific settings and overrides belong in release specific values files.
+#
+# Release specific settings belong in release specific values files.
+
+service:
+  deployment: production
+
+app:
+  config_files:
+    app.config.yaml:
+
+      # Configs for the page_html_content_change enrichment job in dse-k8s-eqiad
+      enrich:
+        # MW API requests should go to local envoy service proxy 'mwapi-async'.
+        # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
+        mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php/v1
+        ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
+        request_timeout: 65
+
+      stream_manager:
+        # Requests to stream_config_uri should
+        # be routed via local envoy service proxy 'mwapi-async'.
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
+
+        # Configure common settings for sources and sinks in dse-k8s
+        source:
+          connector: kafka
+          options:
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+
+        sink:
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              # 20MB - https://phabricator.wikimedia.org/T420356
+              # NOTE: eventutilities_python py4j wrapper expects a string.
+              max.request.size: "20971520"
+
+        error_sink:
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              # 20MB - https://phabricator.wikimedia.org/T420356
+              # NOTE: eventutilities_python py4j wrapper expects a string.
+              max.request.size: "20971520"
+
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+# Enable mwapi-async envoy service proxy.
+# This will forward requests to https://localhost:6500 to mw-api-int.discovery.wmnet.
+discovery:
+  listeners:
+    - mw-api-int-async
+
+external_services:
+  s3: [eqiad-dpe]
