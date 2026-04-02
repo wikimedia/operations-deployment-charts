@@ -13,6 +13,10 @@ import jwtools
 import helpers
 
 def getRateLimits(rlc, policies = None):
+    if rlc == "DENY":
+        denyLimits = { "SECOND": 0, "MINUTE": 0, "HOUR": 0 }
+        return values.Values(denyLimits)
+
     try:
         policies = env.values.main_app.ratelimiter.default_policies if policies is None else policies
 
@@ -60,7 +64,7 @@ class RateLimitTest(unittest.TestCase):
     def setUp(self):
         self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
 
-    def assert_rate_limit_counts( self, path, allowed, assertions, body = None, headers = None, debug = None):
+    def assert_rate_limit_counts(self, path, allowed, assertions, body = None, extra_predicates = None, headers = None, debug = None):
         # Try three times as many requests as allowed.
         # At most twice as many requests as allowed can pass (when crossing a window boundary).
         # At least the last two requests must fail, assuming the requests can be performed within
@@ -71,7 +75,8 @@ class RateLimitTest(unittest.TestCase):
             "x-ratelimit-remaining": Predicates.has_header("x-ratelimit-remaining"),
             "x-wmf-ratelimit-class": Predicates.has_header("x-wmf-ratelimit-class"),
             "retry-after": Predicates.has_header("retry-after"),
-            "notice": Predicates.body_contains("bot-traffic@wikimedia.org")
+            "notice": Predicates.body_contains("bot-traffic@wikimedia.org"),
+            **(extra_predicates or {}),
         }
 
         method = 'POST' if body else 'GET'
@@ -88,7 +93,10 @@ class RateLimitTest(unittest.TestCase):
         for assertion in assertions:
             assertion(allowed, n, counts)
 
-    def assert_rate_limit_enforced( self, path, allowed, **kwargs):
+    def assert_rate_limit_enforced( self, path, limit, policies = None, **kwargs):
+        configured_limits = getRateLimits(limit, policies)
+        allowed = configured_limits.MINUTE
+
         def assert_ratelimit_headers(allowed, submitted, counts):
             xrl_count = counts.get("x-ratelimit-remaining", 0)
             if env.values.main_app.ratelimiter.enable_x_ratelimit_headers:
@@ -114,10 +122,22 @@ class RateLimitTest(unittest.TestCase):
             self.assertEqual( ra_count, count_429, "expected all requests with status 429 to have a retry-after header")
             self.assertEqual( notice_count, count_429, "expected all requests with status 429 to contain the notice")
 
-        assertions = (assert_ratelimit_headers, assert_good_response, assert_denied_responses)
-        self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
+        extra_predicates = {
+            "correct_ratelimit_class": Predicates.header_is("x-wmf-ratelimit-class", limit),
+        }
 
-    def assert_rate_limit_bypassed( self, path, allowed, **kwargs):
+        def assert_correct_class(allowed, submitted, counts):
+            correct_class_count = counts.get("correct_ratelimit_class", 0)
+
+            self.assertEqual( correct_class_count, submitted, "expected all requests to have the correct rate limit class")
+
+        assertions = (assert_ratelimit_headers, assert_good_response, assert_denied_responses)
+        self.assert_rate_limit_counts(path, allowed, assertions = assertions, extra_predicates = extra_predicates, **kwargs)
+
+    def assert_rate_limit_bypassed(self, path, limit, policies = None, **kwargs):
+        configured_limits = getRateLimits(limit, policies)
+        allowed = configured_limits.MINUTE
+
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
             self.assertEqual( counts.get("2xx", 0), submitted, "expected all requests to be allowed")
@@ -129,7 +149,10 @@ class RateLimitTest(unittest.TestCase):
         assertions = (assert_no_denied_responses, assert_no_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
 
-    def assert_rate_limit_shadowed( self, path, allowed, **kwargs):
+    def assert_rate_limit_shadowed(self, path, limit, policies = None, **kwargs):
+        configured_limits = getRateLimits(limit, policies)
+        allowed = configured_limits.MINUTE
+
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
             self.assertEqual( counts.get("2xx", 0), submitted, "expected all requests to be allowed")
@@ -154,19 +177,17 @@ class RateLimitTest(unittest.TestCase):
             "host": "abstract.wikipedia.org" # this triggers the different limit
         }
 
-        limits = getRateLimits("anon", ["AbstractWiki"])
-        self.assert_rate_limit_enforced(abstractwiki_query, limits.MINUTE, headers = headers )
+        self.assert_rate_limit_enforced(abstractwiki_query, "anon", policies = ["AbstractWiki"], headers = headers )
 
     def test_anon_limit(self):
         headers = { "x-client-ip": env.nextIp() }
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers )
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon", headers = headers )
 
         # Try again with a different IP, to check that it is used as the rate limit key.
         headers = {
             "x-client-ip": env.nextIp(),
         }
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon", headers = headers)
 
         # Make an additional request, with the origin header set, and check that we get CORS headers.
         # NOTE: this may flake out due to a race condition
@@ -179,38 +200,33 @@ class RateLimitTest(unittest.TestCase):
 
     def test_local_requests_bypass_limit(self):
         localHeaders = {} # no x-client-ip!
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = localHeaders)
+        self.assert_rate_limit_bypassed(self.default_endpoint, "anon", headers = localHeaders)
 
     def test_options_requests_bypass_limit(self):
         headers = {
             "x-client-ip": env.nextIp(),
             ":method": "OPTIONS"
         }
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_bypassed(self.default_endpoint, "anon", headers = headers)
 
     def test_shadow_policy(self):
         if not self.shadow_endpoint:
             self.skipTest("shadow_endpoint is not set")
 
         headers = { "x-client-ip": env.nextIp() }
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_shadowed(self.shadow_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_shadowed(self.shadow_endpoint, "anon", headers = headers)
 
     def test_cspreport_exempt(self):
         cspreport_endpoint = "/w/api.php?action=cspreport&format=json"
 
         headers = { "x-client-ip": env.nextIp() }
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_bypassed(cspreport_endpoint, "anon", headers = headers)
 
     def test_meta_tokens_exempt(self):
         cspreport_endpoint = "/w/api.php?action=query&meta=tokens%7Cuserinfo&format=json"
 
         headers = { "x-client-ip": env.nextIp() }
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_bypassed(cspreport_endpoint, "anon", headers = headers)
 
     def test_setting_headers_allowed_locally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
@@ -221,8 +237,8 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "anon",
             "x-wmf-ratelimit-policy-1": policy,
         }
-        limits = getRateLimits("anon", [ policy ])
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = testing_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon",
+            policies = [ policy ], headers = testing_headers)
 
     def test_deny_policy(self):
         testing_headers = {
@@ -230,7 +246,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "anon",
             "x-wmf-ratelimit-policy-1": "DENY",
         }
-        self.assert_rate_limit_enforced(self.default_endpoint, 0, headers = testing_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
     def test_deny_class(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
@@ -240,7 +256,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "DENY",
             "x-wmf-ratelimit-policy-1": policy,
         }
-        self.assert_rate_limit_enforced(self.default_endpoint, 0, headers = testing_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
     def test_setting_headers_blocked_externally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
@@ -251,8 +267,8 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "approved-bot",
             "x-wmf-ratelimit-policy-1": policy,
         }
-        limits = getRateLimits("anon", [ policy ])
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = testing_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon",
+            policies = [ policy ], headers = testing_headers)
 
     def test_trust_level_A(self):
         request_headers = {
@@ -262,12 +278,11 @@ class RateLimitTest(unittest.TestCase):
             "user-agent": env.nextName("CoolBot/1.0"), # used as key
         }
 
-        limits = getRateLimits("known-network")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-network", headers = request_headers)
 
         # try again with a different user-agent, to check that it is used as the rate limit key
         request_headers["user-agent"] = env.nextName("KoolBoot/2.0")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-network", headers = request_headers)
 
     def test_trust_level_B(self):
         request_headers = {
@@ -277,12 +292,11 @@ class RateLimitTest(unittest.TestCase):
             "user-agent": env.nextName("CoolBot/1.0"), # ignored
         }
 
-        limits = getRateLimits("known-client")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-client", headers = request_headers)
 
         # try again with a different user-agent, to check that it is used as the rate limit key
         request_headers["x-provenance"] = "client=" + env.nextName("yyy")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-client", headers = request_headers)
 
     def test_trust_level_D(self):
         request_headers = {
@@ -291,8 +305,7 @@ class RateLimitTest(unittest.TestCase):
             "x-ua-contact": env.nextName("bob") + "@acme.test", # compliant bot contact
         }
 
-        limits = getRateLimits("unauthed-bot")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "unauthed-bot", headers = request_headers)
 
     def test_anon_class_by_address(self):
         for (ip, cls) in env.values.main_app.ratelimiter.anon_class_by_address.items():
@@ -303,12 +316,11 @@ class RateLimitTest(unittest.TestCase):
             "x-trusted-request": "E", # generic anon
         }
 
-        limits = getRateLimits(cls)
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, cls, headers = request_headers)
 
         # try again with a different IP, to check that it is used as the rate limit key
         request_headers["x-client-ip"] = ip + "." + env.nextIp()
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, cls, headers = request_headers)
 
     def test_trust_level_F(self):
         request_headers = {
@@ -316,8 +328,7 @@ class RateLimitTest(unittest.TestCase):
             "x-trusted-request": "F", # suspicious/abusive
         }
 
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon", headers = request_headers)
 
     def test_anon_browsers(self):
         request_headers = {
@@ -326,8 +337,7 @@ class RateLimitTest(unittest.TestCase):
             "x-is-browser": "100", # >= 80 is good (see browser_threshold value)
         }
 
-        limits = getRateLimits("anon-browser")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon-browser", headers = request_headers)
 
     def test_unauthed_mediawiki(self):
         request_headers = {
@@ -337,8 +347,7 @@ class RateLimitTest(unittest.TestCase):
             "x-is-browser": "20", # >= 80 is good (see browser_threshold value)
         }
 
-        limits = getRateLimits("unauthed-mediawiki")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "unauthed-mediawiki", headers = request_headers)
 
     def test_bearer_token_limit(self):
         ip = env.nextIp()
@@ -346,14 +355,13 @@ class RateLimitTest(unittest.TestCase):
 
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
 
-        limits = getRateLimits("authed-user")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "authed-user", headers = headers)
 
         #if we can,  try again with a different payload, to check that it is used as the rate limit key
         token = jwtools.createJwt(sub = env.nextName("Testorator") )
         if token:
             headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
-            self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+            self.assert_rate_limit_enforced(self.default_endpoint, "authed-user", headers = headers)
 
     def test_bearer_token_limit_uses_rlc_claim(self):
         ip = env.nextIp()
@@ -372,9 +380,8 @@ class RateLimitTest(unittest.TestCase):
             "cookie": "sessionJwt=" + cookie_token
         }
 
-        # should apply known-client limits, not approved-bot limits
         limits = getRateLimits("known-client")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-client", headers = headers)
 
     def test_centralauthtoken_limit_uses_rlc_claim(self):
         if not self.uses_fake_backend:
@@ -392,8 +399,7 @@ class RateLimitTest(unittest.TestCase):
         }
 
         # should apply known-client limits, not approved-bot limits
-        limits = getRateLimits("known-client")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "known-client", headers = headers)
 
     def test_centralauthtoken_param_limit_uses_rlc_claim(self):
         if not self.uses_fake_backend:
@@ -408,9 +414,8 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": ip, }
 
         # should apply known-client limits, not approved-bot limits
-        limits = getRateLimits("known-client")
         path = helpers.append_params(self.default_endpoint, 'centralauthtoken=' + token )
-        self.assert_rate_limit_enforced(path, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(path, "known-client", headers = headers)
 
     def test_bearer_token_limit_uses_rlc_claim_from_cookie(self):
         ip = env.nextIp()
@@ -429,8 +434,7 @@ class RateLimitTest(unittest.TestCase):
         }
 
         # should apply approved-bot limits
-        limits = getRateLimits("approved-bot")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "approved-bot", headers = headers)
 
     def test_authed_user_limit(self):
         ip = env.nextIp()
@@ -442,8 +446,7 @@ class RateLimitTest(unittest.TestCase):
             "x-is-browser": "100", # >= 80 means "browser", but that should be ignored here
         }
 
-        limits = getRateLimits("authed-user") # not a browser
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "authed-user", headers = headers)
 
     def test_jwt_cookie_limit_uses_rlc_claim(self):
         ip = env.nextIp()
@@ -454,8 +457,7 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 
         # should apply approved-bot limits, not authed-user limits
-        limits = getRateLimits("approved-bot")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "approved-bot", headers = headers)
 
     def test_jwt_cookie_no_limit(self):
         ip = env.nextIp()
@@ -466,8 +468,7 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": ip, "cookie": "sessionJwt=" + token }
 
         # should apply no rate limiting at all
-        limits = getRateLimits("anon")
-        self.assert_rate_limit_bypassed(self.default_endpoint, limits.MINUTE, headers = headers)
+        self.assert_rate_limit_bypassed(self.default_endpoint, "anon", headers = headers)
 
     def test_expired_jwt_cookie(self):
         token = jwtools.createJwtOrSkip(self,
@@ -482,8 +483,7 @@ class RateLimitTest(unittest.TestCase):
             "cookie": "sessionJwt=" + token
         }
 
-        limits = getRateLimits("anon-browser")
-        self.assert_rate_limit_enforced(self.default_endpoint, limits.MINUTE, headers = request_headers)
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon-browser", headers = request_headers)
 
 def main():
     unittest.main()
