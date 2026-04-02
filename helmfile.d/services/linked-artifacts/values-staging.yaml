@@ -15,3 +15,13 @@ resources:
 
 ingress:
   staging: true
+
+# Added temporarily for testing — T421444
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.192.16.14/32 # cassandra-dev2001-a
+        ports:
+          - protocol: tcp
+            port: 50051
