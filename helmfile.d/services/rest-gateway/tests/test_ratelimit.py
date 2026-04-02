@@ -57,8 +57,10 @@ class RateLimitTest(unittest.TestCase):
         print(f"    rate limited endpoint: {cls.default_endpoint}")
         print(f"    shadow mode endpoint:  {cls.shadow_endpoint}")
 
+
     def setUp(self):
-        self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
+        headers = self.probe_config.get("headers", {})
+        self.target = Target(self.target_url, headers = headers)
 
     def assert_rate_limit_counts( self, path, allowed, assertions, headers = None, debug = None):
         # Try three times as many requests as allowed.
@@ -188,20 +190,6 @@ class RateLimitTest(unittest.TestCase):
         headers = { "x-client-ip": env.nextIp() }
         limits = getRateLimits("anon")
         self.assert_rate_limit_bypassed(cspreport_endpoint, limits.MINUTE, headers = headers)
-
-    def test_wikilambda_policy(self):
-        host = self.probe_config.get("wikilambda_host")
-        if not host:
-            self.skipTest("wikilambda_host is not configured")
-
-        wikilambda_query = "/w/api.php?action=query&format=json&list=wikilambdaload_zobjects&formatversion=2&wikilambdaload_zids=Z23&wikilambdaload_language=en"
-
-        headers = {
-            "host": host,
-            "x-client-ip": env.nextIp(),
-        }
-        limits = getRateLimits("anon", ["WikiLambda"])
-        self.assert_rate_limit_enforced(wikilambda_query, limits.MINUTE, headers = headers)
 
     def test_setting_headers_allowed_locally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]

@@ -121,8 +121,9 @@ smokepy:
     # The URL the smoke tests will send requests to.
     # Can also be set via the $GATEWAY_TEST_TARGET_URL environment variable.
     target_url: http://localhost:8087
-    host: localhost
-    wikilambda_host: localhost
+
+    headers:
+      Host: localhost
 
 service:
   deployment: minikube

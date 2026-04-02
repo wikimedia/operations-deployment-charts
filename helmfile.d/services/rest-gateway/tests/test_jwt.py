@@ -43,7 +43,8 @@ class JwtTest(unittest.TestCase):
             raise ValueError("jwt_required_endpoint is not configured")
 
     def setUp(self):
-        self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
+        headers = self.probe_config.get("headers", {})
+        self.target = Target(self.target_url, headers = headers)
 
     ###################################################################################
     ## Most endpoints don't require tokens but require bearer tokens to be valid.

@@ -23,15 +23,6 @@ def getTargetUrl(gateway_probe_config):
 
     return target_url
 
-def makeHttpTarget(target_url, gateway_probe_config):
-    headers = gateway_probe_config.get("headers", {}).values
-    host = gateway_probe_config.get("host")
-
-    if host:
-        headers["host"] = host
-
-    return Target(target_url, headers=headers)
-
 def checkHealthz(base_url, path = '/healthz'):
     target = Target(base_url)
     resp = target.get(path)
