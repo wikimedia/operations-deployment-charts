@@ -99,13 +99,11 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "4"
+            cpu: "6"
             memory: 8Gi
-            amd.com/gpu: "1"
           requests:
-            cpu: "4"
+            cpu: "6"
             memory: 8Gi
-            amd.com/gpu: "1"
   revertrisk-language-agnostic-pre-save:
     annotations:
       autoscaling.knative.dev/target: "15"
