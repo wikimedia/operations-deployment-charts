@@ -52,12 +52,14 @@ app:
             kafka_topic_prefix: staging.
 
         error_sink:
+          stream: mw_page_html_content_change_enrich.error:2.1.0
           options:
             bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             # Prefix the error topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
             kafka_topic_prefix: staging.
+
 
   job:
     # TODO: we might consider setting
@@ -71,7 +73,6 @@ app:
     # Set the staging release specific HA storageDir path.
     # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
     "high-availability.storageDir": "s3://mw-page-html-content-change-enrich-next.dse-k8s-eqiad/staging/high-availability"
-
 
 flink:
   object_store:

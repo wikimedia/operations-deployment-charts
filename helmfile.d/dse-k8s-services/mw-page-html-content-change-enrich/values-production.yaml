@@ -49,9 +49,11 @@ app:
             kafka_topic_prefix: eqiad.
 
         error_sink:
+          stream: mw_page_html_content_change_enrich.error:2.1.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
+
 
   job:
     # TODO: we might consider setting
