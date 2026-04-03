@@ -41,6 +41,10 @@ app:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-content-change-enrich__dse-k8s-eqiad.001
+            # OTTO: While we tune for backfilling etc. always start from latest offsets.
+            #       offsets and ensure we always restart from latest.
+            #       See OTTO note below.
+            offsets_initializer: latest
 
         sink:
           stream: mediawiki.page_html_content_change.dev5:1.0.0
