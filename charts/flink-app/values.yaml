@@ -26,7 +26,7 @@ app:
 
   # FlinkDeployment spec configuration below.
   # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-release-1.2/docs/custom-resource/reference/
-  flinkVersion: v1_16
+  flinkVersion: v1_20
 
   # Nonce used to manually trigger restart for the cluster/session job.
   # In order to trigger restart, change the number to anything other than the current value.
@@ -81,6 +81,9 @@ app:
     "taskmanager.rpc.port": "6122"
     "taskmanager.data.port": "6121"
     "blob.server.port": "6130"
+    # This port allows the Flink JobManager to collect metrics
+    # from TaskManagers and display them in the Flink UI.
+    "metrics.internal.query-service.port": "6124"
     # Override this and taskMananager.repliacs to increase default job parallelism.
     #taskmanager.numberOfTaskSlots: 1
 
