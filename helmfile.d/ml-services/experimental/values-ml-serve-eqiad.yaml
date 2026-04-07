@@ -79,6 +79,14 @@ inference_services:
           value: "2"
         - name: DISABLE_CUSTOM_ALL_REDUCE
           value: "True"
+        - name: NCCL_P2P_DISABLE
+          value: "1"
+        - name: NCCL_DEBUG
+          value: "INFO"
+        - name: VLLM_HOST_IP
+          value: "127.0.0.1"
+        - name: RCCL_MSCCL_ENABLE
+          value: "0"
         - name: MAX_JOBS
           value: "1"
         - name: AMDGCN_USE_BUFFER_OPS
