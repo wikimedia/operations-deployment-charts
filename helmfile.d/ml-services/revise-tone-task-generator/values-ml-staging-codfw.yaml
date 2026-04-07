@@ -15,6 +15,10 @@ inference_services:
           value: "True"
         - name: AIOHTTP_CLIENT_TIMEOUT
           value: "10"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM
+          value: "mediawiki.cirrussearch.page_weighted_tags_change.v1"
         - name: OUTLINK_TOPIC_MODEL_URL
           value: "http://outlink-topic-model.articletopic-outlink/v1/models/outlink-topic-model:predict"
         - name: OUTLINK_TOPIC_MODEL_HEADER
