@@ -139,11 +139,11 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "4"
-            memory: 8Gi
+            cpu: "1"
+            memory: 2Gi
           requests:
-            cpu: "4"
-            memory: 8Gi
+            cpu: "1"
+            memory: 2Gi
 
   revertrisk-language-agnostic:
     predictor:
@@ -167,10 +167,17 @@ inference_services:
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_STREAM
           value: "mediawiki.page_prediction_change.rc0"
+      container:
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
 
   revertrisk-multilingual:
     annotations:
-      autoscaling.knative.dev/metric: "rps"
       autoscaling.knative.dev/target: "10"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
