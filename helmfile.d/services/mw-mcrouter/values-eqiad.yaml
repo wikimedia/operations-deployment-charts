@@ -18,3 +18,18 @@ cache:
         replica:
           route: /codfw/mw-wan
           pool: codfw-servers
+      # T419666: Wikifunctions wf-wan cache route. Served by the shared
+      # mw-mcrouter daemonset so that client wikis (e.g. abstract.wikipedia.org)
+      # using the {{#function:…}} parser function can reach the wf-*
+      # memcached pools. (The /local/wf route — used by the wikifunctions
+      # service chart with a wforch: modifykey, and by mw-wikifunctions as
+      # its default route_prefix for www.wikifunctions.org's general MW
+      # cache — is not needed here; client wikis only address /*/wf-wan/
+      # and /{dc}/wf-wan/.)
+      - route: /eqiad/wf-wan
+        pool: wf-eqiad
+        # No failover for wikifunction
+        failover_time: 0
+        replica:
+          route: /codfw/wf-wan
+          pool: wf-codfw
