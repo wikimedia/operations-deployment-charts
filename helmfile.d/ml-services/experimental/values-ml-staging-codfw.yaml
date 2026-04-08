@@ -145,6 +145,29 @@ inference_services:
             cpu: "4"
             memory: 8Gi
 
+  revertrisk-language-agnostic:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revertrisk"
+      image_version: "2026-01-08-091023-publish"
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-language-agnostic"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/language-agnostic/20231117132654/"
+        - name: WIKI_URL
+          value: "http://mw-api-int-ro.discovery.wmnet:4680"
+        - name: FORCE_HTTP
+          value: "true"
+        - name: ALLOW_REVISION_JSON_INPUT
+          value: "true"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_prediction_change.rc0"
+
   revertrisk-multilingual:
     annotations:
       autoscaling.knative.dev/metric: "rps"
