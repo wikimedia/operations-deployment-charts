@@ -14,6 +14,9 @@ resources:
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
     readOnlyRootFilesystem: true
+    appArmorProfile:
+      type: Localhost
+      localhostProfile: wikifunctions-orchestrator
   {{- if .Values.main_app.command }}
   command:
     {{- range .Values.main_app.command }}
