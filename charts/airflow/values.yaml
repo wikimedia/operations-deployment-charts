@@ -59,6 +59,7 @@ config:
   airflow:
     dags_root: /opt/airflow/dags
     dags_folder: '{{ $.Values.config.airflow.instance_name | replace "-" "_" }}'
+    dags_filter: [] # Add files relative to dags_folder to limit rendering to those, used in airflow_devenv
     instance_name: override_me
     aws_access_key_id: override_me
     aws_secret_access_key: override_me
@@ -106,6 +107,7 @@ config:
         test_connection: enabled
         auth_manager: webserver_config.CustomAuthManager
         xcom_backend: airflow.providers.common.io.xcom.backend.XComObjectStorageBackend
+        might_contain_dag_callable: import_helper.focused_import # Handles $.Values.airflow.config.dags_filter filtering
       common.io:
         # Store XCOMs larger than 500KB in S3 instead of database - T415661
         xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/xcoms

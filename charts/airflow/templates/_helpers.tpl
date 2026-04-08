@@ -506,6 +506,9 @@ spec:
 - name: {{ template "release.name" . }}-webserver-config
   configMap:
     name: {{ template "release.name" . }}-webserver-config
+- name: {{ template "release.name" . }}-import-config
+  configMap:
+    name: {{ template "release.name" . }}-import-config
 - name: {{ template "release.name" . }}-bash-executables
   configMap:
     name: {{ template "release.name" . }}-bash-executables
@@ -533,6 +536,12 @@ spec:
 - name: {{ template "release.name" . }}-webserver-config
   mountPath: /opt/airflow/airflow_local_settings.py
   subPath: airflow_local_settings.py
+- name: {{ template "release.name" . }}-import-config
+  mountPath: /opt/airflow/import_helper.py
+  subPath: import_helper.py
+- name: {{ template "release.name" . }}-import-config
+  mountPath: /opt/airflow/airflowfilter
+  subPath: airflowfilter
 - name: {{ template "release.name" . }}-logs
   mountPath: /opt/airflow/logs
 - name: {{ template "release.name" . }}-bash-executables

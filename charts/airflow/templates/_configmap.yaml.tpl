@@ -204,6 +204,28 @@ data:
     )
 {{- end }}
 
+{{/*
+  This configmap is used to define the airflow import helper configuration
+*/}}
+{{- define "configmap.airflow-import-config" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "release.name" . }}-import-config
+  {{- include "base.meta.labels" . | indent 2 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  # These are system-specified config overrides.
+  import_helper.py: |
+    {{- .Files.Get "files/scheduler/import_helper.py" | nindent 4 }}
+  airflowfilter: |
+    # list of dags to import
+    {{- range $entry := $.Values.config.airflow.dags_filter }}
+    {{- $entry | nindent 4 }}
+    {{- end }}
+{{- end }}
+
 {{- define "configmap.airflow-bash-executables" }}
 ---
 apiVersion: v1
