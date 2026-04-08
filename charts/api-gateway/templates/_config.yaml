@@ -285,7 +285,8 @@ static_resources:
                   requires:
                     allow_missing_or_failed: {}
                 {{- /* apply per-endpoint JWT overrides from rest_gateway_routes */}}
-                {{- range $endpoint := .Values.main_app.rest_gateway_routes }}
+                {{- $all_endpoints := concat ( default (list) .Values.main_app.extra_rest_gateway_routes ) .Values.main_app.rest_gateway_routes }}
+                {{- range $endpoint := $all_endpoints }}
                 {{- if hasKey $endpoint "jwt" }}
                 {{- range $route := $endpoint.urls }}
                 - match:
