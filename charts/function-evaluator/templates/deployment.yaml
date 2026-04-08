@@ -20,6 +20,7 @@ spec:
         release: {{ .Release.Name }}
         routed_via: {{ .Values.routed_via | default .Release.Name }}
       annotations:
+        container.apparmor.security.beta.kubernetes.io/{{ template "base.name.release" . }}: localhost/wikifunctions-evaluator
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/port: "9090"
@@ -40,8 +41,3 @@ spec:
       {{- include "mesh.deployment.container" . | indent 8}}
       volumes:
       {{- include "mesh.deployment.volume" . | indent 8}}
-      securityContext:
-        appArmorProfile:
-          type: Localhost
-          localhostProfile: wikifunctions-evaluator
-
