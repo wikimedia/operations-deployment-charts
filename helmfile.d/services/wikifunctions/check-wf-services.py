@@ -153,10 +153,8 @@ TESTS: list[Test] = [
 # ---------------------------------------------------------------------------
 
 CLUSTERS: list[tuple[str, str]] = [
-    ('Staging',       'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v1/evaluate/'),
-    ('Staging v2',    'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v2/evaluate/'),
-    ('Production',    'https://wikifunctions.discovery.wmnet:30443/1/v1/evaluate/'),
-    ('Production v2', 'https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/'),
+    ('Staging',    'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v2/evaluate/'),
+    ('Production', 'https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/'),
 ]
 
 
