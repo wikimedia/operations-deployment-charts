@@ -1,5 +1,5 @@
 inference_services:
-  - name: revertrisk-language-agnostic
+  revertrisk-language-agnostic:
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk"
       image_version: "2026-01-08-091023-publish"
@@ -21,13 +21,16 @@ inference_services:
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_STREAM
           value: "mediawiki.page_prediction_change.rc0"
-  - name: revertrisk-multilingual
+  revertrisk-multilingual:
+    annotations:
+      autoscaling.knative.dev/metric: "rps"
+      autoscaling.knative.dev/target: "10"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
       image_version: "2026-03-09-143809-publish"
       config:
-        minReplicas: 1
-        maxReplicas: 1
+        minReplicas: 3
+        maxReplicas: 6
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
@@ -46,10 +49,8 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "4"
+            cpu: "6"
             memory: 8Gi
-            amd.com/gpu: "1"
           requests:
-            cpu: "4"
+            cpu: "6"
             memory: 8Gi
-            amd.com/gpu: "1"
