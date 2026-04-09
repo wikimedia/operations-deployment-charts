@@ -922,6 +922,16 @@ main_app:
       tls: true
       port: 4006
       timeout: 30s
+    inference:
+      tls: true
+      port: 30443
+      timeout: 60s
+      internal_host: inference.discovery.wmnet
+    recommendation-api-ng:
+      tls: true
+      port: 31443
+      ingress: true
+      timeout: 60s
 
 service:
   deployment: production
@@ -979,6 +989,8 @@ mesh:
 discovery:
   listeners:
   - mobileapps
+  - inference
+  - recommendation-api-ng
 
 networkpolicy:
   egress:
@@ -1068,6 +1080,26 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4005 # linkrecommendation staging
+    - cidr: 10.2.2.63/32 # inference.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.63/32 # inference.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.58/32 # inference-staging.svc.codfw.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.84/32 # k8s-ingress-ml-serve.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 31443
+    - cidr: 10.2.2.84/32 # k8s-ingress-ml-serve.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 31443
 
 # Needed by the ratelimit sidecar
 nutcracker:
