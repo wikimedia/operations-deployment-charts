@@ -2,7 +2,7 @@ app:
   config_files:
     rdf-streaming-updater-config.properties:
       brokers: kafka-main-eqiad.external-services.svc.cluster.local:9093
-      parallelism: 1
+      parallelism: 3
       produce_side_outputs: false
       output_topic_prefix: eqiad.
   jobManager:
