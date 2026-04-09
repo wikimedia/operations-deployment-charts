@@ -118,6 +118,33 @@ inference_services:
             cpu: "2"
             memory: 2Gi
 
+  edit-check:
+    predictor:
+      config:
+        maxReplicas: 1
+        batcher:
+          maxBatchSize: 32
+          maxLatency: 100
+      image: "machinelearning-liftwing-inference-services-edit-check"
+      image_version: "2025-06-25-142517-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "edit-check-staging"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/edit-check/peacock/"
+        - name: MODEL_VERSION
+          value: "v1"
+        - name: USE_METADATA
+          value: "true"
+      container:
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+          requests:
+            cpu: "4"
+            memory: 8Gi
+
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:
