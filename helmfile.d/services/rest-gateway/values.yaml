@@ -872,6 +872,86 @@ main_app:
           out: '/w/rest.php/v1/\2'
           to: '\1.wiktionary.org'
 
+    - name: liftwing_inference
+      timeout: 30s
+      cluster: inference
+      csp_enabled: false
+      api_cors_enabled: true
+      rate_limit_policies: [ "BYPASS", "BYPASS" ] #TODO: Add liftwing-specific rate limits
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: revscoring_articletopic
+          in: '/+service/lw/inference/(v1/models/(\w+)wiki-(article|item)topic:predict(.*))'
+          out: '/\1'
+          to: '\2wiki-\3topic.revscoring-articletopic.wikimedia.org'
+        - name: revscoring_articletopic_outlink
+          in: '/+service/lw/inference/(v1/models/outlink-topic-model:predict(.*))'
+          out: '/\1'
+          to: 'outlink-topic-model.articletopic-outlink.wikimedia.org'
+        - name: revscoring_articlequality
+          in: '/+service/lw/inference/(v1/models/(\w+)wiki-(article|item)quality:predict(.*))'
+          out: '/\1'
+          to: '\2wiki-\3quality.revscoring-articlequality.wikimedia.org'
+        - name: articlequality_language_agnostic
+          in: '/+service/lw/inference/(v1/models/articlequality:predict(.*))'
+          out: '/\1'
+          to: 'articlequality.article-models.wikimedia.org'
+        - name: article_country_language_agnostic
+          in: '/+service/lw/inference/(v1/models/article-country:predict(.*))'
+          out: '/\1'
+          to: 'article-country.article-models.wikimedia.org'
+        - name: revscoring_drafttopic
+          in: '/+service/lw/inference/(v1/models/(\w+)wiki-drafttopic:predict(.*))'
+          out: '/\1'
+          to: '\2wiki-drafttopic.revscoring-drafttopic.wikimedia.org'
+        - name: revscoring_draftquality
+          in: '/+service/lw/inference/(v1/models/(\w+)wiki-draftquality:predict(.*))'
+          out: '/\1'
+          to: '\2wiki-draftquality.revscoring-draftquality.wikimedia.org'
+        - name: revscoring_editquality_damaging
+          in: '/+service/lw/inference/(v1/models/(\w+)(wiki|wikibooks|wikiquote)-damaging:predict(.*))'
+          out: '/\1'
+          to: '\2\3-damaging.revscoring-editquality-damaging.wikimedia.org'
+        - name: revscoring_editquality_goodfaith
+          in: '/+service/lw/inference/(v1/models/(\w+)(wiki|wikibooks|wikiquote)-goodfaith:predict(.*))'
+          out: '/\1'
+          to: '\2\3-goodfaith.revscoring-editquality-goodfaith.wikimedia.org'
+        - name: revscoring_editquality_reverted
+          in: '/+service/lw/inference/(v1/models/(\w+)(wiki|wikibooks|wikiquote|wiktionary)-reverted:predict(.*))'
+          out: '/\1'
+          to: '\2\3-reverted.revscoring-editquality-reverted.wikimedia.org'
+        - name: revertrisk
+          in: '/+service/lw/inference/(v1/models/revertrisk-([\w-]+):predict(.*))'
+          out: '/\1'
+          to: 'revertrisk-\2.revertrisk.wikimedia.org'
+        - name: readability
+          in: '/+service/lw/inference/(v1/models/readability:predict(.*))'
+          out: '/\1'
+          to: 'readability.readability.wikimedia.org'
+        - name: langid
+          in: '/+service/lw/inference/(v1/models/langid:predict(.*))'
+          out: '/\1'
+          to: 'langid.llm.wikimedia.org'
+        - name: articledesc
+          in: '/+service/lw/inference/(v1/models/article-descriptions:predict(.*))'
+          out: '/\1'
+          to: 'article-descriptions.article-descriptions.wikimedia.org'
+        - name: reference_need
+          in: '/+service/lw/inference/(v1/models/reference-need:predict(.*))'
+          out: '/\1'
+          to: 'reference-need.revision-models.wikimedia.org'
+        - name: reference_risk
+          in: '/+service/lw/inference/(v1/models/reference-risk:predict(.*))'
+          out: '/\1'
+          to: 'reference-risk.revision-models.wikimedia.org'
+        - name: editcheck
+          in: '/+service/lw/inference/(v1/models/edit-check:predict(.*))'
+          out: '/\1'
+          to: 'edit-check.edit-check.wikimedia.org'
+
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
