@@ -442,6 +442,8 @@ extraObjects:
         tls:
           mode: SIMPLE
           subjectAltNames:
+            - main-jaeger-collector.jaeger.svc
+            - main-jaeger-collector.jaeger.svc.cluster.local
             - jaeger-collector-http.discovery.wmnet
             - jaeger-collector-http.svc.codfw.wmnet
             - jaeger-collector-http.svc.eqiad.wmnet
