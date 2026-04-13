@@ -75,7 +75,9 @@ templates:
                                 local body_str = tostring(body:getBytes(0, body:length()))
                                 if string.find(body_str, "can't Unmarshal body") then
                                   response_handle:headers():replace("content-type", "application/json")
-                                  response_handle:body():set('{"error": "can\'t Unmarshal body"}\n')
+                                  local new_body = '{"error": "can\'t Unmarshal body"}\n'
+                                  response_handle:headers():replace("content-length", tostring(string.len(new_body)))
+                                  body:setBytes(new_body)
                                 end
                               end
                             end
