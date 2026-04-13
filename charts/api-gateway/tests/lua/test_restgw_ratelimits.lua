@@ -764,6 +764,7 @@ describe("rest_hooks", function()
             ["action=query&meta=siteinfo"] = "keep",
             ["action=query&meta=tokens"] = "bypass",
             ["action=query&meta=userinfo|tokens"] = "bypass",
+            ["action=query&meta=userinfo%7Ctokens"] = "bypass",
             ["action=query&meta=authmanagerinfo"] = "bypass",
             ["action=query&meta=siteinfo|tokens"] = "keep",
             ["action=query&meta=tokens&list=allusers"] = "keep",

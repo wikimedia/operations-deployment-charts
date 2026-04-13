@@ -276,7 +276,8 @@ function wmf_set_retry_after(response_handle)
     end
 end
 
--- Decode a percent-encoded string (application/x-www-form-urlencoded).
+-- Decode a percent-encoded string.
+-- See https://datatracker.ietf.org/doc/html/rfc3986#section-2.1
 function wmf_url_decode(str)
     str = string.gsub(str, "+", " ")
     str = string.gsub(str, "%%(%x%x)", function(h)
@@ -287,6 +288,7 @@ end
 
 -- Parse a query string into a key→value table.
 -- On duplicate keys the last value wins.
+-- See https://datatracker.ietf.org/doc/html/rfc3986#section-3.4
 function wmf_parse_query_params(str)
     local params = {}
     for chunk in string.gmatch(str, "([^&]+)") do

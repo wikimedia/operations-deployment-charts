@@ -735,7 +735,7 @@ main_app:
                   # Tokens and authmanagerinfo trigger the exemption.
                   # Certain other meta-modules are allowed alongside them (e.g. userinfo),
                   # while most additional modules would cancel the exemption when present.
-                  regex: ".*(^|\\|)(tokens|authmanagerinfo)($|\\|).*"
+                  regex: ".*(^|\\||%7[Cc])(tokens|authmanagerinfo)($|\\||%7[Cc]).*"
       lua_hooks:
         # Use a hook to determine whether the request can actually be exempt or not.
         ratelimit: [ "wmf_handle_action_api_nolimit" ]
