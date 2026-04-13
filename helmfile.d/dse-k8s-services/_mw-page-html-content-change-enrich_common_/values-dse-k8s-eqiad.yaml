@@ -81,6 +81,9 @@ app:
     "kubernetes.operator.savepoint.history.max.age": 24h
     # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
     "high-availability": KUBERNETES
+    # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
+    #       is merged and this is the default in the chart.
+    "metrics.internal.query-service.port": "6124"
 
 
 flink:
