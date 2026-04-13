@@ -47,7 +47,7 @@ templates:
             kind: EnvoyFilter
             metadata:
               name: kserve-batcher-json-error-rewrite
-              namespace: experimental
+              namespace: istio-system
             spec:
               workloadSelector:
                 labels:
