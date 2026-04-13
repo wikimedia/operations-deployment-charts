@@ -43,6 +43,43 @@ templates:
         {{- end }}
         {{- end }}
       - resources:
+          - apiVersion: networking.istio.io/v1alpha3
+            kind: EnvoyFilter
+            metadata:
+              name: kserve-batcher-json-error-rewrite
+              namespace: experimental
+            spec:
+              workloadSelector:
+                labels:
+                  serving.kserve.io/inferenceservice: edit-check
+              configPatches:
+                - applyTo: HTTP_FILTER
+                  match:
+                    context: SIDECAR_INBOUND
+                    listener:
+                      filterChain:
+                        filter:
+                          name: "envoy.filters.network.http_connection_manager"
+                  patch:
+                    operation: INSERT_BEFORE
+                    value:
+                      name: envoy.filters.http.lua
+                      typed_config:
+                        "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                        inlineCode: |
+                          function envoy_on_response(response_handle)
+                            local status = response_handle:headers():get(":status")
+                            if status == "400" then
+                              local body = response_handle:body()
+                              if body then
+                                local body_str = tostring(body:getBytes(0, body:length()))
+                                if string.find(body_str, "can't Unmarshal body") then
+                                  response_handle:headers():replace("content-type", "application/json")
+                                  response_handle:body():set('{"error": "can\'t Unmarshal body"}\n')
+                                end
+                              end
+                            end
+                          end
           - apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             metadata:
