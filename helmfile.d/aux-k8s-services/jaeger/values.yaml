@@ -384,6 +384,8 @@ extraObjects:
           # The ingressgateway will verify that the upstreams certificate SAN matches one of(!)
           # the subjectAltNames provided here.
           subjectAltNames:
+            - main-jaeger-query.jaeger.svc
+            - main-jaeger-query.jaeger.svc.cluster.local
             - jaeger-query.discovery.wmnet
             - jaeger-query.svc.codfw.wmnet
             - jaeger-query.svc.eqiad.wmnet
