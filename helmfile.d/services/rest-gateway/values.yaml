@@ -951,6 +951,20 @@ main_app:
           out: '/\1'
           to: 'edit-check.edit-check.wikimedia.org'
 
+    - name: liftwing_recommendation_api
+      timeout: 30s
+      cluster: recommendation-api-ng
+      csp_enabled: false
+      api_cors_enabled: true
+      rate_limit_policies: [ "BYPASS", "BYPASS" ] #TODO: Add liftwing-specific rate limits
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: recommendation
+          in: '/+(service/lw/recommendation(.*))'
+          out: '/\1'
+          to: recommendation-api-ng.discovery.wmnet
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
@@ -1012,6 +1026,7 @@ main_app:
       port: 31443
       ingress: true
       timeout: 60s
+      internal_host: recommendation-api-ng.discovery.wmnet
 
 service:
   deployment: production
