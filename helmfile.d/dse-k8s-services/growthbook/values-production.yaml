@@ -1,5 +1,8 @@
-image: &app_image repos/data-engineering/growthbook
-version: &app_version 4.3.0-2026-02-06-150523-2c3a6d67031b28acbfe70a43e8edf5f1431d5df8@sha256:8259d6db46762160ae96b2d7ce0a9b7ef7db87b325a74d0293ca160ff8460a15
+# We currently run a non-official release, which was built on a
+# specific commit, to include a bugfix we care about
+# (https://github.com/growthbook/growthbook/pull/5520)
+image: &app_image repos/data-engineering/growthbook/next
+version: &app_version 2026-04-13-070438-992ed9c24cd73e41d6534b54475664722b02c267@sha256:d471b89576c42d34f75445cbefba37c9f17f86252635b60cd2b6a8bd4231312a
 app_origin: &app_origin https://growthbook.wikimedia.org
 api_host: &api_host https://growthbook-api.wikimedia.org
 
