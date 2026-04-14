@@ -312,7 +312,7 @@ data:
 
 {{- end }}
 
-{{- define "configmap.airflow-kubernetes-executor-pod-template" }}
+{{- define "configmap.airflow-kubernetes-pod-templates" }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -321,37 +321,54 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  {{/*
+  {{- /* Begin Kubernetes Executor Pod Templates */ -}}
+  {{- $executor_profiles_default := list "airflow" "hadoop" "spark" "kerberos" "keytab" -}}
+  {{- $executor_profiles_kubeapi := concat $executor_profiles_default (list "kubeapi") -}}
+  {{- $executor_profiles_geoip   := concat $executor_profiles_default (list "geoip") -}}
+
+  {{- /*
     This template is used by the Kubernetes Executor to create task pods spec.
     This is the executor default template, the path to which is set in airflow.cfg
     cf https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/kubernetes_executor.html#example-pod-templates
   */}}
   kubernetes_executor_default_pod_template.yaml: |
-    {{- include "kubernetes-executor.pod-template" (dict "profile" "default" "Root" . ) | nindent 4 }}
+    {{- include "kubernetes-executor.pod-template" (dict "profiles" $executor_profiles_default "Root" . ) | nindent 4 }}
 
-  {{/*
+  {{- /*
     This template is used by the Kubernetes Executor to create task pods themselves having permission to create children Pods.
     This is useful for task pods using the KubernetesPodOperator, or SparkKubernetesOperator, for example.
   */}}
   kubernetes_executor_pod_template_kubeapi_enabled.yaml: |
-    {{- include "kubernetes-executor.pod-template" (dict "profile" "kubeapi" "Root" . ) | nindent 4 }}
+    {{- include "kubernetes-executor.pod-template" (dict "profiles" $executor_profiles_kubeapi "Root" . ) | nindent 4 }}
 
-  {{/*
+  {{- /*
+    This template is used by the Kubernetes Executor to create task pods that have access to the GeoIP databases.
+    These databases are mounted read-only from the kubernetes worker nodes using a hostPath of /usr/share/GeoIP
+  */}}
+  kubernetes_executor_pod_template_geoip.yaml: |
+    {{- include "kubernetes-executor.pod-template" (dict "profiles" $executor_profiles_geoip "Root" . ) | nindent 4 }}
+  {{- /* End Kubernetes Executor Pod Templates */ -}}
+
+  {{- /* Begin Kubernetes Pod Operator Pod Templates */ -}}
+
+  {{- $pod_operator_profiles_default := list -}}
+  {{- $pod_operator_profiles_hadoop  := concat $pod_operator_profiles_default (list "hadoop" "kerberos") -}}
+
+  {{- /*
     This template is used by the KubernetesPodOperator to construct a Pod specs from within a dag task.
     This is useful to get a DAG task to run non python code, for example the mediawiki dump CLI, etc.
     cf https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/operators.html#kubernetespodoperator
   */}}
   kubernetes_pod_operator_default_pod_template.yaml: |
-    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" (list) "Root" . ) | nindent 4 }}
+    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" $pod_operator_profiles_default "Root" . ) | nindent 4 }}
 
-  {{/*
+  {{- /*
     This template is used by the KubernetesPodOperator to construct a Pod specs for pods that need
     access to hadoop.
   */}}
   kubernetes_pod_operator_hadoop_pod_template.yaml: |
-    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" (list "kerberos" "hadoop") "Root" . ) | nindent 4 }}
-
-
+    {{- include "kubernetes-pod-operator.pod-template" (dict "profiles" $pod_operator_profiles_hadoop "Root" . ) | nindent 4 }}
+  {{- /* End Kubernetes Pod Operator Pod Templates */ -}}
 {{- end }}
 
 {{- define "configmap.airflow-hadoop-config" }}

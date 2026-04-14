@@ -19,8 +19,8 @@ spec:
         {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       serviceAccountName: {{ template "release.name" . }}
       initContainers:
@@ -31,7 +31,7 @@ spec:
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "app.airflow.env" . | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
-        {{ include "base.helper.resources" .Values.app | indent 8 }}
+        {{- include "base.helper.resources" .Values.app | indent 8 }}
         volumeMounts:
         {{- include "app.airflow.volumeMounts" . | indent 8 }}
       containers:
@@ -39,7 +39,7 @@ spec:
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{- include "app.airflow.volumes" . | indent 8 }}
-        {{/* We need the keytab to be mounted in the webserver for the API Kerberos authentication to work */}}
+        {{- /* We need the keytab to be mounted in the webserver for the API Kerberos authentication to work */ -}}
         {{- include "kerberos.volumes" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
 
@@ -69,8 +69,8 @@ spec:
         {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
@@ -85,7 +85,7 @@ spec:
       volumes:
         {{- include "app.airflow.volumes" . | indent 8 }}
         {{- include "kerberos.volumes" (dict "Root" .) | indent 8 }}
-        {{/* If the scheduler is running with the LocalExecutor, it also needs the hadoop config files rendered locally */}}
+        {{- /* If the scheduler is running with the LocalExecutor, it also needs the hadoop config files rendered locally */ -}}
         {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
         {{- include "airflow.task-pod.volumes" (dict "Root" . "profiles" (list "hadoop") "header" false) | indent 8 }}
         {{- end }}
@@ -116,8 +116,8 @@ spec:
     spec:
       securityContext:
         fsGroup: {{ $.Values.gitsync.image_gid }} {{/* This allows the volumes to be writable by the git-sync gid */}}
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       containers:
       - name: {{ template "base.name.release" . }}-git-sync
@@ -164,11 +164,11 @@ spec:
     spec:
       securityContext:
         fsGroup: {{ $.Values.kerberos.image_gid }}
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- if $.Values.devenv.enabled }}
-      {{/*
+      {{- /*
         In development environments, we need to wait for engineers to exec into that init container
         to run kinit, which will create the kerberos cache file, causing the init container to stop,
         and the kerberos renewer container to start.
@@ -191,7 +191,7 @@ spec:
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "app.airflow.env" . | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
-        {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
+        {{- include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
         volumeMounts:
         {{- include "app.airflow.volumeMounts" . | indent 8 }}
         {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
@@ -199,7 +199,7 @@ spec:
       containers:
       - name: "airflow-kerberos"
         {{- if $.Values.devenv.enabled }}
-        {{/*
+        {{- /*
           In development environments, we cannot rely on a keytab, as the kerberos token is associated
           with the personal identity of the developer, instead of a service account. Due to the lack of
           keytab, we can't rely on the `airflow kerberos` command (which assumes a keytab is present),
@@ -220,7 +220,7 @@ spec:
         imagePullPolicy: {{ .Values.docker.pull_policy }}
         {{- include "app.airflow.env" . | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | nindent 8 }}
-        {{ include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
+        {{- include "base.helper.resources" $.Values.kerberos.resources | indent 8 }}
         volumeMounts:
         {{- include "app.airflow.volumeMounts" . | indent 8 }}
         {{- include "kerberos.volumeMounts" (dict "Root" . "profiles" (list "keytab")) | indent 8 }}
@@ -299,10 +299,10 @@ spec:
       annotations:
         {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- include "airflow.task-pod.volumes" (dict "Root" $ "profiles" (list "hadoop" "kerberos")) | indent 6 }}
+      {{- include "airflow.task-pod.volumes" (dict "Root" $ "profiles" (list "hadoop" "kerberos" "geoip")) | indent 6 }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       containers:
       - name: "hadoop-shell"
@@ -315,14 +315,14 @@ spec:
         {{- include "app.airflow.env.kerberos" (dict "Root" .) | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         {{- include "base.helper.resources" $.Values.hadoop_shell.resources | indent 8 }}
-        {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" (list "hadoop" "kerberos")) | indent 8 }}
+        {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" (list "hadoop" "kerberos" "geoip")) | indent 8 }}
 
 {{- end }}
 {{- end }}
 
 {{- define "deployment.task-shell" }}
 {{- if $.Values.task_shell.enabled }}
-{{/*
+{{- /*
   This toolbox allows users to test network policies that would be applied to task pods themselves
 */}}
 ---
@@ -346,8 +346,8 @@ spec:
       annotations:
         {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       volumes:
@@ -366,7 +366,6 @@ spec:
         volumeMounts:
         - name: {{ template "release.name" . }}-bash-executables
           mountPath: /opt/airflow/usr/bin
-
 {{- end }}
 {{- end }}
 
@@ -395,8 +394,8 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: {{ $.Values.monitoring.prometheus_port | quote }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       containers:
         {{- include "base.statsd.container" . | indent 8 }}
@@ -428,8 +427,8 @@ spec:
         {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
-      {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
       {{- end }}
       serviceAccountName: {{ template "release.name" . }}
       containers:

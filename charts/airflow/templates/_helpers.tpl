@@ -15,13 +15,13 @@
   {{- range .Values.debug.ports }}
     - containerPort: {{ . }}
   {{- end }}{{ end }}
-  {{- if .Values.app.liveness_probe }}
+  {{- with .Values.app.liveness_probe }}
   livenessProbe:
-  {{- toYaml .Values.app.liveness_probe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .Values.app.readiness_probe }}
+  {{- with .Values.app.readiness_probe }}
   readinessProbe:
-  {{- toYaml .Values.app.readiness_probe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- include "app.airflow.env" . | indent 2 }}
   {{- include "base.helper.resources" .Values.app | indent 2 }}
@@ -42,13 +42,13 @@
   - containerPort: {{ .Root.Values.scheduler.local_executor_api_port }}
   {{- end }}
   - containerPort: {{ .Root.Values.config.airflow.config.scheduler.scheduler_health_check_server_port }}
-  {{- if .Root.Values.scheduler.liveness_probe }}
+  {{- with .Root.Values.scheduler.liveness_probe }}
   livenessProbe:
-  {{- toYaml .Root.Values.scheduler.liveness_probe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if .Root.Values.scheduler.readiness_probe }}
+  {{- with .Root.Values.scheduler.readiness_probe }}
   readinessProbe:
-  {{- toYaml .Root.Values.scheduler.readiness_probe | nindent 4 }}
+  {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- include "app.airflow.env" .Root | indent 2 }}
   {{- if has "LocalExecutor" .profiles }}
@@ -73,11 +73,11 @@
   args: ["triggerer", "--pid" , "/tmp/airflow-triggerer.pid"]
   ports:
   - containerPort: {{ $.Values.triggerer.port }}
-  {{- if $.Values.triggerer.liveness_probe }}
+  {{- with $.Values.triggerer.liveness_probe }}
   livenessProbe:
   {{- toYaml $.Values.triggerer.liveness_probe | nindent 4 }}
   {{- end }}
-  {{- if $.Values.triggerer.readiness_probe }}
+  {{- with $.Values.triggerer.readiness_probe }}
   readinessProbe:
   {{- toYaml $.Values.triggerer.readiness_probe | nindent 4 }}
   {{- end }}
@@ -88,7 +88,7 @@
   {{- include "app.airflow.volumeMounts" $ | indent 2 }}
 {{- end }}
 
-{{ define "app.airflow.env" }}
+{{- define "app.airflow.env" }}
 {{- $krbPrincipal := include "evalValue" (dict "value" $.Values.config.airflow.config.kerberos.principal "Root" $) }}
 env:
 - name: SERVICE_IDENTIFIER
@@ -113,7 +113,7 @@ env:
 {{- end }}
 - name: POOLER_NAME
   value: {{ $.Values.pgServiceName }}-pooler-rw
-{{/*
+{{- /*
   According to https://github.com/sqlalchemy/sqlalchemy/discussions/8386, when using pgbouncer and sqlalchemy,
   we should delegate all pooling to pgbouncer, and disable it at the sqlalchemy level.
   This is done by setting `poolclass=NullPool` at the sqlalchemy level, which airflow does when you pass
@@ -164,7 +164,7 @@ env:
 {{- end }}
 
 {{- define "airflow.env.s3" }}
-{{/*
+{{- /*
   We disable checksum calculation introduced in boto 1.36, as it only pertains to AWS S3, not our Ceph implementation
   cf https://docs.aws.amazon.com/sdkref/latest/guide/feature-dataintegrity.html
 */}}
@@ -199,7 +199,7 @@ env:
 { {{- range $key, $val := .value }}{{ $key | quote }}: {{ template "toPythonValue" (dict "value" $val) }},{{- end -}} }
 {{- end -}}
 {{- end -}}
-{{/*
+{{- /*
   Recursively evaluate a value until it is no longer if the form of a helm template.
   We need this template to be recursive because we could have a setup of the following form
 
@@ -231,7 +231,7 @@ sql_alchemy_conn_cmd = /opt/airflow/usr/bin/pg_pooler_uri
 
 {{- define "airflow.config.core.hostname_callable" -}}
 {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}
-{{/*
+{{- /*
   When we are running with the LocalExecutor, the tasks are executed in the scheduler pod
   as subprocesses, meaning that we need to tell airflow to use the scheduler service name
   when using the API to fetch logs for currently running tasks. Indeed, the logs are local
@@ -280,28 +280,34 @@ auth_backends = airflow.providers.fab.auth_manager.api.auth.backend.kerberos_aut
 
 
 {{- define "airflow.pod.host_aliases" }}
+{{- with $.Values.host_aliases }}
 hostAliases:
-{{- range $hostname, $ip := $.Values.host_aliases }}
+{{- range $hostname, $ip := . }}
 - ip: {{ $ip }}
   hostnames:
   - {{ $hostname}}
 {{- end }}
 {{- end }}
+{{- end }}
 
 {{- define "airflow.task-pod.resources" }}
+{{- with .Values.worker.resources }}
 resources:
   requests:
-  {{- toYaml .Values.worker.resources.requests | nindent 4 }}
+  {{- toYaml .requests | nindent 4 }}
   limits:
-  {{- toYaml .Values.worker.resources.limits | nindent 4 }}
+  {{- toYaml .limits | nindent 4 }}
+{{- end }}
 {{- end }}
 
 {{- define "airflow.kubernetes-pod-operator.resources" }}
+{{- with .Values.kubernetes_pod_operator.resources }}
 resources:
   requests:
-  {{- toYaml .Values.kubernetes_pod_operator.resources.requests | nindent 4 }}
+  {{- toYaml .requests | nindent 4 }}
   limits:
-  {{- toYaml .Values.kubernetes_pod_operator.resources.limits | nindent 4 }}
+  {{- toYaml .limits | nindent 4 }}
+{{- end }}
 {{- end }}
 
 {{- define "app.airflow.env.hadoop" }}
@@ -331,9 +337,9 @@ resources:
 {{- define "kerberos.volumes" }}
 {{- $profiles := .profiles | default list }}
 {{- if .Root.Values.kerberos.enabled }}
-{{ include "app.kerberos.volumes.base" .Root }}
+{{- include "app.kerberos.volumes.base" .Root }}
 {{- if has "keytab" $profiles }}
-{{ include "app.kerberos.volumes.keytab" .Root }}
+{{- include "app.kerberos.volumes.keytab" .Root }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -341,15 +347,15 @@ resources:
 {{- define "kerberos.volumeMounts" }}
 {{- $profiles := .profiles | default list }}
 {{- if .Root.Values.kerberos.enabled }}
-{{ include "app.kerberos.volumeMounts.base" .Root }}
+{{- include "app.kerberos.volumeMounts.base" .Root }}
 {{- if has "keytab" $profiles }}
-{{ include "app.kerberos.volumeMounts.keytab" .Root }}
+{{- include "app.kerberos.volumeMounts.keytab" .Root }}
 {{- end }}
 {{- end }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumes" }}
-{{/* We only need to add the `volumes:` header if we have volumes to declare in the first place */}}
+{{- /* We only need to add the `volumes:` header if we have volumes to declare in the first place */ -}}
 {{- $extraVolumes := (include "airflow.worker.extra-config-volumes" (dict "Root" .Root)) }}
 {{- if or .profiles (fromYaml $extraVolumes) }}
 {{- if ne .header false }}
@@ -357,7 +363,7 @@ volumes:
 {{- end }}
 {{- end }}
 {{- if has "airflow" .profiles }}
-{{ include "app.airflow.volumes" .Root }}
+{{- include "app.airflow.volumes" .Root }}
 {{- end }}
 {{- if has "hadoop" .profiles }}
 {{- include "app.worker.volumes.hadoop" .Root }}
@@ -368,11 +374,14 @@ volumes:
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumes" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
+{{- if has "geoip" .profiles }}
+{{- include "app.worker.volumes.geoip" .Root }}
+{{- end }}
 {{- $extraVolumes }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
-{{/* We only need to add the `volumeMounts:` header if we have volume to declare in the first place */}}
+{{- /* We only need to add the `volumeMounts:` header if we have volume to declare in the first place */ -}}
 {{- $extraVolumeMounts := (include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root)) }}
 {{- if ne .header false }}
 {{- if or .profiles (fromYaml $extraVolumeMounts) }}
@@ -391,6 +400,9 @@ volumeMounts:
 {{- if has "kerberos" .profiles }}
 {{- include "kerberos.volumeMounts" (dict "Root" .Root "profiles" .profiles) }}
 {{- end }}
+{{- if has "geoip" .profiles }}
+{{- include "app.worker.volumeMounts.geoip" .Root }}
+{{- end }}
 {{- $extraVolumeMounts }}
 {{- end }}
 
@@ -398,8 +410,6 @@ volumeMounts:
 {{- if ne .header false }}
 env:
 {{- end }}
-{{- include "airflow.env.requests-ca-bundle" .Root }}
-{{- include "airflow.env.s3" .Root }}
 {{- if .profiles }}
 {{- if has "hadoop" .profiles }}
 {{- include "app.airflow.env.hadoop" .Root }}
@@ -418,7 +428,7 @@ env:
 {{- end -}}
 
 {{- define "airflow.worker.extra-config-volumes" }}
-{{ $Root := .Root }}
+{{- $Root := .Root }}
 {{- range $directory, $config := .Root.Values.worker.config.extra_files }}
 - name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
   configMap:
@@ -427,7 +437,7 @@ env:
 {{- end }}
 
 {{- define "airflow.worker.extra-config-volume-mounts" }}
-{{ $Root := .Root }}
+{{- $Root := .Root }}
 {{- range $directory, $config := .Root.Values.worker.config.extra_files }}
 - name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
   mountPath: {{ $directory }}
@@ -435,6 +445,7 @@ env:
 {{- end }}
 
 {{- define "kubernetes-executor.pod-template" -}}
+{{- $profiles := .profiles | default (list "airflow" "hadoop" "spark" "kerberos" "keytab") -}}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -442,55 +453,58 @@ metadata:
   labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
     {{- include "base.meta.pod_labels" .Root | indent 4 }}
     component: task-pod
-    {{- if eq .profile "kubeapi" }}
-    kubeapi_enabled: 'True' {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to talk to the kube API */}}
+    {{- if has "kubeapi" $profiles }}
+    kubeapi_enabled: 'True' {{- /* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to talk to the kube API */ -}}
     {{- end }}
 spec:
   restartPolicy: Never
   {{- include "airflow.pod.host_aliases" .Root | indent 2 }}
-  {{- if eq .profile "kubeapi" }}
-  serviceAccountName: {{ template "release.name" .Root }} {{/* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */}}
+  {{- if has "kubeapi" $profiles }}
+  serviceAccountName: {{ template "release.name" .Root }} {{- /* Non default operators, such as KubernetesPodOperator or SparkKubernetesOperator need to create pods */ -}}
   {{- end }}
-  {{ include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 2 }}
+  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" $profiles) | indent 2 }}
   {{- include "pod.priority.low" .Root | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
     {{- include "app.airflow.env" .Root | indent 4 }}
-    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" (list "hadoop" "spark" "kerberos" "keytab")) | nindent 4 }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" (list "airflow" "hadoop" "spark" "kerberos" "keytab")) | indent 4 }}
-    {{- if eq .profile "kubeapi" }}
-    {{- include "airflow.kubernetes-pod-operator.resources" .Root | nindent 4 }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" $profiles) | indent 4 }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" $profiles) | indent 4 }}
+    {{- if has "kubeapi" $profiles }}
+    {{- include "airflow.kubernetes-pod-operator.resources" .Root | indent 4 }}
     {{- else }}
-    {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
+    {{- include "airflow.task-pod.resources" .Root | indent 4 }}
     {{- end }}
-    {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
+    {{- include "base.helper.restrictedSecurityContext" .Root | indent 4 }}
 {{- end }}
 
 {{- define "kubernetes-pod-operator.pod-template" }}
+{{- $profiles := .profiles | default list -}}
 apiVersion: v1
 kind: Pod
 metadata:
-  labels: {{/* It's important we set the app and release label to have the external_services network policies apply */}}
+  labels: {{- /* It's important we set the app and release label to have the external_services network policies apply */ -}}
     {{- include "base.meta.pod_labels" .Root | indent 4 }}
     component: task-pod
 spec:
   restartPolicy: Never
-  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" .profiles "header" true) | nindent 2 }}
+  {{- include "airflow.task-pod.volumes" (dict "Root" .Root "profiles" $profiles "header" true) | indent 2 }}
   {{- include "pod.priority.low" .Root | indent 2 }}
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
     imagePullPolicy: IfNotPresent
-    {{- include "airflow.task-pod.env" (dict "Root" .Root "profiles" .profiles) | nindent 4 }}
-    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" .profiles "header" true) | nindent 4 }}
-    {{- include "airflow.task-pod.resources" .Root | nindent 4 }}
-    {{- include "base.helper.restrictedSecurityContext" .Root | nindent 4 }}
+    {{- include "airflow.task-pod.env" (dict "Root" .Root "profiles" $profiles) | indent 4 }}
+    {{- include "airflow.env.requests-ca-bundle" .Root | indent 4 }}
+    {{- include "airflow.env.s3" .Root | indent 4 }}
+    {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" $profiles "header" true) | indent 4 }}
+    {{- include "airflow.task-pod.resources" .Root | indent 4 }}
+    {{- include "base.helper.restrictedSecurityContext" .Root | indent 4 }}
 {{- end }}
 
 
-{{ define "release.name" }}
+{{- define "release.name" }}
 {{- if .Values.devenv.enabled }}
 {{- template "base.name.release" . }}
 {{- else }}
@@ -572,25 +586,36 @@ spec:
   subPath: sparse-checkout.conf
 {{- end }}
 
-{{ define "app.worker.volumes.hadoop" }}
+{{- define "app.worker.volumes.hadoop" }}
 - name: {{ template "release.name" . }}-hadoop-configuration
   configMap:
     name: {{ template "release.name" . }}-hadoop-configuration
 {{- end }}
 
-{{ define "app.worker.volumes.spark" }}
+{{- define "app.worker.volumes.geoip" }}
+- name: {{ template "release.name" . }}-geoip
+  hostPath:
+    path: /usr/share/GeoIP
+{{- end }}
+
+{{- define "app.worker.volumes.spark" }}
 - name: {{ template "release.name" . }}-spark-configuration
   configMap:
     name: {{ template "release.name" . }}-spark-configuration
 {{- end }}
 
-{{ define "app.worker.volumeMounts.hadoop" }}
+{{- define "app.worker.volumeMounts.hadoop" }}
 - name: {{ template "release.name" . }}-hadoop-configuration
   mountPath: {{ $.Values._vars.hadoop_conf_dir }}
 {{- end }}
 
+{{- define "app.worker.volumeMounts.geoip" }}
+- name: {{ template "release.name" . }}-geoip
+  mountPath: /usr/share/GeoIP
+  readOnly: true
+{{- end }}
 
-{{ define "app.worker.volumeMounts.spark" }}
+{{- define "app.worker.volumeMounts.spark" }}
 - name: {{ template "release.name" . }}-spark-configuration
   mountPath: {{ $.Values._vars.spark_conf_dir }}
 {{- end }}
