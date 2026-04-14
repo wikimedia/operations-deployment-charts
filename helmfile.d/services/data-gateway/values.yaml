@@ -16,6 +16,11 @@ main_app:
     cpu: 1
     memory: 1024Mi
 
+  # T423168: Delay initial liveness checks due to gocql client session init
+  # slowness in the presence of unavailable Cassandra hosts.
+  liveness_probe:
+    initialDelaySeconds: 30
+
 resources:
   replicas: 4
 
