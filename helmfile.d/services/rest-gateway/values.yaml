@@ -119,7 +119,7 @@ main_app:
           "unauthed-mediawiki": # InstantCommons and such
             MINUTE: 100
           "anon-browser": # no auth, but looks like a browser
-            MINUTE: 100
+            MINUTE: 200
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
             MINUTE: 4000 # needs high limit until we can distinguish clients
           "authed-user": # valid JWT
