@@ -75,8 +75,7 @@ main_app:
     enable_x_ratelimit_headers: false  # include x-ratelimit headers in responses
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
-    units: [ HOUR ]
-    #units: [ MINUTE, SECOND ]
+    units: [ HOUR, MINUTE ]
     policies:
       # NOTE: the policy name should change when the name or semantics of classes change,
       # to avoid confusing the metrics.
@@ -112,29 +111,29 @@ main_app:
         shadow_mode: true
         limits:
           "*": # catch-all limits
-            HOUR: 100
+            MINUTE: 10
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            HOUR: 100
+            MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            HOUR: 5000
+            MINUTE: 100
           "unauthed-mediawiki": # InstantCommons and such
-            HOUR: 10000
+            MINUTE: 100
           "anon-browser": # no auth, but looks like a browser
-            HOUR: 1000
+            MINUTE: 100
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
-            HOUR: 250000 # needs high limit until we can distinguish clients
+            MINUTE: 4000 # needs high limit until we can distinguish clients
           "authed-user": # valid JWT
-            HOUR: 10000
+            MINUTE: 200
           "established-user": # valid JWT, meets age/edit count criteria
-            HOUR: 100000
+            MINUTE: 2000
           "highlimits-user": # valid WT and member of specific global groups
-            HOUR: 9999999
+            MINUTE: 999999
           "known-network": # no auth, network under our control (WMCS, WME)
-            HOUR: 9999999
+            MINUTE: 999999
           "approved-bot": # community approved bot, based on jwt auth
-            HOUR: 9999999
+            MINUTE: 999999
           "known-client": # no auth, network associated with a known client
-            HOUR: 9999999
+            MINUTE: 999999
 
       # Preliminary limits for abstract.wikipedia.org.
       # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
