@@ -3,8 +3,7 @@ app:
   surveys:
     rest_gateway:
       interval: 10s
-      time_bucket: 1m
-      prefix: "staging_restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit"
+      prefix: "staging_restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit_([^_]*)_"
       sources:
       - redis://api-gateway-restgw:6379 # for dev_redis defined in charts/api-gateway
 docker:

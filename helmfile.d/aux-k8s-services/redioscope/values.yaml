@@ -16,6 +16,18 @@ app:
   requests:
     cpu: 400m
     memory: 100Mi
+  surveys:
+    rest_gateway:
+      name: rate-gateway-ratelimit
+      sources: [] # Depend on cluster
+      prefix: "restgw_wikimedia_policy_(.*)_user_class_(.*)_user_id_(.*)_unit_([^_]*)_"
+      labels:
+        ratelimit_policy: "$1"
+        ratelimit_class: "$2"
+        ratelimit_window: "$4"
+      interval: 15m
+      quantiles: {0.5: 0.05, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001}
+      buckets: [ 10, 100, 1000, 10000, 100000, 1000000 ]
 
 external_services:
   redis-6380: [misc]
