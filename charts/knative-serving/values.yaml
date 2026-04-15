@@ -9,6 +9,8 @@ monitoring:
   enabled: true
   port: 9090
 
+kubernetes_min_version: ""
+
 net_istio:
   # This is the default provided by knative-serving upstream,
   # and represents the external ports that will be used
@@ -25,7 +27,7 @@ net_istio:
         - '*'
   controller:
     image: knative-net-istio-controller
-    version: 1.7.0-1
+    version: 1.21.1-1
     replicaCount: 1
     resources:
       requests:
@@ -36,7 +38,7 @@ net_istio:
         memory: 400Mi
   webhook:
     image: knative-net-istio-webhook
-    version: 1.7.0-1
+    version: 1.21.1-1
     replicaCount: 1
     resources:
       requests:
@@ -46,19 +48,26 @@ net_istio:
         cpu: 200m
         memory: 200Mi
 core:
+  config_autoscaler: {}
+  config_certmanager: {}
+  config_defaults: {}
+  config_deployment: {}
+  config_domain: {}
+  config_features: {}
+  config_gc: {}
+  leader_election: {}
+  config_logging: {}
+  config_network: {}
   config_observability:
-    # This is needed in the current version of Knative (1.7)
-    # to allow the Prometheus exporters to come up correctly
-    # in various pods. Even if the value has already a default,
-    # the go code doesn't tolerate an empty map and it just logs
-    # an error without starting any exporter.
-    metrics.backend-destination: prometheus
+    metrics-protocol: prometheus
+    request-metrics-protocol: prometheus
+  config_tracing: {}
   enable_hpa: false
   # This domain will be used when creating hostnames for routes by Knative
   default_domain: 'wikimedia.org'
   queue_proxy:
     image: knative-serving-queue
-    version: 1.7.2-1
+    version: 1.21.2-1
     resources:
       requests:
         cpu: 1000m
@@ -68,7 +77,7 @@ core:
         memory: 150Mi
   activator:
     image: knative-serving-activator
-    version: 1.7.2-1
+    version: 1.21.2-1
     replicaCount: 1
     podDisruptionBudget:
       minAvailable: 1
@@ -81,7 +90,7 @@ core:
         memory: 600Mi
   autoscaler:
     image: knative-serving-autoscaler
-    version: 1.7.2-1
+    version: 1.21.2-1
     replicaCount: 1
     resources:
       requests:
@@ -97,7 +106,7 @@ core:
             value: "2"
   controller:
     image: knative-serving-controller
-    version: 1.7.2-1
+    version: 1.21.2-1
     replicaCount: 1
     resources:
       requests:
@@ -108,29 +117,7 @@ core:
         memory: 1000Mi
   webhook:
     image: knative-serving-webhook
-    version: 1.7.2-1
-    replicaCount: 1
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        cpu: 500m
-        memory: 500Mi
-  domain_mapping:
-    image: knative-serving-domain-mapping
-    version: 1.7.2-1
-    replicaCount: 1
-    resources:
-      requests:
-        cpu: 30m
-        memory: 40Mi
-      limits:
-        cpu: 300m
-        memory: 400Mi
-  domain_mapping_webhook:
-    image: knative-serving-domain-mapping-webhook
-    version: 1.7.2-1
+    version: 1.21.2-1
     replicaCount: 1
     resources:
       requests:

@@ -2,9 +2,11 @@ docker:
   pull_policy: IfNotPresent
   registry: docker-registry.discovery.wmnet
 
+kubernetes_min_version: "1.31.4"
+
 net_istio:
   controller:
-    version: 1.7.0-2
+    version: 1.21.1-1
     replicaCount: 2
     resources:
       requests:
@@ -14,11 +16,11 @@ net_istio:
         cpu: 1000m
         memory: 400Mi
   webhook:
-    version: 1.7.0-2
+    version: 1.21.1-1
     replicaCount: 2
 core:
   activator:
-    version: 1.7.2-7
+    version: 1.21.2-1
     replicaCount: 2
     resources:
       requests:
@@ -28,7 +30,7 @@ core:
         cpu: 3000m
         memory: 800Mi
   autoscaler:
-    version: 1.7.2-7
+    version: 1.21.2-1
     replicaCount: 2
     resources:
       requests:
@@ -38,7 +40,7 @@ core:
         cpu: 3000m
         memory: 600Mi
   controller:
-    version: 1.7.2-7
+    version: 1.21.2-1
     replicaCount: 2
     resources:
       requests:
@@ -48,7 +50,7 @@ core:
         cpu: 3000m
         memory: 1000Mi
   queue_proxy:
-    version: 1.7.2-7
+    version: 1.21.2-1
   webhook:
     # We raise the max number of pods in production since sometimes,
     # when a new knative-serving chart version is rolled out, there is the chance
@@ -56,7 +58,7 @@ core:
     # from the Kube API (that in turn is contacted by Helm).
     # Having 4 pods helped during the last deployment issue.
     replicaCount: 4
-    version: 1.7.2-7
+    version: 1.21.2-1
     resources:
       requests:
         cpu: 500m
@@ -64,11 +66,6 @@ core:
       limits:
         cpu: 1000m
         memory: 500Mi
-  domain_mapping:
-    version: 1.7.2-7
-  domain_mapping_webhook:
-    version: 1.7.2-7
-
 
   config_autoscaler:
     scale-down-delay: "15m"

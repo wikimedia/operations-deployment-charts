@@ -2,8 +2,8 @@ apiVersion: v2
 name: knative-serving
 description: WMF Knative Serving setup
 type: application
-version: 0.2.34
-appVersion: v1.7.2
+version: 0.2.35
+appVersion: v1.21.1
 # We keep the dependencies list as comment to have a trace about them.
 # The way in which Helm tracks dependencies is a little convoluted
 # for our use case: we deploy crds separately from the charts that depends on
@@ -23,4 +23,3 @@ team: https://wikitech.wikimedia.org/wiki/Machine_Learning
 maintainers:
   - name: Tobias Klausmann
     email: TKlausmann@wikimedia.org
-

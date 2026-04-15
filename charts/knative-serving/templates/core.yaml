@@ -12,6 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-serving-activator
+  namespace: knative-serving
+  labels:
+    serving.knative.dev/controller: "true"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/name: knative-serving
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: ["routing-serving-certs", "knative-serving-certs"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: knative-serving-activator-cluster
+  labels:
+    serving.knative.dev/controller: "true"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/name: knative-serving
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["serving.knative.dev"]
+    resources: ["revisions"]
+    verbs: ["get", "list", "watch"]
+---
 # Use this aggregated ClusterRole when you need readonly access to "Addressables"
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -164,6 +198,16 @@ rules:
   - apiGroups: ["caching.internal.knative.dev"]
     resources: ["images"]
     verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates", "clusterissuers", "certificaterequests", "issuers"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["clusterroles"]
+    verbs: ["delete"]
+    resourceNames: ["knative-serving-certmanager"]
 
 ---
 # Copyright 2019 The Knative Authors
@@ -273,6 +317,52 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: activator
+  namespace: knative-serving
+  labels:
+    app.kubernetes.io/component: activator
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: knative-serving-activator
+  namespace: knative-serving
+  labels:
+    app.kubernetes.io/component: activator
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+subjects:
+  - kind: ServiceAccount
+    name: activator
+    namespace: knative-serving
+roleRef:
+  kind: Role
+  name: knative-serving-activator
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-serving-activator-cluster
+  labels:
+    app.kubernetes.io/component: activator
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+subjects:
+  - kind: ServiceAccount
+    name: activator
+    namespace: knative-serving
+roleRef:
+  kind: ClusterRole
+  name: knative-serving-activator-cluster
+  apiGroup: rbac.authorization.k8s.io
+
+---
 # Copyright 2022 The Knative Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -337,6 +427,22 @@ spec:
   image: {{ .Values.docker.registry }}/{{ .Values.core.queue_proxy.image }}:{{ .Values.core.queue_proxy.version }}
 
 ---
+apiVersion: networking.internal.knative.dev/v1alpha1
+kind: Certificate
+metadata:
+  annotations:
+    networking.knative.dev/certificate.class: cert-manager.certificate.networking.knative.dev
+  labels:
+    networking.knative.dev/certificate-type: system-internal
+  name: routing-serving-certs
+  namespace: knative-serving
+spec:
+  dnsNames:
+    - kn-routing
+    - data-plane.knative.dev
+  secretName: routing-serving-certs
+
+---
 # Copyright 2018 The Knative Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -364,6 +470,38 @@ metadata:
     knative.dev/example-checksum: "47c2487f"
 data:
   {{- range $k, $v := .Values.core.config_autoscaler }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
+
+---
+# Copyright 2020 The Knative Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-certmanager
+  namespace: knative-serving
+  labels:
+    app.kubernetes.io/name: knative-serving
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    networking.knative.dev/certificate-provider: cert-manager
+  annotations:
+    knative.dev/example-checksum: "b7a9a602"
+data:
+  {{- range $k, $v := .Values.core.config_certmanager }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
 
@@ -427,12 +565,11 @@ metadata:
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  # TODO: switch to 'queue-sidecar-image' after 0.27
-  queueSidecarImage: {{ .Values.docker.registry }}/{{ .Values.core.queue_proxy.image }}:{{ .Values.core.queue_proxy.version }}
-  queueSidecarCPURequest: {{ .Values.core.queue_proxy.resources.requests.cpu }}
-  queueSidecarCPULimit: {{ .Values.core.queue_proxy.resources.limits.cpu }}
-  queueSidecarMemoryRequest: {{ .Values.core.queue_proxy.resources.requests.memory }}
-  queueSidecarMemoryLimit: {{ .Values.core.queue_proxy.resources.limits.memory }}
+  queue-sidecar-image: {{ .Values.docker.registry }}/{{ .Values.core.queue_proxy.image }}:{{ .Values.core.queue_proxy.version }}
+  queue-sidecar-cpu-request: {{ .Values.core.queue_proxy.resources.requests.cpu | quote }}
+  queue-sidecar-cpu-limit: {{ .Values.core.queue_proxy.resources.limits.cpu | quote }}
+  queue-sidecar-memory-request: {{ .Values.core.queue_proxy.resources.requests.memory | quote }}
+  queue-sidecar-memory-limit: {{ .Values.core.queue_proxy.resources.limits.memory | quote }}
   {{- range $k, $v := .Values.core.config_deployment }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
@@ -685,7 +822,7 @@ data:
   {{ $k }}: {{ $v | quote }}
   {{- end }}
 
-{{- if .Values.enable_hpa | default false }}
+{{- if .Values.core.enable_hpa | default false }}
 ---
 # Copyright 2020 The Knative Authors
 #
@@ -793,7 +930,17 @@ spec:
         chart: {{ template "base.name.chartid" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: controller
+      # To avoid node becoming SPOF, spread our replicas to different nodes.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: activator
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      serviceAccountName: activator
       containers:
         - name: activator
           # This is the Go import path for the binary that is containerized
@@ -828,7 +975,10 @@ spec:
               value: config-logging
             - name: CONFIG_OBSERVABILITY_NAME
               value: config-observability
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
+            {{- if .Values.kubernetes_min_version }}
+            - name: KUBERNETES_MIN_VERSION
+              value: {{ .Values.kubernetes_min_version | quote }}
+            {{- end }}
             - name: METRICS_DOMAIN
               value: knative.dev/internal/serving
           securityContext:
@@ -1000,7 +1150,10 @@ spec:
               value: config-logging
             - name: CONFIG_OBSERVABILITY_NAME
               value: config-observability
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
+            {{- if .Values.kubernetes_min_version }}
+            - name: KUBERNETES_MIN_VERSION
+              value: {{ .Values.kubernetes_min_version | quote }}
+            {{- end }}
             - name: METRICS_DOMAIN
               value: knative.dev/serving
           securityContext:
@@ -1144,7 +1297,10 @@ spec:
               value: config-logging
             - name: CONFIG_OBSERVABILITY_NAME
               value: config-observability
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
+            {{- if .Values.kubernetes_min_version }}
+            - name: KUBERNETES_MIN_VERSION
+              value: {{ .Values.kubernetes_min_version | quote }}
+            {{- end }}
             - name: METRICS_DOMAIN
               value: knative.dev/internal/serving
           securityContext:
@@ -1156,11 +1312,27 @@ spec:
                 - ALL
             seccompProfile:
               type: RuntimeDefault
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: probes
+              scheme: HTTP
+            periodSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: probes
+              scheme: HTTP
+            periodSeconds: 5
+            failureThreshold: 3
           ports:
             - name: metrics
               containerPort: {{ .Values.monitoring.port }}
             - name: profiling
               containerPort: 8008
+            - name: probes
+              containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -1184,255 +1356,7 @@ spec:
   selector:
     app: controller
 
----
-# Copyright 2020 The Knative Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: domain-mapping
-  namespace: knative-serving
-  labels:
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-spec:
-  replicas: {{ .Values.core.domain_mapping.replicaCount }}
-  selector:
-    matchLabels:
-      app: domain-mapping
-  template:
-    metadata:
-      annotations:
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        {{- if .Values.monitoring.enabled }}
-        prometheus.io/scrape: "true"
-        {{- end }}
-        prometheus.io/port: "{{ .Values.monitoring.port }}"
-      labels:
-        app: domain-mapping
-        app.kubernetes.io/component: domain-mapping
-        app.kubernetes.io/name: knative-serving
-        app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "base.name.chart" . }}
-        chart: {{ template "base.name.chartid" . }}
-        release: {{ .Release.Name }}
-    spec:
-      # To avoid node becoming SPOF, spread our replicas to different nodes.
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: domain-mapping
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-      serviceAccountName: controller
-      containers:
-        - name: domain-mapping
-          # This is the Go import path for the binary that is containerized
-          # and substituted here.
-          image: {{ .Values.docker.registry }}/{{ .Values.core.domain_mapping.image }}:{{ .Values.core.domain_mapping.version }}
-          resources:
-            requests:
-              cpu: {{ .Values.core.domain_mapping.resources.requests.cpu }}
-              memory: {{ .Values.core.domain_mapping.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.core.domain_mapping.resources.limits.cpu }}
-              memory: {{ .Values.core.domain_mapping.resources.limits.memory }}
-          env:
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
-            - name: METRICS_DOMAIN
-              value: knative.dev/serving
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
-          ports:
-            - name: metrics
-              containerPort: {{ .Values.monitoring.port }}
-            - name: profiling
-              containerPort: 8008
-
----
-# Copyright 2020 The Knative Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: domainmapping-webhook
-  namespace: knative-serving
-  labels:
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-spec:
-  replicas: {{ .Values.core.domain_mapping_webhook.replicaCount }}
-  selector:
-    matchLabels:
-      app: domainmapping-webhook
-      role: domainmapping-webhook
-  template:
-    metadata:
-      annotations:
-        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-        {{- if .Values.monitoring.enabled }}
-        prometheus.io/scrape: "true"
-        {{- end }}
-        prometheus.io/port: "{{ .Values.monitoring.port }}"
-      labels:
-        app: domainmapping-webhook
-        role: domainmapping-webhook
-        app.kubernetes.io/component: domain-mapping
-        app.kubernetes.io/name: knative-serving
-        app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-        app-wmf: {{ template "base.name.chart" . }}
-        chart: {{ template "base.name.chartid" . }}
-        release: {{ .Release.Name }}
-    spec:
-      # To avoid node becoming SPOF, spread our replicas to different nodes.
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: domainmapping-webhook
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-      serviceAccountName: controller
-      containers:
-        - name: domainmapping-webhook
-          # This is the Go import path for the binary that is containerized
-          # and substituted here.
-          image: {{ .Values.docker.registry }}/{{ .Values.core.domain_mapping_webhook.image }}:{{ .Values.core.domain_mapping_webhook.version }}
-          resources:
-            requests:
-              cpu: {{ .Values.core.domain_mapping_webhook.resources.requests.cpu }}
-              memory: {{ .Values.core.domain_mapping_webhook.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.core.domain_mapping_webhook.resources.limits.cpu }}
-              memory: {{ .Values.core.domain_mapping_webhook.resources.limits.memory }}
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: SYSTEM_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CONFIG_LOGGING_NAME
-              value: config-logging
-            - name: CONFIG_OBSERVABILITY_NAME
-              value: config-observability
-            - name: WEBHOOK_PORT
-              value: "8443"
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
-            - name: METRICS_DOMAIN
-              value: knative.dev/serving
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
-          ports:
-            - name: metrics
-              containerPort: {{ .Values.monitoring.port }}
-            - name: profiling
-              containerPort: 8008
-            - name: https-webhook
-              containerPort: 8443
-          readinessProbe:
-            periodSeconds: 10
-            httpGet:
-              scheme: HTTPS
-              port: 8443
-              httpHeaders:
-                - name: k-kubelet-probe
-                  value: "webhook"
-          livenessProbe:
-            periodSeconds: 10
-            httpGet:
-              scheme: HTTPS
-              port: 8443
-              httpHeaders:
-                - name: k-kubelet-probe
-                  value: "webhook"
-            failureThreshold: 12
-            initialDelaySeconds: 30
-      # Our webhook should gracefully terminate by lame ducking first, set this to a sufficiently
-      # high value that we respect whatever value it has configured for the lame duck grace period.
-      terminationGracePeriodSeconds: 300
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    role: domainmapping-webhook
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-  name: domainmapping-webhook
-  namespace: knative-serving
-spec:
-  ports:
-    # Define metrics and profiling for them to be accessible within service meshes.
-    - name: http-metrics
-      port: {{ .Values.monitoring.port }}
-      targetPort: {{ .Values.monitoring.port }}
-    - name: http-profiling
-      port: 8008
-      targetPort: 8008
-    - name: https-webhook
-      port: 443
-      targetPort: 8443
-  selector:
-    role: domainmapping-webhook
-
-{{- if .Values.enable_hpa | default false }}
+{{- if .Values.core.enable_hpa | default false }}
 ---
 # Copyright 2020 The Knative Authors
 #
@@ -1531,6 +1455,7 @@ spec:
       labels:
         app: webhook
         role: webhook
+        app.kubernetes.io/component: webhook
         app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
         app.kubernetes.io/name: knative-serving
         app-wmf: {{ template "base.name.chart" . }}
@@ -1577,7 +1502,10 @@ spec:
               value: webhook
             - name: WEBHOOK_PORT
               value: "8443"
-            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
+            {{- if .Values.kubernetes_min_version }}
+            - name: KUBERNETES_MIN_VERSION
+              value: {{ .Values.kubernetes_min_version | quote }}
+            {{- end }}
             - name: METRICS_DOMAIN
               value: knative.dev/internal/serving
           securityContext:
@@ -1684,7 +1612,7 @@ webhooks:
           values: ["knative-serving"]
         - key: app.kubernetes.io/component
           operator: In
-          values: ["autoscaler", "controller", "logging", "networking", "observability", "tracing"]
+          values: ["autoscaler", "controller", "logging", "networking", "observability", "tracing", "net-certmanager"]
     timeoutSeconds: 10
 
 ---
@@ -1741,123 +1669,6 @@ webhooks:
           - revisions
           - routes
           - services
-
----
-# Copyright 2020 The Knative Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-apiVersion: admissionregistration.k8s.io/v1
-kind: MutatingWebhookConfiguration
-metadata:
-  name: webhook.domainmapping.serving.knative.dev
-  labels:
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-webhooks:
-  - admissionReviewVersions: ["v1", "v1beta1"]
-    clientConfig:
-      service:
-        name: domainmapping-webhook
-        namespace: knative-serving
-    failurePolicy: Fail
-    sideEffects: None
-    name: webhook.domainmapping.serving.knative.dev
-    timeoutSeconds: 10
-    rules:
-      - apiGroups:
-          - serving.knative.dev
-        apiVersions:
-          - "*"
-        operations:
-          - CREATE
-          - UPDATE
-        scope: "*"
-        resources:
-          - domainmappings
-          - domainmappings/status
-
----
-# Copyright 2020 The Knative Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: domainmapping-webhook-certs
-  namespace: knative-serving
-  labels:
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-# The data is populated at install time.
-
----
-# Copyright 2020 The Knative Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-apiVersion: admissionregistration.k8s.io/v1
-kind: ValidatingWebhookConfiguration
-metadata:
-  name: validation.webhook.domainmapping.serving.knative.dev
-  labels:
-    app.kubernetes.io/component: domain-mapping
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
-webhooks:
-  - admissionReviewVersions: ["v1", "v1beta1"]
-    clientConfig:
-      service:
-        name: domainmapping-webhook
-        namespace: knative-serving
-    failurePolicy: Fail
-    sideEffects: None
-    name: validation.webhook.domainmapping.serving.knative.dev
-    timeoutSeconds: 10
-    rules:
-      - apiGroups:
-          - serving.knative.dev
-        apiVersions:
-          - "*"
-        operations:
-          - CREATE
-          - UPDATE
-          - DELETE
-        scope: "*"
-        resources:
           - domainmappings
           - domainmappings/status
 
@@ -1916,6 +1727,8 @@ webhooks:
           - revisions
           - routes
           - services
+          - domainmappings
+          - domainmappings/status
 
 ---
 # Copyright 2020 The Knative Authors
