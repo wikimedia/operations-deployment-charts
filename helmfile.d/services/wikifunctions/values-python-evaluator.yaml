@@ -10,6 +10,9 @@ main_app:
     cpu: 6
     memory: 2Gi
 
+resources:
+  replicas: 4
+
 mesh:
   certmanager:
     extraFQDNs:
