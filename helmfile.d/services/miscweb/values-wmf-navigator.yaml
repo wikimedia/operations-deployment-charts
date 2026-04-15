@@ -17,3 +17,30 @@ ingress:
   gatewayHosts:
     extraFQDNs:
     - wmf-navigator.wikimedia.org
+
+config:
+  public: # Add here all the keys that can be publicly available as a ConfigMap
+    DATA_DIR: 'packages/data-api/data'
+    PORT: '3000'
+    CORS_ORIGINS: 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080'
+    VITE_API_BASE_URL: ''
+    OBJECTIVES_SHEET_URL: ''
+    OBJECTIVES_SHEET_EXPORT_URL: 'https://docs.google.com/spreadsheets/d/1g3DCj9CkdBMGNfuv0c_u45LISpMfeRrwCb2norNcADE'
+    OBJECTIVES_WORKBOOK_PATH: ''
+    OKTA_ISSUER: 'https://wikimedia.okta.com'
+    OKTA_SCOPES: okta.users.read
+    OKTA_USERS_QUERY: ''
+    OKTA_USERS_LIMIT: '200'
+    OKTA_API_BASE_URL: ''
+    OKTA_TOKEN_URL: ''
+    OKTA_MANAGER_ID_FIELD: 'managerId'
+  private:  # Add here all the keys that should be private but still available as env variables
+    BOT_USERNAME: "override_me"
+    OKTA_CLIENT_ID: "override_me"
+    BOT_PASSWORD: "override_me"
+    GOOGLE_APPLICATION_CREDENTIALS: "override_me"
+    OBJECTIVES_SHEET_AUTH_HEADER: "override_me"
+    OKTA_PRIVATE_KEY: "override_me"
+    OKTA_PRIVATE_KEY_B64: "override_me"
+    OKTA_PRIVATE_KEY_PATH: "override_me"
+    PRIVATE_KEY_PATH: "override_me"
