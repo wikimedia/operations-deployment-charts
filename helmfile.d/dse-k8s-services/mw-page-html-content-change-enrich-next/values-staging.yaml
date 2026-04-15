@@ -21,14 +21,6 @@ app:
       stream_manager:
         job_name: mw-page-html-content-change-enrich-next
 
-        # Don't use async process function.
-        # This avoids the use of a ThreadPoolExecutor
-        # For async minibatch execution.
-        # This is a trial for the following tasks.
-        # See: https://phabricator.wikimedia.org/T422928
-        # See: https://phabricator.wikimedia.org/T421216#11809025
-        process_async_enabled_default: false
-
         # Configure sources and sinks.
         source:
           stream: mediawiki.page_change.v1:1.3.0
