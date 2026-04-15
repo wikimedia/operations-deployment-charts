@@ -213,6 +213,13 @@ config:
     client_id: 'airflow_{{ $.Values.config.airflow.instance_name | replace "-" "_" }}'
     client_secret: override_me
 
+  # Will this instance make use of the MaxMind GeoIP databases? This requires a
+  # corresponding set of pod security standard labels to be applied to the namespace
+  # in helmfile.d/admin_ng/values/dse-k8s-eqiad/values.yaml
+  # See #T405509 for details
+  geoip:
+    enabled: false
+
 scheduler:
   enabled: true
   service_name: airflow-scheduler

@@ -61,6 +61,8 @@ namespaces:
           memory: "16Gi"
           cpu: "16"
   airflow-test-k8s:
+    labels:
+      <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
       - airflow-test-k8s.wikimedia.org

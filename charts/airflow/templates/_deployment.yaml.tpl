@@ -278,6 +278,10 @@ spec:
 
 {{- define "deployment.hadoop-shell" }}
 {{- if $.Values.hadoop_shell.enabled }}
+{{- $shell_volume_profiles := list "hadoop" "kerberos" -}}
+{{- if $.Values.config.geoip.enabled }}
+  {{- $shell_volume_profiles = append $shell_volume_profiles "geoip" -}}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -302,7 +306,7 @@ spec:
       {{- with .Values.affinity }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- include "airflow.task-pod.volumes" (dict "Root" $ "profiles" (list "hadoop" "kerberos" "geoip")) | indent 6 }}
+      {{- include "airflow.task-pod.volumes" (dict "Root" $ "profiles" $shell_volume_profiles) | indent 6 }}
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       containers:
       - name: "hadoop-shell"
@@ -315,7 +319,7 @@ spec:
         {{- include "app.airflow.env.kerberos" (dict "Root" .) | indent 8 }}
         {{- include "base.helper.restrictedSecurityContext" . | indent 8 }}
         {{- include "base.helper.resources" $.Values.hadoop_shell.resources | indent 8 }}
-        {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" (list "hadoop" "kerberos" "geoip")) | indent 8 }}
+        {{- include "airflow.task-pod.volumeMounts" (dict "Root" $ "profiles" $shell_volume_profiles) | indent 8 }}
 
 {{- end }}
 {{- end }}

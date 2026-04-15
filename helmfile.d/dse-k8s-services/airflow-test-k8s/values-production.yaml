@@ -8,7 +8,8 @@ config:
         worker_pods_creation_batch_size: 32
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
-
+  geoip:
+    enabled: true
   oidc:
     idp_server: idp-test.wikimedia.org
 

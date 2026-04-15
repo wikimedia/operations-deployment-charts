@@ -341,12 +341,14 @@ data:
   kubernetes_executor_pod_template_kubeapi_enabled.yaml: |
     {{- include "kubernetes-executor.pod-template" (dict "profiles" $executor_profiles_kubeapi "Root" . ) | nindent 4 }}
 
+  {{- if .Values.config.geoip.enabled }}
   {{- /*
     This template is used by the Kubernetes Executor to create task pods that have access to the GeoIP databases.
     These databases are mounted read-only from the kubernetes worker nodes using a hostPath of /usr/share/GeoIP
   */}}
   kubernetes_executor_pod_template_geoip.yaml: |
     {{- include "kubernetes-executor.pod-template" (dict "profiles" $executor_profiles_geoip "Root" . ) | nindent 4 }}
+  {{- end }}
   {{- /* End Kubernetes Executor Pod Templates */ -}}
 
   {{- /* Begin Kubernetes Pod Operator Pod Templates */ -}}

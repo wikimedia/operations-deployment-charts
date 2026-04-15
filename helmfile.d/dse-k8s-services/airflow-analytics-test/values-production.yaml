@@ -20,6 +20,8 @@ config:
     - apiGroups: ["batch"]
       resources: ["jobs"]
       verbs: ["get"]
+  geoip:
+    enabled: true
 
 scheduler:
   # With 8GB of memory, the LocalExecutor can run beside the scheduler with a

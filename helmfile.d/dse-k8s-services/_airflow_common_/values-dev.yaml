@@ -53,6 +53,10 @@ config:
     auth: {}
     # S3 bucket *name* is shared between all dev instances
     s3_bucket: '{{ printf "logs.airflow-dev.%s" $.Values.environmentName }}'
+  # The airflow-dev namespace has the required pod security standard to enable the use of the geoip databases
+  # so we enable them by default. See #T405509 for details.
+  geoip:
+    enabled: true
 # The webserver will not be reachable from the outside
 ingress:
   enabled: false
