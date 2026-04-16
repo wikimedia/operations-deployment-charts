@@ -1,3 +1,6 @@
+## mcrouter 1.3.5
+- Add EXTRA_ARGS env var to allow passing extra command line arguments to mcrouter
+
 ## mcrouter 1.3.4
 - Fix typo in ModifyKeyRoute
 

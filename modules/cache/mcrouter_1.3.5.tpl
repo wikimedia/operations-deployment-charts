@@ -23,6 +23,8 @@
       value: "{{ .probe_timeout }}"
     - name: TIMEOUTS_UNTIL_TKO
       value: "{{ .timeouts_until_tko }}"
+    - name: EXTRA_ARGS
+      value: "{{ .extra_args | default "" }}"
     # We don't want to listen to TLS here.
     # TODO: check if it can connect with TLS without the TLS settings.
     - name: USE_SSL
@@ -115,6 +117,8 @@
       value: "{{ .probe_timeout }}"
     - name: TIMEOUTS_UNTIL_TKO
       value: "{{ .timeouts_until_tko }}"
+    - name: EXTRA_ARGS
+      value: "{{ .extra_args | default "" }}"
     # We don't want to listen to TLS here.
     # TODO: check if it can connect with TLS without the TLS settings.
     - name: USE_SSL

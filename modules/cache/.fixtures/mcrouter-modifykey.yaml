@@ -2,6 +2,7 @@ cache:
   mcrouter:
     enabled: true
     public_service: true
+    extra_args: "--reset-inactive-connection-interval=0"
     port: 4442
     route:
       - route: /eqiad/wf
