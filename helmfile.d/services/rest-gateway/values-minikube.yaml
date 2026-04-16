@@ -35,6 +35,7 @@ main_app:
     - restgateway.discovery.wmnet
     - mytestdomain.discovery.wmnet
     - "*.wikipedia.org" # needed for the abstract.wikipedia.org test
+    - "*.wikimedia.org" # needed for the api.wikimedia.org test
 
   # Point all discovery endpoints at the http-https-echo sidecar (port 8888).
   discovery_endpoints:
@@ -94,6 +95,16 @@ main_app:
       internal_host: localhost
       host: localhost
     mw-api-ext-ro:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    inference:
+      tls: false
+      port: 8888
+      internal_host: localhost
+      host: localhost
+    recommendation-api-ng:
       tls: false
       port: 8888
       internal_host: localhost

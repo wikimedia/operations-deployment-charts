@@ -232,6 +232,39 @@ main_app:
           "known-client": # no auth, network associated with a known client
             HOUR: 9999999
 
+      # Relaxed limits for LiftWing (T413448)
+      "LiftWing":
+        shadow_mode: false
+        limits:
+          "*": # catch-all limits
+            HOUR: 50000
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            HOUR: 50000
+          "unauthed-bot": # no auth, but good User-Agent
+            HOUR: 50000
+          "anon-mediawiki": # InstantCommons and such (no contact info)
+            HOUR: 50000
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
+            HOUR: 50000
+          "anon-browser": # no auth, but looks like a browser
+            HOUR: 50000
+          "anon-app": # no auth, but looks like our app
+            HOUR: 50000
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            HOUR: 5000000
+          "authed-user": # valid JWT
+            HOUR: 100000
+          "established-user": # valid JWT, meets age/edit count criteria
+            HOUR: 200000
+          "highlimits-user": # valid WT and member of specific global groups
+            HOUR: 9999999
+          "known-network":
+            HOUR: 9999999
+          "approved-bot":
+            HOUR: 9999999
+          "known-client":
+            HOUR: 9999999
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*
@@ -942,7 +975,7 @@ main_app:
       cluster: inference
       csp_enabled: false
       api_cors_enabled: true
-      rate_limit_policies: [ "BYPASS", "BYPASS" ] #TODO: Add liftwing-specific rate limits
+      rate_limit_policies: [ "LiftWing", "BYPASS" ]
       request_headers_to_add:
         - key: cache-control
           value: no-cache
@@ -1011,17 +1044,13 @@ main_app:
           in: '/+service/lw/inference/(v1/models/reference-risk:predict(.*))'
           out: '/\1'
           to: 'reference-risk.revision-models.wikimedia.org'
-        - name: editcheck
-          in: '/+service/lw/inference/(v1/models/edit-check:predict(.*))'
-          out: '/\1'
-          to: 'edit-check.edit-check.wikimedia.org'
 
     - name: liftwing_recommendation_api
       timeout: 30s
       cluster: recommendation-api-ng
       csp_enabled: false
       api_cors_enabled: true
-      rate_limit_policies: [ "BYPASS", "BYPASS" ] #TODO: Add liftwing-specific rate limits
+      rate_limit_policies: [ "LiftWing", "BYPASS" ]
       request_headers_to_add:
         - key: cache-control
           value: no-cache
@@ -1030,6 +1059,22 @@ main_app:
           in: '/+(service/lw/recommendation(.*))'
           out: '/\1'
           to: recommendation-api-ng.discovery.wmnet
+
+    - name: liftwing_editcheck_api
+      # NOTE: editcheck is separate because it should NOT use the relaxed LiftWing
+      # rate limit policy. It should just use the default rate limit policy.
+      timeout: 30s
+      cluster: inference
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: editcheck
+          in: '/+service/lw/inference/(v1/models/edit-check:predict(.*))'
+          out: '/\1'
+          to: 'edit-check.edit-check.wikimedia.org'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress

@@ -194,6 +194,38 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 210
 
+      "LiftWing":
+        shadow_mode: false
+        limits:
+          "*": # catch-all limits
+            MINUTE: 10
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 10
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 30
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 40
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 50
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 70
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 40
+          "unauthed-mediawiki": # InstantCommons and such
+            MINUTE: 90
+          "authed-user": # valid JWT
+            MINUTE: 110
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 130
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 150
+          "approved-bot": # bot approved by the community
+            MINUTE: 170
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 190
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 210
+
     enable_x_ratelimit_headers: true
 
   access_log:

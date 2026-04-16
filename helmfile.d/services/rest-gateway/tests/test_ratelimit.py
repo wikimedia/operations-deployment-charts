@@ -179,6 +179,19 @@ class RateLimitTest(unittest.TestCase):
 
         self.assert_rate_limit_enforced(abstractwiki_query, "anon", policies = ["AbstractWiki"], headers = headers )
 
+    def test_liftwing_policy(self):
+        liftwing_host = 'api.wikimedia.org'
+        liftwing_path = '/service/lw/inference/v1/models/enwiki-articlequality:predict'
+        liftwing_body = {"rev_id": 12345} # body implies POST
+
+        headers = {
+            "x-client-ip": env.nextIp(),
+            "host": liftwing_host,
+            "content-type": "application/json",
+        }
+
+        self.assert_rate_limit_enforced(liftwing_path, "anon", policies = ["LiftWing"], body = liftwing_body, headers = headers )
+
     def test_anon_limit(self):
         headers = { "x-client-ip": env.nextIp() }
         self.assert_rate_limit_enforced(self.default_endpoint, "anon", headers = headers )
