@@ -9,7 +9,7 @@ app:
   #   rootLogger.level: INFO
 
   taskManager:
-    replicas: 4
+    replicas: 5
     resource:
       cpu: 2
       memory: 6000m
@@ -21,16 +21,7 @@ app:
       stream_manager:
         job_name: mw-page-html-content-change-enrich
 
-        # This is forcing eventutilitites-python to use a single
-        # thread on the async part, faking a sync process. TBD as we tune.
-        # TODO: https://phabricator.wikimedia.org/T421216
-        #       https://phabricator.wikimedia.org/T421965
-        process_max_workers_default: 1
-        process_batch_size_default: 1
-
         # Configure sources and sinks.
-        # production release consumes and produces from kafka jumbo-eqiad.
-
         source:
           stream: mediawiki.page_change.v1:1.3.0
           # source parallelism shoudl probably be set to the number of input Kafka topic-partitions.
@@ -76,6 +67,9 @@ app:
 
 
   flinkConfiguration:
+    # Parallelism == taskManager.replicas * numberOfTaskSlots.
+    # Having fewer TMs results in slightly better resource allocation.
+    "taskmanager.numberOfTaskSlots": 4
     # Set the production release specific HA storageDir path.
     # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
     "high-availability.storageDir": "s3://mw-page-html-content-change-enrich.dse-k8s-eqiad/production/high-availability"

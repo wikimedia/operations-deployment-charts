@@ -23,6 +23,15 @@ app:
         request_timeout: 65
 
       stream_manager:
+        # Use synchronous processing. MW HTML API is high latency,
+        # and microbatching async does not seem to help much.
+        # This avoids the use of a ThreadPoolExecutor
+        # for async minibatch execution.
+        # Using parallelism is better. [citation needed] :)
+        # https://phabricator.wikimedia.org/T421216
+        # https://phabricator.wikimedia.org/T422928
+        process_async_enabled_default: false
+
         # Requests to stream_config_uri should
         # be routed via local envoy service proxy 'mwapi-async'.
         http_client_routes:
@@ -59,28 +68,74 @@ app:
               max.request.size: "20971520"
 
   flinkConfiguration:
+    # == Tuning html-content-change-enrich
+
     # Increase task.off-heap.size for pyflink apps with large messages.
     # Some extra memory is needed to account for large message passing to python.
     "taskmanager.memory.task.off-heap.size": 512m
-    "restart-strategy.type": exponential-delay
-    "state.backend": hashmap
-    "state.checkpoint-storage": filesystem
-    "state.checkpoints.num-retained": "10"
-    "s3.path.style.access": "true"
-    # We need to set an interval in order to trigger checkpointing.
-    # TODO: after gaining some operational experience, set this value to something
-    # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
-    # default.
+
+    # HTML enrichment is a high latency MediaWiki API call.
+    # We want to apply backpressure to tasks upstream of this
+    # call as soon as possible.  Setting this allows the pyflink
+    # process function to be called quickly.
+    # This is especially helpful when running in synch mode
+    # via stream_manager.process_async_enabled_default=False,
+    # where a process function invocation may block for several seconds.
+    "python.fn-execution.bundle.size": "1"
+
+    # We encountered issues with checkpoint times as checkpoint
+    # barriers propagated through the job.
+    # Enable unaligned checkpointing and network buffer debloating.
+
+    # Unaligned checkpoints should be okay for this job.
+    # The size of input data is not large, so even if
+    # checkpoint sizes get a little larger due to saving
+    # the in-flight data, we'd prefer that over long and failed
+    # checkpoint times, especially in the case of backfilling.
+    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
+    "execution.checkpointing.unaligned.enabled": "true"
+
+    # The app's HTTP client request timeout is 65s (configured above).
+    # Consider setting aligned-checkpoint-timeout to wait
+    # at least this long for an aligned checkpoint to
+    # complete before switching to an unaligned checkpoint.
+    # The average HTML fetch takes between 500-1000ms.
+    # Some value between 1s and 65s should be appropriate.
+    #
+    # If aligned checkpoints take longer than aligned-checkpoint-timeout
+    # an unaligned checkpoint will be taken instead.
+    "execution.checkpointing.aligned-checkpoint-timeout": 10s
+
+    # Buffer debloating helps reduce the amount of in-flight data
+    # and backpressure.
+    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
+    "taskmanager.network.memory.buffer-debloat.enabled": true
+
+    # Trigger checkpoints every 10 seconds, or every 2 minutes if under backpressure.
+    # NOTE: max-concurrent-checkpoints defaults to 1, even if a checkpoint
+    # takes longer than this, there will never be more than one in-flight checkpoint at a time.
     "execution.checkpointing.interval": "10000" # 10 seconds.
     "execution.checkpointing.interval-during-backlog": "120000" # 2 minutes
+    # NOTE: Default execution.checkpointing.timeout is 10 minutes.
+
     # Have flink-operator periodic savepoints for handling job restarts and upgrades.
     "kubernetes.operator.periodic.savepoint.interval": 5m
     # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
     # only when the job is running, so if the job is offline e.g. over a weekend,
     # we won't going to lose the latest savepoint.
     "kubernetes.operator.savepoint.history.max.age": 24h
-    # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
+
+    # == Checkpoint, HA and restart settings
+    "restart-strategy.type": exponential-delay
+    "state.backend.type": hashmap
+    "state.checkpoint-storage": filesystem
+    "state.checkpoints.num-retained": "10"
+    "s3.path.style.access": "true"
+    # Enables the Kubernetes HA service.
+    # Recovery metadata will be stored in a k8s ConfigMap.
     "high-availability": KUBERNETES
+    # NOTE: HA paths are configured in release specific files.
+
     # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
     #       is merged and this is the default in the chart.
     "metrics.internal.query-service.port": "6124"
