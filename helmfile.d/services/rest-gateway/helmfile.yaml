@@ -16,6 +16,7 @@ helmDefaults:
 environments:
   minikube:
     values:
+      # Do not load clusterinfo for non-prod environments, just hard-code necessary values here.
       - releases: [local]
       - kubernetesVersion: '1.31'
     missingFileHandler: Warn

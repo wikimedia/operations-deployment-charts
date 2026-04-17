@@ -25,15 +25,14 @@ environments:
     missingFileHandler: Warn
   # These are non-production development environments used for testing
   # scap and related deployment tooling.
+  # Do not load clusterinfo for non-prod environments, just hard-code necessary values here.
   traindev:
     values:
       - releases: [main,canary]
-      # do not load clusterinfo for non-prod environments, just hard-code necessary values
       - kubernetesVersion: '1.31'
   traindev-staging:
     values:
       - releases: [main]
-      # do not load clusterinfo for non-prod environments, just hard-code necessary values
       - kubernetesVersion: '1.31'
 
 ---

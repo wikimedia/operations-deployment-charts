@@ -12,26 +12,30 @@ helmDefaults:
      - "--kubeconfig"
      - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/mw-debug-deploy-%s.config" .Environment.Name) }}
 
-# kubernetesVersion is hard-coded here -- T388969. Remember to change it when upgrading k8s!
 environments:
   eqiad:
     values:
       - releases: [pinkunicorn, next, prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [pinkunicorn, next, prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   staging-eqiad:
     values:
       - releases: [staging]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   staging-codfw:
     values:
       - releases: [staging]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   # These are non-production development environments used for testing
   # scap and related deployment tooling.
+  # Do not load clusterinfo for non-prod environments, just hard-code necessary values here.
   traindev:
     values:
       - releases: [pinkunicorn]

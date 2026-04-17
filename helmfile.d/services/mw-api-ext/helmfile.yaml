@@ -16,11 +16,13 @@ environments:
   eqiad:
     values:
       - releases: [main,next,migration,canary,prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   codfw:
     values:
       - releases: [main,next,migration,canary,prometheus]
-      - kubernetesVersion: '1.31'
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
 
 ---
 
