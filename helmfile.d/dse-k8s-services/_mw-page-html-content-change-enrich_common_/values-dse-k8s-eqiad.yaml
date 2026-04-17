@@ -113,10 +113,20 @@ app:
 
     # Trigger checkpoints every 10 seconds, or every 2 minutes if under backpressure.
     # NOTE: max-concurrent-checkpoints defaults to 1, even if a checkpoint
-    # takes longer than this, there will never be more than one in-flight checkpoint at a time.
+    # takes longer than the checkpoint interval,
+    # there will never be more than one in-flight checkpoint at a time.
     "execution.checkpointing.interval": "10000" # 10 seconds.
+    # Checkpoint less often during backfills.
+    # We will be pushing more messages through, and the likely hood
+    # of a high latency HTML fetches causing a checkpoint timeout is high.
+    # Fewer checkpoint attempts should reduce this occurence.
     "execution.checkpointing.interval-during-backlog": "120000" # 2 minutes
-    # NOTE: Default execution.checkpointing.timeout is 10 minutes.
+    # One high latency HTML fetches can cause all checkpoints to stall until
+    # unaligned checkpointing kicks in. Timeout the checkpoint attempt
+    # earlier than the default 10 minutes.
+    # TODO: Can we reduce this to the maximum enrich function time?
+    #       Calculated accounting for HTTP timeouts and retries?
+    "execution.checkpointing.timeout": "4m"
 
     # Have flink-operator periodic savepoints for handling job restarts and upgrades.
     "kubernetes.operator.periodic.savepoint.interval": 5m
