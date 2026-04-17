@@ -23,6 +23,8 @@
       value: "{{ .probe_timeout }}"
     - name: TIMEOUTS_UNTIL_TKO
       value: "{{ .timeouts_until_tko }}"
+    - name: EXTRA_ARGS
+      value: "{{ .extra_args | default "" }}"
     # We don't want to listen to TLS here.
     # TODO: check if it can connect with TLS without the TLS settings.
     - name: USE_SSL
@@ -115,6 +117,8 @@
       value: "{{ .probe_timeout }}"
     - name: TIMEOUTS_UNTIL_TKO
       value: "{{ .timeouts_until_tko }}"
+    - name: EXTRA_ARGS
+      value: "{{ .extra_args | default "" }}"
     # We don't want to listen to TLS here.
     # TODO: check if it can connect with TLS without the TLS settings.
     - name: USE_SSL
@@ -339,6 +343,8 @@ Expects as input a list of route structs that should look like:
     {{- include "cache.mcrouter._route.replica" . }}
 {{- else if .split -}}
     {{- include "cache.mcrouter._route.split" (dict "route" .route "read_pool" .pool "write_pool" .split.pool) }}
+{{- else if .modifykey -}}
+    {{- include "cache.mcrouter._route.modifykey" . }}
 {{- else -}}
     {{- include "cache.mcrouter._route.standalone" . }}
 {{- end -}}
@@ -442,6 +448,32 @@ Based on https://github.com/facebook/mcrouter/wiki/Two-level-caching#local-insta
     "default_policy": {
 {{ include "cache.mcrouter._failover" . | indent 6 }}
     }
+  }
+}
+{{- end }}
+
+{{/* modifykey route type
+
+This routes adds a prefix or suffix to the key before routing it to the target pool.
+Those modifications are done before the key is hashed, and they are sent to the target pool.
+i.e. if you have a key "foo" and the prefix is "bar:" and the suffix is "baz", the key
+sent to the target pool will be "bar:foo:baz".
+*/}}
+{{ define "cache.mcrouter._route.modifykey" }}
+{{- $route := .route | trimSuffix "/" }}
+{
+  "aliases": [
+    "{{ $route }}/"
+  ],
+  "route": {
+    "type": "ModifyKeyRoute",
+    {{- if .modifykey.prefix }}
+    "prefix": "{{ .modifykey.prefix }}",
+    {{- end }}
+    {{- if .modifykey.suffix }}
+    "suffix": "{{ .modifykey.suffix }}",
+    {{- end }}
+    "target": "PoolRoute|{{ .pool }}"
   }
 }
 {{- end }}

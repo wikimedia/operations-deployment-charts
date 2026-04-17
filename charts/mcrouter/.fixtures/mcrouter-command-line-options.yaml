@@ -1,0 +1,28 @@
+cache:
+  mcrouter:
+    enabled: true
+    extra_args: "--reset-inactive-connection-interval=0"
+    port: 4442
+    service:
+      enabled: true
+
+config:
+  private: {}
+
+service:
+  deployment: minikube # valid values are "production" and "minikube"
+  port:
+    name: mcrouter
+    targetPort: 4442 # the number or name of the exposed port on the container
+    port: 4442
+  nodePort: 0
+  use_node_local_endpoints: true
+
+tolerations:
+  - key: dedicated
+    value: mw-experimental
+    effect: NoExecute
+  - key: dedicated
+    value: mw-experimental
+    effect: NoSchedule
+
