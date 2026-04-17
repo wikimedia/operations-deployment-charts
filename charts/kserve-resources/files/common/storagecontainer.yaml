@@ -3,6 +3,7 @@ kind: ClusterStorageContainer
 metadata:
   name: default
 spec:
+  workloadType: initContainer
   container:
     image: kserve/storage-initializer:latest
     imagePullPolicy: IfNotPresent
