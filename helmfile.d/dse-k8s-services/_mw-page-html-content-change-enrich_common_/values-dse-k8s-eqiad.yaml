@@ -32,9 +32,9 @@ app:
         process_async_enabled_default: false
 
         # Requests to stream_config_uri should
-        # be routed via local envoy service proxy 'mwapi-async'.
+        # be routed via local envoy service proxy for MW API.
         http_client_routes:
-          "https://meta.wikimedia.org/w/api.php": "http://localhost:6500"
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6501"
 
         # Configure common settings for sources and sinks in dse-k8s
         source:
