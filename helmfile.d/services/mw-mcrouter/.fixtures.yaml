@@ -24,3 +24,6 @@ cache:
       - name: wf-codfw
         zone: codfw
         servers: [10.5.0.1, 10.5.0.2]
+    num_proxies: 12
+    timeouts_until_tko: 10
+    cross_region_timeout: 300
