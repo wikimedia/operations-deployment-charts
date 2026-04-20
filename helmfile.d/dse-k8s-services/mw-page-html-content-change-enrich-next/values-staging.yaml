@@ -4,11 +4,12 @@ app:
   # These are set in common values.yaml file.
   # Change them here if you need to override them for the staging release.
   #
-  # version: v1.50.0
+  # version: v1.52.0
   # logConfiguration:
   #   rootLogger.level: INFO
 
   taskManager:
+    # NOTE: parallelism == TM replicas * numberOfTaskSlots.
     replicas: 2
     resource:
       cpu: 2
@@ -75,6 +76,9 @@ app:
 
 
   flinkConfiguration:
+    # Parallelism == taskManager.replicas * numberOfTaskSlots.
+    # Having fewer TMs results in slightly better resource allocation.
+    "taskmanager.numberOfTaskSlots": 4
     # Set the staging release specific HA storageDir path.
     # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
     "high-availability.storageDir": "s3://mw-page-html-content-change-enrich-next.dse-k8s-eqiad/staging/high-availability"

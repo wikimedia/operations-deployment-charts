@@ -82,6 +82,40 @@ app:
     # where a process function invocation may block for several seconds.
     "python.fn-execution.bundle.size": "1"
 
+    # Trigger checkpoints every 1 minute, or every 10 minutes if under backpressure.
+    # The high latency nature of HTML enrichment can cause long checkpoint times.
+    # Checkpointing less frequently allows the pipeline to progress.
+    # See: https://phabricator.wikimedia.org/T421216#11838701
+    # NOTE: max-concurrent-checkpoints defaults to 1, even if a checkpoint
+    # takes longer than the checkpoint interval,
+    # there will never be more than one in-flight checkpoint at a time.
+    "execution.checkpointing.interval": "1m"
+
+    # Ensure there is at least this much pause between
+    # a checkpoint completion and triggering the next checkpoint.
+    "execution.checkpointing.min-pause": "30s"
+
+    # Checkpoint less often during backfills.
+    # We will be pushing more messages through, and the likely hood
+    # of a high latency HTML fetches causing a checkpoint timeout is high.
+    # Fewer checkpoint attempts should reduce this occurence.
+    "execution.checkpointing.interval-during-backlog": "10m"
+
+    # Checkpoints usually complete within a few seconds, but
+    # can sometimes be stalled by high latency HTTP requests.
+    # As long as we don't checkpoint too frequently, we can handle
+    # a long checkpoint timeout.
+    "execution.checkpointing.timeout": "10m"
+
+    # Make flink-operator take periodic savepoints for
+    # handling job restarts and upgrades.
+    "kubernetes.operator.periodic.savepoint.interval": 5m
+
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 24h
+
     # We encountered issues with checkpoint times as checkpoint
     # barriers propagated through the job.
     # Enable unaligned checkpointing and network buffer debloating.
@@ -91,7 +125,10 @@ app:
     # checkpoint sizes get a little larger due to saving
     # the in-flight data, we'd prefer that over long and failed
     # checkpoint times, especially in the case of backfilling.
-    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
+    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#unaligned-checkpoints
+    #
+    # TODO: does this actually help us?
+    #       https://phabricator.wikimedia.org/T421216#11834556
     "execution.checkpointing.unaligned.enabled": "true"
 
     # The app's HTTP client request timeout is 65s (configured above).
@@ -110,31 +147,7 @@ app:
     # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
     "taskmanager.network.memory.buffer-debloat.enabled": true
 
-    # Trigger checkpoints every 10 seconds, or every 2 minutes if under backpressure.
-    # NOTE: max-concurrent-checkpoints defaults to 1, even if a checkpoint
-    # takes longer than the checkpoint interval,
-    # there will never be more than one in-flight checkpoint at a time.
-    "execution.checkpointing.interval": "10000" # 10 seconds.
-    # Checkpoint less often during backfills.
-    # We will be pushing more messages through, and the likely hood
-    # of a high latency HTML fetches causing a checkpoint timeout is high.
-    # Fewer checkpoint attempts should reduce this occurence.
-    "execution.checkpointing.interval-during-backlog": "120000" # 2 minutes
-    # One high latency HTML fetches can cause all checkpoints to stall until
-    # unaligned checkpointing kicks in. Timeout the checkpoint attempt
-    # earlier than the default 10 minutes.
-    # TODO: Can we reduce this to the maximum enrich function time?
-    #       Calculated accounting for HTTP timeouts and retries?
-    "execution.checkpointing.timeout": "4m"
-
-    # Have flink-operator periodic savepoints for handling job restarts and upgrades.
-    "kubernetes.operator.periodic.savepoint.interval": 5m
-    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
-    # only when the job is running, so if the job is offline e.g. over a weekend,
-    # we won't going to lose the latest savepoint.
-    "kubernetes.operator.savepoint.history.max.age": 24h
-
-    # == Checkpoint, HA and restart settings
+    # ==
     "restart-strategy.type": exponential-delay
     "state.backend.type": hashmap
     "state.checkpoint-storage": filesystem
