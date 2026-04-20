@@ -16,10 +16,6 @@ cache:
         replica:
           route: /eqiad/mw-wan
           pool: eqiad-servers
-      - route: /local/wf
-        pool: wf-codfw
-        # No failover for wikifunction
-        failover_time: 0
       - route: /codfw/wf-wan
         pool: wf-codfw
         failover_time: 0
