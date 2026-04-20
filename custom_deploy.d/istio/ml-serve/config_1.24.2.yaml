@@ -34,17 +34,6 @@ spec:
       priorityClassName: "system-cluster-critical"
       logAsJson: true
       proxy:
-        # CNI-CONFIG:
-        # The Istio sidecar is meant to support the containers that run
-        # after it, and it can't work work with init-containers.
-        # In the case of Kserve, every pod runs an init-container
-        # called "storage-initializer", that pulls the model binary from
-        # Swift and adds it to a volume (to be later used by
-        # the kserve-container). The excludeIPRanges setting instructs
-        # the iptables rules injected by the CNI when the pods comes up
-        # to skip any traffic re-routing for certain IPs (in our case,
-        # the Thanos ones).
-        excludeIPRanges: "10.2.2.54/32,10.2.1.54/32"
         componentLogLevel: "misc:info"
         logLevel: info
         # See https://github.com/istio/istio/issues/33968#issuecomment-881910850
