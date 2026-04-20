@@ -16,9 +16,8 @@ app:
 
       # Configs for the page_html_content_change enrichment job in dse-k8s-eqiad
       enrich:
-        # MW API requests should go to local envoy service proxy 'mwapi-async'.
         # https://gerrit.wikimedia.org/g/operations/puppet/+/refs/heads/production/hieradata/common/profile/services_proxy/envoy.yaml
-        mediawiki_api_endpoint_template: http://localhost:6500/w/rest.php/v1
+        mediawiki_api_endpoint_template: http://localhost:6501/w/rest.php/v1
         ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
         request_timeout: 65
 
@@ -169,12 +168,14 @@ mesh:
   enabled: true
 
 
-# Enable mwapi-async envoy service proxy.
-# This will forward requests to https://localhost:6500 to mw-api-int.discovery.wmnet.
+# Enable MW API envoy service proxy.
+# This will forward requests to https://localhost:6501 to mw-api-int.discovery.wmnet.
+# NOTE: we use mw-api-int to get a default envoy timeout of 60s.
+# We want to timeout earliery than -async endpoint.
+# TODO: modify app to handle disable envoy timeouts and handle them ourselves.
 discovery:
   listeners:
-    - mw-api-int-async
-
+    - mw-api-int
 
 external_services:
   s3: [eqiad-dpe]
