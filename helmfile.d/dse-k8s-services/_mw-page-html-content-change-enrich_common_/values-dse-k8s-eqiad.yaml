@@ -107,6 +107,9 @@ app:
     # a long checkpoint timeout.
     "execution.checkpointing.timeout": "10m"
 
+    # Tolerate a few consecutive checkpoint failures.
+    "execution.checkpointing.tolerable-failed-checkpoints": "4"
+
     # Make flink-operator take periodic savepoints for
     # handling job restarts and upgrades.
     "kubernetes.operator.periodic.savepoint.interval": 5m
