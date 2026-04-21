@@ -267,11 +267,18 @@ function wmf_set_retry_after(response_handle)
     if retryable[status] then
         -- Use time to reset supplied by the ratelimit service, or fall back to one minute.
         local reset = headers:get("x-ratelimit-reset") or "60"
+        local reqid = headers:get("x-request-id")
         headers:replace("retry-after", reset)
 
         if headers:get("x-ratelimit-remaining") == "0" then
             headers:replace("content-type", "text/plain")
-            response_handle:body():setBytes( HelmValues.main_app.ratelimiter.ratelimit_notice_text )
+            local text = HelmValues.main_app.ratelimiter.ratelimit_notice_text
+
+            if reqid then
+                text = text .. "\n\nrequest-id: " .. reqid
+            end
+
+            response_handle:body():setBytes( text )
         end
     end
 end

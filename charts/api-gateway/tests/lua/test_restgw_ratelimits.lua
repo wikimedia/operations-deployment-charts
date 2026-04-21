@@ -620,7 +620,23 @@ describe("rest_hooks", function()
             local res = fake_response_handle{headers = headers}
             wmf_set_retry_after( res )
 
-            assert.are.equal("ratelimit notice text", res:body():getBytes())
+            assert.has_match(".*ratelimit notice text.*", res:body():getBytes())
+            assert.are.equal("text/plain", res:headers():get( "content-type" ))
+        end)
+
+        it("should set include the request ID in the response body", function()
+            local headers = {
+                [":status"] = "429",
+                ["x-ratelimit-reset"] = "11",
+                ["x-request-id"] = "abcdefg",
+                ["x-ratelimit-remaining"] = "0", -- envoy caused the 429
+            }
+
+            local res = fake_response_handle{headers = headers}
+            wmf_set_retry_after( res )
+
+            assert.has_match(".*ratelimit notice text.*", res:body():getBytes())
+            assert.has_match(".*request%-id: abcdefg.*", res:body():getBytes())
             assert.are.equal("text/plain", res:headers():get( "content-type" ))
         end)
 

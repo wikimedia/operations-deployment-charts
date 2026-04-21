@@ -45,6 +45,12 @@ main_app:
     # WikipediaApp mostly comes in at 45, but some requests at 25.
     browser_threshold: 35
 
+    # Response body for 429 Too Many Requests
+    ratelimit_notice_text: |-
+      You are making too many requests to the API.
+      Please follow the best practices at <https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits>.
+      If you are unsure how to get the access you need, contact <bot-traffic@wikimedia.org>.
+
     # Based on manual data analysis in March2026
     # (IPs with many hits, varying User-Agents, and high index.php usage)
     anon_class_by_address:
