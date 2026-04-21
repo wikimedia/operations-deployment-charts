@@ -103,7 +103,8 @@ BGPPeers:
   lsw1-e6-eqiad:
     ipv4: 10.64.154.1
     ipv6: 2620:0:861:122::1
-    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-e6')
+    # This special config is for ml-serve1014, which is racked in E11 (which has no ToR) but connected to lsw1-e6-eqiad
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && (topology.kubernetes.io/zone == 'row-e6'|| topology.kubernetes.io/zone == 'row-e11'))
   lsw1-e7-eqiad:
     ipv4: 10.64.156.1
     ipv6: 2620:0:861:124::1
@@ -116,8 +117,8 @@ BGPPeers:
     nodeSelector: (topology.kubernetes.io/region == 'eqiad' && (topology.kubernetes.io/zone == 'row-e8' || topology.kubernetes.io/zone == 'row-e9'))
   # E9 is dedicated to ML, has no ToR
   # E10 is dedicated to ML, has no ToR
-  # TODO: Add E11
-  # TODO: Add E12
+  # E11 is dedicated to ML, has no ToR
+  # E12 is dedicated to ML, has no ToR
   lsw1-f1-eqiad:
     ipv4: 10.64.134.1
     ipv6: 2620:0:861:10d::1
@@ -146,7 +147,8 @@ BGPPeers:
   lsw1-f8-eqiad:
     ipv4: 10.64.166.1
     ipv6: 2620:0:861:12e::1
-    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && topology.kubernetes.io/zone == 'row-f8')
+    # This special config is for ml-serve1015, which is racked in E12 (which has no ToR) but connected to lsw1-f8-eqiad
+    nodeSelector: (topology.kubernetes.io/region == 'eqiad' && (topology.kubernetes.io/zone == 'row-f8' || topology.kubernetes.io/zone == 'row-e12'))
   ## codfw
   lsw1-a1-codfw:
     ipv4: 10.192.4.1
