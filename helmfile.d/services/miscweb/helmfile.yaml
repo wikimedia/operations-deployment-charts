@@ -69,6 +69,7 @@ templates:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/main_services/miscweb/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/aux-k8s_services/miscweb/{{ .Environment.Name }}.yaml" # k8s-aux-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "values-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # release and env-specific overrides
