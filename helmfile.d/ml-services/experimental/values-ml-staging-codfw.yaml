@@ -67,39 +67,6 @@ inference_services:
             cpu: "4"
             memory: 8Gi
 
-  revertrisk-multilingual:
-    annotations:
-      autoscaling.knative.dev/target: "5"
-    predictor:
-      image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2026-04-21-071104-publish"
-      config:
-        minReplicas: 5
-        maxReplicas: 10
-      custom_env:
-        - name: MODEL_NAME
-          value: "revertrisk-multilingual"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/revertrisk/multilingual/20230810110019/"
-        - name: WIKI_URL
-          value: "http://mw-api-int-ro.discovery.wmnet:4680"
-        - name: FORCE_HTTP
-          value: "true"
-        - name: ALLOW_REVISION_JSON_INPUT
-          value: "true"
-        - name: EVENTGATE_URL
-          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
-        - name: EVENTGATE_STREAM
-          value: "mediawiki.page_prediction_change.rc0"
-      container:
-        resources:
-          limits:
-            cpu: "8"
-            memory: 8Gi
-          requests:
-            cpu: "8"
-            memory: 8Gi
-
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:
