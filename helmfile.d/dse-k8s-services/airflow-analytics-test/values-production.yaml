@@ -1,3 +1,8 @@
+app:
+  # Temporarily override the image here, while we roll out the new Airflow version to all instances sequentially. This will be removed once the upgrade is complete.
+  version: &base-image-version airflow-2.11.2-py3.11-2026-04-16-134304-f4802bd4391b8fc561804913728472d5a2721d42@sha256:976f939064787fa65c1c551e72f697120e611e5610441d6869c7523d723d429b
+  executor_pod_image_version: *base-image-version
+
 config:
   airflow:
     instance_name: analytics-test
