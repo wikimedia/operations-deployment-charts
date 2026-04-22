@@ -115,9 +115,37 @@ main_app:
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 100
+            MINUTE: 400 # 200
           "unauthed-mediawiki": # InstantCommons and such
-            MINUTE: 100
+            MINUTE: 400 # 200
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 200
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            MINUTE: 4000 # needs high limit until we can distinguish clients
+          "authed-user": # valid JWT
+            MINUTE: 400 # 200
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 2000
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 999999
+          "known-network": # no auth, network under our control (WMCS, WME)
+            MINUTE: 999999
+          "approved-bot": # community approved bot, based on jwt auth
+            MINUTE: 999999
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 999999
+
+      "May2026":
+        shadow_mode: true
+        limits:
+          "*": # catch-all limits
+            MINUTE: 10
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 10
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 200
+          "unauthed-mediawiki": # InstantCommons and such
+            MINUTE: 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
