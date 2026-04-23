@@ -452,6 +452,16 @@ net_istio:
         # to the istio-system namespace. We deploy it via
         # helmfile_namespace_certs.yaml.
         credentialName: knative-serving-tls-certificate
+    - hosts:
+        - '*'
+      port:
+        name: grpc
+        number: 8081
+        protocol: HTTP2
+      tls:
+        mode: SIMPLE
+        minProtocolVersion: 'TLSV1_2'
+        credentialName: knative-serving-tls-certificate
   mesh:
     service_entries:
       mediawiki-api-proxied-domains:

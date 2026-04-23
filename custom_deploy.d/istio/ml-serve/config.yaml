@@ -145,6 +145,11 @@ spec:
               name: https
               protocol: TCP
               nodePort: 30443
+            - port: 8081
+              targetPort: 8081
+              name: grpc
+              protocol: HTTP2
+              nodePort: 38181
             selector:
               service.istio.io/canonical-name: istio-ingressgateway
               istio: ingressgateway
