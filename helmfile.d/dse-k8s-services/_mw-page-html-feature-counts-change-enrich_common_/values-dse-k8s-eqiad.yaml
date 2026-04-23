@@ -1,0 +1,167 @@
+# This file contains settings shared by all apps deployed in dse-k8s-eqiad.
+#
+# NOTE: This file is shared between production and staging (-next) releases.
+#       In the helmfile directory, this is a symlink into a _*_common_/ values file.
+#       Edits here affect both staging and production.
+#       Release specific settings and overrides belong in release specific values files.
+#
+# Release specific settings belong in release specific values files.
+
+service:
+  deployment: production
+
+app:
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        # Use synchronous processing. Async process bundles multiple events to process
+        # together, but runs into OOM issues due to large HTML contents.
+        # https://phabricator.wikimedia.org/T421026#11745891
+        process_async_enabled_default: false
+
+        # Requests to stream_config_uri should
+        # be routed via local envoy service proxy for MW API.
+        http_client_routes:
+          "https://meta.wikimedia.org/w/api.php": "http://localhost:6501"
+
+        # Configure common settings for sources and sinks in dse-k8s
+        source:
+          connector: kafka
+          options:
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+
+        sink:
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              # 20MB - keeping consistent with error sink
+              # NOTE: eventutilities_python py4j wrapper expects a string.
+              max.request.size: "20971520"
+
+        error_sink:
+          connector: kafka
+          options:
+            delivery_guarantee: AT_LEAST_ONCE
+            properties:
+              security.protocol: SSL
+              ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+              # 20MB - Entire html and diff are stored in error sink topic.
+              # Keeping this as 20MB, same as source topic.
+              # https://phabricator.wikimedia.org/T421026#11745891
+              # NOTE: eventutilities_python py4j wrapper expects a string.
+              max.request.size: "20971520"
+
+  flinkConfiguration:
+    # == Tuning html-content-change-enrich
+
+    # Increase task.off-heap.size for pyflink apps with large messages.
+    # Some extra memory is needed to account for large message passing to python.
+    "taskmanager.memory.task.off-heap.size": 512m
+
+    # In case of high latency, we want to apply backpressure to tasks
+    # upstream of this call as soon as possible.
+    # Setting this allows the pyflink process function to be called quickly.
+    # This is especially helpful when running in sync mode
+    # via stream_manager.process_async_enabled_default=False,
+    # where a process function invocation may block for several seconds.
+    "python.fn-execution.bundle.size": "1"
+
+    # Trigger checkpoints every 1 minute, or every 10 minutes if under backpressure.
+    # In case of high latency, checkpointing less frequently allows the pipeline to progress.
+    # See: https://phabricator.wikimedia.org/T421216#11838701
+    # NOTE: max-concurrent-checkpoints defaults to 1, even if a checkpoint
+    # takes longer than the checkpoint interval,
+    # there will never be more than one in-flight checkpoint at a time.
+    "execution.checkpointing.interval": "1m"
+
+    # Ensure there is at least this much pause between
+    # a checkpoint completion and triggering the next checkpoint.
+    "execution.checkpointing.min-pause": "30s"
+
+    # Checkpoint less often during backfills.
+    # We will be pushing more messages through, high latency 
+    # can cause checkpoint timeout.
+    # Fewer checkpoint attempts should reduce this occurrence.
+    "execution.checkpointing.interval-during-backlog": "10m"
+
+    # Checkpoints usually complete within a few seconds, but
+    # can sometimes be stalled due to high latency.
+    # As long as we don't checkpoint too frequently, we can handle
+    # a long checkpoint timeout.
+    "execution.checkpointing.timeout": "10m"
+
+    # Tolerate a few consecutive checkpoint failures.
+    "execution.checkpointing.tolerable-failed-checkpoints": "4"
+
+    # Make flink-operator take periodic savepoints for
+    # handling job restarts and upgrades.
+    "kubernetes.operator.periodic.savepoint.interval": 5m
+
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 24h
+
+    # We encountered issues with checkpoint times as checkpoint
+    # barriers propagated through the job.
+    # Enable unaligned checkpointing and network buffer debloating.
+
+    # Check if unaligned is required for this stream.
+    # Since input html data can be very large, we may face issues saving
+    # the in-flight data. This is a trade-off with checkpoint timeout.
+    # But we haven't been facing checkpointing issues with this stream.
+    # on the other hand, buffer debloating can help combat memory issues.
+    # "execution.checkpointing.unaligned.enabled": "true"
+
+    # If aligned checkpoints take longer than aligned-checkpoint-timeout
+    # an unaligned checkpoint will be taken instead.
+    # "execution.checkpointing.aligned-checkpoint-timeout": 10s
+
+    # Buffer debloating helps reduce the amount of in-flight data
+    # and backpressure.
+    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
+    "taskmanager.network.memory.buffer-debloat.enabled": true
+
+    # ==
+    "restart-strategy.type": exponential-delay
+    "state.backend.type": hashmap
+    "state.checkpoint-storage": filesystem
+    "state.checkpoints.num-retained": "10"
+    "s3.path.style.access": "true"
+    # Enables the Kubernetes HA service.
+    # Recovery metadata will be stored in a k8s ConfigMap.
+    "high-availability": KUBERNETES
+    # NOTE: HA paths are configured in release specific files.
+
+    # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
+    #       is merged and this is the default in the chart.
+    "metrics.internal.query-service.port": "6124"
+
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet
+
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+
+external_services:
+  s3: [eqiad-dpe]

@@ -1,0 +1,76 @@
+# WMF staging main release specific values.
+
+app:
+  # These are set in common values.yaml file.
+  # Change them here if you need to override them for the staging release.
+  #
+  # version: v1.52.0
+  # logConfiguration:
+  #   rootLogger.level: INFO
+
+  taskManager:
+    # NOTE: parallelism == TM replicas * numberOfTaskSlots.
+    replicas: 2
+    resource:
+      cpu: 1
+      memory: 6000m
+
+  config_files:
+    app.config.yaml:
+
+      # Configs for eventutilities python stream_manager.
+      stream_manager:
+        job_name: mw-page-html-feature-counts-change-enrich-next
+
+      
+        # Configure sources and sinks.
+        source:
+          stream: mediawiki.page_html_content_change.rc0:1.0.0
+          # source parallelism should  be set to the number of input Kafka topic-partitions.
+          # mediawiki.page_html_content_change.rc0 is made up of two topics, each of one partition
+          # (as of 2026-04)
+          parallelism: 2
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            topics: [eqiad.mediawiki.page_html_content_change.rc0]
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
+            consumer_group: mw-page-html-feature-counts-change-enrich-next__dse-k8s-eqiad.000
+
+        sink:
+          stream: mediawiki.page_html_feature_counts_change.rc0:1.0.0
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: staging.
+
+        # By convention we set job_name equal to k8s namespace.
+        # Since this naming will contain hyphens, set the error_sink
+        # stream name explicitly for production deployments.
+        error_sink:
+          stream: mw_page_html_feature_counts_change_enrich.error:2.1.0
+          options:
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: staging.
+  job:
+    # TODO: we might consider setting
+    # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
+    # to fallback on savepoints if checkpoints are too old.
+    # This might require changing checkpoint retention policy.
+    upgradeMode: last-state
+
+
+  flinkConfiguration:
+    # Parallelism == taskManager.replicas * numberOfTaskSlots.
+    # Having fewer TMs results in slightly better resource allocation.
+    # Increase numberOfTaskSlots here if more parallelization is needed.
+    "taskmanager.numberOfTaskSlots": 1
+    # Set the staging release specific HA storageDir path.
+    # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
+    "high-availability.storageDir": "s3://mw-page-html-feature-counts-change-enrich-next.dse-k8s-eqiad/staging/high-availability"
+
+flink:
+  object_store:
+    # Set the staging release specific objectstore bucket
+    swift_bucket: mw-page-html-feature-counts-change-enrich-next.dse-k8s-eqiad
+
+external_services:
+  kafka: [test-eqiad]
