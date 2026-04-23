@@ -79,11 +79,25 @@ inference_services:
         - name: TENSOR_PARALLEL_SIZE
           value: "2"
         - name: DISABLE_CUSTOM_ALL_REDUCE
-          value: "True"
-        - name: NCCL_P2P_DISABLE
+          value: "False"
+        - name: TORCH_BLAS_PREFER_HIPBLASLT
           value: "1"
+        - name: TORCH_SYMM_MEM_DISABLE_MULTICAST
+          value: "1"
+        - name: HSA_FORCE_FINE_GRAIN_PCIE
+          value: "1"
+        - name: HSA_ENABLE_IPC_MODE_LEGACY
+          value: "0"
+        - name: NCCL_P2P_DISABLE
+          value: "0"
+        - name: NCCL_SOCKET_IFNAME
+          value: lo
+        - name: NCCL_SHM_DISABLE
+          value: "0"
         - name: NCCL_DEBUG
           value: "INFO"
+        - name: VLLM_SKIP_P2P_CHECK
+          value: "0"
         - name: VLLM_HOST_IP
           value: "127.0.0.1"
         - name: RCCL_MSCCL_ENABLE
@@ -130,4 +144,3 @@ inference_services:
                       operator: "In"
                       values:
                         - "ml-serve1012.eqiad.wmnet"
-                        - "ml-serve1013.eqiad.wmnet"
