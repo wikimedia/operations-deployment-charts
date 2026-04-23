@@ -23,6 +23,8 @@ spec:
     - ports:
       - port: {{ $.Values.app.port }}
         protocol: TCP
+      - port: {{ $.Values.app.grpc_port }}
+        protocol: TCP
       - port: {{ $.Values.main_app.queue_proxy.port }}
         protocol: TCP
       # The Knative Autoscaler pod fetches data from the queue-proxy
