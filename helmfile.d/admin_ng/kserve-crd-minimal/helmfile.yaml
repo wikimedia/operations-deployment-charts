@@ -3,8 +3,7 @@ templates:
     chart: wmf-stable/kserve-crd-minimal
     namespace: kserve
     missingFileHandler: Warn
-    # CRDs are installed whenever any KServe-related feature is enabled
-    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_knative\" }}{{ .Environment.Values.install_knative }}{{ else if hasKey .Environment.Values \"install_kserve\" }}{{ .Environment.Values.install_kserve }}{{ else if hasKey .Environment.Values \"install_kserve_resources\" }}{{ .Environment.Values.install_kserve_resources }}{{ else }}{{ false }}{{end}}`}}"
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kserve_crd_minimal\" }}{{ .Environment.Values.install_kserve_crd_minimal }}{{ else }}{{ false }}{{end}}`}}"
 
 releases:
   - name: kserve-crd-minimal

@@ -112,6 +112,7 @@ environments:
       - "/etc/helmfile-defaults/services-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
       - install_knative: true
+      - install_kserve_crd_minimal: true
       - install_kserve_resources: true
       - install_cert_manager: true
       - install_kube_state_metrics: true
