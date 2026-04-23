@@ -60,7 +60,7 @@ class RateLimitTest(unittest.TestCase):
     def setUp(self):
         self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
 
-    def assert_rate_limit_counts( self, path, allowed, assertions, headers = None, debug = None):
+    def assert_rate_limit_counts( self, path, allowed, assertions, body = None, headers = None, debug = None):
         # Try three times as many requests as allowed.
         # At most twice as many requests as allowed can pass (when crossing a window boundary).
         # At least the last two requests must fail, assuming the requests can be performed within
@@ -74,7 +74,13 @@ class RateLimitTest(unittest.TestCase):
             "notice": Predicates.body_contains("bot-traffic@wikimedia.org")
         }
 
-        counts = self.target.count_get(path, n=n, predicates = predicates, headers = headers, debug = debug )
+        method = 'POST' if body else 'GET'
+        if headers and ':method' in headers:
+            method = headers[':method']
+            headers = { **headers }
+            del headers[':method']
+
+        counts = self.target.count_responses(n, path, method, body, headers = headers, predicates = predicates, debug = debug )
 
         countErrors = counts.get("error", 0)
         self.assertEqual( countErrors, 0, "expected no connection errors" )
@@ -82,7 +88,7 @@ class RateLimitTest(unittest.TestCase):
         for assertion in assertions:
             assertion(allowed, n, counts)
 
-    def assert_rate_limit_enforced( self, path, allowed, headers = None, debug = None):
+    def assert_rate_limit_enforced( self, path, allowed, **kwargs):
         def assert_ratelimit_headers(allowed, submitted, counts):
             xrl_count = counts.get("x-ratelimit-remaining", 0)
             if env.values.main_app.ratelimiter.enable_x_ratelimit_headers:
@@ -109,9 +115,9 @@ class RateLimitTest(unittest.TestCase):
             self.assertEqual( notice_count, count_429, "expected all requests with status 429 to contain the notice")
 
         assertions = (assert_ratelimit_headers, assert_good_response, assert_denied_responses)
-        self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
+        self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
 
-    def assert_rate_limit_bypassed( self, path, allowed, headers = None, debug = None):
+    def assert_rate_limit_bypassed( self, path, allowed, **kwargs):
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
             self.assertEqual( counts.get("2xx", 0), submitted, "expected all requests to be allowed")
@@ -121,9 +127,9 @@ class RateLimitTest(unittest.TestCase):
             self.assertEqual(  count_headers, 0, "expected no response to contain an x-ratelimit-remaining header")
 
         assertions = (assert_no_denied_responses, assert_no_ratelimit_headers)
-        self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
+        self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
 
-    def assert_rate_limit_shadowed( self, path, allowed, headers = None, debug = None):
+    def assert_rate_limit_shadowed( self, path, allowed, **kwargs):
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
             self.assertEqual( counts.get("2xx", 0), submitted, "expected all requests to be allowed")
@@ -139,7 +145,7 @@ class RateLimitTest(unittest.TestCase):
             self.assertEqual( rlc_count, submitted, "expected all responses to contain an x-wmf-ratelimit-class header")
 
         assertions = (assert_no_denied_responses, assert_ratelimit_headers)
-        self.assert_rate_limit_counts(path, allowed, assertions, headers, debug)
+        self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
 
     def test_abstractwiki_policy(self):
         abstractwiki_query = r'/w/api.php?action=abstractwiki_run_fragment&format=json&formatversion=2&abstractwiki_run_fragment_qid=Q188815'

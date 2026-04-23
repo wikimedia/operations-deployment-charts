@@ -1,6 +1,8 @@
 # Add HTTP helper imports
 import urllib.request
 import urllib.error
+import urllib.parse
+import json
 import ssl
 import threading
 
@@ -54,22 +56,59 @@ class Target:
 
     def get(self, path, headers = None, debug = None):
         """
-        Perform <n> HTTP GET requests to url and return a response object.
+        Perform a HTTP GET requests and return a response object.
         """
 
+        # Hack for overriding the method. Good to use with OPTIONS or HEAD.
+        # Don't use this for POST or PUT.
+        method = "GET"
+        if headers and ":method" in headers:
+            method = headers[":method"]
+            # make a copy, don't mess with the original!
+            headers = { **headers }
+            del headers[":method"]
+
+        return self.req(path, method = method, headers = headers )
+
+    def post(self, path, body, headers = None, debug = None):
+        """
+        Perform a HTTP POST requests and return a response object.
+        """
+
+        # make a copy, don't mess with the original!
+        headers = { **headers }
+
+        # Hack for overriding the method. Good to use with PUT.
+        # Don't use this for GET or HEAD.
+        method = "POST"
+        if ":method" in headers:
+            method = headers[":method"]
+            del headers[":method"]
+
+        return self.req(path, method = method, headers = headers )
+
+    def req(self, path, method, body = None, headers = None, debug = None):
+        """
+        Perform a HTTP requests and return a response object.
+        """
         headers = headers or {}
         debug = debug or []
 
         url = self.url + path
         headers = { **self.headers, **headers }
 
-        method = "GET"
-        # hack for forcing the request method
-        if ":method" in headers:
-            method = headers[":method"]
-            del headers[":method"] # delete from local copy, not original param!
+        # dict-like body, encode!
+        if body and hasattr(body, "keys") and hasattr(body, "__getitem__"):
+            if headers.get("content-type") == "application/json":
+                body = json.dumps(body)
+            else:
+                body = urllib.parse.urlencode(body)
+                headers["content-type"] = "application/x-www-form-urlencoded"
 
-        req = urllib.request.Request(url, method=method, headers = headers )
+        if body and hasattr(body, 'encode'):
+            body = body.encode('utf8')
+
+        req = urllib.request.Request(url, data = body, method=method, headers = headers )
 
         try:
             with self.opener.open(req, timeout=self.timeout) as handle:
@@ -101,20 +140,21 @@ class Target:
             resp.body = f"CONNECTION ERROR: {e}"
             return resp
 
-    def mget(self, paths, headers = None, debug = None):
+    def mreq(self, params, headers = None, debug = None):
         """
         Perform multiple HTTP GET requests in parallel and returns a list of responses,
-        one for each path.
+        one for each list of params. Each list of params is passed as positional parameters
+        to req().
         """
 
-        threads = [None] * len(paths)
-        responses = [None] * len(paths)
+        threads = [None] * len(params)
+        responses = [None] * len(params)
 
         def target(p, i):
-            responses[i] = self.get(p, headers=headers, debug=debug)
+            responses[i] = self.req(*p, headers=headers, debug=debug)
 
-        for i in range(len(paths)):
-            threads[i] = threading.Thread(target=target, args=(paths[i], i, ))
+        for i in range(len(params)):
+            threads[i] = threading.Thread(target=target, args=(params[i], i, ))
             threads[i].start()
 
         for thread in threads:
@@ -122,7 +162,7 @@ class Target:
 
         return responses
 
-    def count_get(self, path, n = 10, predicates = None, headers = None, debug = None):
+    def count_responses(self, n, path, method, body = None, headers = None, predicates = None, debug = None):
         """
         Perform n HTTP GET requests and return a dict that indicates how often each predicate
         matched a response.
@@ -136,7 +176,7 @@ class Target:
         predicates["4xx"] = Predicates.has_status_between(400, 499)
         predicates["5xx"] = Predicates.has_status_between(500, 599)
 
-        responses = self.mget([path] * n, headers=headers, debug=debug)
+        responses = self.mreq([(path, method, body)] * n, headers=headers, debug=debug)
 
         for resp in responses:
             for key, p in predicates.items():
