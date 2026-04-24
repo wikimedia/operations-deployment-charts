@@ -1,5 +1,6 @@
 main_app:
   log_level: debug
+  version: v1.1.3
 
   hoarde:
     tables:
@@ -8,7 +9,7 @@ main_app:
           type: grpc
           hostname: cassandra-dev2001-a.codfw.wmnet
           port: 50051
-          timeout: 2000ms
+          timeout: 5000ms
 
 resources:
   replicas: 1
