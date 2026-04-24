@@ -35,7 +35,7 @@ app:
             consumer_group: mw-page-html-content-change-enrich__dse-k8s-eqiad.001
 
         sink:
-          stream: mediawiki.page_html_content_change.dev5:1.0.0
+          stream: mediawiki.page_html_content_change.rc0:1.0.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
