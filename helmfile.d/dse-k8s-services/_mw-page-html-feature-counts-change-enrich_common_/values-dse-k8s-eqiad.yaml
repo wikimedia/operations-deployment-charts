@@ -109,26 +109,6 @@ app:
     # we won't going to lose the latest savepoint.
     "kubernetes.operator.savepoint.history.max.age": 24h
 
-    # We encountered issues with checkpoint times as checkpoint
-    # barriers propagated through the job.
-    # Enable unaligned checkpointing and network buffer debloating.
-
-    # Check if unaligned is required for this stream.
-    # Since input html data can be very large, we may face issues saving
-    # the in-flight data. This is a trade-off with checkpoint timeout.
-    # But we haven't been facing checkpointing issues with this stream.
-    # on the other hand, buffer debloating can help combat memory issues.
-    # "execution.checkpointing.unaligned.enabled": "true"
-
-    # If aligned checkpoints take longer than aligned-checkpoint-timeout
-    # an unaligned checkpoint will be taken instead.
-    # "execution.checkpointing.aligned-checkpoint-timeout": 10s
-
-    # Buffer debloating helps reduce the amount of in-flight data
-    # and backpressure.
-    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
-    "taskmanager.network.memory.buffer-debloat.enabled": true
-
     # ==
     "restart-strategy.type": exponential-delay
     "state.backend.type": hashmap
