@@ -100,8 +100,8 @@ main_app:
       "11.22.33.": "anon-cgnat"
     units: [ MINUTE ]
     policies:
-      "Mar2026":
-        shadow_mode: false # enable on staging for testing
+      "Apr2026":
+        shadow_mode: false
         limits:
           "*": # catch-all limits
             MINUTE: 1
@@ -128,8 +128,8 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 21
 
-      "Apr2026":
-        shadow_mode: true
+      "May2026":
+        shadow_mode: true # enable on staging for testing
         limits:
           "*": # catch-all limits
             MINUTE: 1
@@ -211,7 +211,7 @@ main_app:
                 # this does not exist in the real API
                 exact: 'shadowed'
                 ignore_case: true
-      rate_limit_policies: [ "Apr2026", "BYPASS" ]
+      rate_limit_policies: [ "May2026", "BYPASS" ]
 
     - name: staging-mw-action-api-jwt-required
       timeout: 53s
