@@ -10,6 +10,11 @@ main_app:
     cpu: 6
     memory: 1Gi
 
+mesh:
+  certmanager:
+    extraFQDNs:
+    - 'wikifunctions-javascript-evaluator.discovery.wmnet'
+
 config:
   public:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
@@ -33,6 +38,7 @@ config:
 # and it cannot be shared by multiple Gateways.
 # We explicitly discard the default and set new ones for the evaluators,
 # that may be revisied once/if they get their own service status.
+# Note: keep the gatewayHosts list in sync with the mesh's one.
 ingress:
   enabled: true
   keepNodePort: true
