@@ -1,0 +1,23 @@
+{{/*
+  We create a service here that is in addition to those managed by the opensearch-operator.
+  The reason for this is so that we can differentiate bulk indexing traffic from regular
+  search queries. This will give us separate metrics from the istio ingressgateway for the
+  different backend services, which will then be useful in building an SLO for opensearch
+  clusters.
+*/}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "%s-bulk" $.Values.opensearchCluster.general.serviceName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    opster.io/opensearch-cluster: {{ $.Values.opensearchCluster.general.serviceName }}
+    opensearch-route: bulk
+spec:
+  ports:
+  - name: http
+    port: {{ $.Values.opensearchCluster.general.httpPort }}
+    targetPort: {{ $.Values.opensearchCluster.general.httpPort }}
+  selector:
+    opster.io/opensearch-cluster: {{ $.Values.opensearchCluster.general.serviceName }}

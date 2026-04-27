@@ -32,7 +32,22 @@ spec:
     - {{ $fqdn }}
   {{- end }}
   http:
-  - headers:
+  - name: bulk
+    match:
+    - uri:
+        regex: "^/(?:[^/]+/)?_bulk(?:/stream)?$"
+    headers:
+      request:
+        remove:
+        - x-request-id
+    route:
+    - destination:
+        host: {{ $.Values.opensearchCluster.general.serviceName }}-bulk.{{ $.Release.Namespace }}.svc.cluster.local
+        port:
+          number: {{ $.Values.opensearchCluster.general.httpPort }}
+
+  - name: default
+    headers:
       request:
         remove:
         - x-request-id
