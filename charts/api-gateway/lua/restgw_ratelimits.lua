@@ -93,6 +93,7 @@ function wmf_ratelimit_info(request_handle)
         -- This works because the "request_headers" directive of the rate_limits filter
         -- will not construct a descriptor if the header is missing.
         if p ~= "BYPASS" then
+            request_handle:logDebug("WMF rate_limit: policy-" .. tostring(i) .. "=" .. p)
             headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
         end
     end
@@ -174,11 +175,8 @@ function wmf_ratelimit_info(request_handle)
         ratelimit_class = anon_class
     end
 
-
     if centralauthPayload.sub then
         user_id = "jwt-sub:" .. centralauthPayload.sub
-    elseif bearerPayload.sub then
-        user_id = "jwt-sub:" .. bearerPayload.sub
     elseif bearerPayload.sub and bearerPayload.rlc then -- has rlc field, it's an access token
         user_id = "jwt-sub:" .. bearerPayload.sub
     elseif cookiePayload.sub then -- preferred to owner-only
@@ -200,7 +198,7 @@ function wmf_ratelimit_info(request_handle)
     ratelimit_class = wmf_apply_class_overrides( request_handle, ratelimit_class )
 
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
-            .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
+            .. ", user=" .. ( user_id or "~" )
     )
 
     headers:replace("x-wmf-user-id", user_id)
