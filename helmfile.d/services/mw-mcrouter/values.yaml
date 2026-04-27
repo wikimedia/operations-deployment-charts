@@ -13,12 +13,12 @@ service:
 
 common_images:
   mcrouter:
-    mcrouter: mcrouter:2023.07.17.00-1-20240714
+    mcrouter: mcrouter:2023.07.17.00-2-20260412
     exporter: prometheus-mcrouter-exporter:0.4.0-1
 
 cache:
   mcrouter:
-    num_proxies: 15
+    num_proxies: 12
     enabled: true
     resources:
       requests:
@@ -27,6 +27,8 @@ cache:
       limits:
         cpu: 2
         memory: 2048Mi
+    timeouts_until_tko: 10
+    cross_region_timeout: 300
     public_service: true
     exporter:
       resources:
