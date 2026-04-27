@@ -465,8 +465,8 @@ net_istio:
         - '*'
       port:
         name: grpc
-        number: 8081
-        protocol: HTTP2
+        number: 50051
+        protocol: HTTPS
       tls:
         mode: SIMPLE
         minProtocolVersion: 'TLSV1_2'
@@ -781,6 +781,8 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
         - 8081
+        # External gRPC port for kserve v2 inference protocol.
+        - 50051
 
 # Measure to deal with https://phabricator.wikimedia.org/T318814
 # By default Kubernetes DNS records have 5s TTL, and in a Service Mesh
