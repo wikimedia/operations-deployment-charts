@@ -38,6 +38,10 @@ port-forward: ## start port forwarding for an installed gateway instance (needed
 logs: ## show logs of an installed gateway instance
 	kubectl logs $$( kubectl get pod -l "app=$(app)" -l "release=$(name)" -o name ) -f
 
+env: ## outputs environment for manual testing
+	@cd "$(servicedir)/tests" && \
+		$(MAKE) env env=minikube
+
 test-lua: ## run Lua tests
 	@echo "Running Lua tests"
 	busted $(dir)/lua/test*.lua

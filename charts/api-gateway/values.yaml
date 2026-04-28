@@ -62,8 +62,14 @@ main_app:
     # Threshold value for x-is-browser, see <https://wikitech.wikimedia.org/wiki/CDN/Backend_api>
     # If the score is below this value, we assume that the request does not come from a browser.
     browser_threshold: 30
-    # classes to assign based on IP range (prefix match for now)
-    anon_class_by_address: {}
+
+    # header-based classes overrides, given as a list of override entries. Each entry has the form:
+    #   header: the HTTP header (or pseudo-header) to match
+    #   values: list of exact string values to match (optional)
+    #   patterns: list of Lua patterns to match (optional)
+    #   mappings: map from initial class to effective class
+    # A mapping from '*' can be used to override all classes
+    class_overrides: {}
 
     log_level: info
 

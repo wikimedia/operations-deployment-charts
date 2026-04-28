@@ -96,8 +96,6 @@ main_app:
     key_prefix: "staging_restgw_"
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%@%REQ(x-wmf-ratelimit-policy)%"
     envoy_timeout: 0.5
-    anon_class_by_address:
-      "11.22.33.": "anon-cgnat"
     units: [ MINUTE ]
     policies:
       "Apr2026":

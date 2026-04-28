@@ -1,5 +1,16 @@
 -- Note: HelmValues is defined in _rest_hooks.lua.tpl
 
+-- Turn class_overrides into a lookup structure per class and header
+overrides_by_class = {}
+for _, entry in ipairs(HelmValues.main_app.ratelimiter.class_overrides) do
+    for cls, _ in pairs(entry.mappings) do
+        if overrides_by_class[cls] == nil then
+            overrides_by_class[cls] = {}
+        end
+        overrides_by_class[cls][entry.header] = entry
+    end
+end
+
 function envoy_on_request(request_handle)
     wmf_run_hooks(request_handle, "request")
     wmf_ratelimit_info(request_handle)
@@ -143,10 +154,6 @@ function wmf_ratelimit_info(request_handle)
         -- Fallback class for authenticated users with no explicit rlc claim.
         ratelimit_class = "authed-user"
 
-    elseif userAgent:find("^MediaWiki/") or userAgent:find("^QuickInstantCommons/") then
-        -- We have a MediaWiki User-Agent string
-        ratelimit_class = "unauthed-mediawiki"
-
     elseif ( trust == "C" or trust == "D" ) and headers:get("x-ua-contact") then
         -- We have a well-formed User-Agent string
 
@@ -160,11 +167,11 @@ function wmf_ratelimit_info(request_handle)
         -- Looks like organic browser traffic (requests from interactive UI or Gadgets)
         -- This is typically trust level E, but we allow level F as well (untile that gets abused)
         -- TODO: Use JA3N + JA4H as the user ID when available
-        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, "anon-browser")
+        ratelimit_class = "anon-browser"
 
     else
         local anon_class = HelmValues.main_app.ratelimiter.fallback_class -- defaults to "anon"
-        ratelimit_class = wmf_ratelimit_class_for_address(client_ip, anon_class)
+        ratelimit_class = anon_class
     end
 
 
@@ -190,6 +197,8 @@ function wmf_ratelimit_info(request_handle)
         user_id = "x-client-ip:" .. client_ip
     end
 
+    ratelimit_class = wmf_apply_class_overrides( request_handle, ratelimit_class )
+
     request_handle:logDebug("WMF rate_limit: class=" .. ( ratelimit_class or "~" )
             .. ", user=" .. ( user_id or "~" ) .. ", policy=" ..  ( ratelimit_policy or "~" )
     )
@@ -206,16 +215,46 @@ function wmf_ratelimit_info(request_handle)
     wmf_run_hooks(request_handle, "ratelimit")
 end
 
-function wmf_ratelimit_class_for_address( address, fallback )
-    for prefix, class in pairs( HelmValues.main_app.ratelimiter.anon_class_by_address ) do
-        -- NOTE: Use naive prefix matching for now. If we need proper range matching,
-        -- we could use <https://github.com/api7/lua-resty-ipmatcher> or similar.
-        if string.find( address, prefix, 1, true ) == 1 then
-            return class
+function wmf_apply_class_overrides( request_handle, ratelimit_class )
+    local overrides = overrides_by_class[ratelimit_class] or {}
+    local headers = request_handle:headers()
+
+    for header, entry in pairs( overrides ) do
+        local value = headers:get(header)
+        local found = false
+
+        if not found and value and entry.values then
+            for _, expected in ipairs( entry.values or {} ) do
+                if value == expected then
+                    found = true
+                    break
+                end
+            end
+        end
+
+        if not found and value and entry.patterns then
+            for _, ptrn in ipairs( entry.patterns or {} ) do
+                if value:find(ptrn) then
+                    found = true
+                    break
+                end
+            end
+        end
+
+        if found then
+            return entry.mappings[ratelimit_class] or ratelimit_class
         end
     end
 
-    return fallback
+    -- If we didn't find any match, try for class '*'.
+    if ratelimit_class ~= '*' then
+        local cls = wmf_apply_class_overrides( request_handle, '*' )
+        if cls ~= '*' then
+            ratelimit_class = cls
+        end
+    end
+
+    return ratelimit_class
 end
 
 function wmf_stash_headers_to_expose(request_handle)

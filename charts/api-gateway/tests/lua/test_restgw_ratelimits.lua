@@ -19,8 +19,20 @@ _G.HelmValues = {
             fallback_class = "anon",
             browser_threshold = 80,
             ratelimit_notice_text = "ratelimit notice text",
-            anon_class_by_address = {
-                 ["11.22.33."] = "special-network",
+            class_overrides = {
+                {
+                    header = "x-client-ip",
+                    patterns = { "^11%.22%.33%." },
+                    mappings = { ['*'] = "special-network" },
+                },
+                {
+                    header = "user-agent",
+                    values = { "QuickInstantCommons/0.8.15" },
+                    mappings = {
+                        ['anon'] = "unauthed-mediawiki",
+                        ['unauthed-bot'] = "unauthed-mediawiki",
+                    },
+                },
             },
             default_policies = {
                 "DefaultPolicy1",
@@ -142,7 +154,7 @@ describe("rest_hooks", function()
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
-            it("should assign a class based on anon_class_by_address", function()
+            it("should assign a class based on class_overrides", function()
                 local headers = { ["x-client-ip"] = "11.22.33.44" }
                 local req = fake_request_handle( { headers = headers } )
                 wmf_ratelimit_info(req)
@@ -298,11 +310,11 @@ describe("rest_hooks", function()
             end)
         end)
         describe("MediaWiki client handling", function()
-            it("should recognize MediaWiki with trust-level D", function()
+            it("should recognize QuickInstantCommons with trust-level D", function()
                 local headers = {
-                    ["user-agent"] = "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1",
+                    ["user-agent"] = "QuickInstantCommons/0.8.15",
                     ["x-trusted-request"] = "D", -- should be ignored
-                    ["x-is-browser"] = "100", -- should be ignored
+                    ["x-is-browser"] = "10", -- not a browser
                     ["x-ua-contact"] = "https://some.fandom.com", -- used as key (for now)
                     ["x-client-ip"] = "203.0.113.222", -- set x-client-ip to mark the request as external
                 }
@@ -315,9 +327,9 @@ describe("rest_hooks", function()
             end)
             it("should recognize QuickInstantCommons with trust-level E", function()
                 local headers = {
-                    ["user-agent"] = "QuickInstantCommons/1.5 MediaWiki/1.39.5; Something",
+                    ["user-agent"] = "QuickInstantCommons/0.8.15",
                     ["x-trusted-request"] = "E", -- should be ignored
-                    ["x-is-browser"] = "100", -- should be ignored
+                    ["x-is-browser"] = "10", -- not a browser
                     ["x-client-ip"] = "203.0.113.222", -- should be used as key
                 }
                 local req = fake_request_handle( { headers = headers } )

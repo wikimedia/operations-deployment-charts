@@ -1,3 +1,32 @@
+{{/*
+  toLua: recursively converts a Helm value (map, slice, string, number, bool, nil)
+  into a Lua literal. Usage: {{ include "toLua" .someValue }}
+  For maps, string keys are quoted; numeric-looking keys use [n] syntax.
+*/}}
+{{- define "toLua" -}}
+  {{- if kindIs "map" . -}}
+    {
+    {{- range $k, $v := . }}
+        ["{{ $k }}"] = {{ include "toLua" $v | indent 4 | trim }},
+    {{- end }}
+    }
+  {{- else if kindIs "slice" . -}}
+    {
+    {{- range . }}
+        {{ include "toLua" . }},
+    {{- end }}
+    }
+  {{- else if kindIs "string" . -}}
+      {{ . | replace "\\" "\\\\" | replace "\"" "\\\"" | replace "\n" "\\n" | quote }}
+  {{- else if kindIs "bool" . -}}
+      {{ if . }}true{{ else }}false{{ end }}
+  {{- else if kindIs "invalid" . -}}
+      nil
+  {{- else -}}
+      {{ . }}
+  {{- end -}}
+{{- end -}}
+
 {{- define "restgw_headers.lua" }}
 -- From lua/restgw_headers.lua:
 {{ .Files.Get "lua/restgw_headers.lua" }}
@@ -16,22 +45,10 @@ HelmValues = {
         ratelimiter = {
             fallback_class = "{{ .Values.main_app.ratelimiter.fallback_class }}",
             browser_threshold = {{ .Values.main_app.ratelimiter.browser_threshold }},
-            anon_class_by_address = {
-                {{- range $addr, $class := .Values.main_app.ratelimiter.anon_class_by_address }}
-                ["{{ $addr }}"] = "{{ $class }}",
-                {{- end}}
-            },
-            default_policies = {
-                {{ range $policy := .Values.main_app.ratelimiter.default_policies -}}
-                "{{ $policy }}",
-                {{- end }}
-            },
-            exposed_headers = {
-                {{ range $header := .Values.main_app.ratelimiter.exposed_headers -}}
-                "{{ $header }}",
-                {{- end }}
-            },
-            ratelimit_notice_text = "{{ replace "\n" "\\\n" .Values.main_app.ratelimiter.ratelimit_notice_text }}"
+            ratelimit_notice_text = "{{ replace "\n" "\\\n" .Values.main_app.ratelimiter.ratelimit_notice_text }}",
+            class_overrides = {{ include "toLua" .Values.main_app.ratelimiter.class_overrides | indent 8 | trim }},
+            default_policies = {{ include "toLua" .Values.main_app.ratelimiter.default_policies | indent 8 | trim }},
+            exposed_headers = {{ include "toLua" .Values.main_app.ratelimiter.exposed_headers | indent 8 | trim }},
         }
     }
 }

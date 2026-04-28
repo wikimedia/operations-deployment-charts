@@ -307,21 +307,6 @@ class RateLimitTest(unittest.TestCase):
 
         self.assert_rate_limit_enforced(self.default_endpoint, "unauthed-bot", headers = request_headers)
 
-    def test_anon_class_by_address(self):
-        for (ip, cls) in env.values.main_app.ratelimiter.anon_class_by_address.items():
-            break # just use the first entry
-
-        request_headers = {
-            "x-client-ip": ip + "." + env.nextIp(), # known network range - not a valid IP address, but that doesn't matter
-            "x-trusted-request": "E", # generic anon
-        }
-
-        self.assert_rate_limit_enforced(self.default_endpoint, cls, headers = request_headers)
-
-        # try again with a different IP, to check that it is used as the rate limit key
-        request_headers["x-client-ip"] = ip + "." + env.nextIp()
-        self.assert_rate_limit_enforced(self.default_endpoint, cls, headers = request_headers)
-
     def test_trust_level_F(self):
         request_headers = {
             "x-client-ip": env.nextIp(), # external request
@@ -340,6 +325,8 @@ class RateLimitTest(unittest.TestCase):
         self.assert_rate_limit_enforced(self.default_endpoint, "anon-browser", headers = request_headers)
 
     def test_unauthed_mediawiki(self):
+        """ Test class_overrides for InstantCommons """
+
         request_headers = {
             "user-agent": "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1", # InstantCommons
             "x-client-ip": env.nextIp(), # external request
