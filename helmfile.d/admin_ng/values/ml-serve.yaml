@@ -346,8 +346,8 @@ namespaces:
           memory: "100Mi"
           cpu: "100m"
         max:
-          memory: "20Gi"
-          cpu: "12"
+          memory: "128Gi"
+          cpu: "24"
         defaultRequest:
           memory: "100Mi"
           cpu: "100m"
@@ -359,8 +359,17 @@ namespaces:
           memory: "100Mi"
           cpu: "100m"
         max:
-          memory: "20Gi"
-          cpu: "12"
+          memory: "132Gi"
+          cpu: "28"
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "90"
+          memory: "200Gi"
+        limits:
+          cpu: "90"
+          memory: "200Gi"
   edit-check:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
