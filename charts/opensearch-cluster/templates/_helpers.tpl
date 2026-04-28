@@ -61,3 +61,31 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{- define "opensearch.destinationRuleTrafficPolicy" -}}
+trafficPolicy:
+  connectionPool:
+    tcp:
+      maxConnections: 100
+      connectTimeout: 5s
+    http:
+      # allow persistent HTTP/1.1 connections and control reuse
+      http1MaxPendingRequests: 1024
+      http2MaxRequests: 1024
+      # 0 means "unlimited" (keep-alive allowed). Setting to 1 disables keep-alive.
+      maxRequestsPerConnection: 0
+      # keep upstream connections idle for up to 1 minute before closing
+      idleTimeout: 1m
+  tls:
+    mode: SIMPLE
+    sni: {{ .Release.Namespace }}.discovery.wmnet
+    caCertificates: /etc/ssl/certs/wmf-ca-certificates.crt
+    subjectAltNames:
+    # Default tls-service certificates
+    - {{ .Release.Namespace }}.discovery.wmnet
+    - {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local
+    - {{ $.Values.opensearchCluster.general.serviceName }}-bulk.{{ $.Release.Namespace }}.svc.cluster.local
+    {{- range $fqdn := $.Values.certificate.extraFQDNs }}
+    - {{ $fqdn }}
+    {{- end }}
+{{- end }}
