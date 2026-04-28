@@ -20,9 +20,9 @@ spec:
   - {{ $.Release.Name }}.{{ $.Release.Namespace }}
   - {{ $.Release.Name }}.{{ $.Release.Namespace }}.svc
   - {{ $.Release.Name }}.{{ $.Release.Namespace }}.svc.cluster.local
-  - {{ $.Release.Name }}.{{ $.Release.Namespace }}-bulk
-  - {{ $.Release.Name }}.{{ $.Release.Namespace }}-bulk.svc
-  - {{ $.Release.Name }}.{{ $.Release.Namespace }}-bulk.svc.cluster.local
+  - {{ $.Release.Name }}-bulk.{{ $.Release.Namespace }}
+  - {{ $.Release.Name }}-bulk.{{ $.Release.Namespace }}.svc
+  - {{ $.Release.Name }}-bulk.{{ $.Release.Namespace }}.svc.cluster.local
   {{- if $.Values.certificate.extraFQDNs -}}
   {{ $.Values.certificate.extraFQDNs | toYaml | nindent 2 }}
   {{- end }}
