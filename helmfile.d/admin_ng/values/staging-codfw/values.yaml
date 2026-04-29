@@ -156,6 +156,9 @@ namespaces:
         limits:
           cpu: "20"
           memory: "20Gi"
+    tlsExtraSANs:
+    - wikifunctions-python-evaluator.k8s-staging.discovery.wmnet
+    - wikifunctions-javascript-evaluator.k8s-staging.discovery.wmnet
   kartotherian:
     resourcequota:
       compute:

@@ -788,7 +788,14 @@ namespaces:
   toolhub:
     enableJobSidecarController: true
   wikifeeds: {}
-  wikifunctions: {}
+  wikifunctions:
+    tlsExtraSANs:
+    - wikifunctions-python-evaluator.svc.eqiad.wmnet
+    - wikifunctions-python-evaluator.svc.codfw.wmnet
+    - wikifunctions-python-evaluator.discovery.wmnet
+    - wikifunctions-javascript-evaluator.svc.eqiad.wmnet
+    - wikifunctions-javascript-evaluator.svc.codfw.wmnet
+    - wikifunctions-javascript-evaluator.discovery.wmnet
   zotero: {}
 
 GlobalNetworkPolicies:
