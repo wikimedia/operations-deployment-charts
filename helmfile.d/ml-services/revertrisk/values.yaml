@@ -76,13 +76,14 @@ inference_services:
           value: "mediawiki.page_revert_risk_prediction_change.v1"
   revertrisk-multilingual:
     annotations:
-      autoscaling.knative.dev/target: "3"
+      autoscaling.knative.dev/metric: "concurrency"
+      autoscaling.knative.dev/target: "5"
     predictor:
       config:
-        minReplicas: 3
-        maxReplicas: 15
+        minReplicas: 5
+        maxReplicas: 10
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2026-01-15-110714-publish"
+      image_version: "2026-04-28-153227-publish"
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
@@ -92,14 +93,18 @@ inference_services:
           value: "http://mw-api-int-ro.discovery.wmnet:4680"
         - name: FORCE_HTTP
           value: "true"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_revert_risk_multilingual_prediction_change.v1"
       container:
         resources:
           limits:
-            cpu: "4"
-            memory: 6Gi
+            cpu: "6"
+            memory: 8Gi
           requests:
-            cpu: "4"
-            memory: 6Gi
+            cpu: "6"
+            memory: 8Gi
   revertrisk-language-agnostic-pre-save:
     annotations:
       autoscaling.knative.dev/target: "15"
