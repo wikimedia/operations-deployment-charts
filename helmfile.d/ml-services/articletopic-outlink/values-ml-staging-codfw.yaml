@@ -25,3 +25,8 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+      container:
+        ports:
+          - name: h2c
+            containerPort: 8081
+            protocol: TCP
