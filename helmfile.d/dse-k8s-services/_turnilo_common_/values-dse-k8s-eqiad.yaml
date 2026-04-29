@@ -2178,6 +2178,18 @@ config:
             title: JA4H client HTTP fingerprint
             formula: $ja4h
 
+          - name: ja4h_prefix
+            title: JA4H prefix
+            formula: $ja4h.extract('^([^_]+)')
+
+          - name: ja4h_header_set
+            title: JA4H header set (sorted header names, hashed)
+            formula: $ja4h.extract('^[^_]+_([^_]+)')
+
+          - name: ja4h_header_order
+            title: JA4H header order (header names in client order, hashed)
+            formula: $ja4h.extract('([^_]+)$')
+
           - name: x_is_browser
             title: X-Is-Browser score
             # X-I-B is a string in Druid, but we wish to interpret it as a number in Turnilo for purposes like sorting.
