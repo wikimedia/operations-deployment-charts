@@ -185,7 +185,9 @@ env:
 
 {{/* Represents a Go variable as a literal Python value */}}
 {{- define "toPythonValue" -}}
-{{- if kindIs "string" .value -}}
+{{- if eq (toYaml .value) "null" -}}
+None
+{{- else if kindIs "string" .value -}}
 {{- .value | quote }}
 {{- else if kindIs "float64" .value -}}
 {{- .value }}

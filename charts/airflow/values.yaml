@@ -67,6 +67,7 @@ config:
 
     auth:
       role_admin: Admin
+      role_public: ~
       roles_sync_at_login: true
       user_registration: true
       user_registration_role: Public
@@ -105,7 +106,6 @@ config:
         default_task_retries: 5
         parallelism: 64
         test_connection: enabled
-        auth_manager: webserver_config.CustomAuthManager
         xcom_backend: airflow.providers.common.io.xcom.backend.XComObjectStorageBackend
         might_contain_dag_callable: import_helper.focused_import # Handles $.Values.airflow.config.dags_filter filtering
       common.io:

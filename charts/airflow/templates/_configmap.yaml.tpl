@@ -134,6 +134,7 @@ data:
 
     {{- with $.Values.config.airflow.auth }}
     AUTH_ROLE_ADMIN = {{ template "toPythonValue" (dict "value" .role_admin) }}
+    AUTH_ROLE_PUBLIC = {{ template "toPythonValue" (dict "value" .role_public) }}
     AUTH_ROLES_SYNC_AT_LOGIN = {{ template "toPythonValue" (dict "value" .roles_sync_at_login) }}
     AUTH_USER_REGISTRATION = {{ template "toPythonValue" (dict "value" .user_registration) }}
     AUTH_USER_REGISTRATION_ROLE = {{ template "toPythonValue" (dict "value" .user_registration_role) }}
