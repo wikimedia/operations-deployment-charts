@@ -24,13 +24,13 @@ inference_services:
   - name: revertrisk-multilingual
     annotations:
       autoscaling.knative.dev/metric: "rps"
-      autoscaling.knative.dev/target: "10"
+      autoscaling.knative.dev/target: "5"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
-      image_version: "2026-03-09-143809-publish"
+      image_version: "2026-04-28-153227-publish"
       config:
-        minReplicas: 3
-        maxReplicas: 6
+        minReplicas: 5
+        maxReplicas: 10
       custom_env:
         - name: MODEL_NAME
           value: "revertrisk-multilingual"
