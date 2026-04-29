@@ -22,3 +22,9 @@ core:
   # More info: https://phabricator.wikimedia.org/T397696#10943466
   config_deployment:
      registriesSkippingTagResolving: 'docker-registry.wikimedia.org,docker-registry.discovery.wmnet'
+
+  # Enable Knative HTTP/2 auto-detection so the queue-proxy speaks h2c upstream
+  # to the user container when the Service port is named http2/h2c. Required for
+  # KServe v2 gRPC traffic via the istio-ingressgateway 50051 listener.
+  config_features:
+    autodetect-http2: "enabled"
