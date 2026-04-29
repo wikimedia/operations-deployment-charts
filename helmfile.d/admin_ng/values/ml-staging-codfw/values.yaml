@@ -60,6 +60,8 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
         - 8081
+        # External gRPC port for kserve v2 inference protocol.
+        - 50051
 chartVersions:
   wmf-stable/calico: ~
   wmf-stable/calico-crds: ~
