@@ -23,7 +23,7 @@ inference_services:
           value: "mediawiki.page_prediction_change.rc0"
   - name: revertrisk-multilingual
     annotations:
-      autoscaling.knative.dev/metric: "rps"
+      autoscaling.knative.dev/metric: "concurrency"
       autoscaling.knative.dev/target: "5"
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
