@@ -13,7 +13,8 @@ app:
     replicas: 10
     resource:
       cpu: 1
-      memory: 6000m
+      # This pipeline uses a little over 3000m in production, setting it to 4000m as buffer.
+      memory: 4000m
 
   config_files:
     app.config.yaml:
@@ -25,19 +26,19 @@ app:
       
         # Configure sources and sinks.
         source:
-          stream: mediawiki.page_html_content_change.rc0:1.0.0
+          stream: mediawiki.page_html_content_change.v1:1.0.0
           # source parallelism should  be set to the number of input Kafka topic-partitions.
-          # mediawiki.page_html_content_change.rc0 is made up of two topics, each of one partition
+          # mediawiki.page_html_content_change.v1 is made up of two topics, each of one partition
           # (as of 2026-04)
           parallelism: 2
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
-            topics: [eqiad.mediawiki.page_html_content_change.rc0, codfw.mediawiki.page_html_content_change.rc0]
+            topics: [eqiad.mediawiki.page_html_content_change.v1, codfw.mediawiki.page_html_content_change.v1]
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-feature-counts-change-enrich__dse-k8s-eqiad.000
 
         sink:
-          stream: mediawiki.page_html_feature_counts_change.rc0:1.0.0
+          stream: mediawiki.page_html_feature_counts_change.v1:1.0.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
