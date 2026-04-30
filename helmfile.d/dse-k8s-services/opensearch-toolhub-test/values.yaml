@@ -1,0 +1,8 @@
+opensearchCluster:
+  general:
+    serviceName: "opensearch-toolhub-test"
+    image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:3@sha256:95eea5d5bbd6ca958f53e120abe631b2e6f99c234339093627216a8fb34f217f
+
+certificate:
+  extraFQDNs:
+  - opensearch-toolhub-test.discovery.wmnet
