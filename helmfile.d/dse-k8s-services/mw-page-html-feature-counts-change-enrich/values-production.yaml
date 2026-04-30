@@ -28,9 +28,9 @@ app:
         source:
           stream: mediawiki.page_html_content_change.v1:1.0.0
           # source parallelism should  be set to the number of input Kafka topic-partitions.
-          # mediawiki.page_html_content_change.v1 is made up of two topics, each of one partition
-          # (as of 2026-04)
-          parallelism: 2
+          # mediawiki.page_html_content_change.v1 is made up of two topics, each of 6 partition
+          # (as of 2026-04). Only one DC is active at a time, so we can set parallelism to 6.
+          parallelism: 6
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             topics: [eqiad.mediawiki.page_html_content_change.v1, codfw.mediawiki.page_html_content_change.v1]
