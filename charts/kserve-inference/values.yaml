@@ -55,6 +55,9 @@ main_app:
   port: 8080
   queue_proxy:
     port: 8012
+    # queue-proxy listens on both 8012 and 8013 in this Knative version
+    # (matches knative networkpolicy-activator); allow both.
+    port_v2: 8013
     metrics_port: 9090
     revision_metrics_port: 9091
   istio_sidecar:
