@@ -15,3 +15,7 @@ resources:
 strategy:
   type: Recreate
   rollingUpdate: ~ # This is here to ensure globals are overriden
+
+# T418200 Test updated rsyslog image
+common_images:
+  rsyslogd: rsyslog:8.2504.0-1
