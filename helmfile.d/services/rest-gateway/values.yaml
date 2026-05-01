@@ -77,6 +77,8 @@ main_app:
       "217.109.129.254":   "anon-cgnat" # Orange, France
       "240f:141:13fb:1:d61:1492:1020:9e5d": "anon-cgnat" # au one net
       "2001:6b0:17:2004::56:212":           "anon-cgnat" # Swedish University Network
+      "93.42.123.246":  "known-network" # T425009 - Milan Hackathon Hotel
+      "168.119.64.194":  "known-network" # T425009 - Milan Hackathon specific network
     allow_client_headers: false        # TESTING: allow clients to pass in rate limit headers
     enable_x_ratelimit_headers: false  # include x-ratelimit headers in responses
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
