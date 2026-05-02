@@ -29,3 +29,25 @@ php:
 
 resources:
   replicas: 8
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      # shellbox-media needs to be able to communicate with swift in order to
+      # fetch files so it can extract metadata
+      # ms-fe.svc.eqiad.wmnet.
+      - cidr: 10.2.2.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+      # ms-fe.svc.codfw.wmnet.
+      - cidr: 10.2.1.27/32
+        ports:
+          - protocol: TCP
+            port: 443
+
+discovery:
+  listeners:
+    - swift-eqiad
+    - swift-codfw
