@@ -61,7 +61,7 @@ resources:
 
 {{- if .Values.sidecar.enabled }}
 - name: {{ .Release.Name }}-sidecar
-  image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}:{{ .Values.main_app.version }}"
+  image: "{{ .Values.docker.registry }}/{{ .Values.sidecar.image }}:{{ .Values.sidecar.version }}"
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   command:
     {{- range .Values.sidecar.command }}
