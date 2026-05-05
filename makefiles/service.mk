@@ -15,9 +15,9 @@ endif
 
 env := $(strip $(env))
 
-# Expect the main script to be in a subdirectory of the service definition.
+# Expect the Makefile to be in the service definition directory.
 entrypoint_dir := $(dir $(firstword $(MAKEFILE_LIST)))
-servicedir := $(entrypoint_dir)/..
+servicedir := $(entrypoint_dir)
 
 # pyunit and valuefiles for smokepy
 thisdir := $(dir $(lastword $(MAKEFILE_LIST)))

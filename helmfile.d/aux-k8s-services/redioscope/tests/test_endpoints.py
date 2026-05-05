@@ -44,11 +44,11 @@ class RedioscopeTest(unittest.TestCase):
 
 def init():
     default_value_files = [
-        "../../../../charts/redioscope/values.yaml", # chart defaults
-        "../values.yaml", # service defaults
+        "../../../charts/redioscope/values.yaml", # chart defaults
+        "values.yaml", # service defaults
     ]
 
-    env.init(__file__, default_value_files)
+    env.init(__file__, '..', default_value_files)
 
 def main():
     unittest.main()

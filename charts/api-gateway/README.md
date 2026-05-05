@@ -35,23 +35,30 @@ This mode is used by the `rest-gateway` service.
 
 ## Tests
 
-Unit tests and end-to-end tests live in `charts/api-gateway/tests/`. See
-[`tests/README.md`](tests/README.md) for full instructions.
+Unit tests and end-to-end tests live in `charts/api-gateway/tests/` and run 
+against Minikube. See [`tests/README.md`](tests/README.md) for full instructions.
 
 Tests can be run using `make`.
-Quick start from `charts/api-gateway/tests/`:
+Quick start from `charts/api-gateway/`:
 
 ```bash
+minikube start     # spin up minikube, if it's not already running
 make test          # offline unit tests (Lua + chart render)
 make install       # deploy to a local minikube cluster
 make port-forward  # forward gateway ports to localhost (run in a separate terminal)
 make check         # run end-to-end smoke tests against the minikube installation
 make uninstall     # tear down the minikube installation
+minikube stop      # shut down minikube (or leave it running for the next test)
 ```
+
+Additional useful Make targets are:
+* `reinstall`: uninstall then install (useful during development)
+* `logs`: show logs from gateway pod
+* `env`: output environment variables for manual testing
 
 Note that `make check` delegates to the smoke tests in
 `helmfile.d/services/rest-gateway/tests/`, which can also be run directly
-against the staging cluster. See that directory's README for details.
+against the staging cluster. See the README in the service directory for details.
 
 See the README in the api-gateway chart's `tests` directory for instructions
 for configuring the test environment. 
@@ -71,12 +78,11 @@ in the API gateway pod.
 The development setup for API Gateway mode is defined in `values-devel.yaml`.
 
 The development setup for REST Gateway mode is defined in `values-minikube.yaml`
-under `helmfile.d/services/rest-gateway/tests/`. That file is designed to be
+under `helmfile.d/services/rest-gateway/`. That file is designed to be
 loaded on top of `values-staging.yaml`, which in turn overrides settings loaded
 from `values.yaml`. This ensures that the test environment is similar to the
 production environment. The easiest way to use the development setup of the
-REST Gateway is using the Makefile in the `tests` directory, see the README in
-that directory for details.
+REST Gateway is using the chart's Makefile. See [`tests/README.md`](tests/README.md) for details.
 
 The development setup makes use of some fake services, to allow easy setup and
 isolation from the production setup.

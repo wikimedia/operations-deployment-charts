@@ -22,7 +22,7 @@ service := $(strip $(service))
 cluster := $(strip $(cluster))
 
 dir := $(dir $(firstword $(MAKEFILE_LIST)))
-chartdir := $(dir)/..
+chartdir := $(dir)
 servicedir := $(chartdir)/../../helmfile.d/$(cluster)/$(service)
 
 ifeq (,$(wildcard $(servicedir)))

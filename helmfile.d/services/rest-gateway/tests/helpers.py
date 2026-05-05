@@ -48,10 +48,10 @@ def initEnv():
     default_value_files = [
         # Relevant value files from the service directory need to be specified
         # using the SMOKEPY_VALUE_FILES environment variable.
-        "../../../../charts/api-gateway/values.yaml", # chart defaults
+        "../../../charts/api-gateway/values.yaml", # chart defaults
     ]
 
-    env.init(__file__, default_value_files)
+    env.init(__file__, '..', default_value_files)
 
 def append_params(path, params):
     if '?' in path:

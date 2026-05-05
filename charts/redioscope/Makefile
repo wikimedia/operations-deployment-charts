@@ -5,9 +5,9 @@ ports = 8099
 selector = -l app=$(name)
 cluster = aux-k8s-services
 
-include ../../../makefiles/chart.mk
-include ../../../makefiles/help.mk
-include ../../../makefiles/phony.mk
+include ../../makefiles/chart.mk
+include ../../makefiles/help.mk
+include ../../makefiles/phony.mk
 
 uninstall: ## uninstall gateway
 	helm uninstall "$(name)"
@@ -36,5 +36,5 @@ logs: ## show logs
 	kubectl logs $$( kubectl get pod $(selector) -o name ) -f
 
 check: ## check minikube environment
-	@cd "$(servicedir)/tests" && \
+	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube

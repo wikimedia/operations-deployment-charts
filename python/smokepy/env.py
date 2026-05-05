@@ -3,7 +3,7 @@ import random
 
 from smokepy.values import Values
 
-base_dir = None
+values_basedir = None
 value_files_specified = None
 values = None
 
@@ -11,17 +11,23 @@ def load_values(valueFiles = []):
     values = Values()
     for f in valueFiles:
         if not os.path.isabs(f):
-            f = os.path.abspath(os.path.join(base_dir, f))
+            f = os.path.abspath(os.path.join(values_basedir, f))
 
         print( "Loading values from", f )
         values.load_yaml_file(f)
 
     return values
 
-def init(caller_file: str, default_value_files = [], extra_value_files = []):
-    global values, value_files_specified, base_dir
+def init(caller_file: str, values_subdir: str, default_value_files = [], extra_value_files = []):
+    global values, value_files_specified, values_basedir
 
-    base_dir = os.path.abspath(os.path.dirname(os.path.realpath(caller_file)))
+    # determine the base dir relative to the location of the caller's file
+    values_basedir = os.path.abspath(
+        os.path.join(
+            os.path.dirname(os.path.realpath(caller_file)),
+            values_subdir
+        )
+    )
 
     value_files_specified = extra_value_files or []
 

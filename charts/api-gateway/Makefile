@@ -3,14 +3,15 @@ name ?= restgw ## release name (e.g. restgw)
 service ?= rest-gateway ## service name (rest-gateway or api-gateway)
 helm ?= helm ## the helm binary to use
 
-include ../../../makefiles/chart.mk
-include ../../../makefiles/help.mk
-include ../../../makefiles/phony.mk
+include ../../makefiles/chart.mk
+include ../../makefiles/help.mk
+include ../../makefiles/phony.mk
 
 name := $(strip $(name))
 helm := $(strip $(helm))
 
 app := "api-gateway"
+testdir := $(chartdir)/tests
 
 uninstall: ## uninstall gateway from kubernetes
 	$(helm) uninstall "$(name)"
@@ -39,26 +40,29 @@ logs: ## show logs of an installed gateway instance
 	kubectl logs $$( kubectl get pod -l "app=$(app)" -l "release=$(name)" -o name ) -f
 
 env: ## outputs environment for manual testing
-	@cd "$(servicedir)/tests" && \
+	@cd "$(servicedir)" && \
 		$(MAKE) env env=minikube
 
 test-lua: ## run Lua tests
 	@echo "Running Lua tests"
-	busted $(dir)/lua/test*.lua
+	cd "$(testdir)" && \
+		busted lua/test*.lua
 	@echo
 
 test-render: ## run chart render tests
 	@echo "Validating chart rendering"
-	HELM_BIN=$(helm) python3 -m unittest render/test_*.py $(pyunit_options)
+	cd "$(testdir)" && \
+		HELM_BIN=$(helm) python3 -m unittest render/test_*.py $(pyunit_options)
 	@echo
 
 test-test-helpers: ## run meta-tests for the test helpers
 	@echo "Testing chart rendering test helpers"
-	python3 -m unittest render/test/test_*.py $(pyunit_options)
+	cd "$(testdir)" && \
+		python3 -m unittest render/test/test_*.py $(pyunit_options)
 	@echo
 
 test: test-test-helpers test-lua test-render ## run unit tests
 
 check: ## run end-to-end checks on minikube environment (needs port-forwarding to be active)
-	@cd "$(servicedir)/tests" && \
+	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube
