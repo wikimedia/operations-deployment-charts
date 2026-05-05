@@ -21,6 +21,17 @@ main_app:
       secret:
         secretName: miscweb-wmf-navigator-secret-config
 
+sidecar:
+  enabled: true
+  image: repos/projects/wmf-navigator
+  version: 2026-05-05-032153-navigator-backend
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
 mesh:
   enabled: true
   public_port: 4111
