@@ -1,6 +1,6 @@
 ################### REPORTING ON CHARTS ###############################
-<%- if has_lv? %>
-== LINTING AND VALIDATION ==
+<%- if has_lv? || has_ci_tests? %>
+== RESULTS FOR <%= tests.join(', ') %> ==
 
   <% ok.keys.each do |lbl| -%>
   <%= lbl.ljust(60) %><%= report(true) %>
@@ -24,6 +24,19 @@
   ----------------
   <% end  # closes the errors clause -%>
   <% end # closes lint clause-%>
+
+  <% unless (asset.result[:ci_test].nil?) -%>
+  CI Test:<%= report(asset.result[:ci_test].ok?).rjust(60) %>
+  <% unless asset.result[:ci_test].ok? -%>
+
+  make/rake ci_test output:
+  ----------------
+  <%= (asset.result[:ci_test].out || '').indent(2) %>
+  <%= (asset.result[:ci_test].err || '').indent(2) %>
+
+  ----------------
+  <% end  # closes the errors clause -%>
+  <% end # closes test clause-%>
 
   Validate: <%= report(asset.validate_errors.empty?).rjust(54) %>
   <% asset.validate_errors.each do |lbl, error| -%>

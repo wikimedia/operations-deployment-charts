@@ -63,6 +63,8 @@ test-test-helpers: ## run meta-tests for the test helpers
 
 test: test-test-helpers test-lua test-render ## run unit tests
 
+ci-test: test
+
 check: ## run end-to-end checks on minikube environment (needs port-forwarding to be active)
 	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube

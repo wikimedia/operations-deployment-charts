@@ -1,6 +1,9 @@
 KIND_CLUSTER_NAME := vaps
 
-.PHONY: kind kind-delete chainsaw chainsaw-custom chainsaw-pss clean test
+.PHONY: kind kind-delete chainsaw chainsaw-custom chainsaw-pss clean ci-test
+
+ci-test:
+	@echo "No CI tests defined"
 
 test: chainsaw kind-delete
 clean: kind-delete

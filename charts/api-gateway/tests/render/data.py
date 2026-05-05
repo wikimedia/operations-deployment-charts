@@ -1,3 +1,4 @@
+from typing import Optional
 from smokepy import values
 
 DEFINED = object()    # any value including None
@@ -85,7 +86,7 @@ def _parse_list_key(k):
 
     raise KeyError(f"Invalid list index {k}")
 
-def find_all(selectors: dict | None, data: list, clazz = HelmData):
+def find_all(selectors: Optional[dict], data: list, clazz = HelmData):
     """
     Find all structs in the list that match the given selectors.
     The selectors are given as a dict that associate value paths with expected values.

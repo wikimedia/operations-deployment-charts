@@ -49,6 +49,7 @@ task :check_dep do
   check_binary('helm3.17')
   check_binary('helmfile')
   check_binary('semver-cli')
+  check_binary('make')
 
   res, output = _exec('helm version --client --short')
   helm_version = output.split('.').first
@@ -122,6 +123,14 @@ desc 'Runs helm lint on all charts'
 task :lint do |_t, args|
   charts = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
   Rake::Task[:check_charts].invoke('lint', charts)
+  Rake::Task[:check_charts].reenable
+end
+
+# XXX: do we need this as a standalone target?
+desc 'Runs CI tests on all charts'
+task :ci_test do |_t, args|
+  charts = args.nil? || args.extras.empty? ? nil : args.extras.join('/')
+  Rake::Task[:check_charts].invoke('ci_test', charts)
   Rake::Task[:check_charts].reenable
 end
 

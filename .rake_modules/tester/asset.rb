@@ -80,6 +80,7 @@ module Tester
     def ok?
       return true if @result == self.class::INIT_RESULT
       return false unless @result[:lint].nil? || @result[:lint].ok?
+      return false unless @result[:ci_test].nil? || @result[:ci_test].ok?
       return false unless validate_errors.empty?
 
       true
@@ -104,6 +105,9 @@ module Tester
     # The public interfaces.
     # Run linting on the asset. Will need to be implemented in the subclasses
     def lint; end
+
+    # Run CI tests on the asset. Will need to be implemented in the subclasses
+    def ci_test; end
 
     # Validate the manifest, by first verifying it's valid yaml,
     # then running it through kubeconform
@@ -325,9 +329,23 @@ module Tester
 
     def lint
       outcome = _exec("helm lint #{@path}")
-      # surpress warnings about symlinks, see https://github.com/helm/helm/issues/7019
+      # suppress warnings about symlinks, see https://github.com/helm/helm/issues/7019
       outcome.grep_v(/found symbolic link/)
       @result[:lint] = outcome
+    end
+
+    def ci_test
+      # Note: By convention, Makefiles use hyphens in target names, not underscores.
+      # For Rakefiles, it's the other way around. We give up on internal consistency
+      # for the sake of adhering to the convention of the target language.
+      if File.exist?(File.join(@path, 'Rakefile'))
+        outcome = _exec("rake ci_test", nil, @path)
+      elsif File.exist?(File.join(@path, 'Makefile'))
+        outcome = _exec("make ci-test", nil, @path)
+      else
+        return
+      end
+      @result[:ci_test] = outcome
     end
 
     private

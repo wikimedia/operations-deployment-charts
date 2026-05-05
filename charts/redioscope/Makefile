@@ -35,6 +35,9 @@ port-forward: ## start port forwarding
 logs: ## show logs
 	kubectl logs $$( kubectl get pod $(selector) -o name ) -f
 
+ci-test:
+	@echo "No CI tests defined"
+
 check: ## check minikube environment
 	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube

@@ -28,6 +28,16 @@ module Tester
       @args[:tests].include?('diff')
     end
 
+    def has_ci_tests?
+      return true unless @args.include?(:tests)
+
+      @args[:tests].include?('ci_test')
+    end
+
+    def tests
+      @args[:tests]&.split('/') || ['all']
+    end
+
     def asset_name(asset)
       if asset.ok?
         asset.name.green

@@ -100,9 +100,15 @@ provide necessary values for testing by creating
 a `helmfile.d/services/$SERVICE/.fixtures.yaml` file to simulate production
 data.
 
-Some charts and service definitions provide a Makefile that defines targets
-for integration testing on the staging cluster and local minikube environments.
-This practice is still experimental.
+Charts may provide a Makefile (or Rakefile) that defines targets for unit
+testing. This feature is still experimental. If a Makefile (or Rakefile) 
+exists, it must define a `ci_test` (rake) resp. `ci-test` (make)
+target is defined. This target will be invoked in CI via the top-level Rakefile.
+
+Similarly, charts and service definitions may provide a Makefile (or Rakefile)
+that defines targets for integration testing on the staging cluster and local
+minikube environments. By convention, the `check` target would be used for this
+purpose.
 
 License
 -------

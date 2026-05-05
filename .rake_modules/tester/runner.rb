@@ -15,7 +15,7 @@ module Tester
     attr_reader :assets
 
     ASSET = ChartAsset
-    DEFAULT_TESTS = %w[lint validate diff].freeze
+    DEFAULT_TESTS = %w[lint validate diff ci_test].freeze
     EXCLUDE = [].freeze
 
     # Instantiate a new TestRunner and find
@@ -39,6 +39,7 @@ module Tester
       assets = @assets.values
       # First let's filter our assets if there is such an option defined
       run_lint assets if @tests.include? 'lint'
+      run_ci_test assets if @tests.include? 'ci_test'
       run_diff assets if @tests.include? 'diff'
       run_validate assets if @tests.include? 'validate'
       run_finally assets
@@ -50,6 +51,17 @@ module Tester
       assets.each do |asset|
         tp.run do
           asset.lint
+        end
+      end
+      tp.join
+    end
+
+    def run_ci_test(assets)
+      # We have no issue with overwhelming any charts repo at this point.
+      tp = ThreadPool.new(nthreads: Etc.nprocessors)
+      assets.each do |asset|
+        tp.run do
+          asset.ci_test
         end
       end
       tp.join
