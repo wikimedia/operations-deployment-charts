@@ -324,6 +324,18 @@ class RateLimitTest(unittest.TestCase):
 
         self.assert_rate_limit_enforced(self.default_endpoint, "anon-browser", headers = request_headers)
 
+    def test_anon_app(self):
+        """ Test class_overrides for WikipediaApp"""
+
+        request_headers = {
+            "user-agent": "WikipediaApp/8.0.0", # WikipediaApp (matched by class_override pattern)
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "E", # general fallback
+            "x-is-browser": "100", # The app should be recognized as a browser
+        }
+
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon-app", headers = request_headers)
+
     def test_anon_mediawiki(self):
         """ Test class_overrides for InstantCommons (no contact info)"""
 

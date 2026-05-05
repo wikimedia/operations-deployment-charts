@@ -117,6 +117,13 @@ main_app:
           - "^MediaWiki/"
           - "^QuickInstantCommons/"
 
+      # Wikipedia App (T425391)
+      - header: "user-agent"
+        mappings:
+          "anon-browser": "anon-app"
+        patterns:
+          - "^WikipediaApp/"
+
     allow_client_headers: false        # TESTING: allow clients to pass in rate limit headers
     enable_x_ratelimit_headers: false  # include x-ratelimit headers in responses
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
@@ -140,6 +147,8 @@ main_app:
             MINUTE: 400 # 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 400
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
             MINUTE: 4000 # needs high limit until we can distinguish clients
           "authed-user": # valid JWT
@@ -170,6 +179,8 @@ main_app:
             MINUTE: 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 400
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
             MINUTE: 4000 # needs high limit until we can distinguish clients
           "authed-user": # valid JWT
@@ -203,6 +214,8 @@ main_app:
           "unauthed-mediawiki": # InstantCommons and such (with contact info)
             HOUR: 10000
           "anon-browser": # no auth, but looks like a browser
+            HOUR: 10000 # a single page view can easily go over 1000 requests...
+          "anon-app": # no auth, but looks like our app
             HOUR: 10000 # a single page view can easily go over 1000 requests...
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
             HOUR: 250000 # needs high limit until we can distinguish clients
