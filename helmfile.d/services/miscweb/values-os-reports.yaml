@@ -14,24 +14,25 @@ main_app:
     - name: rsync-data
       mountPath: /srv/app/html
 
-sidecar:
-  enabled: true
-  image: repos/sre/miscweb/os-reports
-  version: 2025-07-18-121617
-  limits:
-    cpu: 200m
-    memory: 250Mi
-  requests:
-    cpu: 100m
-    memory: 150Mi
-  command:
-  - /bin/sh
-  args:
-  - -c
-  - while true; do /usr/bin/rsync -trv rsync://$PUPPET_DB_HOST/osreports /srv/app/html; sleep 12h; done
-  volumeMounts:
-    - name: rsync-data
-      mountPath: /srv/app/html
+sidecars:
+  data-sync:
+    enabled: true
+    image: repos/sre/miscweb/os-reports
+    version: 2025-07-18-121617
+    limits:
+      cpu: 200m
+      memory: 250Mi
+    requests:
+      cpu: 100m
+      memory: 150Mi
+    command:
+    - /bin/sh
+    args:
+    - -c
+    - while true; do /usr/bin/rsync -trv rsync://$PUPPET_DB_HOST/osreports /srv/app/html; sleep 12h; done
+    volumeMounts:
+      - name: rsync-data
+        mountPath: /srv/app/html
 
 mesh:
   enabled: true

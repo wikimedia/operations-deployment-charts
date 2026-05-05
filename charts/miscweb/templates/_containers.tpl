@@ -59,34 +59,42 @@ resources:
 {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 
-{{- if .Values.sidecar.enabled }}
-- name: {{ .Release.Name }}-sidecar
-  image: "{{ .Values.docker.registry }}/{{ .Values.sidecar.image }}:{{ .Values.sidecar.version }}"
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
+
+{{- range $name, $sidecar := .Values.sidecars }}
+{{- if $sidecar.enabled }}
+- name: {{ $.Release.Name }}-{{ $name }}
+  image: "{{ $.Values.docker.registry }}/{{ $sidecar.image }}:{{ $sidecar.version }}"
+  imagePullPolicy: {{ $.Values.docker.pull_policy }}
+  {{- if $sidecar.command }}
   command:
-    {{- range .Values.sidecar.command }}
+    {{- range $sidecar.command }}
     - {{ . | quote }}
     {{- end}}
+  {{- end }}
+  {{- if $sidecar.args }}
   args:
-    {{- range .Values.sidecar.args }}
+    {{- range $sidecar.args }}
     - {{ . | quote }}
-    {{ end }}
+    {{- end }}
+  {{- end }}
   resources:
     requests:
-{{ toYaml .Values.sidecar.requests | indent 6 }}
+{{ toYaml $sidecar.requests | indent 6 }}
     limits:
-{{ toYaml .Values.sidecar.limits | indent 6 }}
-{{- with .Values.sidecar.volumeMounts }}
+{{ toYaml $sidecar.limits | indent 6 }}
+{{- with $sidecar.volumeMounts }}
   volumeMounts:
 {{ toYaml . | indent 4 }}
 {{- end }}
   env:
-  {{- range $k, $v := .Values.config.public }}
+  {{- range $k, $v := $.Values.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
   {{- end }}
-{{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
-{{- end}}
+{{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
+{{- end }}
+{{- end }}
+
 
 {{- if and .Values.monitoring.enabled .Values.monitoring.uses_statsd }}
 - name: {{ .Release.Name }}-metrics-exporter
