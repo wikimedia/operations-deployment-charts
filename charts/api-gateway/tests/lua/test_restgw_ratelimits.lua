@@ -29,7 +29,7 @@ _G.HelmValues = {
                     header = "user-agent",
                     values = { "QuickInstantCommons/0.8.15" },
                     mappings = {
-                        ['anon'] = "unauthed-mediawiki",
+                        ['anon'] = "anon-mediawiki",
                         ['unauthed-bot'] = "unauthed-mediawiki",
                     },
                 },
@@ -337,7 +337,7 @@ describe("rest_hooks", function()
 
                 local result = req:headers()
                 assert.are.equal( "x-client-ip:203.0.113.222", result:get("x-wmf-user-id") )
-                assert.are.equal( "unauthed-mediawiki", result:get("x-wmf-ratelimit-class") )
+                assert.are.equal( "anon-mediawiki", result:get("x-wmf-ratelimit-class") )
             end)
         end)
         describe("bearer_payload handling", function()

@@ -111,7 +111,9 @@ main_app:
             MINUTE: 5
           "unauthed-bot": # no auth, but good User-Agent -- temp?
             MINUTE: 7
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 4
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             MINUTE: 9
           "authed-user": # valid JWT
             MINUTE: 11
@@ -139,7 +141,9 @@ main_app:
             MINUTE: 5
           "unauthed-bot": # no auth, but good User-Agent -- temp?
             MINUTE: 7
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 4
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             MINUTE: 9
           "authed-user": # valid JWT
             MINUTE: 11
@@ -167,7 +171,9 @@ main_app:
             MINUTE: 50
           "unauthed-bot": # no auth, but good User-Agent -- temp?
             MINUTE: 70
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 40
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             MINUTE: 90
           "authed-user": # valid JWT
             MINUTE: 110

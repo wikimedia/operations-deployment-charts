@@ -111,7 +111,7 @@ main_app:
       # MediaWiki-to-MediaWiki traffic (mostly InstantCommons)
       - header: "user-agent"
         mappings:
-          "anon": "unauthed-mediawiki"
+          "anon": "anon-mediawiki" # T425390
           "unauthed-bot": "unauthed-mediawiki"
         patterns:
           - "^MediaWiki/"
@@ -134,7 +134,9 @@ main_app:
             MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent -- temp?
             MINUTE: 400 # 200
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (no contact info)
+            MINUTE: 400 # 100
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             MINUTE: 400 # 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
@@ -162,7 +164,9 @@ main_app:
             MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent -- temp?
             MINUTE: 200
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (no contact info)
+            MINUTE: 100
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             MINUTE: 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
@@ -194,7 +198,9 @@ main_app:
             HOUR: 1000
           "unauthed-bot": # no auth, but good User-Agent
             HOUR: 1000 # this is quite restrictive, but the endpoints are expensive
-          "unauthed-mediawiki": # InstantCommons and such
+          "anon-mediawiki": # InstantCommons and such (no contact info)
+            HOUR: 1000
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
             HOUR: 10000
           "anon-browser": # no auth, but looks like a browser
             HOUR: 10000 # a single page view can easily go over 1000 requests...

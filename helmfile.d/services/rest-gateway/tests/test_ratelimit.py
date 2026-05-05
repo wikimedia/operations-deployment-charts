@@ -324,13 +324,26 @@ class RateLimitTest(unittest.TestCase):
 
         self.assert_rate_limit_enforced(self.default_endpoint, "anon-browser", headers = request_headers)
 
+    def test_anon_mediawiki(self):
+        """ Test class_overrides for InstantCommons (no contact info)"""
+
+        request_headers = {
+            "user-agent": "MediaWiki/1.43.1", # MediaWiki (no contact info)
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "E", # general fallback
+            "x-is-browser": "20", # >= 80 is good (see browser_threshold value)
+        }
+
+        self.assert_rate_limit_enforced(self.default_endpoint, "anon-mediawiki", headers = request_headers)
+
     def test_unauthed_mediawiki(self):
-        """ Test class_overrides for InstantCommons """
+        """ Test class_overrides for InstantCommons (with contact info)"""
 
         request_headers = {
             "user-agent": "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1", # InstantCommons
             "x-client-ip": env.nextIp(), # external request
-            "x-trusted-request": "E", # general fallback
+            "x-ua-contact": "https://some.fandom.com", # has contact info
+            "x-trusted-request": "D", # good UA
             "x-is-browser": "20", # >= 80 is good (see browser_threshold value)
         }
 
