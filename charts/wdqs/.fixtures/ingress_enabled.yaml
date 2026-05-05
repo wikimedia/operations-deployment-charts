@@ -1,0 +1,38 @@
+mesh:
+  enabled: true
+  image_version: 1.13.1-2
+  public_port: 4666 # the port where TLS will be exposed
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+ingress:
+  enabled: true
+  gatewayHosts:
+    disableDefaultHosts: true
+    extraFQDNs:
+      - somehost.somedomain.sometld
+      - another.somedomain.sometld
+  custom_cors_policy:
+    allowOrigins:
+    - exact: https://example.com
+    allowMethods:
+    - POST
+    - GET
+    allowCredentials: false
+    allowHeaders:
+    - X-Foo-Bar
+    maxAge: "24h"
+  httproutes:
+    - match:
+        - uri:
+            prefix: /blaaa
+    - match:
+        - uri:
+            prefix: /dsjsldfblaaa
+      route:
+        - destination:
+            host: blablabla
+            port:
+              number: 555

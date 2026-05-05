@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '{{ template "base.name.release" . }}-service-checker'
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  containers:
+  - name: '{{ template "base.name.release" . }}-service-checker'
+    image: "{{ .Values.docker.registry }}/service-checker"
+    imagePullPolicy: {{ .Values.docker.pull_policy }}
+    args: ["-t", "5", '$({{ include "base.name.release" . | upper | replace "-" "_" }}_SERVICE_HOST)', '{{ template "base.name.baseurl" . }}']
+    {{- include "base.helper.restrictedSecurityContext" . | indent 4 }}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" . "Name" "backend") | indent 2 }}
+    component: backend
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+      component: backend
+  serviceName: "wdqs-backend"
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: backend
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      {{- end }}
+      containers:
+        {{- include "app.qlever.container" . | indent 8 }}
+        {{- include "app.consumer.container" . | indent 8 }}
+        {{- include "app.health.container" . | indent 8 }}
+      initContainers:
+        {{- include "app.init.container" . | indent 8 }}
+      volumes:
+        {{- include "app.backend.volume" . | indent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" . "Name" "proxy") | indent 2 }}
+    component: proxy
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+      component: proxy
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: proxy
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+    spec:
+      containers:
+        {{- include "app.proxy.container" . | indent 8 }}
+      volumes:
+        {{- include "app.proxy.volume" . | indent 8 }}
