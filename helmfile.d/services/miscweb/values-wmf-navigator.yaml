@@ -50,6 +50,14 @@ sidecars:
     volumeMounts:
       - name: data-sync-output-dir
         mountPath: /data
+      - name: miscweb-wmf-navigator-secret-config
+        mountPath: /etc/secrets/google_application_credentials.json
+        subPath: GOOGLE_APPLICATION_CREDENTIALS_SECRET
+        readOnly: true
+      - name: miscweb-wmf-navigator-secret-config
+        mountPath: /etc/secrets/okta_private.pem
+        subPath: OKTA_PRIVATE_KEY
+        readOnly: true
     command: ["/app/packages/data-sync/bin/sync-to-data-dir.sh"]
 
 mesh:
