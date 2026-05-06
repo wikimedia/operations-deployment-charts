@@ -91,6 +91,13 @@ resources:
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
   {{- end }}
+  {{- range $k, $v := $.Values.config.private }}
+    - name: {{ $k | upper }}
+      valueFrom:
+        secretKeyRef:
+          name: {{ template "base.name.release" $ }}-secret-config
+          key: {{ $k }}
+  {{- end }}
 {{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
 {{- end }}
 {{- end }}
