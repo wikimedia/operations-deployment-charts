@@ -1,6 +1,6 @@
 main_app:
   image: repos/projects/wmf-navigator
-  version: 2026-05-05-032153-web
+  version: 2026-05-06-033217-web
   limits:
     cpu: 200m
     memory: 200Mi
@@ -27,7 +27,7 @@ sidecars:
   navigator-backend:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-05-032153-navigator-backend
+    version: 2026-05-06-033217-navigator-backend
     limits:
       cpu: 200m
       memory: 200Mi
@@ -40,7 +40,7 @@ sidecars:
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-05-032153-data-sync
+    version: 2026-05-06-033217-data-sync
     limits:
       cpu: 200m
       memory: 200Mi
