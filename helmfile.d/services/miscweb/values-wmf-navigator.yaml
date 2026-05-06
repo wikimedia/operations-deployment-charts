@@ -50,6 +50,7 @@ sidecars:
     volumeMounts:
       - name: data-sync-output-dir
         mountPath: /data
+    command: ["/app/packages/data-sync/bin/sync-to-data-dir.sh"]
 
 mesh:
   enabled: true
