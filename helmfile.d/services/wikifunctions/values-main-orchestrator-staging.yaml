@@ -9,6 +9,41 @@ main_app:
     cpu: 1
     memory: 1Gi
 
+config:
+  public:
+    ORCHESTRATOR_CONFIG: |
+      {
+        "addNestedMetadata": false,
+        "createCustomSpans": true,
+        "generateFunctionsMetrics": true,
+        "maxSimultaneousExecutions": 1000,
+        "useWikidata": true,
+        "wikidataImport": {
+          "qualifiers": true,
+          "references": false
+        },
+        "memcachedUri": "127.0.0.1:11213",
+        "maxRecursionDepth": 1000,
+        "useMemcached": true,
+        "useWikidataMemcached": true,
+        "wikidataMemcachedTTL": 86400,
+        "useBatching": true,
+        "evaluatorConfigs": [
+          {
+            "programmingLanguages": ["Z610"],
+            "evaluatorUri": "https://localhost:6512/1/v1/evaluate/",
+            "evaluatorWs": "",
+            "useReentrance": false
+          },
+          {
+            "programmingLanguages": ["Z600"],
+            "evaluatorUri": "https://localhost:6513/1/v1/evaluate/",
+            "evaluatorWs": "",
+            "useReentrance": false
+          }
+        ]
+      }
+
 discovery:
   listeners:
     - mw-wikifunctions-ro
