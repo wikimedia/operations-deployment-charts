@@ -79,3 +79,32 @@ config:
     OKTA_MANAGER_ID_FIELD: 'managerId'
     OKTA_PRIVATE_KEY_PATH: '/etc/secrets/okta_private.pem'
     GOOGLE_APPLICATION_CREDENTIALS: '/etc/secrets/google_application_credentials.json'
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 208.80.154.224/32 # text-lb.eqiad (for office wiki access)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 2620:0:861:ed1a::1/128 # text-lb.codfw (for office wiki access)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 208.80.153.224/32 # text-lb.codfw (for office wiki access)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
+    - cidr: 2620:0:860:ed1a::1/128 # text-lb.codfw (for office wiki access)
+      ports:
+      - protocol: TCP
+        port: 80
+      - protocol: TCP
+        port: 443
