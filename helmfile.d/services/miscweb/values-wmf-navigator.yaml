@@ -20,6 +20,8 @@ main_app:
     - name: miscweb-wmf-navigator-secret-config
       secret:
         secretName: miscweb-wmf-navigator-secret-config
+    - name: data-sync-output-dir
+      emptyDir: {}
 
 sidecars:
   navigator-backend:
@@ -32,6 +34,9 @@ sidecars:
     requests:
       cpu: 100m
       memory: 100Mi
+    volumeMounts:
+      - name: data-sync-output-dir
+        mountPath: /data
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
@@ -42,6 +47,9 @@ sidecars:
     requests:
       cpu: 100m
       memory: 100Mi
+    volumeMounts:
+      - name: data-sync-output-dir
+        mountPath: /data
 
 mesh:
   enabled: true
