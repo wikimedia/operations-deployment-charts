@@ -2179,6 +2179,14 @@ config:
             # X-I-B is a string in Druid, but we wish to interpret it as a number in Turnilo for purposes like sorting.
             formula: $x_is_browser.cast('NUMBER')
 
+          - name: x_wmf_ratelimit_class
+            title: X-WMF-RateLimit class
+            formula: $x_wmf_ratelimit_class
+
+          - name: x_trusted_request
+            title: X-Trusted-Request
+            formula: $x_trusted_request
+
           - name: res_proxy
             title: Residential Proxy (Spur.us data)
             formula: $res_proxy
