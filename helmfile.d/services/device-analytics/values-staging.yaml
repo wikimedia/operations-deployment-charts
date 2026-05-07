@@ -1,5 +1,4 @@
 resources:
-  version: 2026-05-07-154025-production
   replicas: 1
   requests:
     cpu: 100m
@@ -9,6 +8,7 @@ resources:
     memory: 500Mi
 
 main_app:
+  version: 2026-05-07-154025-production
   log_level: debug
 
 ingress:
