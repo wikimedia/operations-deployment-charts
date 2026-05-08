@@ -74,12 +74,16 @@ resources:
 
 main_app:
   name: eventgate-analytics-external
-  version: v1.29.0
+  version: v1.30.0
   requests:
     memory: 300Mi
   limits:
     memory: 400Mi
   conf:
+    transforms:
+    - eventgateWikimediaDefaults
+    - processEdgeUniques
+
     kafka:
       conf:
         # eventgate-analytics-external always uses kafka jumbo-eqiad.

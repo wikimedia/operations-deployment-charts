@@ -33,13 +33,14 @@ resources:
 
 main_app:
   name: eventgate-logging-external
-  version: v1.28.0
+  version: v1.30.0
   conf:
     # eventgate-logging-external is used to intake w3c browser reportingapi reports
     # like Network Error Logging.  Since reportingapi is not POSTing via sendBeacon,
     # we need to set access-control-allow-origin: '*'.
     cors: '*'
-
+    transforms:
+    - eventgateWikimediaDefaults
     kafka:
       conf:
         # NOTE: The kafka brokers list is set in site specific values files.
