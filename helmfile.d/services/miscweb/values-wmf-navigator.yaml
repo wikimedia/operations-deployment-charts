@@ -1,6 +1,6 @@
 main_app:
   image: repos/projects/wmf-navigator
-  version: 2026-05-07-153517-web
+  version: 2026-05-08-093105-web
   limits:
     cpu: 200m
     memory: 200Mi
@@ -27,7 +27,7 @@ sidecars:
   navigator-backend:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-07-153517-navigator-backend
+    version: 2026-05-08-093105-navigator-backend
     limits:
       cpu: 200m
       memory: 200Mi
@@ -40,7 +40,7 @@ sidecars:
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-07-153517-data-sync
+    version: 2026-05-08-093105-data-sync
     limits:
       cpu: 200m
       memory: 200Mi
@@ -93,6 +93,7 @@ config:
     NODE_USE_ENV_PROXY: 1
     OFFICE_WIKI_BASE_URL: "http://localhost:6501"
     MEDIAWIKI_BASE_URL: "http://localhost:6501"
+    OIDC_ISSUER: "https://wikimedia.okta.com"
 
 external_services:
   urldownloader: [wikimedia]
