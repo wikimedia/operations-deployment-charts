@@ -40,6 +40,10 @@ spec:
               path: /healthcheck
               port: 8080
           env:
+            # Prepend all cache keys with a release-specific prefix to avoid collisions
+            # with multiple releases using the same redis instance and db.
+            - name: CACHE_KEY_PREFIX
+              value: {{ .Release.Namespace}}-{{ .Release.Name }}
           {{- range $k, $v := .Values.config.public }}
             - name: {{ $k | upper }}
               value: {{ $v | quote }}

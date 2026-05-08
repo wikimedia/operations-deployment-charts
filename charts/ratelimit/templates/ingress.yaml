@@ -1,0 +1,19 @@
+{{/*
+The ratelimit chart does not use the tls terminator/mesh module since it should not be fronted by envoy and does TLS termination itself.
+
+The ingress.istio module is designed for use with the tls terminator/mesh module, some templates need to be re-defined here.
+*/}}
+{{- define "mesh.name.fqdn" -}}
+{{ include "base.meta.name" (dict "Root" . ) }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+
+{{- define "ingress.istio._default_httproute_destination" -}}
+- name: "default-destination"
+  route:
+  - destination:
+      host: {{ template "mesh.name.fqdn" . }}
+      port:
+        number: {{ .Values.app.port }}
+{{- end -}}
+
+{{ include "ingress.istio.default" . }}

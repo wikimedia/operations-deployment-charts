@@ -11,8 +11,10 @@ spec:
     routed_via: {{ .Release.Name }}
   ports:
     - name: grpc
+      appProtocol: grpc
       targetPort: 8081
       port: 8081
     - name: http
+      appProtocol: http
       targetPort: 8080
       port: 8080
