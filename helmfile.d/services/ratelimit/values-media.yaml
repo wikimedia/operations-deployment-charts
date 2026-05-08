@@ -1,5 +1,7 @@
 resources:
   replicas: 11 # Start with 1 ratelimit pod per ms-fe
+ingress:
+  enabled: true
 app:
   # ratelimit configuration
   # see https://github.com/envoyproxy/ratelimit/tree/main#configuration
