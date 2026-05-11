@@ -1,13 +1,10 @@
-_vars:
-  httpd_cas_port: &httpd_cas_port 8080
-
 # Default values.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
   image: repos/data-engineering/turnilo
   version: latest # we use latest everywhere in the defaults.
-  port: *httpd_cas_port  # port exposed as a Service, also used by service-checker.
+  port: &httpd_cas_port 8080 # port exposed as a Service, also used by service-checker.
   turnilo_port: &turnilo_port 9090
   command: ["/opt/turnilo/bin/turnilo"]
   args: ["run-config", "/etc/turnilo/config.yaml"]
@@ -34,51 +31,42 @@ app:
     mountPath: /etc/turnilo
 
 # The httpd-cas sidecar manages CAS authentication for turnilo, redirecting to the main app when authenticated.
-httpd_cas:
-  image: httpd-cas
-  version: latest
-  replicas: 1
-  port: *httpd_cas_port
-  liveness_probe:
-    tcpSocket:
-      port: *httpd_cas_port
-  readiness_probe:
-    httpGet:
-      path: /health_check
-      port: *httpd_cas_port
-  resources:
-    requests:
-      cpu: 100m
-      memory: 200Mi
-    limits:
-      cpu: 500m
-      memory: 400Mi
-
-  volumes:
-  - name: httpd-cas-site-volume
-    configMap:
-      name: httpd-cas-site
-  - name: httpd-cas-health-check-volume
-    configMap:
-      name: httpd-cas-health-check
-  - name: httpd-cas-cookies-volume
-    emptyDir:
-      sizeLimit: 100Mi
-
-  volumeMounts:
-  - name: httpd-cas-site-volume
-    mountPath: /etc/apache2/sites-enabled
-  - name: httpd-cas-health-check-volume
-    mountPath: /var/www
-  - name: httpd-cas-cookies-volume
-    mountPath: &cookies_volume_path /var/cache/apache2/mod_auth_cas/
+auth_proxy:
+  httpd_cas:
+    image: httpd-cas
+    version: latest # we use latest everywhere in the defaults.
+    # Port that CAS will listen on
+    port: *httpd_cas_port
+    # Port that CAS will proxy to
+    target_port: *turnilo_port
+    site:
+      # HTTP virtualhost that CAS proxy will handle
+      server_name: override_me
+      # URL that users will see, see
+      # https://github.com/apereo/mod_auth_cas/blob/9acbc6239f35f291d3b166f897bdda012adf5cea/README#L217
+      cas_root_proxied_as: override_me
+      cas_login_url: https://idp.wikimedia.org/login
+      cas_validate_url: https://idp.wikimedia.org/serviceValidate
+      cas_ldap_groups: [ops, wmf, nda]
+      health_check_path: /var/www/health_check
+      conf_name: 50-turnilo-wikimedia-org
+      cas_debug: "Off"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 500m
+        memory: 400Mi
+    cookies_path: /var/cache/apache2/mod_auth_cas/
+    cookies_size_limit: 100Mi
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
 service:
-  deployment: production
+  deployment: production # valid values are "production" and "minikube"
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
@@ -94,16 +82,6 @@ config:
     url: override_me
     clusters: []
     datacubes: []
-  httpd_cas_site:
-    server_name: override_me
-    cas_login_url: override_me
-    cas_validate_url: override_me
-    cas_root_proxied_as: override_me
-    cas_debug: override_me
-    cas_ldap_groups: []
-    cas_debug: "Off"
-    cas_cookie_path: *cookies_volume_path
-    health_check_path: /var/www/health_check
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
@@ -161,7 +139,7 @@ ingress:
 # Basic mesh-related data.
 mesh:
   enabled: true
-  admin: { port: 1666 }
+  admin: {port: 1666 }
   image_version: latest
   # http keepalive timeout for incoming requests
   idle_timeout: "4.5s"

@@ -7,6 +7,12 @@ config:
     cas_validate_url: https://idp.wikimedia.org/serviceValidate
     cas_root_proxied_as: https://turnilo.wikimedia.org
 
+auth_proxy:
+  httpd_cas:
+    site:
+      server_name: turnilo.wikimedia.org
+      cas_root_proxied_as: https://turnilo.wikimedia.org
+
 external_services:
   cas: [ idp ]
 
