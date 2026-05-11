@@ -88,6 +88,38 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+      - cidr: 10.64.16.38/32 # restbase1032.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.106/32 # restbase1032-a.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.108/32 # restbase1032-b.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.16.109/32 # restbase1032-c.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.71/32 # restbase1033.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.151/32 # restbase1033-a.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.152/32 # restbase1033-b.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.64.48.153/32 # restbase1033-c.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
       - cidr: 10.64.0.35/32 # restbase1034.eqiad.wmnet
         ports:
           - protocol: tcp
@@ -136,22 +168,6 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
-      - cidr: 10.64.16.38/32 # restbase1032.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.16.106/32 # restbase1032-a.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.16.108/32 # restbase1032-b.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.16.109/32 # restbase1032-c.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
       - cidr: 10.64.16.13/32 # restbase1037.eqiad.wmnet
         ports:
           - protocol: tcp
@@ -197,22 +213,6 @@ networkpolicy:
           - protocol: tcp
             port: 9042
       - cidr: 10.64.16.72/32 # restbase1039-c.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.71/32 # restbase1033.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.151/32 # restbase1033-a.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.152/32 # restbase1033-b.eqiad.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.64.48.153/32 # restbase1033-c.eqiad.wmnet
         ports:
           - protocol: tcp
             port: 9042
@@ -328,6 +328,54 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+      - cidr: 10.192.32.71/32 # restbase2025.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.32.73/32 # restbase2025-a.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.32.74/32 # restbase2025-b.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.32.75/32 # restbase2025-c.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.169/32 # restbase2026.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.170/32 # restbase2026-a.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.171/32 # restbase2026-b.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.172/32 # restbase2026-c.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.16/32 # restbase2027.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.182/32 # restbase2027-a.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.183/32 # restbase2027-b.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.48.184/32 # restbase2027-c.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
       - cidr: 10.192.16.64/32 # restbase2028.codfw.wmnet
         ports:
           - protocol: tcp
@@ -373,22 +421,6 @@ networkpolicy:
           - protocol: tcp
             port: 9042
       - cidr: 10.192.16.245/32 # restbase2030-c.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.32.71/32 # restbase2025.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.32.73/32 # restbase2025-a.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.32.74/32 # restbase2025-b.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.32.75/32 # restbase2025-c.codfw.wmnet
         ports:
           - protocol: tcp
             port: 9042
@@ -440,38 +472,6 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
-      - cidr: 10.192.48.169/32 # restbase2026.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.170/32 # restbase2026-a.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.171/32 # restbase2026-b.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.172/32 # restbase2026-c.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.16/32 # restbase2027.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.182/32 # restbase2027-a.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.183/32 # restbase2027-b.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
-      - cidr: 10.192.48.184/32 # restbase2027-c.codfw.wmnet
-        ports:
-          - protocol: tcp
-            port: 9042
       - cidr: 10.192.48.67/32 # restbase2034.codfw.wmnet
         ports:
           - protocol: tcp
@@ -504,6 +504,10 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+      - cidr: 10.192.14.11/32 # restbase2036.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
       - cidr: 10.192.14.14/32 # restbase2036-a.codfw.wmnet
         ports:
           - protocol: tcp
@@ -516,6 +520,10 @@ networkpolicy:
         ports:
           - protocol: tcp
             port: 9042
+      - cidr: 10.192.29.7/32 # restbase2037.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
       - cidr: 10.192.29.9/32 # restbase2037-a.codfw.wmnet
         ports:
           - protocol: tcp
@@ -525,6 +533,10 @@ networkpolicy:
           - protocol: tcp
             port: 9042
       - cidr: 10.192.29.11/32 # restbase2037-c.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 9042
+      - cidr: 10.192.38.7/32 # restbase2038.codfw.wmnet
         ports:
           - protocol: tcp
             port: 9042
