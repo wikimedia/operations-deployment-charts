@@ -1,0 +1,45 @@
+name: httpd-cas
+description: Set auth-proxy using httpd-cas
+modules:
+  - "auth_proxy.httpd-cas:1.0"
+priority: 99
+templates:
+  containers: |
+    {{- include "auth_proxy.httpd_cas.container" . }}
+  volumes: |
+    {{- include "auth_proxy.httpd_cas.volume" . }}
+  configmap: |
+    {{- include "auth_proxy.httpd_cas.configmap" . }}
+values: |
+  # The httpd-cas sidecar manages CAS authentication for turnilo, redirecting to the main app when authenticated.
+  auth_proxy:
+    httpd_cas:
+      image: httpd-cas
+      version: latest # we use latest everywhere in the defaults.
+      # Port that CAS will listen on
+      port: __httpd_cas_port__
+      # Port that CAS will proxy to
+      target_port: override_me
+      site:
+        # HTTP virtualhost that CAS proxy will handle
+        server_name: override_me
+        # URL that users will see, see
+        # https://github.com/apereo/mod_auth_cas/blob/9acbc6239f35f291d3b166f897bdda012adf5cea/README#L217
+        cas_root_proxied_as: override_me
+        cas_login_url: https://idp.wikimedia.org/login
+        cas_validate_url: https://idp.wikimedia.org/serviceValidate
+        cas_ldap_groups: [nda, wmf]
+        health_check_path: /var/www/health_check
+        conf_name: 50-httpd-cas
+        cas_debug: "Off"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+        limits:
+          cpu: 500m
+          memory: 400Mi
+      cookies_path: /var/cache/apache2/mod_auth_cas/
+      cookies_size_limit: 100Mi
+questions:
+  - httpd_cas_port
