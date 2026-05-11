@@ -616,7 +616,8 @@ namespaces:
       - query-legacy-full.wikidata.org
       - commons-query.wikimedia.org
   ratelimit:
-    deployTLSCertificate: false
+    tlsHostnames:
+      - ratelimit-media
   rdf-streaming-updater:
     # Bump max container memory limit to 7Gi, otherwise use the defaults
     limitranges:
