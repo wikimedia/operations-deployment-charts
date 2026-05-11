@@ -1,6 +1,6 @@
 main_app:
   image: repos/projects/wmf-navigator
-  version: 2026-05-08-093105-web
+  version: 2026-05-11-072134-web
   limits:
     cpu: 200m
     memory: 200Mi
@@ -27,7 +27,7 @@ sidecars:
   navigator-backend:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-08-093105-navigator-backend
+    version: 2026-05-11-072134-navigator-backend
     limits:
       cpu: 200m
       memory: 200Mi
@@ -40,7 +40,7 @@ sidecars:
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-08-093105-data-sync
+    version: 2026-05-11-072134-data-sync
     limits:
       cpu: 200m
       memory: 200Mi
@@ -75,7 +75,6 @@ config:
     DATA_DIR: 'packages/data-api/data'
     PORT: '3000'
     CORS_ORIGINS: 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080'
-    OBJECTIVES_SHEET_URL: 'https://docs.google.com/spreadsheets/d/1g3DCj9CkdBMGNfuv0c_u45LISpMfeRrwCb2norNcADE'
     OBJECTIVES_EXPORT_SHEET_URL: ''
     OBJECTIVES_WORKBOOK_PATH: ''
     OKTA_ISSUER: 'https://wikimedia.okta.com'
