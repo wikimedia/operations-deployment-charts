@@ -32,6 +32,7 @@ app:
                   - key: unit
                     value: SECOND
                     rate_limit:
+                      unit: second
                       requests_per_unit: 5000000
                     shadow_mode: true
       - key: policy
@@ -45,6 +46,7 @@ app:
                   - key: unit
                     value: SECOND
                     rate_limit:
+                      unit: second
                       requests_per_unit: 10000000
                     shadow_mode: true
 # TODO metrics config
