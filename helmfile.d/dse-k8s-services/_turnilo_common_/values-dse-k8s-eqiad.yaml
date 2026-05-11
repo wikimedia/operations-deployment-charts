@@ -2204,8 +2204,12 @@ config:
             formula: $x_trusted_request
 
           - name: res_proxy
-            title: Residential Proxy (Spur.us data)
+            title: Residential Proxy (Spur.us incomplete MMDB)
             formula: $res_proxy
+
+          - name: cider_res_proxy
+            title: Residential Proxy (full Spur.us via CIDERGRINDER)
+            formula: $requestctl.contains('likely_resiproxy')
 
           # This is the place where you might want to add derived dimensions.
           #
