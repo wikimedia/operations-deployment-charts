@@ -8,7 +8,7 @@ main_app:
   cassandra:
     tls:
       ca: /etc/ssl/certs/wmf-ca-certificates.crt
-      enable_host_verification: true
+      enable_host_verification: false
     hosts:
       - cassandra-dev2001-a.codfw.wmnet
       - cassandra-dev2001-b.codfw.wmnet

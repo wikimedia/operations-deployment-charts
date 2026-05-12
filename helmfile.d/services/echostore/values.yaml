@@ -6,7 +6,7 @@ resources:
   replicas: 4
 main_app:
   image: repos/mediawiki/services/kask
-  version: v1.0.12
+  version: v1.0.19
   # All of this needs to be overriden in production
   certs:
     cassandra:
@@ -36,6 +36,7 @@ main_app:
   cassandra:
     tls:
       ca: /etc/cassandra-certs/ca.crt
+      enable_host_verification: false
     authentication:
       # password:
       username: restb
