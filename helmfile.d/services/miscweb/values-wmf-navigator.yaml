@@ -1,6 +1,6 @@
 main_app:
   image: repos/projects/wmf-navigator
-  version: 2026-05-11-072134-web
+  version: 2026-05-11-174459-web
   limits:
     cpu: 200m
     memory: 200Mi
@@ -13,7 +13,7 @@ main_app:
       subPath: GOOGLE_APPLICATION_CREDENTIALS_SECRET
       readOnly: true
     - name: miscweb-wmf-navigator-secret-config
-      mountPath: /etc/secrets/okta_private.pem
+      mountPath: /etc/secrets/okta_users_api_private_key.pem
       subPath: OKTA_PRIVATE_KEY
       readOnly: true
   volumes:
@@ -27,7 +27,7 @@ sidecars:
   navigator-backend:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-11-072134-navigator-backend
+    version: 2026-05-11-174459-navigator-backend
     limits:
       cpu: 200m
       memory: 200Mi
@@ -40,7 +40,7 @@ sidecars:
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-11-072134-data-sync
+    version: 2026-05-11-174459-data-sync
     limits:
       cpu: 200m
       memory: 200Mi
@@ -55,10 +55,10 @@ sidecars:
         subPath: GOOGLE_APPLICATION_CREDENTIALS_SECRET
         readOnly: true
       - name: miscweb-wmf-navigator-secret-config
-        mountPath: /etc/secrets/okta_private.pem
+        mountPath: /etc/secrets/okta_users_api_private_key.pem
         subPath: OKTA_PRIVATE_KEY
         readOnly: true
-    command: ["/app/packages/data-sync/bin/sync-to-data-dir.sh"]
+    command: ["/bin/sh", "-c", "/app/packages/data-sync/bin/sync-to-data-dir.sh; sleep 3600"]
 
 mesh:
   enabled: true
@@ -84,7 +84,7 @@ config:
     OKTA_API_BASE_URL: ''
     OKTA_TOKEN_URL: ''
     OKTA_MANAGER_ID_FIELD: 'managerId'
-    OKTA_PRIVATE_KEY_PATH: '/etc/secrets/okta_private.pem'
+    OKTA_PRIVATE_KEY_PATH: '/etc/secrets/okta_users_api_private_key.pem'
     GOOGLE_APPLICATION_CREDENTIALS: '/etc/secrets/google_application_credentials.json'
     HTTP_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
     HTTPS_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
