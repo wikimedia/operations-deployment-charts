@@ -87,11 +87,11 @@ resources:
 {{ toYaml . | indent 4 }}
 {{- end }}
   env:
-  {{- range $k, $v := $.Values.config.public }}
+  {{- range $k, $v := $sidecar.config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
   {{- end }}
-  {{- range $k, $v := $.Values.config.private }}
+  {{- range $k, $v := $sidecar.config.private }}
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
