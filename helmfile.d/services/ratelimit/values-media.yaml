@@ -32,13 +32,10 @@ app:
             value: anon
             descriptors:
               - key: user_id
-                descriptors:
-                  - key: unit
-                    value: SECOND
-                    rate_limit:
-                      unit: second
-                      requests_per_unit: 5000000
-                    shadow_mode: true
+                rate_limit:
+                  unit: second
+                  requests_per_unit: 5000000
+                shadow_mode: true
       - key: policy
         value: thumbnails
         descriptors:
@@ -47,10 +44,8 @@ app:
             descriptors:
               - key: user_id
                 descriptors:
-                  - key: unit
-                    value: SECOND
-                    rate_limit:
-                      unit: second
-                      requests_per_unit: 10000000
-                    shadow_mode: true
+                rate_limit:
+                  unit: second
+                  requests_per_unit: 10000000
+                shadow_mode: true
 # TODO metrics config
