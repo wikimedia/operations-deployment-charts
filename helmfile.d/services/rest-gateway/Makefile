@@ -1,21 +1,18 @@
 # Parameters that may be overwritten from the command line
 env ?= staging ## The helmfile environment to target
 
+chartdir := ../../../charts/api-gateway
+
 include ../../../makefiles/service.mk
+include ../../../makefiles/smokepy.mk
 include ../../../makefiles/help.mk
 include ../../../makefiles/phony.mk
 
-env: ## outputs environment for manual testing
+smokepy: ## run smokepy container interactively
 	@echo
-	@echo "### Service test environment targeting $(env):"
-	@echo "export PYTHONPATH=$(PYTHONPATH)"
-	@echo "export SMOKEPY_VALUE_FILES=$(valuefiles)"
-	@echo "cd" \"$$( realpath . )/tests\"
-	@echo "python3 -m unittest test_*.py $(pyunit_options)"
-	@echo
+	@echo "### Smokepy container for environment targeting $(env)"
+	$(call smokepy_cli)
 
 check: ## checks installation on staging
 	@echo "Checking installation in environment '$(env)'"
-	@cd tests && \
-		SMOKEPY_VALUE_FILES="$(valuefiles)" \
-		python3 -m unittest test_*.py $(pyunit_options)
+	$(call smokepy)

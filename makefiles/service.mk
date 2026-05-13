@@ -19,10 +19,7 @@ env := $(strip $(env))
 entrypoint_dir := $(dir $(firstword $(MAKEFILE_LIST)))
 servicedir := $(entrypoint_dir)
 
-# pyunit and valuefiles for smokepy
-thisdir := $(dir $(lastword $(MAKEFILE_LIST)))
-include $(thisdir)/pyunit.mk
-
+# valuefiles for smokepy
 valuefiles := $(servicedir)/values.yaml
 
 stagingfile := $(servicedir)/values-staging.yaml

@@ -136,50 +136,16 @@ class HelmDataTest(unittest.TestCase):
         self.assertEqual( unwrap( find({ "bar.x": 2 }, some_list) ), second )
         self.assertIsNone( find({ "bar.x": 2, "foo": "a" }, some_list) )
 
-    def test_update(self):
-        other = {
-            "some_int": 67890,
-            "another_string": "ABCD",
-            "string_list": [ "x", "y", "z" ],
-            "nested_dict": {
-                "foo": { "x": 111 },
-                "bar": { "y": [] },
-                "baz": { "x": 3 },
-            },
-        }
-
-        s = HelmData(TEST_DATA)
-        s.update(other)
-
-        self.assertEqual(s.some_int, 67890)
-        self.assertEqual(s.some_string, "abcd")
-        self.assertEqual(s.another_string, "ABCD")
-        self.assertEqual(s.string_list, [ "x", "y", "z" ])
-        self.assertEqual(s.nested_dict.foo.x, 111)
-        self.assertEqual(s.nested_dict.foo.y, [ 1, 2, 3 ])
-        self.assertEqual(s.nested_dict.bar.x, 2)
-        self.assertEqual(s.nested_dict.bar.y, [])
-        self.assertEqual(s.nested_dict.baz.x, 3)
-
-        t = HelmData(TEST_DATA)
-        t.update( HelmData(other) )
-
-        self.assertEqual(t.values, s.values)
-
     def test_load_and_dump(self):
         s = HelmData(TEST_DATA)
-        t = HelmData()
-        t.load_yaml_file( TEST_DIR + "/test_struct_data.yaml" )
+        t = HelmData.from_yaml_file( TEST_DIR + "/test_struct_data.yaml" )
 
         self.assertTrue(t, s)
 
         dumped = t.dump()
-        t2 = HelmData()
-        t2.load_yaml_data(dumped)
+        t2 = HelmData.from_yaml_data(dumped)
 
         self.assertEqual(t2.values, t.values)
 
     def test_load_bad_yaml(self):
-        t = HelmData()
-
-        self.assertRaises(yaml.YAMLError, lambda: t.load_yaml_file( TEST_DIR + "/bad_struct_data.yaml" ) )
+        self.assertRaises(yaml.YAMLError, lambda: HelmData.from_yaml_file( TEST_DIR + "/bad_struct_data.yaml" ) )
