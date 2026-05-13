@@ -7,15 +7,6 @@ main_app:
   requests:
     cpu: 100m
     memory: 100Mi
-  volumeMounts:
-    - name: miscweb-wmf-navigator-secret-config
-      mountPath: /etc/secrets/google_application_credentials.json
-      subPath: GOOGLE_APPLICATION_CREDENTIALS_SECRET
-      readOnly: true
-    - name: miscweb-wmf-navigator-secret-config
-      mountPath: /etc/secrets/okta_users_api_private_key.pem
-      subPath: OKTA_PRIVATE_KEY
-      readOnly: true
   volumes:
     - name: miscweb-wmf-navigator-secret-config
       secret:
