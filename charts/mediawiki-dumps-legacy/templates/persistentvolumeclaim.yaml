@@ -1,0 +1,15 @@
+{{- range .Values.persistent_volume_claims | default list }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: {{ required "persistent_volume_claims[].claim_name is required" .claim_name }}
+spec:
+    accessModes:
+        - {{ .access_mode | default "ReadWriteMany"}}
+    volumeMode: {{ .volume_mode | default "Filesystem" }}
+    storageClassName: {{ .storage_class | default "override_me" }}
+    resources:
+        requests:
+            storage: {{ .size | default "10Gi" }}
+{{- end }}

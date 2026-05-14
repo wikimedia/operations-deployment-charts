@@ -49,3 +49,8 @@ discovery:
 external_services_selector: "app == 'mediawiki' && release == 'production'"
 external_services:
   prometheus-pushgateway: [eqiad]
+
+persistent_volume_claims:
+  - claim_name: wdqs-update-pipeline
+    storage_class: ceph-cephfs-dumps
+    size: 5Ti
