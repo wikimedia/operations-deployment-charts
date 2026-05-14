@@ -14,7 +14,6 @@ config:
   public:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
     OTEL_SERVICE_NAME: wikifunctions-evaluator-rust-python
-    OTEL_EXPORTER_OTLP_ENDPOINT: http://main-opentelemetry-collector.opentelemetry-collector.svc.cluster.local:4318/
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
     WASM_BINARY: /srv/service/programming-languages/rustpython.so
     PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
