@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.23]
+### Added
+  - Added `opensearchCluster.anonymous_all_indices` option to allow anonymous 
+  access to the cluster in Elastic-style.
+### Deprecated
+### Removed
+### Fixed
+
+
 ## [0.0.18]
 ### Added
   - Switch the ingressgateway TLS support from PASSTHROUGH to SIMPLE mode, so that we can get HTTP metrics from the gateway

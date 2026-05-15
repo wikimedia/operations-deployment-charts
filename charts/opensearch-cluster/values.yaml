@@ -25,6 +25,7 @@ opensearchCluster:
     enable: false
     replicas: 1
     version: 2.3.0
+  anonymous_all_indices: false
 
 # The chart version we are currently using in production (2.7.0) cannot set the
 # WMF-required securityContext for the initHelper container.

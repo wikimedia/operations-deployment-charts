@@ -89,3 +89,32 @@ trafficPolicy:
     - {{ $fqdn }}
     {{- end }}
 {{- end }}
+
+{{/*
+Define permissions
+*/}}
+{{- define "opensearch-cluster.anonymous_users_permissions" -}}
+cluster_permissions:
+  - "cluster:monitor/*"  # read-only cluster-level ops
+  - "cluster_monitor"         # allow monitoring endpoints (optional)
+index_permissions:
+  - index_patterns:
+      - "*"           # allow alias listing across all indices
+    allowed_actions:
+      - "read"
+      - "indices:admin/get"
+      - "indices_monitor" # use the "indices_monitor" built-in action group, ref https://docs.opensearch.org/latest/security/access-control/default-action-groups/#index-level
+{{- end -}}
+
+{{- define "opensearch-cluster.authenticated_users_permissions" -}}
+cluster_permissions:
+  - "cluster_composite_ops_ro"  # read-only cluster-level ops
+  - "cluster_monitor"         # allow monitoring endpoints (optional)
+  - "indices:data/write/bulk*"
+index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "indices_all" # use the "indices_all" built-in action group, ref https://docs.opensearch.org/latest/security/access-control/default-action-groups/#index-level
+        - "indices:data/write/bulk*"
+{{- end -}}
