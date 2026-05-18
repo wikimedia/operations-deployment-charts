@@ -62,6 +62,23 @@ releases:
               storage: 20Gi
           storageClassName: ceph-rbd-ssd
 
+  - name: data-transfer-pvc
+    chart: wmf-stable/raw
+    values:
+    - resources:
+      - apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: airflow-sre-data-transfer
+        spec:
+          accessModes:
+            - ReadWriteMany
+          volumeMode: Filesystem
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: ceph-cephfs-ssd
+
   - name: production
     namespace: airflow-sre
     chart: wmf-stable/airflow
