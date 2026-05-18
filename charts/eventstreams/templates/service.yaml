@@ -6,6 +6,7 @@
 #   chart: {{ template "base.name.chartid" . }}
 #   routed_via: {{ .Release.Name }}
 */}}
+{{ if not (hasSuffix "canary" .Release.Name) }}
 
 {{ if .Values.mesh.enabled }}
 {{ include "mesh.service" . }}
@@ -14,29 +15,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "base.name.release" . }}
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{- include "base.meta.metadata" (dict "Root" . "Name" "debug") | indent 2 }}
 spec:
   type: NodePort
   selector:
     app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    routed_via: {{ .Release.Name }}
+    release: {{ .Release.Name }}
   ports:
-    - name: {{ .Values.main_app.name }}-http
+    - name: {{ .Values.service.port.name }}
       targetPort: {{ .Values.service.port.targetPort | default .Values.app.port }}
       port: {{ .Values.service.port.port | default .Values.app.port }}
-      {{- if .Values.service.port.nodePort }}
+      {{- if and (eq (include "base.helper.serviceType" .) "NodePort") .Values.service.port.nodePort }}
       nodePort: {{ .Values.service.port.nodePort }}
       {{- end }}
 {{- end }}
 {{- if and .Values.monitoring.enabled (eq .Values.service.deployment "minikube") }}
     # If testing monitoring export the service-runner prometheus metrics listen port
-    - name:  prometheus-{{ .Values.main_app.name }}
+    - name:  prometheus-{{ .Values.app.name }}
       targetPort: {{ .Values.monitoring.port.targetPort }}
       port: {{ .Values.monitoring.port.port }}
       nodePort: {{ .Values.monitoring.port.nodePort }}
@@ -46,7 +41,7 @@ spec:
     # .Values.main_app.name doesn't work the range loop below.
     # 'can't evaluate field Values in type interface {}'
     */ -}}
-    {{- $port_name_prefix := printf "%s-debug" .Values.main_app.name -}}
+    {{- $port_name_prefix := printf "%s-debug" .Values.app.name -}}
     {{- range $port := .Values.debug.ports }}
     - name: {{ $port_name_prefix }}-{{ $port }}
       targetPort: {{ $port }}
@@ -55,6 +50,7 @@ spec:
     {{- end }}
 {{- end }}
 
+{{- end }}
 {{- else }}
 {{/*
 #
@@ -63,5 +59,3 @@ spec:
 #
 */}}
 {{- end }}
-
-

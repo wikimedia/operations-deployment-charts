@@ -16,3 +16,4 @@ data:
   puppetca.crt.pem: |-
 {{ .Values.puppet_ca_crt | default "snakeoil" | indent 4 }}
 {{ include "mesh.configuration.configmap" . }}
+{{- include "auth_proxy.httpd_cas.configmap" . }}

@@ -2,20 +2,20 @@
 # service-runner EventStreams app config.yaml.
 
 # Required for service-utils
-service_name: {{ .Values.main_app.name }}
+service_name: {{ .Values.config.name }}
 
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
-num_workers: {{ .Values.main_app.num_workers | default 0 }}
+num_workers: {{ .Values.config.num_workers | default 0 }}
 
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
-worker_heap_limit_mb: {{ .Values.main_app.worker_heap_limit_mb | default 750 }}
+worker_heap_limit_mb: {{ .Values.config.worker_heap_limit_mb | default 750 }}
 
 # Logger info
 logging:
-  level:  {{ .Values.main_app.log_level | default "info" }}
+  level:  {{ .Values.config.log_level | default "info" }}
   streams:
     - type: stdout
       named_levels: true
@@ -27,21 +27,21 @@ metrics:
     port: {{ .Values.monitoring.port.targetPort }}
 {{- end }}
 
-{{- if .Values.main_app.extra_service_runner_conf }}
-{{ toYaml .Values.main_app.extra_service_runner_conf | indent 0 }}
+{{- if .Values.config.extra_service_runner_conf }}
+{{ toYaml .Values.config.extra_service_runner_conf | indent 0 }}
 {{- end }}
 
 services:
-  - name: {{ .Values.main_app.name }}
+  - name: {{ .Values.config.name }}
     module: app.js
     conf:
-      port: {{ .Values.app.port }}
+      port: {{ .Values.config.port }}
       cors: '*'
       csp: "default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src *; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'"
       spec: ./spec.yaml
       user_agent: {{ template "base.name.release" . }}
 
       # eventstreams app settings
-{{ toYaml .Values.main_app.conf | indent 6 }}
+{{ toYaml .Values.config.conf | indent 6 }}
 
 {{- end }}

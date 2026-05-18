@@ -1,6 +1,5 @@
 # Default values for EventStreams.
 
-helm_scaffold_version: 0.2 # This can be useful when backporting fixes.
 docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
@@ -13,13 +12,12 @@ service:
   # If "none", no k8s Service will be deployed for this release.
   deployment: minikube
   port:
-    # targetPort and port are main_app.port (8092)
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8092 # the number or name of the exposed port on the container
+    port: 8092 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
     nodePort: 30892
-  # Set routed_via to the same (arbitrary) value for all releases that you want
-  # this k8s Service to route to.
-  # If you don't to deploy a service with a specific release (e.g. a canary), set service.deployment: none
-  # routed_via defaults to .Release.Name, so by default a Service will only route to the release it is part of.
-  # routed_via:
 
 # EventStreams uses service-runner native prometheus monitoring, not statsd-exporter.
 monitoring:
@@ -29,10 +27,6 @@ monitoring:
     targetPort: 9102
     port: 9102
     nodePort: 31102
-
-config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap env variables
-  private: {} # Add here all the keys that should be private but still available as env variables
 
 # Additional resources if we want to add a port for a debugger to connect to.
 # Debug mode adds the --profile and --inspect flags to the NodeJS service, and
@@ -50,33 +44,35 @@ debug:
   # 9229 master and 9230 worker will be used by v8 profiler
   ports: [9229, 9230]
 
-main_app:
-  # This should uniquely identify your chart's main app's name.
-  # In the case where a chart is used for multiple deployments, this
-  # should be set to something unique for each one.
-  name: eventstreams
-  # Don't use docker.registry value for main_app image so we can override
-  # and use locally built and cached images via --set main_app.image during development.
-  image: docker-registry.wikimedia.org/repos/data-engineering/eventstreams
-  version: latest
-  port: 8092
+# Declare variables to be passed into your templates.
+app:
+  image: repos/data-engineering/eventstreams
+  version: latest # we use latest everywhere in the defaults.
+  port: &app_port 8092 # port exposed as a Service, also used by service-checker.
+  metricsPort: 9102
   command: ["nodejs"]
   args: ["/srv/service/server.js", "-c", "/etc/eventstreams/config.yaml"]
-
   requests:
     cpu: 100m
     memory: 500Mi
   limits:
     cpu: 1000m
     memory: 1000Mi
-
   liveness_probe:
     tcpSocket:
-      port: 8092
+      port: *app_port
   readiness_probe:
     httpGet:
       path: /_info
-      port: 8092
+      port: *app_port
+
+config:
+  public:
+    NODE_EXTRA_CA_CERTS: /etc/eventstreams/puppetca.crt.pem
+  private: {} # Add here all the keys that should be private but still available as env variables
+
+  name: eventstreams
+  port: *app_port
 
   log_level: info
 
@@ -108,18 +104,36 @@ networkpolicy:
   egress:
     enabled: false
 
+# Basic mesh-related data.
 mesh:
   enabled: false
+  admin: {port: 1666 }
   image_version: latest
-  public_port: 4892 # the port where TLS will be exposed
-  # To be defined in a private space
-  certs:
-    cert: "snakeoil"
-    key: "snakeoil"
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 4892
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s" 
+  # Enabling telemetry, telemetry port.
   telemetry:
     enabled: false
     port: 9361
-  upstream_timeout: "0s" # T238658#5961899. Don't override if you don't want premature connection closings.
+  # Extra set of label / value to use in the mesh Service label selector.
+  # Use this when you have multiple pods with different functionalities
+  # in the namespace, to make sure the traffic only goes to the appropriate one.
+  extra_service_selector_labels: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
 
 # Mesh related pure TCP proxies
 tcp_proxy:
@@ -151,9 +165,6 @@ discovery:
 # for the list of supported services
 external_services: {}
 
-app:
-  port: 8092
-
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
@@ -162,7 +173,7 @@ ingress:
   # ClusterIP. While that is fine for new services it may not be desired during transition
   # of existing ones from dedicated LVS to Ingress.
   # By setting keepNodePort to true, the services will stay of type NodePort.
-  keepNodePort: false
+  keepNodePort: true
   # gatewayHosts settings configure the hostnames this service will be reachable on.
   # By default, this will be a list like:
   # - {{ gatewayHosts.default }}.{{ domain }}
@@ -206,9 +217,9 @@ auth_proxy:
     image: httpd-cas
     version: latest # we use latest everywhere in the defaults.
     # Port that CAS will listen on
-    port: 456
+    port: 8444
     # Port that CAS will proxy to
-    target_port: override_me
+    target_port: *app_port
     site:
       # HTTP virtualhost that CAS proxy will handle
       server_name: override_me
