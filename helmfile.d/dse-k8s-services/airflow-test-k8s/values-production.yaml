@@ -35,8 +35,11 @@ external_services:
     cas: [idp-test]
   task-pod:
     dumps: [wikimedia]
+
+    # The following are required by the growthbook-ldap-sync DAG
     gerrit: [wikimedia]
     ldap-ro: [eqiad, codfw]
+    prometheus-pushgateway: [eqiad, codfw]
 
 ingress:
   gatewayHosts:
