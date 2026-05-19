@@ -1,0 +1,53 @@
+helmDefaults:
+  createNamespace: false
+  verify: false
+  atomic: true
+  timeout: 600
+  force: false
+  args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig (e.g. to deploy to staging-codfw).
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
+    - --kubeconfig
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/eventstreams-internal-deploy-%s.config" .Environment.Name) }}
+
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases: [staging]
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
+bases:
+  - ../global.yaml
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/eventstreams-internal: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/eventstreams-internal: {{`{{.HelmfileCommand}}`}}",
+      ]
+
+releases:
+  - name: staging
+    chart: wmf-stable/eventstreams
+    namespace: eventstreams-internal
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values-common.yaml"                                          # Values that are common to all opensearch clusters
+      - "values.yaml"                                                 # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/dse-k8s_services/eventstreams-internal/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml"                         # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml"                       # release-specific overrides
