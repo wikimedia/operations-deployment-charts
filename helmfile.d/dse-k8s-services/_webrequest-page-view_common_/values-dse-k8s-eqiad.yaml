@@ -1,0 +1,72 @@
+# This file contains settings shared by all apps deployed in dse-k8s-eqiad.
+#
+# NOTE: This file is shared between production and staging (-next) releases.
+#       In the helmfile directory, this is a symlink into a _*_common_/ values file.
+#       Edits here affect both staging and production.
+#       Release specific settings and overrides belong in release specific values files.
+#
+# Release specific settings belong in release specific values files.
+
+service:
+  deployment: production
+
+app:
+  config_files:
+    page-view.properties:
+      # Configure common Kafka SSL settings in dse-k8s.
+      kafka-source-config.security.protocol: SSL
+      kafka-source-config.ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+      kafka-sink-config.security.protocol: SSL
+      kafka-sink-config.ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+
+  flinkConfiguration:
+    # == Tuning webrequest-page-view
+
+    "execution.checkpointing.interval": "1m"
+    "execution.checkpointing.min-pause": "30s"
+
+    # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
+    # only when the job is running, so if the job is offline e.g. over a weekend,
+    # we won't going to lose the latest savepoint.
+    "kubernetes.operator.savepoint.history.max.age": 24h
+
+    # Buffer debloating helps reduce the amount of in-flight data
+    # and backpressure.
+    # https://nightlies.apache.org/flink/flink-docs-release-2.2/docs/ops/state/checkpointing_under_backpressure/#buffer-debloating
+    "taskmanager.network.memory.buffer-debloat.enabled": true
+
+    # ==
+    "restart-strategy.type": exponential-delay
+    "state.backend.type": hashmap
+    "state.checkpoint-storage": filesystem
+    "state.checkpoints.num-retained": "10"
+    "s3.path.style.access": "true"
+    # Enables the Kubernetes HA service.
+    # Recovery metadata will be stored in a k8s ConfigMap.
+    "high-availability": KUBERNETES
+    # NOTE: HA paths are configured in release specific files.
+
+    # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
+    #       is merged and this is the default in the chart.
+    "metrics.internal.query-service.port": "6124"
+
+
+flink:
+  object_store:
+    swift_cluster: https://rgw.eqiad.dpe.anycast.wmnet
+
+
+# Enable egress.  Specific egress policies should either be added in
+# environment/k8s cluster specific networkpolicy.egress.dst_nets,
+# or automatically configured via discovery.listeners and/or kafka.allowed_clusters,
+networkpolicy:
+  egress:
+    enabled: true
+
+
+# Enable the service mesh.
+mesh:
+  enabled: true
+
+external_services:
+  s3: [eqiad-dpe]
