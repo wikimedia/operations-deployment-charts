@@ -5,7 +5,10 @@ external_services:
 resources:
   replicas: 1
 
-main_app:
-  conf:
+config:
+  conf: &conf
     kafka:
       metadata.broker.list: kafka-main1006.eqiad.wmnet:9093,kafka-main1007.eqiad.wmnet:9093,kafka-main1008.eqiad.wmnet:9093,kafka-main1009.eqiad.wmnet:9093,kafka-main1010.eqiad.wmnet:9093
+
+main_app:
+  conf: *conf

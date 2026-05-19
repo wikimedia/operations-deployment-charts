@@ -29,10 +29,8 @@ external_services:
 resources:
   replicas: 2
 
-main_app:
-  name: eventstreams-internal
+app: &app
   version: v0.18.0
-
   requests:
     cpu: 200m
     memory: 500Mi
@@ -40,8 +38,9 @@ main_app:
     cpu: 1500m
     memory: 1000Mi
 
-  conf:
-
+config:
+  name: &name eventstreams-internal
+  conf: &conf
     kafka:
       metadata.broker.list: kafka-jumbo1010.eqiad.wmnet:9093,kafka-jumbo1011.eqiad.wmnet:9093,kafka-jumbo1012.eqiad.wmnet:9093,kafka-jumbo1013.eqiad.wmnet:9093,kafka-jumbo1014.eqiad.wmnet:9093,kafka-jumbo1015.eqiad.wmnet:9093,kafka-jumbo1016.eqiad.wmnet:9093,kafka-jumbo1017.eqiad.wmnet:9093,kafka-jumbo1018.eqiad.wmnet:9093
       queued.max.messages.kbytes: 32768
@@ -94,3 +93,8 @@ main_app:
         topics_allowed:
           - eqiad.mediainfo-streaming-updater.mutation
           - codfw.mediainfo-streaming-updater.mutation
+
+main_app:
+  <<: *app
+  name: *name
+  conf: *conf

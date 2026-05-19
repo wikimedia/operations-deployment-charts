@@ -29,8 +29,7 @@ discovery:
 resources:
   replicas: 16
 
-main_app:
-  name: eventstreams
+app: &app
   version: v0.18.0
 
   requests:
@@ -40,7 +39,9 @@ main_app:
     cpu: 1500m
     memory: 2Gi
 
-  conf:
+config:
+  name: &name eventstreams
+  conf: &conf
 
     kafka:
       # NOTE: The kafka brokers list is set in site specific values files.
@@ -644,3 +645,8 @@ main_app:
     (авиабаза), 'Эштон-Чирилло, Сара', Ябатьки, Ягодное (Черниговская область), Ядерное
     оружие и вторжение России на Украину, 'Янков, Игорь Дмитриевич', 'Янчевский, Всеволод
     Вячеславович', Участник:HTriedman (WMF)/redacted page test]
+
+main_app:
+  <<: *app
+  name: *name
+  conf: *conf

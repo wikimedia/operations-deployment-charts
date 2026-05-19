@@ -2,8 +2,8 @@ external_services:
   kafka:
     - main-codfw
 
-main_app:
-  conf:
+config:
+  conf: &conf
     kafka:
       metadata.broker.list: kafka-main2006.codfw.wmnet:9093,kafka-main2007.codfw.wmnet:9093,kafka-main2008.codfw.wmnet:9093,kafka-main2009.codfw.wmnet:9093,kafka-main2010.codfw.wmnet:9093
     stream_config_overrides:
@@ -19,3 +19,6 @@ main_app:
       mediainfo-streaming-updater.mutation.v2:
         topics:
           - codfw.mediainfo-streaming-updater.mutation
+
+main_app:
+  conf: *conf

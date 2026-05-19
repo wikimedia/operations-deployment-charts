@@ -2,8 +2,8 @@ external_services:
   kafka:
     - main-eqiad
 
-main_app:
-  conf:
+config:
+  conf: &conf
     kafka:
       metadata.broker.list: kafka-main1006.eqiad.wmnet:9093,kafka-main1007.eqiad.wmnet:9093,kafka-main1008.eqiad.wmnet:9093,kafka-main1009.eqiad.wmnet:9093,kafka-main1010.eqiad.wmnet:9093
     stream_config_overrides:
@@ -19,3 +19,6 @@ main_app:
       mediainfo-streaming-updater.mutation.v2:
         topics:
           - eqiad.mediainfo-streaming-updater.mutation
+
+main_app:
+  conf: *conf
