@@ -1,0 +1,56 @@
+{{- if .Values.smokepy.gateway }}
+---
+# ConfigMap 1: Helm-merged smokepy and main_app configuration as a values file for the test runner.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-smokepy-values
+data:
+  values.yaml: |
+{{ dict "smokepy" .Values.smokepy "main_app" (dict "ratelimiter" .Values.main_app.ratelimiter "jwks" .Values.main_app.jwks "jwt" .Values.main_app.jwt "http_https_echo" .Values.main_app.http_https_echo) | toYaml | indent 4 }}
+---
+# ConfigMap 2: One entry per test .py file, iterated via .Files.Glob.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base.name.release" . }}-smokepy-tests
+data:
+{{- range $path, $content := .Files.Glob "tests/smokepy/*.py" }}
+  {{ base $path }}: |
+{{ $content | toString | indent 4 }}
+{{- end }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ template "base.name.release" . }}-smokepy
+  annotations:
+    "helm.sh/hook": test-success
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  restartPolicy: Never
+  containers:
+    - name: smokepy
+      image: {{ .Values.docker.registry }}/repos/mediawiki/services/smokepy:{{ .Values.smokepy.image.tag }}
+      imagePullPolicy: {{ .Values.docker.pull_policy }}
+      command: ["python3", "-m", "unittest", "discover", "-v", "tests"]
+      workingDir: /tgt
+      env:
+        - name: SMOKEPY_VALUE_FILES
+          value: /tgt/values.yaml
+        - name: GATEWAY_TEST_TARGET_URL
+          value: {{ template "base.name.baseurl" . }}
+      volumeMounts:
+        - name: smokepy-values
+          mountPath: /tgt
+        - name: smokepy-tests
+          mountPath: /tgt/tests
+  volumes:
+    - name: smokepy-values
+      configMap:
+        name: {{ template "base.name.release" . }}-smokepy-values
+    - name: smokepy-tests
+      configMap:
+        name: {{ template "base.name.release" . }}-smokepy-tests
+{{- end }}

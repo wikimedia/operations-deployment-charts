@@ -59,9 +59,12 @@ test-test-helpers: ## run meta-tests for the test helpers
 
 test: test-test-helpers test-lua test-render ## run unit tests
 
+check_timeout := 5m
 check: ## run end-to-end checks on minikube environment (needs port-forwarding to be active)
-	@cd "$(servicedir)" && \
-		$(MAKE) check env=minikube
+	@echo "Checking $(name) release in $(env) environment"
+	$(helm) test $(name) --timeout $(check_timeout)
+	kubectl logs api-gateway-restgw-smokepy
+	kubectl delete pod api-gateway-restgw-smokepy
 
 smokepy: ## run smokepy container interactively
 	@cd "$(servicedir)" && \
