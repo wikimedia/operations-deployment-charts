@@ -6,6 +6,14 @@ app:
 config:
   airflow:
     instance_name: wikidata
+  connections:
+    wikidata_platform_s3_dpe:
+      conn_type: aws
+      extra:
+        endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
+        region_name: dpe
+      login: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_access_key_id }}"
+      password: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_secret_access_key }}"
 
 ingress:
   gatewayHosts:
