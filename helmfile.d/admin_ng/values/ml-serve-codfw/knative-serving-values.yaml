@@ -1,16 +1,4 @@
-# Differences from prod:
-# - Reduce some the replicas from what we set for production.
-
-net_istio:
-  webhook:
-    replicaCount: 2
-
 core:
-  activator:
-    replicaCount: 2
-  webhook:
-    replicaCount: 2
-
   # Enable Knative HTTP/2 auto-detection so the queue-proxy speaks h2c upstream
   # to the user container when the Service port is named http2/h2c. Required for
   # KServe v2 gRPC traffic via the istio-ingressgateway 50051 listener.
