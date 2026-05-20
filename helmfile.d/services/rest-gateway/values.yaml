@@ -37,7 +37,7 @@ main_app:
     # Enable ratelimit in shadow mode for all users.
     enabled: true
     version: 9.0.4-20260107.e9ce92c
-    default_policies: [ Apr2026, May2026 ]
+    default_policies: [ May2026, Shadow ]
     fallback_class: anon    # class to use when no rule matches
 
     # Some x-is-browser scores as determined in March 2026:
@@ -130,9 +130,7 @@ main_app:
 
     units: [ HOUR, MINUTE ]
     policies:
-      # NOTE: the policy name should change when the name or semantics of classes change,
-      # to avoid confusing the metrics.
-      "Apr2026":
+      "May2026":
         shadow_mode: false
         limits:
           "*": # catch-all limits
@@ -140,11 +138,11 @@ main_app:
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             MINUTE: 10
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 400 # 200
+            MINUTE: 200
           "anon-mediawiki": # InstantCommons and such (no contact info)
-            MINUTE: 400 # 100
+            MINUTE: 100
           "unauthed-mediawiki": # InstantCommons and such (with contact info)
-            MINUTE: 400 # 200
+            MINUTE: 200
           "anon-browser": # no auth, but looks like a browser
             MINUTE: 200
           "anon-app": # no auth, but looks like our app
@@ -152,7 +150,7 @@ main_app:
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
             MINUTE: 4000 # needs high limit until we can distinguish clients
           "authed-user": # valid JWT
-            MINUTE: 400 # 200
+            MINUTE: 200
           "established-user": # valid JWT, meets age/edit count criteria
             MINUTE: 2000
           "highlimits-user": # valid WT and member of specific global groups
@@ -164,7 +162,7 @@ main_app:
           "known-client": # no auth, network associated with a known client
             MINUTE: 999999
 
-      "May2026":
+      "Shadow":
         shadow_mode: true
         limits:
           "*": # catch-all limits

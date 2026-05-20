@@ -98,7 +98,8 @@ main_app:
     envoy_timeout: 0.5
     units: [ MINUTE ]
     policies:
-      "Apr2026":
+
+      "May2026":
         shadow_mode: false
         limits:
           "*": # catch-all limits
@@ -130,37 +131,37 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 21
 
-      "May2026":
-        shadow_mode: true # enable on staging for testing
+      "Shadow":
+        shadow_mode: true
         limits:
           "*": # catch-all limits
             MINUTE: 1
           "anon": # no auth, not a browser, no good User-Agent, no known IP
             MINUTE: 1
           "anon-browser": # no auth, but looks like a browser
-            MINUTE: 3
+            MINUTE: 2
           "anon-app": # no auth, but looks like our app
-            MINUTE: 4
+            MINUTE: 3
           "anon-cgnat": # clients behind a CGNAT
-            MINUTE: 5
-          "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 7
-          "anon-mediawiki": # InstantCommons and such (without contact info)
             MINUTE: 4
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 6
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 3
           "unauthed-mediawiki": # InstantCommons and such (with contact info)
-            MINUTE: 9
+            MINUTE: 8
           "authed-user": # valid JWT
-            MINUTE: 11
+            MINUTE: 10
           "established-user": # valid JWT, meets age/edit count criteria
-            MINUTE: 13
+            MINUTE: 12
           "highlimits-user": # valid WT and member of specific global groups
-            MINUTE: 15
+            MINUTE: 14
           "approved-bot": # bot approved by the community
-            MINUTE: 17
+            MINUTE: 16
           "known-client": # no auth, network associated with a known client
-            MINUTE: 19
+            MINUTE: 17
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            MINUTE: 21
+            MINUTE: 19
 
       "AbstractWiki":
         shadow_mode: false
@@ -253,7 +254,7 @@ main_app:
                 # this does not exist in the real API
                 exact: 'shadowed'
                 ignore_case: true
-      rate_limit_policies: [ "May2026", "BYPASS" ]
+      rate_limit_policies: [ "Shadow", "BYPASS" ]
 
     - name: staging-mw-action-api-jwt-required
       timeout: 53s
