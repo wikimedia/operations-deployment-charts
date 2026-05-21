@@ -1,3 +1,7 @@
+# DEPRECATION NOTICE
+# The api-gateway is deprecated and should not get new code added
+# Please add new functionalities to _rest_routes.yaml
+
 {{- define "apigateway.routes" }}
 {{- $strip_cookies := .Values.main_app.strip_api_cookies }}
             name: api_wikimedia_org_route

@@ -3,23 +3,15 @@
 This Helm chart runs an [Envoy](https://www.envoyproxy.io/)-based API gateway.
 It is used by two Wikimedia services:
 
-- **api-gateway** (`helmfile.d/services/api-gateway`): routes traffic to a set of
-  internal discovery endpoints with JWT authentication and basic rate limiting.
-  This is deprecated, see [T413438](https://phabricator.wikimedia.org/T413438).
 - **rest-gateway** (`helmfile.d/services/rest-gateway`): routes to Wikimedia REST API
   endpoints with per-route JWT overrides and fine-grained Lua-based rate limiting.
+- [DEPRECATED] **api-gateway** (`helmfile.d/services/api-gateway`): routes traffic to a set of
+  internal discovery endpoints with JWT authentication and basic rate limiting.
+  This is deprecated, see [T413438](https://phabricator.wikimedia.org/T413438).
 
 ## Two modes
 
 The chart supports two modes, one for each service it is used with:
-
-### API gateway mode
-The Legacy API gateway mode is deprecated,
-see [T413438](https://phabricator.wikimedia.org/T413438). 
-
-Routes are defined via `main_app.discovery_endpoints`. Rate limiting uses simple
-per-route anonymous and authenticated limits (`anon_limit` / `default_limit`)
-and overrides embdded in JWTs. 
 
 ### REST gateway mode
 
@@ -102,3 +94,12 @@ was passed from the client, which can be useful for debugging ratelimiting
 configuration and other issues.
 It can be enabled using the `main_app.http_https_echo` setting and will run as a
 sidecar to Envoy. 
+
+### [DEPRECATED] API gateway mode
+The Legacy API gateway mode is deprecated,
+see [T413438](https://phabricator.wikimedia.org/T413438). 
+
+Routes are defined via `main_app.discovery_endpoints`. Rate limiting uses simple
+per-route anonymous and authenticated limits (`anon_limit` / `default_limit`)
+and overrides embdded in JWTs. 
+
