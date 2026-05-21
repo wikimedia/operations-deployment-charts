@@ -60,6 +60,10 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
 {{- range $route := $endpoint.urls }}
 {{- $cluster_name := ternary $endpoint.name $endpoint.cluster (not $endpoint.cluster) }}
               - name: {{ $endpoint.name }}_{{ $route.name }}
+                {{- if $endpoint.strip_cookies }}
+                request_headers_to_remove: ["cookie"]
+                response_headers_to_remove: ["set-cookie"]
+                {{- end }}
                 match:
                   {{- include "restgateway.route.match" (dict "route" $route "endpoint" $endpoint) | nindent 18 }}
                 {{- if not $route.disable_route_stats }}

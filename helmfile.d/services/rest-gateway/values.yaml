@@ -887,6 +887,7 @@ main_app:
       cluster: linkrecommendation
       csp_enabled: false
       api_cors_enabled: true
+      strip_cookies: true
       request_headers_to_add:
         - key: cache-control
           value: no-cache
@@ -913,6 +914,7 @@ main_app:
       cluster: mw-api-ext-ro
       csp_enabled: false
       api_cors_enabled: true
+      strip_cookies: true
       request_headers_to_add:
         - key: cache-control
           value: no-cache
@@ -975,6 +977,7 @@ main_app:
       cluster: inference
       csp_enabled: false
       api_cors_enabled: true
+      strip_cookies: true
       rate_limit_policies: [ "LiftWing", "BYPASS" ]
       request_headers_to_add:
         - key: cache-control
@@ -1050,6 +1053,7 @@ main_app:
       cluster: recommendation-api-ng
       csp_enabled: false
       api_cors_enabled: true
+      strip_cookies: true
       rate_limit_policies: [ "LiftWing", "BYPASS" ]
       request_headers_to_add:
         - key: cache-control
@@ -1067,6 +1071,7 @@ main_app:
       cluster: inference
       csp_enabled: false
       api_cors_enabled: true
+      strip_cookies: true
       request_headers_to_add:
         - key: cache-control
           value: no-cache
