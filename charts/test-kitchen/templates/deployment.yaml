@@ -18,6 +18,7 @@ spec:
         checksum/idp-client-secret: {{ .Values.config.private.idp_client_secret | sha256sum }}
         checksum/session-secret: {{ .Values.config.private.session_secret | sha256sum }}
         checksum/csrf-secret: {{ .Values.config.private.csrf_secret | sha256sum }}
+        checksum/growthbook-api-key: {{ .Values.config.private.growthbook_api_key | sha256sum }}
 
     spec:
       {{- if .Values.affinity }}

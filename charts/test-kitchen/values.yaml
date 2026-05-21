@@ -69,6 +69,12 @@ app:
     redirect_uri: http://test-kitchen-next.wikimedia.org/login/callback
     response_type: code
 
+  growthbook:
+    run_poller: false
+    api_url: https://growthbook-api-next.wikimedia.org/api/v1/experiments
+    poll_interval_ms: 15000
+    timeout_ms: 5000
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
@@ -89,6 +95,7 @@ config:
     idp_client_secret: "idpclientsecret"
     session_secret: "sessionsecret"
     csrf_secret: "csrfsecret"
+    growthbook_api_key: "growthbookapikey"
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:

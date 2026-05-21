@@ -26,4 +26,10 @@ idp:
   redirect_uri: {{ .Values.app.idp.redirect_uri }}
   response_type: {{ .Values.app.idp.response_type }}
 
+growthbook:
+  run_poller: {{ .Values.app.growthbook.run_poller }}
+  api_url: {{ .Values.app.growthbook.api_url }}
+  poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}
+  timeout_ms: {{ .Values.app.growthbook.timeout_ms }}
+
 {{- end }}
