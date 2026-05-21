@@ -43,7 +43,7 @@ app:
     "s3.path.style.access": "true"
     # Enables the Kubernetes HA service.
     # Recovery metadata will be stored in a k8s ConfigMap.
-    "high-availability": KUBERNETES
+    "high-availability.type": KUBERNETES
     # NOTE: HA paths are configured in release specific files.
 
     # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
