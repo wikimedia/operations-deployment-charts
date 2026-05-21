@@ -19,12 +19,6 @@ app:
     client_id: test_kitchen_next
     redirect_uri: https://test-kitchen-next.wikimedia.org/login/callback
 
-  growthbook:
-    run_poller: false
-    api_url: http://growthbook-api-next.wikimedia.org/api/v1/experiments
-    poll_interval_ms: 15000
-    timeout_ms: 5000
-
 ingress:
   gatewayHosts:
     extraFQDNs:
