@@ -12,14 +12,12 @@ config:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
-      login: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_access_key_id }}"
-      password: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_secret_access_key }}"
   extra_secrets:
     # Create a secret object with the same values as the corresponding airflow connection.
     # This may be useful if running a task based on a KubernetesPodOperator that does not use the airflow image.
     wikidata_platform_s3_dpe.yaml: |
-      username: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_access_key_id }}"
-      password: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.aws_secret_access_key }}"
+      username: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.login }}"
+      password: "{{ $.Values.config.connections.wikidata_platform_s3_dpe.password }}"
 
 ingress:
   gatewayHosts:
