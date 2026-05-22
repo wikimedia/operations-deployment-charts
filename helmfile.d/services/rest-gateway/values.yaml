@@ -889,7 +889,7 @@ main_app:
       api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      request_headers_to_add:
+      response_headers_to_add:
         - key: cache-control
           value: no-cache
       urls:
@@ -917,7 +917,7 @@ main_app:
       api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      request_headers_to_add:
+      response_headers_to_add:
         - key: cache-control
           value: no-cache
       urls:
@@ -982,7 +982,7 @@ main_app:
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
       rate_limit_policies: [ "LiftWing", "BYPASS" ]
-      request_headers_to_add:
+      response_headers_to_add:
         - key: cache-control
           value: no-cache
       urls:
@@ -1059,7 +1059,7 @@ main_app:
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
       rate_limit_policies: [ "LiftWing", "BYPASS" ]
-      request_headers_to_add:
+      response_headers_to_add:
         - key: cache-control
           value: no-cache
       urls:
@@ -1077,7 +1077,7 @@ main_app:
       api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      request_headers_to_add:
+      response_headers_to_add:
         - key: cache-control
           value: no-cache
       urls:
