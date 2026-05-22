@@ -60,3 +60,10 @@ mariadb:
   wikiadmin_password: override_me
 
 persistent_volume_claims: ~
+
+# The format for these s3 token entries is as follows:
+# s3_tokens:
+#  - account_reference: "dummy-user"
+#    aws_access_key_id: "dummy-access-key-id"
+#    aws_secret_access_key: "dummy-secret-key"
+s3_tokens: []
