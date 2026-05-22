@@ -12,6 +12,7 @@ config:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
+        verify: /etc/ssl/certs/wmf-ca-certificates.crt
   extra_secrets:
     # Create a secret object with the same values as the corresponding airflow connection.
     # This may be useful if running a task based on a KubernetesPodOperator that does not use the airflow image.
