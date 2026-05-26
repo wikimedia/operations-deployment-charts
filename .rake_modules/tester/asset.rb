@@ -533,7 +533,14 @@ module Tester
       helm_home = ENV['HELM_HOME'] || File.expand_path('~/.helm')
       # abort("unable to find helm home: #{helm_home}. Do you need to run helm init?") unless File.directory?(helm_home)
       dir_to_copy = File.join source, @path
-      Dir.mktmpdir do |dir|
+      # Create an outer tmpdir to house BASE_HELMFILE alongside the asset's own
+      # tmpdir. Service helmfiles reference it as `../global.yaml`, so it must
+      # live one level above where helmfile runs. This prevents parallel threads
+      # from overwriting it, and thus fixes the sporadic
+      # `no top-level config keys are found in ../global.yaml` race condition errors.
+      Dir.mktmpdir do |outer|
+        dir = File.join(outer, 'asset')
+        FileUtils.mkdir dir
         local_helm_home = File.join dir, '.helm'
         if File.directory?(helm_home)
           FileUtils.cp_r helm_home, local_helm_home
@@ -549,7 +556,7 @@ module Tester
         end
         # Copy over the base helmfile
         if File.exist? File.join(source, self.class::BASE_HELMFILE)
-          FileUtils.cp File.join(source, self.class::BASE_HELMFILE), File.join(dir, '..')
+          FileUtils.cp File.join(source, self.class::BASE_HELMFILE), File.join(outer, File.basename(self.class::BASE_HELMFILE))
         end
         block.call dir
       end
