@@ -74,3 +74,13 @@ inference_services:
       config:
         minReplicas: 2
         maxReplicas: 5
+  outlink-topic-model-grpc:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 3
+      container:
+        ports:
+          - name: h2c
+            containerPort: 8081
+            protocol: TCP
