@@ -10,6 +10,12 @@ main_app:
           hostname: cassandra-dev2001-a.codfw.wmnet
           port: 50051
           timeout: 5000ms
+      article_topics:
+        lambda:
+          type: kserve_v2
+          hostname: inference-staging.svc.codfw.wmnet
+          port: 30443
+          model: outlink-topic-model
 
 resources:
   replicas: 1
