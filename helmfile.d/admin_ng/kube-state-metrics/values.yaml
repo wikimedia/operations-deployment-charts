@@ -1,10 +1,9 @@
 prometheusScrape: false
 image:
   registry: docker-registry.discovery.wmnet
-  repository: kube-state-metrics
+  repository: kube-state-metrics2.14
   pullPolicy: IfNotPresent
-  # See T356252
-  tag: 2.10.0-1-20240602
+  tag: 2.14.0-1
 
 collectors:
   - cronjobs
