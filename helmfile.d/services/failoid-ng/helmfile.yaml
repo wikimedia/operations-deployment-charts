@@ -19,17 +19,17 @@ environments:
   staging:
     values:
       - releases: [correct, horse, bear, dolphin, octopus, dog, unicorn, rabbit, goat, cat, fox]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   # eqiad:
   #   values:
   #     - releases: [horse, zebra, donkey]
-  #     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+  #     - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
   #   missingFileHandler: Warn
   # codfw:
   #   values:
   #     - releases: [horse, zebra, donkey]
-  #     - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+  #     - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
   #   missingFileHandler: Warn
 
 ---

@@ -15,7 +15,7 @@ environments:
   staging:
     values:
       - releases: [kafka-smoke-test]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---

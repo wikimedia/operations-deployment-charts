@@ -28,7 +28,7 @@ environments:
         - security-landing-page
         - wikipedia25
         - status
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
     <<: *default_values
@@ -39,14 +39,14 @@ environments:
       - releases:
         - os-reports
         - wmf-navigator
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   aux-k8s-codfw:
     values:
       - releases:
         - os-reports
         - wmf-navigator
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 ---
 

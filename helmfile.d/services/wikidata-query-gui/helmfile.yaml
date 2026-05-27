@@ -20,7 +20,7 @@ environments:
         - wikidata-query-main-gui
         - wikidata-query-scholarly-gui
         - wikidata-query-builder
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
     <<: *default_values

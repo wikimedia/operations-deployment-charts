@@ -23,7 +23,7 @@ environments:
       - releases:
         - producer
         - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
   ## eqiad and codfw are configured, as we are figuring out what exactly needs
@@ -37,14 +37,14 @@ environments:
         - producer
         - "consumer-cloudelastic{{ if .Values.backfill }}-backfill{{ end }}"
         - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
       - releases:
         - producer
         - "consumer-search{{ if .Values.backfill }}-backfill{{ end }}"
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---

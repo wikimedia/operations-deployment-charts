@@ -20,7 +20,7 @@ environments:
         - evaluator-rust-javascript
         - python-evaluator
         - evaluator-rust-python
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
     <<: *default_values
