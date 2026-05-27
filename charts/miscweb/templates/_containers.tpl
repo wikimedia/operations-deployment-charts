@@ -87,17 +87,21 @@ resources:
 {{ toYaml . | indent 4 }}
 {{- end }}
   env:
-  {{- range $k, $v := $.Values.config.public }}
+{{- with $sidecar.config.public }}
+  {{- range $k, $v := . }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
   {{- end }}
-  {{- range $k, $v := $.Values.config.private }}
+{{- end }}
+{{- with $sidecar.config.private }}
+  {{- range $k, $v := . }}
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
+{{- end }}
 {{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
 {{- end }}
 {{- end }}

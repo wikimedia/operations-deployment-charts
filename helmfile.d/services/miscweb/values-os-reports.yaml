@@ -33,6 +33,9 @@ sidecars:
     volumeMounts:
       - name: rsync-data
         mountPath: /srv/app/html
+    config:
+      public:
+        puppet_db_host: puppet-puppetdb-codfw.external-services.svc.cluster.local
 
 mesh:
   enabled: true
