@@ -1,7 +1,7 @@
 name: httpd-cas
 description: Set auth-proxy using httpd-cas
 modules:
-  - "auth_proxy.httpd-cas:1.0"
+  - "auth_proxy.httpd-cas:1.0.1"
 priority: 99
 templates:
   containers: |
@@ -13,6 +13,7 @@ templates:
 values: |
   # The httpd-cas sidecar manages CAS authentication for turnilo, redirecting to the main app when authenticated.
   auth_proxy:
+    enabled: false
     httpd_cas:
       image: httpd-cas
       version: latest # we use latest everywhere in the defaults.
