@@ -13,6 +13,10 @@ service:
 app:
   config_files:
     page-view.properties:
+      # Even if we don't do any HTTP requests to enrich events,
+      # we do need to reach the stream config API to get the source and sink topic configs.
+      event-stream-config-url: http://localhost:6501/w/api.php
+
       # Configure common Kafka SSL settings in dse-k8s.
       kafka-source-config.security.protocol: SSL
       kafka-source-config.ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
@@ -67,6 +71,10 @@ networkpolicy:
 # Enable the service mesh.
 mesh:
   enabled: true
+
+discovery:
+  listeners:
+    - mw-api-int
 
 external_services:
   s3: [eqiad-dpe]
