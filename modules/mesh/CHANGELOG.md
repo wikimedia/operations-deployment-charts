@@ -1,3 +1,9 @@
+## configuration 1.15.3
+
+ - Add restricted_listeners. When set, an additional Envoy port is opened, which
+   terminates TLS using the same cert and redirects all traffic to the same
+   local upstream, but only offers a restricted set of routes.
+
 ## configuration 1.15.2
 
 - Ensure that local TLS listeners are correctly marked as `traffic_direction: INBOUND`.

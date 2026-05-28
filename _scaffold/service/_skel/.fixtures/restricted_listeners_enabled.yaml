@@ -1,0 +1,12 @@
+mesh:
+  enabled: true
+  image_version: 1.13.1-2
+  public_port: 4666 # the port where TLS will be exposed
+  restricted_listeners:
+    - port: 4974
+      allow_only:
+        method: GET
+        path: /example
+  telemetry:
+    enabled: true
+    port: 9361
