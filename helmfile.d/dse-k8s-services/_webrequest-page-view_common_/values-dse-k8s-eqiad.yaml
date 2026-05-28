@@ -13,15 +13,15 @@ service:
 app:
   config_files:
     page-view.properties:
-      # Even if we don't do any HTTP requests to enrich events,
-      # we do need to reach the stream config API to get the source and sink topic configs.
-      event-stream-config-url: http://localhost:6501/w/api.php
-
       # Configure common Kafka SSL settings in dse-k8s.
       kafka-source-config.security.protocol: SSL
       kafka-source-config.ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
       kafka-sink-config.security.protocol: SSL
       kafka-sink-config.ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
+
+      # We route the event stream config URI through the local envoy proxy for the MW API
+      event-stream-config-url: https://meta.wikimedia.org/w/api.php/
+      http-client-routes.meta: https://meta.wikimedia.org=http://localhost:6501
 
   flinkConfiguration:
     # == Tuning webrequest-page-view
