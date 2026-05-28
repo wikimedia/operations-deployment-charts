@@ -29,6 +29,7 @@ idp:
 growthbook:
   run_poller: {{ .Values.app.growthbook.run_poller }}
   api_url: {{ .Values.app.growthbook.api_url }}
+  saved_groups_url: {{ .Values.app.growthbook.saved_groups_url }}
   poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}
   timeout_ms: {{ .Values.app.growthbook.timeout_ms }}
 
