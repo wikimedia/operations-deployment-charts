@@ -33,6 +33,10 @@ sidecars:
         DATA_DIR: 'packages/data-api/data'
         PORT: '3000'
         CORS_ORIGINS: 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080'
+        HTTP_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
+        HTTPS_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
+        NO_PROXY: "localhost,127.0.0.1,office.wikimedia.org"
+        NODE_USE_ENV_PROXY: 1
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
@@ -64,7 +68,7 @@ sidecars:
         NODE_USE_ENV_PROXY: 1
         OFFICE_WIKI_BASE_URL: "http://localhost:6501"
         MEDIAWIKI_BASE_URL: "http://localhost:6501"
-        OKTA_USERS_API_ISSUER: "https://wikimedia.okta.com"
+        GOOGLE_APPLICATION_CREDENTIALS: "/etc/secrets/google_application_credentials.json"
 mesh:
   enabled: true
   public_port: 4111

@@ -15,7 +15,7 @@ main_app:
       mountPath: /srv/app/html
 
 sidecars:
-  data-sync:
+  data-rsync:
     enabled: true
     image: repos/sre/miscweb/os-reports
     version: 2025-07-18-121617
