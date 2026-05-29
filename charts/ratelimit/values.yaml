@@ -34,6 +34,12 @@ nutcracker:
 
 # Configuration for the ratelimit container
 config:
+  # This sets the CACHE_KEY_PREFIX environment variable, which defaults to
+  # a computed value of ".Release.Namespace-.Release.Name_".
+  # As we can't set computed defaults in yaml, it can't be set using the common config.public
+  # way of configuring variables.
+  # Set to null so the default doesn't change, override in local values.yaml if necessary
+  cache_key_prefix: ~
   public:
     LOG_LEVEL: warn
     LOG_FORMAT: json
