@@ -43,6 +43,10 @@ _G.HelmValues = {
                 "x-wmf-user-id",
                 "x-wmf-ratelimit-class",
             },
+            policies = {
+                ["some-limits"] = { measure = "count" },
+                ["time-limits"] = { measure = "time" },
+            }
         }
     }
 }
@@ -114,6 +118,22 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
                 assert.are.equal( "some-limits", result:get("x-wmf-ratelimit-policy-2") )
+            end)
+            it("should set x-wmf-timelimit-policy for time-limits policy", function()
+                local headers = {
+                    ["x-client-ip"] = "1.2.3.4",
+                }
+                local routeMeta = { ["wmf_ratelimit"] = {
+                    ["policies"] = { "time-limits" }
+                } }
+                local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
+
+                wmf_ratelimit_info(req)
+
+                local result = req:headers()
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
+                assert.is_nil( result:get("x-wmf-ratelimit-policy-2") )
+                assert.are.equal( "time-limits", result:get("x-wmf-timelimit-policy-1") )
             end)
             it("should unset x-wmf-ratelimit-policy based on route metadata", function()
                 local headers = {

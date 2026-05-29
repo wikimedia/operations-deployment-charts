@@ -22,6 +22,10 @@ smokepy:
     # Doesn't have to be an existing action API module since missing modules still produce status 200.
     shadow_policy_endpoint: "/w/api.php?action=shadowed&format=json"
 
+    # The path of the endpoint to probe when testing time limit policy handling.
+    # Doesn't have to be an existing action API module since missing modules still produce status 200.
+    timelimit_endpoint: "/w/api.php?action=timelimited&format=json"
+
     # The path of the endpoint to probe when testing for RESTbase compatibility CORS behavior
     cors_rb_compat_endpoint: "/en.wikipedia.org/v1/page/title/X"
 
@@ -227,6 +231,39 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 210
 
+      "QueryCost":
+        shadow_mode: false
+        measure: time
+        limits:
+          "*": # catch-all limits
+            MINUTE: 600
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 650
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 700
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 750
+          "anon-cgnat": # clients behind a CGNAT
+            MINUTE: 800
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 850
+          "anon-mediawiki": # InstantCommons and such (without contact info)
+            MINUTE: 900
+          "unauthed-mediawiki": # InstantCommons and such
+            MINUTE: 950
+          "authed-user": # valid JWT
+            MINUTE: 1000
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 1050
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 1100
+          "approved-bot": # bot approved by the community
+            MINUTE: 1200
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 1300
+          "known-network": # no auth, network under outbound control (WMCS, WME)
+            MINUTE: 1400
+
     enable_x_ratelimit_headers: true
 
   access_log:
@@ -255,6 +292,25 @@ main_app:
                 exact: 'shadowed'
                 ignore_case: true
       rate_limit_policies: [ "Shadow", "BYPASS" ]
+
+    # Fake API module for testing test shadow mode
+    - name: mw-action-api-timelimited
+      # We set a higher timeout to allow for long queries on the search API
+      timeout: 53s
+      # Exclude cspreports action API calls from rate limits
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      urls:
+        - name: timelimited
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                # this does not exist in the real API
+                exact: 'timelimited'
+                ignore_case: true
+      rate_limit_policies: [ "QueryCost", "BYPASS" ]
 
     - name: staging-mw-action-api-jwt-required
       timeout: 53s

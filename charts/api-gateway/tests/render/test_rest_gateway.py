@@ -5,6 +5,7 @@ from subprocess import CalledProcessError
 from .manifest import Manifest
 from .chart import Chart
 from .data import HelmData
+from .data import DEFINED, UNDEFINED
 
 TEST_DIR = path.dirname(__file__)
 CHART_DIR = path.dirname( path.dirname( TEST_DIR ) )
@@ -184,8 +185,32 @@ class RestGatewayTest(unittest.TestCase):
         self.assertIsNotNone( vhost, "restgateway_vhost")
 
         # ratelimit rules
-        self.assertIsNotNone( vhost.rate_limits, "rate_limits")
-        self.assertEqual( len(vhost.rate_limits), 2, "rate_limits count") # policies x units
+        self.assertIsNone(vhost.get("rate_limits"), "vhost.rate_limits should be removed")
+
+        rl_config = vhost.get(["typed_per_filter_config", "envoy.filters.http.ratelimit"])
+        self.assertIsNotNone(rl_config, "envoy.filters.http.ratelimit vhost config")
+        self.assertEqual(
+            rl_config.get("@type"),
+            "type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitPerRoute",
+            "RateLimitPerRoute @type",
+        )
+
+        self.assertIsNotNone(rl_config.rate_limits, "rate_limits")
+        self.assertEqual(len(rl_config.rate_limits), 6, "rate_limits count") # policies x units x 3 (count, up-front time, response time)
+
+        countLimit = rl_config.get(["rate_limits", { "hits_addend": UNDEFINED }])
+        upFrontCostLimit = rl_config.get(["rate_limits", { "hits_addend": DEFINED, "apply_on_stream_done": UNDEFINED }])
+        onResponseCostLimit = rl_config.get(["rate_limits", { "hits_addend": DEFINED, "apply_on_stream_done": True }])
+
+        header_name_path = ["actions", { "request_headers.descriptor_key": "policy" }, "request_headers", "header_name"]
+        self.assertIsNotNone(countLimit, "request counting limit")
+        self.assertEqual(countLimit.get(header_name_path), "x-wmf-ratelimit-policy-1", "request counting limit: policy header")
+
+        self.assertIsNotNone(upFrontCostLimit, "up-front cost limit")
+        self.assertEqual(upFrontCostLimit.get(header_name_path), "x-wmf-timelimit-policy-1", "up-front cost limit: policy header")
+
+        self.assertIsNotNone(onResponseCostLimit, "on-response cost")
+        self.assertEqual(onResponseCostLimit.get(header_name_path), "x-wmf-timelimit-policy-1", "on-response cost: policy header")
 
         # route_config
         policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])

@@ -36,3 +36,12 @@ main_app:
             HOUR: 100
           "approved-bot":
             HOUR: 1000
+      "cost-based-policy":
+        measure: time
+        limits:
+          "*": # catch-all limits
+            HOUR: 1000
+          "anon":
+            HOUR: 1000
+          "approved-bot":
+            HOUR: 10000

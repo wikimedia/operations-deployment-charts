@@ -78,6 +78,7 @@ function wmf_ratelimit_info(request_handle)
     headers:remove("x-wmf-user-id")
     for i, _ in ipairs(HelmValues.main_app.ratelimiter.default_policies) do
         headers:remove("x-wmf-ratelimit-policy-" .. tostring(i))
+        headers:remove("x-wmf-timelimit-policy-" .. tostring(i))
     end
 
     -- Use the client IP as the fallback use ID.
@@ -89,12 +90,28 @@ function wmf_ratelimit_info(request_handle)
 
     local ratelimit_policies = routeMeta_ratelimit["policies"] or {}
     for i, p in ipairs(ratelimit_policies) do
+        -- Determine the header name for the measure being limited (requests, time, etc)
+        -- Different rate-limit descriptors are defined for different headers.
+        -- Which header is set here controls which descriptors will be sent to the
+        -- ratelimit service.
+        local policy = HelmValues.main_app.ratelimiter.policies[p]
+        local policy_header = "x-wmf-ratelimit-policy"
+
+        if policy and policy.measure then
+            if policy.measure == "time" then
+                -- setting this header causes cost-based
+                policy_header = "x-wmf-timelimit-policy"
+            end
+        end
+
         -- No header for the "BYPASS" policy, so rate limiting is bypassed entirely.
-        -- This works because the "request_headers" directive of the rate_limits filter
-        -- will not construct a descriptor if the header is missing.
-        if p ~= "BYPASS" then
+        if p == "BYPASS" then
+            policy_header = nil
+        end
+
+        if policy_header then
             request_handle:logDebug("WMF rate_limit: policy-" .. tostring(i) .. "=" .. p)
-            headers:replace("x-wmf-ratelimit-policy-" .. tostring(i), p)
+            headers:replace(policy_header .. "-" .. tostring(i), p)
         end
     end
 

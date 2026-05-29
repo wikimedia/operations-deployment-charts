@@ -2,6 +2,7 @@ from typing import Optional
 from smokepy import values
 
 DEFINED = object()    # any value including None
+UNDEFINED = object()   # not defined
 NOT_NONE = object()   # not None, but can be empty/falsy
 NOT_EMPTY = object()  # not empty (must be truthy)
 
@@ -110,7 +111,13 @@ def find_all(selectors: Optional[dict], data: list, clazz = HelmData):
             continue
 
         for k, exp in selectors.items():
-            actual = elem.get(k)
+            actual = elem.get(k, UNDEFINED)
+
+            if actual is UNDEFINED:
+                if exp is UNDEFINED:
+                    continue
+                else:
+                    break
 
             if exp is DEFINED:
                 continue
@@ -120,6 +127,9 @@ def find_all(selectors: Optional[dict], data: list, clazz = HelmData):
 
             if exp is NOT_EMPTY and bool(actual):
                 continue
+
+            if exp is None and actual is not None:
+                break
 
             if type(actual) != type(exp):
                 break

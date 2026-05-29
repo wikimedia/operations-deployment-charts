@@ -49,6 +49,14 @@ HelmValues = {
             class_overrides = {{ include "toLua" .Values.main_app.ratelimiter.class_overrides | indent 8 | trim }},
             default_policies = {{ include "toLua" .Values.main_app.ratelimiter.default_policies | indent 8 | trim }},
             exposed_headers = {{ include "toLua" .Values.main_app.ratelimiter.exposed_headers | indent 8 | trim }},
+            policies = {
+                {{ range $name, $def := .Values.main_app.ratelimiter.policies -}}
+                [{{ $name | quote }}] = {
+                    shadow_mode = {{ default $def.shadow_mode | default false }},
+                    measure = {{ $def.measure | default "count" | quote }},
+                },
+                {{- end }}
+            },
         }
     }
 }

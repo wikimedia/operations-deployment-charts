@@ -129,6 +129,7 @@ main_app:
     key_log_format: "%REQ(x-wmf-ratelimit-class)%:%REQ(x-wmf-user-id)%"
 
     units: [ HOUR, MINUTE ]
+    up_front_cost: 100
     policies:
       "May2026":
         shadow_mode: false
