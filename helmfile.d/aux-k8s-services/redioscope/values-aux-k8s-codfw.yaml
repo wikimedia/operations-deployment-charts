@@ -1,7 +1,8 @@
 app:
   surveys:
     rest_gateway:
-      sources:
+      sources: &ratelimit_redis_servers
       - redis://rdb2011.codfw.wmnet:6380
       - redis://rdb2013.codfw.wmnet:6380
-
+    media:
+      sources: *ratelimit_redis_servers

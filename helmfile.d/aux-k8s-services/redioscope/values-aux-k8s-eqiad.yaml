@@ -1,6 +1,8 @@
 app:
   surveys:
     rest_gateway:
-      sources:
+      sources: &ratelimit_redis_servers
         - redis://rdb1015.eqiad.wmnet:6380
         - redis://rdb1013.eqiad.wmnet:6380
+    media:
+      sources: *ratelimit_redis_servers
