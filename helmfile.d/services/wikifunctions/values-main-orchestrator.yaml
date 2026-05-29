@@ -72,6 +72,16 @@ config:
         ]
       }
 
+mesh:
+  # Additional TLS listener that routes POSTs to /v1/callback to the same local
+  # upstream, and rejects everything else with a 403. This is the only port the
+  # evaluators can talk to for callback traffic, enforced by NetworkPolicy.
+  restricted_listeners:
+    - port: 4974
+      allow_only:
+        method: POST
+        path: /v1/callback
+
 discovery:
   listeners:
     - mw-wikifunctions-ro
