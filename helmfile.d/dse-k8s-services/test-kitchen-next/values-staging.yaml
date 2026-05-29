@@ -21,8 +21,9 @@ app:
 
   growthbook:
     run_poller: true
-    api_url: https://growthbook-api-next.discovery.wmnet:30443/api/v1/experiments
-    saved_groups_url: https://growthbook-api-next.discovery.wmnet:30443/api/v1/saved-groups
+    # http://localhost:6048 is proxied to growthbook-api-next
+    api_url: http://localhost:6048/api/v1/experiments
+    saved_groups_url: http://localhost:6048/api/v1/saved-groups
 
 ingress:
   gatewayHosts:
@@ -31,4 +32,5 @@ ingress:
 
 discovery:
   listeners:
-     - mw-api-int-async-ro
+    - mw-api-int-async-ro
+    - growthbook-api-next
