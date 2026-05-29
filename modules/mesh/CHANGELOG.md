@@ -1,3 +1,7 @@
+## service 1.2.1
+
+- Add TLS service ports for restricted_listeners
+
 ## networkpolicy 1.2.2
 
 - Add ingress ports for restricted_listeners

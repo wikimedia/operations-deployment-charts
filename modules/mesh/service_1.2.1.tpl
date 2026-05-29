@@ -22,5 +22,13 @@ spec:
       {{- if eq (include "base.helper.serviceType" .) "NodePort" }}
       nodePort: {{ .Values.mesh.public_port }}
       {{- end }}
+    {{- range .Values.mesh.restricted_listeners }}
+    - name: {{ template "base.name.release" $ }}-{{ .port }}
+      protocol: TCP
+      port: {{ .port }}
+      {{- if eq (include "base.helper.serviceType" $) "NodePort" }}
+      nodePort: {{ .port }}
+      {{- end }}
+    {{- end }}
 {{- end }}
 {{- end -}}
