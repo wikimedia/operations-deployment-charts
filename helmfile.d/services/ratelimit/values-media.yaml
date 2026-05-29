@@ -46,7 +46,6 @@ app:
             value: anon
             descriptors:
               - key: user_id
-                descriptors:
                 rate_limit:
                   unit: second
                   requests_per_unit: 10000000
@@ -54,3 +53,46 @@ app:
 config:
   cache_key_prefix: "media_"
 # TODO metrics config
+
+monitoring:
+  statsd:
+    # Override default statsd config file from chart with inline yaml config
+    filename: ~
+    config: |-
+      ---
+      mappings:
+        # Limit metrics ##############################################################
+        # Mappings for media rate limiting
+        - match: "ratelimit\\.service\\.rate_limit\\.upload\\.policy_(.*)\\.user_class_(.*)\\.user_id\\.(.*)"
+          match_type: regex
+          name: "ratelimit_service_media_$3"
+          labels:
+            policy: "$1"
+            user_class: "$2"
+        # Service metrics ##############################################################
+        - match: "ratelimit.service.call.should_rate_limit.*"
+          name: "ratelimit_service_should_rate_limit_error"
+          match_metric_type: counter
+          labels:
+            err_type: "$1"
+        - match: "ratelimit_server.*.total_requests"
+          name: "ratelimit_service_total_requests"
+          match_metric_type: counter
+          labels:
+            grpc_method: "$1"
+        - match: "ratelimit_server.*.response_time"
+          name: "ratelimit_service_response_time_seconds"
+          timer_type: histogram
+          labels:
+            grpc_method: "$1"
+        - match: "ratelimit.service.config_load_success"
+          name: "ratelimit_service_config_load_success"
+          match_metric_type: counter
+        - match: "ratelimit.service.config_load_error"
+          name: "ratelimit_service_config_load_error"
+          match_metric_type: counter
+        # Drop everything else
+        - match: "."
+          match_type: "regex"
+          action: "drop"
+          name: "dropped"
