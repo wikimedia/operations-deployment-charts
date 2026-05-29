@@ -1,6 +1,6 @@
 main_app:
   image: repos/projects/wmf-navigator
-  version: 2026-05-11-174459-web
+  version: 2026-05-28-182504-web
   limits:
     cpu: 200m
     memory: 200Mi
@@ -18,7 +18,7 @@ sidecars:
   navigator-backend:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-11-174459-navigator-backend
+    version: 2026-05-28-182504-navigator-backend
     limits:
       cpu: 200m
       memory: 200Mi
@@ -30,7 +30,7 @@ sidecars:
         mountPath: /data
     config:
       public:
-        DATA_DIR: 'packages/data-api/data'
+        DATA_DIR: '/data'
         PORT: '3000'
         CORS_ORIGINS: 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080'
         HTTP_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
@@ -40,7 +40,7 @@ sidecars:
   data-sync:
     enabled: true
     image: repos/projects/wmf-navigator
-    version: 2026-05-11-174459-data-sync
+    version: 2026-05-28-182504-data-sync
     limits:
       cpu: 200m
       memory: 200Mi
@@ -61,7 +61,7 @@ sidecars:
     command: ["/bin/sh", "-c", "/app/packages/data-sync/bin/sync-to-data-dir.sh; sleep 3600"]
     config:
       public:
-        DATA_DIR: 'packages/data-api/data'
+        DATA_DIR: '/data'
         HTTP_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
         HTTPS_PROXY: "http://url-downloader.eqiad.wikimedia.org:8080"
         NO_PROXY: "localhost,127.0.0.1,office.wikimedia.org"
