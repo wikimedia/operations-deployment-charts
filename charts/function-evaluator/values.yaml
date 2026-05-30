@@ -55,13 +55,49 @@ mesh:
     enabled: true
     port: 9361
 
+# Envoy config for the evaluator to send function callbacks to the orchestrator.
+#
+# This is nonstandard. Instead of the cluster-wide services_proxy config inherited from the default
+# written by Puppet, we write our own here, with a single "service". Differences:
+# - It's backed by the orchestrator's cluster-local Kubernetes service IP (not LVS or Ingress).
+# - We override the upstream port to reach an alternate Envoy listener.
+# - There's no `upstream.ips` field; instead we'll use a podSelector in the network policy below.
+# Everything else is duplicated from the Puppet-generated config.
+#
+# See mesh.restricted_listeners in values-main-orchestrator.yaml for the destination Envoy config.
+# That listener only grants access to the /v1/callback endpoint, which enforces semantic
+# restrictions on what functions are allowed to be called from user code. That port is the only
+# thing accessible with our network egress policy; that's why this doesn't use the normal
+# orchestrator service backed by the cluster ingress, which wouldn't let us enforce that
+# restriction.
+discovery:
+  listeners:
+    - wikifunctions-orchestrator-callback
+services_proxy:
+  wikifunctions-orchestrator-callback:
+    port: 6520
+    timeout: 9.5s
+    upstream:
+      address: function-orchestrator-main-orchestrator-tls-service.wikifunctions.svc.cluster.local
+      port: &callback_dest_port 4974
+      encryption: true
+      sets_sni: true
+      keepalive: "60s"
+
 debug:
   enabled: false
 
 networkpolicy:
   egress:
-    # enabled: true without any rules does prohibit egress traffic
     enabled: true
+    extraRules:
+      - ports:
+        - protocol: TCP
+          port: *callback_dest_port
+        to:
+        - podSelector:
+            matchLabels:
+              app: function-orchestrator
 
 ingress:
   enabled: false
