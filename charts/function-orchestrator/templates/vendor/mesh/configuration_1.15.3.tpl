@@ -193,10 +193,20 @@ static_resources:
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
   {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
   {{- if .Values.mesh.public_port -}}
+  {{- $af_aware_dot = set $af_aware_dot "port" .Values.mesh.public_port }}
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
   {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
   {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- range .Values.mesh.restricted_listeners }}
+  {{- $af_aware_dot = set $af_aware_dot "port" .port }}
+  {{- $af_aware_dot = set $af_aware_dot "allow_only" .allow_only }}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- end }}
+  {{- $af_aware_dot = unset $af_aware_dot "allow_only" }}
   {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
@@ -286,7 +296,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
 - address:
     socket_address:
       address: "{{ .listen_address | default "0.0.0.0" }}"
-      port_value: {{ .Values.mesh.public_port }}
+      port_value: {{ .port }}
   filter_chains:
   - filters:
     - name: envoy.filters.network.http_connection_manager
@@ -339,19 +349,23 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
           - domains: ['*']
             name: tls_termination
             routes:
+            {{- with .allow_only }}
+            - match:
+                path: {{ .path | quote }}
+                headers:
+                - name: ":method"
+                  string_match:
+                    exact: {{ .method | quote }}
+              {{- include "mesh.configuration._local_route" $ | nindent 14 }}
             - match: {prefix: /}
-              route:
-                cluster: {{ template "mesh.configuration._local_cluster_name" . }}
-                timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
-                {{- if .Values.mesh.idle_upstream_timeout | default false }}
-                idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
-                {{- end }}
-                {{- if .Values.mesh.upstream_retry_policy }}
-                retry_policy:
-                {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
-                  {{ $k }}: {{ $v }}
-                {{- end }}
-                {{- end }}
+              direct_response:
+                status: 403
+                body:
+                  inline_string: "Forbidden: only {{ .method }} {{ .path }} is permitted on this port\n"
+            {{- else }}
+            - match: {prefix: /}
+              {{- include "mesh.configuration._local_route" . | nindent 14 }}
+            {{- end }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
         request_id_extension:
@@ -373,7 +387,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 timeout: 0.250s
               service_name: {{ .Values.mesh.tracing.service_name | default .Release.Namespace }}
         {{- end }}
-        stat_prefix: ingress_https_{{ .Release.Name }}
+        stat_prefix: ingress_https_{{ .Release.Name }}{{ if ne .port .Values.mesh.public_port }}_{{ .port }}{{ end }}
         server_name: {{ .Release.Name }}-tls
         server_header_transformation: APPEND_IF_ABSENT
         internal_address_config:
@@ -404,7 +418,23 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
   - name: envoy.filters.listener.tls_inspector
     typed_config:
       "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
+  traffic_direction: INBOUND
 {{- end }}
+
+{{- define "mesh.configuration._local_route" -}}
+route:
+  cluster: {{ template "mesh.configuration._local_cluster_name" . }}
+  timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
+  {{- if .Values.mesh.idle_upstream_timeout | default false }}
+  idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
+  {{- end }}
+  {{- if .Values.mesh.upstream_retry_policy }}
+  retry_policy:
+  {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
+    {{ $k }}: {{ $v }}
+  {{- end }}
+  {{- end }}
+{{- end -}}
 
 {{/* Mesh network configuration. */}}
 {{- /*

@@ -20,6 +20,10 @@
     - name: DRAIN_STRATEGY
       value: {{ .drain_strategy | default "gradual" }}
     {{- end }}
+    {{- range $k, $v := .Values.mesh.extra_env }}
+    - name: {{ $k }}
+      value: {{ $v | quote }}
+    {{- end }}
   {{- if .Values.mesh.public_port }}
   ports:
     - containerPort: {{ .Values.mesh.public_port }}
@@ -42,7 +46,7 @@
     preStop:
       exec:
         command:
-        - "/bin/sh"
+        - "/bin/bash"
         - "-c"
         - "/bin/drain-envoy.sh"
 {{- else if .Values.mesh.prestop_sleep }}
