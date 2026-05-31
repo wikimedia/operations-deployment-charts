@@ -1,0 +1,30 @@
+networkpolicy:
+  egress:
+    enabled: true
+mesh:
+  enabled: true
+  public_port: 4004
+  telemetry:
+    enabled: true
+    port: 9361
+discovery:
+  listeners:
+    - citoid
+services_proxy:
+  citoid:
+    port: 6014
+    timeout: 10s
+    upstream:
+      ips: ~
+      address: citoid.discovery.wmnet
+      port: 4003
+      encryption: true
+      sets_sni: true
+      keepalive: 4s
+    split:
+      percentage: 55
+      ips: ~
+      address: mw-api-int.discovery.wmnet
+      port: 4448
+      encryption: true
+      keepalive: "5s"

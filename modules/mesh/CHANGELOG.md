@@ -1,3 +1,10 @@
+## networkpolicy 1.2.2
+
+- Add ingress ports for restricted_listeners
+- For a services_proxy entry with no upstream.ips, suppress the egress rule,
+  instead of generating one with an empty `to` (which allows traffic to
+  anywhere). For use in combination with `extraRules`.
+
 ## configuration 1.15.3
 
  - Add restricted_listeners. When set, an additional Envoy port is opened, which
