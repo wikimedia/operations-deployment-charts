@@ -153,7 +153,16 @@ module Tester
       origin_master = templates(orig_dir)
       # Iterate over the templates of HEAD of the local branch
       cached_templates.each do |label, outcome|
-        manifest = outcome.ok? ? outcome.out : 'Template did not render correctly (HEAD of local branch).'
+        if outcome.ok?
+          manifest = outcome.out
+        else
+          manifest = 'Template did not render correctly (HEAD of local branch).'
+          # For runners that don't include :validate in their tests (e.g. DeploymentTestRunner),
+          # record the failure so ok? reflects it.
+          if not @result[:validate].include?(label)
+            @result[:validate][label] = outcome
+          end
+        end
         if origin_master.include?(label)
           origin_master_outcome = origin_master[label]
           origin_master_manifest = origin_master_outcome.ok? ? origin_master_outcome.out : 'Template did not render correctly (HEAD of origin/master).'
