@@ -41,10 +41,10 @@ app:
   command: [ "./entrypoint.sh" ]
   limits:
     cpu: 2
-    memory: 1Gi
+    memory: 2Gi
   requests:
     cpu: 2
-    memory: 1Gi
+    memory: 2Gi
   readiness_probe:
     httpGet:
       path: /docs
