@@ -29,7 +29,7 @@ discovery:
 resources:
   replicas: 16
 
-app: &app
+app:
   version: v0.18.0
 
   requests:
@@ -40,8 +40,8 @@ app: &app
     memory: 2Gi
 
 config:
-  name: &name eventstreams
-  conf: &conf
+  name: eventstreams
+  conf:
 
     kafka:
       # NOTE: The kafka brokers list is set in site specific values files.
@@ -109,6 +109,7 @@ config:
       - rdf-streaming-updater.mutation-main.v2
       - rdf-streaming-updater.mutation-scholarly.v2
       - mediainfo-streaming-updater.mutation.v2
+      - mediawiki.page_outlink_topic_prediction_change.v1
       - mediawiki.page_revert_risk_prediction_change.v1
       - mediawiki.page_revert_risk_multilingual_prediction_change.v1
     # Before integrating with EventStreamConfig API,
@@ -645,8 +646,3 @@ config:
     (авиабаза), 'Эштон-Чирилло, Сара', Ябатьки, Ягодное (Черниговская область), Ядерное
     оружие и вторжение России на Украину, 'Янков, Игорь Дмитриевич', 'Янчевский, Всеволод
     Вячеславович', Участник:HTriedman (WMF)/redacted page test]
-
-main_app:
-  <<: *app
-  name: *name
-  conf: *conf
