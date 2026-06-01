@@ -1,6 +1,6 @@
 main_app:
   log_level: debug
-  version: v1.3.1
+  version: v1.4.0
 
   hoarde:
     tables:
@@ -16,6 +16,7 @@ main_app:
           hostname: inference-staging.svc.codfw.wmnet
           port: 30443
           model_name: outlink-topic-model
+          content_type: application/json
           tls:
             ca: /etc/ssl/certs/ca-certificates.crt
             authority: outlink-topic-model.articletopic-outlink.wikimedia.org
