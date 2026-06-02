@@ -1,6 +1,5 @@
 main_app:
   log_level: debug
-  version: v1.4.0
 
   hoarde:
     tables:
@@ -19,7 +18,7 @@ main_app:
           content_type: application/json
           tls:
             ca: /etc/ssl/certs/ca-certificates.crt
-            authority: outlink-topic-model.articletopic-outlink.wikimedia.org
+            authority: outlink-topic-model-grpc.articletopic-outlink.wikimedia.org
 
 resources:
   replicas: 1

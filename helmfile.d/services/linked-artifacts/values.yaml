@@ -1,6 +1,6 @@
 main_app:
   image: repos/sre/hoarde
-  version: v1.1.1
+  version: v1.4.0
   command: ["./hoarde"]
   args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
   service_name: linked-artifacts
@@ -14,10 +14,14 @@ main_app:
     tables:
       article_topics:
         lambda:
-          type: grpc
-          hostname: localhost  # FIXME: placeholder
-          port: 50501  # FIXME: placeholder
-          timeout: 2000ms
+          type: kserve_v2
+          hostname: inference.discovery.wmnet
+          port: 30443
+          model_name: outlink-topic-model
+          content_type: application/json
+          tls:
+            ca: /etc/ssl/certs/ca-certificates.crt
+            authority: outlink-topic-model-grpc.articletopic-outlink.wikimedia.org
 
   requests:
     cpu: 200m
