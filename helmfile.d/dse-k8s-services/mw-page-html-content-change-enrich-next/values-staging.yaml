@@ -30,25 +30,14 @@ app:
           # (as of 2026-04)
           parallelism: 2
           options:
-            # OTTO: temporarily use staging release to tune and test backfilling.
-            #       allowing the production release to always consume from latest
-            #       (missing messages) after restarts.
-            #       Note that the topic prefixes we produce to are 'staging.', so we
-            #       won't collied with the 'production' 'eqiad.' prefixed topics.
-            #       https://phabricator.wikimedia.org/T421216
-            # TODO: reset this to jumbo-eqiad before we productionize.
-            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-content-change-enrich-next__dse-k8s-eqiad.001
 
         sink:
           stream: mediawiki.page_html_content_change.v1:1.0.0
           options:
-            # OTTO: See note above.
-            # TODO: reset this to jumbo-eqiad before we productionize.
-            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             # Prefix the output topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
@@ -89,7 +78,6 @@ flink:
     swift_bucket: mw-page-html-content-change-enrich-next.dse-k8s-eqiad
 
 external_services:
-  # OTTO: See note above.
-  #kafka:  [test-eqiad]
-  kafka:  [jumbo-eqiad]
+  kafka:  [test-eqiad]
+
 
