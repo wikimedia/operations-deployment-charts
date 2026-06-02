@@ -45,7 +45,7 @@ _G.HelmValues = {
             },
             policies = {
                 ["some-limits"] = { measure = "count" },
-                ["time-limits"] = { measure = "time" },
+                ["time-limits"] = { measure = "time", upfront_cost = 100 },
             }
         }
     }
@@ -93,6 +93,7 @@ describe("rest_hooks", function()
                     ["x-wmf-ratelimit-policy-1"] = "xyzzy1",
                     ["x-wmf-ratelimit-policy-2"] = "xyzzy2",
                     ["x-wmf-ratelimit-policy-3"] = "xyzzy3",
+                    ["x-wmf-ratelimit-cost-3"] = "0",
                 }
                 local routeMeta = { ["wmf_ratelimit"] = { ["policies"] = { "one", "two" } } }
                 local req = fake_request_handle( { routeMetadata = routeMeta, headers = headers } )
@@ -102,7 +103,9 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "one", result:get("x-wmf-ratelimit-policy-1") )
                 assert.are.equal( "two", result:get("x-wmf-ratelimit-policy-2") )
+                assert.are.equal( "1", result:get("x-wmf-ratelimit-cost-2") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-3") )
+                assert.is_nil( result:get("x-wmf-ratelimit-cost-3") )
             end)
             it("should not set x-wmf-ratelimit-policy for BYPASS policy", function()
                 local headers = {
@@ -134,6 +137,7 @@ describe("rest_hooks", function()
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-2") )
                 assert.are.equal( "time-limits", result:get("x-wmf-timelimit-policy-1") )
+                assert.are.equal( "100", result:get("x-wmf-ratelimit-cost-1") )
             end)
             it("should unset x-wmf-ratelimit-policy based on route metadata", function()
                 local headers = {

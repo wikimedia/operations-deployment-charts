@@ -54,6 +54,7 @@ HelmValues = {
                 [{{ $name | quote }}] = {
                     shadow_mode = {{ default $def.shadow_mode | default false }},
                     measure = {{ $def.measure | default "count" | quote }},
+                    upfront_cost = {{ $def.upfront_cost | default 1 }},
                 },
                 {{- end }}
             },

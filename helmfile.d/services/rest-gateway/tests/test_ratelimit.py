@@ -4,7 +4,7 @@ import sys
 import os
 import unittest
 import datetime
-import math
+from typing import Callable, NamedTuple, Optional
 
 from smokepy.http import *
 from smokepy import env
@@ -13,22 +13,49 @@ from smokepy import values
 import jwtools
 import helpers
 
-def getRateLimits(rlc, policies = None):
+class RateLimit(NamedTuple):
+    # Effective request count allowance for the unit (raw // upfront_cost).
+    # Used by count-based assertions.
+    allowed: int
+    # Raw policy limit as configured (cost-units per unit).
+    # Used by cost-based assertions as the budget.
+    raw: int
+    # Per-request cost charged on the request flow.
+    upfront_cost: int
+
+# Predicate label -> count of responses matching that predicate.
+ResponseCounts = dict[str, int]
+
+# Classifies a Response (returns True for matches). See smokepy.http.Predicates.
+Predicate = Callable[[Response], bool]
+
+# Assertion callback used by assert_rate_limit_counts:
+# (allowed, submitted, counts) -> None. Raises on failure.
+Assertion = Callable[[int, int, ResponseCounts], None]
+
+def getRateLimits(rlc: str, policies: Optional[list] = None) -> values.Values:
     if rlc == "DENY":
-        denyLimits = { "SECOND": 0, "MINUTE": 0, "HOUR": 0 }
+        denyLimits = {
+            "SECOND": RateLimit(allowed=0, raw=0, upfront_cost=1),
+            "MINUTE": RateLimit(allowed=0, raw=0, upfront_cost=1),
+            "HOUR": RateLimit(allowed=0, raw=0, upfront_cost=1),
+        }
         return values.Values(denyLimits)
 
     try:
         policies = env.values.main_app.ratelimiter.default_policies if policies is None else policies
 
-        if not policies:
-            return None
-
         minLimits = {}
         for p in policies:
-            pLimits = env.values.main_app.ratelimiter.policies[p].limits[rlc]
+            policy = env.values.main_app.ratelimiter.policies[p]
+            pLimits = policy.limits[rlc]
+            cost = getattr(policy, 'upfront_cost', 1)
+
             for k in pLimits:
-                minLimits[k] = pLimits[k] if k not in minLimits or pLimits[k] < minLimits[k] else minLimits[k]
+                scaled_lim = pLimits[k] // cost
+                if k not in minLimits or scaled_lim < minLimits[k].allowed:
+                    minLimits[k] = RateLimit(allowed=scaled_lim, raw=pLimits[k], upfront_cost=cost)
+
         return values.Values(minLimits)
     except TypeError:
         pass
@@ -65,7 +92,17 @@ class RateLimitTest(unittest.TestCase):
     def setUp(self):
         self.target = helpers.makeHttpTarget(self.target_url, self.probe_config)
 
-    def assert_rate_limit_counts(self, path, allowed, assertions, body = None, extra_predicates = None, headers = None, debug = None, n = None):
+    def assert_rate_limit_counts(
+        self,
+        path: str,
+        allowed: int,
+        assertions: tuple[Assertion, ...],
+        body: Optional[dict] = None,
+        extra_predicates: Optional[dict[str, Predicate]] = None,
+        headers: Optional[dict[str, str]] = None,
+        debug: Optional[list] = None,
+        n: Optional[int] = None,
+    ) -> None:
         # By default, try allowed*2 + 2 as many requests as allowed:
         # At most twice as many requests as allowed can pass (when crossing a window boundary).
         # At least the last two requests must fail, assuming the requests can be performed within
@@ -94,9 +131,9 @@ class RateLimitTest(unittest.TestCase):
         for assertion in assertions:
             assertion(allowed, n, counts)
 
-    def assert_rate_limit_enforced(self, path, limit, policies = None, **kwargs):
+    def assert_rate_limit_enforced(self, path: str, limit: str, policies: Optional[list] = None, **kwargs) -> None:
         configured_limits = getRateLimits(limit, policies)
-        allowed = configured_limits.MINUTE
+        allowed = configured_limits.MINUTE.allowed
 
         def assert_ratelimit_headers(allowed, submitted, counts):
             xrl_count = counts.get("x-ratelimit-remaining", 0)
@@ -135,20 +172,20 @@ class RateLimitTest(unittest.TestCase):
         assertions = (assert_ratelimit_headers, assert_good_response, assert_denied_responses)
         self.assert_rate_limit_counts(path, allowed, assertions = assertions, extra_predicates = extra_predicates, **kwargs)
 
-    def assert_cost_limit_enforced(self, path, limit, policies = None, **kwargs):
+    def assert_cost_limit_enforced(self, path: str, limit: str, policies: Optional[list] = None, **kwargs) -> None:
         configured_limits = getRateLimits(limit, policies)
-        allowed = configured_limits.MINUTE
+        allowed = configured_limits.MINUTE.raw
+        upfront_cost = configured_limits.MINUTE.upfront_cost
 
         # Assume each request costs at least the up-front cost, and at most twice that.
         # So the minimum expected number is the 1x allowed limited divided by 2x the up-front cost,
         # and the maximum expected number is 2x the allowed limited divided by 1x the up-front cost.
 
-        up_front_cost = env.values.main_app.ratelimiter.up_front_cost
-        min_expected = math.floor( allowed / (2*up_front_cost) )
-        max_expected = math.floor( (2*allowed) / up_front_cost )
+        min_expected = allowed // (2*upfront_cost)
+        max_expected = (2*allowed) // upfront_cost
 
         if min_expected < 2:
-            raise Exception( f"The cost limit ({allowed}) is too close to the up-front cost ({up_front_cost}) for reliable testing")
+            raise Exception( f"The cost limit ({allowed}) is too close to the up-front cost ({upfront_cost}) for reliable testing")
 
         # Try so many requests that some must be denied
         n = min_expected + max_expected
@@ -177,9 +214,9 @@ class RateLimitTest(unittest.TestCase):
         self.assert_rate_limit_counts(path, allowed, assertions = assertions, n = n, **kwargs)
 
 
-    def assert_rate_limit_bypassed(self, path, limit, policies = None, **kwargs):
+    def assert_rate_limit_bypassed(self, path: str, limit: str, policies: Optional[list] = None, **kwargs) -> None:
         configured_limits = getRateLimits(limit, policies)
-        allowed = configured_limits.MINUTE
+        allowed = configured_limits.MINUTE.allowed
 
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
@@ -192,9 +229,9 @@ class RateLimitTest(unittest.TestCase):
         assertions = (assert_no_denied_responses, assert_no_ratelimit_headers)
         self.assert_rate_limit_counts(path, allowed, assertions = assertions, **kwargs)
 
-    def assert_rate_limit_shadowed(self, path, limit, policies = None, **kwargs):
+    def assert_rate_limit_shadowed(self, path: str, limit: str, policies: Optional[list] = None, **kwargs) -> None:
         configured_limits = getRateLimits(limit, policies)
-        allowed = configured_limits.MINUTE
+        allowed = configured_limits.MINUTE.allowed
 
         def assert_no_denied_responses(allowed, submitted, counts):
             self.assertEqual( counts.get("429", 0), 0, "expected no request to be denied")
@@ -292,6 +329,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-user-id": env.nextName("Youser"),
             "x-wmf-ratelimit-class": "anon",
             "x-wmf-ratelimit-policy-1": policy,
+            "x-wmf-ratelimit-cost-1": "1",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "anon",
             policies = [ policy ], headers = testing_headers)
@@ -301,6 +339,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-user-id": env.nextName("Jane"),
             "x-wmf-ratelimit-class": "anon",
             "x-wmf-ratelimit-policy-1": "DENY",
+            "x-wmf-ratelimit-cost-1": "1",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
@@ -311,6 +350,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-user-id": env.nextName("Judy"),
             "x-wmf-ratelimit-class": "DENY",
             "x-wmf-ratelimit-policy-1": policy,
+            "x-wmf-ratelimit-cost-1": "1",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
@@ -322,6 +362,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-user-id": env.nextName("Xyzzy"),
             "x-wmf-ratelimit-class": "approved-bot",
             "x-wmf-ratelimit-policy-1": policy,
+            "x-wmf-ratelimit-cost-1": "1",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "anon",
             policies = [ policy ], headers = testing_headers)
@@ -448,7 +489,6 @@ class RateLimitTest(unittest.TestCase):
             "cookie": "sessionJwt=" + cookie_token
         }
 
-        limits = getRateLimits("known-client")
         self.assert_rate_limit_enforced(self.default_endpoint, "known-client", headers = headers)
 
     def test_centralauthtoken_limit_uses_rlc_claim(self):

@@ -79,6 +79,7 @@ function wmf_ratelimit_info(request_handle)
     for i, _ in ipairs(HelmValues.main_app.ratelimiter.default_policies) do
         headers:remove("x-wmf-ratelimit-policy-" .. tostring(i))
         headers:remove("x-wmf-timelimit-policy-" .. tostring(i))
+        headers:remove("x-wmf-ratelimit-cost-" .. tostring(i))
     end
 
     -- Use the client IP as the fallback use ID.
@@ -95,8 +96,12 @@ function wmf_ratelimit_info(request_handle)
         -- Which header is set here controls which descriptors will be sent to the
         -- ratelimit service.
         local policy = HelmValues.main_app.ratelimiter.policies[p]
-        local policy_header = "x-wmf-ratelimit-policy"
 
+        -- We take the per-request upfront cost from the policy for now, but we could take
+        -- a multiplier from routeMeta in the future.
+        local cost = policy and policy.upfront_cost or 1
+
+        local policy_header = "x-wmf-ratelimit-policy"
         if policy and policy.measure then
             if policy.measure == "time" then
                 -- setting this header causes cost-based
@@ -112,6 +117,7 @@ function wmf_ratelimit_info(request_handle)
         if policy_header then
             request_handle:logDebug("WMF rate_limit: policy-" .. tostring(i) .. "=" .. p)
             headers:replace(policy_header .. "-" .. tostring(i), p)
+            headers:replace("x-wmf-ratelimit-cost-" .. tostring(i), tostring(cost))
         end
     end
 

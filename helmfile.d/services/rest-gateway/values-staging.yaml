@@ -169,6 +169,7 @@ main_app:
 
       "AbstractWiki":
         shadow_mode: false
+        upfront_cost: 2
         limits:
           "*": # catch-all limits
             MINUTE: 10
@@ -234,6 +235,7 @@ main_app:
       "QueryCost":
         shadow_mode: false
         measure: time
+        upfront_cost: 100
         limits:
           "*": # catch-all limits
             MINUTE: 600

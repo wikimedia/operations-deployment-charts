@@ -33,7 +33,10 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
 {{- range $unit := $.Values.main_app.ratelimiter.units }}
   {{- /* The rate limit is enforced only if the policy header is set (by Lua) */}}
   {{- $policy_header := printf "x-wmf-ratelimit-policy-%d" (add1 $index) }}
-  - actions: # request count per {{ $unit }}
+  {{- $cost_format := printf "%%REQ(x-wmf-ratelimit-cost-%d)%%" (add1 $index) }}
+  - hits_addend: # up-front cost per {{ $unit }}
+      format: {{ $cost_format | quote }}
+    actions: # request count per {{ $unit }}
   {{- include "restgateway.rate_limit_actions" (dict "unit" $unit "policy_header" $policy_header) | nindent 2 }}
 {{- end }}
 {{- end }}
@@ -45,8 +48,9 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
 {{- range $unit := $.Values.main_app.ratelimiter.units }}
   {{- /* The rate limit is enforced only if the policy header is set (by Lua) */}}
   {{- $policy_header := printf "x-wmf-timelimit-policy-%d" (add1 $index) }}
+  {{- $cost_format := printf "%%REQ(x-wmf-ratelimit-cost-%d)%%" (add1 $index) }}
   - hits_addend: # up-front cost per {{ $unit }}
-      number: {{ $.Values.main_app.ratelimiter.up_front_cost | default 1 }}
+      format: {{ $cost_format | quote }}
     actions:
     {{- include "restgateway.rate_limit_actions" (dict "unit" $unit "policy_header" $policy_header) | nindent 2 }}
   - hits_addend: # response cost per {{ $unit }} (record only, no enforcement)

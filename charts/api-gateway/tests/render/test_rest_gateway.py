@@ -5,7 +5,6 @@ from subprocess import CalledProcessError
 from .manifest import Manifest
 from .chart import Chart
 from .data import HelmData
-from .data import DEFINED, UNDEFINED
 
 TEST_DIR = path.dirname(__file__)
 CHART_DIR = path.dirname( path.dirname( TEST_DIR ) )
@@ -172,7 +171,7 @@ class RestGatewayTest(unittest.TestCase):
         self.assertIsNotNone(access_log.get("log_format.json_format.http.request_headers.x-wmf-ratelimit-policy"))
         self.assertEqual(
             access_log.get("log_format.json_format.http.request_headers.x-wmf-ratelimit-policy").strip(),
-            r"%REQ(X-WMF-RATELIMIT-POLICY-1)% %REQ(X-WMF-RATELIMIT-POLICY-2)%",
+            r"%REQ(X-WMF-RATELIMIT-POLICY-1)%+%REQ(X-WMF-RATELIMIT-COST-1)%;%REQ(X-WMF-RATELIMIT-POLICY-2)%+%REQ(X-WMF-RATELIMIT-COST-2)%;",
         )
 
         # http filters
@@ -198,19 +197,39 @@ class RestGatewayTest(unittest.TestCase):
         self.assertIsNotNone(rl_config.rate_limits, "rate_limits")
         self.assertEqual(len(rl_config.rate_limits), 6, "rate_limits count") # policies x units x 3 (count, up-front time, response time)
 
-        countLimit = rl_config.get(["rate_limits", { "hits_addend": UNDEFINED }])
-        upFrontCostLimit = rl_config.get(["rate_limits", { "hits_addend": DEFINED, "apply_on_stream_done": UNDEFINED }])
-        onResponseCostLimit = rl_config.get(["rate_limits", { "hits_addend": DEFINED, "apply_on_stream_done": True }])
+        # Every entry now carries hits_addend (count and up-front read the per-policy cost
+        # header; on-response reads %DURATION%). Distinguish entries by policy header in
+        # actions[] and by apply_on_stream_done.
+        policy_header_path = ["actions", { "request_headers.descriptor_key": "policy" }, "request_headers", "header_name"]
 
-        header_name_path = ["actions", { "request_headers.descriptor_key": "policy" }, "request_headers", "header_name"]
+        def find_limit(policy_header, on_stream_done):
+            for i in range(len(rl_config.rate_limits)):
+                rl = rl_config.get(["rate_limits", i])
+                if rl.get(policy_header_path) == policy_header and rl.get("apply_on_stream_done") == on_stream_done:
+                    return rl
+            return None
+
+        countLimit = find_limit("x-wmf-ratelimit-policy-1", None)
+        upFrontCostLimit = find_limit("x-wmf-timelimit-policy-1", None)
+        onResponseCostLimit = find_limit("x-wmf-timelimit-policy-1", True)
+
         self.assertIsNotNone(countLimit, "request counting limit")
-        self.assertEqual(countLimit.get(header_name_path), "x-wmf-ratelimit-policy-1", "request counting limit: policy header")
+        self.assertEqual(
+            countLimit.get(["hits_addend", "format"]), "%REQ(x-wmf-ratelimit-cost-1)%",
+            "request counting limit: hits_addend.format",
+        )
 
         self.assertIsNotNone(upFrontCostLimit, "up-front cost limit")
-        self.assertEqual(upFrontCostLimit.get(header_name_path), "x-wmf-timelimit-policy-1", "up-front cost limit: policy header")
+        self.assertEqual(
+            upFrontCostLimit.get(["hits_addend", "format"]), "%REQ(x-wmf-ratelimit-cost-1)%",
+            "up-front cost limit: hits_addend.format",
+        )
 
         self.assertIsNotNone(onResponseCostLimit, "on-response cost")
-        self.assertEqual(onResponseCostLimit.get(header_name_path), "x-wmf-timelimit-policy-1", "on-response cost: policy header")
+        self.assertEqual(
+            onResponseCostLimit.get(["hits_addend", "format"]), "%DURATION%",
+            "on-response cost limit: hits_addend.format",
+        )
 
         # route_config
         policies = vhost.get(["routes", {"name": "main_services_foo_bar"}, "metadata", "filter_metadata", "envoy.filters.http.lua", "wmf_ratelimit", "policies"])

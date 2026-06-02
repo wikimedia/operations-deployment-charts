@@ -18,6 +18,7 @@ DENY_LIMIT_HEADERS = {
     "x-wmf-user-id": "Danese",
     "x-wmf-ratelimit-class": "DENY",
     "x-wmf-ratelimit-policy-1": "DENY",
+    "x-wmf-ratelimit-cost-1": "1",
 }
 
 class CorsTest(unittest.TestCase):
