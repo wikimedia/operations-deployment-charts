@@ -58,7 +58,7 @@ sidecars:
         mountPath: /etc/secrets/okta_users_api_private_key.pem
         subPath: OKTA_PRIVATE_KEY
         readOnly: true
-    command: ["/bin/sh", "-c", "/app/packages/data-sync/bin/sync-to-data-dir.sh; sleep 3600"]
+    command: ["/bin/sh", "-c", "/app/packages/data-sync/bin/sync-to-data-dir.sh && sleep 3600"]
     config:
       public:
         DATA_DIR: '/data'
