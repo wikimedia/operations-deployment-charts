@@ -32,7 +32,8 @@ app:
       kafka-bootstrap-servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
       kafka-consumer-group-id: webrequest-page-view-next__dse-k8s-eqiad.001
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
-      output-topic: staging.eqiad.webrequest.page_view.dev0
+      output-topic: staging.webrequest.page_view.dev0
+      error-topic: staging.webrequest_page_view.error
       input-topics: webrequest_frontend_text
 
 

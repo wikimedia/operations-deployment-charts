@@ -8,7 +8,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment/java
-  version: v1.56.0-dev11
+  version: v1.56.0-dev14
   flinkVersion: v2_0
   logConfiguration:
     rootLogger.level: INFO
@@ -22,6 +22,8 @@ app:
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
       input-event-stream: webrequest.dev0
       output-event-stream: webrequest.page_view.dev0
+      error-event-stream: webrequest_page_view.error
+      error-schema-version: 2.1.0
 
       # NOTE: kafka-bootstrap-servers, kafka-consumer-group-id, and output-topic
       #       must be configured in release / cluster specific values files.
