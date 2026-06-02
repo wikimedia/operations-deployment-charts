@@ -562,7 +562,7 @@ class RateLimitTest(unittest.TestCase):
 
         anonHeaders = { "x-client-ip": env.nextIp() }
         self.assert_cost_limit_enforced(self.probe_config.timelimit_endpoint, "anon",
-                                        headers = anonHeaders, policies = ["QueryCost"])
+                                        headers = anonHeaders, policies = ["ParseCost"])
 
     def test_jwt_cookie_limit_uses_rlc_claim(self):
         ip = env.nextIp()

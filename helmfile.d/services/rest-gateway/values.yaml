@@ -194,6 +194,42 @@ main_app:
           "known-client": # no auth, network associated with a known client
             MINUTE: 999999
 
+      # Response-time based limit for parsing.
+      # Derived from the default limit by multiplying it by the median parse time (60ms)
+      "ParseCost":
+        shadow_mode: true
+        measure: time
+        upfront_cost: 20
+        limits:
+          "*": # catch-all limits
+            MINUTE: 600
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 600
+          "unauthed-bot": # no auth, but good User-Agent -- temp?
+            MINUTE: 12000
+          "anon-mediawiki": # InstantCommons and such (no contact info)
+            MINUTE: 6000
+          "unauthed-mediawiki": # InstantCommons and such (with contact info)
+            MINUTE: 12000
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 12000
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 24000
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            MINUTE: 240000 # needs high limit until we can distinguish clients
+          "authed-user": # valid JWT
+            MINUTE: 12000
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 120000
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 9999999
+          "known-network": # no auth, network under our control (WMCS, WME)
+            MINUTE: 9999999
+          "approved-bot": # community approved bot, based on jwt auth
+            MINUTE: 9999999
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 9999999
+
       # Preliminary limits for abstract.wikipedia.org.
       # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
       # to avoid locking users out of other things inadvertently. We also set higher limits,
@@ -806,8 +842,8 @@ main_app:
           redirect: true
           redirect_code: MOVED_PERMANENTLY
         # *** END REST API sandbox ***
+    # Allow certain action API calls to bypass rate limits
     - name: mw-action-api-nolimit
-      # We set a higher timeout to allow for long queries on the search API
       timeout: 53s
       cluster: mw-api-ext-ro
       csp_enabled: false
@@ -840,6 +876,20 @@ main_app:
       lua_hooks:
         # Use a hook to determine whether the request can actually be exempt or not.
         ratelimit: [ "wmf_handle_action_api_nolimit" ]
+    # We apply a cost-bassed limit to prevent high load
+    - name: mw-action-api-parse
+      timeout: 53s
+      cluster: mw-api-ext-ro
+      csp_enabled: false
+      rate_limit_policies: [ "May2026", "ParseCost" ]
+      urls:
+        - name: allowed_action
+          in: '/+w/api.php(.*)'
+          out: '/w/api.php\1'
+          query_parameters:
+            - name: action
+              string_match:
+                exact: 'parse'
     # Assign rate limit policy for abstract.wikipedia.org.
     # Abstract Wikipedia requires a LOT of API queries, they need to have a separate bucket
     # to avoid locking users out of other things inadvertently.

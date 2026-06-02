@@ -23,6 +23,7 @@ smokepy:
     shadow_policy_endpoint: "/w/api.php?action=shadowed&format=json"
 
     # The path of the endpoint to probe when testing time limit policy handling.
+    # Use a fake action (instead of action=parse) so ONLY the time limit applies.
     # Doesn't have to be an existing action API module since missing modules still produce status 200.
     timelimit_endpoint: "/w/api.php?action=timelimited&format=json"
 
@@ -232,7 +233,7 @@ main_app:
           "known-network": # no auth, network under outbound control (WMCS, WME)
             MINUTE: 210
 
-      "QueryCost":
+      "ParseCost":
         shadow_mode: false
         measure: time
         upfront_cost: 100
@@ -312,7 +313,7 @@ main_app:
                 # this does not exist in the real API
                 exact: 'timelimited'
                 ignore_case: true
-      rate_limit_policies: [ "QueryCost", "BYPASS" ]
+      rate_limit_policies: [ "ParseCost", "BYPASS" ]
 
     - name: staging-mw-action-api-jwt-required
       timeout: 53s
