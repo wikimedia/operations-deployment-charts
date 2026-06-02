@@ -28,14 +28,14 @@ app:
         # Configure sources and sinks.
         # NOTE: Make sure to set kafka options in environment specific values files.
         source:
-          stream: mediawiki.content_history_reconcile.v1:1.3.0
+          stream: mediawiki.content_history_reconcile.v1:1.7.0
           connector: kafka
           options:
             properties:
               security.protocol: SSL
               ssl.ca.location: /etc/ssl/certs/wmf-ca-certificates.crt
         sink:
-          stream: mediawiki.content_history_reconcile_enriched.v1:1.3.0
+          stream: mediawiki.content_history_reconcile_enriched.v1:1.7.0
           connector: kafka
           options:
             delivery_guarantee: AT_LEAST_ONCE
@@ -69,7 +69,7 @@ app:
     "state.checkpoints.num-retained": "10"
     "s3.path.style.access": "true"
     # We need to set an interval in order to trigger checkpointing.
-    # TODO: after gaining some operational experience, set this value to something 
+    # TODO: after gaining some operational experience, set this value to something
     # meaningful. Given the small size of kafka offsets (KBs), 30 seconds seems a reasonable
     # default.
     "execution.checkpointing.interval": "30000" # 30 seconds.
