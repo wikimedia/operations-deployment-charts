@@ -17,6 +17,15 @@ nodeplugin:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
       tag: 2025-04-07-130725-8ce7fc442c39f3b4fe1a7cb81d70b1328a72c143@sha256:05eaf7794e6f939aa6f9d3aa3fb525d3a4671a0abba4ce233432c5b581433eea
+  tolerations:
+  # allow the ceph-csi-rbd pods to run on dedicated workers,
+  # as the workload might still require access to Ceph rbd volumes.
+  - key: "dedicated"
+    operator: "Exists"
+    effect: "NoSchedule"
+  - key: "dedicated"
+    operator: "Exists"
+    effect: "NoExecute"
 
 provisioner:
   provisioner:
