@@ -27,7 +27,8 @@ idp:
   response_type: {{ .Values.app.idp.response_type }}
 
 growthbook:
-  run_poller: {{ .Values.app.growthbook.run_poller }}
+  include_gb: {{ .Values.app.growthbook.include_gb }}
+  include_tk: {{ .Values.app.growthbook.include_tk }}
   api_url: {{ .Values.app.growthbook.api_url }}
   saved_groups_url: {{ .Values.app.growthbook.saved_groups_url }}
   poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}

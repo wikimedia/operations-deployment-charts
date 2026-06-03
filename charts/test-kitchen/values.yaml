@@ -70,7 +70,8 @@ app:
     response_type: code
 
   growthbook:
-    run_poller: false
+    include_gb: false
+    include_tk: true
     api_url: https://growthbook-api-next.wikimedia.org/api/v1/experiments
     saved_groups_url: http://growthbook-api-next.wikimedia.org/api/v1/saved-groups
     poll_interval_ms: 15000
