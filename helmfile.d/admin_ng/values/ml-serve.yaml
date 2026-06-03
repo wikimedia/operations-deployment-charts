@@ -316,6 +316,14 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+  liftwing-openapi-server:
+    deployClusterRole: deploy
+    deployTLSCertificate: true
+    labels:
+      istio-injection: enabled
+      webhooks.knative.dev/exclude: "true"
+    tlsExtraSANs:
+      - api.wikimedia.org
   ores-legacy:
     deployClusterRole: deploy
     deployTLSCertificate: true

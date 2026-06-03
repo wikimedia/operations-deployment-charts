@@ -1,0 +1,39 @@
+# Values common to both ML serve clusters. If you need to add per-cluster
+# specific values, please create ./ml-serve-{eqiad,codfw}.yaml files.
+
+chartName: liftwing-openapi-server
+
+monitoring:
+  enabled: true
+  uses_statsd: false
+
+main_app:
+  image: wikimedia/machinelearning-liftwing-inference-services-liftwing-openapi-server
+  version: "2026-06-08-095152-publish"  # Manually update after image is published by CI pipeline
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  readiness_probe:
+    httpGet:
+      path: /openapi.yaml
+      port: 8080
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 8081  # local TLS terminator port
+
+resources:
+  replicas: 2
+
+ingress:
+  enabled: true
+  base_cors_policy: true
+  gatewayHosts:
+    extraFQDNs:
+      - api.wikimedia.org
