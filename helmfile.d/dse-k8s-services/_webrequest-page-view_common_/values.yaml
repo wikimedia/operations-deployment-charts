@@ -21,7 +21,9 @@ app:
       # Load schema from local path baked into the image.
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
       input-event-stream: webrequest.dev0
+      input-schema-version: 1.0.0
       output-event-stream: webrequest.page_view.dev0
+      output-schema-version: 1.0.0
       error-event-stream: webrequest_page_view.error
       error-schema-version: 2.1.0
 
