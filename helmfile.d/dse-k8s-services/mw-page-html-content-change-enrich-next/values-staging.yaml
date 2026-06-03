@@ -18,6 +18,9 @@ app:
   config_files:
     app.config.yaml:
 
+      enrich:
+        max_content_size: 58720256
+
       # Configs for eventutilities python stream_manager.
       stream_manager:
         job_name: mw-page-html-content-change-enrich-next
@@ -42,6 +45,12 @@ app:
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
             kafka_topic_prefix: staging.
+            properties:
+              # Testing this situation, we believe th is value is the max size BEFORE compression.
+              max.request.size: "100663296"
+              # 128MB - a single record must also fit in the producer buffer
+              # (default 32MB), so this must exceed max.request.size.
+              buffer.memory: "134217728"
 
         error_sink:
           stream: mw_page_html_content_change_enrich.error:2.1.0
@@ -54,6 +63,11 @@ app:
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
             kafka_topic_prefix: staging.
+            properties:
+              # 96MB
+              max.request.size: "100663296"
+              # 128MB
+              buffer.memory: "134217728"
 
 
   job:
