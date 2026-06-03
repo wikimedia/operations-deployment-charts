@@ -1,5 +1,5 @@
 app:
-  version: v1.3.9-prod
+  version: v1.4.0-prod
 
   service:
     user_agent: Test Kitchen UI/1.3 (#experiment-platform)
@@ -20,7 +20,8 @@ app:
     redirect_uri: https://test-kitchen-next.wikimedia.org/login/callback
 
   growthbook:
-    run_poller: true
+    include_gk: false
+    include_tk: true
     # http://localhost:6048 is proxied to growthbook-api-next
     api_url: http://localhost:6048/api/v1/experiments
     saved_groups_url: http://localhost:6048/api/v1/saved-groups
