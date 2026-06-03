@@ -1,0 +1,17 @@
+init:
+  config:
+    public:
+      KAFKA_BROKERS: kafka-main-codfw.external-services.svc.cluster.local:9092 # TODO: the init container needs to be able to use SSL
+      KAFKA_GROUP: codfw.$(K8S_POD_NAMESPACE).$(K8S_POD_NAME)
+
+consumer:
+  config:
+    public:
+      KAFKA_BROKERS: kafka-main-codfw.external-services.svc.cluster.local:9092 # TODO: the consumer needs to be able to use SSL
+      KAFKA_GROUP: codfw.$(K8S_POD_NAMESPACE).$(K8S_POD_NAME)
+
+external_services:
+  kafka:
+    - main-codfw
+  s3:
+    - codfw-dpe

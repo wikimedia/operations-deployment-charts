@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
 {{- include "base.meta.metadata" (dict "Root" . "Name" "proxy-service") | indent 2 }}
+    component: proxy
 spec:
   type: {{ template "base.helper.serviceType" . }}
   selector:
@@ -10,7 +11,7 @@ spec:
     component: proxy
     release: {{ .Release.Name }}
   ports:
-    - name: {{ .Values.proxy.port.name }}
-      targetPort: {{ .Values.proxy.port.targetPort }}
-      port: {{ .Values.proxy.port.port }}
+    - name: {{ .Values.service.port.name }}
+      targetPort: {{ .Values.service.port.targetPort }}
+      port: {{ .Values.service.port.port }}
 {{- end }}

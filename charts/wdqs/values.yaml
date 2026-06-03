@@ -1,16 +1,19 @@
 app:
-  port: 80 # proxy service port for the network policy
+  port: &proxyport 80
 
 backend:
   volume:
     name: data-dir
     storageClass: emptyDir # Set to storageClass to enable PVC
     size: 1Mi # dummy value
+  security:
+    gid: 900 # default runuser as created by blubber
 
 qlever:
   image: repos/wikidata-platform/wdqs/wdqs-qlever
   version: latest
   port: 7001
+  # The "current" dir is created and populated by the "init" container
   workingDir: /srv/data/current
   requests:
     cpu: 1
@@ -27,25 +30,34 @@ qlever:
       QLEVER_MAX_MEM: 24G
       QLEVER_MAX_CACHE: 8G
       QLEVER_NUM_QUERIES: 50
+  service:
+    port:
+      name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+      # protocol: TCP # TCP is the default protocol
+      targetPort: 7001 # the number or name of the exposed port on the container
+      port: 7001 # the number of the port desired to be exposed to the cluster
 
 init:
   image: repos/wikidata-platform/wdqs/wdqs-backend-init
   version: latest
   config:
     public:
+      # A stable Kafka group bound to the storage and pod, due to usage of StatefulSet
       KAFKA_GROUP: $(K8S_POD_NAMESPACE)-$(K8S_POD_NAME)
+      # As long as the Qlever index is not persisted regularly, we need to rebuild from dump ts on each restart
       KAFKA_FORCE_SEEK: true
       NEW_INDEX_S3_HOST: rgw.eqiad.dpe.anycast.wmnet
       NEW_INDEX_S3_BUCKET: wdqs-index-update
       LOGGER: ecs
     private:
+      # The actual values are automatically injected from /etc/helmfile-defaults/private via the helmfile
       S3_ACCESS_KEY: accesskey
       S3_SECRET_KEY: privatekey
   requests:
     cpu: 100m
-    memory: 50Mi
+    memory: 300Mi
   limits:
-    cpu: 1
+    cpu: 500m
     memory: 512Mi
   volumeMounts:
    - name: data-dir
@@ -58,13 +70,14 @@ consumer:
     public:
       # communication via localhost because Qlever and consumer live in the same pod
       SPARQL_ENDPOINT: http://localhost:7001/sparql
+      # Same stable kafka group as used in the init container
       KAFKA_GROUP: $(K8S_POD_NAMESPACE)-$(K8S_POD_NAME)
       BATCH_SIZE: 250
   requests:
     cpu: 1
     memory: 1Gi
   limits:
-    cpu: 4
+    cpu: 1
     memory: 4Gi
 
 health:
@@ -72,16 +85,16 @@ health:
   version: latest
   config:
     public:
-      QUARKUS_REST_CLIENT_CONSUMER_URL: http://localhost:9101
+      QUARKUS_REST_CLIENT_CONSUMER_URL: http://localhost:9101/metrics
       HEALTH_MONITOR_UPDATE_LAG_THRESHOLD: 10
-      HEALTH_MONITOR_UPDATE_LAG_METRIC_NAME: wdqs_streaming_updater_kafka_stream_consumer_lag_Value
+      HEALTH_MONITOR_UPDATE_LAG_METRIC_NAME: wdqs_streaming_updater_update_lag_offset_Value
       HEALTH_MONITOR_INDEX_DIR: /srv/data/current
       HEALTH_MONITOR_INDEX_SPARQL_ENDPOINT: http://localhost:7001/sparql
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 512Mi
   limits:
-    cpu: 1
+    cpu: 500m
     memory: 1Gi
   startup_probe:
     httpGet:
@@ -90,20 +103,23 @@ health:
     # We allow 2h (720*10=7200s=2h) for the consumer to catch up to the current state
     failureThreshold: 720
     periodSeconds: 10
+    # The consumer waits 10 seconds before exposing the metrics
+    initialDelaySeconds: 10
   volumeMounts:
    - name: data-dir
      mountPath: /srv/data
+     readOnly: true
 
 proxy:
   image: repos/wikidata-platform/wdqs/wdqs-proxy
   version: latest
   port:
     name: http
-    port: 80
+    port: *proxyport
     targetPort: 8080
   config:
     public:
-      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-qlever.wdqs.svc.cluster.local:7001/sparql
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-main-internal-qlever:7001/sparql
       QUERY_REWRITER_MW_SPARQL_ENABLED: false
       QUERY_REWRITER_FEDERATION_ENABLED: true
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.wikimedia.org/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/releases/permalink/latest/downloads/allowlist.json
@@ -113,7 +129,7 @@ proxy:
       QUARKUS_MICROMETER_ENABLED: false
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 512Mi
   limits:
     cpu: 1
     memory: 1Gi
@@ -123,14 +139,14 @@ monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
+# The proxy service is our external service
 service:
-  deployment: minikube # valid values are "production" and "minikube"
+  deployment: minikube
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
-    targetPort: 7001 # the number or name of the exposed port on the container
-    port: 80 # the number of the port desired to be exposed to the cluster
-    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+    targetPort: 8080 # the number or name of the exposed port on the container
+    port: *proxyport # the number of the port desired to be exposed to the cluster
 
 debug:
   enabled: false

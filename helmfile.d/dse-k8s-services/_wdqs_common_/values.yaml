@@ -1,0 +1,85 @@
+backend:
+  volume:
+    storageClass: emptyDir
+    size: 600Gi # 600Gi should be enough for 1 full index and 1 backup
+
+qlever:
+  version: v0.5.47
+  config:
+    public:
+      QLEVER_MAX_MEM: 100G
+      QLEVER_MAX_CACHE: 32G
+  requests:
+    cpu: 4
+    memory: 32Gi
+  limits:
+    cpu: 10
+    memory: 120Gi
+
+init:
+  version: v0.0.5
+  config:
+    public:
+      NUM_BACKUPS: 1
+
+consumer:
+  version: v0.0.8
+
+health:
+  version: v0.0.2
+
+proxy:
+  version: v0.3.1
+
+networkpolicy:
+  egress:
+    enabled: true
+
+ingress:
+  enabled: false
+
+mesh:
+  public_port: 80
+
+# gmodena:
+# We need egress to gitlab (for the federation allow list), kafka main and S3 in both DCs.
+# With maybe cross-dc requests allowed for S3 (do we run the datapipeline and # bucket active-active? Other can of worms).
+#
+# We also possibly need egress rules EventGate (analytics), if we don't end up producing query telemetry directly into kafka-main.
+
+# And we need egress rules from qlever to federated endpoints (from the allow list).
+external_services:
+  gitlab:
+    - wikimedia
+
+affinity:
+  # affinity to bind our backend pod to the wdqs nodes
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: dedicated
+            operator: In
+            values:
+              - wdqs
+  # affinity to prevent two instances of WDQS to run on the same node
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - wdqs
+        topologyKey: "kubernetes.io/hostname"
+
+# toleration to allow wdqs-backend pods to run on wdqs nodes
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "wdqs"
+    effect: "NoSchedule"
+  - key: "dedicated"
+    operator: "Equal"
+    value: "wdqs"
+    effect: "NoExecute"

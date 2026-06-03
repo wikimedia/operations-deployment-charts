@@ -17,6 +17,9 @@ spec:
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
     spec:
+      securityContext:
+        fsGroup: {{ $.Values.backend.security.gid }} {{/* This allows the volumes to be writable */}}
+        fsGroupChangePolicy: "OnRootMismatch"
       {{- if .Values.affinity }}
       affinity:
         {{- toYaml .Values.affinity | nindent 8 }}
