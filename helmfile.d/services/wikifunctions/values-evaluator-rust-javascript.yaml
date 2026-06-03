@@ -15,13 +15,11 @@ config:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
     OTEL_SERVICE_NAME: wikifunctions-evaluator-rust-javascript
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
-    WASM_BINARY: /srv/service/programming-languages/wasmedge_quickjs.so
-    PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
-    WASMEDGE_HOME: /srv/service/programming-languages/wasmedge
+    JAVASCRIPT_INTERPRETER_FILE: /srv/rustversion/interpreters/wasip1_quickjs_uncompiled_spliced.wasm
+    EXECUTOR_ROOT: /srv/executors
+    PROGRAMMING_LANGUAGE_DIR: /srv/rustversion/interpreters/
     EXECUTOR_PROCESS_POOL_SIZE: "5"
-    ENABLE_WASMEDGE_LIMITS: "0"
-    WASMEDGE_GAS_LIMIT: "1000000"
-    WASMEDGE_MEMORY_PAGE_LIMIT: "10000"
-    WASMEDGE_TIMEOUT_MS: "11000"
-    FUNCTION_EVALUATOR_WASI_ACQUIRE_TIMEOUT: "1500"
+    WASMTIME_FUEL_LIMIT: "10000000000"
+    WASMTIME_MEMORY_PAGES: "10000"
+    MAX_REQUESTS_PER_ID: "100"
 
