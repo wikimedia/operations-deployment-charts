@@ -8,12 +8,13 @@ main_app:
           type: grpc
           hostname: cassandra-dev2001-a.codfw.wmnet
           port: 50051
-          timeout: 5000ms
+          timeout: 5s
       article_topics:
         lambda:
           type: kserve_v2
           hostname: inference-staging.svc.codfw.wmnet
           port: 30443
+          timeout: 5s
           model_name: outlink-topic-model
           content_type: application/json
           tls:

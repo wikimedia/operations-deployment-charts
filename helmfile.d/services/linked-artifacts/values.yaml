@@ -1,6 +1,6 @@
 main_app:
   image: repos/sre/hoarde
-  version: v1.4.0
+  version: v1.4.1
   command: ["./hoarde"]
   args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
   service_name: linked-artifacts
@@ -17,6 +17,7 @@ main_app:
           type: kserve_v2
           hostname: inference.discovery.wmnet
           port: 30443
+          timeout: 5s
           model_name: outlink-topic-model
           content_type: application/json
           tls:
