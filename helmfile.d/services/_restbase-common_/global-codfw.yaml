@@ -50,7 +50,9 @@ main_app:
 external_services:
   cassandra:
     # Allow egress to the entire cluster (both sites).
-    - restbase-storage-a-codfw
-    - restbase-storage-b-codfw
-    - restbase-storage-a-eqiad
-    - restbase-storage-b-eqiad
+    - restbase-a-codfw
+    - restbase-b-codfw
+    - restbase-c-codfw
+    - restbase-a-eqiad
+    - restbase-b-eqiad
+    - restbase-c-eqiad
