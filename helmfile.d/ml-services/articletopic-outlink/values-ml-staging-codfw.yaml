@@ -25,6 +25,11 @@ inference_services:
       config:
         minReplicas: 1
         maxReplicas: 1
+  outlink-topic-model-grpc:
+    predictor:
+      config:
+        minReplicas: 1
+        maxReplicas: 1
       container:
         ports:
           - name: h2c
