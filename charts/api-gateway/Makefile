@@ -39,6 +39,10 @@ port-forward: ## start port forwarding for an installed gateway instance (needed
 logs: ## show logs of an installed gateway instance
 	kubectl logs $$( kubectl get pod -l "app=$(app)" -l "release=$(name)" -o name ) -f
 
+env: ## outputs environment for manual testing
+	@cd "$(servicedir)" && \
+		$(MAKE) env env=minikube
+
 test-lua: ## run Lua tests
 	@echo "Running Lua tests"
 	cd "$(testdir)" && \
@@ -62,7 +66,3 @@ test: test-test-helpers test-lua test-render ## run unit tests
 check: ## run end-to-end checks on minikube environment (needs port-forwarding to be active)
 	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube
-
-smokepy: ## run smokepy container interactively
-	@cd "$(servicedir)" && \
-		$(MAKE) smokepy env=minikube

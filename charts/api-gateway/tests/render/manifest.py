@@ -30,13 +30,16 @@ class Manifest (data.HelmData):
         Useful for getting YAML config files from a config map.
         """
 
+        helm_data = data.HelmData()
+
         s = self.get(key)
 
         if s is None:
             return None
 
         if isinstance(s, str):
-            return data.HelmData.from_yaml_data(s)
+            helm_data.load_yaml_data(s)
+            return helm_data
         else:
             return s
 
@@ -98,11 +101,13 @@ class ManifestSet:
                 self.load_manifest_data(buffer)
 
     def load_manifest_file(self, path: str):
-        manifest = Manifest.from_yaml_file(path)
+        manifest = Manifest()
+        manifest.load_yaml_file(path)
         self.manifests.append(manifest)
 
     def load_manifest_data(self, data: str):
-        manifest = Manifest.from_yaml_data(data)
+        manifest = Manifest()
+        manifest.load_yaml_data(data)
         self.manifests.append(manifest)
 
     def dump(self):

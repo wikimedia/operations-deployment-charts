@@ -35,10 +35,6 @@ port-forward: ## start port forwarding
 logs: ## show logs
 	kubectl logs $$( kubectl get pod $(selector) -o name ) -f
 
-check: ## run end-to-end checks on minikube environment (needs port-forwarding to be active)
+check: ## check minikube environment
 	@cd "$(servicedir)" && \
 		$(MAKE) check env=minikube
-
-smokepy: ## run smokepy container interactively
-	@cd "$(servicedir)" && \
-		$(MAKE) smokepy env=minikube

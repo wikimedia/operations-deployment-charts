@@ -1,83 +1,15 @@
-import os
-import yaml
-from io import StringIO
+from smokepy import values
 
 DEFINED = object()    # any value including None
 NOT_NONE = object()   # not None, but can be empty/falsy
 NOT_EMPTY = object()  # not empty (must be truthy)
 
-class HelmData:
+class HelmData (values.Values):
     """
     A HelmData object represents a nested yaml-style structure as used by Helm.
     This can be used to represent the contents of helm value files (Helm input)
     or of kubernetes manifest files (Helm output).
     """
-
-    def __init__(self, v = None):
-        if v is None:
-            v = {}
-
-        if isinstance(v, HelmData):
-            v = v.values
-
-        if not isinstance(v, dict):
-            raise ValueError( f"Struct values must be given as a dict, got {type(v)}" )
-
-        self.values = v
-
-    @classmethod
-    def from_yaml_data(cls, data: str):
-        with StringIO(data) as s:
-            return cls( yaml.safe_load(s) )
-
-    @classmethod
-    def from_yaml_file(cls, path: str):
-        if not os.path.isfile(path):
-            raise Exception(f"YAML file not found: {path}")
-
-        with open(path, "r") as f:
-            values = yaml.safe_load(f)
-
-            if values is None:
-                return cls()
-
-            return cls( values )
-
-    def __getitem__(self, key):
-        try:
-            return self.__getattr__(key)
-        except AttributeError as ex:
-            raise KeyError(f"{key} not found") from ex
-
-    def __getattr__(self, key):
-        if not key in self.values:
-            keys = self.values.keys()
-            raise AttributeError(f"{key} not in {keys}")
-
-        return self._wrap_value( self.values[key] )
-
-    def __str__(self):
-        return f"Values({self.values})"
-
-    def __iter__(self):
-        for key in self.values.keys():
-            yield key
-
-    def __contains__(self, key):
-        return key in self.values
-
-    def keys(self):
-        return self.values.keys()
-
-    def items(self):
-        # TODO: wrap dict values?
-        return self.values.items()
-
-    def empty(self):
-        return len(self.values.keys()) == 0
-
-    def dump(self):
-        return yaml.dump(self.values)
 
     def _wrap_value(self, v):
         if isinstance(v, dict):
