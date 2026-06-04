@@ -156,10 +156,94 @@ namespaces:
   kafka-ui:
    tlsExtraSANs:
       - kafka.wikimedia.org
-  wdqs-internal: {}
-  wdqs-internal-next: {}
-  wdqs-external: {}
-  wdqs-external-next: {}
+  wdqs-internal:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+  wdqs-internal-next:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+  wdqs-external:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+  wdqs-external-next:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "12"
 
 istio:
   gateways:
