@@ -1,0 +1,17 @@
+external_services:
+  kafka:
+  - ci-eqiad
+  cas:
+  - idp-ci
+
+auth_proxy:
+  httpd_cas:
+    site:
+      server_name: kafka-ci.wikimedia.org
+      cas_root_proxied_as: https://kafka-ci.wikimedia.org
+
+ingress:
+  gatewayHosts:
+    default: "kafka-ci"
+    extraFQDNs:
+    - kafka-ci.wikimedia.org
