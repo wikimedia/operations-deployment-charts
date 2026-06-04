@@ -1091,6 +1091,24 @@ main_app:
           out: '/\1'
           to: recommendation-api-ng.discovery.wmnet
 
+    - name: liftwing_editing_suggestions_experimental_api
+      # NOTE: editing-suggestions is separate because it should NOT use the relaxed
+      # LiftWing rate limit policy. It should just use the default rate limit policy.
+      timeout: 30s
+      cluster: inference
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_remove: ["cookie"]
+      response_headers_to_remove: ["set-cookie"]
+      response_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: editing_suggestions
+          in: '/+service/lw/inference/(v1/models/editing-suggestions:predict(.*))'
+          out: '/\1'
+          to: 'editing-suggestions.experimental.wikimedia.org'
+
     - name: liftwing_editcheck_api
       # NOTE: editcheck is separate because it should NOT use the relaxed LiftWing
       # rate limit policy. It should just use the default rate limit policy.
