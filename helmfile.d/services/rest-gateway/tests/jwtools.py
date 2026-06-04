@@ -23,7 +23,7 @@ def createJwtOrSkip(test, **payload):
     return token
 
 def getValidJwt():
-    if env.values.smokepy.get('valid_jwt'):
+    if env.values.smokepy.valid_jwt:
         return env.values.smokepy.valid_jwt
     jwtvar = os.getenv("SMOKEPY_VALID_JWT")
     if jwtvar is not None and jwtvar != "":

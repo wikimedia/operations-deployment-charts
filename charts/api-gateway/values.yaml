@@ -313,11 +313,23 @@ common_images:
 app:
   port: 8087
 
-# Settings for the end-to-end tests run via `helm test`.
-# Populated by env-specific value files; see values-staging.yaml for an example.
+# Settings for the end-to-end tests defined under tests/e2e.
+# Local overrides go into tests/e2e/values-tests.local.yaml.
 smokepy:
-  image:
-    tag: "v0.2-dev"
+  # The target URL to use for end-to-end tests.
+  # Can also be set using $SMOKEPY_TARGET_URL.
+  target_url: ~
+
+  # A valid token to use for testing.
+  # Can also be set using $SMOKEPY_VALID_JWT.
+  valid_jwt: ~
+
+  default_policy_endpoint: ~
+  shadow_policy_endpoint: ~
+  jwt_exempt_endpoint: ~
+  jwt_required_endpoint: ~
+  cors_upstream_endpoint: ~
+  cors_rb_compat_endpoint: ~
 
 # The set of external services to allow egress to
 # Example:

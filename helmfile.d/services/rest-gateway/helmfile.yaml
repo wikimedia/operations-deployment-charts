@@ -19,25 +19,21 @@ environments:
       # Do not load clusterinfo for non-prod environments, just hard-code necessary values here.
       - releases: [local]
       - kubernetesVersion: '1.31'
-      - runTests: true
     missingFileHandler: Warn
   staging:
     values:
       - releases: [main]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - runTests: true
     missingFileHandler: Warn
   eqiad:
     values:
       - releases: [main]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - runTests: false
     missingFileHandler: Warn
   codfw:
     values:
       - releases: [main]
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
-      - runTests: false
     missingFileHandler: Warn
 
 ---
@@ -83,6 +79,4 @@ hooks:
 
 releases:
   - name: main
-    # NOTE: the "test" directive is not supported in older version of helmfile
-    # test: {{ .Values.runTests }}
     <<: *default
