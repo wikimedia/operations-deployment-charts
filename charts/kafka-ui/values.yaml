@@ -48,7 +48,8 @@ service:
     nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
 
 config:
-  public: {} # Add here all the keys that can be publicly available as a ConfigMap
+  public:
+    GITHUB_RELEASE_INFO_ENABLED: "false" # disable check for latest available version via github
   private: {} # Add here all the keys that should be private but still available as env variables
 
 # Additional resources if we want to add a port for a debugger to connect to.
