@@ -194,21 +194,3 @@ inference_services:
                       operator: "In"
                       values:
                         - "ml-serve1012.eqiad.wmnet"
-
-  editing-suggestions:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-editing-suggestions"
-      image_version: "2026-06-03-093430-publish"
-      custom_env:
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/editing-suggestions/v1/20260604132039/"
-        - name: MODEL_NAME
-          value: "editing-suggestions"
-      container:
-        resources:
-          limits:
-            cpu: "8"
-            memory: 16Gi
-          requests:
-            cpu: "2"
-            memory: 4Gi
