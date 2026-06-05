@@ -1,0 +1,10 @@
+# fixtures for dse_k8s environment
+# this file replaces /etc/helmfile-defaults/private/admin/*.yaml
+issuers:
+  discovery:
+    authSecret:
+      key: foobar
+  opensearch:
+    authSecret:
+      key: foobar
+services: {}

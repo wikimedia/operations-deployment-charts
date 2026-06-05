@@ -122,3 +122,7 @@ opensearchCluster:
 app:
   port: 9200
   protocol: TCP
+
+certificate:
+  # refers to the ClusterIssuer in helmfile.d/admin_ng/values/dse-k8s-*/cfssl-issuer-values.yaml 
+  issuerRefName: opensearch

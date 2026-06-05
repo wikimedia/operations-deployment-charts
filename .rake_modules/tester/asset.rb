@@ -606,11 +606,13 @@ module Tester
       results
     end
 
-    # Patch helmfiles so that .fixtures.yaml is used instead of
+    # Patch helmfiles so that .fixtures.yaml (or .fixtures/#{env}.yaml) is used instead of
     # * /etc/helmfile-defaults/clusterinfo-#{env}.yaml
     # * /etc/helmfile-defaults/general-#{env}.yaml
     # * /etc/helmfile-defaults/services-#{env}.yaml
     # * /etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml for admin_ng helmfiles
+    # Environment specific .fixtures/#{env}.yaml file has higher priority over default .fixtures.yaml file,
+    # and the environment-specific file is NOT merged with the default one.
     # * For services, also add the service-proxy fixture
     # Also replace references to charts in wmf-stable repo with the local path,
     # and add --debug to the helm args
@@ -619,7 +621,12 @@ module Tester
       # First run helmfile build to find any chart that has a pinned version
       charts_dir = File.join dir, 'charts'
       helmfile_glob = File.join(dir, '**/helmfile*.yaml')
-      fixtures_file = File.join(dir, '.fixtures.yaml')
+      environment_fixtures_file = File.join(dir, ".fixtures/#{env}.yaml")
+      if File.exist? environment_fixtures_file
+        fixtures_file = environment_fixtures_file
+      else
+        fixtures_file = File.join(dir, '.fixtures.yaml')
+      end
       # generated_fixtures_file will contain the megred content of
       # general environment fixtures and local fixtures (for services)
       generated_fixtures_file = File.join(dir, '.generated_fixtures.yaml')

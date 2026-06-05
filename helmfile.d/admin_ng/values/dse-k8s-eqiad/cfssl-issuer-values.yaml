@@ -1,3 +1,18 @@
 issuers:
   discovery:
     profile: k8s_dse
+  opensearch:
+    # based on helmfile.d/admin_ng/cert-manager/cfssl-issuer-values.yaml https://w.wiki/QeeD
+    # label and profile are taken from hieradata/role/common/pki/multirootca.yaml https://w.wiki/Qed$
+    # used to create clusterissuers.cfssl-issuer.wikimedia.org CRD in charts/cfssl-issuer/templates/issuer.yaml
+    # and secret in charts/cfssl-issuer/templates/secret.yaml
+    profile: k8s_dse_opensearch
+    kind: ClusterIssuer
+    url: https://pki.discovery.wmnet:8443
+    label: discovery2026
+    bundle: true
+    # need distinct name because for the secret
+    authSecretName: issuer-opensearch-authkey
+    # authSecret will be overridden by /etc/helmfile-defaults/*/cfssl-issuer/*.yaml
+    # but for helm to actually merge values, the key must be defined here as well.
+    authSecret: {}
