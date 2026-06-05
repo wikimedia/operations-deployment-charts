@@ -146,4 +146,4 @@ popd
 rm -rf "${tmp_admin_ng}"
 
 # Install Istio using the main configuration
-istioctl-1.24.2 manifest apply --skip-confirmation -f custom_deploy.d/istio/main/config_1.24.2.yaml
+istioctl-1.24.2 manifest apply --skip-confirmation -f custom_deploy.d/istio/main/config.yaml
