@@ -66,6 +66,11 @@ limit counters. In the production setup, we use an external Redis cluster for th
 accessed via a nutcracker for sharding and replication. Nutcracker runs as a sidecar
 in the API gateway pod.
 
+Note that rate limits can also be used to deny access entirely, by setting the limit
+to 0. In that case, we replace the 429 response with 401. This is based on the
+assumption that the limit would be set to 0 for unauthenticated clients.
+This is implemented in a Lua function, namely `wmf_set_status()`.
+
 ### Development environment
 The development setup for API Gateway mode is defined in `values-devel.yaml`.
 
@@ -87,7 +92,7 @@ image. When in the context of your local kubernetes setup (ie: `eval
 $(minikube docker-env)`), run `docker pull redis` and the chart will
 find the image to use.
 
-To allow tesing and development without having to run real upstream services,
+To allow testing and development without having to run real upstream services,
 the `http-https-echo` service is used as a stand-in for the real upstream services.
 The `http-https-echo` simply returns information about the headers the service
 was passed from the client, which can be useful for debugging ratelimiting

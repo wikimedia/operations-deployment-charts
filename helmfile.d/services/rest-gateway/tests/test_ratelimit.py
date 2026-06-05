@@ -265,12 +265,29 @@ class RateLimitTest(unittest.TestCase):
         liftwing_body = {"rev_id": 12345} # body implies POST
 
         headers = {
+            "x-client-ip": env.nextIp(), # external request
+            "x-trusted-request": "B", # known client
+            "x-provenance": "client=" + env.nextName("coolbot"), # used as key
+            "host": liftwing_host,
+            "content-type": "application/json",
+        }
+
+        self.assert_rate_limit_enforced(liftwing_path, "known-client", policies = ["LiftWing"], body = liftwing_body, headers = headers )
+
+    def test_liftwing_deny_anon(self):
+        liftwing_host = 'api.wikimedia.org'
+        liftwing_path = '/service/lw/inference/v1/models/enwiki-articlequality:predict'
+        liftwing_body = {"rev_id": 12345} # body implies POST
+
+        headers = {
             "x-client-ip": env.nextIp(),
             "host": liftwing_host,
             "content-type": "application/json",
         }
 
-        self.assert_rate_limit_enforced(liftwing_path, "anon", policies = ["LiftWing"], body = liftwing_body, headers = headers )
+        resp = self.target.post(liftwing_path, liftwing_body, headers = headers)
+        self.assertEqual(401, resp.status, "expected anon request to be rejected because the rate limit is 0")
+        self.assertIn("Bearer", resp.headers.get("WWW-Authenticate"), "WWW-Authenticate")
 
     def test_anon_limit(self):
         headers = { "x-client-ip": env.nextIp() }
@@ -340,6 +357,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "anon",
             "x-wmf-ratelimit-policy-1": "DENY",
             "x-wmf-ratelimit-cost-1": "1",
+            "x-wmf-debug-flags": "keep-429-on-zero-limit",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
@@ -351,6 +369,7 @@ class RateLimitTest(unittest.TestCase):
             "x-wmf-ratelimit-class": "DENY",
             "x-wmf-ratelimit-policy-1": policy,
             "x-wmf-ratelimit-cost-1": "1",
+            "x-wmf-debug-flags": "keep-429-on-zero-limit",
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 

@@ -384,6 +384,8 @@ static_resources:
               stage: 0
               timeout: {{ .Values.main_app.ratelimiter.envoy_timeout }}s
               enable_x_ratelimit_headers: DRAFT_VERSION_03
+              # NOTE: If the limit was 0, we may replace the 429 with a 401 (or 403) in a Lua filter.
+              rate_limited_status: { code: 429 }
               rate_limit_service:
                 transport_api_version: V3
                 grpc_service:

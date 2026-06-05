@@ -96,6 +96,7 @@ main_app:
     enabled: true
     lua_hook_enabled: true
     log_level: debug
+    honor_debug_flags: true # allow x-wmf-debug-flags header
     redis_host: localhost
     redis_port: 6379
     key_prefix: "staging_restgw_"
@@ -205,33 +206,33 @@ main_app:
         shadow_mode: false
         limits:
           "*": # catch-all limits
-            MINUTE: 10
+            MINUTE: 0
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            MINUTE: 10
+            MINUTE: 0
           "anon-browser": # no auth, but looks like a browser
-            MINUTE: 30
+            MINUTE: 0
           "anon-app": # no auth, but looks like our app
-            MINUTE: 40
+            MINUTE: 0
           "anon-cgnat": # clients behind a CGNAT
-            MINUTE: 50
+            MINUTE: 0
           "unauthed-bot": # no auth, but good User-Agent -- temp?
-            MINUTE: 70
+            MINUTE: 0
           "anon-mediawiki": # InstantCommons and such (without contact info)
-            MINUTE: 40
+            MINUTE: 0
           "unauthed-mediawiki": # InstantCommons and such
-            MINUTE: 90
+            MINUTE: 0
           "authed-user": # valid JWT
-            MINUTE: 110
+            MINUTE: 2
           "established-user": # valid JWT, meets age/edit count criteria
-            MINUTE: 130
+            MINUTE: 4
           "highlimits-user": # valid WT and member of specific global groups
-            MINUTE: 150
+            MINUTE: 6
           "approved-bot": # bot approved by the community
-            MINUTE: 170
+            MINUTE: 8
           "known-client": # no auth, network associated with a known client
-            MINUTE: 190
+            MINUTE: 10
           "known-network": # no auth, network under outbound control (WMCS, WME)
-            MINUTE: 210
+            MINUTE: 12
 
       "ParseCost":
         shadow_mode: false

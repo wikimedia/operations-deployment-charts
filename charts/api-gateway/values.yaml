@@ -73,6 +73,13 @@ main_app:
 
     log_level: info
 
+    # Honor the x-wmf-debug-flags request header on internal requests (no x-client-ip).
+    # Useful for integration tests. Should be false in production.
+    # Known flags:
+    #   - keep-429-on-zero-limit: skip the 429 -> 401 rewrite, so tests can use the DENY
+    #     policy to force a rate limited response.
+    honor_debug_flags: false
+
     # Request headers to expose in the response, including x-wmf-* headers set by restgw_ratelimits.lua
     # See T417780
     exposed_headers: [ "x-wmf-ratelimit-class" ]

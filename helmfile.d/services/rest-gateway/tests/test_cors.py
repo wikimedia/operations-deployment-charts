@@ -19,6 +19,7 @@ DENY_LIMIT_HEADERS = {
     "x-wmf-ratelimit-class": "DENY",
     "x-wmf-ratelimit-policy-1": "DENY",
     "x-wmf-ratelimit-cost-1": "1",
+    "x-wmf-debug-flags": "keep-429-on-zero-limit",
 }
 
 class CorsTest(unittest.TestCase):

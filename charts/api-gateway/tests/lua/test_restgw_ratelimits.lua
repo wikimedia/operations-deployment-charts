@@ -15,6 +15,10 @@ end
 
 _G.HelmValues = {
     main_app = {
+        jwt = {
+            enabled = true,
+            issuer = "test.example.org",
+        },
         ratelimiter = {
             fallback_class = "anon",
             browser_threshold = 80,
@@ -46,7 +50,8 @@ _G.HelmValues = {
             policies = {
                 ["some-limits"] = { measure = "count" },
                 ["time-limits"] = { measure = "time", upfront_cost = 100 },
-            }
+            },
+            honor_debug_flags = false,
         }
     }
 }
@@ -688,6 +693,150 @@ describe("rest_hooks", function()
 
             local result = res:body():getBytes()
             assert.are_not.equal("ratelimit notice text", result)
+        end)
+    end)
+
+    describe("wmf_set_status", function()
+        it("rewrites 429 with limit=0 to 401", function()
+            local res = fake_response_handle{ headers = {
+                [":status"] = "429",
+                ["x-ratelimit-remaining"] = "0",
+                ["x-ratelimit-limit"] = "0, 0;w=60",
+            }}
+            wmf_set_status(res)
+
+            local h = res:headers()
+            assert.are.equal("401", h:get(":status"))
+            assert.are.equal('Bearer realm="test.example.org"', h:get("WWW-Authenticate"))
+            assert.are.equal("text/plain", h:get("content-type"))
+            assert.are.equal("Unauthorized", res:body():getBytes())
+        end)
+
+        it("does nothing when status is not 429", function()
+            local res = fake_response_handle{ headers = {
+                [":status"] = "200",
+                ["x-ratelimit-remaining"] = "0",
+                ["x-ratelimit-limit"] = "0, 0;w=60",
+            }}
+            wmf_set_status(res)
+
+            local h = res:headers()
+            assert.are.equal("200", h:get(":status"))
+            assert.is_nil(h:get("WWW-Authenticate"))
+        end)
+
+        it("does nothing when limit is not 0", function()
+            local res = fake_response_handle{ headers = {
+                [":status"] = "429",
+                ["x-ratelimit-remaining"] = "0",
+                ["x-ratelimit-limit"] = "5, 5;w=60",
+            }}
+            wmf_set_status(res)
+            assert.are.equal("429", res:headers():get(":status"))
+        end)
+
+        it("does nothing when x-ratelimit-limit is missing", function()
+            local res = fake_response_handle{ headers = {
+                [":status"] = "429",
+            }}
+            wmf_set_status(res)
+            assert.are.equal("429", res:headers():get(":status"))
+        end)
+
+        it("keeps the 429 when keep-429-on-zero-limit debug flag is set", function()
+            local res = fake_response_handle{
+                headers = {
+                    [":status"] = "429",
+                    ["x-ratelimit-remaining"] = "0",
+                    ["x-ratelimit-limit"] = "0, 0;w=60",
+                },
+                streamMetadata = {
+                    ["envoy.wmf_debug_flags"] = {
+                        flags = { ["keep-429-on-zero-limit"] = true },
+                    },
+                },
+            }
+            wmf_set_status(res)
+
+            local h = res:headers()
+            assert.are.equal("429", h:get(":status"))
+            assert.is_nil(h:get("WWW-Authenticate"))
+        end)
+
+        it("rewrites the 429 when an unrelated debug flag is set", function()
+            local res = fake_response_handle{
+                headers = {
+                    [":status"] = "429",
+                    ["x-ratelimit-remaining"] = "0",
+                    ["x-ratelimit-limit"] = "0, 0;w=60",
+                },
+                streamMetadata = {
+                    ["envoy.wmf_debug_flags"] = {
+                        flags = { ["something-else"] = true },
+                    },
+                },
+            }
+            wmf_set_status(res)
+            assert.are.equal("401", res:headers():get(":status"))
+        end)
+    end)
+
+    describe("wmf_extract_debug_flags", function()
+        it("does nothing when the header is not set", function()
+            local req = fake_request_handle{ headers = {
+                ["x-client-ip"] = "10.0.0.1",
+            }}
+            wmf_extract_debug_flags(req)
+            assert.is_nil(req:streamInfo():dynamicMetadata():get("envoy.wmf_debug_flags"))
+        end)
+
+        it("strips the header but does not honor it when the honor_debug_flags is off", function()
+            HelmValues.main_app.ratelimiter.honor_debug_flags = false
+            local req = fake_request_handle{ headers = {
+                ["x-wmf-debug-flags"] = "keep-429-on-zero-limit",
+            }}
+            wmf_extract_debug_flags(req)
+            assert.is_nil(req:headers():get("x-wmf-debug-flags"))
+            assert.is_nil(req:streamInfo():dynamicMetadata():get("envoy.wmf_debug_flags"))
+        end)
+
+        it("strips the header but does not honor it on external requests", function()
+            HelmValues.main_app.ratelimiter.honor_debug_flags = true
+            local req = fake_request_handle{ headers = {
+                ["x-client-ip"] = "1.2.3.4",
+                ["x-wmf-debug-flags"] = "keep-429-on-zero-limit",
+            }}
+            wmf_extract_debug_flags(req)
+            assert.is_nil(req:headers():get("x-wmf-debug-flags"))
+            assert.is_nil(req:streamInfo():dynamicMetadata():get("envoy.wmf_debug_flags"))
+            HelmValues.main_app.ratelimiter.honor_debug_flags = false
+        end)
+
+        it("stashes flags from internal requests when the honor_debug_flags is on", function()
+            HelmValues.main_app.ratelimiter.honor_debug_flags = true
+            local req = fake_request_handle{ headers = {
+                -- no x-client-ip: this is an internal request
+                ["x-wmf-debug-flags"] = "keep-429-on-zero-limit",
+            }}
+            wmf_extract_debug_flags(req)
+            assert.is_nil(req:headers():get("x-wmf-debug-flags"))
+            local stashed = req:streamInfo():dynamicMetadata():get("envoy.wmf_debug_flags")
+            assert.is_not_nil(stashed)
+            assert.is_true(stashed.flags["keep-429-on-zero-limit"])
+            HelmValues.main_app.ratelimiter.honor_debug_flags = false
+        end)
+
+        it("parses multiple whitespace-or-comma-separated flags", function()
+            HelmValues.main_app.ratelimiter.honor_debug_flags = true
+            local req = fake_request_handle{ headers = {
+                ["x-wmf-debug-flags"] = "keep-429-on-zero-limit, future-flag  another",
+            }}
+            wmf_extract_debug_flags(req)
+            local flags = req:streamInfo():dynamicMetadata():get("envoy.wmf_debug_flags").flags
+            assert.is_true(flags["keep-429-on-zero-limit"])
+            assert.is_true(flags["future-flag"])
+            assert.is_true(flags["another"])
+            HelmValues.main_app.ratelimiter.honor_debug_flags = false
         end)
     end)
 

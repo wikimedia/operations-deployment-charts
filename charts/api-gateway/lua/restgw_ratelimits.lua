@@ -13,12 +13,14 @@ end
 
 function envoy_on_request(request_handle)
     wmf_run_hooks(request_handle, "request")
+    wmf_extract_debug_flags(request_handle)
     wmf_ratelimit_info(request_handle)
     wmf_stash_headers_to_expose(request_handle)
 end
 
 function envoy_on_response(response_handle)
     wmf_expose_headers(response_handle)
+    wmf_set_status(response_handle)
     wmf_set_retry_after(response_handle)
     wmf_run_hooks(response_handle, "response")
 end
@@ -278,6 +280,37 @@ function wmf_apply_class_overrides( request_handle, ratelimit_class )
     return ratelimit_class
 end
 
+-- extract flags from x-wmf-debug-flags header
+function wmf_extract_debug_flags(request_handle)
+    local headers = request_handle:headers()
+    local flags_str = headers:get("x-wmf-debug-flags")
+
+    -- If the header is not set, exit. This is the usual case.
+    if not flags_str then
+        return
+    end
+
+    -- Strip the header in all cases, even if we do not act on it.
+    headers:remove("x-wmf-debug-flags")
+
+    -- Debug flags must be enabled in config
+    if not HelmValues.main_app.ratelimiter.honor_debug_flags then
+        return
+    end
+
+    -- Debug flags are not allowed on external requests
+    if headers:get("x-client-ip") then
+        return
+    end
+
+    local flags = {}
+    for flag in string.gmatch(flags_str, "[^%s,]+") do
+        flags[flag] = true
+    end
+
+    request_handle:streamInfo():dynamicMetadata():set( "envoy.wmf_debug_flags", "flags", flags )
+end
+
 function wmf_stash_headers_to_expose(request_handle)
     local req_headers = request_handle:headers()
     local streamMeta = request_handle:streamInfo():dynamicMetadata()
@@ -340,6 +373,44 @@ function wmf_set_retry_after(response_handle)
 
             response_handle:body():setBytes( text )
         end
+    end
+end
+
+function wmf_set_status(response_handle)
+    local headers = response_handle:headers()
+
+    local status_header = headers:get(":status")
+
+    if status_header ~= "429" then
+        return
+    end
+
+    -- Some tests want to force a 429 response using the DENY policy.
+    -- So don't override the status if the keep-429-on-zero-limit flag is set.
+    local debug_flags = response_handle:streamInfo():dynamicMetadata():get( "envoy.wmf_debug_flags" )
+    if debug_flags and debug_flags.flags and debug_flags.flags["keep-429-on-zero-limit"]
+    then
+        return
+    end
+
+    local limit_header = headers:get("x-ratelimit-limit")
+    local limit = limit_header and tonumber(limit_header:match("^(%d+)"))
+
+    -- If the limit was configured to be 0, that means the request is denied completely,
+    -- not just exceeding limits.
+    if limit == 0 then
+        -- Note: We use 401 because we assume that the use case is to allow
+        -- authenticated clients but reject unauthenticated clients. Other
+        -- use cases may call for a 403 response. We could make this configurable
+        -- per policy.
+        headers:replace(":status", "401")
+
+        local realm = HelmValues.main_app.jwt and HelmValues.main_app.jwt.issuer
+        local challenge = realm and ('Bearer realm="' .. realm .. '"') or 'Bearer'
+        headers:replace("WWW-Authenticate", challenge)
+
+        headers:replace("content-type", "text/plain")
+        response_handle:body():setBytes("Unauthorized")
     end
 end
 
