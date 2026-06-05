@@ -2,7 +2,7 @@
 
 main_app:
   image: repos/abstract-wiki/wikifunctions/function-evaluator/rusty-py
-  version: 2026-06-03-023342
+  version: 2026-06-06-013944
   requests:
     cpu: 4
     memory: 800Mi
@@ -15,9 +15,7 @@ config:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
     OTEL_SERVICE_NAME: wikifunctions-evaluator-rust-python
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
-    PYTHON_INTERPRETER_FILE: /srv/service/programming-languages/rustpython_uncompiled.wasm
     EXECUTOR_ROOT: /srv/executors
-    PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
     EXECUTOR_PROCESS_POOL_SIZE: "5"
     WASMTIME_FUEL_LIMIT: "10000000000"
     WASMTIME_MEMORY_PAGES: "10000"
