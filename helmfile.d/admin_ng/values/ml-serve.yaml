@@ -320,7 +320,7 @@ namespaces:
     deployClusterRole: deploy
     deployTLSCertificate: true
     labels:
-      istio-injection: enabled
+      istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
     tlsExtraSANs:
       - api.wikimedia.org
