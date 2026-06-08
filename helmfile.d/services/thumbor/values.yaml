@@ -53,6 +53,12 @@ main_app:
 haproxy:
   timeout_queue: 2000
   version: '3.2.15-1'
+  # Try to reduce flapping by not snapping back to Ready immediately
+  # when saturation events occur
+  readiness_probe:
+    periodSeconds: 2      # poll haproxy healthcheck often
+    failureThreshold: 2   # fail pods out after 4s of unhealth
+    successThreshold: 5   # only rejoin after ~10s of sustained recovery
 
 service:
   deployment: production
