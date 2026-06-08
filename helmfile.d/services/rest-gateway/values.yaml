@@ -1127,6 +1127,24 @@ main_app:
           out: '/\1'
           to: 'edit-check.edit-check.wikimedia.org'
 
+    - name: liftwing_openapi_server
+      # NOTE: editcheck is separate because it should NOT use the relaxed LiftWing
+      # rate limit policy. It should just use the default rate limit policy.
+      timeout: 30s
+      cluster: liftwing-openapi-server
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_remove: ["cookie"]
+      response_headers_to_remove: ["set-cookie"]
+      response_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      rate_limit_policies: [ "BYPASS", "BYPASS" ]
+      urls:
+        - name: specs
+          in: '/+service/lw/specs/(.*)'
+          out: '/\1'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -1193,6 +1211,12 @@ main_app:
       ingress: true
       timeout: 60s
       internal_host: recommendation-api-ng.discovery.wmnet
+    liftwing-openapi-server:
+      tls: true
+      port: 31443
+      ingress: true
+      timeout: 60s
+      internal_host: liftwing-openapi-server.discovery.wmnet
 
 service:
   deployment: production
@@ -1252,6 +1276,7 @@ discovery:
   - mobileapps
   - inference
   - recommendation-api-ng
+  - liftwing-openapi-server
 
 networkpolicy:
   egress:
