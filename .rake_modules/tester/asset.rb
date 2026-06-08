@@ -15,7 +15,7 @@ module Tester
   class BaseTestAsset
     # When adding kubernetes versions here the corresponding schemata
     # need to be made available in https://gitlab.wikimedia.org/repos/sre/kubernetes-json-schema
-    KUBERNETES_VERSIONS = ['1.23.6', '1.31.2'].freeze
+    KUBERNETES_VERSIONS = ['1.31.2', '1.34.8'].freeze
     KUBE_VERSION_STATE_VALUE = "kubernetesVersion=#{KUBERNETES_VERSIONS[0]}"
     ERROR_CONTEXT_LINES = 4
     INIT_RESULT = { lint: nil, validate: {}, diff: {} }.freeze
