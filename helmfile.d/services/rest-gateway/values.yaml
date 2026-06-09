@@ -1144,6 +1144,7 @@ main_app:
         - name: specs
           in: '/+service/lw/specs/(.*)'
           out: '/\1'
+          to: 'liftwing-openapi-server.discovery.wmnet'
 
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
