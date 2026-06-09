@@ -1,7 +1,6 @@
 {{ include "mesh.configuration.configmap" . }}
 {{- include "auth_proxy.httpd_cas.configmap" . }}
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -32,5 +31,27 @@ data:
       {{- toYaml $.Values.config.turnilo.clusters | nindent 6 }}
 
     dataCubes:
+      {{- $network_devices_map := dict }}
+      {{- $network_region_map := dict }}
+      {{- range $name, $data := $.Values.network_devices }}
+      {{- $region := (substr (int (sub (len $data.site) 3)) (len $data.site) $data.site) }}
+      {{- if has $data.role (list "cr" "asw" "cloudsw" "pfw") }}
+      {{- $_ := set $network_devices_map $data.ipv4 $name }}
+      {{- $_ := set $network_region_map $data.ipv4 $region }}
+      {{- end }}
+      {{- end }}
+      {{- $sorted_network_devices_map := dict }}
+      {{- range $ip := keys $network_devices_map | sortAlpha }}
+      {{- $_ := set $sorted_network_devices_map $ip (index $network_devices_map $ip) }}
+      {{- end }}
+      {{- $sorted_network_region_map := dict }}
+      {{- range $ip := keys $network_region_map | sortAlpha }}
+      {{- $_ := set $sorted_network_region_map $ip (index $network_region_map $ip) }}
+      {{- end }}
+      {{- range $datacube := $.Values.config.turnilo.datacubes }}
+      {{- if eq $datacube.name "wmf_netflow" }}
+      {{- $_ := set $datacube.options.customTransforms.exporter_name_map.extractionFn.lookup "map" $network_devices_map }}
+      {{- $_ := set $datacube.options.customTransforms.exporter_region_map.extractionFn.lookup "map" $network_region_map }}
+      {{- end }}
+      {{- end }}
       {{- toYaml $.Values.config.turnilo.datacubes | nindent 6 }}
-
