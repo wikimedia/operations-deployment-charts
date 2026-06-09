@@ -2019,9 +2019,41 @@ config:
             kind: time
             formula: $__time
 
+          - name: as_number
+            title: AS number
+            formula: $as_number
+
+          - name: cache_status
+            title: Cache status
+            formula: $cache_status
+
           - name: content_type
             title: Content Type
             formula: $content_type
+
+          - name: continent
+            title: Continent
+            formula: $continent
+
+          - name: country_code
+            title: Country code
+            formula: $country_code
+
+          - name: wmfuniq_days
+            title: Edge Unique days age
+            formula: $wmfuniq_days
+
+          - name: wmfuniq_freq
+            title: Edge Unique weekly visit frequency decile
+            formula: $wmfuniq_freq
+
+          - name: wmfuniq_weeks
+            title: Edge Unique weeks age
+            formula: $wmfuniq_weeks
+
+          - name: termination_state
+            title: HAProxy termination state
+            formula: $termination_state
 
           - name: hostname
             title: Hostname
@@ -2039,9 +2071,54 @@ config:
             title: Ip
             formula: $ip
 
+          - name: is_from_public_cloud
+            title: Is from public cloud
+            formula: $is_from_public_cloud
+
+          - name: is_pageview
+            title: Is pageview
+            formula: $is_pageview
+
+          - name: isp
+            title: ISP
+            formula: $isp
+
+          - name: JA3N
+            title: JA3N client TLS fingerprint
+            formula: $ja3n
+
+          - name: JA4H
+            title: JA4H client HTTP fingerprint
+            formula: $ja4h
+
+          - name: ja4h_header_order
+            title: JA4H header order (header names in client order, hashed)
+            formula: $ja4h.extract('([^_]+)$')
+
+          - name: ja4h_header_set
+            title: JA4H header set (sorted header names, hashed)
+            formula: $ja4h.extract('^[^_]+_([^_]+)')
+
+          - name: ja4h_prefix
+            title: JA4H prefix
+            formula: $ja4h.extract('^([^_]+)')
+
           - name: referer
             title: Referer
             formula: $referer
+
+          - name: accept_language
+            title: Request accept language header
+            formula: $accept_language
+
+          - name: cider_res_proxy
+            title: Residential Proxy (full Spur.us via CIDERGRINDER)
+            formula: $requestctl.contains('likely_resiproxy')
+            kind: boolean
+
+          - name: res_proxy
+            title: Residential Proxy (Spur.us incomplete MMDB)
+            formula: $res_proxy
 
           - name: response_size
             title: Response Size
@@ -2052,6 +2129,26 @@ config:
             title: Time Firstbyte
             kind: number
             formula: $time_firstbyte
+
+          - name: tls_auth
+            title: TLS Auth
+            formula: $tls_auth
+
+          - name: tls_cipher
+            title: TLS Cipher
+            formula: $tls_cipher
+
+          - name: tls_key_exchange
+            title: TLS KeyExchange
+            formula: $tls_key_exchange
+
+          - name: tls_sess
+            title: TLS Session
+            formula: $tls_sess
+
+          - name: tls_version
+            title: TLS Version
+            formula: $tls_version
 
           - name: uri_host
             title: Uri Host
@@ -2077,66 +2174,6 @@ config:
             title: X Cache
             formula: $x_cache
 
-          - name: cache_status
-            title: Cache status
-            formula: $cache_status
-
-          - name: is_debug
-            title: X-Analytics is debug
-            formula: $is_debug
-
-          - name: as_number
-            title: AS number
-            formula: $as_number
-
-          - name: isp
-            title: ISP
-            formula: $isp
-
-          - name: continent
-            title: Continent
-            formula: $continent
-
-          - name: country_code
-            title: Country code
-            formula: $country_code
-
-          - name: is_pageview
-            title: Is pageview
-            formula: $is_pageview
-
-          - name: tls_version
-            title: TLS Version
-            formula: $tls_version
-
-          - name: tls_key_exchange
-            title: TLS KeyExchange
-            formula: $tls_key_exchange
-
-          - name: tls_auth
-            title: TLS Auth
-            formula: $tls_auth
-
-          - name: tls_cipher
-            title: TLS Cipher
-            formula: $tls_cipher
-
-          - name: tls_sess
-            title: TLS Session
-            formula: $tls_sess
-
-          - name: is_from_public_cloud
-            title: Is from public cloud
-            formula: $is_from_public_cloud
-
-          - name: requestctl
-            title: X-Analytics requestctl actions
-            formula: $requestctl
-
-          - name: nocookies
-            title: X-Analytics nocookies value
-            formula: $nocookies
-
           - name: authorization
             title: X-Analytics authorization value
             formula: $authorization
@@ -2145,66 +2182,32 @@ config:
             title: X-Analytics https value
             formula: $https
 
-          - name: termination_state
-            title: HAProxy termination state
-            formula: $termination_state
+          - name: is_debug
+            title: X-Analytics is debug
+            formula: $is_debug
 
-          - name: accept_language
-            title: Request accept language header
-            formula: $accept_language
+          - name: nocookies
+            title: X-Analytics nocookies value
+            formula: $nocookies
 
-          - name: wmfuniq_days
-            title: Edge Unique days age
-            formula: $wmfuniq_days
-
-          - name: wmfuniq_weeks
-            title: Edge Unique weeks age
-            formula: $wmfuniq_weeks
-
-          - name: wmfuniq_freq
-            title: Edge Unique weekly visit frequency decile
-            formula: $wmfuniq_freq
-
-          - name: JA3N
-            title: JA3N client TLS fingerprint
-            formula: $ja3n
-
-          - name: JA4H
-            title: JA4H client HTTP fingerprint
-            formula: $ja4h
-
-          - name: ja4h_prefix
-            title: JA4H prefix
-            formula: $ja4h.extract('^([^_]+)')
-
-          - name: ja4h_header_set
-            title: JA4H header set (sorted header names, hashed)
-            formula: $ja4h.extract('^[^_]+_([^_]+)')
-
-          - name: ja4h_header_order
-            title: JA4H header order (header names in client order, hashed)
-            formula: $ja4h.extract('([^_]+)$')
+          - name: requestctl
+            title: X-Analytics requestctl actions
+            formula: $requestctl
 
           - name: x_is_browser
-            title: X-Is-Browser score
             # X-I-B is a string in Druid, but we wish to interpret it as a number in Turnilo for purposes like sorting.
+            title: X-Is-Browser score
             formula: $x_is_browser.cast('NUMBER')
-
-          - name: x_wmf_ratelimit_class
-            title: X-WMF-RateLimit class
-            formula: $x_wmf_ratelimit_class
+            kind: number
 
           - name: x_trusted_request
             title: X-Trusted-Request
             formula: $x_trusted_request
 
-          - name: res_proxy
-            title: Residential Proxy (Spur.us incomplete MMDB)
-            formula: $res_proxy
+          - name: x_wmf_ratelimit_class
+            title: X-WMF-RateLimit class
+            formula: $x_wmf_ratelimit_class
 
-          - name: cider_res_proxy
-            title: Residential Proxy (full Spur.us via CIDERGRINDER)
-            formula: $requestctl.contains('likely_resiproxy')
 
           # This is the place where you might want to add derived dimensions.
           #
