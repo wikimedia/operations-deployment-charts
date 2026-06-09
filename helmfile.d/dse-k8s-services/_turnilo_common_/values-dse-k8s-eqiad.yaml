@@ -2301,14 +2301,7 @@ config:
                 retainMissingValue: true
                 lookup:
                   type: map
-                  map: {"1": true, "0": false}
-            ipversion:
-              extractionFn:
-                type: lookup
-                retainMissingValue: true
-                lookup:
-                  type: map
-                  map: {"IPv4": 4, "IPv6": 6}
+                  map: {"1":"yes", "0":"no"}
             tcp:
               extractionFn:
                 type: lookup
@@ -2386,11 +2379,9 @@ config:
            - name: as_src
              title: AS src
              formula: $as_src
-             kind: number
            - name: as_dst
              title: AS dst
              formula: $as_dst
-             kind: number
            - name: as_path
              title: AS path
              formula: $as_path
@@ -2406,19 +2397,15 @@ config:
            - name: peer_as_src
              title: Peer AS src
              formula: $peer_as_src
-             kind: number
            - name: peer_as_dst
              title: Peer AS dst
              formula: $peer_as_dst
-             kind: number
            - name: port_src
              title: Port src
              formula: $port_src
-             kind: number
            - name: port_dst
              title: Port dst
              formula: $port_dst
-             kind: number
            - name: country_ip_src
              title: Country IP src
              formula: $country_ip_src
@@ -2454,15 +2441,13 @@ config:
              formula: $as_name_dst
            - name: ip_version
              title: IP version
-             formula: $ip_version.customTransform('ipversion')
-             kind: number
+             formula: $ip_version
            - name: region
              title: Region
              formula: $region
            - name: forwarded
              title: Forwarded
              formula: $forwarded.customTransform('forwarded')
-             kind: boolean
         defaultSelectedMeasures: [bps, pps]
         measures:
            - name: bytes
