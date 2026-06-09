@@ -21,20 +21,19 @@ app:
     jarURI: local:///srv/app/usrlib/app-with-dependencies.jar
     entryClass: org.wikimedia.mediawiki.event.enrichment.pageview.PageView
 
-    # TODO: we might consider setting
-    # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
-    # to fallback on savepoints if checkpoints are too old.
-    # This might require changing checkpoint retention policy.
-    upgradeMode: last-state
+    # Using stateless only for staging.
+    upgradeMode: stateless
 
   config_files:
     page-view.properties:
-      kafka-bootstrap-servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-      kafka-consumer-group-id: webrequest-page-view-next__dse-k8s-eqiad.001
+      kafka-bootstrap-servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+      kafka-consumer-group-id: staging.webrequest-page-view-next__dse-k8s-eqiad.001
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
       output-topic: staging.webrequest.page_view.dev0
       error-topic: staging.webrequest_page_view.error
       input-topics: webrequest_frontend_text
+      wiki-id-miss-threshold: 500
+      wiki-id-reload-cooldown: 10 min
 
 
   flinkConfiguration:
@@ -51,5 +50,5 @@ flink:
     swift_bucket: webrequest-page-view-next.dse-k8s-eqiad
 
 external_services:
-  kafka: [test-eqiad]
+  kafka: [jumbo-eqiad]
 
