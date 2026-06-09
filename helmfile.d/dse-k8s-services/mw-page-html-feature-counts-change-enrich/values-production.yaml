@@ -26,7 +26,7 @@ app:
       
         # Configure sources and sinks.
         source:
-          stream: mediawiki.page_html_content_change.v1:1.0.0
+          stream: mediawiki.page_html_content_change.v1:1.1.0
           # source parallelism should  be set to the number of input Kafka topic-partitions.
           # mediawiki.page_html_content_change.v1 is made up of two topics, but since it is hosted
           # in jumbo, only eqiad is active, which has 6 partition.
@@ -38,7 +38,7 @@ app:
             consumer_group: mw-page-html-feature-counts-change-enrich__dse-k8s-eqiad.000
 
         sink:
-          stream: mediawiki.page_html_feature_counts_change.v1:1.0.0
+          stream: mediawiki.page_html_feature_counts_change.v1:1.1.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.

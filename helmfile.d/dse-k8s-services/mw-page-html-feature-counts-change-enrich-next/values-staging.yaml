@@ -26,7 +26,7 @@ app:
       
         # Configure sources and sinks.
         source:
-          stream: mediawiki.page_html_content_change.v1:1.0.0
+          stream: mediawiki.page_html_content_change.v1:1.1.0
           parallelism: 1
           options:
             bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
@@ -35,7 +35,7 @@ app:
             consumer_group: mw-page-html-feature-counts-change-enrich-next__dse-k8s-eqiad.000
 
         sink:
-          stream: mediawiki.page_html_feature_counts_change.v1:1.0.0
+          stream: mediawiki.page_html_feature_counts_change.v1:1.1.0
           options:
             bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: staging.

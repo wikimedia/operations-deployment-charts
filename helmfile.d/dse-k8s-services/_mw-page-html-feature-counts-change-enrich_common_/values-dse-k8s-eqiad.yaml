@@ -21,6 +21,14 @@ app:
         # https://phabricator.wikimedia.org/T421026#11745891
         process_async_enabled_default: false
 
+        schema_uris:
+          # Load schema from local path baked into the image.
+          - file:///srv/app/event-schemas/primary/jsonschema
+          # If a schema doesn't exist locally, it is okay to fetch it
+          # from the schema service.  This adds a runtime coupling
+          # to this job, but only on startup when schemas are fetched.
+          - http://127.0.0.1:6023/repositories/primary/jsonschema/
+
         # Requests to stream_config_uri should
         # be routed via local envoy service proxy for MW API.
         http_client_routes:
@@ -146,6 +154,8 @@ mesh:
 discovery:
   listeners:
     - mw-api-int
+    # Allow fetches of schemas from schema service via 127.0.0.1:6023.
+    - schema
 
 
 external_services:
