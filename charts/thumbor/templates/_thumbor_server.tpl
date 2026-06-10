@@ -228,13 +228,17 @@ ERROR_HANDLER_MODULE = 'wikimedia_thumbor.error_handlers.logstash'
 from wikimedia_thumbor.logging.filter.context import ContextFilter
 from wikimedia_thumbor.logging.filter.http404 import Http404Filter
 from wikimedia_thumbor.logging.filter.error import ErrorFilter
+from wikimedia_thumbor.logging.formatter import ThumborFormatter
+
+import logging
+logging.captureWarnings(True)
 
 THUMBOR_LOG_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'format': '%(asctime)s %(port)s %(name)s:%(levelname)s %(message)s'
+            '()': ThumborFormatter
         }
     },
     'filters': {
