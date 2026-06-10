@@ -1,4 +1,6 @@
 environments:
+  # Production Wikikube clusters
+  # See https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#WikiKube
   eqiad:
     values:
       - "values/common.yaml"
@@ -37,6 +39,8 @@ environments:
       - install_sidecar_job_controller: true
       - install_external_services: true
       - install_opentelemetry_collector: true
+  # Staging Wikikube clusters
+  # See k8s_dse_opensearch
   staging-eqiad:
     values:
       - "values/common.yaml"
@@ -74,6 +78,7 @@ environments:
       - install_sidecar_job_controller: true
       - install_external_services: true
   # Machine Learning clusters
+  # see https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#ml-serve
   ml-serve-eqiad:
     values:
       - "values/common.yaml"
@@ -131,6 +136,8 @@ environments:
       # Experiments currently ongoing in T297612
       - istio_sidecar_proxy: true
       - install_external_services: true
+  # data-platform engineering clusters (used to be called data-science engineering, hence the dse)
+  # see https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#dse-k8s
   dse-k8s-eqiad:
     values:
       - "values/common.yaml"
@@ -177,6 +184,8 @@ environments:
       - istio_sidecar_proxy: true
       - install_ceph_csi_rbd: true
       - install_ceph_csi_cephfs: true
+  # auxilliary clusters
+  # see https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#aux
   aux-k8s-eqiad:
     values:
       - "values/common.yaml"
