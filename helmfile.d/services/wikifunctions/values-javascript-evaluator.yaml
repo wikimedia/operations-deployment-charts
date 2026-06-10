@@ -1,7 +1,7 @@
 # Over-ride values for the JavaScript evaluator
 
 main_app:
-  image: repos/abstract-wiki/wikifunctions/function-evaluator/wasm-javascript-all
+  image: repos/abstract-wiki/wikifunctions/function-evaluator/rusty-js
   version: 2026-06-18-181627
   requests:
     cpu: 4
@@ -20,20 +20,16 @@ config:
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
     OTEL_SERVICE_NAME: wikifunctions-evaluator-javascript
     FUNCTION_EVALUATOR_TIMEOUT_MS: "9000"
-    WASM_BINARY: /srv/service/programming-languages/wasmedge_quickjs.so
-    PROGRAMMING_LANGUAGE_DIR: /srv/service/programming-languages
-    WASMEDGE_HOME: /srv/service/programming-languages/wasmedge
+    EXECUTOR_ROOT: /srv/executors
     EXECUTOR_PROCESS_POOL_SIZE: "5"
-    ENABLE_WASMEDGE_LIMITS: "0"
-    WASMEDGE_GAS_LIMIT: "1000000"
-    WASMEDGE_MEMORY_PAGE_LIMIT: "10000"
-    WASMEDGE_TIMEOUT_MS: "11000"
-    FUNCTION_EVALUATOR_WASI_ACQUIRE_TIMEOUT: "1500"
+    WASMTIME_FUEL_LIMIT: "10000000000"
+    WASMTIME_MEMORY_PAGES: "10000"
+    MAX_REQUESTS_PER_ID: "100"
 
 # The evaluator's ingress config is peculiar since it is contained in
 # "wikifunctions", that by default is used to create the gateway hosts
 # value that Istio accepts. For example, the orchestrator responds
-# to wikifunctions.discovery.wment (and its svc.{eqiad,codfw}.wmnet variants)
+# to wikifunctions.discovery.wmnet (and its svc.{eqiad,codfw}.wmnet variants)
 # and it cannot be shared by multiple Gateways.
 # We explicitly discard the default and set new ones for the evaluators,
 # that may be revisied once/if they get their own service status.

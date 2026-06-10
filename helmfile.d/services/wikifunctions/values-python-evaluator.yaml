@@ -29,7 +29,7 @@ config:
 # The evaluator's ingress config is peculiar since it is contained in
 # "wikifunctions", that by default is used to create the gateway hosts
 # value that Istio accepts. For example, the orchestrator responds
-# to wikifunctions.discovery.wment (and its svc.{eqiad,codfw}.wmnet variants)
+# to wikifunctions.discovery.wmnet (and its svc.{eqiad,codfw}.wmnet variants)
 # and it cannot be shared by multiple Gateways.
 # We explicitly discard the default and set new ones for the evaluators,
 # that may be revisied once/if they get their own service status.
