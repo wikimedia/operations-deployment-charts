@@ -10,6 +10,8 @@ _vars:
   krb5ccname: &krb5ccname /tmp/airflow_krb5_ccache/krb5cc
   krb5conf: &krb5conf /etc/krb5.conf
   keytab: &keytab /etc/kerberos/keytabs/airflow.keytab
+  java_home: /usr/lib/jvm/java-8-openjdk-amd64/jre
+  hadoop_home: /usr/lib/hadoop
   hadoop_conf_dir: &hadoop_conf_dir /etc/hadoop/conf
   spark_conf_dir: &spark_conf_dir /etc/spark3/conf
   hdfs_keytab: &hdfs_keytab /etc/security/keytabs/hadoop/hdfs.keytab
@@ -449,6 +451,10 @@ worker:
         value: *hadoop_conf_dir
       - name: HIVE_CONF_DIR
         value: *hadoop_conf_dir
+      - name: ARROW_LIBHDFS_DIR
+        value: "{{ $.Values._vars.hadoop_home }}/lib/native"
+      - name: LD_LIBRARY_PATH
+        value: "/usr/lib:{{ $.Values._vars.java_home }}/lib/amd64/server:{{ $.Values._vars.hadoop_home }}/lib/native"
     spark:
       - name: SPARK_CONF_DIR
         value: *spark_conf_dir

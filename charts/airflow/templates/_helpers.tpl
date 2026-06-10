@@ -313,8 +313,9 @@ resources:
 {{- end }}
 
 {{- define "app.airflow.env.hadoop" }}
+{{- $root := . }}
 {{- with .Values.worker.env.hadoop }}
-{{ toYaml . }}
+{{ tpl (toYaml .) $root }}
 {{- end }}
 {{- end }}
 
