@@ -1128,17 +1128,14 @@ main_app:
           to: 'edit-check.edit-check.wikimedia.org'
 
     - name: liftwing_openapi_server
-      # NOTE: editcheck is separate because it should NOT use the relaxed LiftWing
-      # rate limit policy. It should just use the default rate limit policy.
+      # NOTE: liftwing_openapi_server is separate because it doesn't need a
+      # rate limit policy.
       timeout: 30s
       cluster: liftwing-openapi-server
       csp_enabled: false
-      api_cors_enabled: true
+      api_cors_enabled: false
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      response_headers_to_add:
-        - key: cache-control
-          value: no-cache
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
       urls:
         - name: specs
