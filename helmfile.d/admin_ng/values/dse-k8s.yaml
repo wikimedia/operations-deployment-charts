@@ -86,18 +86,29 @@ pod-security-labels: &analytics-pss-labels
 
 # List all namespaces that should be created in every DSE-K8S cluster.
 # For info about what overrides are available, please check ./common.yaml.
+# When adding a new namespace, please keep the entries alphabetically sorted
 namespaces:
   # The following namespace is used by the external-services chart,
   # and shouldn't be deployed to by another chart
-  external-services:
-    systemNamespace: true
-    deployTLSCertificate: false
-
-  kube-system:
+  analytics:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-test:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  cert-manager:
     systemNamespace: true
     allowCriticalPods: true
     labels:
       istio-injection: disabled
+  external-services:
+    systemNamespace: true
+    deployTLSCertificate: false
+
   istio-system:
     systemNamespace: true
     allowCriticalPods: true
@@ -123,26 +134,17 @@ namespaces:
   #     control-plane: kserve-controller-manager
   #     controller-tools.k8s.io: "1.0"
   #     istio-injection: disabled
-  cert-manager:
+  kube-system:
     systemNamespace: true
     allowCriticalPods: true
     labels:
       istio-injection: disabled
-  sidecar-controller:
-    systemNamespace: true
-  analytics:
-    deployClusterRole: deploy-spark-support
-    labels:
-      <<: *analytics-pss-labels
-      istio-injection: disabled
-  analytics-test:
-    deployClusterRole: deploy-spark-support
-    labels:
-      <<: *analytics-pss-labels
-      istio-injection: disabled
-  opensearch-test: {}
+  opensearch-apifeatureusage: {}
+  opensearch-apifeatureusage-test: {}
   opensearch-ipoid: {}
   opensearch-ipoid-test: {}
+  opensearch-operator: {}
+  opensearch-operator-3: {}
   opensearch-semantic-search:
     resourcequota:
       compute:
@@ -153,14 +155,13 @@ namespaces:
           cpu: "100"
           memory: "650Gi"
   opensearch-semantic-search-test: {}
-  opensearch-operator: {}
-  opensearch-operator-3: {}
+  opensearch-test: {}
   opensearch-toolhub: {}
   opensearch-toolhub-test: {}
-  opensearch-apifeatureusage: {}
-  opensearch-apifeatureusage-test: {}
   opensearch-ttmserver: {}
   opensearch-ttmserver-test: {}
+  sidecar-controller:
+    systemNamespace: true
   wdqs-internal:
     limitranges:
       container:

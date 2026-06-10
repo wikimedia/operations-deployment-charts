@@ -21,18 +21,33 @@ mw-pss-labels: &mw-pss-labels
   pod-security.wmf.org/disallow-capabilities-adding-capabilities: exclude
   pod-security.wmf.org/disallow-capabilities-except-ptrace: include
 
+# When adding a new namespace, please keep the entries alphabetically sorted
 namespaces:
+  airflow-analytics-product:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-analytics-product.wikimedia.org
+  airflow-analytics-test:
+    labels:
+      <<: *analytics-pss-labels
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-analytics-test.wikimedia.org
   airflow-dev:
     labels:
       <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
+  airflow-fr-tech:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-fr-tech.wikimedia.org
   airflow-main:
     labels:
       <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
-      - airflow.wikimedia.org
-      - airflow.discovery.wmnet
+    - airflow.wikimedia.org
+    - airflow.discovery.wmnet
     resourcequota:
       compute:
         requests:
@@ -62,12 +77,32 @@ namespaces:
         max:
           memory: "16Gi"
           cpu: "16"
+  airflow-ml:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-ml.wikimedia.org
+  airflow-platform-eng:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-platform-eng.wikimedia.org
+  airflow-research:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-research.wikimedia.org
+  airflow-search:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-search.wikimedia.org
+  airflow-sre:
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-sre.wikimedia.org
   airflow-test-k8s:
     labels:
       <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
-      - airflow-test-k8s.wikimedia.org
+    - airflow-test-k8s.wikimedia.org
     resourcequota:
       compute:
         requests:
@@ -97,49 +132,14 @@ namespaces:
         max:
           memory: "10Gi"
           cpu: "10"
-  airflow-analytics-test:
-    labels:
-      <<: *analytics-pss-labels
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-analytics-test.wikimedia.org
-  airflow-wmde:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-wmde.wikimedia.org
-  airflow-research:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-research.wikimedia.org
-  airflow-search:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-search.wikimedia.org
-  airflow-platform-eng:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-platform-eng.wikimedia.org
-  airflow-analytics-product:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-analytics-product.wikimedia.org
-  airflow-ml:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-ml.wikimedia.org
-  airflow-sre:
-    deployClusterRole: deploy-airflow
-    tlsExtraSANs:
-      - airflow-sre.wikimedia.org
   airflow-wikidata:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
-      - airflow-wikidata.wikimedia.org
-  airflow-fr-tech:
+    - airflow-wikidata.wikimedia.org
+  airflow-wmde:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
-      - airflow-fr-tech.wikimedia.org
-  echoserver: {}
+    - airflow-wmde.wikimedia.org
   blunderbuss:
     limitranges:
       container:
@@ -162,174 +162,52 @@ namespaces:
         max:
           memory: "16Gi"
           cpu: "8"
-  spark:
-    deployClusterRole: deploy-spark-support
-    deployTLSCertificate: false
-    labels:
-      <<: *analytics-pss-labels
-      istio-injection: disabled
-  spark-history:
-    labels:
-      istio-injection: disabled
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "16000m"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "17000m"
-  spark-history-test:
-    labels:
-      istio-injection: disabled
-  spark-operator:
+  cloudnative-pg-operator:
     systemNamespace: true
-    deployTLSCertificate: false
-    labels:
-      istio-injection: disabled
-  superset:
-    tlsExtraSANs:
-      - superset.wikimedia.org
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "32Gi"
-          cpu: "16"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "32Gi"
-          cpu: "16"
-  superset-next:
-    tlsExtraSANs:
-      - superset-next.wikimedia.org
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "8"
-  test-kitchen:
+  datahub:
     tlsHostnames:
-      - test-kitchen
+    - datahub-frontend
+    - datahub-gms
     tlsExtraSANs:
-      - test-kitchen.wikimedia.org
-  test-kitchen-next:
+    - datahub.wikimedia.org
+  datahub-next:
     tlsHostnames:
-      - test-kitchen-next
+    - datahub-frontend-next
+    - datahub-gms-next
     tlsExtraSANs:
-      - test-kitchen-next.wikimedia.org
+    - datahub-next.wikimedia.org
+  datasets-config:
+    tlsExtraSANs:
+    - datasets-config.wikimedia.org
+  datasets-config-next:
+    tlsExtraSANs:
+    - datasets-config-next.wikimedia.org
+  echoserver: {}
+  eventstreams-internal:
+    tlsExtraSANs:
+    - stream-internal.wikimedia.org
   flink-operator:
     systemNamespace: true
     labels:
       istio-injection: disabled
-  datasets-config:
-    tlsExtraSANs:
-      - datasets-config.wikimedia.org
-  datasets-config-next:
-    tlsExtraSANs:
-      - datasets-config-next.wikimedia.org
-  datahub:
+  growthbook:
     tlsHostnames:
-      - datahub-frontend
-      - datahub-gms
+    - growthbook
+    - growthbook-api
     tlsExtraSANs:
-      - datahub.wikimedia.org
-  datahub-next:
+    - growthbook.wikimedia.org
+    - growthbook-api.wikimedia.org
+  growthbook-next:
     tlsHostnames:
-      - datahub-frontend-next
-      - datahub-gms-next
+    - growthbook-next
+    - growthbook-api-next
     tlsExtraSANs:
-      - datahub-next.wikimedia.org
-  rdf-streaming-updater:
+    - growthbook-next.wikimedia.org
+    - growthbook-api-next.wikimedia.org
+  kafka-mirrormaker:
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
-    # Bump max container memory limit to 4.5Gi, otherwise use the defaults
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "4.5Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "5Gi"
-          cpu: "9"
-  growthbook:
-    tlsHostnames:
-      - growthbook
-      - growthbook-api
-    tlsExtraSANs:
-      - growthbook.wikimedia.org
-      - growthbook-api.wikimedia.org
-  growthbook-next:
-    tlsHostnames:
-      - growthbook-next
-      - growthbook-api-next
-    tlsExtraSANs:
-      - growthbook-next.wikimedia.org
-      - growthbook-api-next.wikimedia.org
-  cloudnative-pg-operator:
-    systemNamespace: true
-  postgresql-test: {}
-  mw-content-history-reconcile-enrich: {}
-  mw-content-history-reconcile-enrich-next: {}
-  mw-page-html-content-change-enrich: {}
-  mw-page-html-content-change-enrich-next: {}
-  mw-page-html-feature-counts-change-enrich: {}
-  mw-page-html-feature-counts-change-enrich-next: {}
-  webrequest-page-view-next: {}
   llm-inference:
     deployTLSCertificate: false
     labels:
@@ -391,34 +269,57 @@ namespaces:
         max:
           memory: "65Gi"
           cpu: "16"
-  query-service:
-    enableJobSidecarController: true
+  mw-content-history-reconcile-enrich: {}
+  mw-content-history-reconcile-enrich-next: {}
+  mw-page-html-content-change-enrich: {}
+  mw-page-html-content-change-enrich-next: {}
+  mw-page-html-feature-counts-change-enrich: {}
+  mw-page-html-feature-counts-change-enrich-next: {}
+  opensearch-apifeatureusage:
     limitranges:
       container:
         min:
           memory: "300Mi"
           cpu: "100m"
         max:
-          memory: "16Gi"
-          cpu: "8"
+          memory: "4Gi"
+          cpu: "2"
         defaultRequest:
-          memory: "300Mi"
-          cpu: "100m"
+          memory: "2000Mi"
+          cpu: "500m"
         default:
-          memory: "300Mi"
-          cpu: "100m"
+          memory: "2000Mi"
+          cpu: "500m"
       pod:
         min:
           memory: "300Mi"
           cpu: "100m"
         max:
-          memory: "20Gi"
-          cpu: "12"
-  kafka-mirrormaker:
-    deployTLSCertificate: false
-    labels:
-      istio-injection: disabled
-  opensearch-test:
+          memory: "4Gi"
+          cpu: "2"
+  opensearch-apifeatureusage-test:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+  opensearch-ipoid:
     limitranges:
       container:
         min:
@@ -441,28 +342,6 @@ namespaces:
           memory: "20Gi"
           cpu: "12"
   opensearch-ipoid-test:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "20Gi"
-          cpu: "12"
-  opensearch-ipoid:
     limitranges:
       container:
         min:
@@ -528,6 +407,28 @@ namespaces:
         max:
           memory: "32Gi"
           cpu: "12"
+  opensearch-test:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
   opensearch-toolhub:
     limitranges:
       container:
@@ -551,50 +452,6 @@ namespaces:
           memory: "4Gi"
           cpu: "2"
   opensearch-toolhub-test:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-  opensearch-apifeatureusage:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-  opensearch-apifeatureusage-test:
     limitranges:
       container:
         min:
@@ -660,14 +517,158 @@ namespaces:
         max:
           memory: "4Gi"
           cpu: "2"
+  postgresql-test: {}
+  query-service:
+    enableJobSidecarController: true
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "300Mi"
+          cpu: "100m"
+        default:
+          memory: "300Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
+  rdf-streaming-updater:
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+    # Bump max container memory limit to 4.5Gi, otherwise use the defaults
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "4.5Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "5Gi"
+          cpu: "9"
+  spark:
+    deployClusterRole: deploy-spark-support
+    deployTLSCertificate: false
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  spark-history:
+    labels:
+      istio-injection: disabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "16000m"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "17000m"
+  spark-history-test:
+    labels:
+      istio-injection: disabled
+  spark-operator:
+    systemNamespace: true
+    deployTLSCertificate: false
+    labels:
+      istio-injection: disabled
+  superset:
+    tlsExtraSANs:
+    - superset.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "32Gi"
+          cpu: "16"
+  superset-next:
+    tlsExtraSANs:
+    - superset-next.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+  test-kitchen:
+    tlsHostnames:
+    - test-kitchen
+    tlsExtraSANs:
+    - test-kitchen.wikimedia.org
+  test-kitchen-next:
+    tlsHostnames:
+    - test-kitchen-next
+    tlsExtraSANs:
+    - test-kitchen-next.wikimedia.org
   turnilo:
     tlsExtraSANs:
-      - turnilo.wikimedia.org
+    - turnilo.wikimedia.org
   turnilo-next:
     tlsExtraSANs:
-      - turnilo-next.wikimedia.org
-  eventstreams-internal:
-    tlsExtraSANs:
-      - stream-internal.wikimedia.org
+    - turnilo-next.wikimedia.org
   wdqs-queryhammer: {}
+  webrequest-page-view-next: {}
 

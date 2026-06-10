@@ -1,6 +1,51 @@
+# When adding a new namespace, please keep the entries alphabetically sorted
 namespaces:
   echoserver: {}
-  opensearch-test:
+  opensearch-apifeatureusage:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+  opensearch-apifeatureusage-test:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "4Gi"
+          cpu: "2"
+  opensearch-ipoid:
     limitranges:
       container:
         min:
@@ -23,28 +68,6 @@ namespaces:
           memory: "20Gi"
           cpu: "12"
   opensearch-ipoid-test:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "20Gi"
-          cpu: "12"
-  opensearch-ipoid:
     limitranges:
       container:
         min:
@@ -110,6 +133,28 @@ namespaces:
         max:
           memory: "32Gi"
           cpu: "12"
+  opensearch-test:
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "20Gi"
+          cpu: "12"
   opensearch-toolhub:
     limitranges:
       container:
@@ -133,50 +178,6 @@ namespaces:
           memory: "4Gi"
           cpu: "2"
   opensearch-toolhub-test:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-  opensearch-apifeatureusage:
-    limitranges:
-      container:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-        defaultRequest:
-          memory: "2000Mi"
-          cpu: "500m"
-        default:
-          memory: "2000Mi"
-          cpu: "500m"
-      pod:
-        min:
-          memory: "300Mi"
-          cpu: "100m"
-        max:
-          memory: "4Gi"
-          cpu: "2"
-  opensearch-apifeatureusage-test:
     limitranges:
       container:
         min:
