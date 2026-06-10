@@ -61,5 +61,8 @@ secret:
   adminID: dse-k8s-csi-cephfs
   # adminKey: # This value has been added helmfile via the private repo
 
+# The list of namespaces using ceph-cephfs PVCs. If you plan to use such a PVC in a new namespace,
+# you'll need to add it in there (please keep the list sorted, after the kube-system entry)
+# and apply admin_ng
 tenantNamespaces:
 - kube-system
