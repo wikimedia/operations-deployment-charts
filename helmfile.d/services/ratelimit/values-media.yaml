@@ -1,5 +1,8 @@
 resources:
   replicas: 11 # Start with 1 ratelimit pod per ms-fe
+nutcracker:
+  limits:
+    memory: 400Mi
 ingress:
   enabled: true
   gatewayHosts:
