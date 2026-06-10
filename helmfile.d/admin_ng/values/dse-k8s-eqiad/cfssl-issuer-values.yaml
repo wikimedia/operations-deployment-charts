@@ -1,6 +1,11 @@
 issuers:
   discovery:
     profile: k8s_dse
+
+  # This cfssl issuer will be used to create certificates for our Opensearch clusters valid
+  # for 6 months, because the opensearch-operator does not restart opensearch pods when the
+  # certificate gets updated, nor does it reload it. This will reduce our manual toil related
+  # to opensearch.
   opensearch:
     # based on helmfile.d/admin_ng/cert-manager/cfssl-issuer-values.yaml https://w.wiki/QeeD
     # label and profile are taken from hieradata/role/common/pki/multirootca.yaml https://w.wiki/Qed$
