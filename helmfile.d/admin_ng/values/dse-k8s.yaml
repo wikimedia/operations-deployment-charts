@@ -8,68 +8,68 @@ GlobalNetworkPolicies:
   allow-all-icmp:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
-      - Ingress
-      - Egress
+    - Ingress
+    - Egress
     ingress:
-      - action: Allow
-        protocol: ICMP
-      - action: Allow
-        protocol: ICMPv6
+    - action: Allow
+      protocol: ICMP
+    - action: Allow
+      protocol: ICMPv6
     egress:
-      - action: Allow
-        protocol: ICMP
-      - action: Allow
-        protocol: ICMPv6
+    - action: Allow
+      protocol: ICMP
+    - action: Allow
+      protocol: ICMPv6
   default-deny:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
-      - Ingress
-      - Egress
+    - Ingress
+    - Egress
     egress:
       # Allow all namespaces to communicate to DNS pods
-      - action: Allow
-        protocol: UDP
-        destination:
-          services:
-            name: "kube-dns"
-            namespace: "kube-system"
+    - action: Allow
+      protocol: UDP
+      destination:
+        services:
+          name: "kube-dns"
+          namespace: "kube-system"
   # This allows egress from all pods to all pods. Ingress still needs to be allowed by the destination, though.
   allow-pod-to-pod:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
     types:
-      - Egress
+    - Egress
     egress:
-      - action: Allow
-        destination:
-          nets:
+    - action: Allow
+      destination:
+        nets:
             # eqiad
-            - "10.67.24.0/21"
+        - "10.67.24.0/21"
             # codfw
-            - "10.192.96.0/21"
-      - action: Allow
-        destination:
-          nets:
+        - "10.192.96.0/21"
+    - action: Allow
+      destination:
+        nets:
             # eqiad
-            - "2620:0:861:302::/64"
+        - "2620:0:861:302::/64"
             # codfw
-            - "2620:0:860:308::/64"
+        - "2620:0:860:308::/64"
 
 # Context: https://knative.dev/docs/serving/tag-resolution/
 docker:
   registry_cidrs:
-      - '10.2.2.44/32'
-      - '10.2.1.44/32'
+  - '10.2.2.44/32'
+  - '10.2.1.44/32'
 
 # These are roles created to deploy charts with special permissions.
 # Usually, these roles are created to deploy charts themselves containing rbac resources.
 # The actual roles are created in helmfile.d/admin_ng/helmfile_rbac.yaml
 deployExtraClusterRoles:
-  - "sparkapplications"
-  - "airflow"
-  - "mediawiki-dumps-legacy"
-  - "opensearch"
-  - "amdgpu-node-labeller"
-  - "spark-support"
+- "sparkapplications"
+- "airflow"
+- "mediawiki-dumps-legacy"
+- "opensearch"
+- "amdgpu-node-labeller"
+- "spark-support"
 
 # These pod security labels are used to allow host paths in certain locations used by analytics workloads.
 # the `include` security policies referenced in these labels are defined in
@@ -211,10 +211,10 @@ istio:
   gateways:
     ingressgateway:
       ports:
-        - 8443
+      - 8443
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
-        - 8081
+      - 8081
 net_istio:
   ingressgateway:
     servers:
@@ -227,7 +227,7 @@ net_istio:
     # 3) All traffic allowed: '*'
     # For the moment option 3) is fine, but we'll need to review the choice.
     - hosts:
-        - '*'
+      - '*'
       port:
         name: https
         number: 443
@@ -271,4 +271,5 @@ resourcequota:
 priorityClasses:
 - name: low-priority-pod
   value: -100
-  description: "Priority class used by non-critical non-system pods, to ensure they get evicted first under resource pressure"
+  description: "Priority class used by non-critical non-system pods, to ensure they
+    get evicted first under resource pressure"
