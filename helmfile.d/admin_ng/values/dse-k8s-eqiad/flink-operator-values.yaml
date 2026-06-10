@@ -1,9 +1,9 @@
-# List of namespaces that the flink-operator
-# will watch and be granted permissions to manage.
-#
+# List of namespaces that the flink-operator will watch and be granted permissions to manage.
+# If you plan to deploy a flink app to a new namespace, add it to the list (please keep it sorted)
+# and redeploy admin_ng
 watchNamespaces:
-- mw-content-history-reconcile-enrich-next
 - mw-content-history-reconcile-enrich
+- mw-content-history-reconcile-enrich-next
 - mw-page-html-content-change-enrich
 - mw-page-html-content-change-enrich-next
 - mw-page-html-feature-counts-change-enrich
