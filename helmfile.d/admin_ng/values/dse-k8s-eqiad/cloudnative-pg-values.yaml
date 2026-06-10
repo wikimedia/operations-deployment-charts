@@ -1,5 +1,8 @@
-
+# The list of namespaces in which cloudnative-pg clusters are deployed.
+# If you plan to deploy a cluster to a new namespace, you'll need to add it in there
+# (please keep the list sorted, and keep the cloudative-pg-operator first) and apply admin_ng
 watchedNamespaces:
+- cloudnative-pg-operator
 - airflow-analytics-product
 - airflow-analytics-test
 - airflow-dev
@@ -13,6 +16,5 @@ watchedNamespaces:
 - airflow-test-k8s
 - airflow-wikidata
 - airflow-wmde
-- cloudnative-pg-operator
 - growthbook
 - growthbook-next
