@@ -188,6 +188,8 @@ config:
         instance_name: "{{ $.Values.config.airflow.instance_name }}"
         expose_hostname: true
         expose_stacktrace: true
+        # Always show the trigger configuration dialog
+        show_trigger_form_if_no_params: true
         # We wish to allow long-running requests, such as when clearing many tasks. See #T400493
         web_server_worker_timeout: 300 # Note: Deprecated in version 3.0 and replaced with: api.worker_timeout
 
