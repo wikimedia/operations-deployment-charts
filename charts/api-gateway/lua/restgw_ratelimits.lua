@@ -343,6 +343,9 @@ function wmf_expose_headers(response_handle)
 end
 
 function wmf_set_retry_after(response_handle)
+    -- wmf_request_info is provided by wmf_stash_request_info
+    local streamMeta = response_handle:streamInfo():dynamicMetadata()
+    local request_info = streamMeta:get("envoy.wmf_request_info") or {}
     local headers = response_handle:headers()
 
     if headers:get("retry-after") then
@@ -360,7 +363,7 @@ function wmf_set_retry_after(response_handle)
     if retryable[status] then
         -- Use time to reset supplied by the ratelimit service, or fall back to one minute.
         local reset = headers:get("x-ratelimit-reset") or "60"
-        local reqid = headers:get("x-request-id")
+        local reqid = request_info["x-request-id"]
         headers:replace("retry-after", reset)
 
         if headers:get("x-ratelimit-remaining") == "0" then

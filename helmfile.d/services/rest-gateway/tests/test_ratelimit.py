@@ -373,6 +373,21 @@ class RateLimitTest(unittest.TestCase):
         }
         self.assert_rate_limit_enforced(self.default_endpoint, "DENY", headers = testing_headers)
 
+    def test_deny_response(self):
+        headers = {
+            "x-wmf-user-id": env.nextName("Jane"),
+            "x-wmf-ratelimit-class": "anon",
+            "x-wmf-ratelimit-policy-1": "DENY",
+            "x-wmf-ratelimit-cost-1": "1",
+            "x-wmf-debug-flags": "keep-429-on-zero-limit",
+            "x-request-id": "12345", # should be looped through to the response body
+        }
+
+        resp = self.target.get(self.default_endpoint, headers = headers)
+        self.assertEqual(429, resp.status, "expected request to be denied")
+        self.assertIn("bot-traffic@wikimedia.org", resp.body, "body contains notice text")
+        self.assertIn("12345", resp.body, "body contains request ID")
+
     def test_setting_headers_blocked_externally(self):
         policy = env.values.main_app.ratelimiter.default_policies[0]
 
@@ -470,7 +485,7 @@ class RateLimitTest(unittest.TestCase):
         request_headers = {
             "user-agent": "MediaWiki/1.43.1 (https://some.fandom.com) ForeignAPIRepo/2.1", # InstantCommons
             "x-client-ip": env.nextIp(), # external request
-            "x-ua-contact": "https://some.fandom.com", # has contact info
+            "x-ua-contact": "https://some.fandom.com " + env.nextName("Test"), # has contact info
             "x-trusted-request": "D", # good UA
             "x-is-browser": "20", # >= 80 is good (see browser_threshold value)
         }

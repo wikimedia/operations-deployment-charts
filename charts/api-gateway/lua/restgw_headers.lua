@@ -7,7 +7,7 @@
 function wmf_stash_request_info(request_handle)
     local req_headers = request_handle:headers()
     local streamMeta = request_handle:streamInfo():dynamicMetadata()
-    for _, hname in ipairs({ ":path", ":method", "origin" }) do
+    for _, hname in ipairs({ ":path", ":method", "origin", "x-request-id" }) do
         local hvalue = req_headers:get(hname)
         if hvalue then
             streamMeta:set("envoy.wmf_request_info", hname, hvalue)

@@ -669,11 +669,18 @@ describe("rest_hooks", function()
             local headers = {
                 [":status"] = "429",
                 ["x-ratelimit-reset"] = "11",
-                ["x-request-id"] = "abcdefg",
                 ["x-ratelimit-remaining"] = "0", -- envoy caused the 429
             }
 
-            local res = fake_response_handle{headers = headers}
+            local request_info = {
+                [":method"] = "GET",
+                [":path"] = "/a/b/c",
+                ["x-request-id"] = "abcdefg",
+            }
+
+            local streamMetadata = {["envoy.wmf_request_info"] = request_info}
+            local res = fake_response_handle{headers = headers, streamMetadata = streamMetadata}
+
             wmf_set_retry_after( res )
 
             assert.has_match(".*ratelimit notice text.*", res:body():getBytes())
