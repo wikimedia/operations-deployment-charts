@@ -63,10 +63,10 @@ inference_services:
   editing-suggestions:
     predictor:
       image: "machinelearning-liftwing-inference-services-editing-suggestions"
-      image_version: "2026-06-03-093430-publish"
+      image_version: "2026-06-11-144626-publish"
       custom_env:
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/editing-suggestions/v1/20260604132039/"
+          value: "s3://wmf-ml-models/editing-suggestions/v1/20260611103632/"
         - name: MODEL_NAME
           value: "editing-suggestions"
       container:
