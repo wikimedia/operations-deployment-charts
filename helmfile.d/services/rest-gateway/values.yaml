@@ -1188,8 +1188,8 @@ main_app:
       response_headers_to_remove: ["set-cookie"]
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
       response_headers_to_add:
-        - key: cache-control
-          value: no-cache
+        - key: Vary
+          value: Origin
       urls:
         - name: specs
           in: '/+service/lw/specs/(.*)'
