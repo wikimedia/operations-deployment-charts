@@ -4,6 +4,12 @@ shellbox:
 service:
   deployment: production
 
+main_app:
+  requests:
+    cpu: 1
+  limits:
+    cpu: 8  # lilypond v2.24 is a _lot_ more CPU hungry
+
 mesh:
   enabled: true
   public_port: 4008

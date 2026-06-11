@@ -664,7 +664,15 @@ namespaces:
           memory: "50Mi"
           cpu: "100m"
   sessionstore: {}
-  shellbox: {}
+  shellbox:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "90"
+          memory: "120Gi"
+        limits:
+          cpu: "90"
+          memory: "120Gi"
   shellbox-constraints:
     resourcequota:
       compute:
