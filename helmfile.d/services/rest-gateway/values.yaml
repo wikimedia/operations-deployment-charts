@@ -1183,10 +1183,13 @@ main_app:
       timeout: 30s
       cluster: liftwing-openapi-server
       csp_enabled: false
-      api_cors_enabled: false
+      api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
+      response_headers_to_add:
+        - key: cache-control
+          value: no-cache
       urls:
         - name: specs
           in: '/+service/lw/specs/(.*)'
