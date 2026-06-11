@@ -8,7 +8,7 @@ listen thumbor
     # and log-format can't multiply, so this value is emitted in ms.
 
     log-format '{"source.ip":"%ci","source.port":%cp,"http.request.method":"%HM","url.path":"%{+E}HP","url.original":"%{+E}HU","http.response.status_code":%ST,"http.response.bytes":%B,"event.duration":%Ta,"trace.id":"%ID","haproxy.frontend_name":"%ft","haproxy.backend_name":"%b","haproxy.server_name":"%s","haproxy.request_time_ms":%TR,"haproxy.total_waiting_time_ms":%Tw,"haproxy.connection_wait_time_ms":%Tc,"haproxy.response_time_ms":%Tr,"haproxy.duration_ms":%Ta,"haproxy.termination_state":"%tsc","haproxy.connections.active":%ac,"haproxy.connections.frontend":%fc,"haproxy.connections.backend":%bc,"haproxy.connections.server":%sc,"haproxy.connections.retries":%rc,"haproxy.server_queue":%sq,"haproxy.backend_queue":%bq}'
-    log stdout local0 info
+    log stdout format raw local0 info len 10000
 
     # Short because if Haproxy attempts to connect, the Thumbor instance it tries must be
     # free (no other connection, because maxconn is 1)
