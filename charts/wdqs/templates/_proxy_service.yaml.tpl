@@ -11,7 +11,7 @@ spec:
     component: proxy
     release: {{ .Release.Name }}
   ports:
-    - name: {{ .Values.service.port.name }}
-      targetPort: {{ .Values.service.port.targetPort }}
-      port: {{ .Values.service.port.port }}
+    - name: {{ .Values.proxy.service.port.name }}
+      targetPort: {{ .Values.proxy.service.port.targetPort }}
+      port: {{ .Values.proxy.service.port.port }}
 {{- end }}

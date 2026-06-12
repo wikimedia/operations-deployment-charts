@@ -1,3 +1,7 @@
 {{- include "app.qlever.service" . }}
 ---
+{{ if .Values.mesh.enabled }}
+{{- include "mesh.service" . }}
+{{- else }}
 {{- include "app.proxy.service" . }}
+{{- end }}

@@ -1,0 +1,10 @@
+# wdqs-next uses its own ingress/mesh hostnames (wdqs2-next-*) so it does not
+# collide with the wdqs namespace, which shares the release values from _wdqs_common_.
+# Everything else for this release comes from the shared values-scholarly-internal.yaml symlink.
+ingress:
+  gatewayHosts:
+    default: wdqs2-next-scholarly-internal
+
+mesh:
+  certmanager:
+    default_host: wdqs2-next-scholarly-internal

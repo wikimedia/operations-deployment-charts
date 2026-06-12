@@ -1,6 +1,6 @@
 backend:
   volume:
-    storageClass: emptyDir
+    storageClass: ceph-rbd-ssd
     size: 600Gi # 600Gi should be enough for 1 full index and 1 backup
 
 qlever:
@@ -17,10 +17,12 @@ qlever:
     memory: 120Gi
 
 init:
-  version: v0.0.5
+  version: v0.0.8
   config:
     public:
       NUM_BACKUPS: 1
+      LOGGER: plain
+      LOGLEVEL: DEBUG
 
 consumer:
   version: v0.0.8
@@ -36,10 +38,7 @@ networkpolicy:
     enabled: true
 
 ingress:
-  enabled: false
-
-mesh:
-  public_port: 80
+  enabled: true
 
 # gmodena:
 # We need egress to gitlab (for the federation allow list), kafka main and S3 in both DCs.

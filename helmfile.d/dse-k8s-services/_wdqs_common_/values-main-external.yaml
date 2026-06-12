@@ -6,3 +6,9 @@ proxy:
 ingress:
   gatewayHosts:
     default: wdqs2-main-external
+    extraFQDNs:
+    - query-next.wikidata.org
+
+mesh:
+  certmanager:
+    default_host: wdqs2-main-external

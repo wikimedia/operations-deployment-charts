@@ -1,5 +1,5 @@
 app:
-  port: &proxyport 80
+  port: &proxyport 443
 
 backend:
   volume:
@@ -47,7 +47,7 @@ init:
       # As long as the Qlever index is not persisted regularly, we need to rebuild from dump ts on each restart
       KAFKA_FORCE_SEEK: true
       NEW_INDEX_S3_HOST: rgw.eqiad.dpe.anycast.wmnet
-      NEW_INDEX_S3_BUCKET: wdqs-index-update
+      NEW_INDEX_S3_BUCKET: wdqs-update-pipeline
       LOGGER: ecs
     private:
       # The actual values are automatically injected from /etc/helmfile-defaults/private via the helmfile
@@ -113,10 +113,11 @@ health:
 proxy:
   image: repos/wikidata-platform/wdqs/wdqs-proxy
   version: latest
-  port:
-    name: http
-    port: *proxyport
-    targetPort: 8080
+  service:
+    port:
+      name: http
+      port: *proxyport
+      targetPort: 8080
   config:
     public:
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-main-internal-qlever:7001/sparql
@@ -139,20 +140,28 @@ monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
 
-# The proxy service is our external service
+# only used in NOTES.txt
 service:
   deployment: minikube
-  port:
-    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
-    # protocol: TCP # TCP is the default protocol
-    targetPort: 8080 # the number or name of the exposed port on the container
-    port: *proxyport # the number of the port desired to be exposed to the cluster
 
 debug:
   enabled: false
 
 mesh:
-  enabled: false
+  enabled: true
+  public_port: *proxyport
+  upstream_local_port: 8080
+  telemetry:
+    port: 1667
+  extra_service_selector_labels:
+    component: proxy
+  resources:
+    requests:
+      cpu: 200m
+      memory: 300Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
 
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)

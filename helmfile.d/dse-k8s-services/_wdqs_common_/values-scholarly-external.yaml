@@ -6,3 +6,9 @@ proxy:
 ingress:
   gatewayHosts:
     default: wdqs2-scholarly-external
+    extraFQDNs:
+    - query-scholarly-next.wikidata.org
+
+mesh:
+  certmanager:
+    default_host: wdqs2-scholarly-external

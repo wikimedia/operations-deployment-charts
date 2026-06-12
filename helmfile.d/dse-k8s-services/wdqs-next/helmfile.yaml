@@ -21,7 +21,7 @@ environments:
     missingFileHandler: Warn
   dse-k8s-codfw:
     values:
-      - releases: [scholary-internal]
+      - releases: [scholarly-internal]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -48,6 +48,7 @@ templates:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "values-{{ .Environment.Name }}-{{`{{ .Release.Name }}`}}.yaml" # env and release-specific overrides
+      - "hostoverride-{{`{{ .Release.Name }}`}}.yaml" # wdqs-next-only: override ingress/mesh host to wdqs2-next-* (release values are shared from _wdqs_common_ with the wdqs namespace)
 
 hooks:
   - events: ["prepare"]
@@ -70,9 +71,9 @@ hooks:
 releases:
   - name: main-internal
     <<: *default
-  - name: scholary-internal
+  - name: scholarly-internal
     <<: *default
   - name: main-external
     <<: *default
-  - name: scholary-external
+  - name: scholarly-external
     <<: *default
