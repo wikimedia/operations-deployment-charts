@@ -4,6 +4,12 @@ resources:
 crawler:
   enabled: false
 
+discovery:
+  listeners:
+    - search-chi-codfw
+    - search-chi-eqiad
+    - opensearch-toolhub-test
+
 config:
   public:
     ES_HOSTS: localhost:6517  # Envoy proxy to opensearch-toolhub-test
