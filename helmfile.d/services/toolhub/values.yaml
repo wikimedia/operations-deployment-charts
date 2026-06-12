@@ -44,8 +44,7 @@ networkpolicy:
 
 discovery:
   listeners:
-    - search-chi-codfw
-    - search-chi-eqiad
+    - opensearch-toolhub
 
 mcrouter:
   enabled: true
@@ -65,7 +64,7 @@ config:
     DB_HOST: m5-master.eqiad.wmnet
     CACHE_BACKEND: django_prometheus.cache.backends.memcached.MemcachedCache
     CACHE_LOCATION: mcrouter:11213  # Sidecar container
-    ES_HOSTS: localhost:6102  # Envoy proxy to search-chi-eqiad
+    ES_HOSTS: localhost:6519  # Envoy proxy to opensearch-toolhub
     ES_INDEX_REPLICAS: 2
     WIKIMEDIA_OAUTH2_KEY: 89c2e5fbbbbe57687b8757c46cb74901
     http_proxy: http://url-downloader.eqiad.wikimedia.org:8080
