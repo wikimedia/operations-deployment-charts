@@ -7,3 +7,9 @@ ingress:
     default: "airflow-fr-tech"
     extraFQDNs:
     - airflow-fr-tech.wikimedia.org
+
+external_services:
+  task-pod:
+    minio:
+    - fr-tech-eqiad
+    - fr-tech-codfw
