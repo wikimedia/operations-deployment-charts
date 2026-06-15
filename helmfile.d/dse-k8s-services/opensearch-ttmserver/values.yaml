@@ -1,4 +1,49 @@
 opensearchCluster:
+  nodePools:
+    - component: masters
+      diskSize: "30Gi"
+      persistence:
+        pvc:
+          storageClass: ceph-rbd-ssd
+          accessModes:
+            - ReadWriteOnce
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
+      resources:
+        requests:
+          memory: "16Gi"
+          cpu: "4000m"
+        limits:
+          memory: "16Gi"
+          cpu: "4000m"
+    # These annotations enable/configure metrics scrapes
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+        prometheus.io/path: "/_prometheus/metrics"
+        prometheus.io/scheme: "https"
+
+    # We don't want the opensearch pods to be scheduled on pods with a 1G NIC.
+    # See T415635, T416345 and https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+      # prevent 2 masters from being scheduled on the same k8s worker
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-nodepool: masters
+              topologyKey: kubernetes.io/hostname
   general:
     serviceName: "opensearch-ttmserver"
     image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2026-05-13-143357-2b2e022d3e2756b0dbd31d66e341a587f5d3b8d7-production2
