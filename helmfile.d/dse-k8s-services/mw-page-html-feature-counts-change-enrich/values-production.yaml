@@ -23,19 +23,33 @@ app:
       stream_manager:
         job_name: mw-page-html-feature-counts-change-enrich
 
-      
+
         # Configure sources and sinks.
         source:
           stream: mediawiki.page_html_content_change.v1:1.1.0
           # source parallelism should  be set to the number of input Kafka topic-partitions.
           # mediawiki.page_html_content_change.v1 is made up of two topics, but since it is hosted
           # in jumbo, only eqiad is active, which has 6 partition.
-          parallelism: 6
+          parallelism: 12
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             topics: [eqiad.mediawiki.page_html_content_change.v1]
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-feature-counts-change-enrich__dse-k8s-eqiad.000
+            # ONE-TIME RECOVERY (remove after the new partitions have caught up).
+            # The topic was scaled 6 -> 12 partitions but the running job never
+            # auto-discovered partitions 6-11, so their backlog was never consumed.
+            # On a last-state restore, this initializer is applied ONLY to partitions
+            # that are NOT in the restored checkpoint state:
+            #   - old partitions 0-5  -> resume from checkpointed offsets (no reprocessing)
+            #   - new partitions 6-11 -> not in state -> read from earliest (recovers backlog)
+            # WARNING: revert this once recovered. If the job ever starts WITHOUT state
+            # (stateless), 'earliest' replays ALL 12 partitions from the start of retention.
+            # and not from the Kafka Consumer group offsets
+            offsets_initializer: earliest
+
+            properties:
+              partition.discovery.interval.ms: "60000"
 
         sink:
           stream: mediawiki.page_html_feature_counts_change.v1:1.1.0
