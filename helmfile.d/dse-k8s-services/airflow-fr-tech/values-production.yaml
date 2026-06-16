@@ -1,6 +1,13 @@
 config:
   airflow:
     instance_name: fr-tech
+  connections:
+    s3_fr_tech:
+      conn_type: aws
+      extra:
+        endpoint_url: https://franio1001.frack.eqiad.wmnet:9000
+        region_name: us-east-1
+        verify: /etc/ssl/certs/wmf-ca-certificates.crt
 
 ingress:
   gatewayHosts:
@@ -12,4 +19,3 @@ external_services:
   task-pod:
     minio:
     - fr-tech-eqiad
-    - fr-tech-codfw
