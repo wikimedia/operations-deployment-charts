@@ -52,7 +52,7 @@ inference_services:
   cope-b-a4b:
     predictor:
       image: "machinelearning-liftwing-inference-services-policy-violation-cope-b-a4b"
-      image_version: "2026-06-03-150921-publish"
+      image_version: "2026-06-15-154924-publish"
       custom_env:
         - name: MODEL_NAME
           value: "cope-b-a4b"
@@ -70,11 +70,11 @@ inference_services:
         resources:
           limits:
             cpu: "6"
-            memory: 64Gi
+            memory: 16Gi
             amd.com/gpu: "1"
           requests:
             cpu: "6"
-            memory: 64Gi
+            memory: 16Gi
             amd.com/gpu: "1"
       config:
         maxReplicas: 1
