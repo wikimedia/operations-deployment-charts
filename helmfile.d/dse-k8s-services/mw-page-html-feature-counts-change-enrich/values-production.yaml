@@ -36,18 +36,6 @@ app:
             topics: [eqiad.mediawiki.page_html_content_change.v1]
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-feature-counts-change-enrich__dse-k8s-eqiad.000
-            # ONE-TIME RECOVERY (remove after the new partitions have caught up).
-            # The topic was scaled 6 -> 12 partitions but the running job never
-            # auto-discovered partitions 6-11, so their backlog was never consumed.
-            # On a last-state restore, this initializer is applied ONLY to partitions
-            # that are NOT in the restored checkpoint state:
-            #   - old partitions 0-5  -> resume from checkpointed offsets (no reprocessing)
-            #   - new partitions 6-11 -> not in state -> read from earliest (recovers backlog)
-            # WARNING: revert this once recovered. If the job ever starts WITHOUT state
-            # (stateless), 'earliest' replays ALL 12 partitions from the start of retention.
-            # and not from the Kafka Consumer group offsets
-            offsets_initializer: earliest
-
             properties:
               partition.discovery.interval.ms: "60000"
 
