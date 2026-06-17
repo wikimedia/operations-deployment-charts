@@ -876,8 +876,12 @@ GlobalNetworkPolicies:
           nets:
             - 208.80.154.75/32  # urldownloader1003
             - 208.80.155.118/32 # urldownloader1004
+            - 208.80.154.11/32  # urldownloader1005
+            - 208.80.154.136/32 # urldownloader1006
             - 208.80.153.72/32  # urldownloader2003
             - 208.80.153.109/32  # urldownloader2004
+            - 208.80.153.73/32  # urldownloader2005
+            - 208.80.153.40/32  # urldownloader2006
       - action: Allow
         protocol: TCP
         destination:
@@ -886,8 +890,12 @@ GlobalNetworkPolicies:
           nets:
             - 2620:0:861:3:208:80:154:75/128  # urldownloader1003
             - 2620:0:861:4:208:80:155:118/128  # urldownloader1004
+            - 2620:0:861:1:208:80:154:11/128  # urldownloader1005
+            - 2620:0:861:2:208:80:154:136/128  # urldownloader1006
             - 2620:0:860:3:208:80:153:72/128  # urldownloader2003
             - 2620:0:860:4:208:80:153:109/128  # urldownloader2004
+            - 2620:0:860:3:208:80:153:73/128  # urldownloader2005
+            - 2620:0:860:2:208:80:153:40/128  # urldownloader2006
   # Allow all pods access to restbase
   allow-restbase:
     namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
