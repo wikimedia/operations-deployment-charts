@@ -33,18 +33,30 @@ app:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-content-change-enrich__dse-k8s-eqiad.001
+            properties:
+              partition.discovery.interval.ms: "60000"
 
         sink:
           stream: mediawiki.page_html_content_change.v1:1.1.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
+            properties:
+              # Max request BEFORE compression. 96MB
+              max.request.size: "100663296"
+              # 128MB - a single record must also fit in the producer buffer
+              buffer.memory: "134217728"
 
         error_sink:
           stream: mw_page_html_content_change_enrich.error:2.1.0
           options:
             bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
+            properties:
+              # 96MB
+              max.request.size: "100663296"
+              # 128MB
+              buffer.memory: "134217728"
 
   job:
     # TODO: we might consider setting

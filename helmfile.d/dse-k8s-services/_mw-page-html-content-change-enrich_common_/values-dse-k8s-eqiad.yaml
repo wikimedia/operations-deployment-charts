@@ -20,8 +20,8 @@ app:
         mediawiki_api_endpoint_template: http://localhost:6501/w/rest.php/v1
         ssl_ca_bundle_path: /etc/ssl/certs/ca-certificates.crt
         request_timeout: 65
-        # 17MB
-        max_content_size: 17825792
+        # 56MB ~ compressed with Snappy should be less than 20MB.
+        max_content_size: 58720256
 
       stream_manager:
         # Use synchronous processing. MW HTML API is high latency,
