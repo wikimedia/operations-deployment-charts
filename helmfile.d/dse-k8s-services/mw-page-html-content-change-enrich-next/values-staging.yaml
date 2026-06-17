@@ -10,7 +10,7 @@ app:
 
   taskManager:
     # NOTE: parallelism == TM replicas * numberOfTaskSlots.
-    replicas: 2
+    replicas: 10
     resource:
       cpu: 2
       memory: 6000m
@@ -33,7 +33,8 @@ app:
           # (as of 2026-04)
           parallelism: 2
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # Read from Jumbo, write in Test.
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
             consumer_group: mw-page-html-content-change-enrich-next__dse-k8s-eqiad.001
 
@@ -44,8 +45,10 @@ app:
             # Prefix the output topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
-            kafka_topic_prefix: staging.
+            kafka_topic_prefix: staging.zstd
             properties:
+              # Testing zstd
+              compression.type: zstd
               # Testing this situation, we believe th is value is the max size BEFORE compression.
               max.request.size: "100663296"
               # 128MB - a single record must also fit in the producer buffer
@@ -55,15 +58,13 @@ app:
         error_sink:
           stream: mw_page_html_content_change_enrich.error:2.1.0
           options:
-            # OTTO: See note above.
-            # TODO: reset this to jumbo-eqiad before we productionize.
-            #bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
             # Prefix the error topic with 'staging.' for the staging release output.
             # this allows us to use Kafka jumbo-eqiad for backfill testing if we need to,
             # without potentiall affecting the production release output topics.
             kafka_topic_prefix: staging.
             properties:
+              compression.type: zstd
               # 96MB
               max.request.size: "100663296"
               # 128MB
@@ -92,6 +93,6 @@ flink:
     swift_bucket: mw-page-html-content-change-enrich-next.dse-k8s-eqiad
 
 external_services:
-  kafka:  [test-eqiad]
+  kafka:  [test-eqiad, jumbo-eqiad]
 
 
