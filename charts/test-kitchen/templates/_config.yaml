@@ -35,4 +35,9 @@ growthbook:
   poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}
   timeout_ms: {{ .Values.app.growthbook.timeout_ms }}
 
+phabricator:
+  api_url: {{ .Values.app.phabricator.api_url }}
+  enabled: {{ .Values.app.phabricator.enabled }}
+  timeout_ms: {{ .Values.app.phabricator.timeout_ms }}
+
 {{- end }}

@@ -19,6 +19,7 @@ spec:
         checksum/session-secret: {{ .Values.config.private.session_secret | sha256sum }}
         checksum/csrf-secret: {{ .Values.config.private.csrf_secret | sha256sum }}
         checksum/growthbook-api-key-rw: {{ .Values.config.private.growthbook_api_key_rw | sha256sum }}
+        checksum/phabricator-api-token: {{ .Values.config.private.phabricator_api_token | sha256sum }}
 
     spec:
       {{- if .Values.affinity }}

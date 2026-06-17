@@ -78,6 +78,11 @@ app:
     poll_interval_ms: 15000
     timeout_ms: 5000
 
+  phabricator:
+    api_url: https://phabricator.wikimedia.org/api/
+    enabled: false
+    timeout_ms: 5000
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false
@@ -99,6 +104,7 @@ config:
     session_secret: "sessionsecret"
     csrf_secret: "csrfsecret"
     growthbook_api_key_rw: "growthbookapikeyrw"
+    phabricator_api_token: "phabricatorapitoken"
 
 # Additional resources if we want to add a port for a debugger to connect to.
 debug:
