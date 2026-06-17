@@ -63,12 +63,13 @@ monitoring:
       mappings:
         # Limit metrics ##############################################################
         # Mappings for media rate limiting
-        - match: "ratelimit\\.service\\.rate_limit\\.upload\\.policy_(.*)\\.user_class_(.*)\\.user_id\\.(.*)"
+        - match: "ratelimit\\.service\\.rate_limit\\.(.*)\\.policy_(.*)\\.user_class_(.*)\\.user_id\\.(.*)"
           match_type: regex
-          name: "ratelimit_service_media_$3"
+          name: "ratelimit_service_$4"
           labels:
-            policy: "$1"
-            user_class: "$2"
+            domain: "$1"
+            policy: "$2"
+            user_class: "$3"
         # Service metrics ##############################################################
         - match: "ratelimit.service.call.should_rate_limit.*"
           name: "ratelimit_service_should_rate_limit_error"
