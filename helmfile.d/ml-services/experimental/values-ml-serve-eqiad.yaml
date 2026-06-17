@@ -195,13 +195,13 @@ inference_services:
                       values:
                         - "ml-serve1012.eqiad.wmnet"
 
-  qwen3.6-27b:
+  qwen3-6-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
       image_version: "2026-06-16-150712-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "qwen3.6-27b"
+          value: "qwen3-6-27b"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/llm/Qwen3.6-27B-FP8/"
         - name: MODEL_PATH
