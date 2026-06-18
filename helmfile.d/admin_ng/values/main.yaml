@@ -336,6 +336,13 @@ namespaces:
       <<: *mw-pss-labels
     tlsExtraSANs:
       - noc.wikimedia.org
+  mw-pretrain:
+    # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
+    labels:
+      <<: *mw-pss-labels
+    tlsExtraSANs:
+      - test.wikipedia.org
+      - mw-pretrain-ro.discovery.wmnet
   mw-wikifunctions:
     # pod-security.wmf.org labels are used on k8s 1.31 to customize Pod Security Standards
     labels:
