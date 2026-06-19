@@ -17,12 +17,12 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases: [main-internal]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   dse-k8s-codfw:
     values:
       - releases: [scholary-internal]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---

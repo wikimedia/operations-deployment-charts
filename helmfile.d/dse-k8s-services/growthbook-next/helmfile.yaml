@@ -15,7 +15,8 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases: [staging]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # loaded early here because the below depends on some of these
     missingFileHandler: Warn
 
 ---

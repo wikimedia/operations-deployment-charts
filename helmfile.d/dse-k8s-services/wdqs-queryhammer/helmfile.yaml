@@ -17,7 +17,7 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases: [qlever-main, qlever-scholary, virtuoso-main, virtuoso-scholary]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---

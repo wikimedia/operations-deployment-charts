@@ -17,7 +17,7 @@ environments:
     values:
       - releases:
         - postgresql-growthbook-next
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---

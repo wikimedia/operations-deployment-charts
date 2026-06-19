@@ -15,7 +15,7 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases: [analytics-test-hadoop]
-      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
 ---
