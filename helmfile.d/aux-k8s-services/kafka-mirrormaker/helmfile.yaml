@@ -24,14 +24,14 @@ environments:
       - main-eqiad-to-main-codfw
       - main-codfw-to-main-eqiad
       - main-eqiad-to-jumbo-eqiad
-    - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+    - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
     missingFileHandler: Warn
   aux-k8s-codfw:
     values:
     - releases:
       - main-eqiad-to-main-codfw
       - main-codfw-to-main-eqiad
-    - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+    - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
     missingFileHandler: Warn
 
 ---
