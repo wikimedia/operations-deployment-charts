@@ -1,4 +1,3 @@
-helmBinary: helm3
 helmDefaults:
   createNamespace: false
   verify: false
@@ -14,11 +13,18 @@ environments:
   ml-serve-eqiad:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
   ml-serve-codfw:
     values:
       - releases: [main]
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
 
 ---
+
+bases:
+  - ../global.yaml
 
 templates:
   default: &default
