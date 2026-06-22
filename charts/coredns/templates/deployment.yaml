@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: coredns
+  name: {{ .Release.Name }}
   namespace: kube-system
   labels:
-    k8s-app: kube-dns
-    app: "coredns"
+    k8s-app: {{ .Values.k8s_app }}
+    app: {{ .Release.Name }}
     {{- include "coredns.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -16,11 +16,11 @@ spec:
       maxSurge: 25%
   selector:
     matchLabels:
-      k8s-app: kube-dns
+      k8s-app: {{ .Values.k8s_app }}
   template:
     metadata:
       labels:
-        k8s-app: kube-dns
+        k8s-app: {{ .Values.k8s_app }}
       annotations:
         prometheus.io/port: "9153"
         prometheus.io/scrape: "true"
@@ -28,7 +28,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 30
       priorityClassName: system-cluster-critical
-      serviceAccountName: coredns
+      serviceAccountName: {{ .Release.Name }}
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
@@ -82,7 +82,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: coredns
+            name: {{ .Release.Name }}
             items:
             - key: Corefile
               path: Corefile

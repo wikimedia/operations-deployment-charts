@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: coredns
+  name: {{ .Release.Name }}
   namespace: kube-system
   labels:
     {{- include "coredns.labels" . | nindent 4 }}

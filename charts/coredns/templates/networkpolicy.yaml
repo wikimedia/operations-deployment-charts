@@ -1,13 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: kube-dns
+  name: {{ .Values.k8s_app }}
   labels:
     {{- include "coredns.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      k8s-app: kube-dns
+      k8s-app: {{ .Values.k8s_app }}
   policyTypes:
     - Ingress
   ingress:
