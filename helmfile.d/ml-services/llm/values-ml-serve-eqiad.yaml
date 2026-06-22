@@ -260,3 +260,52 @@ inference_services:
                       values:
                         # can only use ml-serve1012 because T421461#11838860
                         - "ml-serve1012.eqiad.wmnet"
+
+  # policy-violation isvc
+  cope-b-a4b:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-policy-violation-cope-b-a4b"
+      image_version: "2026-06-17-075022-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "cope-b-a4b"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/cope-b-a4b/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        - name: TRUST_REMOTE_CODE
+          value: "False"
+        - name: DTYPE
+          value: "bfloat16"
+        - name: MAX_MODEL_LEN
+          value: 16384
+      container:
+        resources:
+          limits:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+          requests:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        - "ml-serve1012.eqiad.wmnet"
