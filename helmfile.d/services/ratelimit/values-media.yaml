@@ -65,7 +65,7 @@ monitoring:
         # Mappings for media rate limiting
         - match: "ratelimit\\.service\\.rate_limit\\.(.*)\\.policy_(.*)\\.user_class_(.*)\\.user_id\\.(.*)"
           match_type: regex
-          name: "ratelimit_service_$4"
+          name: "ratelimit_service_rate_limit_$4"
           labels:
             domain: "$1"
             policy: "$2"

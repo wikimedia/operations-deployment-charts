@@ -20,7 +20,7 @@ monitoring:
         # Mappings for internal rate limiting
         - match: "ratelimit\\.service\\.rate_limit\\.(.*)\\.(.*)\\.(.*)"
           match_type: regex
-          name: "ratelimit_service_$3"
+          name: "ratelimit_service_rate_limit_$3"
           labels:
             domain: "$1"
             key1: "$2" # Old label for backwards-compatibility
