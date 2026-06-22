@@ -1,0 +1,8 @@
+k8s_app: kube-dns-internalonly
+internal_only: true
+service:
+  clusterIP: 255.255.255.255
+coredns:
+  rewrite_actions:
+    continue:
+    - 'ttl regex (.*)\.discovery\.wmnet 30'

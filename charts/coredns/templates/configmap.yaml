@@ -8,32 +8,30 @@ metadata:
 data:
   Corefile: |
     .:5353 {
-        errors
+        {{- include "coredns.commonplugins" . | nindent 8 }}
         health {
             lameduck 5s
         }
         ready
-        nsid
         kubernetes cluster.local in-addr.arpa ip6.arpa {
             pods insecure
             fallthrough in-addr.arpa ip6.arpa
         }
-        {{- if hasKey ( .Values.coredns | default dict ) "rewrite_actions" }}
-        {{- range $action, $configs := .Values.coredns.rewrite_actions }}
-        {{- range $configs }}
-        rewrite {{ $action }} {
-            {{ . }}
-        }
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        prometheus 0.0.0.0:9153
+        {{- if not .Values.internal_only }}
         forward . /etc/resolv.conf
-        cache 30
-        loop
+        {{- end }}
         reload
-        loadbalance
     }
+
+    {{- if .Values.internal_only }}
+    # For coredns-internalonly, allow resolving *.wmnet (by forwarding to /etc/resolv.conf, which
+    # has `nameserver` pointing to the cluster DNS recursors). The catchall .:5353 server block
+    # doesn't forward to resolv.conf, so anything outside of wmnet will NXDOMAIN.
+    wmnet:5353 {
+        {{- include "coredns.commonplugins" . | nindent 8 }}
+        forward . /etc/resolv.conf
+    }
+    {{- end }}
 
     # Similar to reflect.wikimedia.org: will return the client's IP address
     # in A/AAAA, and will return source port & protocol in a SRV record.

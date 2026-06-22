@@ -24,3 +24,24 @@ Selector labels
 app.kubernetes.io/name: "CoreDNS"
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Plugins common to each server block in a Corefile.
+*/}}
+{{- define "coredns.commonplugins" -}}
+errors
+nsid
+{{- if hasKey ( .Values.coredns | default dict ) "rewrite_actions" }}
+{{- range $action, $configs := .Values.coredns.rewrite_actions }}
+{{- range $configs }}
+rewrite {{ $action }} {
+    {{ . }}
+}
+{{- end }}
+{{- end }}
+{{- end }}
+prometheus 0.0.0.0:9153
+cache 30
+loop
+loadbalance
+{{- end }}

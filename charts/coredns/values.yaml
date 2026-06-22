@@ -4,6 +4,12 @@
 
 k8s_app: kube-dns
 
+# When true, this CoreDNS instance is restricted to internal domains only: Kubernetes cluster.local
+# addresses will resolve, and anything in *.wmnet will be forwarded through /etc/resolv.conf, but
+# everything else will come back NXDOMAIN instead of recursing to external DNS resolvers on the
+# internet.
+internal_only: false
+
 replicaCount: 2
 
 image:
