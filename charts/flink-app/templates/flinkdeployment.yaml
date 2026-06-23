@@ -62,12 +62,12 @@ spec:
     s3.secret-key: {{ $store.swift_secret_key }}
     s3.endpoint: {{ $store.swift_cluster }}
     s3.path.style.access: "true"
-    state.savepoints.dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/savepoints
-    state.checkpoints.dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/checkpoints
+    execution.checkpointing.savepoint-dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/savepoints
+    execution.checkpointing.dir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/checkpoints
 
     {{- with $ha := $.Values.flink.high_availability }}
     ### Flink high-availability configuration
-    high-availability: zookeeper
+    high-availability.type: zookeeper
     high-availability.storageDir: s3://{{ $store.swift_bucket }}/{{ $.Release.Name }}/zookeeper_ha_storage
     high-availability.zookeeper.quorum: {{ $ha.zookeeper_quorum }}
     high-availability.zookeeper.path.root: /flink/{{ $.Values.environmentName }}/{{ $.Release.Namespace }}/{{ $.Release.Name }}
