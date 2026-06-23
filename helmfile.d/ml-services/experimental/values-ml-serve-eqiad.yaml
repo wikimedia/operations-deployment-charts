@@ -149,7 +149,7 @@ inference_services:
   qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-06-23-090130-publish"
+      image_version: "2026-06-24-100720-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen36-27b"
@@ -158,6 +158,8 @@ inference_services:
         - name: MODEL_PATH
           value: "/mnt/models"
         - name: TRUST_REMOTE_CODE
+          value: "True"
+        - name: LANGUAGE_MODEL_ONLY
           value: "True"
         - name: DTYPE
           value: "auto"
@@ -243,3 +245,5 @@ inference_services:
                       operator: "In"
                       values:
                         - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
+                        - "ml-serve1015.eqiad.wmnet"
