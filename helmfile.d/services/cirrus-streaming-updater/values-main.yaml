@@ -25,7 +25,7 @@ app:
     # Swift and Zookeeper specific configs (paths), should be defined
     # in each cluster's  helmfile.
     state.backend.type: hashmap
-    state.checkpoints.num-retained: "10"
+    execution.checkpointing.num-retained: "10"
     # Enable automatic restarts
     restart-strategy.type: failure-rate
     restart-strategy.failure-rate.delay: "1 min"
