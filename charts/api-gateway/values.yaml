@@ -157,8 +157,6 @@ main_app:
     mwapi_cluster:
       type: LOGICAL_DNS
       hosts: {}
-      # Specifies the host to support debug routing to via X-Wikimedia-Debug
-      debug_hosts: {}
     # use for /v1/ which visual editor etc use
     restbase_cluster:
       type: LOGICAL_DNS
@@ -175,7 +173,6 @@ main_app:
     appserver_cluster:
       type: LOGICAL_DNS
       hosts: {}
-      debug_hosts: {}
   # Hosts with $service.discovery.wmnet records
   # Note that discovery_hosts behaves differently to the hosts dictionaries above.
   # the format of each entry is:

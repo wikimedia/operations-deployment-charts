@@ -383,19 +383,6 @@ static_resources:
                   use cases for compatibility. See discussion of metadata match for subset_selectors in:
                   https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/cluster/v3/cluster.proto#config-cluster-v3-cluster-lbsubsetconfig
                 */}}
-                - header: "x-wikimedia-debug"
-                  on_header_present:
-                    metadata_namespace: envoy.lb
-                    key: x_wikimedia_debug_server
-                    regex_value_rewrite:
-                      pattern:
-                        regex: "^backend=([\\w.]+).*$"
-                      substitution: "\\1"
-                  on_header_missing:
-                    metadata_namespace: envoy.lb
-                    key: x_wikimedia_debug_server
-                    value: none
-                    type: STRING
                 - cookie: PHP_ENGINE
                   on_header_present:
                     metadata_namespace: envoy.lb
@@ -473,15 +460,6 @@ static_resources:
             trusted_ca:
               filename: /etc/ssl/certs/wmf-ca-certificates.crt
 {{- end }}
-    lb_subset_config:
-      fallback_policy: "DEFAULT_SUBSET"
-      default_subset:
-        x_wikimedia_debug_server: none
-        php_engine: none
-      subset_selectors:
-        - keys:
-            - x_wikimedia_debug_server
-            - php_engine
     load_assignment:
       cluster_name: {{ $cluster_name }}
       endpoints:
@@ -492,23 +470,6 @@ static_resources:
               socket_address:
                 address: {{ $host }}
                 port_value: {{ $port }}
-          metadata:
-            filter_metadata:
-              envoy.lb:
-                x_wikimedia_debug_server: none
-                php_engine: none
-{{- end }}
-{{- range $host, $port := $cluster_opts.debug_hosts }}
-        - endpoint:
-            address:
-              socket_address:
-                address: {{ $host }}
-                port_value: {{ $port }}
-          metadata:
-            filter_metadata:
-              envoy.lb:
-                x_wikimedia_debug_server: {{ $host }}
-                php_engine: none
 {{- end }}
 {{- end }}
 {{- end }}
@@ -557,11 +518,9 @@ static_resources:
       fallback_policy: "DEFAULT_SUBSET"
       default_subset:
         php_engine: none
-        x_wikimedia_debug_server: none
       subset_selectors:
         - keys:
             - php_engine
-            - x_wikimedia_debug_server
 {{- end }}
     load_assignment:
       cluster_name: {{ $cluster_name }}_cluster
@@ -577,7 +536,6 @@ static_resources:
             filter_metadata:
               envoy.lb:
                 php_engine: none
-                x_wikimedia_debug_server: none
 {{- range $cookie_value, $override_opts := $cluster_opts.php_engine_routing }}
         - endpoint:
             address:
@@ -588,7 +546,6 @@ static_resources:
             filter_metadata:
               envoy.lb:
                 php_engine: {{ $cookie_value | quote }}
-                x_wikimedia_debug_server: none
 {{- end }}
 {{- end }}
 {{- end }}
