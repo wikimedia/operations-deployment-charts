@@ -163,6 +163,11 @@ namespaces:
   sidecar-controller:
     systemNamespace: true
   wdqs:
+    tlsHostnames:
+    - wdqs2-main-internal
+    - wdqs2-main-external
+    - wdqs2-scholarly-internal
+    - wdqs2-scholarly-external
     limitranges:
       container:
         min:
@@ -185,6 +190,11 @@ namespaces:
           memory: "128Gi"
           cpu: "12"
   wdqs-next:
+    tlsHostnames:
+    - wdqs2-next-main-internal
+    - wdqs2-next-main-external
+    - wdqs2-next-scholarly-internal
+    - wdqs2-next-scholarly-external
     limitranges:
       container:
         min:
