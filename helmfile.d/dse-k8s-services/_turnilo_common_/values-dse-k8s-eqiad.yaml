@@ -2195,10 +2195,9 @@ config:
             formula: $requestctl
 
           - name: x_is_browser
-            # X-I-B is a string in Druid, but we wish to interpret it as a number in Turnilo for purposes like sorting.
             title: X-Is-Browser score
+            # X-I-B is a string in Druid, but we wish to interpret it as a number in Turnilo for purposes like sorting.
             formula: $x_is_browser.cast('NUMBER')
-            kind: number
 
           - name: x_trusted_request
             title: X-Trusted-Request
