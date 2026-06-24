@@ -28,6 +28,22 @@ spec:
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:
       automountServiceAccountToken: false
+      {{- if .Values.dns.nameserver }}
+      dnsPolicy: None
+      dnsConfig:
+        # This is the same config Kubernetes generates with the default ClusterFirst policy, only
+        # with the nameserver replaced by the one from values.
+        nameservers:
+          - {{ .Values.dns.nameserver }}
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+          - {{ .Values.dns.nodeDomain }}
+        options:
+          - name: ndots
+            value: "5"
+      {{- end }}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}

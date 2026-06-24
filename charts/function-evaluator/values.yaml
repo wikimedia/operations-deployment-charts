@@ -77,3 +77,11 @@ ingress:
 
 app:
   port: 6927
+
+dns:
+  # If nameserver is set, we'll set a custom dnsPolicy, with that ClusterIP as the nameserver. (In
+  # prod, we do this with the ClusterIP for coredns-internalonly in each cluster.) In that case we'll
+  # also insert nodeDomain, e.g. "eqiad.wmnet", in the search line so that unqualified hostnames like
+  # "foobar1001" are still resolved, just for compatibility. Thus both are set in per-cluster values.
+  nameserver: ""
+  nodeDomain: ""
