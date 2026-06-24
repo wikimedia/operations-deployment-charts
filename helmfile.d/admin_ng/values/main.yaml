@@ -827,6 +827,25 @@ GlobalNetworkPolicies:
           services:
             name: "kube-dns"
             namespace: "kube-system"
+  # Allow access to kube-dns-internalonly, which refuses to resolve domain names
+  # outside of cluster.local and wmnet.
+  allow-kube-dns-internalonly:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name != "kube-system"'
+    types:
+      - Egress
+    egress:
+      - action: Allow
+        protocol: UDP
+        destination:
+          services:
+            name: kube-dns-internalonly
+            namespace: kube-system
+      - action: Allow
+        protocol: TCP
+        destination:
+          services:
+            name: kube-dns-internalonly
+            namespace: kube-system
   # This allows egress from all pods to all pods. Ingress still needs to be
   # allowed by the destination, though.
   allow-pod-to-pod:
