@@ -37,7 +37,13 @@ monitoring:
           error: 0.001
         - quantile: 0.5
           error: 0.005
-      mappings: []
+      mappings:
+      # ttl should match prometheus scrape_interval defined in puppet
+        - match: "(.*)"
+          match_type: regex
+          match_metric_type: gauge
+          name: "$1"
+          ttl: 60s
 common_images:
   statsd:
     exporter: prometheus-statsd-exporter:0.26.1-2-20240804
