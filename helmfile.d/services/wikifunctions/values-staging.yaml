@@ -1,6 +1,10 @@
 resources:
   replicas: 1
 
+dns:
+  nameserver: 10.64.76.4  # coredns-internalonly
+  nodeDomain: eqiad.wmnet
+
 main_app:
   requests:
     cpu: 1
