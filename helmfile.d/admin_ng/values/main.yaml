@@ -812,15 +812,19 @@ GlobalNetworkPolicies:
     types:
       - Ingress
       - Egress
+  # Allow all pods access to kube-dns, except wikifunctions (which uses the
+  # internalonly variant, allowed below)
+  allow-kube-dns:
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
+    types:
+      - Egress
     egress:
-      # Allow all namespaces to communicate to DNS pods (UDP)
       - action: Allow
         protocol: UDP
         destination:
           services:
             name: "kube-dns"
             namespace: "kube-system"
-      # Allow all namespaces to communicate to DNS pods (TCP)
       - action: Allow
         protocol: TCP
         destination:
