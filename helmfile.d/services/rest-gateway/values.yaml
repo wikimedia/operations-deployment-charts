@@ -299,6 +299,24 @@ main_app:
           "known-client":
             HOUR: 9999999
 
+      # Rate limit policy for the GPU-backed LLM endpoints (T426749).
+      # Effectively unlimited for WMCS and known clients, strict for everyone else.
+      # The public ("*") limit is a per-client budget shared across all llm-* services
+      # (no service in the counter key); a coarse interim limit until cost/token-based
+      # limiting lands.
+      # See https://phabricator.wikimedia.org/T426749
+      "LiftWingLLM":
+        shadow_mode: false
+        limits:
+          "*": # strict shared limit for public access (anon*, unauthed*, authed-*)
+            HOUR: 100
+          "known-network": # network under our control: WMCS / Toolforge (x-trusted-request: A)
+            HOUR: 9999999
+          "known-client": # network associated with a known client (x-trusted-request: B)
+            HOUR: 9999999
+          "approved-bot": # community approved bot, based on jwt auth
+            HOUR: 9999999
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*
@@ -1123,6 +1141,35 @@ main_app:
           in: '/+service/lw/inference/v1/models/qwen3-14b/(openai/v1/completions(.*))'
           out: '/\1'
           to: 'qwen3-14b.experimental.wikimedia.org'
+
+    # GPU-backed LLM models, rate-limited by the LiftWingLLM policy (T426749).
+    # Targeting is by NAME: any InferenceService named "llm-<model>" is matched and
+    # gated, so to put a model behind the LLM limits we name it "llm-*". The models live
+    # in the "llm" namespace, so the backend host is "<model>.llm.wikimedia.org" (other,
+    # non-"llm-*" models in that namespace are not matched here and keep their own routes
+    # or stay internal). The two url entries cover the KServe predict path and ALL
+    # OpenAI subpaths.
+    - name: liftwing_llm
+      timeout: 60s
+      cluster: inference-eqiad
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_remove: ["cookie"]
+      response_headers_to_remove: ["set-cookie"]
+      rate_limit_policies: [ "LiftWingLLM", "BYPASS" ]
+      response_headers_to_add:
+        - key: cache-control
+          value: no-cache
+      urls:
+        - name: predict # KServe predict protocol (model name stays in the backend path)
+          in: '/+service/lw/inference/(v1/models/(llm-[\w.-]+):predict(.*))'
+          out: '/\1'
+          to: '\2.llm.wikimedia.org'
+        - name: openai # OpenAI subpaths (model selected by Host header). Scoped to
+                       # openai/v1/ to match the CDN streaming/pipe rule (T425680).
+          in: '/+service/lw/inference/v1/models/(llm-[\w.-]+)/(openai/v1/.*)'
+          out: '/\2'
+          to: '\1.llm.wikimedia.org'
 
     - name: liftwing_recommendation_api
       timeout: 30s
