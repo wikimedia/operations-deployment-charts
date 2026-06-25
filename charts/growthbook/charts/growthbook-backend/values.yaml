@@ -76,6 +76,7 @@ config:
     UPLOAD_METHOD: local
     KRB5CCNAME: DIR:/etc/kerberos/tgt
     KRB5_CONFIG: /etc/krb5.conf
+    API_RATE_LIMIT_MAX: 100
 
   private:
     MONGODB_URI: secret
