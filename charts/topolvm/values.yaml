@@ -3,11 +3,15 @@ useLegacy: false
 
 image:
   # image.repository -- TopoLVM image repository to use.
-  repository: ghcr.io/topolvm/topolvm-with-sidecar
+  # WMF: our own topolvm build, served from our registry. See
+  # https://gitlab.wikimedia.org/repos/data-engineering/topolvm
+  repository: docker-registry.discovery.wmnet/repos/data-engineering/topolvm
 
   # image.tag -- TopoLVM image tag to use.
   # @default -- `{{ .Chart.AppVersion }}`
-  tag:  # 0.18.1
+  # WMF: charts use :latest; the immutable tag is pinned in the helmfile
+  # deployment (helmfile.d/admin_ng/topolvm/values.yaml).
+  tag: latest
 
   # image.pullPolicy -- TopoLVM image pullPolicy.
   pullPolicy:  # Always
@@ -16,25 +20,28 @@ image:
   pullSecrets: []
 
   csi:
-    # image.csi.nodeDriverRegistrar -- Specify csi-node-driver-registrar: image.
-    # If not specified, `ghcr.io/topolvm/topolvm-with-sidecar:{{ .Values.image.tag }}` will be used.
-    nodeDriverRegistrar:  # registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.2.0
+    # WMF: we build the CSI sidecars ourselves rather than using the upstream
+    # registry.k8s.io images. See
+    # https://gitlab.wikimedia.org/repos/data-engineering/kubernetes/csi
+    # As above, tags are :latest here and pinned in the helmfile deployment.
+
+    # image.csi.nodeDriverRegistrar -- Specify csi-node-driver-registrar image.
+    nodeDriverRegistrar: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar:latest
 
     # image.csi.csiProvisioner -- Specify csi-provisioner image.
-    # If not specified, `ghcr.io/topolvm/topolvm-with-sidecar:{{ .Values.image.tag }}` will be used.
-    csiProvisioner:  # registry.k8s.io/sig-storage/csi-provisioner:v2.2.1
+    csiProvisioner: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner:latest
 
     # image.csi.csiResizer -- Specify csi-resizer image.
-    # If not specified, `ghcr.io/topolvm/topolvm-with-sidecar:{{ .Values.image.tag }}` will be used.
-    csiResizer:  # registry.k8s.io/sig-storage/csi-resizer:v1.2.0
+    csiResizer: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer:latest
 
-    # image.csi.csiSnapshotter -- Specify csi-snapshot image.
-    # If not specified, `ghcr.io/topolvm/topolvm-with-sidecar:{{ .Values.image.tag }}` will be used.
-    csiSnapshotter:  # registry.k8s.io/sig-storage/csi-snapshotter:v5.0.1
+    # image.csi.csiSnapshotter -- Specify csi-snapshotter image.
+    # WMF: left unset; we disable volume snapshots (snapshot.enabled=false) so
+    # this sidecar is not deployed. Set it to our csi-snapshotter build if you
+    # enable snapshots.
+    csiSnapshotter:  # docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-snapshotter:latest
 
     # image.csi.livenessProbe -- Specify livenessprobe image.
-    # If not specified, `ghcr.io/topolvm/topolvm-with-sidecar:{{ .Values.image.tag }}` will be used.
-    livenessProbe:  # registry.k8s.io/sig-storage/livenessprobe:v2.3.0
+    livenessProbe: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-livenessprobe:latest
 
 # A scheduler extender for TopoLVM
 scheduler:
@@ -133,17 +140,25 @@ scheduler:
 # lvmd service
 lvmd:
   # lvmd.managed -- If true, set up lvmd service with DaemonSet.
-  managed: true
+  # WMF: we run lvmd as a systemd service on the host (it is the only component
+  # that requires elevated privileges) rather than as an in-cluster DaemonSet,
+  # so this is disabled by default. The CSI node plugin reaches lvmd over the
+  # host socket (node.lvmdSocket, mounted from /run/topolvm). See T429325 and
+  # https://github.com/topolvm/topolvm/blob/v0.38.1/docs/advanced-setup.md#run-lvmd-as-a-systemd-service
+  managed: false
 
   # lvmd.socketName -- Specify socketName.
   socketName: /run/topolvm/lvmd.sock
 
   # lvmd.deviceClasses -- Specify the device-class settings.
-  deviceClasses:
-    - name: ssd
-      volume-group: myvg1
-      default: true
-      spare-gb: 10
+  # WMF: the device-classes are configured on each node by the systemd-based
+  # lvmd service (managed by puppet), not in-cluster, because lvmd.managed=false.
+  # The in-cluster settings are therefore left empty/commented here.
+  deviceClasses: []
+  #  - name: ssd
+  #    volume-group: myvg1
+  #    default: true
+  #    spare-gb: 10
 
   # lvmd.lvcreateOptionClasses -- Specify the lvcreate-option-class settings.
   lvcreateOptionClasses: []
@@ -746,11 +761,6 @@ securityContext:
   runAsUser: 10000
   # securityContext.runAsGroup -- Specify runAsGroup.
   runAsGroup: 10000
-
-cert-manager:
-  # cert-manager.enabled -- Install cert-manager together.
-  ## ref: https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm
-  enabled: false
 
 priorityClass:
   # priorityClass.enabled -- Install priorityClass.

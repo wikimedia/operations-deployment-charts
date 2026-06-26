@@ -11,11 +11,21 @@ annotations:
 apiVersion: v2
 appVersion: 0.38.1
 description: Topolvm
-home: https://github.com/topolvm/topolvm
+home: https://wikitech.wikimedia.org/wiki/Helm/Upstream_Charts/topolvm
 name: topolvm
 sources:
 - https://github.com/topolvm/topolvm
+- https://github.com/topolvm/topolvm/tree/topolvm-chart-v15.7.1/charts/topolvm
 type: application
 # WMF: our own chart version, independent of the upstream chart version (which
 # is recorded in the wmf/upstreamVersion annotation above).
 version: 0.0.1
+keywords:
+  - topolvm
+  - csi
+  - storage
+  - lvm
+team: https://www.mediawiki.org/wiki/Data_Platform_Engineering/Data_Platform_SRE
+maintainers:
+  - name: Ben Tullis
+    email: btullis@wikimedia.org
