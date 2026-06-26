@@ -149,7 +149,7 @@ inference_services:
   qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-06-24-100720-publish"
+      image_version: "2026-06-26-084001-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen36-27b"
@@ -160,6 +160,8 @@ inference_services:
         - name: TRUST_REMOTE_CODE
           value: "True"
         - name: LANGUAGE_MODEL_ONLY
+          value: "True"
+        - name: SKIP_MM_PROFILING
           value: "True"
         - name: DTYPE
           value: "auto"
@@ -176,11 +178,11 @@ inference_services:
         - name: BLOCK_SIZE
           value: "64"
         - name: ATTENTION_BACKEND
-          value: "ROCM_AITER_UNIFIED_ATTN"
+          value: "TRITON_ATTN"
         - name: DISABLE_CUSTOM_ALL_REDUCE
           value: "False"
         - name: VLLM_ROCM_USE_AITER
-          value: "1"
+          value: "0"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
           value: "1"
         - name: TORCH_SYMM_MEM_DISABLE_MULTICAST
@@ -246,4 +248,3 @@ inference_services:
                       values:
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
-                        - "ml-serve1015.eqiad.wmnet"
