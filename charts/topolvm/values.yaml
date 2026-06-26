@@ -264,39 +264,6 @@ lvmd:
     annotations:
       prometheus.io/port: metrics
 
-  prometheus:
-    podMonitor:
-      # lvmd.prometheus.podMonitor.enabled -- Set this to `true` to create PodMonitor for Prometheus operator.
-      enabled: false
-
-      # lvmd.prometheus.podMonitor.additionalLabels -- Additional labels that can be used so PodMonitor will be discovered by Prometheus.
-      additionalLabels: {}
-
-      # lvmd.prometheus.podMonitor.namespace -- Optional namespace in which to create PodMonitor.
-      namespace: ""
-
-      # lvmd.prometheus.podMonitor.interval -- Scrape interval. If not set, the Prometheus default scrape interval is used.
-      interval: ""
-
-      # lvmd.prometheus.podMonitor.scrapeTimeout -- Scrape timeout. If not set, the Prometheus default scrape timeout is used.
-      scrapeTimeout: ""
-
-      # lvmd.prometheus.podMonitor.relabelings -- RelabelConfigs to apply to samples before scraping.
-      relabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
-
-      # lvmd.prometheus.podMonitor.metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion.
-      metricRelabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
-
 # CSI node service
 node:
   # node.lvmdEmbedded -- Specify whether to embed lvmd in the node container.
@@ -324,41 +291,13 @@ node:
     # node.metrics.enabled -- If true, enable scraping of metrics by Prometheus.
     enabled: true
     # node.metrics.annotations -- Annotations for Scrape used by Prometheus.
+    # WMF: our Prometheus discovers pods via prometheus.io/* annotations rather
+    # than PodMonitor objects, so set the full scrape annotation set with a
+    # numeric port. See https://wikitech.wikimedia.org/wiki/Kubernetes/Metrics
     annotations:
-      prometheus.io/port: metrics
-
-  prometheus:
-    podMonitor:
-      # node.prometheus.podMonitor.enabled -- Set this to `true` to create PodMonitor for Prometheus operator.
-      enabled: false
-
-      # node.prometheus.podMonitor.additionalLabels -- Additional labels that can be used so PodMonitor will be discovered by Prometheus.
-      additionalLabels: {}
-
-      # node.prometheus.podMonitor.namespace -- Optional namespace in which to create PodMonitor.
-      namespace: ""
-
-      # node.prometheus.podMonitor.interval -- Scrape interval. If not set, the Prometheus default scrape interval is used.
-      interval: ""
-
-      # node.prometheus.podMonitor.scrapeTimeout -- Scrape timeout. If not set, the Prometheus default scrape timeout is used.
-      scrapeTimeout: ""
-
-      # node.prometheus.podMonitor.relabelings -- RelabelConfigs to apply to samples before scraping.
-      relabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
-
-      # node.prometheus.podMonitor.metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion.
-      metricRelabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: /metrics
 
   # node.priorityClassName -- Specify priorityClassName.
   priorityClassName:
@@ -460,6 +399,18 @@ controller:
     # controller.securityContext.enabled -- Enable securityContext.
     enabled: true
 
+  # WMF: upstream ships no controller.metrics section (the controller is only
+  # wired for PodMonitor). We add one because our Prometheus scrapes via
+  # prometheus.io/* annotations. See https://wikitech.wikimedia.org/wiki/Kubernetes/Metrics
+  metrics:
+    # controller.metrics.enabled -- If true, add the scrape annotations to the controller pod.
+    enabled: true
+    # controller.metrics.annotations -- Annotations for scraping by Prometheus.
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: /metrics
+
   nodeFinalize:
     # controller.nodeFinalize.skipped -- Skip automatic cleanup of PhysicalVolumeClaims when a Node is deleted.
     # WMF: skip it. This cleanup is going away upstream (topolvm/topolvm#1148),
@@ -470,39 +421,6 @@ controller:
   leaderElection:
     # controller.leaderElection.enabled -- Enable leader election for controller and all sidecars.
     enabled: true
-
-  prometheus:
-    podMonitor:
-      # controller.prometheus.podMonitor.enabled -- Set this to `true` to create PodMonitor for Prometheus operator.
-      enabled: false
-
-      # controller.prometheus.podMonitor.additionalLabels -- Additional labels that can be used so PodMonitor will be discovered by Prometheus.
-      additionalLabels: {}
-
-      # controller.prometheus.podMonitor.namespace -- Optional namespace in which to create PodMonitor.
-      namespace: ""
-
-      # controller.prometheus.podMonitor.interval -- Scrape interval. If not set, the Prometheus default scrape interval is used.
-      interval: ""
-
-      # controller.prometheus.podMonitor.scrapeTimeout -- Scrape timeout. If not set, the Prometheus default scrape timeout is used.
-      scrapeTimeout: ""
-
-      # controller.prometheus.podMonitor.relabelings -- RelabelConfigs to apply to samples before scraping.
-      relabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
-
-      # controller.prometheus.podMonitor.metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion.
-      metricRelabelings: []
-      # - sourceLabels: [__meta_kubernetes_service_label_cluster]
-      #   targetLabel: cluster
-      #   regex: (.*)
-      #   replacement: ${1}
-      #   action: replace
 
   # controller.terminationGracePeriodSeconds -- (int) Specify terminationGracePeriodSeconds.
   terminationGracePeriodSeconds:  # 10

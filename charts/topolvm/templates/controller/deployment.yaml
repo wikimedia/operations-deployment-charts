@@ -28,6 +28,12 @@ spec:
         {{- with .Values.controller.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- /* WMF: upstream only wires the controller for PodMonitor scraping; we
+             add prometheus.io/* annotations because our Prometheus discovers
+             pods by annotation. Mirrors the upstream node/lvmd metrics pattern. */}}
+      {{- if and .Values.controller.metrics.enabled .Values.controller.metrics.annotations }}
+      annotations: {{ toYaml .Values.controller.metrics.annotations | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.controller.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ . }}
