@@ -1,0 +1,38 @@
+# Installs the TopoLVM CSI driver and its CRD into kube-system where install_topolvm is set.
+templates:
+  default: &default
+    namespace: kube-system
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_topolvm\" }}{{ .Environment.Values.install_topolvm }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  # Install first the CRDs, then the driver.
+  - name: topolvm-crds
+    chart: wmf-stable/topolvm-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/topolvm-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    namespace: ~ # The CRDs are non-namespaced objects, so we can overwrite the value from the defaults with null here.
+    needs:
+      - kube-system/namespaces
+
+  - name: topolvm
+    chart: wmf-stable/topolvm
+    {{- $version := .Values.chartVersions | get "wmf-stable/topolvm" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    needs:
+      - kube-system/coredns
+      - kube-system/namespaces
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"          # General values for environment
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)

@@ -1,0 +1,62 @@
+# Overrides for the topolvm release, shared by every cluster where it runs
+# (currently dse-k8s-eqiad and dse-k8s-codfw). If a single cluster ever needs
+# different values, add a values/<cluster>/topolvm-values.yaml file; it is
+# layered on top of this one.
+#
+# lvmd runs as a systemd service on the host (lvmd.managed=false in the chart),
+# so the device-classes -- their names, volume groups and the disks behind them
+# -- are configured per node by puppet, not here. The CSI node plugin reaches
+# lvmd over the host socket at /run/topolvm.
+
+# Grant the controller pod update/delete only in the namespaces that use topolvm
+# storage (see the chart's tenantNamespaces and
+# templates/controller/tenant-pods-rbac.yaml).
+tenantNamespaces: []
+
+# Sign the webhook cert with WMF PKI instead of a self-signed CA.
+webhook:
+  existingCertManagerIssuer:
+    group: cfssl-issuer.wikimedia.org
+    kind: ClusterIssuer
+    name: discovery
+
+# Pin the published images by immutable digest (the chart defaults them to
+# :latest).
+image:
+  tag: 2026-06-29-112746-b0fcdad32d8b48939eab7f1d7622cd4f1331df4e@sha256:46c2977f359f38c47e84376e002ee4cf3e35751945c339796072bf785a554d79
+  csi:
+    nodeDriverRegistrar: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar:2026-06-29-143436-9e795112991276df1086caf50000cc73b0faa9d0@sha256:ba684dd8546285f0e0f6b6bc743b3ccfcd41a0e886f6dd4ab539f6289cf0fdbc
+    csiProvisioner: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner:2026-06-29-143436-9e795112991276df1086caf50000cc73b0faa9d0@sha256:574aec19e2b17cd6b385ece9045e0664cdbc9c432b17c931d85dd92b3be6cbb7
+    csiResizer: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer:2026-06-29-143436-9e795112991276df1086caf50000cc73b0faa9d0@sha256:07946f0381d1fdf695cd9fef8b350b0e552e158bef2994456d13aea3818ee208
+    livenessProbe: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-livenessprobe:2026-06-29-143436-9e795112991276df1086caf50000cc73b0faa9d0@sha256:b636995d6979fc706bac4e43fdb5ff5711fcd6d20694329bb5c7f8a77e13ade6
+
+# StorageClasses to create. Each one selects a host lvmd device-class *by name*
+# through the topolvm.io/device-class parameter, and that name must match a
+# device-class defined in the node's lvmd config (puppet). A StorageClass with
+# no device-class parameter uses whichever device-class each node marks default.
+#
+# This is exactly how heterogeneous workers are supported: give each node type's
+# lvmd the device-classes that suit its hardware (e.g. "nvme", "ssd", "capacity")
+# and create one StorageClass per device-class name. TopoLVM only schedules a PVC
+# onto a node that advertises free capacity for the requested device-class (we
+# have controller.storageCapacityTracking enabled), so a PVC for "topolvm-nvme"
+# lands only on nodes whose lvmd defines an "nvme" device-class.
+#
+# The chart default is a single "topolvm-provisioner" class bound to each node's
+# default device-class. Replace it once the node storage layout and lvmd
+# device-class names are finalised, for example:
+# storageClasses:
+#   - name: topolvm-nvme
+#     storageClass:
+#       fsType: ext4
+#       volumeBindingMode: WaitForFirstConsumer
+#       allowVolumeExpansion: true
+#       additionalParameters:
+#         "topolvm.io/device-class": "nvme"
+#   - name: topolvm-capacity
+#     storageClass:
+#       fsType: ext4
+#       volumeBindingMode: WaitForFirstConsumer
+#       allowVolumeExpansion: true
+#       additionalParameters:
+#         "topolvm.io/device-class": "capacity"
