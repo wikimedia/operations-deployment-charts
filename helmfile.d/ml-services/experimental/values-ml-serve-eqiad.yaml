@@ -164,17 +164,17 @@ inference_services:
         - name: SKIP_MM_PROFILING
           value: "True"
         - name: DTYPE
-          value: "auto"
+          value: "float16"
         - name: GPU_MEMORY_UTILIZATION
           value: "0.85"
         - name: MAX_MODEL_LEN
-          value: "65536"
+          value: "19136"
         - name: TENSOR_PARALLEL_SIZE
           value: "2"
         - name: MAX_NUM_SEQS
-          value: "128"
+          value: "48"
         - name: MAX_NUM_BATCHED_TOKENS
-          value: "65536"
+          value: "19136"
         - name: BLOCK_SIZE
           value: "64"
         - name: ATTENTION_BACKEND
