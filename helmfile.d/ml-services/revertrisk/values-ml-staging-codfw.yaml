@@ -51,3 +51,31 @@ inference_services:
           requests:
             cpu: "6"
             memory: 8Gi
+  - name: revertrisk-wikidata
+    predictor:
+      image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
+      image_version: "2026-06-26-124615-publish"
+      config:
+        minReplicas: 1
+        maxReplicas: 1
+      custom_env:
+        - name: MODEL_NAME
+          value: "revertrisk-wikidata"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/revertrisk/wikidata/20251104121312/"
+        - name: FORCE_HTTP
+          value: "true"
+        - name: WORKERS
+          value: "2"
+        - name: EVENTGATE_URL
+          value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
+        - name: EVENTGATE_STREAM
+          value: "mediawiki.page_prediction_change.rc0"
+      container:
+        resources:
+          limits:
+            cpu: "8"
+            memory: 16Gi
+          requests:
+            cpu: "8"
+            memory: 16Gi
