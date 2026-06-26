@@ -1,0 +1,21 @@
+apiVersion: v2
+name: topolvm-crds
+description: TopoLVM CRDs
+type: application
+# NOTE: version here is WMF's version of this chart.
+# appVersion should be the upstream version.
+# (We cannot use a '-wmf0' prerelease suffix in helm charts.
+# Helm considers these 'development' versions.)
+version: 0.0.1
+appVersion: 0.38.1
+keywords:
+  - topolvm
+  - csi
+  - crds
+sources:
+  - https://github.com/topolvm/topolvm/tree/topolvm-chart-v15.7.1/charts/topolvm/templates/crds
+home: https://wikitech.wikimedia.org/wiki/Helm/Upstream_Charts/topolvm
+team: https://www.mediawiki.org/wiki/Data_Platform_Engineering/Data_Platform_SRE
+maintainers:
+  - name: Ben Tullis
+    email: btullis@wikimedia.org
