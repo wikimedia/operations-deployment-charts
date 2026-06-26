@@ -1,0 +1,307 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "topolvm.fullname" . }}-controller
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+    {{- with .Values.controller.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  {{- with .Values.controller.minReadySeconds }}
+  minReadySeconds: {{ . }}
+  {{- end }}
+  {{- with .Values.controller.updateStrategy }}
+  strategy: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      {{- include "topolvm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        {{- include "topolvm.selectorLabels" . | nindent 8 }}
+        {{- with .Values.controller.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.controller.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
+      {{- if .Values.controller.securityContext.enabled }}
+      securityContext: {{ toYaml .Values.securityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ template "topolvm.fullname" . }}-controller
+      {{- with .Values.controller.initContainers }}
+      initContainers: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: topolvm-controller
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - /topolvm-controller
+            {{- if not .Values.controller.leaderElection.enabled }}
+            - --leader-election=false
+            {{- else }}
+            - --leader-election-namespace={{ .Release.Namespace }}
+            {{- end }}
+            {{- if or .Values.webhook.podMutatingWebhook.enabled .Values.webhook.pvcMutatingWebhook.enabled }}
+            - --cert-dir=/certs
+            {{- else }}
+            - --enable-webhooks=false
+            {{- end }}
+            {{- if .Values.controller.nodeFinalize.skipped }}
+            - --skip-node-finalize
+            {{- end }}
+            {{- if .Values.controller.profiling.bindAddress }}
+            - --profiling-bind-address={{ .Values.controller.profiling.bindAddress }}
+            {{- end }}
+          {{- if or .Values.useLegacy .Values.env.topolvm_controller }}
+          env:
+            {{- if .Values.useLegacy }}
+            - name: USE_LEGACY
+              value: "true"
+            {{- end }}
+            {{- with .Values.env.topolvm_controller }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.controller.args }}
+          args: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 9443
+              name: webhook
+              protocol: TCP
+            - containerPort: 9808
+              name: healthz
+              protocol: TCP
+            - containerPort: 8081
+              name: readyz
+              protocol: TCP
+            - containerPort: 8080
+              name: metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: readyz
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            {{- with .Values.livenessProbe.topolvm_controller.failureThreshold }}
+            failureThreshold: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_controller.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_controller.timeoutSeconds }}
+            timeoutSeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_controller.periodSeconds }}
+            periodSeconds: {{ . }}
+            {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          {{- with .Values.resources.topolvm_controller }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /run/topolvm
+            {{- if or .Values.webhook.podMutatingWebhook.enabled .Values.webhook.pvcMutatingWebhook.enabled }}
+            - name: certs
+              mountPath: /certs
+            {{- end }}
+
+        - name: csi-provisioner
+          {{- if .Values.image.csi.csiProvisioner }}
+          image: {{ .Values.image.csi.csiProvisioner }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          {{- with .Values.resources.csi_provisioner }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.csi_provisioner }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - /csi-provisioner
+            - --csi-address=/run/topolvm/csi-topolvm.sock
+            - --feature-gates=Topology=true
+            {{- if .Values.controller.leaderElection.enabled }}
+            - --leader-election
+            - --leader-election-namespace={{ .Release.Namespace }}
+            {{- end }}
+            - --http-endpoint=:9809
+            {{- with .Values.controller.storageCapacityTracking.enabled }}
+            - --enable-capacity
+            - --capacity-ownerref-level=2
+            {{- end }}
+          ports:
+            - containerPort: 9809
+              name: csi-provisioner
+          {{- with .Values.controller.storageCapacityTracking.enabled }}
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- end }}
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /run/topolvm
+
+        - name: csi-resizer
+          {{- if .Values.image.csi.csiResizer }}
+          image: {{ .Values.image.csi.csiResizer }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          {{- with .Values.resources.csi_resizer }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.csi_resizer }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - /csi-resizer
+            - --csi-address=/run/topolvm/csi-topolvm.sock
+            {{- if .Values.controller.leaderElection.enabled }}
+            - --leader-election
+            - --leader-election-namespace={{ .Release.Namespace }}
+            {{- end }}
+            - --http-endpoint=:9810
+          ports:
+            - containerPort: 9810
+              name: csi-resizer
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /run/topolvm
+
+         {{- if .Values.snapshot.enabled }}
+        - name: csi-snapshotter
+          {{- if .Values.image.csi.csiSnapshotter }}
+          image: {{ .Values.image.csi.csiSnapshotter }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          {{- with .Values.resources.csi_snapshotter }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.csi_snapshotter }}
+          env: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - /csi-snapshotter
+            - --csi-address=/run/topolvm/csi-topolvm.sock
+            {{- if .Values.controller.leaderElection.enabled }}
+            - --leader-election
+            - --leader-election-namespace={{ .Release.Namespace }}
+            {{- end }}
+            - --http-endpoint=:9811
+          ports:
+            - containerPort: 9811
+              name: csi-snapshotter
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /run/topolvm
+        {{- end }}
+
+        - name: liveness-probe
+          {{- if .Values.image.csi.livenessProbe }}
+          image: {{ .Values.image.csi.livenessProbe }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - /livenessprobe
+            - --csi-address=/run/topolvm/csi-topolvm.sock
+            - --http-endpoint=:9808
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /run/topolvm
+          {{- with .Values.resources.liveness_probe }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.liveness_probe }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+
+        {{- with .Values.controller.additionalContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if or .Values.webhook.podMutatingWebhook.enabled .Values.webhook.pvcMutatingWebhook.enabled }}
+        - name: certs
+          secret:
+            secretName: {{ template "topolvm.fullname" . }}-mutatingwebhook
+        {{- end }}
+        {{- with .Values.controller.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- if ne .Values.controller.affinity "" }}
+      affinity: {{ tpl .Values.controller.affinity . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}

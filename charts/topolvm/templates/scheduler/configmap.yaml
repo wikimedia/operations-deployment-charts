@@ -1,0 +1,22 @@
+{{ if .Values.scheduler.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "topolvm.fullname" . }}-scheduler-options
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+data:
+  scheduler-options.yaml: |
+    listen: "{{ .Values.scheduler.options.listen.host }}:{{ .Values.scheduler.options.listen.port }}"
+    {{- if .Values.scheduler.schedulerOptions }}
+    {{- toYaml .Values.scheduler.schedulerOptions | nindent 4 }}
+    {{- else }}
+    default-divisor: 1
+    {{- end }}
+    {{- if .Values.scheduler.profiling.bindAddress }}
+    profiling-bind-address: {{ .Values.scheduler.profiling.bindAddress }}
+    {{- end }}
+---
+{{ end }}

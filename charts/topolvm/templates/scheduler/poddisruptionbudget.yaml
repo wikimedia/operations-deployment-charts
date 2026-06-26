@@ -1,0 +1,17 @@
+{{ if and .Values.scheduler.enabled
+  .Values.scheduler.podDisruptionBudget.enabled
+  (eq (lower .Values.scheduler.type) "deployment") }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "topolvm.fullname" . }}-scheduler
+  namespace: {{ .Release.Namespace }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: scheduler
+      {{ include "topolvm.selectorLabels" . | nindent 6 }}
+---
+{{ end }}

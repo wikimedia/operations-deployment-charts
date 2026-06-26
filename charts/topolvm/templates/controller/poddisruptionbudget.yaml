@@ -1,0 +1,15 @@
+{{- if .Values.controller.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "topolvm.fullname" . }}-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      {{- include "topolvm.selectorLabels" . | nindent 6 }}
+---
+{{- end }}

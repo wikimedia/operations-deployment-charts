@@ -1,0 +1,180 @@
+# Copied from config/rbac/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Namespace }}:controller
+  labels:
+  {{- include "topolvm.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  - pods
+  verbs:
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - csidrivers
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - "{{ include "topolvm.pluginName" . }}"
+  resources:
+  - logicalvolumes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - topolvm.io
+  resources:
+  - logicalvolumes/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+# Copied from https://github.com/kubernetes-csi/external-provisioner/blob/master/deploy/kubernetes/rbac.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-external-provisioner-runner
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+rules:
+  # The following rule should be uncommented for plugins that require secrets
+  # for provisioning.
+  # - apiGroups: [""]
+  #   resources: ["secrets"]
+  #   verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["get", "list"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["get", "list"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csinodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  # Access to volumeattachments is only needed when the CSI driver
+  # has the PUBLISH_UNPUBLISH_VOLUME controller capability.
+  # In that case, external-provisioner will watch volumeattachments
+  # to determine when it is safe to delete a volume.
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch"]
+  # (Alpha) Access to referencegrants is only needed when the CSI driver
+  # has the CrossNamespaceVolumeDataSource controller capability.
+  # In that case, external-provisioner requires "get", "list", "watch" 
+  # permissions  for "referencegrants" on "gateway.networking.k8s.io".
+  #- apiGroups: ["gateway.networking.k8s.io"]
+  #  resources: ["referencegrants"]
+  #  verbs: ["get", "list", "watch"]
+---
+# Copied from https://github.com/kubernetes-csi/external-resizer/blob/master/deploy/kubernetes/rbac.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-external-resizer-runner
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+rules:
+  # The following rule should be uncommented for plugins that require secrets
+  # for provisioning.
+  # - apiGroups: [""]
+  #   resources: ["secrets"]
+  #   verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims/status"]
+    verbs: ["patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  # only required if enabling the alpha volume modify feature
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattributesclasses"]
+    verbs: ["get", "list", "watch"]
+---
+# Copied from https://github.com/kubernetes-csi/external-snapshotter/blob/master/deploy/kubernetes/csi-snapshotter/rbac-csi-snapshotter.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-external-snapshotter-runner
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  # Secret permission is optional.
+  # Enable it if your driver needs secret.
+  # For example, `csi.storage.k8s.io/snapshotter-secret-name` is set in VolumeSnapshotClass.
+  # See https://kubernetes-csi.github.io/docs/secrets-and-credentials.html for more details.
+  #  - apiGroups: [""]
+  #    resources: ["secrets"]
+  #    verbs: ["get", "list"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: ["groupsnapshot.storage.k8s.io"]
+    resources: ["volumegroupsnapshotclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["groupsnapshot.storage.k8s.io"]
+    resources: ["volumegroupsnapshotcontents"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["groupsnapshot.storage.k8s.io"]
+    resources: ["volumegroupsnapshotcontents/status"]
+    verbs: ["update", "patch"]

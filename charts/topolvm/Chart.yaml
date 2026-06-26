@@ -1,0 +1,21 @@
+annotations:
+  artifacthub.io/images: |
+    - name: topolvm-with-sidecar
+      image: ghcr.io/topolvm/topolvm-with-sidecar:0.38.1
+    - name: topolvm-with
+      image: ghcr.io/topolvm/topolvm:0.38.1
+  artifacthub.io/license: Apache-2.0
+  # This annotation reflects the last upstream chart version that we imported.
+  # See https://wikitech.wikimedia.org/wiki/Kubernetes/Upstream_Helm_charts_policy
+  wmf/upstreamVersion: v15.7.1
+apiVersion: v2
+appVersion: 0.38.1
+description: Topolvm
+home: https://github.com/topolvm/topolvm
+name: topolvm
+sources:
+- https://github.com/topolvm/topolvm
+type: application
+# WMF: our own chart version, independent of the upstream chart version (which
+# is recorded in the wmf/upstreamVersion annotation above).
+version: 0.0.1

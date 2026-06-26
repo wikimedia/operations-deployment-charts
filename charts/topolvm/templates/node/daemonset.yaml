@@ -1,0 +1,264 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "topolvm.fullname" . }}-node
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "topolvm.labels" . | nindent 4 }}
+    {{- with .Values.node.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.node.updateStrategy }}
+  updateStrategy: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: node
+      {{- include "topolvm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: node
+        {{- include "topolvm.selectorLabels" . | nindent 8 }}
+        {{- with .Values.node.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- if and .Values.node.metrics.enabled .Values.node.metrics.annotations }}
+      annotations: {{ toYaml .Values.node.metrics.annotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.node.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ template "topolvm.fullname" . }}-node
+      {{- if .Values.node.lvmdEmbedded }}
+      hostPID: true
+      {{- end }}
+      {{- with .Values.node.initContainers }}
+      initContainers: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: topolvm-node
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          {{- with .Values.node.securityContext }}
+          securityContext: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          command:
+            - /topolvm-node
+            - --csi-socket={{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/csi-topolvm.sock
+            {{- if .Values.node.lvmdEmbedded }}
+            - --embed-lvmd
+            {{- else }}
+            - --lvmd-socket={{ .Values.node.lvmdSocket }}
+            {{- end }}
+            {{- if .Values.node.profiling.bindAddress }}
+            - --profiling-bind-address={{ .Values.node.profiling.bindAddress }}
+            {{- end }}
+          {{- with .Values.node.args }}
+          args: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: healthz
+              containerPort: 9808
+              protocol: TCP
+            - name: metrics
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            {{- with .Values.livenessProbe.topolvm_node.failureThreshold }}
+            failureThreshold: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_node.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_node.timeoutSeconds }}
+            timeoutSeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.topolvm_node.periodSeconds }}
+            periodSeconds: {{ . }}
+            {{- end }}
+          {{- with .Values.resources.topolvm_node }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            {{- if .Values.useLegacy }}
+            - name: USE_LEGACY
+              value: "true"
+            {{- end }}
+            {{- with .Values.env.topolvm_node }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.node.volumeMounts.topolvmNode }}
+            {{- toYaml .Values.node.volumeMounts.topolvmNode | nindent 12 }}
+            {{- else }}
+            - name: node-plugin-dir
+              mountPath: {{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/
+            {{- if .Values.node.lvmdEmbedded }}
+            - name: config
+              mountPath: /etc/topolvm
+            {{- else }}
+            - name: lvmd-socket-dir
+              mountPath: {{ dir .Values.node.lvmdSocket }}
+            {{- end }}
+            - name: pod-volumes-dir
+              mountPath: {{ .Values.node.kubeletWorkDirectory }}/pods
+              mountPropagation: "Bidirectional"
+            - name: csi-plugin-dir
+              mountPath: {{ .Values.node.kubeletWorkDirectory }}/plugins/kubernetes.io/csi
+              mountPropagation: "Bidirectional"
+            - name: devices-dir
+              mountPath: /dev
+            {{- end }}
+
+        - name: csi-registrar
+          {{- if .Values.image.csi.nodeDriverRegistrar }}
+          image: {{ .Values.image.csi.nodeDriverRegistrar }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          command:
+            - /csi-node-driver-registrar
+            - --csi-address={{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/csi-topolvm.sock
+            - --kubelet-registration-path={{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/csi-topolvm.sock
+            - --http-endpoint=:9809
+          ports:
+            - containerPort: 9809
+              name: healthz
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            {{- with .Values.livenessProbe.csi_registrar.failureThreshold }}
+            failureThreshold: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.csi_registrar.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.csi_registrar.timeoutSeconds }}
+            timeoutSeconds: {{ . }}
+            {{- end }}
+            {{- with .Values.livenessProbe.csi_registrar.periodSeconds }}
+            periodSeconds: {{ . }}
+            {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/sh
+                - -c
+                - rm -rf /registration/{{ include "topolvm.pluginName" . }} /registration/{{ include "topolvm.pluginName" . }}-reg.sock
+          {{- with .Values.resources.csi_registrar }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.csi_registrar }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: node-plugin-dir
+              mountPath: {{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/
+            - name: registration-dir
+              mountPath: /registration
+
+        - name: liveness-probe
+          {{- if .Values.image.csi.livenessProbe }}
+          image: {{ .Values.image.csi.livenessProbe }}
+          {{- else }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          {{- end }}
+          {{- with .Values.image.pullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          command:
+            - /livenessprobe
+            - --csi-address={{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/csi-topolvm.sock
+            - --http-endpoint=:9808
+          {{- with .Values.resources.liveness_probe }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.env.liveness_probe }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: node-plugin-dir
+              mountPath: {{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node/
+
+        {{- with .Values.node.additionalContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.node.volumes }}
+        {{- toYaml .Values.node.volumes | nindent 8 }}
+        {{- else }}
+        - name: devices-dir
+          hostPath:
+            path: /dev
+            type: Directory
+        - name: registration-dir
+          hostPath:
+            path: {{ .Values.node.kubeletWorkDirectory }}/plugins_registry/
+            type: Directory
+        - name: node-plugin-dir
+          hostPath:
+            path: {{ .Values.node.kubeletWorkDirectory }}/plugins/{{ include "topolvm.pluginName" . }}/node
+            type: DirectoryOrCreate
+        - name: csi-plugin-dir
+          hostPath:
+            path: {{ .Values.node.kubeletWorkDirectory }}/plugins/kubernetes.io/csi
+            type: DirectoryOrCreate
+        - name: pod-volumes-dir
+          hostPath:
+            path: {{ .Values.node.kubeletWorkDirectory }}/pods/
+            type: DirectoryOrCreate
+        {{- if .Values.node.lvmdEmbedded }}
+          {{ $global := . }}
+          {{- $lvmds := concat ( list .Values.lvmd ) .Values.lvmd.additionalConfigs }}
+          {{- range $lvmdidx, $lvmd := $lvmds }}
+            {{/* Undo the "." rewritten by the range block */}}
+            {{- with $global }}
+        - name: config
+          configMap:
+            name: {{ template "topolvm.fullname" . }}-lvmd-{{ $lvmdidx }}
+            {{- end }}
+          {{- end }}
+        {{- else }}
+        - name: lvmd-socket-dir
+          hostPath:
+            path: {{ dir .Values.node.lvmdSocket }}
+            type: Directory
+        {{- end }}
+        {{- end }}
+        {{- with .Values.node.additionalVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+      {{- with .Values.node.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.node.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.node.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.node.podSecurityContext }}
+      securityContext: {{ toYaml . | nindent 8 }}
+      {{- end }}
