@@ -16,17 +16,24 @@ rules:
   - patch
   - update
   - watch
+# WMF: only the node finalizer deletes PVCs, so grant PVC delete only when it is
+# enabled (nodeFinalize.skipped=false). Split out from the upstream combined
+# pods+persistentvolumeclaims rule.
 - apiGroups:
   - ""
   resources:
   - persistentvolumeclaims
-  - pods
   verbs:
-  - delete
   - get
   - list
   - update
   - watch
+  {{- if not .Values.controller.nodeFinalize.skipped }}
+  - delete
+  {{- end }}
+# WMF: pod permissions are granted per namespace, not cluster-wide -- the
+# controller only touches pods in a PVC's own namespace. See tenantNamespaces
+# and templates/controller/tenant-pods-rbac.yaml.
 - apiGroups:
   - storage.k8s.io
   resources:
@@ -141,6 +148,8 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["volumeattributesclasses"]
     verbs: ["get", "list", "watch"]
+{{- /* WMF: only create the snapshotter ClusterRole when snapshots are enabled. */}}
+{{- if .Values.snapshot.enabled }}
 ---
 # Copied from https://github.com/kubernetes-csi/external-snapshotter/blob/master/deploy/kubernetes/csi-snapshotter/rbac-csi-snapshotter.yaml
 kind: ClusterRole
@@ -178,3 +187,4 @@ rules:
   - apiGroups: ["groupsnapshot.storage.k8s.io"]
     resources: ["volumegroupsnapshotcontents/status"]
     verbs: ["update", "patch"]
+{{- end }}

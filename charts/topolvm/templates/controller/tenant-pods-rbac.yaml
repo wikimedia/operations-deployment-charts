@@ -1,0 +1,35 @@
+{{- /*
+WMF: give the controller its pod permissions per tenant namespace instead of
+cluster-wide. It only touches pods in a topolvm PVC's own namespace, so listing
+those namespaces in tenantNamespaces keeps the permission off everything else.
+*/}}
+{{- range $tenantNamespace := .Values.tenantNamespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "topolvm.fullname" $ }}-controller-pods
+  namespace: {{ $tenantNamespace }}
+  labels:
+    {{- include "topolvm.labels" $ | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "update", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "topolvm.fullname" $ }}-controller-pods
+  namespace: {{ $tenantNamespace }}
+  labels:
+    {{- include "topolvm.labels" $ | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "topolvm.fullname" $ }}-controller
+    namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ include "topolvm.fullname" $ }}-controller-pods
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

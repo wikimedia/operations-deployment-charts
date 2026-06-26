@@ -55,6 +55,8 @@ rules:
 - apiGroups: ["coordination.k8s.io"]
   resources: ["leases"]
   verbs: ["get", "watch", "list", "delete", "update", "create"]
+{{- /* WMF: only create the snapshotter Role when snapshots are enabled. */}}
+{{- if .Values.snapshot.enabled }}
 ---
 # Copied from https://github.com/kubernetes-csi/external-snapshotter/blob/master/deploy/kubernetes/csi-snapshotter/rbac-csi-snapshotter.yaml
 kind: Role
@@ -68,3 +70,4 @@ rules:
 - apiGroups: ["coordination.k8s.io"]
   resources: ["leases"]
   verbs: ["get", "watch", "list", "delete", "update", "create"]
+{{- end }}

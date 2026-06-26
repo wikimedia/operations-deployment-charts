@@ -42,6 +42,8 @@ roleRef:
   kind: ClusterRole
   name: {{ .Release.Namespace }}-external-resizer-runner
   apiGroup: rbac.authorization.k8s.io
+{{- /* WMF: only bind the snapshotter ClusterRole when snapshots are enabled. */}}
+{{- if .Values.snapshot.enabled }}
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -57,3 +59,4 @@ roleRef:
   kind: ClusterRole
   name: {{ .Release.Namespace }}-external-snapshotter-runner
   apiGroup: rbac.authorization.k8s.io
+{{- end }}

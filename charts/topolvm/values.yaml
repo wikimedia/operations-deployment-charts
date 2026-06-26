@@ -1,6 +1,11 @@
 # useLegacy -- If true, the legacy plugin name and legacy custom resource group is used(topolvm.cybozu.com).
 useLegacy: false
 
+# tenantNamespaces -- WMF: namespaces that use topolvm storage. The controller
+# gets pod permissions only in these namespaces, not cluster-wide. Set per
+# cluster in the deployment.
+tenantNamespaces: []
+
 image:
   # image.repository -- TopoLVM image repository to use.
   # WMF: our own topolvm build, served from our registry. See
@@ -457,7 +462,10 @@ controller:
 
   nodeFinalize:
     # controller.nodeFinalize.skipped -- Skip automatic cleanup of PhysicalVolumeClaims when a Node is deleted.
-    skipped: false
+    # WMF: skip it. This cleanup is going away upstream (topolvm/topolvm#1148),
+    # and it is the only thing that needs the controller to delete PVCs
+    # cluster-wide, so skipping it lets us drop that permission.
+    skipped: true
 
   leaderElection:
     # controller.leaderElection.enabled -- Enable leader election for controller and all sidecars.
@@ -772,4 +780,6 @@ priorityClass:
 
 snapshot:
   # snapshot.enabled -- Turn on the snapshot feature.
-  enabled: true
+  # WMF: off. dse-k8s has no snapshot controller or CRDs, so the snapshotter
+  # sidecar and its broad RBAC are not needed. Turn on if that changes.
+  enabled: false
