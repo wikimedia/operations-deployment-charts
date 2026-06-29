@@ -2,7 +2,7 @@ apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   hub: docker-registry.discovery.wmnet/istio
-  tag: 1.15.7-2
+  tag: 1.24.2-1
   meshConfig:
     # This enables access logging in istio-proxy, which means all sidecars
     # as well as all ingress and egress gateways.
@@ -13,12 +13,6 @@ spec:
       mode: 'REGISTRY_ONLY'
     # Disable zipkin
     # See https://github.com/istio/istio/issues/33968
-    enableTracing: false
-    defaultConfig:
-      tracing: {}
-      proxyStatsMatcher:
-        inclusionRegexps:
-          - ".*http_local_rate_limit.*"
   values:
     # CNI-CONFIG:
     # This config is deployed via puppet, the following settings are not really
@@ -40,23 +34,11 @@ spec:
       priorityClassName: "system-cluster-critical"
       logAsJson: true
       proxy:
-        # CNI-CONFIG:
-        # The Istio sidecar is meant to support the containers that run
-        # after it, and it can't work work with init-containers.
-        # In the case of Kserve, every pod runs an init-container
-        # called "storage-initializer", that pulls the model binary from
-        # Swift and adds it to a volume (to be later used by
-        # the kserve-container). The excludeIPRanges setting instructs
-        # the iptables rules injected by the CNI when the pods comes up
-        # to skip any traffic re-routing for certain IPs (in our case,
-        # the Thanos ones).
-        excludeIPRanges: "10.2.2.54/32,10.2.1.54/32"
         componentLogLevel: "misc:info"
         logLevel: info
         # See https://github.com/istio/istio/issues/33968#issuecomment-881910850
         # We need this setting to fully disable any tracing and
         # stop DNS queries for zipkin when the service is disabled.
-        tracer: openCensusAgent
     pilot:
       autoscaleEnabled: false # overwritten
       replicaCount: 2
@@ -145,11 +127,11 @@ spec:
               name: https
               protocol: TCP
               nodePort: 30443
-            - port: 8081
-              targetPort: 8081
+            - port: 50051
+              targetPort: 50051
               name: grpc
-              protocol: HTTP2
-              nodePort: 38181
+              protocol: TCP
+              nodePort: 30051
             selector:
               service.istio.io/canonical-name: istio-ingressgateway
               istio: ingressgateway
