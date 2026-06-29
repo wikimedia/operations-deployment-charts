@@ -1,0 +1,56 @@
+# We are trying to keep this base values.yaml files useable in minikube development environments.
+# Please put overrides for k8s envs or releases in other values files.
+#
+# NOTE: This file is shared between production and staging (-next) releases.
+#       In the helmfile directory, this is a symlink into a _*_common_/ values file.
+#       Edits here affect both staging and production.
+#       Release specific settings and overrides belong in release specific values files.
+
+app:
+  image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment/java
+  version: v1.57.0-dev0
+  flinkVersion: v2_0
+  logConfiguration:
+    rootLogger.level: INFO
+
+  config_files:
+
+    # Will be rendered into /srv/app/conf/page-trending.properties by the flink-app chart.
+    page-trending.properties:
+
+      # Load schema from local path baked into the image.
+      event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
+
+      page-view-stream: webrequest.page_view.dev0
+      page-view-schema-version: 1.0.0
+      baseline-stream: webrequest.page_view_stats.dev0
+      baseline-schema-version: 1.0.0
+      output-stream: webrequest.page_trending.dev0
+      output-schema-version: 1.0.0
+
+      # NOTE: kafka-bootstrap-servers, kafka-consumer-group-id and topic-prefix
+      #       must be configured in release / cluster specific values files.
+
+  job:
+    # Desired state for the job, either 'running' or 'suspended'.
+    # Alter this property to trigger a restart.
+    state: running
+
+    jarURI: local:///srv/app/usrlib/app-with-dependencies.jar
+    entryClass: org.wikimedia.mediawiki.event.enrichment.pagetrending.PageTrending
+    upgradeMode: last-state
+
+  # (job|task)Manager.resource are k8s Resource configs, and used by the
+  # flink-kubernetes-operator to request resources from k8s.
+  # These should be the 'limit' requests.
+  # https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-main/docs/custom-resource/reference/#resource
+  jobManager:
+    resource:
+      memory: 1500m
+
+  taskManager:
+    # NOTE: taskManager.replicas takes precedence over job.parallelism.
+    # # Default lower value for development in base values.yaml
+    replicas: 1
+    resource:
+      memory: 1500m
