@@ -24,7 +24,6 @@ CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
 # that guaranteed proper rendering of the CRDs and will be used to create
 # JSON schema (used by kubeconform to validate custom resources).
 CDRS_GLOB = 'charts/**/.fixtures/crds.yaml'.freeze
-ISTIOCTL_VERSION = 'istioctl-1.15.7'.freeze
 JSON_SCHEMA = 'jsonschema/'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
 
@@ -303,12 +302,37 @@ end
 
 desc 'Validate istio configuration'
 task :validate_istio_config do
-  check_binary(ISTIOCTL_VERSION)
-  FileList.new('custom_deploy.d/istio/*/config.yaml').each do |config|
-    ok, out = _exec "#{ISTIOCTL_VERSION} validate -f #{config}"
+  checked_istioctl_binaries = {}
+
+  FileList.new('custom_deploy.d/istio/*/config*.yaml').each do |config|
+    # We need to determine the istio version from the config file and, if possible,
+    # use the corresponding istioctl binary to validate the config.
+    tag = begin
+      config_yaml = yaml_load_file(config)
+      config_yaml.dig('spec', 'tag')
+    rescue StandardError => e
+      puts "Failed to read istio config '#{config}':".red
+      puts e
+      raise('Failure')
+    end
+
+    match = tag.is_a?(String) ? tag.match(/\A(\d+\.\d+\.\d+)/) : nil
+    if match.nil?
+      puts "Failed to determine istio version from '#{config}' spec.tag (value: #{tag.inspect})".red
+      raise('Failure')
+    end
+
+    istioctl_binary = "istioctl-#{match[1]}"
+    # Don't check each version more than once
+    unless checked_istioctl_binaries[istioctl_binary]
+      check_binary(istioctl_binary)
+      checked_istioctl_binaries[istioctl_binary] = true
+    end
+
+    ok, out = _exec "#{istioctl_binary} validate -f #{config}"
     next if ok
 
-    puts "Failed to verify istio config '#{config}':".red
+    puts "Failed to verify istio config '#{config}' with '#{istioctl_binary}':".red
     puts out
     raise('Failure')
   end
