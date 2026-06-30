@@ -149,7 +149,7 @@ inference_services:
   qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-06-26-084001-publish"
+      image_version: "2026-06-30-131041-publish"
       custom_env:
         - name: MODEL_NAME
           value: "qwen36-27b"
@@ -181,6 +181,8 @@ inference_services:
           value: "TRITON_ATTN"
         - name: DISABLE_CUSTOM_ALL_REDUCE
           value: "False"
+        - name: ENFORCE_EAGER
+          value: "True"
         - name: VLLM_ROCM_USE_AITER
           value: "0"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
