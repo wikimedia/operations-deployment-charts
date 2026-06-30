@@ -33,6 +33,8 @@ growthbook:
   ui_url: {{ .Values.app.growthbook.ui_url }}
   poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}
   timeout_ms: {{ .Values.app.growthbook.timeout_ms }}
+  drafts_validation: {{ .Values.app.growthbook.drafts_validation }}
+  drafts_validation_interval: {{ .Values.app.growthbook.drafts_validation_interval }}
 
 phabricator:
   api_url: {{ .Values.app.phabricator.api_url }}
