@@ -17,6 +17,18 @@ opensearchCluster:
       limits:
         memory: "2Gi"
         cpu: "1"
+  # The operator's securityconfig-update job (runs securityadmin.sh) is also unconfigured and hits
+  # the same LimitRange default.
+  security:
+    config:
+      updateJob:
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 # TLS cert issued by the WMF cfssl ClusterIssuer (WMF PKI). Include the in-cluster service DNS so
 # the cert is valid for datahub-next's in-namespace HTTPS connection (validated against the WMF CA
