@@ -11,6 +11,13 @@ spec:
     additionalConfig:
       {{ toYaml .Values.opensearchCluster.bootstrap.additionalConfig | nindent 6 }}
     {{- end }}
+    {{- if .Values.opensearchCluster.bootstrap.jvm }}
+    jvm: {{ .Values.opensearchCluster.bootstrap.jvm | quote }}
+    {{- end }}
+    {{- if .Values.opensearchCluster.bootstrap.resources }}
+    resources:
+      {{- toYaml .Values.opensearchCluster.bootstrap.resources | nindent 6 }}
+    {{- end }}
   {{- end }}
   {{- if .Values.opensearchCluster.initHelper }}
   initHelper:
