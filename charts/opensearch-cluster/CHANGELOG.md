@@ -5,9 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.24]
+### Added
+  - Render spec.bootstrap.jvm and spec.bootstrap.resources so the
+  bootstrap pod can get an explicit heap and memory limit.
+### Deprecated
+### Removed
+### Fixed
+
+---
 ## [0.0.23]
 ### Added
-  - Added `opensearchCluster.anonymous_all_indices` option to allow anonymous 
+  - Added `opensearchCluster.anonymous_all_indices` option to allow anonymous
   access to the cluster in Elastic-style.
 ### Deprecated
 ### Removed
