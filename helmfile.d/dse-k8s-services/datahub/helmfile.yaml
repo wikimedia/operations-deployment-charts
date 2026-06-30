@@ -76,3 +76,6 @@ releases:
   - name: production
     namespace: datahub
     <<: *default
+    # Pinned to the currently-published chart so prod stays put while datahub-next
+    # validates v1.6.0; raise/remove when v1.6.0 is promoted (T402408).
+    version: "0.0.82"
