@@ -6,18 +6,6 @@ version: &version "dummyversion-test"
 docker: &docker
   registry: "docker-registry.discovery.wmnet"
 
-setupjobs: &setupjobs
-  enabled: true
-  docker: *docker
-  image:
-    tag: *version
-
-elasticsearchSetupJob: *setupjobs
-
-kafkaSetupJob: *setupjobs
-
-mysqlSetupJob: *setupjobs
-
 datahubUpgrade:
   enabled: true
 

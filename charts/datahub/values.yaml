@@ -6,27 +6,9 @@ docker:
   registry: docker-registry.wikimedia.org
   pull_policy: IfNotPresent
 
-# Start of batch job configuration. These values are used by three setup jobs
-# that setup elasticsearch (aka opensearch), kafka, and mysql (aka mariadb).
-# The jobs run in the context of the parent chart
-elasticsearchSetupJob:
-  enabled: false
-  image:
-    repository: repos/data-engineering/datahub/elasticsearch-setup
-    tag: latest
-
-kafkaSetupJob:
-  enabled: false
-  image:
-    repository: repos/data-engineering/datahub/kafka-setup
-    tag: latest
-
-mysqlSetupJob:
-  enabled: false
-  image:
-    repository: repos/data-engineering/datahub/mysql-setup
-    tag: latest
-
+# DataHub 1.x consolidated the standalone elasticsearch/kafka/mysql setup jobs into the
+# datahub-system-update job (run from the datahub-upgrade image), so those *SetupJob images
+# and templates have been removed from this chart.
 datahubUpgrade:
   enabled: true
   image:
@@ -82,12 +64,11 @@ datahubSystemUpdate:
       cpu: 300m
       memory: 256Mi
   extraSidecars: []
-# This networkpolicy applies to all three setup jobs (Elasticsearch, Kafka, MySQL) and
-# the other batch jobs that run from this chart, but is not passed down to the subcharts.
+# This networkpolicy applies to the datahub-upgrade / system-update batch jobs that run
+# from this chart, but is not passed down to the subcharts.
 networkpolicy:
   egress:
     enabled: false
-# End of batch job configuration
 mesh:
   enabled: false
 # Start of subchart configuration

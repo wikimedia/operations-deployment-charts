@@ -19,17 +19,19 @@ main_app:
   limits:
     cpu: 1
     memory: 1G
+  # DataHub 1.x serves the Spring Boot actuator on the management port (default 4319);
+  # the legacy 9091 management port is gone. Verify on datahub-next before promoting.
   liveness_probe:
     httpGet:
       path: /actuator/health
-      port: 9091
+      port: 4319
     initialDelaySeconds: 10
     periodSeconds: 10
     failureThreshold: 3
   readiness_probe:
     httpGet:
       path: /actuator/health
-      port: 9091
+      port: 4319
     initialDelaySeconds: 10
     periodSeconds: 10
     failureThreshold: 3
