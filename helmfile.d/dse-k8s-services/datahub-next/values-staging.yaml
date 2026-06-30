@@ -142,5 +142,7 @@ global:
       driver: "com.mysql.cj.jdbc.Driver"
       username: "datahub"
   elasticsearch:
-    indexPrefix: "staging"
+    host: "opensearch-datahub-next.datahub-next.svc.cluster.local"
+    port: "9200"
+    useSSL: true
 

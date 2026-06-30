@@ -1,0 +1,18 @@
+# OpenSearch 2.x cluster dedicated to datahub-next, co-located in the datahub-next namespace.
+# Image, OpenSearch version (2.7.0), node sizing (3 master+data) and security/securityContext are
+# inherited from ../_opensearch_common_/values-common.yaml.
+opensearchCluster:
+  general:
+    serviceName: "opensearch-datahub-next"
+  # Allow anonymous access to all indices, so DataHub connects without credentials (test env).
+  anonymous_all_indices: true
+
+# TLS cert issued by the WMF cfssl ClusterIssuer (WMF PKI). Include the in-cluster service DNS so
+# the cert is valid for datahub-next's in-namespace HTTPS connection (validated against the WMF CA
+# shipped in the images; no insecure/skip-verify needed).
+certificate:
+  issuerRefName: opensearch
+  extraFQDNs:
+    - opensearch-datahub-next.datahub-next.svc.cluster.local
+    - opensearch-datahub-next.svc.eqiad.wmnet
+    - opensearch-datahub-next.discovery.wmnet

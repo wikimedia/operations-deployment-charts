@@ -16,7 +16,7 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [staging]
+      - releases: [staging, opensearch-datahub-next]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # loaded early here because the below depends on some of these
     missingFileHandler: Warn
@@ -73,5 +73,20 @@ hooks:
 
 
 releases:
+  # In-namespace OpenSearch 2.x cluster for datahub-next (DataHub 1.6.0 needs OpenSearch 2.x).
+  # Standalone release (NOT <<: *default, which is datahub-specific); reconciled by the
+  # cluster-wide OpenSearch operator. Security secrets come from the SRE private values path.
+  - name: opensearch-datahub-next
+    namespace: datahub-next
+    chart: wmf-stable/opensearch-cluster
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "../_opensearch_common_/values-common.yaml"
+      - "values-opensearch-datahub-next.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/datahub-next/{{ .Environment.Name }}.yaml"
   - name: staging
     <<: *default
+    needs:
+      - datahub-next/opensearch-datahub-next
