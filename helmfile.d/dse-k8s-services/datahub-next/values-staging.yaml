@@ -22,6 +22,8 @@ config: &config
   public: {}
 
 datahub-frontend:
+  main_app:
+    version: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:caa8faa81b1e910a1d54bc03824421447bb4596018c067c516925aa37e2e75e9"
   ingress:
     staging: true
   auth:
@@ -51,6 +53,7 @@ datahub-frontend:
 
 datahub-gms:
   main_app:
+    version: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:df66d87c494285ca3f3ab7a9f2827905065b2076a068353fa47ad5fa5db8f17a"
     requests:
       cpu: 2
       memory: 2G
@@ -76,6 +79,7 @@ datahub-gms:
 
 datahub-mce-consumer:
   main_app:
+    version: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:5663b298bba00ee690eb9bc54f11644010025d5aa0f139de9d7dacb85ea0f04a"
     limits:
       cpu: 1
       memory: 2G
@@ -86,6 +90,7 @@ datahub-mce-consumer:
 
 datahub-mae-consumer:
   main_app:
+    version: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:c274bb718ac7ca991414dbe9981ac084797e3799425c4a48cfed21d59af798b6"
     limits:
       cpu: 2
       memory: 4G
@@ -98,6 +103,8 @@ datahub-mae-consumer:
     <<: *networkpolicies
 
 datahubSystemUpdate:
+  image:
+    tag: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:e9da2ab3dc05f73811282d9eafe0af0e6d2c79cc7bf95228ba2afb1393887d2c"
   resources:
     requests:
       cpu: 2
@@ -107,6 +114,8 @@ datahubSystemUpdate:
       memory: 2048Mi
 
 datahubUpgrade:
+  image:
+    tag: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:e9da2ab3dc05f73811282d9eafe0af0e6d2c79cc7bf95228ba2afb1393887d2c"
   noCodeDataMigration:
     resources:
       limits:
