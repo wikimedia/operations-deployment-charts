@@ -142,28 +142,6 @@ namespaces:
           cpu: "50"
           memory: "30Gi"
   geo-analytics: {}
-  ipoid:
-    limitranges:
-      container:
-        min:
-          memory: "50Mi"
-          cpu: "100m"
-        max:
-          memory: "26Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "50Mi"
-          cpu: "100m"
-        max:
-          memory: "28Gi"
-          cpu: "10"
   kartotherian:
     resourcequota:
       compute:
