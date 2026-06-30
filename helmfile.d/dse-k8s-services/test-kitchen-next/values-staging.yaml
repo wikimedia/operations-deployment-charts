@@ -1,5 +1,5 @@
 app:
-  version: v1.4.5-prod
+  version: v1.4.6-prod
 
   service:
     user_agent: Test Kitchen UI/1.4 (#experiment-platform)
@@ -25,6 +25,8 @@ app:
     # http://localhost:6048 is proxied to growthbook-api-next
     api_url: http://localhost:6048/api/v1/experiments
     ui_url: https://growthbook-next.wikimedia.org/experiments
+    drafts_validation: true
+    drafts_validation_interval: 4
 
 ingress:
   gatewayHosts:
