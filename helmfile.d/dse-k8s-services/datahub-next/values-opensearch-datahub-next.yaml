@@ -6,6 +6,17 @@ opensearchCluster:
     serviceName: "opensearch-datahub-next"
   # Allow anonymous access to all indices, so DataHub connects without credentials (test env).
   anonymous_all_indices: true
+  # The bootstrap pod forms the initial cluster on first bring-up. Left unconfigured it inherits
+  # the namespace LimitRange default.
+  bootstrap:
+    jvm: "-Xmx1g -Xms1g"
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+      limits:
+        memory: "2Gi"
+        cpu: "1"
 
 # TLS cert issued by the WMF cfssl ClusterIssuer (WMF PKI). Include the in-cluster service DNS so
 # the cert is valid for datahub-next's in-namespace HTTPS connection (validated against the WMF CA
