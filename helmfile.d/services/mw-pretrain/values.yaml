@@ -2,7 +2,6 @@ resources:
   replicas: 2
 
 mesh:
-  public_port: 4456
   tracing:
     enabled: true
     sampling: 100
@@ -13,3 +12,6 @@ monitoring:
 php:
   apc:
     size: 2048
+
+service:
+  nodePort: false
