@@ -33,7 +33,7 @@ releases:
               resources: ["flinkdeployments", "flinksessionjobs", "flinkstatesnapshots", "flinkbluegreendeployments"]
               verbs: ["get", "list", "watch"]
             {{- end }}
-            {{- if hasKey .Environment.Values "install_kserve" }}
+            {{- if hasKey .Environment.Values "install_kserve_resources" }}
             - apiGroups: ["serving.kserve.io"]
               resources: ["*"]
               verbs: ["get", "list", "watch"]

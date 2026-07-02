@@ -1,6 +1,0 @@
-kserve:
-  # In big namespaces (with a lot of pods), any deployment that triggers changes
-  # in isvc resources can overwhelm the kserve webhook causing Helm failures.
-  # Four replicas seem, for the moment, the best compromise.
-  controller:
-    replicas: 4
