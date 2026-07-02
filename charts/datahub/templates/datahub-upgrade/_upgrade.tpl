@@ -59,13 +59,18 @@ Return the env variables for upgrade jobs
       name: {{ .Values.global.datahub.metadata_service_authentication.systemClientSecret.secretRef }}
       key: {{ .Values.global.datahub.metadata_service_authentication.systemClientSecret.secretKey }}
 {{- end }}
-# The SystemUpdate CLI always initialises the token service, so the signing key must be present
-# even when metadata_service_authentication is disabled.
+# The SystemUpdate CLI always initialises the token service, so the signing key and salt must be
+# present even when metadata_service_authentication is disabled.
 - name: DATAHUB_TOKEN_SERVICE_SIGNING_KEY
   valueFrom:
     secretKeyRef:
       name: {{ template "base.name.release" $ }}-secret-config
       key: token_service_signing_key
+- name: DATAHUB_TOKEN_SERVICE_SALT
+  valueFrom:
+    secretKeyRef:
+      name: {{ template "base.name.release" $ }}-secret-config
+      key: token_service_salt
 - name: KAFKA_BOOTSTRAP_SERVER
   value: "{{ .Values.global.kafka.bootstrap.server }}"
 {{- if eq .Values.global.kafka.schemaregistry.type "INTERNAL" }}
