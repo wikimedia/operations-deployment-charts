@@ -17,18 +17,6 @@ networkpolicy: &networkpolicies
   egress:
     dst_nets:
       - cidr: 10.2.2.71/32  # datahubsearch.svc.eqiad.wmnet
-    # Allow egress to the co-located in-cluster OpenSearch cluster (same namespace).
-    # datahub-next's search backend is opensearch-datahub-next, not the VM above.
-    # Applies to the umbrella (system-update/upgrade jobs) and to the frontend/gms/mae
-    # subcharts that merge this anchor.
-    extraRules:
-      - to:
-          - podSelector:
-              matchLabels:
-                opster.io/opensearch-cluster: opensearch-datahub-next
-        ports:
-          - protocol: TCP
-            port: 9200
 
 config: &config
   public: {}
