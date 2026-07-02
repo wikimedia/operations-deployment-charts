@@ -127,14 +127,21 @@ resources:
     {{- end }}
     - name: GRAPH_SERVICE_IMPL
       value: {{ .Values.global.graph_service_impl }}
-    {{- if .Values.global.datahub.metadata_service_authentication.enabled }}
-    - name: METADATA_SERVICE_AUTH_ENABLED
-      value: "true"
+    # GMS initialises the token service unconditionally (like the SystemUpdate CLI), so the signing
+    # key and salt must be present even when metadata_service_authentication is disabled.
     - name: DATAHUB_TOKEN_SERVICE_SIGNING_KEY
       valueFrom:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
+    - name: DATAHUB_TOKEN_SERVICE_SALT
+      valueFrom:
+        secretKeyRef:
+          name: {{ template "base.name.release" $ }}-secret-config
+          key: token_service_salt
+    {{- if .Values.global.datahub.metadata_service_authentication.enabled }}
+    - name: METADATA_SERVICE_AUTH_ENABLED
+      value: "true"
     - name: DATAHUB_SYSTEM_CLIENT_ID
       value: {{ .Values.global.datahub.metadata_service_authentication.systemClientId }}
     - name: DATAHUB_SYSTEM_CLIENT_SECRET
