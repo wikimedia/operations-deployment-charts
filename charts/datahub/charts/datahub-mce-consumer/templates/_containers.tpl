@@ -56,11 +56,15 @@ resources:
       value: {{ $v | quote }}
   {{- end }}
   {{- range $k, $v := .Values.datahub_config.private }}
+  {{- /* ELASTICSEARCH_PASSWORD is emitted by the elasticsearch.auth block; skip it here to avoid a
+         duplicate env var, which breaks the k8s strategic-merge patch on upgrade. */}}
+  {{- if ne $k "elasticsearch_password" }}
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
+  {{- end }}
   {{- end }}
     - name: SHOW_SEARCH_FILTERS_V2
       value: {{ .Values.global.datahub.search_and_browse.show_search_v2 | quote }}

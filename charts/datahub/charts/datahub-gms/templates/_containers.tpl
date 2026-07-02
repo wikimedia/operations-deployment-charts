@@ -46,11 +46,15 @@ resources:
       value: {{ $v | quote }}
   {{- end }}
   {{- range $k, $v := .Values.datahub_config.private }}
+  {{- /* ELASTICSEARCH_PASSWORD is emitted by the elasticsearch.auth block; skip it here to avoid a
+         duplicate env var, which breaks the k8s strategic-merge patch on upgrade. */}}
+  {{- if ne $k "elasticsearch_password" }}
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
+  {{- end }}
   {{- end }}
   {{- with .Values.global.kafka.topics }}
     - name: METADATA_CHANGE_EVENT_NAME
