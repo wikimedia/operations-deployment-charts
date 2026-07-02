@@ -182,7 +182,7 @@ inference_services:
         - name: DISABLE_CUSTOM_ALL_REDUCE
           value: "False"
         - name: ENFORCE_EAGER
-          value: "True"
+          value: "False"
         - name: VLLM_ROCM_USE_AITER
           value: "0"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
@@ -231,6 +231,7 @@ inference_services:
             sizeLimit: "16Gi"
       config:
         maxReplicas: 1
+        timeout: 2000
         tolerations:
           - key: "dedicated"
             operator: "Equal"
