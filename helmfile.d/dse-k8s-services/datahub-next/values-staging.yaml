@@ -145,4 +145,10 @@ global:
     host: "opensearch-datahub-next.datahub-next.svc.cluster.local"
     port: "9200"
     useSSL: true
+    # Validate the server cert against the WMF CA.
+    insecure: "false"
+    # OpenSearch requires auth (anonymous 401s DataHub's client); password comes from the
+    # elasticsearch_password secret key, set in the private hiera.
+    auth:
+      username: opensearch
 
