@@ -4,7 +4,7 @@ kafka: &kafka
 kafka_brokers: &kafka_brokers
   {}
 
-config: &config
+datahub_config: &datahub_config
   public: {}
   private:
     datahub_encryption_key: encryption_key_secret
@@ -15,26 +15,26 @@ config: &config
 datahub-frontend:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 
 datahub-gms:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 
 datahub-mce-consumer:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 
 datahub-mae-consumer:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 
 global:
   elasticsearch:

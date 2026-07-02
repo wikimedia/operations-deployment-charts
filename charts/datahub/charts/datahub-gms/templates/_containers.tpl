@@ -41,11 +41,11 @@ resources:
   env:
     - name: SERVICE_IDENTIFIER
       value: {{ template "base.name.release" . }}
-  {{- range $k, $v := .Values.config.public }}
+  {{- range $k, $v := .Values.datahub_config.public }}
     - name: {{ $k | upper }}
       value: {{ $v | quote }}
   {{- end }}
-  {{- range $k, $v := .Values.config.private }}
+  {{- range $k, $v := .Values.datahub_config.private }}
     - name: {{ $k | upper }}
       valueFrom:
         secretKeyRef:

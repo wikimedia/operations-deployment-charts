@@ -21,7 +21,7 @@ kafka: &kafka
   allowed_clusters:
     - test-eqiad
 
-config: &config
+datahub_config: &datahub_config
   public: {}
 
 
@@ -33,8 +33,8 @@ datahub-frontend:
     ldap:
       enabled: true
   kafka: *kafka
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
   mesh:
     enabled: true
   ingress:
@@ -54,8 +54,8 @@ datahub-gms:
     version: *version
   docker: *docker
   kafka: *kafka
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
   mesh:
     enabled: true
   ingress:
@@ -73,8 +73,8 @@ datahub-mce-consumer:
     version: *version
   docker: *docker
   kafka: *kafka
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
   networkpolicy:
     egress:
       dst_nets:
@@ -86,8 +86,8 @@ datahub-mae-consumer:
     version: *version
   docker: *docker
   kafka: *kafka
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
   networkpolicy:
     egress:
       dst_nets:

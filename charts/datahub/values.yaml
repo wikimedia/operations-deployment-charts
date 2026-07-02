@@ -78,12 +78,12 @@ kafka: &kafka
 kafka_brokers: &kafka_brokers
   {}
 
-# Umbrella-level secrets/config for the pre-install system-update and upgrade jobs.
+# Parent-chart secrets/config for the pre-install system-update and upgrade jobs.
 # NOTE: deliberately NOT called `config` (the WMF _scaffold convention). The co-located
 # opensearch-cluster chart reads config.private.users from the shared private values file,
-# so datahub keeps its umbrella secrets under a distinct top-level key to avoid that
-# collision (T402408). The subcharts below still use their own namespaced config.* .
-datahub_config: &config
+# so datahub keeps its parent-chart secrets under a distinct top-level key to avoid that
+# collision (T402408). The sub-charts below still use their own namespaced config.* .
+datahub_config: &datahub_config
   public: {}
   private:
     datahub_encryption_key: ""    # This is used for at-rest encryption
@@ -103,8 +103,8 @@ datahub-frontend:
       discovery_uri: "https://idp.wikimedia.org/oidc/.well-known"
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
     public:
       AUTH_NATIVE_ENABLED: false
   # The set of external services to allow egress to
@@ -122,22 +122,22 @@ datahub-frontend:
 datahub-gms:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
     public:
       DATAHUB_TELEMETRY_ENABLED: false
 
 datahub-mce-consumer:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 
 datahub-mae-consumer:
   kafka: *kafka
   kafka_brokers: *kafka_brokers
-  config:
-    <<: *config
+  datahub_config:
+    <<: *datahub_config
 # End of subchart configuration
 
 # Start of global values. Values configured here will be made available to all
