@@ -116,14 +116,6 @@ datahubSystemUpdate:
 datahubUpgrade:
   image:
     tag: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:e9da2ab3dc05f73811282d9eafe0af0e6d2c79cc7bf95228ba2afb1393887d2c"
-  noCodeDataMigration:
-    resources:
-      limits:
-        cpu: 1
-        memory: 2048Mi
-      requests:
-        cpu: 300m
-        memory: 1024Mi
 
 global:
   kafka:
