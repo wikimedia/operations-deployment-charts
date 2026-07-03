@@ -101,6 +101,10 @@ Return the env variables for upgrade jobs
       name: {{ template "base.name.release" $ }}-secret-config
       key: elasticsearch_password
 {{- end }}
+- name: ELASTICSEARCH_SHIM_ENGINE_TYPE
+  value: {{ .Values.global.elasticsearch.engineType | quote }}
+- name: ELASTICSEARCH_SHIM_AUTO_DETECT
+  value: {{ .Values.global.elasticsearch.autoDetect | quote }}
 {{- with .Values.global.elasticsearch.indexPrefix }}
 - name: INDEX_PREFIX
   value: {{ . }}

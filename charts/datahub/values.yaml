@@ -156,6 +156,10 @@ global:
     port: dummy
     skipcheck: "false"
     insecure: "true"
+    ## SearchClientShim backend selection. AUTO_DETECT inspects the cluster; pin an explicit
+    ## engine (e.g. OPENSEARCH_2) with autoDetect "false" for managed/locked-down backends.
+    engineType: "AUTO_DETECT"
+    autoDetect: "true"
     ## The following section controls when and how reindexing of elasticsearch indices are performed
     index:
       ## Enable reindexing when mappings change based on the data model annotations
