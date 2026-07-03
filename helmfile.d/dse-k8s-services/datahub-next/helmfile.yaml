@@ -1,7 +1,9 @@
 helmDefaults:
   createNamespace: false
   verify: false
-  atomic: true
+  # atomic disabled for the datahub-next bring-up: a first DataHub deploy is slow (system-update hook
+  # + GMS bootstrap) and an atomic rollback on timeout is disruptive. Revert to true once stable.
+  atomic: false
   timeout: 600
   force: false
   args:
