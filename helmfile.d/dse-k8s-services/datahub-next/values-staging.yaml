@@ -139,6 +139,10 @@ global:
     useSSL: true
     # Validate the server cert against the WMF CA.
     insecure: "false"
+    # Pin the engine explicitly; the OpenSearch security plugin makes shim auto-detection
+    # (which needs cluster-info access) unreliable.
+    engineType: "OPENSEARCH_2"
+    autoDetect: "false"
     # OpenSearch requires auth (anonymous 401s DataHub's client); password comes from the
     # elasticsearch_password secret key, set in the private hiera.
     auth:
