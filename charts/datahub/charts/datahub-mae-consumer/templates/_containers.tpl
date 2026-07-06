@@ -137,6 +137,10 @@ resources:
         secretKeyRef:
           name: {{ template "base.name.release" $ }}-secret-config
           key: token_service_signing_key
+    {{- else }}
+    # DataHub 1.x defaults this to true; set it explicitly so disabling auth takes effect.
+    - name: METADATA_SERVICE_AUTH_ENABLED
+      value: "false"
     {{- end }}
     {{- with .Values.global.kafka.topics }}
     - name: METADATA_AUDIT_EVENT_NAME
