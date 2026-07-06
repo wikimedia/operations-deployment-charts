@@ -378,10 +378,12 @@ inference_services:
             cpu: "16"
             memory: 16Gi
             amd.com/gpu: "2"
+            ephemeral-storage: 35Gi
           requests:
             cpu: "16"
             memory: 16Gi
             amd.com/gpu: "2"
+            ephemeral-storage: 30Gi
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
@@ -409,4 +411,4 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
+                        - "ml-serve1013.eqiad.wmnet"
