@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "base.name.chart" . }}-toolbox
+  name: {{ template "base.name.chart" . }}-dump-toolbox
   {{- include "base.meta.labels" . | indent 2 }}
 spec:
   selector:
@@ -10,11 +10,13 @@ spec:
       app: mediawiki
       release: production
       component: toolbox
+      toolbox: dump
   replicas: 1
   template:
     metadata:
       labels:
         component: toolbox
+        toolbox: dump
         {{/* We hardcode these labels so that the toolbox pod is matched by the mediawiki networkpolicy selector */}}
         app: mediawiki
         release: production
@@ -24,8 +26,9 @@ spec:
     spec:
       securityContext:
         fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
-      - name: "toolbox"
+      - name: "dump-toolbox"
         command: ["sleep"]
         args: ["infinity"]
         image: "{{ .Values.docker.registry }}/{{ .Values.main_app.image }}"
@@ -87,11 +90,13 @@ spec:
       app: mediawiki-dumps-legacy
       release: {{ $.Release.Name }}
       component: sync-pod
+      toolbox: sync
   replicas: 1
   template:
     metadata:
       labels:
         component: sync-pod
+        toolbox: sync
         release: {{ $.Release.Name }}
         app: mediawiki-dumps-legacy
       annotations:
@@ -100,6 +105,7 @@ spec:
     spec:
       securityContext:
         fsGroup: {{ $.Values.dumps.toolbox.fs_group }}
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
       - name: "sync-toolbox"
         command: ["sleep"]
