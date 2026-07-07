@@ -1,0 +1,47 @@
+# OpenSearch 2.x cluster dedicated to DataHub production, co-located in the datahub namespace.
+# Image, OpenSearch version (2.7.0), node sizing (3 master+data) and security/securityContext are
+# inherited from ../_opensearch_common_/values-common.yaml.
+#
+# NOTE (sizing): the inherited node pool is 3 x 4Gi/2cpu with 30Gi SSD, same as datahub-next.
+# Production likely holds more metadata than the test instance, so review this against the current
+# datahubsearch.svc.eqiad.wmnet data volume and override nodePools here if it needs to be larger.
+#
+# Unlike datahub-next this does NOT enable anonymous_all_indices: DataHub authenticates as the
+# `opensearch` user (see values-production.yaml global.elasticsearch.auth), and prod should not
+# permit anonymous access.
+opensearchCluster:
+  general:
+    serviceName: "opensearch-datahub"
+  # The bootstrap pod forms the initial cluster on first bring-up. Left unconfigured it inherits
+  # the namespace LimitRange default.
+  bootstrap:
+    jvm: "-Xmx1g -Xms1g"
+    resources:
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+  # The operator's securityconfig-update job (runs securityadmin.sh) is also unconfigured and hits
+  # the same LimitRange default.
+  security:
+    config:
+      updateJob:
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+
+# TLS cert issued by the WMF cfssl ClusterIssuer (WMF PKI). Include the in-cluster service DNS so
+# the cert is valid for the in-namespace HTTPS connection (validated against the WMF CA shipped in
+# the images; no insecure/skip-verify needed).
+certificate:
+  issuerRefName: opensearch
+  extraFQDNs:
+    - opensearch-datahub.datahub.svc.cluster.local
+    - opensearch-datahub.svc.eqiad.wmnet
+    - opensearch-datahub.discovery.wmnet

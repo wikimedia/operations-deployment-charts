@@ -1,7 +1,9 @@
 helmDefaults:
   createNamespace: false
   verify: false
-  atomic: true
+  # atomic disabled for the v1.6.0 cutover: the first 1.6.0 deploy is slow (system-update hook +
+  # GMS bootstrap) and an atomic rollback on timeout is disruptive. Restore to true once stable.
+  atomic: false
   timeout: 600
   force: false
   args:
@@ -16,7 +18,7 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [production]
+      - releases: [production, opensearch-datahub]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # loaded early here because the below depends on some of these
     missingFileHandler: Warn
@@ -73,9 +75,23 @@ hooks:
 
 
 releases:
+  # In-namespace OpenSearch 2.x cluster for production (DataHub 1.6.0 needs OpenSearch 2.x).
+  # Standalone release (NOT <<: *default, which is datahub-specific); reconciled by the
+  # cluster-wide OpenSearch operator. Security secrets come from the SRE private values path.
+  - name: opensearch-datahub
+    namespace: datahub
+    chart: wmf-stable/opensearch-cluster
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml"
+      - "../_opensearch_common_/values-common.yaml"
+      - "values-opensearch-datahub.yaml"
+      - "/etc/helmfile-defaults/private/dse-k8s_services/datahub/{{ .Environment.Name }}.yaml"
+  # Chart version intentionally unpinned so production tracks the latest published chart, the same
+  # as datahub-next (was pinned to 0.0.82 during the v1.6.0 validation on datahub-next, T402408).
   - name: production
     namespace: datahub
     <<: *default
-    # Pinned to the currently-published chart so prod stays put while datahub-next
-    # validates v1.6.0; raise/remove when v1.6.0 is promoted (T402408).
-    version: "0.0.82"
+    needs:
+      - datahub/opensearch-datahub
