@@ -117,6 +117,21 @@ datahubSystemUpdate:
 datahubUpgrade:
   image:
     tag: "2026-06-29-222051-c4f4ed6903ddb12f550d3b298ba2cda4e3a45082@sha256:e9da2ab3dc05f73811282d9eafe0af0e6d2c79cc7bf95228ba2afb1393887d2c"
+  # A full RestoreIndices reindex needs far more heap than the default. The container was 1Gi and
+  # the JVM only takes ~25% of that (~256Mi) with no explicit heap, so it OOMs. Give it a bigger
+  # container and 75% of it for heap; raise memory further if needed (heap scales with the limit).
+  restoreIndices:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 4Gi
+      requests:
+        cpu: 300m
+        memory: 2Gi
+  # datahub-upgrade's start.sh runs `java $JAVA_OPTS ...` with no default heap, so set it here.
+  extraEnvs:
+    - name: JAVA_OPTS
+      value: "-XX:+ExitOnOutOfMemoryError -XX:MaxRAMPercentage=75.0"
 
 global:
   kafka:
