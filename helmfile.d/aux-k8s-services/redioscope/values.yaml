@@ -31,11 +31,11 @@ app:
     media:
       name: media-ratelimit
       sources: [] # Depend on cluster
-      prefix: "media_upload_policy_(.*)_user_class_(.*)_user_id_(.*)_unit_([^_]*)_"
+      prefix: "media_upload_policy_(.*)_user_class_(.*)_user_id_(.*)"
       labels:
         ratelimit_policy: "$1"
         ratelimit_class: "$2"
-        ratelimit_window: "$4"
+        ratelimit_window: "SECOND"
       interval: 15m
       quantiles: {0.5: 0.05, 0.9: 0.01, 0.99: 0.001, 0.999: 0.0001}
       # Provisional values based on 5MB and 10MB limits for originals and thumbnails respectively
