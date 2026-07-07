@@ -49,6 +49,24 @@ inference_services:
             cpu: "2"
             memory: 4Gi
 
+  tts:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-tts"
+      image_version: "2026-07-07-062223-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "tts"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/tts/"
+      container:
+        resources:
+          limits:
+            cpu: "8"
+            memory: 16Gi
+          requests:
+            cpu: "8"
+            memory: 16Gi
+
 external_services_app_label_selector: app-wmf
 external_services:
   cassandra:
