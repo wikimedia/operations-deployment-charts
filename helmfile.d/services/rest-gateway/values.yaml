@@ -1117,31 +1117,6 @@ main_app:
           out: '/\1'
           to: 'reference-risk.revision-models.wikimedia.org'
 
-    - name: liftwing_inference_eqiad
-      timeout: 60s
-      cluster: inference-eqiad
-      csp_enabled: false
-      api_cors_enabled: true
-      request_headers_to_remove: ["cookie"]
-      response_headers_to_remove: ["set-cookie"]
-      rate_limit_policies: [ "LiftWing", "BYPASS" ]
-      response_headers_to_add:
-        - key: cache-control
-          value: no-cache
-      urls:
-        - name: qwen314b_predict
-          in: '/+service/lw/inference/(v1/models/qwen3-14b:predict(.*))'
-          out: '/\1'
-          to: 'qwen3-14b.experimental.wikimedia.org'
-        - name: qwen314b_chat
-          in: '/+service/lw/inference/v1/models/qwen3-14b/(openai/v1/chat/completions(.*))'
-          out: '/\1'
-          to: 'qwen3-14b.experimental.wikimedia.org'
-        - name: qwen314b_completion
-          in: '/+service/lw/inference/v1/models/qwen3-14b/(openai/v1/completions(.*))'
-          out: '/\1'
-          to: 'qwen3-14b.experimental.wikimedia.org'
-
     # GPU-backed LLM models, rate-limited by the LiftWingLLM policy (T426749).
     # Targeting is by NAME: any InferenceService named "llm-<model>" is matched and
     # gated, so to put a model behind the LLM limits we name it "llm-*". The models live
