@@ -31,7 +31,8 @@ php:
   workers: 24
 mw:
   experimental:
-    enabled: true
+    # to allow overriding mw-parsoid codebase in /srv/mediawiki enable this flag
+    enabled: false
 # enabling mounting of /srv/parsoid-testing from the node
 # via hostPath for parsoid test support.
   parsoid:
