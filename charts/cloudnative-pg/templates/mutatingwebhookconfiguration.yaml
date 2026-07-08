@@ -1,5 +1,6 @@
 #
-# Copyright The CloudNativePG Contributors
+# Copyright © contributors to CloudNativePG, established as
+# CloudNativePG a Series of LF Projects, LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,29 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-{{- if .Values.webhook.mutating.create }}
+# SPDX-License-Identifier: Apache-2.0
+#
+{{- if .Values.webhook.validating.create }}
 ---
 apiVersion: admissionregistration.k8s.io/v1
-kind: MutatingWebhookConfiguration
+kind: ValidatingWebhookConfiguration
 metadata:
-  name: cnpg-mutating-webhook-configuration
-  {{- with .Values.commonAnnotations }}
+  name: cnpg-validating-webhook-configuration
+  labels:
+    {{- include "cloudnative-pg.labels" . | nindent 4 }}
+  {{- with .Values.rbac.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  labels:
-    {{- include "cloudnative-pg.labels" . | nindent 4 }}
 webhooks:
 - admissionReviewVersions:
   - v1
   clientConfig:
     service:
       name: {{ .Values.service.name }}
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-postgresql-cnpg-io-v1-backup
+      namespace: {{ $.Release.Namespace }}
+      path: /validate-postgresql-cnpg-io-v1-backup
       port: {{ .Values.service.port }}
-  failurePolicy: {{ .Values.webhook.mutating.failurePolicy }}
-  name: mbackup.cnpg.io
+  failurePolicy: {{ .Values.webhook.validating.failurePolicy }}
+  name: vbackup.cnpg.io
   rules:
   - apiGroups:
     - postgresql.cnpg.io
@@ -52,11 +55,11 @@ webhooks:
   clientConfig:
     service:
       name: {{ .Values.service.name }}
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-postgresql-cnpg-io-v1-cluster
+      namespace: {{ $.Release.Namespace }}
+      path: /validate-postgresql-cnpg-io-v1-cluster
       port: {{ .Values.service.port }}
-  failurePolicy: {{ .Values.webhook.mutating.failurePolicy }}
-  name: mcluster.cnpg.io
+  failurePolicy: {{ .Values.webhook.validating.failurePolicy }}
+  name: vcluster.cnpg.io
   rules:
   - apiGroups:
     - postgresql.cnpg.io
@@ -73,11 +76,11 @@ webhooks:
   clientConfig:
     service:
       name: {{ .Values.service.name }}
-      namespace: {{ .Release.Namespace }}
-      path: /mutate-postgresql-cnpg-io-v1-scheduledbackup
+      namespace: {{ $.Release.Namespace }}
+      path: /validate-postgresql-cnpg-io-v1-scheduledbackup
       port: {{ .Values.service.port }}
-  failurePolicy: {{ .Values.webhook.mutating.failurePolicy }}
-  name: mscheduledbackup.cnpg.io
+  failurePolicy: {{ .Values.webhook.validating.failurePolicy }}
+  name: vscheduledbackup.cnpg.io
   rules:
   - apiGroups:
     - postgresql.cnpg.io
@@ -88,5 +91,47 @@ webhooks:
     - UPDATE
     resources:
     - scheduledbackups
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: {{ .Values.service.name }}
+      namespace: {{ $.Release.Namespace }}
+      path: /validate-postgresql-cnpg-io-v1-database
+      port: {{ .Values.service.port }}
+  failurePolicy: {{ .Values.webhook.validating.failurePolicy }}
+  name: vdatabase.cnpg.io
+  rules:
+  - apiGroups:
+    - postgresql.cnpg.io
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - databases
+  sideEffects: None
+- admissionReviewVersions:
+    - v1
+  clientConfig:
+    service:
+      name: {{ .Values.service.name }}
+      namespace: {{ $.Release.Namespace }}
+      path: /validate-postgresql-cnpg-io-v1-pooler
+      port: {{ .Values.service.port }}
+  failurePolicy: {{ .Values.webhook.validating.failurePolicy }}
+  name: vpooler.cnpg.io
+  rules:
+    - apiGroups:
+        - postgresql.cnpg.io
+      apiVersions:
+        - v1
+      operations:
+        - CREATE
+        - UPDATE
+      resources:
+        - poolers
   sideEffects: None
 {{- end }}

@@ -1,5 +1,6 @@
 #
-# Copyright The CloudNativePG Contributors
+# Copyright © contributors to CloudNativePG, established as
+# CloudNativePG a Series of LF Projects, LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
 #
 {{- if .Values.serviceAccount.create }}
 ---
@@ -43,14 +46,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - namespaces
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
   - nodes
   verbs:
   - get
@@ -60,27 +55,10 @@ rules:
   - admissionregistration.k8s.io
   resources:
   - mutatingwebhookconfigurations
-  verbs:
-  - get
-  - list
-  - patch
-  - update
-- apiGroups:
-  - admissionregistration.k8s.io
-  resources:
   - validatingwebhookconfigurations
   verbs:
   - get
-  - list
   - patch
-  - update
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - get
-  - list
 - apiGroups:
   - postgresql.cnpg.io
   resources:
@@ -127,6 +105,8 @@ rules:
   - ""
   resources:
   - configmaps
+  - secrets
+  - services
   verbs:
   - create
   - delete
@@ -139,6 +119,7 @@ rules:
   - ""
   resources:
   - configmaps/status
+  - secrets/status
   verbs:
   - get
   - patch
@@ -154,27 +135,7 @@ rules:
   - ""
   resources:
   - persistentvolumeclaims
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - watch
-- apiGroups:
-  - ""
-  resources:
   - pods
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - watch
-- apiGroups:
-  - ""
-  resources:
   - pods/exec
   verbs:
   - create
@@ -192,41 +153,9 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - secrets
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - secrets/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
   - serviceaccounts
   verbs:
   - create
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - create
-  - delete
   - get
   - list
   - patch
@@ -262,7 +191,28 @@ rules:
   verbs:
   - create
   - get
+  - list
   - update
+  - watch
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - podmonitors
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - watch
 - apiGroups:
   - policy
   resources:
@@ -279,6 +229,13 @@ rules:
   - postgresql.cnpg.io
   resources:
   - backups
+  - clusters
+  - databaseroles
+  - databases
+  - poolers
+  - publications
+  - scheduledbackups
+  - subscriptions
   verbs:
   - create
   - delete
@@ -286,42 +243,29 @@ rules:
   - list
   - patch
   - update
+  - watch
+- apiGroups:
+  - postgresql.cnpg.io
+  resources:
+  - failoverquorums
+  verbs:
+  - create
+  - delete
+  - get
+  - list
   - watch
 - apiGroups:
   - postgresql.cnpg.io
   resources:
   - backups/status
+  - databases/status
+  - publications/status
+  - scheduledbackups/status
+  - subscriptions/status
   verbs:
   - get
   - patch
   - update
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
-  - clusters
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
-  - clusters/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
-  - clusters/status
-  verbs:
-  - get
-  - patch
-  - update
-  - watch
 - apiGroups:
   - postgresql.cnpg.io
   resources:
@@ -333,64 +277,27 @@ rules:
 - apiGroups:
   - postgresql.cnpg.io
   resources:
-  - poolers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
+  - clusters/finalizers
+  - databaseroles/finalizers
   - poolers/finalizers
   verbs:
   - update
 - apiGroups:
   - postgresql.cnpg.io
   resources:
+  - clusters/status
+  - databaseroles/status
   - poolers/status
+  - failoverquorums/status
   verbs:
   - get
   - patch
   - update
   - watch
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
-  - scheduledbackups
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - postgresql.cnpg.io
-  resources:
-  - scheduledbackups/status
-  verbs:
-  - get
-  - patch
-  - update
 - apiGroups:
   - rbac.authorization.k8s.io
   resources:
   - rolebindings
-  verbs:
-  - create
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
   - roles
   verbs:
   - create

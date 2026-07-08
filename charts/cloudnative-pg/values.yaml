@@ -1,5 +1,6 @@
 #
-# Copyright The CloudNativePG Contributors
+# Copyright © contributors to CloudNativePG, established as
+# CloudNativePG a Series of LF Projects, LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
 #
 # Default values for CloudNativePG.
 # This is a YAML-formatted file.
@@ -28,6 +31,21 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+hostNetwork: false
+dnsPolicy: ""
+
+# -- Update strategy for the operator.
+# ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+# For example:
+#  type: RollingUpdate
+#  rollingUpdate:
+#    maxSurge: 25%
+#    maxUnavailable: 25%
+updateStrategy: {}
+
+crds:
+  # -- Specifies whether the CRDs should be created when installing the chart.
+  create: true
 
 # -- The webhook configuration.
 webhook:
@@ -42,8 +60,11 @@ webhook:
     initialDelaySeconds: 3
   readinessProbe:
     initialDelaySeconds: 3
+  startupProbe:
+    failureThreshold: 6
+    periodSeconds: 5
 
-# -- Operator configuration.
+# Operator configuration.
 config:
   # -- Specifies whether the secret should be created.
   create: true
@@ -51,6 +72,10 @@ config:
   name: cnpg-controller-manager-config
   # -- Specifies whether it should be stored in a secret, instead of a configmap.
   secret: false
+  # -- This option determines if the operator is responsible for observing
+  # events across the entire Kubernetes cluster or if its focus should be
+  # narrowed down to the specific namespace within which it has been deployed.
+  clusterWide: false  # WMF SPECIFIC
   # -- The content of the configmap/secret, see
   # https://cloudnative-pg.io/documentation/current/operator_conf/#available-options
   # for all the available options.
@@ -58,8 +83,10 @@ config:
   # INHERITED_ANNOTATIONS: categories
   # INHERITED_LABELS: environment, workload, app
   # WATCH_NAMESPACE: namespace-a,namespace-b
+  # -- The maximum number of concurrent reconciles. Defaults to 10.
+  maxConcurrentReconciles: 10
 
-# -- Additinal arguments to be added to the operator's args list.
+# -- Additional arguments to be added to the operator's args list.
 additionalArgs: []
 
 # -- Array containing extra environment variables which can be templated.
@@ -75,6 +102,7 @@ additionalEnv:
 - name: INHERITED_ANNOTATIONS
   value: "prometheus.io/*"
 
+
 serviceAccount:
   # -- Specifies whether the service account should be created.
   create: true
@@ -83,7 +111,7 @@ serviceAccount:
   name: ""
 
 rbac:
-  # -- Specifies whether Role and RoleBinding should be created.
+  # -- Specifies whether ClusterRole and ClusterRoleBinding should be created.
   create: true
   # -- Aggregate ClusterRoles to Kubernetes default user-facing roles.
   # Ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles
@@ -91,6 +119,7 @@ rbac:
 
 # -- Annotations to be added to all other resources.
 commonAnnotations: {}
+
 # -- Annotations to be added to the pod.
 podAnnotations:
   # See https://cloudnative-pg.io/documentation/1.23/monitoring/#monitoring-the-operator
@@ -130,6 +159,10 @@ service:
   # and can not be configured
   name: cnpg-webhook-service
   port: 443
+  # -- Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)
+  ipFamilyPolicy: ""
+  # -- Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
+  ipFamilies: []
 
 resources: {}
   # If you want to specify resources, uncomment the following
@@ -145,6 +178,9 @@ resources: {}
 # -- Nodeselector for the operator to be installed.
 nodeSelector: {}
 
+# -- Topology Spread Constraints for the operator to be installed.
+topologySpreadConstraints: []
+
 # -- Tolerations for the operator to be installed.
 tolerations: []
 
@@ -156,5 +192,29 @@ monitoringQueriesConfigMap:
   # -- The name of the default monitoring configmap.
   name: cnpg-default-monitoring
 
-# Custom value listing the namespaces to watch for the creation of PG-related resources
-watchedNamespaces: []
+
+monitoring:
+
+  # -- Specifies whether the monitoring should be enabled. Requires Prometheus Operator CRDs.
+  podMonitorEnabled: false
+  # -- Metrics relabel configurations to apply to samples before ingestion.
+  podMonitorMetricRelabelings: []
+  # -- Relabel configurations to apply to samples before scraping.
+  podMonitorRelabelings: []
+  # -- Additional labels for the podMonitor
+  podMonitorAdditionalLabels: {}
+
+  grafanaDashboard:
+    create: false
+    # -- Allows overriding the namespace where the ConfigMap will be created, defaulting to the same one as the Release.
+    namespace: ""
+    # -- The name of the ConfigMap containing the dashboard.
+    configMapName: "cnpg-grafana-dashboard"
+    # -- Label that ConfigMaps should have to be loaded as dashboards.  DEPRECATED: Use labels instead.
+    sidecarLabel: "grafana_dashboard"
+    # -- Label value that ConfigMaps should have to be loaded as dashboards.  DEPRECATED: Use labels instead.
+    sidecarLabelValue: "1"
+    # -- Labels that ConfigMaps should have to get configured in Grafana.
+    labels: {}
+    # -- Annotations that ConfigMaps can have to get configured in Grafana.
+    annotations: {}
