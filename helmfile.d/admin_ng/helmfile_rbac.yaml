@@ -40,7 +40,7 @@ releases:
             {{- end }}
             {{- if hasKey .Environment.Values "install_cloudnative_pg_operator" }}
             - apiGroups: ["postgresql.cnpg.io"]
-              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups"]
+              resources: ["backups", "clusters", "clusters/status", "databaseroles", "databases", "failoverquorums", "poolers", "publications", "scheduledbackups", "imagecatalogs", "clusterimagecatalogs", "subscriptions"]
               verbs: ["get", "list", "watch"]
             {{- end }}
             {{- if hasKey .Environment.Values "install_opensearch_operator" }}
@@ -130,7 +130,7 @@ releases:
             {{- end }}
             {{- if hasKey .Environment.Values "install_cloudnative_pg_operator" }}
             - apiGroups: ["postgresql.cnpg.io"]
-              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              resources: ["backups", "clusters", "clusters/status", "databaseroles", "databases", "failoverquorums", "poolers", "publications", "scheduledbackups", "imagecatalogs", "clusterimagecatalogs", "subscriptions"]
               verbs: ["*"]
             {{- end }}
             {{- if hasKey .Environment.Values "install_opensearch_operator" }}
@@ -218,7 +218,7 @@ releases:
             {{- end }}
             {{- if hasKey $.Environment.Values "install_cloudnative_pg_operator" }}
             - apiGroups: ["postgresql.cnpg.io"]
-              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              resources: ["backups", "clusters", "clusters/status", "databaseroles", "databases", "failoverquorums", "poolers", "publications", "scheduledbackups", "imagecatalogs", "clusterimagecatalogs", "subscriptions"]
               verbs: ["*"]
             {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
@@ -335,7 +335,7 @@ releases:
             {{- end }}
             {{- if hasKey $.Environment.Values "install_cloudnative_pg_operator" }}
             - apiGroups: ["postgresql.cnpg.io"]
-              resources: ["clusters", "poolers", "imagecatalogs", "scheduledbackups", "backups"]
+              resources: ["backups", "clusters", "clusters/status", "databaseroles", "databases", "failoverquorums", "poolers", "publications", "scheduledbackups", "imagecatalogs", "clusterimagecatalogs", "subscriptions"]
               verbs: ["*"]
             {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
