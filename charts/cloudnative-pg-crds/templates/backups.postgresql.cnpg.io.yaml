@@ -1,9 +1,8 @@
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.14.0
+    controller-gen.kubebuilder.io/version: v0.20.0
     helm.sh/resource-policy: keep
   name: backups.postgresql.cnpg.io
 spec:
@@ -34,7 +33,8 @@ spec:
     name: v1
     schema:
       openAPIV3Schema:
-        description: Backup is the Schema for the backups API
+        description: A Backup resource is a request for a PostgreSQL backup by the
+          user.
         properties:
           apiVersion:
             description: |-
@@ -142,6 +142,9 @@ spec:
             required:
             - cluster
             type: object
+            x-kubernetes-validations:
+            - message: BackupSpec is immutable once set
+              rule: oldSelf == self
           status:
             description: |-
               Most recently observed status of the backup. This data may not be up to
@@ -211,6 +214,11 @@ spec:
                     - key
                     - name
                     type: object
+                  useDefaultAzureCredentials:
+                    description: |-
+                      Use the default Azure authentication flow, which includes DefaultAzureCredential.
+                      This allows authentication using environment variables and managed identities.
+                    type: boolean
                 type: object
               backupId:
                 description: The ID of the Barman backup
@@ -308,7 +316,19 @@ spec:
                   podName:
                     description: The pod name
                     type: string
+                  sessionID:
+                    description: |-
+                      The instance manager session ID. This is a unique identifier generated at instance manager
+                      startup and changes on every restart (including container reboots). Used to detect if
+                      the instance manager was restarted during long-running operations like backups, which
+                      would terminate any running backup process.
+                    type: string
                 type: object
+              majorVersion:
+                description: |-
+                  The PostgreSQL major version that was running when the
+                  backup was taken.
+                type: integer
               method:
                 description: The backup method being used
                 type: string
@@ -319,6 +339,11 @@ spec:
               phase:
                 description: The last backup status
                 type: string
+              pluginMetadata:
+                additionalProperties:
+                  type: string
+                description: A map containing the plugin metadata
+                type: object
               s3Credentials:
                 description: The credentials to use to upload data to S3
                 properties:

@@ -5,15 +5,15 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.20.0
     helm.sh/resource-policy: keep
-  name: clusterimagecatalogs.postgresql.cnpg.io
+  name: imagecatalogs.postgresql.cnpg.io
 spec:
   group: postgresql.cnpg.io
   names:
-    kind: ClusterImageCatalog
-    listKind: ClusterImageCatalogList
-    plural: clusterimagecatalogs
-    singular: clusterimagecatalog
-  scope: Cluster
+    kind: ImageCatalog
+    listKind: ImageCatalogList
+    plural: imagecatalogs
+    singular: imagecatalog
+  scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .metadata.creationTimestamp
@@ -22,8 +22,7 @@ spec:
     name: v1
     schema:
       openAPIV3Schema:
-        description: ClusterImageCatalog is the Schema for the clusterimagecatalogs
-          API
+        description: ImageCatalog is the Schema for the imagecatalogs API
         properties:
           apiVersion:
             description: |-
@@ -44,7 +43,7 @@ spec:
             type: object
           spec:
             description: |-
-              Specification of the desired behavior of the ClusterImageCatalog.
+              Specification of the desired behavior of the ImageCatalog.
               More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
             properties:
               images:
