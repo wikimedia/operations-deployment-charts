@@ -1,10 +1,6 @@
 # OpenSearch 2.x cluster dedicated to DataHub production, co-located in the datahub namespace.
-# Image, OpenSearch version (2.7.0), node sizing (3 master+data) and security/securityContext are
-# inherited from ../_opensearch_common_/values-common.yaml.
-#
-# NOTE (sizing): the inherited node pool is 3 x 4Gi/2cpu with 30Gi SSD, same as datahub-next.
-# Production likely holds more metadata than the test instance, so review this against the current
-# datahubsearch.svc.eqiad.wmnet data volume and override nodePools here if it needs to be larger.
+# Image, OpenSearch version (2.7.0) and security/securityContext are inherited from
+# ../_opensearch_common_/values-common.yaml. The node pool is overridden below.
 #
 # Unlike datahub-next this does NOT enable anonymous_all_indices: DataHub authenticates as the
 # `opensearch` user (see values-production.yaml global.elasticsearch.auth), and prod should not
@@ -12,6 +8,56 @@
 opensearchCluster:
   general:
     serviceName: "opensearch-datahub"
+    additionalConfig:
+      # DataHub's graph writes issue a delete-by-query (one scroll context each) per change
+      # event; a restore-indices backlog exhausts the default 500 and everything 429s.
+      search.max_open_scroll_context: "3000"
+  # Restates the values-common node pool (helm replaces lists wholesale) with doubled memory
+  # and an explicit 4g heap, matching the previous datahubsearch VMs (3 x 8G).
+  nodePools:
+    - component: masters
+      diskSize: "30Gi"
+      persistence:
+        pvc:
+          storageClass: ceph-rbd-ssd
+          accessModes:
+            - ReadWriteOnce
+      replicas: 3
+      roles:
+        - "master"
+        - "data"
+      jvm: "-Xms4g -Xmx4g"
+      resources:
+        requests:
+          memory: "8Gi"
+          cpu: "2000m"
+        limits:
+          memory: "8Gi"
+          cpu: "2000m"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+        prometheus.io/path: "/_prometheus/metrics"
+        prometheus.io/scheme: "https"
+      # We don't want the opensearch pods to be scheduled on pods with a 1G NIC.
+      # See T415635, T416345.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: capabilities.nic
+                operator: NotIn
+                values:
+                - 1G
+      # prevent 2 masters from being scheduled on the same k8s worker
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-nodepool: masters
+              topologyKey: kubernetes.io/hostname
   # The bootstrap pod forms the initial cluster on first bring-up. Left unconfigured it inherits
   # the namespace LimitRange default.
   bootstrap:
