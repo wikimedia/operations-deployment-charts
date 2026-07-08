@@ -50,6 +50,7 @@ discovery:
   - mw-api-int-async   # TODO: change to a more stringent timeout
   - restbase-for-services
   - eventgate-main
+  - linked-artifacts
 
 networkpolicy:
   egress:
@@ -90,6 +91,14 @@ networkpolicy:
       ports:
       - protocol: tcp
         port: 4492
+    - cidr: 10.2.2.70/32 # k8s-ingress-wikikube-ro.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.1.70/32 # k8s-ingress-wikikube-ro.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 30443
 
 datastore:
   cassandra_client:
