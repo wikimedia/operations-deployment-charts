@@ -97,6 +97,11 @@ datahub-mae-consumer:
     requests:
       cpu: 1
       memory: 1G
+  # One listener thread per MetadataChangeLog_Versioned_v1 partition; the default
+  # single thread cannot keep up with a restore-indices backlog.
+  datahub_config:
+    public:
+      KAFKA_LISTENER_CONCURRENCY: 5
   external_services:
     mariadb: [analytics-meta]
     kafka: [jumbo-eqiad]
