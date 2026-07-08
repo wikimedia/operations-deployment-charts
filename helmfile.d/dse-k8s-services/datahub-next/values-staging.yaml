@@ -33,6 +33,9 @@ datahub-frontend:
       client_id: "datahub_staging"
       base_url: "https://datahub-next.wikimedia.org"
       discovery_uri: "https://idp-test.wikimedia.org/oidc/.well-known"
+      # Pin the DataHub username to the shell name (uid): under v1.6.0, preferred_username
+      # resolves to the free-form Developer Account name instead (T309382).
+      user_name_claim: "uid"
   datahub_config:
     <<: *datahub_config
     public:
