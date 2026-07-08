@@ -22,10 +22,12 @@ inference_services:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 30Gi
           requests:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 25Gi
       config:
         maxReplicas: 1
         tolerations:

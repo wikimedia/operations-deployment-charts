@@ -24,10 +24,12 @@ inference_services:
             cpu: "6"
             memory: 8Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 30Gi
           requests:
             cpu: "6"
             memory: 8Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 25Gi
       config:
         tolerations:
           - key: "dedicated"
@@ -76,10 +78,12 @@ inference_services:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 15Gi
           requests:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 10Gi
       config:
         maxReplicas: 1
         tolerations:
@@ -135,10 +139,12 @@ inference_services:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 15Gi
           requests:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 10Gi
       config:
         maxReplicas: 1
         tolerations:
@@ -227,10 +233,12 @@ inference_services:
             cpu: "16"
             memory: 80Gi
             amd.com/gpu: "2"
+            ephemeral-storage: 25Gi
           requests:
             cpu: "16"
             memory: 80Gi
             amd.com/gpu: "2"
+            ephemeral-storage: 20Gi
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
@@ -285,10 +293,12 @@ inference_services:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 65Gi
           requests:
             cpu: "6"
             memory: 16Gi
             amd.com/gpu: "1"
+            ephemeral-storage: 60Gi
       config:
         maxReplicas: 1
         tolerations:
