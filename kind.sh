@@ -6,6 +6,8 @@ set -e
 
 KIND_CLUSTER_NAME="admin-ng"
 SIMPLE_CFSSL_URL="https://gerrit.wikimedia.org/r/plugins/gitiles/operations/software/cfssl-issuer/+archive/refs/heads/main/simple-cfssl.tar.gz"
+ISTIOCTL="istioctl-1.29.4"
+ISTIO_CONFIG="custom_deploy.d/istio/main/config_1.29.yaml"
 
 if kind get clusters | grep "^${KIND_CLUSTER_NAME}$" -q; then
   read -p "Cluster '${KIND_CLUSTER_NAME}' already exists. Delete it and recreate? [y/N]: " confirm
@@ -61,7 +63,7 @@ metadata:
 __EOF__
 
 # Install Istio CRDs early, so that we have them available for the admin_ng deployment
-istioctl-1.24.2 install --set profile=remote --skip-confirmation
+$ISTIOCTL install --set profile=remote --skip-confirmation
 # Remove the isio-system namespace created by istioctl, it will be created by helmfile later on
 kubectl delete ns istio-system
 
@@ -146,4 +148,4 @@ popd
 rm -rf "${tmp_admin_ng}"
 
 # Install Istio using the main configuration
-istioctl-1.24.2 manifest apply --skip-confirmation -f custom_deploy.d/istio/main/config.yaml
+$ISTIOCTL manifest apply --skip-confirmation -f "$ISTIO_CONFIG"
