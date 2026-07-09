@@ -233,12 +233,12 @@ inference_services:
             cpu: "16"
             memory: 80Gi
             amd.com/gpu: "2"
-            ephemeral-storage: 25Gi
+            ephemeral-storage: 35Gi
           requests:
             cpu: "16"
             memory: 80Gi
             amd.com/gpu: "2"
-            ephemeral-storage: 20Gi
+            ephemeral-storage: 30Gi
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
