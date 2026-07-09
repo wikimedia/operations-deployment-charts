@@ -40,6 +40,12 @@ health:
   config:
     public:
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
+      # Pool the pod as soon as the index is loaded, without waiting for the
+      # consumer to catch up with Kafka lag. The health-monitor has no toggle
+      # to disable the lag check, so we set the threshold effectively-infinite
+      # to neutralise it. The index-loaded check (HEALTH_MONITOR_INDEX_*) still
+      # gates the /probe startup check.
+      HEALTH_MONITOR_UPDATE_LAG_THRESHOLD: 2147483647
 
 proxy:
   version: v0.3.1
