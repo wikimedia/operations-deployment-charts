@@ -1,6 +1,5 @@
 releases:
-  - &coredns
-    name: coredns
+  - name: coredns
     namespace: kube-system
     chart: wmf-stable/coredns
     {{- $version := .Values.chartVersions | get "wmf-stable/coredns" "" }}
@@ -17,9 +16,3 @@ releases:
       - "{{`{{ .Release.Name }}`}}/values.yaml"                                # Release specific overrides
       - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment
       - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"    # Secrets (from private puppet repo)
-
-  # When requested, also install an "internal only" instance of CoreDNS, which only resolves domain
-  # names in cluster.local and wmnet, without recursing to external (internet) DNS servers.
-  - <<: *coredns
-    name: coredns-internalonly
-    installedTemplate: "{{`{{ .Environment.Values | get \"install_coredns_internalonly\" false }}`}}"

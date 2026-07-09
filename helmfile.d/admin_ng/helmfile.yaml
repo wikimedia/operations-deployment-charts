@@ -20,7 +20,6 @@ environments:
       - install_sidecar_job_controller: true
       - install_external_services: true
       - install_opentelemetry_collector: true
-      - install_coredns_internalonly: true
   codfw:
     values:
       - "values/common.yaml"
@@ -40,7 +39,6 @@ environments:
       - install_sidecar_job_controller: true
       - install_external_services: true
       - install_opentelemetry_collector: true
-      - install_coredns_internalonly: true
   # Staging Wikikube clusters
   # See https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#staging
   staging-eqiad:
@@ -61,7 +59,6 @@ environments:
       - install_flink_operator: true
       - install_sidecar_job_controller: true
       - install_external_services: true
-      - install_coredns_internalonly: true
   staging-codfw:
     values:
       - "values/common.yaml"
@@ -80,7 +77,6 @@ environments:
       - install_flink_operator: true
       - install_sidecar_job_controller: true
       - install_external_services: true
-      - install_coredns_internalonly: true
   # Machine Learning clusters
   # see https://wikitech.wikimedia.org/wiki/Kubernetes/Clusters#ml-serve
   ml-serve-eqiad:
