@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.25]
+### Added
+### Deprecated
+### Removed
+### Fixed
+  - Render nodePool affinity through tpl, so that values can reference the
+  cluster name (e.g. in podAntiAffinity matchLabels, where a hardcoded name
+  left the anti-affinity rule matching no pods).
+
+---
 ## [0.0.24]
 ### Added
   - Render spec.bootstrap.jvm and spec.bootstrap.resources so the

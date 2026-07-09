@@ -216,8 +216,10 @@ spec:
         {{- toYaml $val.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if $val.affinity }}
+      {{- /* Rendered through tpl so shared values can reference the cluster name, e.g. in
+             podAntiAffinity matchLabels: the operator labels pods with the CR name. */}}
       affinity:
-        {{- toYaml $val.affinity | nindent 8 }}
+        {{- tpl (toYaml $val.affinity) $ | nindent 8 }}
       {{- end }}
       {{- if $val.tolerations }}
       tolerations:
