@@ -58,6 +58,10 @@ config:
   public: # Add here all the keys that can be publicly available as a ConfigMap
     AIRFLOW_HOME: /opt/airflow
   private: {} # Add here all the keys that should be private but still available as env variables
+  # Values that back the standalone Secret objects declared in config.extra_k8s_secrets, sourced
+  # from the private helmfile values. Unlike config.private, these are NOT injected as env vars on
+  # the airflow/task pods - they only land in the dedicated Secret they are referenced from.
+  private_secrets: {}
   airflow:
     dags_root: /opt/airflow/dags
     dags_folder: '{{ $.Values.config.airflow.instance_name | replace "-" "_" }}'
@@ -211,6 +215,16 @@ config:
         deploy-mode: cluster
 
   extra_secrets: {}
+
+  # Standalone Kubernetes Secret objects, each with its own custom name (unlike extra_secrets, which
+  # only adds keys into the shared -connections-variables Secret). Once created in the namespace they
+  # can be consumed by task pods via secretKeyRef. Structure: <secret-name>: { <key>: <value> }.
+  # Values are tpl-rendered (so they may reference config.private_secrets.*); empty values are
+  # skipped, and a Secret with no non-empty keys is not rendered at all. Example:
+  #   extra_k8s_secrets:
+  #     gcs-token-search-console:
+  #       credentials: '{{ .Values.config.private_secrets.gcs_token_search_console | default "" }}'
+  extra_k8s_secrets: {}
 
   oidc:
     idp_server: override_me

@@ -13,6 +13,19 @@ config:
     idp_server: idp-test.wikimedia.org
     client_id: ci
 
+  # Dummy secret to exercise the extra_k8s_secrets / private_secrets rendering.
+  private_secrets:
+    gcs_token_search_console: |
+      {
+        "type": "service_account",
+        "project_id": "search-console-export-ci",
+        "private_key": "-----BEGIN PRIVATE KEY-----\ndummy\n-----END PRIVATE KEY-----\n",
+        "client_email": "ci@search-console-export-ci.iam.gserviceaccount.com"
+      }
+  extra_k8s_secrets:
+    gcs-token-search-console:
+      credentials: '{{ .Values.config.private_secrets.gcs_token_search_console | default "" }}'
+
 kerberos:
   keytab: cGxvcAo=
 

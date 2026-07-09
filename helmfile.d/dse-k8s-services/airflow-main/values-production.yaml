@@ -32,6 +32,10 @@ config:
         type: "datahub-rest"
         config:
           server: 'https://datahub-gms.discovery.wmnet:30443'
+  extra_k8s_secrets:
+    # This GCP service account is scoped to the Google Search Console API, and has no access to any other GCP resources.
+    gcs-token-search-console:
+      credentials: '{{ .Values.config.private_secrets.gcs_token_search_console | default "" }}'
   geoip:
     enabled: true
 
