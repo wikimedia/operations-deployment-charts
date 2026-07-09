@@ -1,5 +1,5 @@
 app:
-  version: v1.4.6-prod
+  version: v1.4.7-prod
 
   service:
     user_agent: Test Kitchen UI/1.4 (#experiment-platform)
@@ -27,6 +27,11 @@ app:
     ui_url: https://growthbook-next.wikimedia.org/experiments
     drafts_validation: true
     drafts_validation_interval: 4
+
+  phabricator:
+    api_url: https://phabricator.discovery.wmnet/api/
+    enabled: true
+    timeout_ms: 5000
 
 ingress:
   gatewayHosts:
