@@ -2207,6 +2207,13 @@ config:
             title: X-WMF-RateLimit class
             formula: $x_wmf_ratelimit_class
 
+          - name: top_historical_webrequest
+            title: Top historical IPs from Webrequest
+            formula: $top_historical_webrequest
+
+          - name: datacenter
+            title: X-Provenance datacenter
+            formula: $datacenter
 
           # This is the place where you might want to add derived dimensions.
           #
