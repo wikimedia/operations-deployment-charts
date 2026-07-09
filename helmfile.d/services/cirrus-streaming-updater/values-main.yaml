@@ -27,10 +27,12 @@ app:
     state.backend.type: hashmap
     execution.checkpointing.num-retained: "10"
     # Enable automatic restarts
-    restart-strategy.type: failure-rate
-    restart-strategy.failure-rate.delay: "1 min"
-    restart-strategy.failure-rate.failure-rate-interval: "2 min"
-    restart-strategy.failure-rate.max-failures-per-interval: "10"
+    restart-strategy: exponential-delay
+    restart-strategy.exponential-delay.initial-backoff: "10 s"
+    restart-strategy.exponential-delay.max-backoff: "2 min"
+    restart-strategy.exponential-delay.backoff-multiplier: "2.0"
+    restart-strategy.exponential-delay.reset-backoff-threshold: "10 min"
+    restart-strategy.exponential-delay.jitter-factor: "0.1"
     # When HA is disabled we need to set an interval in order to trigger checkpointing.
     # TODO: after gaining some operational experience, set this value to something
     # meaningful. Given the small size of kafka offsets (KBs), 10 seconds seems a reasonable
