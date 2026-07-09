@@ -13,6 +13,19 @@
 # templates/controller/tenant-pods-rbac.yaml).
 tenantNamespaces: []
 
+# Run the CSI node plugin only on workers that run the lvmd systemd service
+# (labelled lvmd=enabled by puppet, see T429325). On any other node the
+# DaemonSet pod would fail to start, as the /run/topolvm hostPath does not
+# exist. The current lvmd hosts are dedicated (tainted) wdqs nodes, and any
+# future dedicated pool with local storage needs tolerating too, so tolerate
+# every dedicated=* taint rather than just wdqs.
+node:
+  nodeSelector:
+    lvmd: enabled
+  tolerations:
+    - key: dedicated
+      operator: Exists
+
 # Sign the webhook cert with WMF PKI instead of a self-signed CA.
 webhook:
   existingCertManagerIssuer:
@@ -32,31 +45,46 @@ image:
 
 # StorageClasses to create. Each one selects a host lvmd device-class *by name*
 # through the topolvm.io/device-class parameter, and that name must match a
-# device-class defined in the node's lvmd config (puppet). A StorageClass with
-# no device-class parameter uses whichever device-class each node marks default.
+# device-class defined in the node's lvmd config (puppet). To add storage on a
+# new class of worker, define a new device-class in its lvmd hiera and add a
+# matching StorageClass here.
 #
-# This is exactly how heterogeneous workers are supported: give each node type's
-# lvmd the device-classes that suit its hardware (e.g. "nvme", "ssd", "capacity")
-# and create one StorageClass per device-class name. TopoLVM only schedules a PVC
-# onto a node that advertises free capacity for the requested device-class (we
-# have controller.storageCapacityTracking enabled), so a PVC for "topolvm-nvme"
-# lands only on nodes whose lvmd defines an "nvme" device-class.
+# TopoLVM only schedules a PVC onto a node that advertises free capacity for
+# the requested device-class (controller.storageCapacityTracking is enabled),
+# so with WaitForFirstConsumer a pod requesting "topolvm-performance" lands
+# only on nodes whose lvmd defines a "performance" device-class. A class whose
+# device-class no node advertises yet just leaves its pods Pending.
 #
-# The chart default is a single "topolvm-provisioner" class bound to each node's
-# default device-class. Replace it once the node storage layout and lvmd
-# device-class names are finalised, for example:
-# storageClasses:
-#   - name: topolvm-nvme
-#     storageClass:
-#       fsType: ext4
-#       volumeBindingMode: WaitForFirstConsumer
-#       allowVolumeExpansion: true
-#       additionalParameters:
-#         "topolvm.io/device-class": "nvme"
-#   - name: topolvm-capacity
-#     storageClass:
-#       fsType: ext4
-#       volumeBindingMode: WaitForFirstConsumer
-#       allowVolumeExpansion: true
-#       additionalParameters:
-#         "topolvm.io/device-class": "capacity"
+# Workloads whose data does not need to outlive the pod should request these
+# classes through a generic ephemeral volume (spec.volumes[].ephemeral): the
+# PVC then shares the pod's lifecycle and the logical volume is removed with
+# it (reclaimPolicy defaults to Delete).
+#
+# The image ships mkfs for ext4, xfs and btrfs; we default to ext4.
+storageClasses:
+  # Striped NVMe drives (vg_data) on the dse-k8s-wdqs workers.
+  - name: topolvm-performance
+    storageClass:
+      fsType: ext4
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+      additionalParameters:
+        "topolvm.io/device-class": "performance"
+  # Striped SSD partitions (vg_data) on the dse-k8s-wdqs-test hosts.
+  - name: topolvm-balanced
+    storageClass:
+      fsType: ext4
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+      additionalParameters:
+        "topolvm.io/device-class": "balanced"
+  # Large HDD arrays (vg1) on the repurposed Hadoop and kafka-stretch workers
+  # (dse-k8s-worker102[5-8] and dse-k8s-worker200[1-2]). No node advertises
+  # this device-class until their lvmd hiera is added (T429325).
+  - name: topolvm-capacity
+    storageClass:
+      fsType: ext4
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
+      additionalParameters:
+        "topolvm.io/device-class": "capacity"
