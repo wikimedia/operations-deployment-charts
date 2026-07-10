@@ -15,3 +15,7 @@ external_services:
     - main-codfw
   s3:
     - codfw-dpe
+    # Allow egress to the eqiad RGW so codfw backends can load the qlever index
+    # from a single shared eqiad bucket (NEW_INDEX_S3_HOST defaults to
+    # rgw.eqiad.dpe.anycast.wmnet).
+    - eqiad-dpe
