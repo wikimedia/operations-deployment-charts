@@ -51,17 +51,21 @@ inference_services:
 
   tts:
     predictor:
+      config:
+        containerConcurrency: 1
+        minReplicas: 1
+        maxReplicas: 4
       image: "machinelearning-liftwing-inference-services-tts"
-      image_version: "2026-07-10-091118-publish"
+      image_version: "2026-07-10-112644-publish"
       custom_env:
         - name: MODEL_NAME
           value: "tts"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/tts/"
         - name: KOKORO_THREADS
-          value: "2"
+          value: "8"
         - name: W2V2_THREADS
-          value: "2"
+          value: "4"
       container:
         resources:
           limits:
