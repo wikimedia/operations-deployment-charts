@@ -21,7 +21,7 @@ environments:
     missingFileHandler: Warn
   dse-k8s-codfw:
     values:
-      - releases: [scholarly-internal] # once the necessary wdqs cluster nodes have been integrated, this will include all releases
+      - releases: [main-internal, scholarly-internal, main-external, scholarly-external]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
