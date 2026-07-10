@@ -16,7 +16,7 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [main-internal] # once the necessary wdqs cluster nodes have been integrated, this will include all releases
+      - releases: [main-internal, scholarly-internal, main-external, scholarly-external]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   dse-k8s-codfw:
