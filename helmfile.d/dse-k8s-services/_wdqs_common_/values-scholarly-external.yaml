@@ -17,6 +17,12 @@ qlever:
   config:
     public:
       QLEVER_DBNAME: scholarly_articles
+      QLEVER_MAX_MEM: 20G
+      QLEVER_MAX_CACHE: 8G
+  requests:
+    memory: 8Gi
+  limits:
+    memory: 24Gi
 
 init:
   config:

@@ -7,18 +7,16 @@ qlever:
   version: v0.5.47
   config:
     public:
-      QLEVER_MAX_MEM: 100G
-      QLEVER_MAX_CACHE: 32G
       QLEVER_QUERY_TIMEOUT: 300s
+  # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
+  # set per-release so each dataset fits the wdqs namespace quota
   requests:
     cpu: 4
-    memory: 32Gi
   limits:
     cpu: 10
-    memory: 120Gi
 
 init:
-  version: v0.0.8
+  version: v0.0.9
   config:
     public:
       NUM_BACKUPS: 1
