@@ -52,12 +52,16 @@ inference_services:
   tts:
     predictor:
       image: "machinelearning-liftwing-inference-services-tts"
-      image_version: "2026-07-09-120433-publish"
+      image_version: "2026-07-10-091118-publish"
       custom_env:
         - name: MODEL_NAME
           value: "tts"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/tts/"
+        - name: KOKORO_THREADS
+          value: "2"
+        - name: W2V2_THREADS
+          value: "2"
       container:
         resources:
           limits:
