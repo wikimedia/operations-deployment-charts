@@ -12,3 +12,20 @@ ingress:
 mesh:
   certmanager:
     default_host: wdqs2-main-external
+
+qlever:
+  config:
+    public:
+      QLEVER_DBNAME: wikidata_main
+  requests:
+    cpu: 4
+    memory: 32Gi
+  limits:
+    cpu: 10
+    memory: 100Gi
+
+init:
+  config:
+    public:
+      NEW_INDEX_S3_BUCKET: wdqs-update-pipeline
+      NEW_INDEX_S3_PATH: wikidata_main/

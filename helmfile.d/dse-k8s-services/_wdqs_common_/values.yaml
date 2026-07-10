@@ -9,6 +9,7 @@ qlever:
     public:
       QLEVER_MAX_MEM: 100G
       QLEVER_MAX_CACHE: 32G
+      QLEVER_QUERY_TIMEOUT: 300s
   requests:
     cpu: 4
     memory: 32Gi
@@ -25,10 +26,20 @@ init:
       LOGLEVEL: DEBUG
 
 consumer:
-  version: v0.0.8
+  version: v0.1.2
+  config:
+    public:
+      BATCH_SIZE: 100000
+      BUFFERED_INPUT_MESSAGES: 500
+      BATCH_TIMEOUT: 600
+      HEAP_SIZE: 2g
+      LOG_LEVEL: DEBUG
 
 health:
   version: v0.0.2
+  config:
+    public:
+      QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
 
 proxy:
   version: v0.3.1

@@ -10,3 +10,15 @@ ingress:
 mesh:
   certmanager:
     default_host: wdqs2-scholarly-internal
+
+
+qlever:
+  config:
+    public:
+      QLEVER_DBNAME: scholarly_articles
+
+init:
+  config:
+    public:
+      NEW_INDEX_S3_BUCKET: wdqs-update-pipeline
+      NEW_INDEX_S3_PATH: scholarly_articles/
