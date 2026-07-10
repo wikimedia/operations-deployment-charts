@@ -56,7 +56,7 @@ inference_services:
         minReplicas: 1
         maxReplicas: 4
       image: "machinelearning-liftwing-inference-services-tts"
-      image_version: "2026-07-10-112644-publish"
+      image_version: "2026-07-10-163102-publish"
       custom_env:
         - name: MODEL_NAME
           value: "tts"
@@ -65,7 +65,7 @@ inference_services:
         - name: KOKORO_THREADS
           value: "8"
         - name: W2V2_THREADS
-          value: "4"
+          value: "2"
       container:
         resources:
           limits:
