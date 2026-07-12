@@ -63,13 +63,13 @@ listen thumbor
     http-response set-header X-Upstream %si:%sp
     http-response set-header Thumbor-Request-Id %[unique-id]
 
-    # Maxconn 1 ensures that each Thumbor instance only handles one request at a time
-    # which is deliberate since Thumbor is single-threaded
+    # Maxconn 2 ensures that each Thumbor instance don't get overloaded
+    # since the async system is not perfect and needs some work.
     # Consider a thumbor worker healthy after one successful connection rather than 2
     # Check thumbor workers every 1 second rather than 2 seconds.
     {{ range $thumbor_worker := ( int .Values.main_app.thumbor_workers | until) -}}
     {{ $thumbor_port := (add 8080 $thumbor_worker) -}}
-    server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 1 check inter 1s rise 1
+    server server{{$thumbor_port}} 127.0.0.1:{{$thumbor_port}} maxconn 2 check inter 1s rise 1
     {{ end }}
 
 listen stats
