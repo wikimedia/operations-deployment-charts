@@ -280,7 +280,14 @@ node:
 
   # node.podSecurityContext -- Pod securityContext.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  podSecurityContext: {}
+  # WMF: run every container in the node pod as root, where upstream relies on
+  # its images defaulting to the root user. Our blubber-built images default
+  # to an unprivileged user (runuser, uid 900), which cannot create the CSI
+  # and registration sockets in the root-owned hostPath directories under
+  # /var/lib/kubelet.
+  podSecurityContext:
+    runAsUser: 0
+    runAsGroup: 0
 
   # node.securityContext. -- Container securityContext.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
