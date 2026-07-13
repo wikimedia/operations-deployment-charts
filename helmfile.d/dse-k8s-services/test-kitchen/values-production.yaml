@@ -1,5 +1,5 @@
 app:
-  version: v1.4.5-prod
+  version: v1.4.8-prod
 
   service:
     user_agent: Test Kitchen UI/1.4 (#experiment-platform)
@@ -25,6 +25,13 @@ app:
     # http://localhost:6049 is proxied to growthbook-api
     api_url: http://localhost:6049/api/v1/experiments
     ui_url: https://growthbook.wikimedia.org/experiments
+    drafts_validation: false
+    drafts_validation_interval: 4
+
+  phabricator:
+    api_url: https://phabricator.discovery.wmnet/api/
+    enabled: true
+    timeout_ms: 5000
 
 ingress:
   gatewayHosts:
