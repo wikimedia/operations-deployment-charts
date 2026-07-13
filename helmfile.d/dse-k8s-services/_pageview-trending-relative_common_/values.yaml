@@ -8,7 +8,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment/java
-  version: v1.57.0-dev0
+  version: v1.58.0-dev1
   flinkVersion: v2_0
   logConfiguration:
     rootLogger.level: INFO
@@ -21,11 +21,11 @@ app:
       # Load schema from local path baked into the image.
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
 
-      page-view-stream: webrequest.page_view.dev0
+      page-view-stream: pageview.v1
       page-view-schema-version: 1.0.0
-      baseline-stream: webrequest.page_view_stats.dev0
+      baseline-stream: pageview.stats.v1
       baseline-schema-version: 1.0.0
-      output-stream: webrequest.page_trending.dev0
+      output-stream: pageview.trending.relative.v1
       output-schema-version: 1.0.0
 
       # NOTE: kafka-bootstrap-servers, kafka-consumer-group-id and topic-prefix

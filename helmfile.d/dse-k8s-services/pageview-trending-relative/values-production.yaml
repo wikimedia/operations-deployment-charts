@@ -1,0 +1,47 @@
+# WMF production main release specific values.
+
+app:
+  # These are set in common values.yaml file.
+  # Change them here if you need to override them for the production release.
+  #
+  # version: v1.57.0-dev0
+  # logConfiguration:
+  #   rootLogger.level: INFO
+
+  taskManager:
+    # NOTE: parallelism == TM replicas * numberOfTaskSlots.
+    replicas: 2
+    resource:
+      cpu: 2
+      memory: 6000m
+
+  flinkVersion: v2_0
+
+  job:
+    jarURI: local:///srv/app/usrlib/app-with-dependencies.jar
+    entryClass: org.wikimedia.mediawiki.event.enrichment.pagetrending.PageTrending
+    upgradeMode: last-state
+
+  config_files:
+    page-trending.properties:
+      kafka-bootstrap-servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+      kafka-consumer-group-id: pageview-trending-relative__dse-k8s-eqiad.001
+      topic-prefix: eqiad
+      event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
+
+
+  flinkConfiguration:
+    # Parallelism == taskManager.replicas * numberOfTaskSlots.
+    # Having fewer TMs results in slightly better resource allocation.
+    "taskmanager.numberOfTaskSlots": 2
+    # Set the production release specific HA storageDir path.
+    # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
+    "high-availability.storageDir": "s3://pageview-trending-relative.dse-k8s-eqiad/production/high-availability"
+
+flink:
+  object_store:
+    # Set the production release specific objectstore bucket
+    swift_bucket: pageview-trending-relative.dse-k8s-eqiad
+
+external_services:
+  kafka: [jumbo-eqiad]
