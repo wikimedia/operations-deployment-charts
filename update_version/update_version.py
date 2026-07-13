@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
-import io
 import os
 
-import ruamel.yaml
+from ruamel.yaml import YAML
 
 
 BASE_PATH = os.path.dirname(__file__)
@@ -18,6 +17,12 @@ VALUES_ROOT = os.path.abspath(
 )
 
 VALID_ENVS = ['staging', 'codfw', 'eqiad']
+
+YAML_RT = YAML(typ='rt')
+YAML_RT.preserve_quotes = True
+# Long values (kafka broker lists, zookeeper quorums) are single tokens that
+# must not be folded onto a continuation line.
+YAML_RT.width = 4096
 
 
 def parse_args():
@@ -66,29 +71,25 @@ class ValuesUpdater:
     def load_yaml(file):
         """Loads yaml from a file or returns an empty object."""
 
-        try:
-            data = ruamel.yaml.load(
-                file,
-                ruamel.yaml.RoundTripLoader,
-                preserve_quotes=True
-            )
-        except io.UnsupportedOperation:
+        data = YAML_RT.load(file)
+
+        if data is None:
             print(
                 """Warning: Could not load yaml from file.
                 This could be due to the file being empty.
                 Returning empty object
                 """
             )
-            data = {}
-        finally:
-            return data
+            return {}
+
+        return data
 
     @staticmethod
     def dump_yaml(data, file):
         """Dumps yaml to a file (replacing the contents)."""
 
         file.seek(0)
-        ruamel.yaml.dump(data, file, Dumper=ruamel.yaml.RoundTripDumper)
+        YAML_RT.dump(data, file)
         file.truncate()
 
     def update_version(self, data):
