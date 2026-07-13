@@ -404,7 +404,7 @@ inference_services:
   llm-qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-06-30-131041-publish"
+      image_version: "2026-07-13-091038-publish"
       custom_env:
         - name: MODEL_NAME
           value: "llm-qwen36-27b"
@@ -420,6 +420,8 @@ inference_services:
           value: "True"
         - name: DTYPE
           value: "auto"
+        - name: KV_CACHE_DTYPE
+          value: "fp8"
         - name: GPU_MEMORY_UTILIZATION
           value: "0.85"
         - name: MAX_MODEL_LEN
