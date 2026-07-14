@@ -111,3 +111,11 @@ spec:
             name: tls
             protocol: TCP
             nodePort: 31443
+          # SNI-based TLS passthrough for PostgreSQL (CloudnativePG) clusters.
+          # Gateway/VirtualService objects are managed by the
+          # cloudnative-pg-cluster chart (ingress.enabled). See T432104.
+          - port: 5432
+            targetPort: 5432
+            name: tls-postgresql
+            protocol: TCP
+            nodePort: 31432
