@@ -10,7 +10,7 @@ app:
 
   taskManager:
     # NOTE: parallelism == TM replicas * numberOfTaskSlots.
-    replicas: 2
+    replicas: 5
     resource:
       cpu: 2
       memory: 6000m
@@ -32,11 +32,15 @@ app:
 
   flinkConfiguration:
     # Parallelism == taskManager.replicas * numberOfTaskSlots.
-    # Having fewer TMs results in slightly better resource allocation.
-    "taskmanager.numberOfTaskSlots": 2
+    # Only 1 task slot because this application requires a lot of memory.
+    "taskmanager.numberOfTaskSlots": 1
     # Set the production release specific HA storageDir path.
     # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
     "high-availability.storageDir": "s3://pageview-trending-relative.dse-k8s-eqiad/production/high-availability"
+    # Use RocksDB state backend, hashmap was storing 2GB on the heap and breaking containers.
+    "state.backend.type": "rocksdb"
+    # Upload only changed SST files on each checkpoint instead of the full state.
+    "execution.checkpointing.incremental": "true"
 
 flink:
   object_store:
