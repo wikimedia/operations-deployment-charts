@@ -1,0 +1,63 @@
+{{- if .Values.ingress.enabled }}
+{{- if empty .Values.ingress.hosts }}
+{{- fail "ingress.hosts must contain at least one FQDN when ingress.enabled is true" }}
+{{- end }}
+{{/*
+  Expose the PostgreSQL cluster outside of Kubernetes through the shared
+  istio-ingressgateway, using SNI-based TLS passthrough: the gateway inspects
+  the TLS ClientHello to select a destination by SNI hostname, then forwards
+  the bytes unmodified. TLS is terminated by PostgreSQL/PgBouncer itself, so
+  the connection is encrypted end-to-end and clients verify the CNPG server
+  certificate directly.
+
+  PostgreSQL's traditional in-band TLS negotiation (SSLRequest) cannot be
+  SNI-routed: clients must use PostgreSQL 17+ direct TLS negotiation, e.g.
+  libpq `sslnegotiation=direct` or pgjdbc (>= 42.7.4) `sslNegotiation=direct`.
+*/}}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ include "cluster.fullname" . }}
+  labels:
+    {{- include "cluster.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- .Values.ingress.selectors | toYaml | nindent 4 }}
+  servers:
+  - port:
+      number: {{ .Values.ingress.gatewayPort }}
+      name: tls-postgresql
+      protocol: TLS
+    tls:
+      mode: PASSTHROUGH
+    hosts:
+    {{- range .Values.ingress.hosts }}
+    - {{ . }}
+    {{- end }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "cluster.fullname" . }}
+  labels:
+    {{- include "cluster.labels" . | nindent 4 }}
+spec:
+  hosts:
+  {{- range .Values.ingress.hosts }}
+  - {{ . }}
+  {{- end }}
+  gateways:
+  - {{ include "cluster.fullname" . }}
+  tls:
+  - match:
+    - port: {{ .Values.ingress.gatewayPort }}
+      sniHosts:
+      {{- range .Values.ingress.hosts }}
+      - {{ . }}
+      {{- end }}
+    route:
+    - destination:
+        host: {{ include "cluster.ingress.destinationService" . }}.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: {{ .Values.ingress.destinationPort }}
+{{- end }}

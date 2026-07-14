@@ -55,6 +55,38 @@ app.kubernetes.io/part-of: cloudnative-pg
 {{ include "cluster.fullname" . }}-catalog
 {{- end }}
 
+{{/*
+Name of the service that ingress traffic is forwarded to: the PgBouncer pooler
+service when the pooler is enabled, the cluster rw service otherwise.
+*/}}
+{{- define "cluster.ingress.destinationService" -}}
+{{- if .Values.ingress.destinationService -}}
+{{- .Values.ingress.destinationService -}}
+{{- else if .Values.pooler.enabled -}}
+{{- include "cluster.fullname" . }}-pooler-rw
+{{- else -}}
+{{- include "cluster.fullname" . }}-rw
+{{- end -}}
+{{- end -}}
+
+{{/*
+The Cluster certificates configuration. When ingress is enabled and the server
+certificate is operator-managed, the ingress FQDNs are merged into
+serverAltDNSNames, so that the issued certificate is valid for the
+externally-visible hostnames and clients can use sslmode=verify-full.
+*/}}
+{{- define "cluster.certificates" -}}
+{{- $certificates := deepCopy (.Values.cluster.certificates | default dict) -}}
+{{- if and .Values.ingress.enabled (not $certificates.serverTLSSecret) -}}
+{{- $serverAltDNSNames := concat ($certificates.serverAltDNSNames | default list) .Values.ingress.hosts | uniq -}}
+{{- $_ := set $certificates "serverAltDNSNames" $serverAltDNSNames -}}
+{{- end -}}
+{{- with $certificates }}
+certificates:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end -}}
+
 {{- define "base.helper.restrictedSecurityContext" }}
 securityContext:
   allowPrivilegeEscalation: false

@@ -47,10 +47,9 @@ spec:
   primaryUpdateMethod: {{ .Values.cluster.primaryUpdateMethod }}
   primaryUpdateStrategy: {{ .Values.cluster.primaryUpdateStrategy }}
   logLevel: {{ .Values.cluster.logLevel }}
-  {{- with .Values.cluster.certificates }}
-  certificates:
-    {{- toYaml . | nindent 4 }}
-  {{ end }}
+  {{- with (include "cluster.certificates" .) }}
+  {{- . | nindent 2 }}
+  {{- end }}
   enableSuperuserAccess: {{ .Values.cluster.enableSuperuserAccess }}
   {{- with .Values.cluster.superuserSecret }}
   superuserSecret:

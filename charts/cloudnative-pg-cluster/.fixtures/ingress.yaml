@@ -1,0 +1,26 @@
+fullnameOverride: pg-ingress
+cluster:
+  instances: 1
+  version: 17
+
+ingress:
+  enabled: true
+  hosts:
+    - pg-ingress.svc.eqiad.wmnet
+    - pg-ingress.svc.codfw.wmnet
+
+common_images:
+  postgresql:
+    "17": abc123456789
+
+s3:
+  endpoint_url: s3.svc.eqiad.wmtest
+  accessKey: accesskey
+  secretKey: secretKey
+  region: ci
+  bucket: testbucket
+  ca_cert_bundle: |
+    -----BEGIN CERTIFICATE-----
+    plop
+    -----END CERTIFICATE-----
+environmentName: ci

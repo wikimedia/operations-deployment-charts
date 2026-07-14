@@ -315,6 +315,37 @@ pooler:
       - name: pgbouncer
         image: automatically_overriden_at_rendering_time
 
+ingress:
+  # -- Whether to expose this PostgreSQL cluster outside of the Kubernetes cluster,
+  # via SNI-based TLS passthrough on the shared istio-ingressgateway.
+  # The gateway does not terminate TLS: it inspects the TLS ClientHello to select
+  # a destination by SNI hostname, then forwards the bytes unmodified, so the
+  # connection is encrypted end-to-end between the client and PostgreSQL/PgBouncer.
+  # IMPORTANT: PostgreSQL's traditional in-band TLS negotiation (SSLRequest) never
+  # sends a ClientHello and cannot be SNI-routed. Clients must use PostgreSQL 17+
+  # direct TLS negotiation: libpq >= 17 `sslnegotiation=direct`, or
+  # pgjdbc >= 42.7.4 `sslNegotiation=direct`.
+  enabled: false
+  # -- Port of the istio-ingressgateway TLS passthrough server. It must be exposed
+  # by the ingressgateway service, cf custom_deploy.d/istio/<cluster>/config.yaml
+  gatewayPort: 5432
+  # -- Labels selecting the istio-ingressgateway this Gateway is attached to (provided by SRE).
+  selectors:
+    istio: ingressgateway
+  # -- List of external FQDNs (SNI hostnames) that route to this cluster. Required
+  # when ingress is enabled. These are also merged into the server certificate's
+  # serverAltDNSNames, so that clients can use sslmode=verify-full.
+  # Note: SNI hosts can only be registered once per gateway port, so they must not
+  # overlap with the hosts of any other release.
+  hosts: []
+  # -- Service the gateway forwards TLS connections to. Defaults to the PgBouncer
+  # pooler service when the pooler is enabled, or to the cluster rw service
+  # otherwise. Note: pointing this at the rw service while the pooler is enabled
+  # will be blocked by the instance NetworkPolicy.
+  destinationService: ""
+  # -- Port of the destination service.
+  destinationPort: 5432
+
 common_images:
   postgresql:
     "15": "override_me"
