@@ -6,11 +6,15 @@ backup:
   barmanObjectStore:
     wal:
       compression: {{ .Values.backups.wal.compression }}
+      {{- if and .Values.backups.wal.encryption (ne .Values.backups.wal.encryption "''") }}
       encryption: {{ .Values.backups.wal.encryption }}
+      {{- end }}
       maxParallel: {{ .Values.backups.wal.maxParallel }}
     data:
       compression: {{ .Values.backups.data.compression }}
+      {{- if and .Values.backups.data.encryption (ne .Values.backups.data.encryption "''") }}
       encryption: {{ .Values.backups.data.encryption }}
+      {{- end }}
       jobs: {{ .Values.backups.data.jobs }}
 
     {{- $d := dict "chartFullname" (include "cluster.fullname" .) "scope" .Values.backups "secretPrefix" "backup" "Root" $ }}

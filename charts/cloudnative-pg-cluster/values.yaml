@@ -249,7 +249,8 @@ backups:
     # -- Whether to instruct the storage provider to encrypt WAL files. One of `` (use the storage container default), `AES256` or `aws:kms`.
     # Note: we disable encryption for now, as it causes permissions errors with our Ceph-backed S3 bucket
     # See: https://github.com/cloudnative-pg/cloudnative-pg/issues/4291#issuecomment-2129750251
-    encryption: "''"
+    # When empty, the field is omitted from the Cluster manifest, as the CRD only accepts `AES256` or `aws:kms`.
+    encryption: ""
     # -- Number of WAL files to be archived or restored in parallel.
     maxParallel: 1
   data:
@@ -258,7 +259,8 @@ backups:
     # -- Whether to instruct the storage provider to encrypt data files. One of `` (use the storage container default), `AES256` or `aws:kms`.
     # Note: we disable encryption for now, as it causes permissions errors with our Ceph-backed S3 bucket
     # See: https://github.com/cloudnative-pg/cloudnative-pg/issues/4291#issuecomment-2129750251
-    encryption: "''"
+    # When empty, the field is omitted from the Cluster manifest, as the CRD only accepts `AES256` or `aws:kms`.
+    encryption: ""
     # -- Number of data files to be archived or restored in parallel.
     jobs: 2
 
