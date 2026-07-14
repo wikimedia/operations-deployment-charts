@@ -212,7 +212,6 @@ spec: &spec
                   - '/^mediawiki\.job\..*/'
                 # Don't execute anything that's covered by different rules
                 exclude_topics:
-                  - 'mediawiki.job.fetchGoogleCloudVisionAnnotations'
                 {{- range $topic, $topic_config := .Values.main_app.jobqueue.high_traffic_jobs_config }}
                   - 'mediawiki.job.{{ $topic }}'
                 {{- end }}
