@@ -23,8 +23,16 @@ app:
   flinkConfiguration:
     # == Tuning pageview-trending-relative
 
-    "execution.checkpointing.interval": "1m"
-    "execution.checkpointing.min-pause": "30s"
+    "execution.checkpointing.interval": "5m"
+    "execution.checkpointing.min-pause": "2m"
+    # Default timeout is 10m and a single timed-out checkpoint fails the job.
+    "execution.checkpointing.timeout": "20m"
+    "execution.checkpointing.tolerable-failed-checkpoints": "3"
+    # Let checkpoint barriers overtake buffered data when backpressured.
+    "execution.checkpointing.unaligned.enabled": "true"
+    "execution.checkpointing.aligned-checkpoint-timeout": "1m"
+    # Restore from local disk instead of S3 after a failure.
+    "state.backend.local-recovery": "true"
 
     # Keep the last 24 hours of savepoints.  Savepoint cleanup happens
     # only when the job is running, so if the job is offline e.g. over a weekend,

@@ -8,7 +8,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment/java
-  version: v1.58.0
+  version: v1.59.0-dev2
   flinkVersion: v2_0
   logConfiguration:
     rootLogger.level: INFO
@@ -27,6 +27,10 @@ app:
       baseline-schema-version: 1.0.0
       output-stream: pageview.trending.relative.v1
       output-schema-version: 1.0.0
+
+      # Min number of views in a window needed to produce a message. Useful to reduce the
+      # amount of data produced. Must be <= trending-min-view-count.
+      emit-min-view-count: 10
 
       # NOTE: kafka-bootstrap-servers, kafka-consumer-group-id and topic-prefix
       #       must be configured in release / cluster specific values files.
