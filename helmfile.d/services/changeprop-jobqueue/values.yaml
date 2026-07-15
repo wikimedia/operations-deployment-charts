@@ -55,7 +55,7 @@ main_app:
       # when maintenance scripts are run. Elevated concurrency
       RecordLintJob:
         enabled: true
-        concurrency: 40
+        concurrency: 50
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
         enabled: true
@@ -128,7 +128,7 @@ main_app:
         concurrency: 7
       parsoidCachePrewarm:
         enabled: true
-        concurrency: 50
+        concurrency: 70
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
