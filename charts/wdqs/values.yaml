@@ -121,6 +121,7 @@ proxy:
   config:
     public:
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-main-internal-qlever:7001/sparql
+      QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://eventgate-analytics.discovery.wmnet:4592
       QUERY_REWRITER_MW_SPARQL_ENABLED: false
       QUERY_REWRITER_FEDERATION_ENABLED: true
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.wikimedia.org/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/releases/permalink/latest/downloads/allowlist.json
