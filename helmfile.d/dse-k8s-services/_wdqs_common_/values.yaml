@@ -24,10 +24,10 @@ init:
       LOGLEVEL: DEBUG
   requests:
     cpu: 2
-    memory: 1Gi
+    memory: 4Gi
   limits:
     cpu: 2
-    memory: 1Gi
+    memory: 4Gi
 
 consumer:
   version: v0.2.0
@@ -50,6 +50,8 @@ health:
       # to neutralise it. The index-loaded check (HEALTH_MONITOR_INDEX_*) still
       # gates the /probe startup check.
       HEALTH_MONITOR_UPDATE_LAG_THRESHOLD: 2147483647
+  startup_probe:
+    timeoutSeconds: 30
 
 proxy:
   version: v0.4.0
