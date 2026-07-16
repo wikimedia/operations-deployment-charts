@@ -8,7 +8,7 @@
 
 app:
   image: docker-registry.discovery.wmnet/repos/data-engineering/mediawiki-event-enrichment/java
-  version: v1.59.0-dev2
+  version: v1.59.0
   flinkVersion: v2_0
   logConfiguration:
     rootLogger.level: INFO
@@ -27,6 +27,9 @@ app:
       baseline-schema-version: 1.0.0
       output-stream: pageview.trending.relative.v1
       output-schema-version: 1.0.0
+
+      # Min views in a window for a page to be eligible to trend.
+      trending-min-view-count: 120
 
       # Min number of views in a window needed to produce a message. Useful to reduce the
       # amount of data produced. Must be <= trending-min-view-count.
