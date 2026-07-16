@@ -27,7 +27,7 @@ app:
     state.backend.type: hashmap
     execution.checkpointing.num-retained: "10"
     # Enable automatic restarts
-    restart-strategy: exponential-delay
+    restart-strategy.type: exponential-delay
     restart-strategy.exponential-delay.initial-backoff: "10 s"
     restart-strategy.exponential-delay.max-backoff: "2 min"
     restart-strategy.exponential-delay.backoff-multiplier: "2.0"
