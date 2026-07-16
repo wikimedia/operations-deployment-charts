@@ -123,11 +123,8 @@ function wmf_ratelimit_info(request_handle)
         end
     end
 
-    -- relevant cookies have been copied to dynamic metadata using envoy.filters.http.header_to_metadata
-    local streamMeta = streamInfo:dynamicMetadata()
-    local cookies = streamMeta:get("envoy.wmf_cookies") or {}
-
     -- Payload from sessionJwt cookie from envoy.filters.http.jwt_authn.
+    local streamMeta = streamInfo:dynamicMetadata()
     local jwtMeta = streamMeta:get("envoy.filters.http.jwt_authn") or {}
     local cookiePayload = jwtMeta.cookie_payload or {}
 

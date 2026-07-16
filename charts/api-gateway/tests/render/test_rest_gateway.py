@@ -138,7 +138,6 @@ class RestGatewayTest(unittest.TestCase):
         # http filters
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.health_check"}]), )
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.cors"}]), )
-        self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.header_to_metadata"}]), )
         self.assertIsNotNone( connection_manager.get(["typed_config", "http_filters", {"name": "envoy.filters.http.router"}]), )
 
         # route_config
