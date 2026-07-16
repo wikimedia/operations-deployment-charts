@@ -1,0 +1,59 @@
+{{- /*
+Maps from generic endpoint reference value containing either an endpoint or
+discovery_endpoint field to cluster name.
+
+Verifies that the referenced endpoint exists in .Values.main_app.
+*/}}
+{{- define "restgateway.cluster_specifier_plugins.endpoint_to_cluster" }}
+{{- if .value.endpoint }}
+  {{- if not ( hasKey .Root.Values.main_app.endpoints .value.endpoint ) }}
+    {{- fail ( printf "Plugin depends on non-existent endpoint: %s" .value.endpoint ) }}
+  {{- end }}
+  {{- .value.endpoint }}
+{{- else if .value.discovery_endpoint }}
+  {{- if not ( hasKey .Root.Values.main_app.discovery_endpoints .value.discovery_endpoint ) }}
+    {{- fail ( printf "Plugin depends on non-existent discovery_endpoint %s" .value.discovery_endpoint ) }}
+  {{- end }}
+  {{- .value.discovery_endpoint }}_cluster
+{{- else }}
+  {{- fail "Plugin references neither an endpoint or discovery_endpoint" }}
+{{- end }}
+{{- end }}
+
+{{- /*
+Renders the set of configured cluster specifier plugins. Each supported plugin
+has an associated Lua constants template and script, which are concatenated to
+produce the complete plugin source code.
+
+At a minimum, each configured plugin should specify a default cluster, in the
+form of a reference to either an endpoint or discovery endpoint.
+
+Example:
+
+  main_app:
+    cluster_specifier_plugins:
+      mw-api:
+        default:
+          discovery_endpoint: mw-api-ext-ro
+
+This configures the mw-api plugin, where the default cluster is that associated
+with the mw-api-ext-ro discovery endpoint. RouteActions can use the plugin via
+the cluster_specifier_plugin field.
+
+https://www.envoyproxy.io/docs/envoy/latest/configuration/http/cluster_specifier/lua
+*/}}
+{{- define "restgateway.cluster_specifier_plugins" -}}
+cluster_specifier_plugins:
+{{- range $name, $params := $.Values.main_app.cluster_specifier_plugins }}
+- extension:
+    name: {{ $name }}_cluster_specifier_plugin
+    typed_config:
+      "@type": type.googleapis.com/envoy.extensions.router.cluster_specifiers.lua.v3.LuaConfig
+      source_code:
+        inline_string: |
+{{- include ( printf "restgateway.cluster_specifier_plugins.constants.%s.lua" $name ) ( dict "params" $params "Root" $ ) | nindent 10 }}
+{{- $.Files.Get ( printf "lua/cluster_specifier_plugins/%s.lua" $name ) | nindent 10 }}
+      default_cluster: {{ include "restgateway.cluster_specifier_plugins.endpoint_to_cluster" ( dict "value" $params.default "Root" $ ) }}
+{{- end }}
+{{- end }}
+

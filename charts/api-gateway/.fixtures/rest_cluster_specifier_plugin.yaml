@@ -1,0 +1,17 @@
+main_app:
+  cluster_specifier_plugins:
+    mw-api:
+      default:
+        discovery_endpoint: mw-api-main
+
+  rest_gateway_routes:
+    - name: main_services
+      urls:
+        - name: foo
+          in: 'main/foo/(.+)'
+          out: '/foo/\1'
+      cluster_specifier_plugin: mw-api
+
+  discovery_endpoints:
+    mw-api-main:
+      port: 1234

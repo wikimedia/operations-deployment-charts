@@ -46,7 +46,7 @@ env: ## outputs environment for manual testing
 test-lua: ## run Lua tests
 	@echo "Running Lua tests"
 	cd "$(testdir)" && \
-		busted lua/test*.lua
+		busted lua/test*.lua lua/cluster_specifier_plugins/test*.lua
 	@echo
 
 test-render: ## run chart render tests

@@ -64,6 +64,9 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
 
 {{- define "restgateway.routes" }}
             name: restgateway_route
+{{- if .Values.main_app.cluster_specifier_plugins }}
+            {{- include "restgateway.cluster_specifier_plugins" $ | nindent 12 }}
+{{- end }}
             virtual_hosts:
             - name: restgateway_vhost
               domains:
@@ -188,7 +191,11 @@ query_parameters: {{ toYaml .route.query_parameters | nindent 2 }}
                     substitution: '{{ $route.to }}'
                 {{- end }}
                   timeout: {{ $endpoint.timeout | default "15s" }}
+                  {{- if $endpoint.cluster_specifier_plugin }}
+                  cluster_specifier_plugin: {{ $endpoint.cluster_specifier_plugin }}_cluster_specifier_plugin
+                  {{- else }}
                   cluster: {{ $cluster_name }}_cluster
+                  {{- end }}
                   {{- if $endpoint.ingress }}
                   auto_host_rewrite: true
                   {{- end }}
