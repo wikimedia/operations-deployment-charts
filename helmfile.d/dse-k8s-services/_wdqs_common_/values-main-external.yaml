@@ -2,6 +2,8 @@ proxy:
   config:
     public:
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-main-external-qlever-service:7001/sparql
+      EVENTGATE_STREAM: wdqs_external.sparql_query.v2
+      EVENTGATE_GRAPH_NAME: wikidata_main
 
 ingress:
   gatewayHosts:
