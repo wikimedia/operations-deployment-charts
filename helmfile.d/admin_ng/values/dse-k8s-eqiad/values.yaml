@@ -1,8 +1,7 @@
 # These pod security labels are used to allow host paths in certain locations used by analytics workloads.
 # the `include` security policies referenced in these labels are defined in
 # charts/validating-admission-policies/templates/custom-policies
-# These are used to eg mount the /srv/spark (large scratch space mounted on the host, used by spark as a shuffle
-# area) and /usr/share/GeoIP (the goip mmdb files) into analytics workloads.
+# These are used to mount /usr/share/GeoIP (the geoip mmdb files) into analytics workloads.
 analytics-pss-labels: &analytics-pss-labels
   pod-security.wmf.org/profile: restricted
   pod-security.wmf.org/restrict-volume-types-restricted-volumes: exclude

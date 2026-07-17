@@ -8,11 +8,11 @@ spec:
     image: busybox:1.35
     volumeMounts:
     - name: foo
-      mountPath: /tmp/spark
+      mountPath: /data
   volumes:
   - name: foo
     hostPath:
-      path: /srv/spark-negative
+      path: /usr/share/GeoIP-negative
 ---
 apiVersion: v1
 kind: Pod

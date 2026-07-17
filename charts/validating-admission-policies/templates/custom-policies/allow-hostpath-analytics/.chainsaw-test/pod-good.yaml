@@ -140,22 +140,6 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: goodpod11
-spec:
-  containers:
-  - name: busybox
-    image: busybox:1.35
-    volumeMounts:
-    - name: spark
-      mountPath: /tmp/spark
-  volumes:
-  - name: spark
-    hostPath:
-      path: /srv/spark
----
-apiVersion: v1
-kind: Pod
-metadata:
   name: goodpod12
 spec:
   containers:
@@ -179,8 +163,6 @@ spec:
   - name: busybox
     image: busybox:1.35
     volumeMounts:
-    - name: spark
-      mountPath: /tmp/spark
     - name: geoip
       mountPath: /usr/share/GeoIP
       readOnly: true
@@ -192,6 +174,3 @@ spec:
   - name: geoip
     hostPath:
       path: /usr/share/GeoIP
-  - name: spark
-    hostPath:
-      path: /srv/spark

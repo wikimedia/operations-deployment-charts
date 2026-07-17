@@ -39,10 +39,10 @@ spec:
       !has(object.spec.volumes) ||
       object.spec.volumes.all(v,
         !has(v.hostPath) ||
-        v.hostPath.path in ["/srv/spark", "/usr/share/GeoIP"]
+        v.hostPath.path in ["/usr/share/GeoIP"]
       )
     message: >-
-      hostPath volumes are allowed only for /srv/spark and /usr/share/GeoIP.
+      hostPath volumes are allowed only for /usr/share/GeoIP.
 
   #
   # Require readOnly mounts for /usr/share/GeoIP hostPath
