@@ -1,0 +1,83 @@
+# Staging overrides: single replica, staging inference service, no public
+# ingress. The service is only reachable within the cluster.
+
+config:
+  public:
+    # TTS inference service (Kokoro + Wav2Vec2).  The isvc URL and Host header
+    # point at the LiftWing inference platform; staging is the default here,
+    # overridden per environment in values-ml-serve-*.yaml.
+    # isvc URL is overridden per-environment; staging and production use
+    # different inference platform instances.
+    TTS_ISVC_URL: "https://inference-staging.svc.codfw.wmnet:30443/v1/models/tts:predict"
+    TTS_ISVC_HOST: "tts.experimental.wikimedia.org"
+    TTS_ISVC_VERIFY_TLS: "true"
+    # Identity
+    TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.3 (https://phabricator.wikimedia.org/T430536)"
+    # NeMo grammar cache (baked at image build; see blubber.yaml build variant)
+    TTS_GEN_NEMO_CACHE: "/home/somebody/nemo-grammars"
+    # Text processing: generation version components (see version.py)
+    TTS_GEN_KOKORO_VERSION: "kokoro-v1.0"
+    TTS_GEN_DEFAULT_VOICE: "af_heart"
+    TTS_GEN_DEFAULT_LANG: "en-us"
+    TTS_GEN_NORM_RULESET: "2026.07"
+    # Transcode: Opus tuned for speech intelligibility at low bitrate
+    TTS_GEN_OPUS_BITRATE: "32k"
+    TTS_GEN_OPUS_APPLICATION: "voip"
+    TTS_GEN_MP3_BITRATE: "48k"
+    # Chunking: segment size sent to the isvc (isvc hard ceiling is 800)
+    TTS_GEN_MAX_SEGMENT_CHARS: "400"
+    TTS_GEN_MIN_TEXT_LENGTH: "50"
+    # Artifact sink: inline (bytes_b64) by default; file mode is available for
+    # direct-to-disk writes with a volume mount.
+    TTS_GEN_BLOB_SINK: "inline"
+
+resources:
+  replicas: 1
+
+app:
+  image: wikimedia/machinelearning-liftwing-inference-services-tts-section-generator
+  version: "2026-07-17-025413-publish"
+  port: 8080
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 1
+    memory: 1Gi
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readiness_probe:
+    httpGet:
+      path: /docs
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 10
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 8443
+  telemetry:
+    enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.1.16/32 # inference-staging.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
