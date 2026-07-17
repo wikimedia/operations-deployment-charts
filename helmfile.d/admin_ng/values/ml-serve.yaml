@@ -343,6 +343,14 @@ namespaces:
     labels:
       istio-injection: disabled
       webhooks.knative.dev/exclude: "true"
+  tts-section-generator:
+    deployClusterRole: deploy
+    deployTLSCertificate: true
+    # NOTE: istio-injection is disabled here because we want to keep comparibility
+    # with servivesd deployed to wikikube (that don't use istio-proxy but tls-proxy).
+    labels:
+      istio-injection: disabled
+      webhooks.knative.dev/exclude: "true"
   llm:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
