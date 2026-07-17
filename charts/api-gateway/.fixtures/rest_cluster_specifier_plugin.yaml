@@ -1,6 +1,11 @@
 main_app:
   cluster_specifier_plugins:
     mw-api:
+      xwd_backends:
+        k8s-mwdebug:
+          discovery_endpoint: mwdebug
+        k8s-mwdebug-antarctica:
+          endpoint: mwdebug-antarctica
       default:
         discovery_endpoint: mw-api-main
 
@@ -12,6 +17,14 @@ main_app:
           out: '/foo/\1'
       cluster_specifier_plugin: mw-api
 
+  endpoints:
+    mwdebug-antarctica:
+      type: LOGICAL_DNS
+      hosts:
+        mwdebug.svc.antarctica.wmnet: 3456
+
   discovery_endpoints:
     mw-api-main:
       port: 1234
+    mwdebug:
+      port: 2345
