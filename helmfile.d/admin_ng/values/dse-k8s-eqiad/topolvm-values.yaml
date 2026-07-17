@@ -1,5 +1,11 @@
 # This is the list of namespaces in which local LVM volumes will be available.
 # Please keep the list sorted.
+#
+# The airflow namespaces are here so that DAGs can manage temporary volumes whose
+# lifecycle matches a DAG run. See the temp_volume task factory in the airflow-dags
+# repository.
 tenantNamespaces:
+- airflow-test-k8s
+- airflow-wikidata
 - wdqs
 - wdqs-next

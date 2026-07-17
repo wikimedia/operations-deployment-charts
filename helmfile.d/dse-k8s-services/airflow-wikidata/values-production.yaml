@@ -1,6 +1,14 @@
 config:
   airflow:
     instance_name: wikidata
+    extra_rbac:
+    # DAGs create a scratch PVC on TopoLVM node-local storage at the start of
+    # a run and delete it at the end (the scratch_pvc task factory in the
+    # airflow-dags repository). The qlever indexing pipeline uses this to
+    # share a volume between its download, index and upload tasks. See T428235.
+    - apiGroups: [""]
+      resources: ["persistentvolumeclaims"]
+      verbs: ["create", "get", "list", "delete"]
   connections:
     wikidata_platform_s3_dpe:
       conn_type: aws

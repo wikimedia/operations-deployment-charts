@@ -8,6 +8,13 @@ config:
         worker_pods_creation_batch_size: 32
       kerberos:
         principal: analytics/airflow-test-k8s.discovery.wmnet
+    extra_rbac:
+    # DAGs create a scratch PVC on TopoLVM node-local storage at the start of
+    # a run and delete it at the end (the scratch_pvc task factory in the
+    # airflow-dags repository). See T428235.
+    - apiGroups: [""]
+      resources: ["persistentvolumeclaims"]
+      verbs: ["create", "get", "list", "delete"]
   geoip:
     enabled: true
   oidc:
