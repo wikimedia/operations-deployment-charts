@@ -30,12 +30,12 @@ init:
     memory: 1Gi
 
 consumer:
-  version: v0.1.2
+  version: v0.2.0
   config:
     public:
       BATCH_SIZE: 100000
       BUFFERED_INPUT_MESSAGES: 500
-      BATCH_TIMEOUT: 600
+      BATCH_TIMEOUT: 10
       HEAP_SIZE: 2g
       LOG_LEVEL: DEBUG
 
