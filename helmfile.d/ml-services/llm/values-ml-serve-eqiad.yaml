@@ -326,18 +326,20 @@ inference_services:
   llm-qwen3-14b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-07-07-083002-publish"
+      image_version: "2026-07-13-091038-publish"
       custom_env:
         - name: MODEL_NAME
           value: "llm-qwen3-14b"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/Qwen3-14B/"
+          value: "s3://wmf-ml-models/llm/qwen3-14b-fp8/"
         - name: MODEL_PATH
           value: "/mnt/models"
         - name: TRUST_REMOTE_CODE
           value: "True"
         - name: DTYPE
           value: "auto"
+        - name: KV_CACHE_DTYPE
+          value: "fp8"
         - name: GPU_MEMORY_UTILIZATION
           value: "0.85"
         - name: MAX_MODEL_LEN
@@ -345,15 +347,17 @@ inference_services:
         - name: TENSOR_PARALLEL_SIZE
           value: "1"
         - name: MAX_NUM_SEQS
-          value: "128"
+          value: "32"
         - name: MAX_NUM_BATCHED_TOKENS
           value: "32768"
         - name: BLOCK_SIZE
           value: "64"
         - name: ATTENTION_BACKEND
-          value: "ROCM_AITER_UNIFIED_ATTN"
+          value: "TRITON_ATTN"
+        - name: ENFORCE_EAGER
+          value: "False"
         - name: VLLM_ROCM_USE_AITER
-          value: "1"
+          value: "0"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
           value: "1"
         - name: MAX_JOBS
@@ -399,7 +403,7 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
+                        - "ml-serve1013.eqiad.wmnet"
 
   llm-qwen36-27b:
     predictor:
