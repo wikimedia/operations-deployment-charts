@@ -45,9 +45,13 @@ provisioner:
 
 storageClass:
   create: true
-  name: ceph-rbd-ssd
-  clusterID: *clusterid
-  pool: dse-k8s-csi-rbd-ssd
+  classes:
+  - name: ceph-rbd-ssd
+    clusterID: *clusterid
+    pool: dse-k8s-csi-rbd-ssd
+  - name: ceph-rbd-hdd
+    clusterID: *clusterid
+    pool: dse-k8s-csi-rbd-hdd
 
 secret:
   create: true
