@@ -11,6 +11,7 @@ config:
     TTS_ISVC_URL: "https://inference-staging.svc.codfw.wmnet:30443/v1/models/tts:predict"
     TTS_ISVC_HOST: "tts.experimental.wikimedia.org"
     TTS_ISVC_VERIFY_TLS: "true"
+    TTS_ISVC_TIMEOUT_S: "600"
     # Identity
     TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.3 (https://phabricator.wikimedia.org/T430536)"
     # NeMo grammar cache (baked at image build; see blubber.yaml build variant)
@@ -47,14 +48,14 @@ resources:
 
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-tts-section-generator
-  version: "2026-07-20-092024-publish"
+  version: "2026-07-20-131212-publish"
   port: 8080
   limits:
     cpu: 1
-    memory: 1Gi
+    memory: 3Gi
   requests:
     cpu: 1
-    memory: 1Gi
+    memory: 3Gi
   liveness_probe:
     tcpSocket:
       port: 8080
@@ -74,6 +75,7 @@ service:
 mesh:
   enabled: true
   public_port: 8443
+  upstream_timeout: "600s"
   telemetry:
     enabled: true
   resources:
