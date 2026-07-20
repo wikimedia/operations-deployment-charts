@@ -18,7 +18,7 @@ provisioner: {{ $.Values.driverName }}
 parameters:
   clusterID: {{ $storageClass.clusterID }}
   pool: {{ $storageClass.pool }}
-  imageFeatures: {{ $storageClass.imageFeatures }}
+  imageFeatures: {{ $storageClass.imageFeatures | default "layering" }}
 {{- if $storageClass.tryOtherMounters }}
   tryOtherMounters: {{ $storageClass.tryOtherMounters | quote}}
 {{- end }}
@@ -53,27 +53,27 @@ parameters:
 {{- if $storageClass.unmapOptions }}
   unmapOptions: {{ $storageClass.unmapOptions }}
 {{- end }}
-  csi.storage.k8s.io/provisioner-secret-name: {{ $storageClass.provisionerSecret }}
+  csi.storage.k8s.io/provisioner-secret-name: {{ $storageClass.provisionerSecret | default "csi-rbd-secret" }}
 {{- if $storageClass.provisionerSecretNamespace }}
   csi.storage.k8s.io/provisioner-secret-namespace: {{ $storageClass.provisionerSecretNamespace }}
 {{ else }}
   csi.storage.k8s.io/provisioner-secret-namespace: {{ $.Release.Namespace }}
 {{- end }}
-  csi.storage.k8s.io/controller-expand-secret-name: {{ $storageClass.controllerExpandSecret }}
+  csi.storage.k8s.io/controller-expand-secret-name: {{ $storageClass.controllerExpandSecret | default "csi-rbd-secret" }}
 {{- if $storageClass.controllerExpandSecretNamespace }}
   csi.storage.k8s.io/controller-expand-secret-namespace: {{ $storageClass.controllerExpandSecretNamespace }}
 {{ else }}
   csi.storage.k8s.io/controller-expand-secret-namespace: {{ $.Release.Namespace }}
 {{- end }}
-  csi.storage.k8s.io/node-stage-secret-name: {{ $storageClass.nodeStageSecret }}
+  csi.storage.k8s.io/node-stage-secret-name: {{ $storageClass.nodeStageSecret | default "csi-rbd-secret" }}
 {{- if $storageClass.nodeStageSecretNamespace }}
   csi.storage.k8s.io/node-stage-secret-namespace: {{ $storageClass.nodeStageSecretNamespace }}
 {{ else }}
   csi.storage.k8s.io/node-stage-secret-namespace: {{ $.Release.Namespace }}
 {{- end }}
-  csi.storage.k8s.io/fstype: {{ $storageClass.fstype }}
-reclaimPolicy: {{ $storageClass.reclaimPolicy }}
-allowVolumeExpansion: {{ $storageClass.allowVolumeExpansion }}
+  csi.storage.k8s.io/fstype: {{ $storageClass.fstype | default "ext4" }}
+reclaimPolicy: {{ $storageClass.reclaimPolicy | default "Delete" }}
+allowVolumeExpansion: {{ $storageClass.allowVolumeExpansion | default true }}
 {{- if $storageClass.mountOptions }}
 mountOptions:
   {{- range $storageClass.mountOptions }}
