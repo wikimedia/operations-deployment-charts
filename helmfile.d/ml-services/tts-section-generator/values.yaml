@@ -24,6 +24,10 @@ config:
     TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.3 (https://phabricator.wikimedia.org/T430536)"
     # NeMo grammar cache (baked at image build; see blubber.yaml build variant)
     TTS_GEN_NEMO_CACHE: "/home/somebody/nemo-grammars"
+    # MediaWiki API proxy through the envoy services-proxy (localhost:6500
+    # routes to mw-api-int.discovery.wmnet) on LiftWing.
+    # NB: Leave empty "" for local dev to hit Wikipedia directly.
+    TTS_GEN_MW_API_PROXY: "http://localhost:6500"
     # Text processing: generation version components (see version.py)
     TTS_GEN_KOKORO_VERSION: "kokoro-v1.0"
     TTS_GEN_DEFAULT_VOICE: "af_heart"
@@ -45,7 +49,7 @@ resources:
 
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-tts-section-generator
-  version: "2026-07-17-025413-publish"
+  version: "2026-07-20-065434-publish"
   port: 8080
   limits:
     cpu: 1
