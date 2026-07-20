@@ -35,6 +35,13 @@ config:
     # direct-to-disk writes with a volume mount.
     TTS_GEN_BLOB_SINK: "inline"
 
+# Envoy services-proxy listeners for outgoing traffic. Each name must match
+# a key in the services_proxy dictionary (injected at deploy time from Puppet
+# hieradata). The envoy sidecar creates a localhost listener for each entry.
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+
 resources:
   replicas: 1
 
