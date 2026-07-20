@@ -341,15 +341,15 @@ inference_services:
         - name: KV_CACHE_DTYPE
           value: "fp8"
         - name: GPU_MEMORY_UTILIZATION
-          value: "0.85"
+          value: "0.92"
         - name: MAX_MODEL_LEN
-          value: "32768"
+          value: "16384"
         - name: TENSOR_PARALLEL_SIZE
           value: "1"
         - name: MAX_NUM_SEQS
           value: "32"
         - name: MAX_NUM_BATCHED_TOKENS
-          value: "32768"
+          value: "8192"
         - name: BLOCK_SIZE
           value: "64"
         - name: ATTENTION_BACKEND
