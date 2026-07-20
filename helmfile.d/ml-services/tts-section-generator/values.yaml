@@ -82,6 +82,12 @@ mesh:
       cpu: 1000m
       memory: 500Mi
 
+ingress:
+  enabled: true
+  selectors:
+    service.istio.io/canonical-name: istio-ingressgateway-services
+    istio: ingressgateway
+
 networkpolicy:
   egress:
     enabled: true
