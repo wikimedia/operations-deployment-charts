@@ -4,7 +4,8 @@ app:
 backend:
   volume:
     name: data-dir
-    storageClass: emptyDir # Set to storageClass to enable PVC
+    storageType: emptyDir # Can be set to emptyDir or pvc
+    storageClass: none # only used if storageType == pvc
     size: 1Mi # dummy value
   security:
     gid: 900 # default runuser as created by blubber

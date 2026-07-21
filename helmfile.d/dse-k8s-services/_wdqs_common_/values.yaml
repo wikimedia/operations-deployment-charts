@@ -1,6 +1,7 @@
 backend:
   volume:
-    storageClass: ceph-rbd-ssd
+    storageType: pvc
+    storageClass: topolvm-performance
     size: 600Gi # 600Gi should be enough for 1 full index and 1 backup
 
 qlever:
