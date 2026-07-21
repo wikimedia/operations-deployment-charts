@@ -18,7 +18,9 @@ environments:
         - wikidata-query-gui
         - commons-query-gui
         - wikidata-query-main-gui
+        - wikidata-query-next-gui
         - wikidata-query-scholarly-gui
+        - wikidata-query-scholarly-next-gui
         - wikidata-query-builder
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
@@ -74,6 +76,10 @@ releases:
   - name: commons-query-gui
     <<: *default
   - name: wikidata-query-main-gui
+    <<: *default
+  - name: wikidata-query-next-gui
+    <<: *default
+  - name: wikidata-query-scholarly-next-gui
     <<: *default
   - name: wikidata-query-scholarly-gui
     <<: *default

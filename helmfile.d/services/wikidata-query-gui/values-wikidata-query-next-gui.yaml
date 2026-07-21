@@ -1,0 +1,43 @@
+main_app:
+  volumeMounts:
+    - name: wikidata-next-custom-config
+      mountPath: /srv/app/html/custom-config.json
+      subPath: custom-config.json
+
+# additional configmaps which can be mounted in the application container
+configMaps:
+  wikidata-next-custom-config:
+    custom-config.json: |-
+      {
+        "api": {
+          "sparql": {
+            "uri": "/sparql"
+            },
+          "urlShortener": "wmf"
+        },
+        "brand": {
+          "logo": "logo.svg",
+          "favicon": "favicon.ico",
+          "title": "Wikidata Query Service (QLever)",
+          "copyrightUrl": "https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:SPARQL_query_service/Copyright"
+        },
+        "location": {
+          "root": "https://query-next.wikidata.org/",
+          "index": "https://query-next.wikidata.org/"
+        },
+        "bannerName": "graph-split"
+      }
+ingress:
+  enabled: true
+  existingGatewayName: "miscweb-wikidata-query-gui"
+  routeHosts:
+  - query-next.wikidata.org
+  httproutes:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: miscweb-wikidata-query-next-gui-tls-service.wikidata-query-gui.svc.cluster.local
+        port:
+          number: 8081

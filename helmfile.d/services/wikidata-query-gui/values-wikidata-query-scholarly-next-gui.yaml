@@ -1,0 +1,43 @@
+main_app:
+  volumeMounts:
+    - name: scholarly-next-custom-config
+      mountPath: /srv/app/html/custom-config.json
+      subPath: custom-config.json
+
+# additional configmaps which can be mounted in the application container
+configMaps:
+  scholarly-next-custom-config:
+    custom-config.json: |-
+      {
+        "api": {
+          "sparql": {
+            "uri": "/sparql"
+          },
+          "urlShortener": "wmf"
+        },
+        "brand": {
+          "logo": "logo.svg",
+          "favicon": "favicon.ico",
+          "title": "WDQS scholarly articles graph (QLever)",
+          "copyrightUrl": "https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:SPARQL_query_service/Copyright"
+        },
+        "location": {
+          "root": "https://query-scholarly-next.wikidata.org/",
+          "index": "https://query-scholarly-next.wikidata.org/"
+        },
+        "bannerName": ""
+      }
+ingress:
+  enabled: true
+  existingGatewayName: "miscweb-wikidata-query-gui"
+  routeHosts:
+  - query-scholarly-next.wikidata.org
+  httproutes:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: miscweb-wikidata-query-scholarly-next-gui-tls-service.wikidata-query-gui.svc.cluster.local
+        port:
+          number: 8081
