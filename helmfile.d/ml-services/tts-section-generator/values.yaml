@@ -17,7 +17,7 @@ config:
     # overridden per environment in values-ml-serve-*.yaml.
     # isvc URL is overridden per-environment; staging and production use
     # different inference platform instances.
-    TTS_ISVC_URL: "https://inference-staging.svc.codfw.wmnet:30443/v1/models/tts:predict"
+    TTS_ISVC_URL: "https://inference.discovery.wmnet:30443/v1/models/tts:predict"
     TTS_ISVC_HOST: "tts.experimental.wikimedia.org"
     TTS_ISVC_VERIFY_TLS: "true"
     TTS_ISVC_TIMEOUT_S: "600"
