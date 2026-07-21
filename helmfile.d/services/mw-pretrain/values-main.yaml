@@ -4,7 +4,18 @@ ingress:
     extraFQDNs:
       - test.wikipedia.org
   httproutes:
-    - match:
+    - name: debug
+      match:
+      - headers:
+          x-wikimedia-debug:
+            regex: "(backend=)?k8s-mw-pretrain"
+      route:
+      - destination:
+          host: mediawiki-debug-tls-service.mw-pretrain.svc.cluster.local
+          port:
+            number: 4457
+    - name: main
+      match:
       - uri:
           prefix: /
       route:
@@ -12,3 +23,6 @@ ingress:
           host: mediawiki-main-tls-service.mw-pretrain.svc.cluster.local
           port:
             number: 4457
+  destinationrulehosts:
+    - mediawiki-main-tls-service.mw-pretrain.svc.cluster.local
+    - mediawiki-debug-tls-service.mw-pretrain.svc.cluster.local
