@@ -15,12 +15,12 @@ helmDefaults:
 environments:
   eqiad:
     values:
-      - releases: [main,prometheus]
+      - releases: [main,debug,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main,prometheus]
+      - releases: [main,debug,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -55,7 +55,7 @@ templates:
       - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
       - name: php.servergroup
-        value: "kube-{{`{{ .Release.Namespace }}`}}"
+        value: 'kube-{{`{{ .Release.Namespace }}`}}{{`{{ if ne .Release.Name "main" }}-{{ .Release.Name }}{{ end }}`}}'
   statsd-exporter: &statsd
     namespace: mw-pretrain
     chart: wmf-stable/statsd-exporter
@@ -93,6 +93,8 @@ hooks:
 
 releases:
   - name: main
+    <<: *default
+  - name: debug
     <<: *default
   - name: prometheus
     <<: *statsd
