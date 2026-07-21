@@ -2,6 +2,7 @@ dumps:
   orchestrator:
     service_accounts:
       airflow-test-k8s: [airflow]  # temporary namespace, until the DAG is production ready
+      airflow-dumps: [airflow]
       airflow-dev:
         - airflow-dev-btullis
         - airflow-dev-lerickson
