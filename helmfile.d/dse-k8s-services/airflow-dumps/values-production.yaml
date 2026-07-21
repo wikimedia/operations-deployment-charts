@@ -1,0 +1,32 @@
+config:
+  airflow:
+    instance_name: dumps
+  auth:
+    op_ldap_role: airflow-analytics-ops
+  config:
+    kubernetes_executor:
+      worker_pods_creation_batch_size: 32
+
+ingress:
+  gatewayHosts:
+    default: "airflow-dumps"
+    extraFQDNs:
+    - airflow-dumps.wikimedia.org
+
+app: # the webserver
+  requests:
+    memory: 4Gi
+  limits:
+    memory: 4Gi
+
+scheduler:
+  requests:
+    cpu: 8
+    memory: 4Gi
+  limits:
+    cpu: 8
+    memory: 4Gi
+
+external_services:
+  task-pod:
+    dumps: [wikimedia]

@@ -39,6 +39,9 @@ external_services:
     ldap-ro: [eqiad, codfw]
     prometheus-pushgateway: [eqiad, codfw]
 
+gitsync:
+  ref: 1e2fcc4e5740b9c3480b6cd07d9046613ea7aae2  # git commit still including the dump DAGs
+
 ingress:
   gatewayHosts:
     default: "airflow-test-k8s"
