@@ -39,6 +39,7 @@ consumer:
       BATCH_TIMEOUT: 10
       HEAP_SIZE: 2g
       LOG_LEVEL: DEBUG
+  metricsPort: 9101
 
 health:
   version: v0.0.2
@@ -74,6 +75,11 @@ ingress:
 external_services:
   gitlab:
     - wikimedia
+
+# Enable scraping of Prometheus metrics
+monitoring:
+  enabled: true
+  named_ports: true # scrape from all ports wth names ending in "-metrics"
 
 affinity:
   # affinity to bind our backend pod to the wdqs nodes
