@@ -52,7 +52,16 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
       containers:
-      {{- include "lamp.deployment" . | indent 8 }}
+      {{- if $flags.web }}
+      {{- include "sidecars.httpd.container" . | indent 8 }}
+      {{- end }}
+      {{- include "mediawiki.container" . | indent 8 }}
+      {{- if .Values.monitoring.enabled }}
+      {{- if $flags.web }}
+      {{- include "sidecars.httpd-exporter.container" . | indent 8 }}
+      {{- end }}
+      {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
+      {{- end }}
       {{- include "cache.mcrouter.container" . | indent 8 }}
       {{- if .Values.mw.localmemcached.enabled }}
         {{- include "localmemcached.deployment" . | indent 8 }}
