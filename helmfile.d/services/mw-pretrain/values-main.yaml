@@ -1,0 +1,14 @@
+ingress:
+  enabled: true
+  gatewayHosts:
+    extraFQDNs:
+      - test.wikipedia.org
+  httproutes:
+    - match:
+      - uri:
+          prefix: /
+      route:
+      - destination:
+          host: mediawiki-main-tls-service.mw-pretrain.svc.cluster.local
+          port:
+            number: 4457
