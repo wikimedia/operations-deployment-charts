@@ -102,35 +102,6 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
     - airflow-test-k8s.wikimedia.org
-    resourcequota:
-      compute:
-        requests:
-          cpu: "300"
-          memory: "500Gi"
-        limits:
-          cpu: "400"
-          memory: "600Gi"
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "16Gi"
-          cpu: "8"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "10Gi"
-          cpu: "10"
   airflow-dumps:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:

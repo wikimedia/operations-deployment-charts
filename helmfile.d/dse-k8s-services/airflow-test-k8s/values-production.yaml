@@ -20,34 +20,15 @@ config:
   oidc:
     idp_server: idp-test.wikimedia.org
 
-app: # the webserver
-  requests:
-    memory: 4Gi
-  limits:
-    memory: 4Gi
-
-scheduler:
-  requests:
-    cpu: 8
-    memory: 4Gi
-  limits:
-    cpu: 8
-    memory: 4Gi
-
 external_services:
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]
-  task-pod:
-    dumps: [wikimedia]
 
     # The following are required by the growthbook-ldap-sync DAG
     gerrit: [wikimedia]
     ldap-ro: [eqiad, codfw]
     prometheus-pushgateway: [eqiad, codfw]
-
-gitsync:
-  ref: 1e2fcc4e5740b9c3480b6cd07d9046613ea7aae2  # git commit still including the dump DAGs
 
 ingress:
   gatewayHosts:
