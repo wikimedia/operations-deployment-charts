@@ -850,13 +850,13 @@ main_app:
         # CSP issues that we can't override per-route, breaking JS and CSS.
         - name: rest_sandbox_global
           in: '/wikimedia\.org/v1/'
-          out: '/wiki/Special:RestSandbox/wmf-restbase-global'
+          out: '/wiki/Special:RestSandbox/wmf-math'
           to: 'meta.wikimedia.org'
           redirect: true
           redirect_code: MOVED_PERMANENTLY
         - name: rest_sandbox_project
           in: '/[^/]+/v1/'
-          out: '/wiki/Special:RestSandbox/wmf-restbase'
+          out: '/wiki/Special:RestSandbox/wmf-rest'
           redirect: true
           redirect_code: MOVED_PERMANENTLY
         # *** END REST API sandbox ***
