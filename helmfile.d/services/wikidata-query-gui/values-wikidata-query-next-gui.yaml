@@ -11,8 +11,9 @@ configMaps:
       {
         "api": {
           "sparql": {
-            "uri": "/sparql"
-            },
+            "uri": "/sparql",
+            "engine": "qlever"
+          },
           "urlShortener": "wmf"
         },
         "brand": {
@@ -25,7 +26,7 @@ configMaps:
           "root": "https://query-next.wikidata.org/",
           "index": "https://query-next.wikidata.org/"
         },
-        "bannerName": "graph-split"
+        "bannerName": "qlever-migration"
       }
 ingress:
   enabled: true
