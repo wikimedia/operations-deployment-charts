@@ -1,10 +1,22 @@
+backend:
+  volume:
+    # We force the wdqs-next deployment onto our test nodes which only
+    # provide the balanced storage class for TopoLVM
+    storageClass: topolvm-balanced
+
 # wdqs-next uses its own ingress/mesh hostnames (wdqs2-next-*) so it does not
 # collide with the wdqs namespace, which shares the release values from _wdqs_common_.
 # Everything else for this release comes from the shared values-main-external.yaml symlink.
 ingress:
   gatewayHosts:
     default: wdqs2-next-main-external
+    extraFQDNs: []
 
 mesh:
   certmanager:
     default_host: wdqs2-next-main-external
+
+# On wdqs-next we are fine with releases sharing a node
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution: []
