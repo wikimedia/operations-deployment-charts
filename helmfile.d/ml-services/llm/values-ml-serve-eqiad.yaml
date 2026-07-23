@@ -195,9 +195,9 @@ inference_services:
         - name: ENFORCE_EAGER
           value: "True"
         - name: VLLM_ROCM_USE_AITER
-          value: "0"
-        - name: VLLM_USE_TRITON_FLASH_ATTN
           value: "1"
+        - name: VLLM_ATTENTION_BACKEND
+          value: "ROCM_AITER_UNIFIED_ATTN"
         - name: MAX_JOBS
           value: "1"
       container:
