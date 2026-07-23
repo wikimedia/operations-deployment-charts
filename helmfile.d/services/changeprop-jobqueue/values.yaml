@@ -129,6 +129,13 @@ main_app:
       parsoidCachePrewarm:
         enabled: true
         concurrency: 70
+      cacheAbstractContentFragment:
+        # (T430898) Abstract Wikipedia re-render fragment job set to low concurrency
+        # Being quite conservative: priority is to protect the orchestrator from loads
+        # of concurrent requests triggered by article rendering; some delay in fragment
+        # re-render when coming from this job type is acceptable.
+        enabled: true
+        concurrency: 1
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
