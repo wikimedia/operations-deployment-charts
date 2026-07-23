@@ -13,6 +13,10 @@ cluster:
     # writer tasks.
     max_connections: "200"
 
+  pg_hba:
+  - host superset_metrics superset_metrics 10.0.0.0/8 scram-sha-256
+
+
   # Node-local storage (RAID1 SSD pairs, exposed by TopoLVM). PostgreSQL
   # streaming replication provides the redundancy and barman/S3 the disaster
   # recovery, so we avoid paying for Ceph replication on top: with
