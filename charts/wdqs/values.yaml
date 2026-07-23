@@ -40,8 +40,6 @@ init:
     public:
       # A stable Kafka group bound to the storage and pod, due to usage of StatefulSet
       KAFKA_GROUP: $(K8S_POD_NAMESPACE)-$(K8S_POD_NAME)
-      # As long as the Qlever index is not persisted regularly, we need to rebuild from dump ts on each restart
-      KAFKA_FORCE_SEEK: true
       NEW_INDEX_S3_HOST: rgw.eqiad.dpe.anycast.wmnet
       NEW_INDEX_S3_BUCKET: wdqs-update-pipeline
       LOGGER: ecs

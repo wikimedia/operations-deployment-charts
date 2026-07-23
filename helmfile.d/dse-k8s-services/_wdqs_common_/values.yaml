@@ -11,12 +11,13 @@ qlever:
   config:
     public:
       QLEVER_QUERY_TIMEOUT: 300s
+      QLEVER_ADDITIONAL_ARGS: --persist-updates
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
   # set per-release so each dataset fits the wdqs namespace quota
   requests: {}
 
 init:
-  version: v0.0.9
+  version: v0.1.0
   config:
     public:
       NUM_BACKUPS: 1
