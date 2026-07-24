@@ -24,7 +24,7 @@ external_services:
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]
-  task_pod:
+  task-pod:
     # The following are required by the growthbook-ldap-sync DAG
     gerrit: [wikimedia]
     ldap-ro: [eqiad, codfw]
