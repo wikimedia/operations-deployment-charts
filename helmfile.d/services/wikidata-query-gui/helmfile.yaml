@@ -15,13 +15,17 @@ environments:
   staging: &default_values
     values:
       - releases:
-        - wikidata-query-gui
         - commons-query-gui
-        - wikidata-query-main-gui
-        - wikidata-query-next-gui
-        - wikidata-query-scholarly-gui
-        - wikidata-query-scholarly-next-gui
+        - wikidata-query-gui
         - wikidata-query-builder
+        - wikidata-query-main-gui
+        - wikidata-query-main-builder
+        - wikidata-query-scholarly-gui
+        - wikidata-query-scholarly-builder
+        - wikidata-query-next-gui
+        - wikidata-query-next-builder
+        - wikidata-query-scholarly-next-gui
+        - wikidata-query-scholarly-next-builder
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
@@ -71,17 +75,25 @@ hooks:
       ]
 
 releases:
+  - name: commons-query-gui
+    <<: *default
   - name: wikidata-query-gui
     <<: *default
-  - name: commons-query-gui
+  - name: wikidata-query-builder
     <<: *default
   - name: wikidata-query-main-gui
     <<: *default
-  - name: wikidata-query-next-gui
-    <<: *default
-  - name: wikidata-query-scholarly-next-gui
+  - name: wikidata-query-main-builder
     <<: *default
   - name: wikidata-query-scholarly-gui
     <<: *default
-  - name: wikidata-query-builder
+  - name: wikidata-query-scholarly-builder
+    <<: *default
+  - name: wikidata-query-next-gui
+    <<: *default
+  - name: wikidata-query-next-builder
+    <<: *default
+  - name: wikidata-query-scholarly-next-gui
+    <<: *default
+  - name: wikidata-query-scholarly-next-builder
     <<: *default
