@@ -53,7 +53,11 @@ health:
       HEALTH_MONITOR_UPDATE_LAG_THRESHOLD: 2147483647
 
 proxy:
-  version: v0.3.1
+  version: v0.4.0
+  config:
+    public:
+      QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://eventgate-analytics.discovery.wmnet:4592
+      QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
 
 networkpolicy:
   egress:
