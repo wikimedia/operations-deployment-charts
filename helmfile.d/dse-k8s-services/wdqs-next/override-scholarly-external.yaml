@@ -1,8 +1,23 @@
+resources:
+  replicas: 1
+
 backend:
   volume:
     # We force the wdqs-next deployment onto our test nodes which only
     # provide the balanced storage class for TopoLVM
     storageClass: topolvm-balanced
+
+qlever:
+  config:
+    public:
+      QLEVER_MAX_MEM: 20G
+      QLEVER_MAX_CACHE: 8G
+  requests:
+    cpu: 5
+    memory: 30Gi
+  limits:
+    cpu: 5
+    memory: 30Gi
 
 # wdqs-next uses its own ingress/mesh hostnames (wdqs2-next-*) so it does not
 # collide with the wdqs namespace, which shares the release values from _wdqs_common_.
@@ -15,8 +30,3 @@ ingress:
 mesh:
   certmanager:
     default_host: wdqs2-next-scholarly-external
-
-# On wdqs-next we are fine with releases sharing a node
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution: []

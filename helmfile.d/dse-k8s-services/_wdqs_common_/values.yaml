@@ -1,3 +1,6 @@
+resources:
+  replicas: 3
+
 backend:
   volume:
     storageClass: topolvm-performance
@@ -10,10 +13,7 @@ qlever:
       QLEVER_QUERY_TIMEOUT: 300s
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
   # set per-release so each dataset fits the wdqs namespace quota
-  requests:
-    cpu: 4
-  limits:
-    cpu: 10
+  requests: {}
 
 init:
   version: v0.0.9
@@ -38,6 +38,12 @@ consumer:
       HEAP_SIZE: 2g
       LOG_LEVEL: DEBUG
   metricsPort: 9101
+  requests:
+    cpu: 2
+    memory: 3Gi
+  limits:
+    cpu: 2
+    memory: 3Gi
 
 health:
   version: v0.0.2
@@ -50,6 +56,12 @@ health:
       # to neutralise it. The index-loaded check (HEALTH_MONITOR_INDEX_*) still
       # gates the /probe startup check.
       HEALTH_MONITOR_UPDATE_LAG_THRESHOLD: 2147483647
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    cpu: 1
+    memory: 1Gi
 
 proxy:
   version: v0.4.0
@@ -57,6 +69,12 @@ proxy:
     public:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://eventgate-analytics.discovery.wmnet:4592
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
+  requests:
+    cpu: 2
+    memory: 2Gi
+  limits:
+    cpu: 2
+    memory: 2Gi
 
 networkpolicy:
   egress:
@@ -91,16 +109,6 @@ affinity:
             operator: In
             values:
               - wdqs
-  # affinity to prevent two instances of WDQS to run on the same node
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app
-              operator: In
-              values:
-                - wdqs
-        topologyKey: "kubernetes.io/hostname"
 
 # toleration to allow wdqs-backend pods to run on wdqs nodes
 tolerations:

@@ -17,9 +17,6 @@ qlever:
   requests:
     cpu: 1
     memory: 1Gi
-  limits:
-    cpu: 4
-    memory: 32Gi
   volumeMounts:
    - name: data-dir
      mountPath: /srv/data
@@ -55,9 +52,6 @@ init:
   requests:
     cpu: 100m
     memory: 300Mi
-  limits:
-    cpu: 500m
-    memory: 512Mi
   volumeMounts:
    - name: data-dir
      mountPath: /srv/data
@@ -75,9 +69,6 @@ consumer:
   requests:
     cpu: 1
     memory: 1Gi
-  limits:
-    cpu: 1
-    memory: 4Gi
 
 health:
   image: repos/wikidata-platform/wdqs/wdqs-backend-health-monitor
@@ -92,9 +83,6 @@ health:
   requests:
     cpu: 100m
     memory: 512Mi
-  limits:
-    cpu: 500m
-    memory: 1Gi
   startup_probe:
     httpGet:
       path: /probe
@@ -131,9 +119,6 @@ proxy:
   requests:
     cpu: 100m
     memory: 512Mi
-  limits:
-    cpu: 1
-    memory: 1Gi
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
@@ -158,9 +143,6 @@ mesh:
     requests:
       cpu: 200m
       memory: 300Mi
-    limits:
-      cpu: 500m
-      memory: 500Mi
 
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
