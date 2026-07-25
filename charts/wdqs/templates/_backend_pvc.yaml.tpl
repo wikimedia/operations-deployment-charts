@@ -1,13 +1,10 @@
 {{- define "app.backend.pvc" }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ template "base.name.release" . }}-backend-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ $.Values.backend.volume.size }}
-  storageClassName: {{ $.Values.backend.volume.storageClass }}
+- metadata:
+    name: data-dir
+  spec:
+    accessModes: [ReadWriteOnce]
+    storageClassName: {{ $.Values.backend.volume.storageClass }}
+    resources:
+      requests:
+        storage: {{ $.Values.backend.volume.size }}
 {{- end }}

@@ -1,3 +1,0 @@
-{{- if ne .Values.backend.volume.storageClass "emptyDir" }}
-{{- include "app.backend.pvc" . }}
-{{- end }}
