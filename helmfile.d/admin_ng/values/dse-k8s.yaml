@@ -227,6 +227,10 @@ istio:
         # knative-local-gateway (not exposed via NodePort),
         # only for internal traffic.
       - 8081
+        # TLS passthrough to PostgreSQL (CloudnativePG) clusters. This is
+        # the container port that sits behind nodePort 31432, cf
+        # custom_deploy.d/istio/dse-k8s/config.yaml (T432104).
+      - 5432
 net_istio:
   ingressgateway:
     servers:
