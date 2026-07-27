@@ -194,6 +194,7 @@ php:
 
 mw:
   domain_suffix: "org"
+  mail_timeout: 5  # T383047: Increase from default of 1s
   httpd:
     additional_config: |-
       LoadModule remoteip_module /usr/lib/apache2/modules/mod_remoteip.so

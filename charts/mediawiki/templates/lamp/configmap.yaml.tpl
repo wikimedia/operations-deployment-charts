@@ -72,7 +72,7 @@ data:
     account default
     host {{ .Values.mw.mail_host }}
     from wiki@wikimedia.org
-    timeout 1
+    timeout {{ .Values.mw.mail_timeout | default "1" }}
 {{- end }}
 {{ include "mw.lamp.envvars" . }}
 {{- end }}
