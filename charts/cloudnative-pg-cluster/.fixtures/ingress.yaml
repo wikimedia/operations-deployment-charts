@@ -9,6 +9,13 @@ ingress:
     - pg-ingress.svc.eqiad.wmnet
     - pg-ingress.svc.codfw.wmnet
 
+certmanager:
+  enabled: true
+  ca: |
+    -----BEGIN CERTIFICATE-----
+    plop
+    -----END CERTIFICATE-----
+
 common_images:
   postgresql:
     "17": abc123456789

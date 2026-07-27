@@ -70,13 +70,24 @@ service when the pooler is enabled, the cluster rw service otherwise.
 {{- end -}}
 
 {{/*
-The Cluster certificates configuration. When ingress is enabled and the server
-certificate is operator-managed, the ingress FQDNs are merged into
-serverAltDNSNames, so that the issued certificate is valid for the
-externally-visible hostnames and clients can use sslmode=verify-full.
+The Cluster certificates configuration.
+
+When certmanager is enabled, the server certificate pair comes from the
+secrets created by templates/server-certificate.yaml, unless explicitly
+overridden in cluster.certificates.
+
+When ingress is enabled and the server certificate is operator-managed, the
+ingress FQDNs are merged into serverAltDNSNames, so that the issued
+certificate is valid for the externally-visible hostnames and clients can use
+sslmode=verify-full. (With certmanager, the ingress hosts are included in the
+requested certificate directly.)
 */}}
 {{- define "cluster.certificates" -}}
 {{- $certificates := deepCopy (.Values.cluster.certificates | default dict) -}}
+{{- if .Values.certmanager.enabled -}}
+{{- $_ := set $certificates "serverTLSSecret" (default (printf "%s-server-cert" (include "cluster.fullname" .)) $certificates.serverTLSSecret) -}}
+{{- $_ := set $certificates "serverCASecret" (default (printf "%s-server-ca" (include "cluster.fullname" .)) $certificates.serverCASecret) -}}
+{{- end -}}
 {{- if and .Values.ingress.enabled (not $certificates.serverTLSSecret) -}}
 {{- $serverAltDNSNames := concat ($certificates.serverAltDNSNames | default list) .Values.ingress.hosts | uniq -}}
 {{- $_ := set $certificates "serverAltDNSNames" $serverAltDNSNames -}}

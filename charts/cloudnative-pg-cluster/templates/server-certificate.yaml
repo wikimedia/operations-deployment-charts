@@ -1,0 +1,56 @@
+{{- if .Values.certmanager.enabled }}
+{{/*
+  Request the PostgreSQL server certificate from the WMF PKI via cert-manager,
+  covering the cluster service names and any ingress hostnames. The resulting
+  secret is configured as the CNPG serverTLSSecret, cf the cluster.certificates
+  helper. The operator watches the secret and reloads PostgreSQL when
+  cert-manager renews the certificate.
+*/}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "cluster.fullname" . }}-server
+  labels:
+    {{- include "cluster.labels" . | nindent 4 }}
+spec:
+  commonName: {{ include "cluster.fullname" . }}-rw
+  secretName: {{ include "cluster.fullname" . }}-server-cert
+  dnsNames:
+  {{- range $suffix := list "-rw" "-ro" "-r" }}
+  {{- $service := printf "%s%s" (include "cluster.fullname" $) $suffix }}
+  - {{ $service }}
+  - {{ $service }}.{{ $.Release.Namespace }}
+  - {{ $service }}.{{ $.Release.Namespace }}.svc
+  - {{ $service }}.{{ $.Release.Namespace }}.svc.cluster.local
+  {{- end }}
+  {{- range .Values.ingress.hosts }}
+  - {{ . }}
+  {{- end }}
+  {{- range .Values.certmanager.extraDnsNames }}
+  - {{ . }}
+  {{- end }}
+  usages:
+  - server auth
+  # revisionHistoryLimit is the maximum number of CertificateRequest revisions
+  # that are maintained in the Certificate's history. If not set, cert-manager
+  # will not clean up old CertificateRequests at all.
+  revisionHistoryLimit: 2
+  issuerRef:
+    name: {{ .Values.certmanager.issuerRefName }}
+    kind: {{ .Values.certmanager.issuerRefKind }}
+    group: {{ .Values.certmanager.issuerRefGroup }}
+---
+{{/*
+  The CA bundle that validates certificates issued by the issuer above,
+  configured as the CNPG serverCASecret.
+*/}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "cluster.fullname" . }}-server-ca
+  labels:
+    {{- include "cluster.labels" . | nindent 4 }}
+type: Opaque
+data:
+  ca.crt: {{ required "certmanager.ca is required when certmanager.enabled is true" .Values.certmanager.ca | b64enc }}
+{{- end }}

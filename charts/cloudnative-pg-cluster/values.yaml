@@ -346,6 +346,29 @@ ingress:
   # -- Port of the destination service.
   destinationPort: 5432
 
+certmanager:
+  # -- Whether to request the PostgreSQL server certificate from the WMF PKI,
+  # via cert-manager and the cfssl issuer, instead of using the self-signed
+  # certificate authority that the operator generates for the cluster.
+  # Clients can then verify their connection to PostgreSQL with the standard
+  # wmf-ca-certificates bundle, which is installed on every production host.
+  # The client CA, which issues the certificates used for streaming
+  # replication, remains managed by the operator.
+  enabled: false
+  # -- The certificate issuer, provided by SRE.
+  # See helmfile.d/admin_ng/cert-manager/cfssl-issuer-values.yaml
+  issuerRefName: discovery
+  issuerRefKind: ClusterIssuer
+  issuerRefGroup: cfssl-issuer.wikimedia.org
+  # -- The CA bundle used to validate certificates issued by the issuer above.
+  # It is stored in a secret which is configured as the CNPG serverCASecret,
+  # so the replicas can verify the primary's certificate when streaming.
+  # Required when enabled.
+  ca: ""
+  # -- Additional DNS names to include in the certificate. The cluster service
+  # names and the ingress hosts are always included.
+  extraDnsNames: []
+
 common_images:
   postgresql:
     "15": "override_me"
