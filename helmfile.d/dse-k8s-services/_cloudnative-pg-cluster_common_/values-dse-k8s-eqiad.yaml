@@ -7,8 +7,10 @@ s3:
 
   # This is the certificate installed by the wmf-ca-certificates deb
   # package, used to validate the certificate of the Rados Gateway
-  # instance acting as our S3 endpoint.
-  ca_cert_bundle: |
+  # instance acting as our S3 endpoint. The anchor is reused below to
+  # validate the PostgreSQL server certificate when it is issued by the
+  # WMF PKI (certmanager.enabled).
+  ca_cert_bundle: &wmf_ca_certificates |
     -----BEGIN CERTIFICATE-----
     MIIDBjCCAmegAwIBAgIUJzV1YuedEKoaCkVVX4sGAX6x9eMwCgYIKoZIzj0EAwQw
     gZwxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1T
@@ -63,3 +65,8 @@ s3:
 external_services:
   # PG needs access to S3 to upload its WALs and base backups
   s3: [eqiad-dpe]
+
+certmanager:
+  # The CA bundle that validates server certificates issued by the WMF PKI.
+  # Only used by clusters that set certmanager.enabled.
+  ca: *wmf_ca_certificates

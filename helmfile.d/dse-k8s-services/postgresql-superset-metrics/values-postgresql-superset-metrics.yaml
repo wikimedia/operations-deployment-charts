@@ -52,12 +52,23 @@ cluster:
 ingress:
   # Expose the cluster outside of Kubernetes via SNI-based TLS passthrough,
   # for the Spark jobs on YARN which populate the data. Clients connect to
-  # this hostname on port 31432 (the k8s-ingress-dse-postgresql LVS service)
-  # with PostgreSQL 17 direct TLS negotiation, e.g.
-  # jdbc:postgresql://postgresql-superset-metrics.svc.eqiad.wmnet:31432/superset_metrics?sslNegotiation=direct&sslmode=verify-full
+  # one of these hostnames on port 31432 (the k8s-ingress-dse-postgresql
+  # LVS service) with PostgreSQL 17 direct TLS negotiation, e.g.
+  # jdbc:postgresql://postgresql-superset-metrics.discovery.wmnet:31432/superset_metrics?sslNegotiation=direct&sslmode=verify-full&sslrootcert=/etc/ssl/certs/wmf-ca-certificates.crt
+  # These hostnames are matched by the gateway for SNI routing and are also
+  # included in the server certificate. Clients should prefer the discovery
+  # name; the site-specific name remains for direct per-DC access.
   enabled: true
   hosts:
+    - postgresql-superset-metrics.discovery.wmnet
     - postgresql-superset-metrics.svc.eqiad.wmnet
+
+certmanager:
+  # The server certificate is issued by the WMF PKI, so that the Spark jobs
+  # and Superset can verify their connections with the standard
+  # wmf-ca-certificates bundle, rather than needing a copy of this cluster's
+  # own certificate authority.
+  enabled: true
 
 pooler:
   # No PgBouncer: both clients hold few, long-lived connections. Superset
