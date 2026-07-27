@@ -88,6 +88,25 @@ worker:
     urldownloader:
       enabled: true
 
+discovery:
+  listeners:
+  - mw-api-int     # to be able to talk to https://meta.wikimedia.org/w/api.php?action=streamsconfig
+  - noc            # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
+  - schema         # to be able to talk to https://schema.discovery.wmnet
+  - analytics-web  # to be able to talk to https://analytics.wikimedia.org
+  - eventgate-main
+  - eventgate-main-eqiad
+  - eventgate-main-codfw
+  - eventgate-analytics
+  - eventgate-analytics-eqiad
+  - eventgate-analytics-codfw
+  - eventgate-analytics-external
+  - eventgate-analytics-external-eqiad
+  - eventgate-analytics-external-codfw
+  - eventgate-logging-external
+  - eventgate-logging-external-eqiad
+  - eventgate-logging-external-codfw
+
 external_services:
   task-pod:
     # Some DAGs talk to the AQS Cassandra cluster directly
