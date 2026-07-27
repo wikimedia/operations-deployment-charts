@@ -61,7 +61,6 @@
   {{- include "kerberos.volumeMounts" (dict "Root" .Root) | indent 2 }}
   {{- if has "LocalExecutor" .profiles }}
   {{- include "app.worker.volumeMounts.hadoop" .Root | indent 2 }}
-  {{- include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root) | indent 2 }}
   {{- end }}
 {{- end }}
 
@@ -359,8 +358,7 @@ resources:
 
 {{- define "airflow.task-pod.volumes" }}
 {{- /* We only need to add the `volumes:` header if we have volumes to declare in the first place */ -}}
-{{- $extraVolumes := (include "airflow.worker.extra-config-volumes" (dict "Root" .Root)) }}
-{{- if or .profiles (fromYaml $extraVolumes) }}
+{{- if .profiles }}
 {{- if ne .header false }}
 volumes:
 {{- end }}
@@ -380,14 +378,12 @@ volumes:
 {{- if has "geoip" .profiles }}
 {{- include "app.worker.volumes.geoip" .Root }}
 {{- end }}
-{{- $extraVolumes }}
 {{- end }}
 
 {{- define "airflow.task-pod.volumeMounts" }}
 {{- /* We only need to add the `volumeMounts:` header if we have volume to declare in the first place */ -}}
-{{- $extraVolumeMounts := (include "airflow.worker.extra-config-volume-mounts" (dict "Root" .Root)) }}
 {{- if ne .header false }}
-{{- if or .profiles (fromYaml $extraVolumeMounts) }}
+{{- if .profiles}}
 volumeMounts:
 {{- end }}
 {{- end }}
@@ -406,7 +402,6 @@ volumeMounts:
 {{- if has "geoip" .profiles }}
 {{- include "app.worker.volumeMounts.geoip" .Root }}
 {{- end }}
-{{- $extraVolumeMounts }}
 {{- end }}
 
 {{- define "airflow.task-pod.env" }}
@@ -429,23 +424,6 @@ env:
 {{- define "airflow.worker.extra-config-resource-name" -}}
 {{ template "release.name" .Root }}-worker-{{ .directory | replace "/" "-" }}
 {{- end -}}
-
-{{- define "airflow.worker.extra-config-volumes" }}
-{{- $Root := .Root }}
-{{- range $directory, $config := .Root.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
-  configMap:
-    name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
-{{- end }}
-{{- end }}
-
-{{- define "airflow.worker.extra-config-volume-mounts" }}
-{{- $Root := .Root }}
-{{- range $directory, $config := .Root.Values.worker.config.extra_files }}
-- name: {{ include "airflow.worker.extra-config-resource-name" (dict "Root" $Root "directory" $directory) }}
-  mountPath: {{ $directory }}
-{{- end }}
-{{- end }}
 
 {{- define "kubernetes-executor.pod-template" -}}
 {{- $profiles := .profiles | default (list "airflow" "hadoop" "spark" "kerberos" "keytab") -}}
