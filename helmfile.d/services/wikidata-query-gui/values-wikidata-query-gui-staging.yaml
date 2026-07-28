@@ -1,0 +1,23 @@
+# make the api.sparql.url absolute so that the staging app can be port-forwarded around while still targeting real WDQS
+configMaps:
+  wikidata-custom-config:
+    custom-config.json: |-
+      {
+        "api": {
+          "sparql": {
+            "uri": "https://query.wikidata.org/sparql"
+          },
+          "urlShortener": "wmf"
+        },
+        "brand": {
+          "logo": "logo.svg",
+          "favicon": "favicon.ico",
+          "title": "Wikidata Query Service",
+          "copyrightUrl": "https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:SPARQL_query_service/Copyright"
+        },
+        "location": {
+          "root": "https://query.wikidata.org/",
+          "index": "https://query.wikidata.org/"
+        },
+        "bannerName": "graph-split"
+      }
