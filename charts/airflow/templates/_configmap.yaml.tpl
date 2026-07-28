@@ -158,31 +158,43 @@ data:
     {{- end }}
 
   airflow_local_settings.py: |
-    from airflow.www.utils import UIAlert
+    try:
+        # Airflow 3.3+
+        from airflow.api_fastapi.common.types import UIAlert
+    except ImportError:
+        # Airflow 2.x
+        from airflow.www.utils import UIAlert as BaseUIAlert
+        def UIAlert(text, html, category):
+            return BaseUIAlert(text, html=html, category=category)
     DASHBOARD_UIALERTS = [
     {{- range $ui_alert := $.Values.config.airflow.local_settings.ui_alerts }}
         UIAlert(
-          """{{ $ui_alert.text }}""",
+          text="""{{ $ui_alert.text }}""",
           html={{ template "toPythonValue" (dict "value" ($ui_alert.html | default false )) }},
           category={{ template "toPythonValue" (dict "value" ($ui_alert.category | default "info" )) }},
         ),
     {{- end }}
     {{- if $.Values.devenv.enabled }}
         UIAlert(
-          """This is an ephemeral airflow development instance. Please destroy it with <code>airflow-devenv destroy {{ $.Release.Name }}</code> when you're done.""",
+          text="""This is an ephemeral airflow development instance. Please destroy it with <code>airflow-devenv destroy {{ $.Release.Name }}</code> when you're done.""",
           html=True,
           category="info",
         ),
     {{- end }}
     {{- if ne $.Values.gitsync.ref "main" }}
         UIAlert(
-          """<code>git-sync</code> is currently pulling the <code><a href="https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags/-/tree/{{ $.Values.gitsync.ref }}">{{ $.Values.gitsync.ref }}</a></code> ref from <code>airflow-dags</code>.""",
+          text="""<code>git-sync</code> is currently pulling the <code><a href="https://gitlab.wikimedia.org/repos/data-engineering/airflow-dags/-/tree/{{ $.Values.gitsync.ref }}">{{ $.Values.gitsync.ref }}</a></code> ref from <code>airflow-dags</code>.""",
           html=True,
           category="warning",
         ),
     {{- end }}
     ]
-    from airflow.kubernetes.pod_generator import PodDefaults
+    try:
+        # Airflow 3.3+
+        from airflow.providers.cncf.kubernetes.utils.xcom_sidecar import PodDefaults
+    except ImportError:
+        # Airflow 2.x
+        from airflow.kubernetes.pod_generator import PodDefaults
     from kubernetes.client import models as k8s
     PodDefaults.SIDECAR_CONTAINER.image = "{{ $.Values.docker.registry }}/{{ $.Values.config.airflow.local_settings.xcom_sidecar.image }}:{{ $.Values.config.airflow.local_settings.xcom_sidecar.tag }}"
     {{- with $.Values.config.airflow.local_settings.xcom_sidecar.resources }}
