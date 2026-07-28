@@ -278,7 +278,7 @@ hooks:
         "[{{ .Environment.Name }}] DONE helmfile.d/admin '{{`{{.HelmfileCommand}}`}}'.",
       ]
 ---
-helmBinary: '{{ if semverCompare "<=1.24" .Values.kubernetesVersion }}helm3.11{{ else }}helm3.17{{ end }}'
+helmBinary: '{{ if semverCompare "<=1.31" .Values.kubernetesVersion }}helm3.17{{ else }}helm3.19{{ end }}'
 helmDefaults:
   createNamespace: false
   verify: false

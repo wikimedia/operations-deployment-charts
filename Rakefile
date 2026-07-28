@@ -44,8 +44,8 @@ OPEN_URI_OPTIONS = {
 desc 'Checks dependencies'
 task :check_dep do
   check_binary('helm')
-  check_binary('helm3.11')
   check_binary('helm3.17')
+  check_binary('helm3.19')
   check_binary('helmfile')
   check_binary('semver-cli')
   check_binary('make')
