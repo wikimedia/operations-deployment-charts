@@ -243,4 +243,23 @@ namespaces:
         max:
           memory: "4Gi"
           cpu: "2"
-
+  # resourcequotas for both wdqs and wdqs-next are defined for each cluster
+  # individually, while the limitranges are defined only once.
+  wdqs:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "336"
+          memory: "1900Gi"
+        limits:
+          cpu: "336"
+          memory: "1900Gi"
+  wdqs-next:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "28"
+          memory: "100Gi"
+        limits:
+          cpu: "28"
+          memory: "100Gi"

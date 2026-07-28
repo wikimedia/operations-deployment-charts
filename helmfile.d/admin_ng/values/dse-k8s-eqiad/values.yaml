@@ -677,4 +677,23 @@ namespaces:
     - turnilo-next.wikimedia.org
   wdqs-queryhammer: {}
   webrequest-page-view-next: {}
-
+  # resourcequotas for both wdqs and wdqs-next are defined for each cluster
+  # individually, while the limitranges are defined only once.
+  wdqs:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "252"
+          memory: "1425Gi"
+        limits:
+          cpu: "252"
+          memory: "1425Gi"
+  wdqs-next:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "36"
+          memory: "235Gi"
+        limits:
+          cpu: "36"
+          memory: "235Gi"

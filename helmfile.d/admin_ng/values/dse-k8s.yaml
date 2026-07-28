@@ -170,6 +170,9 @@ namespaces:
     tlsExtraSANs:
     - query-next.wikidata.org
     - query-scholarly-next.wikidata.org
+    # resourcequotas for the entire namespace are defined for each cluster individually
+    # because while the individual dedicated wdqs nodes are similar, eqiad has 3, while
+    # codfw has 4
     limitranges:
       container:
         min:
@@ -197,6 +200,9 @@ namespaces:
     - wdqs2-next-main-external
     - wdqs2-next-scholarly-internal
     - wdqs2-next-scholarly-external
+    # resourcequotas for the entire namespace are defined for each clsuter individually
+    # because the dedicated wdqs-test nodes in eqiad and codfw differ in terms of memory
+    # and cpu
     limitranges:
       container:
         min:
