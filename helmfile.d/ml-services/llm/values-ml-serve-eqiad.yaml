@@ -169,15 +169,13 @@ inference_services:
                         - "ml-serve1014.eqiad.wmnet"
                         - "ml-serve1015.eqiad.wmnet"
 
-  jina-embeddings-staging:
-    annotations:
-      serving.knative.dev/progress-deadline: "1800s"
+  jina-embeddings:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings-transformers"
       image_version: "2026-07-28-084901-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "jina-embedding"
+          value: "jina-embeddings"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/jina-embeddings/v1/20260728115813/"
         - name: MODEL_VERSION
@@ -215,7 +213,54 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
+                        - "ml-serve1015.eqiad.wmnet"
+
+  jina-embeddings-staging:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-embeddings-transformers"
+      image_version: "2026-07-28-084901-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "jina-embeddings-staging"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/jina-embeddings/v1/20260728115813/"
+        - name: MODEL_VERSION
+          value: "jina-embeddings-v5-text-nano-retrieval"
+        - name: DTYPE
+          value: "bfloat16"
+      container:
+        resources:
+          limits:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 15Gi
+          requests:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 10Gi
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
                         - "ml-serve1015.eqiad.wmnet"
