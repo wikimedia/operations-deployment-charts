@@ -42,7 +42,7 @@ app:
         sink:
           stream: mediawiki.page_html_feature_counts_change.v1:1.1.0
           options:
-            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            bootstrap_servers: kafka-main-eqiad.external-services.svc.cluster.local:9093
             kafka_topic_prefix: eqiad.
 
         # By convention we set job_name equal to k8s namespace.
@@ -76,4 +76,5 @@ flink:
     swift_bucket: mw-page-html-feature-counts-change-enrich.dse-k8s-eqiad
 
 external_services:
-  kafka: [jumbo-eqiad]
+  # jumbo-eqiad for the source and error_sink topics, main-eqiad for the sink topic.
+  kafka: [jumbo-eqiad, main-eqiad]
