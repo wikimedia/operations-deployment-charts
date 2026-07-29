@@ -3,3 +3,12 @@ networkpolicy:
     enabled: true
     dst_nets:
     - cidr: 123.123.123.123/24
+
+main_app:
+  rest_gateway_routes:
+    - name: main_services
+      timeout: 120s
+      urls:
+        - name: foo_bar
+          in: 'main/foo/bar/(.+)'
+          out: '/foo/bar/\2'

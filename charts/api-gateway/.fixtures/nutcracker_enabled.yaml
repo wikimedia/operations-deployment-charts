@@ -4,3 +4,12 @@ nutcracker:
   servers:
     - 10.10.10.10:6379:1 "r1"
     - 20.20.20.20:6379:1 "r2"
+
+main_app:
+  rest_gateway_routes:
+    - name: main_services
+      timeout: 120s
+      urls:
+        - name: foo_bar
+          in: 'main/foo/bar/(.+)'
+          out: '/foo/bar/\2'

@@ -218,8 +218,6 @@ static_resources:
           route_config:
 {{- if .Values.main_app.rest_gateway_routes }}
 {{ include "restgateway.routes" . }}
-{{- else }}
-{{ include "apigateway.routes" . }}
 {{- end }}
           http_filters:
           - name: envoy.health_check

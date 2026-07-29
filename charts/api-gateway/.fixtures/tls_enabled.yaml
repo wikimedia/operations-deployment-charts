@@ -9,3 +9,12 @@ mesh:
       -- begin --
       678910
       -- end --
+
+main_app:
+  rest_gateway_routes:
+    - name: main_services
+      timeout: 120s
+      urls:
+        - name: foo_bar
+          in: 'main/foo/bar/(.+)'
+          out: '/foo/bar/\2'

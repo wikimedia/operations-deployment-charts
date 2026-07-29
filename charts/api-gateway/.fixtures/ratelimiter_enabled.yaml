@@ -45,3 +45,22 @@ main_app:
             HOUR: 1000
           "approved-bot":
             HOUR: 10000
+
+    rest_gateway_routes:
+      - name: main_services
+        timeout: 120s
+        urls:
+          - name: foo_bar
+            in: 'main/foo/bar/(.+)'
+            out: '/foo/bar/\2'
+        rb_response_headers: true
+        rate_limit_policies: []
+
+      - name: other_endpoints
+        timeout: 15s
+        cluster: other
+        csp_enabled: false
+        urls:
+          - name: dummy
+            in: '/other/(.*)'
+            out: '/service/\1'
