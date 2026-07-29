@@ -288,7 +288,9 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
+        minReplicas: 1
         maxReplicas: 1
+        timeout: 600
         tolerations:
           - key: "dedicated"
             operator: "Equal"
@@ -511,6 +513,7 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
+        minReplicas: 1
         maxReplicas: 1
         timeout: 600
         tolerations:
