@@ -1,58 +1,4 @@
 inference_services:
-  aya-llm:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-llm"
-      image_version: "2025-11-28-100340-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "aya-expanse-8B"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/aya-expanse-8B/"
-        - name: LLM_CLASS
-          value: "llm.Aya"
-        - name: BITSANDBYTES_DTYPE
-          value: "int4"
-        - name: DEVICE
-          value: "auto"
-        - name: ATTN_IMPLEMENTATION
-          value: "flash_attention_2"
-        - name: DTYPE
-          value: "bfloat16"
-      container:
-        resources:
-          limits:
-            cpu: "6"
-            memory: 8Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 30Gi
-          requests:
-            cpu: "6"
-            memory: 8Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 25Gi
-      config:
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1012.eqiad.wmnet"
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
-                        - "ml-serve1015.eqiad.wmnet"
-
   embeddings:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings"
@@ -103,7 +49,6 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
                         - "ml-serve1015.eqiad.wmnet"
@@ -164,7 +109,6 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
                         - "ml-serve1015.eqiad.wmnet"
