@@ -13,7 +13,7 @@ config:
     TTS_ISVC_VERIFY_TLS: "true"
     TTS_ISVC_TIMEOUT_S: "600"
     # Identity
-    TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.3 (https://phabricator.wikimedia.org/T430536)"
+    TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.4 (https://phabricator.wikimedia.org/T430536)"
     # NeMo grammar cache (baked at image build; see blubber.yaml build variant)
     TTS_GEN_NEMO_CACHE: "/home/somebody/nemo-grammars"
     # MediaWiki API proxy through the envoy services-proxy (localhost:6500
@@ -24,7 +24,7 @@ config:
     TTS_GEN_KOKORO_VERSION: "kokoro-v1.0"
     TTS_GEN_DEFAULT_VOICE: "af_heart"
     TTS_GEN_DEFAULT_LANG: "en-us"
-    TTS_GEN_NORM_RULESET: "2026.07.23"
+    TTS_GEN_NORM_RULESET: "2026.07.30"
     # Transcode: Opus tuned for speech intelligibility at low bitrate
     TTS_GEN_OPUS_BITRATE: "32k"
     TTS_GEN_OPUS_APPLICATION: "voip"
@@ -48,7 +48,7 @@ resources:
 
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-tts-section-generator
-  version: "2026-07-22-154834-publish"
+  version: "2026-07-30-122201-publish"
   port: 8080
   limits:
     cpu: 1
