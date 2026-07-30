@@ -21,26 +21,6 @@ mappings:
       user_class: "other"
       unit: "$3"
 
-  # Mappings for the API gateway (anon)
-  - match: "ratelimit\\.service\\.rate_limit.wikimedia\\.route_name_(.*)\\.user_class_anon_fallback_(\\w+)\\.client_ip\\.(.*)"
-    match_type: regex
-    name: "ratelimit_service_api_gateway_$3"
-    labels:
-      route_name: "$1"
-      user_class: "$2"
-      client_id: "none"
-      user_id: "none"
-
-  # Mappings for the API gateway (JWT)
-  - match: "ratelimit\\.service\\.rate_limit\\.wikimedia\\.route_name_(.*)\\.client_id_(\\w+)\\.user_id_(\\w+)\\.(.*)"
-    match_type: regex
-    name: "ratelimit_service_api_gateway_$4"
-    labels:
-      route_name: "$1"
-      user_class: "jwt-user"
-      client_id: "$2"
-      user_id: "$3"
-
   # Service metrics ##############################################################
   - match: "ratelimit.service.call.should_rate_limit.*"
     name: "ratelimit_service_should_rate_limit_error"

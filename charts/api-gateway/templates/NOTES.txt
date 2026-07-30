@@ -4,8 +4,6 @@ Your release is named {{ template "base.name.release" . }}.
 
 {{- if .Values.main_app.rest_gateway_routes }}
 This release is configured in REST gateway mode (main_app.rest_gateway_routes).
-{{- else }}
-This release is configured in API gateway mode (main_app.discovery_endpoints).
 {{- end }}
 
 To learn more about the release, try:

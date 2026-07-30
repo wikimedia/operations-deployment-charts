@@ -4,7 +4,7 @@
 ---
 domain: wikimedia
 descriptors:
-{{- if ( and .Values.main_app.rest_gateway_routes .Values.main_app.ratelimiter.enabled ) }}
+{{- if .Values.main_app.ratelimiter.enabled }}
   # NOTE: when changing the descriptor structure,
   #       also update the matcher rules in ratelimiter_metrics.yaml!
   {{/* Inject a DENY policy that consists of just the "*" class with a limit of 0 per minute. */}}

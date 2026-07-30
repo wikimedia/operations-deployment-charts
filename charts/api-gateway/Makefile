@@ -1,6 +1,6 @@
 # Parameters may be overwritten from the command line
 name ?= restgw ## release name (e.g. restgw)
-service ?= rest-gateway ## service name (rest-gateway or api-gateway)
+service ?= rest-gateway ## service name (rest-gateway)
 helm ?= helm ## the helm binary to use
 
 include ../../makefiles/chart.mk

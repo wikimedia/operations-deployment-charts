@@ -53,7 +53,6 @@ main_app:
     # The rate limit policies to apply for rest routes.
     # Individual routes can override the default by specifying a rate_limit_policies value.
     # An empty list of policies means no rate limit.
-    # NOTE: This is used for rest-gateway routes only, it's ignored for api-gateway routes.
     default_policies: []
     # The rate limiting class to apply if the user identity is not know.
     # This can be set to "BYPASS" for testing, when we only want to enforce rate limits
@@ -98,16 +97,16 @@ main_app:
       cpu: 500m
       memory: 1000Mi
     key_prefix: ""
-    key_log_format: "" # TODO: define log format usable with old api gateway rate limiting
-    anon_limit: # used with api-gateway, not rest-gateway
+    key_log_format: ""
+    anon_limit: # used with API Gateway, not REST Gateway
       requests_per_unit: 500
       unit: HOUR
-    default_limit: # used with api-gateway, not rest-gateway
+    default_limit: # used with API Gateway, not REST Gateway
       requests_per_unit: 5000
       unit: HOUR
     units: [ HOUR, MINUTE, SECOND ]
 
-    # Rate limit policies are used with the REST gateway, not the API gateway.
+    # Rate limit policies are used with the REST gateway.
     # A rate limit policy defines the limits for each rate limit class.
     # For a description of the available rate limit classes and their meaning and purpose,
     # see the comment on the wmf_ratelimit_info method in restgw_ratelimits.lua.
@@ -126,12 +125,6 @@ main_app:
     #         HOUR: 5000
     #         MINUTE: 1000
     #         SECOND: 100
-
-    # Prefixes that don't require a JWT in the APi gateway (ignored by REST gateway)
-    prefixes_without_required_jwt:
-      - prefix: "/wiki/"
-      - prefix: "/w/"
-      - path: "/"
 
     # timeout for connecting from envoy to ratelimit service in seconds
     envoy_timeout: 0.25
@@ -161,8 +154,7 @@ main_app:
     kid: ""
     key: ""
 
-  # If this list is populated, we will not configure the gateway
-  # as an API gateway, but as a REST gateway
+  # If this list is populated, we will not configure the gateway as a REST gateway
   rest_gateway_routes: []
 
   endpoints:
@@ -256,28 +248,13 @@ main_app:
   # instructions
   dev_redis: false
 
-  # domains that the API Gateway will answer for. Be sure to set your
+  # domains that the Gateway will answer for. Be sure to set your
   # Host headers accordingly.
   domains:
     - localhost
     - localhost:*
     - 127.0.0.1
     - 127.0.0.1:*
-
-  # This map maps URLs that will be requested of api.wikimedia.org to
-  # a *path* that is requested of the appservers. The map key is a
-  # api.wikimedia.org/{path} regex match. Path property is a regex
-  # substitution to compute the appserver path, and 'host' property
-  # is a regex substitution used to compute the host header value
-  # to send to the appserver.
-  #Example:
-  #pathing_map:
-  #  mwapi_cluster:
-  #    '/core/v1/localtesting/(\w+)/(.*)':
-  #      path: '/w/rest.php/v1/\2'
-  #      host: '\1.wikipedia.org'
-
-  pathing_map: {}
 
 nutcracker:
   enabled: false

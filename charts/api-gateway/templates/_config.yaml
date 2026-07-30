@@ -1,5 +1,5 @@
 {{- define "config.app" }}
-# api gateway envoy config
+# Gateway envoy config
 {{ if .Values.main_app.telemetry_port -}}
 admin:
   access_log:
@@ -331,22 +331,6 @@ static_resources:
                             requirements:
                               - provider_name: wikimedia_centralauth
                               - allow_missing_or_failed: {} # ignore expired tokens in cookies
-{{- else }}
-          - name: envoy.filters.http.jwt_authn
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
-              providers:
-                wikimedia:
-                  issuer: {{ .Values.main_app.jwt.issuer }}
-                  local_jwks:
-                    filename: /etc/jwks/jwks.json
-                  forward: true
-                  from_headers:
-                    name: Authorization
-                    value_prefix: Bearer
-                  payload_in_metadata: "jwt_payload"
-              rules:
-{{ include "apigateway.ratelimit_rules" . }}
 {{- end }}
 {{- end }}
 {{- if not .Values.main_app.ratelimiter.enable_x_ratelimit_headers }}
