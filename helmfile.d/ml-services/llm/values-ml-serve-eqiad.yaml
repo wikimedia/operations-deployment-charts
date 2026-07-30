@@ -173,7 +173,9 @@ inference_services:
         - name: MODEL_VERSION
           value: "jina-embeddings-v5-text-nano-retrieval"
         - name: DTYPE
-          value: "bfloat16"
+          value: "float16"
+        - name: ATTN_IMPLEMENTATION
+          value: "paged|sdpa"
       container:
         resources:
           limits:
