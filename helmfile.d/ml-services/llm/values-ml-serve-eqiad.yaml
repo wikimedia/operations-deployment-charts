@@ -164,7 +164,7 @@ inference_services:
   jina-embeddings-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings-transformers"
-      image_version: "2026-07-30-101452-publish"
+      image_version: "2026-07-30-121000-publish"
       custom_env:
         - name: MODEL_NAME
           value: "jina-embeddings-staging"
@@ -175,7 +175,7 @@ inference_services:
         - name: DTYPE
           value: "float16"
         - name: ATTN_IMPLEMENTATION
-          value: "sdpa"
+          value: "eager"
       container:
         resources:
           limits:
