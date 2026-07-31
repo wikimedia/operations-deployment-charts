@@ -46,6 +46,7 @@ main_app:
 
   # if true, enable a debug server that echoes requests - see README.md
   http_https_echo: false
+
   ratelimiter:
     enabled: false
     # Expose the x-ratelimit-limit and x-ratelimit-remaining headers in response from the ratelimit service.
@@ -98,12 +99,6 @@ main_app:
       memory: 1000Mi
     key_prefix: ""
     key_log_format: ""
-    anon_limit: # used with API Gateway, not REST Gateway
-      requests_per_unit: 500
-      unit: HOUR
-    default_limit: # used with API Gateway, not REST Gateway
-      requests_per_unit: 5000
-      unit: HOUR
     units: [ HOUR, MINUTE, SECOND ]
 
     # Rate limit policies are used with the REST gateway.
