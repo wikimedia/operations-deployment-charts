@@ -1,7 +1,13 @@
 opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search"
-    image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:3@sha256:95eea5d5bbd6ca958f53e120abe631b2e6f99c234339093627216a8fb34f217f
+    image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2026-08-03-124320-2498d27fa37e1bd707fab587a434169a611f66ed-production3@sha256:84c68ffd377c7fa26a9154dc47a5ab9fe24a7b0ab270ffe97126de61c4d5e407
+    additionalConfig:
+      # disable query insights metrics (https://github.com/opensearch-project/query-insights/issues/651)
+      search.insights.top_queries.latency.enabled: "false"
+      search.insights.top_queries.cpu.enabled: "false"
+      search.insights.top_queries.memory.enabled: "false"
+      search.insights.recommendations.enabled: "false"
   nodePools:
     - &node-pool-common
       component: data
