@@ -126,6 +126,8 @@ inference_services:
           value: "jina-embeddings-v5-text-nano-retrieval"
         - name: DTYPE
           value: "bfloat16"
+        - name: ATTN_IMPLEMENTATION
+          value: "sdpa"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
           value: "0"
       container:
