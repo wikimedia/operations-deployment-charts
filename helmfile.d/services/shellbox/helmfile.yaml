@@ -28,6 +28,12 @@ environments:
       - releases: [main,migration]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
+  # This is a non-production development environment used for testing
+  # scap and related deployment tooling.
+  traindev:
+    values:
+      - releases: [main,migration]
+      - kubernetesVersion: '1.31'
 
 ---
 

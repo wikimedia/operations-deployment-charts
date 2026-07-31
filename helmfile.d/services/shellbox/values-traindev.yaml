@@ -1,0 +1,21 @@
+service:
+  deployment: minikube
+
+mesh:
+  enabled: false
+
+monitoring:
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false
+
+resources:
+  replicas: 1
+
+main_app:
+  requests:
+    memory: 256Mi
+  limits:
+    memory: 256Mi
