@@ -40,6 +40,7 @@ jwt:
 ratelimiter_key: {{ .Values.main_app.ratelimiter_key }}
 ratelimiter_rate: {{ .Values.main_app.ratelimit_rate }}
 languages: config/languages.yaml
+referencePunctuation: config/reference-punctuation.yaml
 templatemapping:
   database: config/templatemapping.db
 sectionmapping:
