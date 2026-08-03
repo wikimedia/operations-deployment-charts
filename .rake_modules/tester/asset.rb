@@ -502,9 +502,10 @@ module Tester
     end
 
     def _helmfile_build(env, chdir)
-      # We hard-code a k8s version here for simplicity. This sets helmBinary to helm3.11.
-      # Note that this is only needed because we are not always including /etc/helmfile-defaults/*,
-      # so it can go away if we fix that everywhere.
+      # We hard-code a k8s version here for simplicity, to set the helmBinary.
+      # This is needed because `collect_fixtures` above is calling this without
+      # replacing the paths for /etc/helmfile-defaults/*, so it won't load that
+      # and will fail without a kubeVersion.
       _exec("helmfile -e #{env} build --state-values-set #{KUBE_VERSION_STATE_VALUE}", nil, chdir)
     end
 
