@@ -130,6 +130,12 @@ services:
         headers:
           content-type: 'application/json'
         body: '{{ `{{request.body}}` }}'
+      # the template used for outgoing requests for fetching page topics
+      predicted_topics_req:
+        method: GET
+        uri: '{{ .Values.main_app.linked_artifacts_uri }}/revisions/v1/article_topics/{{ `{{wikiId}}` }}/{{ `{{pageId}}` }}/{{ `{{revisionId}}` }}'
+        headers:
+          content-type: 'application/json'
       # REST API external base URIs (for injection into mobile-html output)
       mobile_html_rest_api_base_uri: {{ .Values.main_app.mobile_html_rest_api_base_uri }}
       mobile_html_local_rest_api_base_uri_template: //{{ `{{domain}}` }}/api/rest_v1/
