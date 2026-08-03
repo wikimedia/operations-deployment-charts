@@ -12,8 +12,6 @@ qlever:
   image: repos/wikidata-platform/wdqs/wdqs-qlever
   version: latest
   port: 7001
-  # The "current" dir is created and populated by the "init" container
-  workingDir: /srv/data/current
   requests:
     cpu: 1
     memory: 1Gi
@@ -26,6 +24,9 @@ qlever:
       QLEVER_MAX_MEM: 24G
       QLEVER_MAX_CACHE: 8G
       QLEVER_NUM_QUERIES: 50
+      # /srv/data/current is a symlink, created by the "init" container,
+      # pointing to the latest version
+      QLEVER_INDEX_DIR: /srv/data/current
   service:
     port:
       name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
@@ -50,6 +51,27 @@ init:
   requests:
     cpu: 100m
     memory: 300Mi
+  volumeMounts:
+   - name: data-dir
+     mountPath: /srv/data
+
+reindex:
+  image: repos/wikidata-platform/wikidata-platform-tools
+  version: latest
+  command:
+    - python3
+    - qlever_rebuild_index.py
+  config:
+    public:
+      QLEVER_HOST: http://localhost:7001
+      # /srv/data/current is a symlink, created by the "init" container,
+      # pointing to the latest version
+      QLEVER_INDEX_DIR: /srv/data/current
+      # Default schedule: run twice a day
+      SCHEDULE: "00 01,13 * * *"
+      # no timeout for the rebuild index request
+      TIMEOUT: 0
+      LOGGER: ecs
   volumeMounts:
    - name: data-dir
      mountPath: /srv/data

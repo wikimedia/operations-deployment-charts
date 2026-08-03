@@ -7,7 +7,7 @@ backend:
     size: 600Gi # 600Gi should be enough for 1 full index and 1 backup
 
 qlever:
-  version: master_2026-07-17T10-19-48Z_5e6d68c
+  version: master_2026-08-03T08-03-25Z_634ebb2
   config:
     public:
       QLEVER_QUERY_TIMEOUT: 300s
@@ -28,6 +28,24 @@ init:
   limits:
     cpu: 2
     memory: 2Gi
+
+reindex:
+  version: v0.0.5
+  config:
+    public:
+      # Run the rebuild every 8 hours
+      SCHEDULE: "00 02,10,18 * * *"
+      # To avoid running all replica rebuilds at the same time, we add a random
+      # jitter value which will push the rebuild up to 2h.
+      JITTER: 7200
+      # 3h timeout for the rebuild index request
+      TIMEOUT: 10800
+  requests:
+    cpu: 500m
+    memory: 300Mi
+  limits:
+    cpu: 500m
+    memory: 300Mi
 
 consumer:
   version: v0.2.0

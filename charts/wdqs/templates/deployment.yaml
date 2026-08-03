@@ -30,6 +30,7 @@ spec:
         {{- include "app.health.container" . | indent 8 }}
       initContainers:
         {{- include "app.init.container" . | indent 8 }}
+        {{- include "app.reindex.container" . | indent 8 }}
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
   volumeClaimTemplates:
