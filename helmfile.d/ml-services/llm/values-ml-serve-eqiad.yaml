@@ -116,7 +116,7 @@ inference_services:
   jina-embeddings:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings-transformers"
-      image_version: "2026-07-28-084901-publish"
+      image_version: "2026-07-31-125251-publish"
       custom_env:
         - name: MODEL_NAME
           value: "jina-embeddings"
@@ -168,7 +168,7 @@ inference_services:
   jina-embeddings-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings-transformers"
-      image_version: "2026-07-30-101452-publish"
+      image_version: "2026-07-31-125251-publish"
       custom_env:
         - name: MODEL_NAME
           value: "jina-embeddings-staging"
@@ -177,9 +177,11 @@ inference_services:
         - name: MODEL_VERSION
           value: "jina-embeddings-v5-text-nano-retrieval"
         - name: DTYPE
-          value: "float16"
+          value: "bfloat16"
         - name: ATTN_IMPLEMENTATION
-          value: "eager"
+          value: "sdpa"
+        - name: TORCH_BLAS_PREFER_HIPBLASLT
+          value: "0"
       container:
         resources:
           limits:
