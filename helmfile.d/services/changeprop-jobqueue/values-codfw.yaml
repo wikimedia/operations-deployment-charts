@@ -20,20 +20,21 @@ nutcracker:
 # Values like "row-e1" here are correct (i.e. match the actual labels on the nodes) even though E1
 # is a rack, not a row.
 affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: topology.kubernetes.io/zone
-          operator: NotIn
-          values:
-          - row-e1
-          - row-e2
-          - row-e3
-          - row-e4
-          - row-e5
-          - row-f1
-          - row-f2
-          - row-f3
-          - row-f4
-          - row-f5
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: NotIn
+            values:
+            - row-e1
+            - row-e2
+            - row-e3
+            - row-e4
+            - row-e5
+            - row-f1
+            - row-f2
+            - row-f3
+            - row-f4
+            - row-f5
