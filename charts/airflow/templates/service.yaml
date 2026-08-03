@@ -5,9 +5,7 @@
 {{- if .Values.debug.enabled }}
   {{- template "app.generic.debug_service" . }}
 {{- end }}
-{{- if not $.Values.devenv.enabled }}
 {{ include "mesh.service" . }}
-{{- end }}
 {{- end }}
 
 {{- if eq $.Values.config.airflow.config.core.executor "LocalExecutor" }}

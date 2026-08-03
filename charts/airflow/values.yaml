@@ -114,6 +114,7 @@ config:
         test_connection: enabled
         xcom_backend: airflow.providers.common.io.xcom.backend.XComObjectStorageBackend
         might_contain_dag_callable: import_helper.focused_import # Handles $.Values.airflow.config.dags_filter filtering
+        execution_api_server_url: "https://{{ template \"mesh.name.fqdn\" . }}:{{ $.Values.mesh.public_port }}/execution/"
       common.io:
         # Store XCOMs larger than 500KB in S3 instead of database - T415661
         xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/xcoms
