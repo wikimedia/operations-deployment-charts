@@ -122,7 +122,7 @@ main_app:
           kafka_topic: 'mediawiki.page_change.v1'
         # See T420883 for more info
         revertrisk-wikidata:
-          concurrency: 5
+          concurrency: 2
           match_config_need_quotes: ['page_change_kind', 'wiki_id', 'domain']
           match_config:
             match:
