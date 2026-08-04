@@ -6,6 +6,8 @@ config:
   config:
     kubernetes_executor:
       worker_pods_creation_batch_size: 32
+    core:
+      parallelism: 128
 
 ingress:
   gatewayHosts:
