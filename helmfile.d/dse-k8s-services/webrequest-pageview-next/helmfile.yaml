@@ -9,7 +9,7 @@ helmDefaults:
     # Use the following example as a reference:
     # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
     - --kubeconfig
-    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/webrequest-page-view-next-deploy-%s.config" .Environment.Name) }}
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/webrequest-pageview-next-deploy-%s.config" .Environment.Name) }}
 
 environments:
   dse-k8s-eqiad:
@@ -29,19 +29,19 @@ hooks:
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/webrequest-page-view-next: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/webrequest-pageview-next: {{`{{.HelmfileCommand}}`}}",
       ]
   - events: ["cleanup"]
     command: "helmfile_log_sal"
     args:
       [
         "{{`{{.HelmfileCommand}}`}}",
-        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/webrequest-page-view-next: {{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/webrequest-pageview-next: {{`{{.HelmfileCommand}}`}}",
       ]
 
 releases:
   - name: staging
-    namespace: webrequest-page-view-next
+    namespace: webrequest-pageview-next
     chart: wmf-stable/flink-app
     # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
     recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
@@ -53,6 +53,6 @@ releases:
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "values.yaml" # non-env-specific values, in this repository
-      - "/etc/helmfile-defaults/private/dse-k8s_services/webrequest-page-view-next/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "/etc/helmfile-defaults/private/dse-k8s_services/webrequest-pageview-next/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides

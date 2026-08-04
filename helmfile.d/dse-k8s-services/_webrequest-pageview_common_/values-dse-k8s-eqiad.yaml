@@ -24,7 +24,7 @@ app:
       http-client-routes.meta: https://meta.wikimedia.org=http://localhost:6501
 
   flinkConfiguration:
-    # == Tuning webrequest-page-view
+    # == Tuning webrequest-pageview
 
     "execution.checkpointing.interval": "1m"
     "execution.checkpointing.min-pause": "30s"
@@ -49,10 +49,6 @@ app:
     # Recovery metadata will be stored in a k8s ConfigMap.
     "high-availability.type": KUBERNETES
     # NOTE: HA paths are configured in release specific files.
-
-    # TODO: this can be removed once https://gerrit.wikimedia.org/r/c/operations/deployment-charts/+/1268071
-    #       is merged and this is the default in the chart.
-    "metrics.internal.query-service.port": "6124"
 
 
 flink:

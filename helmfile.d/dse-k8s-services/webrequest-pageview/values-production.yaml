@@ -1,10 +1,10 @@
-# WMF staging main release specific values.
+# WMF production main release specific values.
 
 app:
   # These are set in common values.yaml file.
-  # Change them here if you need to override them for the staging release.
+  # Change them here if you need to override them for the production release.
   #
-  # version: v1.52.0
+  # version: v1.59.0
   # logConfiguration:
   #   rootLogger.level: INFO
 
@@ -20,15 +20,12 @@ app:
   job:
     jarURI: local:///srv/app/usrlib/app-with-dependencies.jar
     entryClass: org.wikimedia.mediawiki.event.enrichment.pageview.PageView
-
-    # Using stateless only for staging.
-    upgradeMode: stateless
+    upgradeMode: last-state
 
   config_files:
     page-view.properties:
-      # NOTE: Using Jumbo for now, set Test back when the production release is done.
       kafka-bootstrap-servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
-      kafka-consumer-group-id: staging.webrequest-page-view-next__dse-k8s-eqiad.001
+      kafka-consumer-group-id: webrequest-pageview__dse-k8s-eqiad.001
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
       output-topic: eqiad.pageview.v1
       input-topics: webrequest_frontend_text
@@ -40,15 +37,14 @@ app:
     # Parallelism == taskManager.replicas * numberOfTaskSlots.
     # Having fewer TMs results in slightly better resource allocation.
     "taskmanager.numberOfTaskSlots": 2
-    # Set the staging release specific HA storageDir path.
-    # Note: Naming convention is different than in mw-page-content-change-enrich-next due to swift template in flink chart
-    "high-availability.storageDir": "s3://webrequest-page-view-next.dse-k8s-eqiad/staging/high-availability"
+    # Set the production release specific HA storageDir path.
+    # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
+    "high-availability.storageDir": "s3://webrequest-pageview.dse-k8s-eqiad/production/high-availability"
 
 flink:
   object_store:
-    # Set the staging release specific objectstore bucket
-    swift_bucket: webrequest-page-view-next.dse-k8s-eqiad
+    # Set the production release specific objectstore bucket
+    swift_bucket: webrequest-pageview.dse-k8s-eqiad
 
 external_services:
   kafka: [jumbo-eqiad]
-
