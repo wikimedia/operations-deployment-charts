@@ -16,7 +16,15 @@ config:
   connections:
     spurus:
       host: https://feeds.spur.us
-      extra: '{"proxies": {"https": "http://url-downloader.eqiad.wikimedia.org:8080"}}'
+      extra_dejson:
+        proxies:
+          https: http://url-downloader.eqiad.wikimedia.org:8080
+    cloudflare_radar:
+      host: https://api.cloudflare.com/client/v4
+      conn_type: http
+      extra_dejson:
+        proxies:
+          https: http://url-downloader.eqiad.wikimedia.org:8080
   extra_secrets:
     datahub_ingest_superset.yaml: |
       source:
