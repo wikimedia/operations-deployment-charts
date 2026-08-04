@@ -1,13 +1,14 @@
 config:
   airflow:
     instance_name: dumps
+    config:
+      kubernetes_executor:
+        worker_pods_creation_batch_size: 32
+      core:
+        parallelism: 128
   auth:
     op_ldap_role: airflow-analytics-ops
-  config:
-    kubernetes_executor:
-      worker_pods_creation_batch_size: 32
-    core:
-      parallelism: 128
+
 
 ingress:
   gatewayHosts:
