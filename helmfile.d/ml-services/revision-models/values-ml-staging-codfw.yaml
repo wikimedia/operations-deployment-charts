@@ -25,11 +25,19 @@ inference_services:
           limits:
             cpu: "4"
             memory: 2Gi
+            ephemeral-storage: 15Gi
           requests:
             cpu: "4"
             memory: 2Gi
+            ephemeral-storage: 10Gi
   reference-risk:
     predictor:
       config:
         minReplicas: 1
         maxReplicas: 1
+      container:
+        resources:
+          limits:
+            ephemeral-storage: 15Gi
+          requests:
+            ephemeral-storage: 10Gi

@@ -5,6 +5,12 @@ inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-outlink"
     version: "2026-06-25-124508-publish"
+    container:
+      resources:
+        limits:
+          ephemeral-storage: 15Gi
+        requests:
+          ephemeral-storage: 10Gi
     base_env:
       - name: STORAGE_URI
         value: "s3://wmf-ml-models/articletopic/outlink/20221111111111/"

@@ -5,6 +5,12 @@ inference:
   predictor:
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2026-07-21-140708-publish"
+    container:
+      resources:
+        limits:
+          ephemeral-storage: 15Gi
+        requests:
+          ephemeral-storage: 10Gi
     config:
       minReplicas: 1
       maxReplicas: 1

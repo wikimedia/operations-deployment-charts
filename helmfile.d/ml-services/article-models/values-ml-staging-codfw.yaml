@@ -17,8 +17,10 @@ inference_services:
         resources:
           limits:
             memory: 1Gi
+            ephemeral-storage: 15Gi
           requests:
             memory: 1Gi
+            ephemeral-storage: 10Gi
 
   article-country:
     predictor:
@@ -42,6 +44,8 @@ inference_services:
           limits:
             cpu: "2"
             memory: 2Gi
+            ephemeral-storage: 15Gi
           requests:
             cpu: "2"
             memory: 2Gi
+            ephemeral-storage: 10Gi

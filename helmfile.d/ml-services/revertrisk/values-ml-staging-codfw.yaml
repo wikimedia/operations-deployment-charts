@@ -21,6 +21,12 @@ inference_services:
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_STREAM
           value: "mediawiki.page_prediction_change.rc0"
+      container:
+        resources:
+          limits:
+            ephemeral-storage: 15Gi
+          requests:
+            ephemeral-storage: 10Gi
   - name: revertrisk-multilingual
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-multilingual"
@@ -48,9 +54,11 @@ inference_services:
           limits:
             cpu: "6"
             memory: 8Gi
+            ephemeral-storage: 15Gi
           requests:
             cpu: "6"
             memory: 8Gi
+            ephemeral-storage: 10Gi
   - name: revertrisk-wikidata
     predictor:
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
@@ -76,6 +84,8 @@ inference_services:
           limits:
             cpu: "8"
             memory: 16Gi
+            ephemeral-storage: 15Gi
           requests:
             cpu: "8"
             memory: 16Gi
+            ephemeral-storage: 10Gi
