@@ -139,6 +139,27 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
     - airflow-wikidata.wikimedia.org
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "192Gi"
+          cpu: "16"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "200Gi"
+          cpu: "20"
   airflow-wmde:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
