@@ -139,6 +139,14 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
     - airflow-wikidata.wikimedia.org
+    resourcequota:
+      compute:
+        requests:
+          cpu: "300"
+          memory: "600Gi"
+        limits:
+          cpu: "400"
+          memory: "800Gi"
     limitranges:
       container:
         min:
