@@ -118,6 +118,8 @@ networkpolicy:
         - protocol: TCP
           port: 443
     # # etcd/dbctl # #
+    # NOTE: The network policy must allow egress to either etcd cluster, in
+    # order to facilitate cluster depool / switchover.
     # conf1007.eqiad.wmnet
     - cidr: 10.64.0.207/32
       ports:
@@ -142,6 +144,33 @@ networkpolicy:
         - protocol: TCP
           port: 4001
     - cidr: 2620:0:861:107:10:64:48:154/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # conf2004.codfw.wmnet
+    - cidr: 10.192.16.45/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:860:102:10:192:16:45/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # conf2005.codfw.wmnet
+    - cidr: 10.192.32.52/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:860:103:10:192:32:52/128
+      ports:
+        - protocol: TCP
+          port: 4001
+    # conf2006.codfw.wmnet
+    - cidr: 10.192.48.59/32
+      ports:
+        - protocol: TCP
+          port: 4001
+    - cidr: 2620:0:860:104:10:192:48:59/128
       ports:
         - protocol: TCP
           port: 4001
