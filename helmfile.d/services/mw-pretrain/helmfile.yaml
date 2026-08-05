@@ -15,12 +15,12 @@ helmDefaults:
 environments:
   eqiad:
     values:
-      - releases: [main,canary,debug,jobrunner,prometheus]
+      - releases: [main,canary,debug,jobrunner,jobrunner-canary,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main,canary,debug,jobrunner,prometheus]
+      - releases: [main,canary,debug,jobrunner,jobrunner-canary,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -51,6 +51,7 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/{{`{{ .Release.Namespace }}`}}/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - 'values-{{`{{ if hasSuffix "-canary" .Release.Name }}{{ trimSuffix "-canary" .Release.Name }}{{ else }}empty{{ end }}`}}.yaml' # release-specific overrides inherited from non-canary sibling release
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
@@ -99,6 +100,8 @@ releases:
   - name: debug
     <<: *default
   - name: jobrunner
+    <<: *default
+  - name: jobrunner-canary
     <<: *default
   - name: prometheus
     <<: *statsd

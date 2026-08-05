@@ -1,0 +1,7 @@
+# Route canary through the main jobrunner release.
+routed_via: jobrunner
+service:
+  # Don't deploy a k8s Service for this canary release.
+  deployment: none
+resources:
+  replicas: 1
