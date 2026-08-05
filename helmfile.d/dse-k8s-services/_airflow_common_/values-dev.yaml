@@ -32,7 +32,7 @@ config:
       email:
         # We don't want to alert for development instances to avoid adding noise
         # to ops week.
-        from_email: airflow-{{ $.Release.Name }} <noreply@wikimedia.org>
+        default_email_on_retry: false
         default_email_on_failure: false
       logging:
         # Each airflow dev instance will send their logs to a subfolder of the airflow-dev
@@ -49,6 +49,10 @@ config:
       datahub:
         # Don't report on DAG runs to datahub, as they would link to http://localhost:8080/...
         enabled: false
+      email:
+        # Ensure that the instance does not know where to send alerts, to avoid spamming
+        # MLs from devenvs.
+        smtp_host: ""
     # Disable all auth config
     auth: {}
     # S3 bucket *name* is shared between all dev instances
