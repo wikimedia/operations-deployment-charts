@@ -1,0 +1,44 @@
+resources:
+  replicas: 2
+mesh:
+  # Slightly above apache timeout
+  upstream_timeout: "1202.5s"
+# These are directly copied from mw-jobrunner.
+php:
+  max_execution_time: 1200
+  timeout: 86400
+  apc:
+    size: 4096
+  opcache:
+    interned_strings_buffer: 96
+    size: 1024
+# Only one website needed here.
+mw:
+  sites:
+  - name: mw-jobrunner
+    # Despite this being the only website around, we also have the nonexistent
+    # one by default in our setup. That one ends up with a virtualhost file
+    # entry of 00-nonexistent. Having 0 for the priority here as well, ensures
+    # that all requests go to the mw-jobrunner one, even if they don't have the
+    # proper Host header. This is crucial for the Single Version MediaWiki HTTP
+    # routing implementation
+    priority: 0
+    content: |+
+      <Virtualhost *:8080>
+        Servername mw-pretrain-jobrunner.discovery.wmnet
+        ServerAlias mw-pretrain-jobrunner.svc.codfw.wmnet mw-pretrain-jobrunner.svc.eqiad.wmnet
+        # MediaWiki has a timeout of 20 minutes, add 2 seconds here to let
+        # mediawiki handle timeouts in most cases.
+        Timeout 1202
+        DocumentRoot "/srv/mediawiki"
+        RewriteEngine On
+        <Directory /srv/mediawiki>
+          Require all granted
+        </Directory>
+        # Only selected paths are allowed here
+        RewriteCond %{REQUEST_URI} !^/(w/health-check|rpc/RunSingleJob)\.php
+        RewriteRule ^ - [R=404,L]
+        <FilesMatch "\.php$">
+          SetHandler "proxy:unix:/run/shared/fpm-www.sock|fcgi://localhost"
+        </FilesMatch>
+      </VirtualHost>

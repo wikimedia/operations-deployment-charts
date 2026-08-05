@@ -15,12 +15,12 @@ helmDefaults:
 environments:
   eqiad:
     values:
-      - releases: [main,canary,debug,prometheus]
+      - releases: [main,canary,debug,jobrunner,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   codfw:
     values:
-      - releases: [main,canary,debug,prometheus]
+      - releases: [main,canary,debug,jobrunner,prometheus]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -97,6 +97,8 @@ releases:
   - name: canary
     <<: *default
   - name: debug
+    <<: *default
+  - name: jobrunner
     <<: *default
   - name: prometheus
     <<: *statsd
