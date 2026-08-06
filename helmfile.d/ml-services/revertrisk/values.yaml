@@ -170,8 +170,8 @@ inference_services:
       autoscaling.knative.dev/target: "3"
     predictor:
       config:
-        minReplicas: 1
-        maxReplicas: 1
+        minReplicas: 3
+        maxReplicas: 3
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
       image_version: "2026-06-26-124615-publish"
       custom_env:
