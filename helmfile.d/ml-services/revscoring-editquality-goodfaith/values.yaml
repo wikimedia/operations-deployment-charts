@@ -68,6 +68,12 @@ inference:
       maxReplicas: 4
     image: "machinelearning-liftwing-inference-services-revscoring"
     version: "2026-06-23-094330-publish"
+    container:
+      resources:
+        limits:
+          ephemeral-storage: 15Gi
+        requests:
+          ephemeral-storage: 10Gi
     base_env:
       - name: REQUESTS_CA_BUNDLE
         value: "/etc/ssl/certs/wmf-ca-certificates.crt"
