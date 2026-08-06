@@ -9,4 +9,11 @@ local XWD_BACKEND_CLUSTERS = {
 {{- end }}
 }
 {{- end }}
+{{- if .params.host_diversion }}
+local HOST_DIVERSION_CLUSTERS = {
+{{- range $host, $host_endpoint := .params.host_diversion }}
+  ["{{ $host }}"] = "{{ include "restgateway.cluster_specifier_plugins.endpoint_to_cluster" ( dict "value" $host_endpoint "Root" $.Root ) }}",
+{{- end }}
+}
+{{- end }}
 {{- end }}

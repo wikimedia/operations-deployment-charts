@@ -50,4 +50,43 @@ describe("mw-api cluster specifier plugin", function()
       assert.are.equal("mwdebug-next_cluster", envoy_on_route(handle))
     end)
   end)
+
+  insulate("with host-diversion routing", function()
+    _G.HOST_DIVERSION_CLUSTERS = { ["test.wikipedia.org"] = "mw-pretrain_cluster" }
+
+    it("returns the default cluster when :authority is absent", function()
+      local handle = fake_route_handle({})
+      assert.are.equal(DEFAULT_CLUSTER, envoy_on_route(handle))
+    end)
+
+    it("returns the default cluster when :authority specifices an ineligible host", function()
+      local handle = fake_route_handle({ [":authority"] = "en.wikipedia.org" })
+      assert.are.equal(DEFAULT_CLUSTER, envoy_on_route(handle))
+    end)
+
+    it("returns the appropriate cluster when :authority specifices an eligible host", function()
+      local handle = fake_route_handle({ [":authority"] = "test.wikipedia.org" })
+      assert.are.equal("mw-pretrain_cluster", envoy_on_route(handle))
+    end)
+
+    insulate("with x-wikimedia-debug routing", function()
+      _G.XWD_BACKEND_CLUSTERS = { ["k8s-mwdebug"] = "mwdebug_cluster" }
+
+      it("prefers host diversion for an eligible host", function()
+        local handle = fake_route_handle({
+          [":authority"] = "test.wikipedia.org",
+          ["x-wikimedia-debug"] = "backend=k8s-mwdebug",
+        })
+        assert.are.equal("mw-pretrain_cluster", envoy_on_route(handle))
+      end)
+
+      it("falls back to x-wikimedia-debug routing for an ineligible host", function()
+        local handle = fake_route_handle({
+          [":authority"] = "en.wikipedia.org",
+          ["x-wikimedia-debug"] = "backend=k8s-mwdebug",
+        })
+        assert.are.equal("mwdebug_cluster", envoy_on_route(handle))
+      end)
+    end)
+  end)
 end)

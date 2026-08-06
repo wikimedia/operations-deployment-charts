@@ -6,6 +6,9 @@ main_app:
           discovery_endpoint: mwdebug
         k8s-mwdebug-antarctica:
           endpoint: mwdebug-antarctica
+      host_diversion:
+        test.wikipedia.org:
+          discovery_endpoint: mw-test
       default:
         discovery_endpoint: mw-api-main
 
@@ -28,3 +31,6 @@ main_app:
       port: 1234
     mwdebug:
       port: 2345
+    mw-test:
+      port: 30443
+      ingress: true
