@@ -18,6 +18,7 @@ qlever:
   limits:
     cpu: 10
     memory: 60Gi
+  http_proxy: "http://webproxy:8080"
 
 # wdqs-next uses its own ingress/mesh hostnames (wdqs2-next-*) so it does not
 # collide with the wdqs namespace, which shares the release values from _wdqs_common_.

@@ -37,6 +37,10 @@
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
+  {{- with .Values.qlever.http_proxy }}
+    - name: http_proxy
+      value: {{ . | quote }}
+  {{- end}}
   {{- if .Values.qlever.env_from }}
   envFrom:
   {{- toYaml .Values.qlever.env_from | nindent 4 }}
