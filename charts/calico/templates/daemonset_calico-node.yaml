@@ -233,6 +233,9 @@ spec:
                   # interchangeable. Since calico-node is a Daemonset it
                   # doesn't matter, but we use hostIP to be explicit
                   fieldPath: status.hostIP
+            # Disable usage reporting
+            - name: FELIX_USAGEREPORTINGENABLED
+              value: "false"
             # Location of the CA bundle Felix uses to authenticate Typha; volume mount
             #- name: FELIX_TYPHACAFILE
             #  value: /calico-typha-ca/typhaca.crt
