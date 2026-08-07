@@ -1,5 +1,5 @@
 app:
-  version: &base-image-version airflow-3.3.0-py3.11-2026-08-03-103538-c12a5a673b5b604870bf1e52b7f197caed5ac09c@sha256:490a14ce0283c82dfd9c647db0dfa7415195540179f1ebb6d535f3aba2e73879
+  version: &base-image-version airflow-3.3.0-py3.11-2026-08-07-113031-43c9bcf355a9fb50c4cfc40e01c7379dae511149@sha256:3127ca59c77fb94449149d3b65c563caa6e219d84db7335afff144154e34d6ab
   executor_pod_image_version: *base-image-version
   args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
   readiness_probe:

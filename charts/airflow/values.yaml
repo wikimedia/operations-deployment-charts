@@ -47,6 +47,7 @@ app:
 
 service:
   deployment: minikube # valid values are "production" and "minikube"
+  nodePort: false
   port:
     name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
     # protocol: TCP # TCP is the default protocol
@@ -244,13 +245,15 @@ scheduler:
   service_name: airflow-scheduler
   local_executor_api_port: 8793
   liveness_probe:
-    tcpSocket:
+    httpGet:
+      path: /health
       port: *scheduler_healthcheck_port
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 10
   readiness_probe:
-    tcpSocket:
+    httpGet:
+      path: /health
       port: *scheduler_healthcheck_port
   requests:
     cpu: "1"
