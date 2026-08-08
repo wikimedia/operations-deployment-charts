@@ -12,6 +12,7 @@ qlever:
     public:
       QLEVER_QUERY_TIMEOUT: 300s
       QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics
+      http_proxy: http://webproxy:8080
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
   # set per-release so each dataset fits the wdqs namespace quota
   requests: {}

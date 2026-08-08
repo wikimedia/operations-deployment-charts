@@ -27,7 +27,7 @@
     - name: SERVICE_IDENTIFIER
       value: {{ template "base.name.release" . }}-qlever
   {{- range $k, $v := .Values.qlever.config.public }}
-    - name: {{ $k | upper }}
+    - name: {{ $k }}
       value: {{ $v | quote }}
   {{- end }}
   {{- range $k, $v := .Values.qlever.config.private }}
@@ -37,10 +37,6 @@
           name: {{ template "base.name.release" $ }}-secret-config
           key: {{ $k }}
   {{- end }}
-  {{- with .Values.qlever.http_proxy }}
-    - name: http_proxy
-      value: {{ . | quote }}
-  {{- end}}
   {{- if .Values.qlever.env_from }}
   envFrom:
   {{- toYaml .Values.qlever.env_from | nindent 4 }}
