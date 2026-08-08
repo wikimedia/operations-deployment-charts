@@ -52,14 +52,14 @@ extraFQDNs is returned (if not empty).
 List of hosts (FQDN) the VirtualService should be configured for
 */}}
 {{- define "ingress.istio.routeHosts" -}}
+{{- if empty .Values.ingress.routeHosts }}
 {{- if eq .Values.ingress.existingGatewayName "" }}
 {{- include "ingress.istio.gatewayHosts" . -}}
 {{- else -}}
-{{- if  empty .Values.ingress.routeHosts }}
-{{- fail "ingress.istio.routeHosts is required when ingress.existingGateway is set" }}
+{{- fail "ingress.routeHosts is required when ingress.existingGatewayName is set" }}
+{{- end -}}
 {{- else -}}
 {{- .Values.ingress.routeHosts | toYaml }}
-{{- end -}}
 {{- end -}}
 {{- end -}}
 

@@ -461,10 +461,12 @@ ingress:
   # of that gateway here in the format: <namespace>/<gateway-name>
   # This is useful if you wish to make multiple releases available from the same hostname.
   existingGatewayName: ""
-  # routeHosts is a list of FQDNs the httproutes should attach to.
-  # If existingGatewayName not set, this list might be empty and will default to the gateway
-  # host generated according to how .Values.gatewayHosts.* is configured.
-  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
+  # routeHosts is a list of FQDNs the httproutes should attach to, i.e., corresponding to the hosts
+  # list in the VirtualService.
+  # If existingGatewayName is set, you must provide the list of FQDNs your routes should attach to
+  # via routeHosts.
+  # If existingGatewayName is not set, you may optionally provide that list. Otherwise, it will
+  # default to the same FQDN list as the Gateway hosts generated from .Values.gatewayHosts.*.
   routeHosts: []
   # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
   # the service without modification.
