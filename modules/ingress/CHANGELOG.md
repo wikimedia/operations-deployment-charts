@@ -1,3 +1,8 @@
+## istio 1.3.0
+- If .Values.ingress.routeHosts is non-empty, it will now always take precedent over the host list
+  generated from .Values.ingress.gatewayHosts.* when populating the VirtualService host list. Prior
+  to now, this was only supported when .Values.ingress.existingGatewayName was set.
+
 ## istio 1.1.0
 - Drop .Values.ingress.staging and .Values.ingress.mlstaging
 - Use a per environment list of domains instead of a hardcoded one for gatewayHosts
