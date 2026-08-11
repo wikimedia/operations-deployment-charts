@@ -53,9 +53,11 @@ app:
   limits:
     cpu: 1
     memory: 3Gi
+    ephemeral-storage: 10Gi
   requests:
     cpu: 1
     memory: 3Gi
+    ephemeral-storage: 1Gi
   liveness_probe:
     tcpSocket:
       port: 8080

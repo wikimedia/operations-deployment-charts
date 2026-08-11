@@ -42,9 +42,11 @@ app:
   limits:
     cpu: 2
     memory: 2Gi
+    ephemeral-storage: 10Gi
   requests:
     cpu: 2
     memory: 2Gi
+    ephemeral-storage: 1Gi
   readiness_probe:
     httpGet:
       path: /docs

@@ -20,9 +20,11 @@ app:
   limits:
     cpu: 1
     memory: 1G
+    ephemeral-storage: 10Gi
   requests:
     cpu: 1
     memory: 1G
+    ephemeral-storage: 1Gi
 
 service:
   deployment: production

@@ -13,9 +13,11 @@ main_app:
   limits:
     cpu: 200m
     memory: 200Mi
+    ephemeral-storage: 10Gi
   requests:
     cpu: 100m
     memory: 100Mi
+    ephemeral-storage: 1Gi
   readiness_probe:
     httpGet:
       path: /openapi.yaml
