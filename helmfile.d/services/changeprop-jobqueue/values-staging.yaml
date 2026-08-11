@@ -23,9 +23,10 @@ nutcracker:
 resources:
   replicas: 1
 
+# NOTE: Historically, changeprop-jobqueue exposed a NodePort Service. This is
+# no longer the case, and it exposes no Service at all (see mesh configuration
+# in value.yaml). Howevever, we retain a minimal 'service' values map (without
+# port info), since the names therein have other configuration use cases.
 service:
   name: cpjobqueue-staging
   deployment: "production"
-  port:
-    name: cpjobqueue-staging
-    nodePort: 7200

@@ -257,3 +257,16 @@ metrics:
 
 app:
   port: 7200
+
+# changeprop-jobqueue uses the service mesh, but does not use it for inbound
+# TLS termination - only for outbound connectivity to jobrunner services.
+mesh:
+  enabled: true
+  sidecar: true
+  public_port: null  # No inbound TLS termination
+  telemetry:
+    enabled: true
+
+discovery:
+  listeners:
+    - mw-jobrunner
