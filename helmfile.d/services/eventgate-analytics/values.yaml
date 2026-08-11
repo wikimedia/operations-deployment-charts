@@ -22,7 +22,7 @@ external_services:
 
 main_app:
   name: eventgate-analytics
-  version: v1.31.0
+  version: v1.32.0
   conf:
     transforms:
     - eventgateWikimediaDefaults
@@ -52,8 +52,6 @@ main_app:
     - 'http://127.0.0.1:6023/repositories/secondary/jsonschema/' # schema service mesh port
 
     # Request static stream config during startup from the EventStreamConfig extension.
-    # stream_config_ttl is not set, so stream configs will be cached permanently.
-    # The service will require a restart to pick up new streams.
     # MW API endpoint for all streams with destination_event_service == eventgate-analytics
     # We use meta.wikimedia.org here as the default stream configuration wiki.
     # Streams can be configured per wiki in mediawiki-config, but they should always be at
@@ -62,6 +60,8 @@ main_app:
     stream_config_uri_options: {'headers': {'Host': 'meta.wikimedia.org'}}
     # Expect the stream -> settings map in the response at this subobject key
     stream_config_object_path: streams
+      # Expire and re-request dynamic stream configs every minute.
+    stream_config_ttl: 60
 
     # If test_events is set, EventGate will set up a /v1/_test/events
     # route that will process these test_events as if they were POSTed
