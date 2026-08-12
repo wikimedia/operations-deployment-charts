@@ -5,3 +5,6 @@ service:
   deployment: none
 resources:
   replicas: 1
+# Do not inherit jobrunner's ingress configuration.
+ingress:
+  enabled: false

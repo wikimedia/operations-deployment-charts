@@ -42,3 +42,38 @@ mw:
           SetHandler "proxy:unix:/run/shared/fpm-www.sock|fcgi://localhost"
         </FilesMatch>
       </VirtualHost>
+# T427666: jobrunner uses a dedicated Gateway, bound only to the internal
+# mw-pretrain-jobrunner (CNAME) address. This provides a boundary between
+# external traffic on the main Gateway and internal jobrunner traffic.
+ingress:
+  enabled: true
+  gatewayHosts:
+    default: mw-pretrain-jobrunner
+  # The VirtualService will only route testwiki traffic (all others will 404).
+  routeHosts:
+    - test.wikipedia.org
+  httproutes:
+    - name: health-check
+      match:
+        - uri:
+            exact: /w/health-check.php
+          method:
+            exact: GET
+      route:
+        - destination:
+            host: mediawiki-jobrunner-tls-service.mw-pretrain.svc.cluster.local
+            port:
+              number: 4457
+    - name: run-single-job
+      match:
+        - uri:
+            exact: /rpc/RunSingleJob.php
+          method:
+            exact: POST
+      route:
+        - destination:
+            host: mediawiki-jobrunner-tls-service.mw-pretrain.svc.cluster.local
+            port:
+              number: 4457
+  destinationrulehosts:
+    - mediawiki-jobrunner-tls-service.mw-pretrain.svc.cluster.local
