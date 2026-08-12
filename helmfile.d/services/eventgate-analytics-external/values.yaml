@@ -83,6 +83,7 @@ main_app:
     transforms:
     - eventgateWikimediaDefaults
     - processEdgeUniques
+    - testKitchen
 
     kafka:
       conf:
@@ -130,3 +131,7 @@ main_app:
     stream_config_object_path: streams
     # Expire and re-request dynamic stream configs every minute.
     stream_config_ttl: 60
+
+    test_kitchen:
+      ua_denylist:
+      - bingbot/2.0; \\+http://www.bing.com/bingbot.htm
