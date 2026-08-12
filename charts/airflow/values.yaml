@@ -29,6 +29,7 @@ app:
   # Example:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
+  waitForMigrations: false
   command: ["airflow"]
   args: ["webserver", "--pid" , "/tmp/airflow-webserver.pid"]
   requests:
@@ -273,6 +274,26 @@ triggerer:
   readiness_probe:
     tcpSocket:
       port: *triggerer_port
+  enabled: false
+  requests:
+    cpu: "0.5"
+    memory: 1Gi
+  limits:
+    cpu: "0.5"
+    memory: 2Gi
+
+dagProcessor:
+  liveness_probe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 20
+    failureThreshold: 5
+    periodSeconds: 60
+    exec:
+      command:
+      - sh
+      - -c
+      - CONNECTION_CHECK_MAX_COUNT=0 AIRFLOW__LOGGING__LOGGING_LEVEL=ERROR airflow
+        jobs check --local --job-type DagProcessorJob
   enabled: false
   requests:
     cpu: "0.5"

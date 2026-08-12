@@ -87,6 +87,42 @@
   {{- include "app.airflow.volumeMounts" $ | indent 2 }}
 {{- end }}
 
+{{- define "app.airflow.dag-processor" }}
+- name: {{ template "base.name.release" $ }}
+  image: {{ template "app.generic._image" $ }}
+  imagePullPolicy: {{ $.Values.docker.pull_policy }}
+  command: ["airflow"]
+  args: ["dag-processor", "--pid" , "/tmp/airflow-dag-processor.pid"]
+  {{- with $.Values.dagProcessor.liveness_probe }}
+  livenessProbe:
+  {{- toYaml $.Values.dagProcessor.liveness_probe | nindent 4 }}
+  {{- end }}
+  {{- include "app.airflow.env" $ | indent 2 }}
+  {{- include "base.helper.resources" $.Values.dagProcessor | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
+  volumeMounts:
+  {{- include "app.airflow.volumeMounts" $ | indent 2 }}
+{{- end }}
+
+{{- define "app.airflow.wait-for-initdb" }}
+{{- if $.Values.app.waitForMigrations }}
+initContainers:
+- name: {{ template "base.name.release" $ }}-wait-for-initdb
+  image: {{ template "app.generic._image" $ }}
+  imagePullPolicy: {{ $.Values.docker.pull_policy }}
+  command: ["airflow"]
+  args:
+  - db
+  - check-migrations
+  - --migration-wait-timeout=60
+  {{- include "app.airflow.env" $ | indent 2 }}
+  {{- include "base.helper.resources" $.Values.app | indent 2 }}
+  {{- include "base.helper.restrictedSecurityContext" $ | indent 2 }}
+  volumeMounts:
+  {{- include "app.airflow.volumeMounts" $ | indent 2 }}
+{{- end }}
+{{- end }}
+
 {{- define "app.airflow.env" }}
 {{- $krbPrincipal := include "evalValue" (dict "value" $.Values.config.airflow.config.kerberos.principal "Root" $) }}
 env:

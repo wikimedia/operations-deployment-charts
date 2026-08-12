@@ -1,6 +1,4 @@
 app:
-  version: &base-image-version airflow-3.3.0-py3.11-2026-08-07-113031-43c9bcf355a9fb50c4cfc40e01c7379dae511149@sha256:3127ca59c77fb94449149d3b65c563caa6e219d84db7335afff144154e34d6ab
-  executor_pod_image_version: *base-image-version
   waitForMigrations: true
   args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
   readiness_probe:

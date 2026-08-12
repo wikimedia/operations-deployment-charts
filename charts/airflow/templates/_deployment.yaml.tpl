@@ -76,6 +76,7 @@ spec:
       {{- include "airflow.pod.host_aliases" . | indent 6 }}
       {{- end }}
       serviceAccountName: {{ template "release.name" . }}
+      {{- include "app.airflow.wait-for-initdb" $ | indent 6 }}
       containers:
         {{- if contains "LocalExecutor" $.Values.config.airflow.config.core.executor }}
         {{- include "app.airflow.scheduler" (dict "Root" . "profiles" (list "LocalExecutor")) | indent 8 }}
@@ -435,8 +436,44 @@ spec:
       {{- toYaml . | nindent 6 }}
       {{- end }}
       serviceAccountName: {{ template "release.name" . }}
+      {{- include "app.airflow.wait-for-initdb" $ | indent 6 }}
       containers:
         {{- include "app.airflow.triggerer" $ | indent 8 }}
+      volumes:
+        {{- include "app.airflow.volumes" . | indent 8 }}
+
+{{- end }}
+{{- end }}
+
+{{- define "deployment.airflow.dag-processor" }}
+{{- if $.Values.dagProcessor.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "release.name" . }}-dag-processor
+  {{- include "base.meta.labels" . | indent 2 }}
+    component: dag-processor
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+        component: dag-processor
+      annotations:
+        {{- include "pod.annotations.secrets-configmap.checksums" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      {{- with .Values.affinity }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      serviceAccountName: {{ template "release.name" . }}
+      {{- include "app.airflow.wait-for-initdb" $ | indent 6 }}
+      containers:
+        {{- include "app.airflow.dag-processor" $ | indent 8 }}
       volumes:
         {{- include "app.airflow.volumes" . | indent 8 }}
 
