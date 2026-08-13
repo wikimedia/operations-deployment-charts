@@ -16,7 +16,10 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      # The default maxUnavailable is 1, which leads to very slow upgrades on large clusters.
+      # 2% currently gives us 5 replicas on wikikube clusters. Since it can't be below 1 smaller
+      # clusters will stick to that. Numbers >1 will be rounded down to the nearest integer.
+      maxUnavailable: "2%"
   template:
     metadata:
       labels:
