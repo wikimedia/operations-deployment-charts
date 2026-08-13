@@ -38,18 +38,4 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   policy.xml: |- {{ include "imagemagick-policy.config" . | indent 4 }}
-{{- if .Values.monitoring.enabled }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "base.name.release" . }}-statsd-config
-  labels:
-    app: {{ template "base.name.chart" . }}
-    chart: {{ template "base.name.chartid" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  prometheus-statsd.conf: |-
-{{ .Files.Get "config/prometheus-statsd.conf" | indent 4 }}
-{{- end }}
+{{- include "base.statsd.configmap" . }}

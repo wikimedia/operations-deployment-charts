@@ -14,14 +14,6 @@ resources:
 {{ toYaml .Values.haproxy.limits | indent 4 }}
 {{- end }}
 
-{{- define "statsd.limits" }}
-resources:
-  requests:
-{{ toYaml .Values.statsd.requests | indent 4 }}
-  limits:
-{{ toYaml .Values.statsd.limits | indent 4 }}
-{{- end }}
-
 {{/* default scaffolding for containers */}}
 {{- define "default.containers" }}
 # The exposed haproxy container
@@ -96,24 +88,6 @@ resources:
     - name: tmp-dir
       mountPath: /tmp/
     {{- end }}
-  {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
-{{- end }}
-
-{{- if .Values.monitoring.enabled }}
-- name: statsd-exporter
-  image: {{ .Values.docker.registry }}/{{ .Values.statsd.image }}:{{ .Values.statsd.version }}
-  imagePullPolicy: {{ .Values.docker.pull_policy }}
-  {{- include "statsd.limits" . | indent 2 }}
-  volumeMounts:
-    - name: statsd-config
-      mountPath: /etc/monitoring
-      readOnly: true
-  ports:
-  - name: statsd-metrics
-    containerPort: {{ .Values.main_app.prometheus_port }}
-  livenessProbe:
-    tcpSocket:
-      port: statsd-metrics
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 {{- end }}
 {{- end }}

@@ -4,6 +4,8 @@ common_images:
   mcrouter:
     mcrouter: latest
     exporter: latest
+  statsd:
+    exporter: prometheus-statsd-exporter:latest
 
 docker:
   registry: docker-registry.wikimedia.org
@@ -208,16 +210,8 @@ main_app:
          timeout: 10
 
 # TODO use prometheus if possible in future
+# Where thumbor itself sends its metrics to (the statsd-exporter sidecar).
 statsd:
-  image: "prometheus-statsd-exporter"
-  version: "latest"
-  requests:
-    cpu: 200m
-    memory: 150Mi
-  limits:
-    cpu: 400m
-    memory: 250Mi
-
   name: thumbor
   host: localhost
   port: 9125
@@ -225,6 +219,15 @@ statsd:
 
 monitoring:
   enabled: false
+  # Configuration of the prometheus-statsd-exporter sidecar, see base.statsd
+  statsd:
+    requests:
+      cpu: 200m
+      memory: 150Mi
+    limits:
+      cpu: 400m
+      memory: 250Mi
+    filename: config/prometheus-statsd.conf
 
 service:
   deployment: minikube

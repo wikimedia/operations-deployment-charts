@@ -29,8 +29,8 @@ spec:
         checksum/thumbor: {{ include "thumbor_server.config" . | sha256sum }}
         checksum/haproxy: {{ include "haproxy.config" . | sha256sum }}
         checksum/swift: {{ include "swift.config" . | sha256sum }}
+        {{- include "base.statsd.deployment_annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
-        checksum/prometheus-statsd: {{ .Files.Get "config/prometheus-statsd.conf" | sha256sum }}
         prometheus.io/scrape_by_name: "true"
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
@@ -43,9 +43,11 @@ spec:
       {{- include "thumbor.containers" . | indent 8}}
       {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "cache.mcrouter.deployment" . | indent 8 }}
+      {{- include "base.statsd.container" . | indent 8 }}
       volumes:
       {{- include "mesh.deployment.volume" . | nindent 8 }}
       {{- include "cache.mcrouter.volume" .  | indent 8 }}
+      {{- include "base.statsd.volume" . | indent 8 }}
         - name: thumbor-config
           configMap:
             name: {{ template "base.name.release" . }}-thumbor-config
@@ -55,9 +57,6 @@ spec:
         - name: haproxy-config
           configMap:
             name: {{ template "base.name.release" . }}-haproxy-config
-        - name: statsd-config
-          configMap:
-            name: {{ template "base.name.release" . }}-statsd-config
         {{- if .Values.main_app.tmp_empty_dir.enabled }}
         - name: tmp-dir
           emptyDir:
