@@ -3,7 +3,7 @@ inference_services:
   revise-tone-task-generator:
     predictor:
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
-      image_version: "2026-08-12-121220-publish"
+      image_version: "2026-08-13-090541-publish"
       custom_env:
         - name: NUM_WORKERS
           value: "2"
@@ -19,10 +19,6 @@ inference_services:
           value: "http://eventgate-main.discovery.wmnet:4480/v1/events"
         - name: EVENTGATE_WEIGHTED_TAGS_CHANGE_STREAM
           value: "mediawiki.cirrussearch.page_weighted_tags_change.v1"
-        - name: OUTLINK_TOPIC_MODEL_URL
-          value: "http://outlink-topic-model.articletopic-outlink/v1/models/outlink-topic-model:predict"
-        - name: OUTLINK_TOPIC_MODEL_HEADER
-          value: "outlink-topic-model-predictor.articletopic-outlink.svc.cluster.local"
         - name: USE_CACHE
           value: "True"
         - name: CASSANDRA_DATACENTER
