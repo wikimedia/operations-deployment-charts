@@ -89,6 +89,7 @@ proxy:
     public:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://eventgate-analytics.discovery.wmnet:4592
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 300000
   requests:
     cpu: 2
     memory: 2Gi
