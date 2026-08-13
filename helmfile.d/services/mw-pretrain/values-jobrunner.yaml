@@ -49,9 +49,6 @@ ingress:
   enabled: true
   gatewayHosts:
     default: mw-pretrain-jobrunner
-  # The VirtualService will only route testwiki traffic (all others will 404).
-  routeHosts:
-    - test.wikipedia.org
   httproutes:
     - name: health-check
       match:
