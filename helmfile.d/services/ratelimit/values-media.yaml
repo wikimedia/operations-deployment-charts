@@ -21,8 +21,8 @@ app:
   # The user_id should be X-Client-Ip
   #
   # This limits to:
-  #   5MB of total uint(response.size)/1024u per second **FIXED WINDOW** on originals
-  #   10MB of total uint(response.size)/1024u per second **FIXED WINDOW** on thumbnails
+  #   300MB of total uint(response.size)/1024u per minute **FIXED WINDOW** on originals
+  #   600MB of total uint(response.size)/1024u per minute **FIXED WINDOW** on thumbnails
   #
   # The tally is done at the end of the request, so a single request exceeding the quota would go
   # through, but the next one would not.
@@ -36,8 +36,8 @@ app:
             descriptors:
               - key: user_id
                 rate_limit:
-                  unit: second
-                  requests_per_unit: 5000
+                  unit: minute
+                  requests_per_unit: 300000
                 shadow_mode: true
       - key: policy
         value: thumbnails
@@ -47,8 +47,8 @@ app:
             descriptors:
               - key: user_id
                 rate_limit:
-                  unit: second
-                  requests_per_unit: 10000
+                  unit: minute
+                  requests_per_unit: 600000
                 shadow_mode: true
 config:
   cache_key_prefix: "media_"
