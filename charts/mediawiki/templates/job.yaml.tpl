@@ -56,7 +56,10 @@ spec:
       containers:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
       # above.
-      {{- include "lamp.deployment" . | indent 8 }}
+      {{- include "mediawiki.container" . | indent 8 }}
+      {{- if .Values.monitoring.enabled }}
+      {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
+      {{- end }}
       {{- include "cache.mcrouter.deployment" . | indent 8 }}
       {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "rsyslog.deployment" . | indent 8 }}
