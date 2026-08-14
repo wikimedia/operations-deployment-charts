@@ -916,6 +916,8 @@ GlobalNetworkPolicies:
             - 208.80.153.109/32  # urldownloader2004
             - 208.80.153.73/32  # urldownloader2005
             - 208.80.153.40/32  # urldownloader2006
+            - 10.2.1.95/32      # urldownloader low-traffic VIP (codfw)
+            - 10.2.2.95/32      # urldownloader low-traffic VIP (eqiad)
       - action: Allow
         protocol: TCP
         destination:
