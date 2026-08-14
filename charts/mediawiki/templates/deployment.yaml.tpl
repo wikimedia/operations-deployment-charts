@@ -51,6 +51,26 @@ spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
+      {{- if $flags.native_sidecars}}
+      containers:
+      {{- include "mediawiki.container" . | indent 8 }}
+      initContainers:
+      {{- if $flags.web }}
+      {{- include "sidecars.httpd.container" . | indent 8 }}
+      {{- include "sidecars.httpd-exporter.container" . | indent 8}}
+      {{- end }}
+      {{- if .Values.monitoring.enabled }}
+      {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
+      {{- end }}
+      {{- include "cache.mcrouter.container" . | indent 8 }}
+      {{- if .Values.mw.localmemcached.enabled }}
+        {{- include "localmemcached.deployment" . | indent 8 }}
+      {{- end }}
+      {{- include "mesh.deployment.container" . | indent 8 }}
+      {{- include "rsyslog.deployment" . | indent 8 }}
+      {{- include "base.statsd.container" . | indent 8 }}
+      {{- end }}
+      {{- if not $flags.native_sidecars}}
       containers:
       {{- if $flags.web }}
       {{- include "sidecars.httpd.container" . | indent 8 }}
@@ -69,6 +89,7 @@ spec:
       {{- include "mesh.deployment.container" . | indent 8}}
       {{- include "rsyslog.deployment" . | indent 8 }}
       {{- include "base.statsd.container" . | indent 8 }}
+      {{- end }}
       volumes:
       {{- include "mw.volumes" . | indent 8}}
       {{- include "base.statsd.volume" . | indent 8 }}
