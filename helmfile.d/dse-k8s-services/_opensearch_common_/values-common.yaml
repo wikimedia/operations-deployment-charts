@@ -3,7 +3,7 @@ opensearchCluster:
 #  bootstrap:
 #    Configure settings for the bootstrap pod
   general:
-    image: docker-registry.wikimedia.org/repos/data-engineering/opensearch:2025-12-15-175518-d448e86ebefc1ff653b93dfd27b331e251ce3393
+    image: docker-registry.discovery.wmnet/repos/data-engineering/opensearch:2@sha256:595b2a0d61cf724962d5425bb728523125c5531a094e7df513ea1a328fc8e41e
     imagePullPolicy: Never
     httpPort: "9200"
     version: 2.7.0
@@ -124,5 +124,5 @@ app:
   protocol: TCP
 
 certificate:
-  # refers to the ClusterIssuer in helmfile.d/admin_ng/values/dse-k8s-*/cfssl-issuer-values.yaml 
+  # refers to the ClusterIssuer in helmfile.d/admin_ng/values/dse-k8s-*/cfssl-issuer-values.yaml
   issuerRefName: opensearch
