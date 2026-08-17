@@ -7,8 +7,11 @@ main_app:
   limits:
     cpu: 5000m
     memory: 2800Mi
-resources:
-  replicas: 1
+# Do not set resources.replicas in this file.  It makes scap include
+# that number of replicas in its deployment progress report, but the
+# "production" release of this service has no Deployment, resulting in
+# a progress report that can't reach 100%.  The mediawiki-dumps-legacy
+# chart sets the replicas of its own Deployments. (T375514)
 
 service:
   deployment: production
