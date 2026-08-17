@@ -1,0 +1,24 @@
+# make the api.sparql.url absolute so that the staging app can be port-forwarded around while still targeting real WDQS
+configMaps:
+  wikidata-next-custom-config:
+    custom-config.json: |-
+      {
+        "api": {
+          "sparql": {
+            "uri": "https://query-next.wikidata.org/sparql",
+            "engine": "qlever"
+          },
+          "urlShortener": "wmf"
+        },
+        "brand": {
+          "logo": "logo.svg",
+          "favicon": "favicon.ico",
+          "title": "Wikidata Query Service (QLever)",
+          "copyrightUrl": "https://www.wikidata.org/wiki/Special:MyLanguage/Wikidata:SPARQL_query_service/Copyright"
+        },
+        "location": {
+          "root": "https://query-next.wikidata.org/",
+          "index": "https://query-next.wikidata.org/"
+        },
+        "bannerName": "qlever-migration"
+      }
