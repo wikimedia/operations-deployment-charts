@@ -87,7 +87,7 @@ proxy:
   version: v0.4.0
   config:
     public:
-      QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://eventgate-analytics.discovery.wmnet:4592
+      QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 300000
   requests:
@@ -116,6 +116,10 @@ external_services:
     - wikimedia
   urldownloader:
     - wikimedia
+
+discovery:
+  listeners:
+    - eventgate-analytics
 
 # Enable scraping of Prometheus metrics
 monitoring:
