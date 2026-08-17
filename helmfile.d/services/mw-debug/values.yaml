@@ -360,6 +360,16 @@ networkpolicy:
       # rdb1016 C2
       - cidr: 10.64.133.6/32
       - cidr: 2620:0:861:10c:10:64:133:6/128
+      # new redis-lock T427999
+      # rdb-lock1001.eqiad.wmnet
+      - cidr: 10.64.0.65/32
+      - cidr: 2620:0:861:101:10:64:0:65/128
+      # rdb-lock1002.eqiad.wmnet
+      - cidr: 10.64.16.45/32
+      - cidr: 2620:0:861:102:10:64:16:45/128
+      # rdb-lock1003.eqiad.wmnet
+      - cidr: 10.64.32.7/32
+      - cidr: 2620:0:861:103:10:64:32:7/128
       # wiki-mail-eqiad
       - cidr: 208.80.154.91/32
         ports:
@@ -414,6 +424,16 @@ networkpolicy:
       # rdb2014 D2
       - cidr: 10.192.37.22/32
       - cidr: 2620:0:860:11c:10:192:37:22/128
+      # new redis-lock T427999
+      # rdb-lock2001.codfw.wmnet
+      - cidr: 10.192.16.11/32
+      - cidr: 2620:0:860:102:10:192:16:11/128
+      # rdb-lock2002.codfw.wmnet
+      - cidr: 10.192.32.12/32
+      - cidr: 2620:0:860:103:10:192:32:12/128
+      # rdb-lock2003.codfw.wmnet
+      - cidr: 10.192.48.7/32
+      - cidr: 2620:0:860:104:10:192:48:7/128
       # wiki-mail-codfw
       - cidr: 208.80.153.46/32
         ports:
