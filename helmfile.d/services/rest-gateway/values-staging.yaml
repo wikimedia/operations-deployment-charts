@@ -40,6 +40,8 @@ smokepy:
     jwt_required_endpoint: "/w/api.php?action=compare&format=json"
 
 main_app:
+  image: envoy-future
+  version: 1.39.0-1
   # enable debug logging in staging
   args: ["-l", "debug"]
   domains:
