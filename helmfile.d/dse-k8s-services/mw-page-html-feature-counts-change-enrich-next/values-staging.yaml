@@ -4,13 +4,13 @@ app:
   # These are set in common values.yaml file.
   # Change them here if you need to override them for the staging release.
   #
-  # version: v1.52.0
+  version: v1.60.0-dev0
   # logConfiguration:
   #   rootLogger.level: INFO
 
   taskManager:
     # NOTE: parallelism == TM replicas * numberOfTaskSlots.
-    replicas: 2
+    replicas: 10
     resource:
       cpu: 1
       # This pipeline uses a little over 3000m in production, setting it to 4000m as buffer.
@@ -23,22 +23,31 @@ app:
       stream_manager:
         job_name: mw-page-html-feature-counts-change-enrich-next
 
-      
+
         # Configure sources and sinks.
         source:
           stream: mediawiki.page_html_content_change.v1:1.1.0
-          parallelism: 1
+          # Matches the production release.
+          parallelism: 12
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
+            # Connecting to Jumbo for zstd tests: T429456
+            # We'll revert this patch after the test is done.
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
             topics: [eqiad.mediawiki.page_html_content_change.v1]
-            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>
-            consumer_group: mw-page-html-feature-counts-change-enrich-next__dse-k8s-eqiad.000
+            # Kafka consumer group naming follows convention: <job_name>__<k8s_cluster_name>,
+            consumer_group: mw-page-html-feature-counts-change-enrich-next__dse-k8s-eqiad.zstd.000
+            properties:
+              partition.discovery.interval.ms: "60000"
 
         sink:
           stream: mediawiki.page_html_feature_counts_change.v1:1.1.0
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-            kafka_topic_prefix: staging.
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            # Writes to zstd.mediawiki.page_html_feature_counts_change.v1.
+            kafka_topic_prefix: zstd.
+            properties:
+              # Overrides the snappy default set by eventutilities-flink.
+              compression.type: zstd
 
         # By convention we set job_name equal to k8s namespace.
         # Since this naming will contain hyphens, set the error_sink
@@ -46,14 +55,10 @@ app:
         error_sink:
           stream: mw_page_html_feature_counts_change_enrich.error:2.1.0
           options:
-            bootstrap_servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
-            kafka_topic_prefix: staging.
+            bootstrap_servers: kafka-jumbo-eqiad.external-services.svc.cluster.local:9093
+            kafka_topic_prefix: zstd.
   job:
-    # TODO: we might consider setting
-    # kubernetes.operator.job.upgrade.last-state.max.allowed.checkpoint.age.
-    # to fallback on savepoints if checkpoints are too old.
-    # This might require changing checkpoint retention policy.
-    upgradeMode: last-state
+    upgradeMode: stateless
 
 
   flinkConfiguration:
@@ -71,4 +76,4 @@ flink:
     swift_bucket: mw-page-html-feature-counts-change-enrich-next.dse-k8s-eqiad
 
 external_services:
-  kafka: [test-eqiad]
+  kafka: [jumbo-eqiad]
