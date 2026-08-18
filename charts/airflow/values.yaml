@@ -222,6 +222,12 @@ config:
   # Standalone Kubernetes Secret objects, each with its own custom name (unlike extra_secrets, which
   # only adds keys into the shared -connections-variables Secret). Once created in the namespace they
   # can be consumed by task pods via secretKeyRef. Structure: <secret-name>: { <key>: <value> }.
+  # In a devenv the rendered Secret name is release-scoped ("<release.name>-<secret-name>", e.g.
+  # airflow-dev-<user>-gcs-token-search-console) so that multiple dev releases sharing the single
+  # airflow-dev namespace do not collide on Helm ownership. In production the name is left bare
+  # ("<secret-name>", e.g. gcs-token-search-console) since each prod instance owns its own namespace;
+  # this keeps the name consumers (secretKeyRef in task pods) reference unchanged. Devenv consumers
+  # must reference the release-scoped name.
   # Values are tpl-rendered (so they may reference config.private_secrets.*); empty values are
   # skipped, and a Secret with no non-empty keys is not rendered at all. Example:
   #   extra_k8s_secrets:
