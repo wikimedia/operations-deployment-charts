@@ -34,7 +34,7 @@ spec:
           operator: "Exists"
       containers:
       - name: coredns
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}-1"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (print .Chart.AppVersion "-1") }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:
           {{- toYaml .Values.resources | nindent 12 }}

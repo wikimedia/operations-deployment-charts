@@ -1,4 +1,4 @@
-# Default values for wmfcoredns.
+# Default values for wmf coredns.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -8,7 +8,8 @@ service:
   nodePort: 53
 
 image:
-  repository: docker-registry.discovery.wmnet/coredns
+  repository: docker-registry.discovery.wmnet/coredns1.11
+  tag: "1.11.3-2"
   pullPolicy: IfNotPresent
 
 resources:

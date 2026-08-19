@@ -10,10 +10,20 @@ k8s_app: kube-dns
 # internet.
 internal_only: false
 
+# When enabled, configure the kubepods plugin which synthesizes A, AAAA, and PTR records for Pod addresses.
+# See: https://github.com/coredns/kubepods
+kubepods: false
+
+# Internal message rewriting rules, see: https://coredns.io/plugins/rewrite/
+# These will apply to all server blocks.
+# rewrite_actions:
+#   continue: []
+#   stop: []
+
 replicaCount: 2
 
 image:
-  repository: docker-registry.wikimedia.org/coredns
+  repository: docker-registry.wikimedia.org/coredns1.12
   # Overrides the images tags (whose default is the chart appVersion).
   tag: ""
   pullPolicy: IfNotPresent
