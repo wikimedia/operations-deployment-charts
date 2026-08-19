@@ -8,7 +8,7 @@ ingress:
       match:
       - headers:
           x-wikimedia-debug:
-            regex: "(backend=)?k8s-mw-pretrain"
+            regex: "(backend=)?k8s-mw-pretrain.*"
       route:
       - destination:
           host: mediawiki-debug-tls-service.mw-pretrain.svc.cluster.local
