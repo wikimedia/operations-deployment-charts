@@ -47,6 +47,9 @@ app:
     # ==
     "restart-strategy.type": exponential-delay
     "state.backend.type": hashmap
+    # We store only trending pages in the keyed state,
+    # so this metric will be very similar to the number of trending pages.
+    "state.backend.rocksdb.metrics.estimate-num-keys": "true"
     "state.checkpoint-storage": filesystem
     "state.checkpoints.num-retained": "10"
     "s3.path.style.access": "true"
