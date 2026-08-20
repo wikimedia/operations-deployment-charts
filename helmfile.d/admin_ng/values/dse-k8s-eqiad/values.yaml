@@ -36,6 +36,12 @@ namespaces:
     labels:
       <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
+  airflow-experiment-platform:
+    labels:
+      <<: *analytics-pss-labels
+    deployClusterRole: deploy-airflow
+    tlsExtraSANs:
+    - airflow-experiment-platform.wikimedia.org
   airflow-fr-tech:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
