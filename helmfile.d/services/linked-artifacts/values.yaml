@@ -1,6 +1,6 @@
 main_app:
   image: repos/sre/hoarde
-  version: v1.5.0
+  version: v1.5.3
   command: ["./hoarde"]
   args: ["-config", "/etc/cassandra-http-gateway/config.yaml"]
   service_name: linked-artifacts
@@ -23,6 +23,15 @@ main_app:
           tls:
             ca: /etc/ssl/certs/ca-certificates.crt
             authority: outlink-topic-model-grpc.articletopic-outlink.wikimedia.org
+      edit_suggestions_counts:
+        lambda:
+          type: grpc
+          hostname: editcheck-headless.discovery.wmnet
+          port: 30443
+          timeout: 20s
+          content_type: application/json
+          tls:
+            ca: /etc/ssl/certs/ca-certificates.crt
 
   requests:
     cpu: 200m
@@ -53,6 +62,16 @@ networkpolicy:
             port: 30443
 
       - cidr: 10.2.1.63/32  # inference.svc.codfw.wmnet
+        ports:
+          - protocol: tcp
+            port: 30443
+
+      - cidr: 10.2.2.70/32 # k8s-ingress-wikikube.svc.eqiad.wmnet
+        ports:
+          - protocol: tcp
+            port: 30443
+
+      - cidr: 10.2.1.70/32 # k8s-ingress-wikikube.svc.codfw.wmnet
         ports:
           - protocol: tcp
             port: 30443
