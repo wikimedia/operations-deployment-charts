@@ -132,5 +132,10 @@ chartVersions:
   wmf-stable/calico: 0.4.0
   wmf-stable/calico-crds: 0.3.0
   wmf-stable/cert-manager: 1.16.4
+  # Pin kserve to the versions prod runs today. This change publishes 0.2.0, and
+  # without a pin every cluster would take it on its next apply. ml-staging-codfw
+  # overrides these to `~` when it opts in to 0.20.
+  wmf-stable/kserve-crd-minimal: 0.1.0
+  wmf-stable/kserve-resources: 0.1.1
   wmf-stable/kube-state-metrics: 5.11.0
 

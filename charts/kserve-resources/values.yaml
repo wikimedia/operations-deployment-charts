@@ -1,5 +1,5 @@
 kserve:
-  version: v0.17.0
+  version: v0.20.0
   createSharedResources: true
   deploymentMode: Knative
   inferenceServiceConfig:
@@ -137,6 +137,7 @@ kserve:
       # Knative mode - enable Knative-specific virtual host handling
       disableIstioVirtualHost: false
       disableIngressCreation: false
+      disableHTTPRouteTimeout: false
       # Knative mode uses Knative ingress gateways
       localGateway:
         gateway: knative-serving/knative-local-gateway
@@ -155,6 +156,7 @@ kserve:
     affinity: {}
     image: docker-registry.wikimedia.org/kserve-controller
     tag: ''
+    imagePullPolicy: IfNotPresent
     imagePullSecrets: []
     resources:
       limits:

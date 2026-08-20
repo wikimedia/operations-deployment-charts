@@ -3,7 +3,6 @@ kind: ClusterStorageContainer
 metadata:
   name: default
 spec:
-  workloadType: initContainer
   container:
     image: kserve/storage-initializer:latest
     imagePullPolicy: IfNotPresent
@@ -24,3 +23,5 @@ spec:
   - regex: https://(.+?).blob.core.windows.net/(.+)
   - regex: https://(.+?).file.core.windows.net/(.+)
   - regex: https?://(.+)/(.+)
+  supportsMultiModelDownload: true
+  workloadType: initContainer
