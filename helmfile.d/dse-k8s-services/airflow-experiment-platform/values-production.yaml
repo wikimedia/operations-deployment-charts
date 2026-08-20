@@ -1,0 +1,21 @@
+config:
+  airflow:
+    instance_name: experiment-platform
+    config:
+      kerberos:
+        principal: analytics-experiment/airflow-experiment-platform.discovery.wmnet
+  auth:
+    op_ldap_role: airflow-experiment-platform-ops
+
+external_services:
+  task-pod:
+    # The following are required by the growthbook-ldap-sync DAG
+    gerrit: [wikimedia]
+    ldap-ro: [eqiad, codfw]
+    prometheus-pushgateway: [eqiad, codfw]
+
+ingress:
+  gatewayHosts:
+    default: "airflow-experiment-platform"
+    extraFQDNs:
+    - airflow-experiment-platform.wikimedia.org
