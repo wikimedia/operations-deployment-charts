@@ -97,6 +97,7 @@ UPLOAD_MAX_SIZE = 1048576 # 1GB
 ## Defaults to: ['thumbor.filters.brightness', 'thumbor.filters.colorize', 'thumbor.filters.contrast', 'thumbor.filters.rgb', 'thumbor.filters.round_corner', 'thumbor.filters.quality', 'thumbor.filters.noise', 'thumbor.filters.watermark', 'thumbor.filters.equalize', 'thumbor.filters.fill', 'thumbor.filters.sharpen', 'thumbor.filters.strip_icc', 'thumbor.filters.frame', 'thumbor.filters.grayscale', 'thumbor.filters.rotate', 'thumbor.filters.format', 'thumbor.filters.max_bytes', 'thumbor.filters.convolution', 'thumbor.filters.blur', 'thumbor.filters.extract_focal', 'thumbor.filters.no_upscale', 'thumbor.filters.saturation', 'thumbor.filters.max_age', 'thumbor.filters.curve']
 FILTERS = [
     'wikimedia_thumbor.filter.conditional_sharpen',
+    'wikimedia_thumbor.filter.format',
     'wikimedia_thumbor.filter.lang',
     'wikimedia_thumbor.filter.page',
     'thumbor.filters.format',
