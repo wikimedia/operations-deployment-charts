@@ -24,6 +24,7 @@ data:
             fallthrough in-addr.arpa ip6.arpa
         }
         {{- if not .Values.internal_only }}
+        loop
         forward . /etc/resolv.conf
         {{- end }}
         reload
@@ -35,6 +36,7 @@ data:
     # doesn't forward to resolv.conf, so anything outside of wmnet will NXDOMAIN.
     wmnet:5353 {
         {{- include "coredns.commonplugins" . | nindent 8 }}
+        loop
         forward . /etc/resolv.conf
     }
     {{- end }}

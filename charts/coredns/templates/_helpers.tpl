@@ -42,6 +42,5 @@ rewrite {{ $action }} {
 {{- end }}
 prometheus 0.0.0.0:9153
 cache 30
-loop
 loadbalance
 {{- end }}
