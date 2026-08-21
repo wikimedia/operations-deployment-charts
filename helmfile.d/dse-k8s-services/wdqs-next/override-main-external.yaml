@@ -30,3 +30,9 @@ ingress:
 mesh:
   certmanager:
     default_host: wdqs2-next-main-external
+
+# Deploy the index from the test bucket to staging, while we gain confidence in the pipeline.
+init:
+  config:
+    public:
+      NEW_INDEX_S3_BUCKET: data-reload-test-bucket
