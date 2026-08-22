@@ -1,3 +1,9 @@
+## istio 1.4.0
+- Dependency: mesh.name 1.1 => 1.2
+- Fix "depends" field in module.json. Previously, the module's dependencies would be ignored by
+  sextant during upgrade operations. Note that this is only done for 1.4.0 - i.e., prior versions
+  are not retroactively fixed.
+
 ## istio 1.3.0
 - If .Values.ingress.routeHosts is non-empty, it will now always take precedent over the host list
   generated from .Values.ingress.gatewayHosts.* when populating the VirtualService host list. Prior

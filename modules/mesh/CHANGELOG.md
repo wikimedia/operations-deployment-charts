@@ -1,3 +1,15 @@
+## certificate 1.2.0
+
+- Dependency: name 1.1 => 1.2
+
+## name 1.2.0
+
+- Dependency: configuration 1.15 => 1.16
+
+## configuration 1.16.0 / networkpolicy 1.3.0
+
+TODO: Features
+
 ## service 1.2.1
 
 - Add TLS service ports for restricted_listeners
