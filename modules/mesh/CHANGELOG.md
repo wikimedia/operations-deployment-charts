@@ -8,7 +8,10 @@
 
 ## configuration 1.16.0 / networkpolicy 1.3.0
 
-TODO: Features
+- Add support for Host-based listener splits
+- Remove support for (unused) percentage-based listener split
+- Fix support for RouteAction-level stream idle timeout in the split listener
+  case (was missing)
 
 ## service 1.2.1
 

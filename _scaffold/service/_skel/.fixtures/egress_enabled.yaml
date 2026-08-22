@@ -45,15 +45,17 @@ services_proxy:
       encryption: true
       sets_sni: true
       keepalive: 4s
-    split:
-      percentage: 55
-      address: mw-api-int.discovery.wmnet
-      port: 4448
-      encryption: true
-      keepalive: "5s"
-      ips:
-        - 3.2.1.1/32
-        - 1.1.2.3/32
+    splits:
+      - name: testwiki-ingress
+        host_regex: "test[.]wikipedia[.]org"
+        address: mw-ingress-test.discovery.wmnet
+        port: 4448
+        encryption: true
+        keepalive: "5s"
+        sets_sni: true
+        ips:
+          - 3.2.1.1/32
+          - 1.1.2.3/32
   eventgate-analytics:
     port: 6004
     timeout: 10s

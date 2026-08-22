@@ -21,10 +21,11 @@ services_proxy:
       encryption: true
       sets_sni: true
       keepalive: 4s
-    split:
-      percentage: 55
-      ips: ~
-      address: mw-api-int.discovery.wmnet
-      port: 4448
-      encryption: true
-      keepalive: "5s"
+    splits:
+      - name: testwiki-api
+        host_regex: "test[.]wikipedia[.]org"
+        ips: ~
+        address: mw-api-int.discovery.wmnet
+        port: 4448
+        encryption: true
+        keepalive: "5s"

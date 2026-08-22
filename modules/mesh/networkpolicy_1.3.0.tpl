@@ -16,19 +16,19 @@
     port: {{ .port }}
     {{- end }}
     {{- end }} {{/* end with upstream */}}
-    {{- with $listener.split }}
-    {{- if .ips }}
-# Network egress to {{ $name }}-split
+    {{- range $split := $listener.splits }}
+    {{- if $split.ips }}
+# Network egress to {{ $name }}_{{ $split.name }}-split
 - to:
-  {{- range .ips }}
+  {{- range $split.ips }}
   - ipBlock:
       cidr: {{ . }}
   {{- end }}
   ports:
   - protocol: TCP
-    port: {{ .port }}
+    port: {{ $split.port }}
     {{- end }}
-    {{- end }} {{/* end with split */}}
+    {{- end }} {{/* end range splits */}}
   {{- end }} {{/* end range listeners */}}
 {{- end }}
 {{- if (.Values.mesh.tracing | default dict).enabled }}
