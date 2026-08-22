@@ -402,12 +402,14 @@ task :refresh_fixtures do
     }
     # NOTE: This should be kept in sync with services_proxy data written by
     # modules/profile/manifests/kubernetes/deployment_server/global_config.pp
-    # in puppet. There are two parts to this:
+    # in puppet. There are three parts to this:
     # * List of keys in the listener definitions to copy into the service_proxy
     #   data items.
-    listener_keys_to_keep = %w(port http_host timeout retry_policy xfp upstream split)
+    listener_keys_to_keep = %w(port http_host timeout retry_policy xfp upstream splits)
     # * List of keys in the listener definitions to copy into the upstream data.
     upstream_keys_from_listener = %w(idle_timeout keepalive sets_sni sni_rewrites_host_header tcp_keepalive)
+    # * List of keys in the listener definitions to copy into the splits data.
+    splits_keys_from_listener = %w(idle_timeout)
     data = hiera['profile::services_proxy::envoy::listeners'].map do |x|
       name = x['name']
       upstream = upstream_mock.dup
@@ -418,12 +420,17 @@ task :refresh_fixtures do
       end
       x['upstream'] = upstream
 
-      if x['split']
-        x['split']['address'] = x['split']['upstream']
+      x['splits']&.each do |split|
+        split['address'] = split['upstream']
         # Override ips, port and encryption with mock data
-        x['split']['ips'] = ['127.0.0.2/32', '169.254.0.2/32']
-        x['split']['port'] = 1443
-        x['split']['encryption'] = true
+        split['ips'] = ['127.0.0.2/32', '169.254.0.2/32']
+        split['port'] = 1443
+        split['encryption'] = true
+        splits_keys_from_listener.each do |k|
+          if x.key?(k)
+            split[k] = x[k]
+          end
+        end
       end
 
       # Filter keys and nil values to produce the same structure as global_config.pp
