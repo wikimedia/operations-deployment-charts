@@ -59,6 +59,7 @@
   <!-- <policy domain="system" name="max-memory-request" value="256MiB"/> -->
   <policy domain="resource" name="temporary-path" value="/tmp"/>
   <policy domain="resource" name="memory" value="{{ regexFind "\\d+" .Values.main_app.limits.memory  | int |  mulf 0.8 }}GiB"/>
+  <policy domain="resource" name="map" value="{{ regexFind "\\d+" .Values.main_app.limits.memory  | int |  mulf 0.8 }}GiB"/>
   <policy domain="resource" name="disk" value="4GiB"/>
   <policy domain="resource" name="width" value="66KP"/>
   <policy domain="resource" name="height" value="66KP"/>
