@@ -35,6 +35,9 @@ config:
       extra:
         endpoint_url: https://rgw.eqiad.dpe.anycast.wmnet
         region_name: dpe
+    datahub_gms:
+      conn_type: datahub-rest
+      host: http://datahub-gms-production.datahub.svc:8080
     kafka_test_eqiad:
       conn_type: kafka
       host: kafka-test-eqiad.external-services.svc.cluster.local
