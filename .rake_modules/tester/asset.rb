@@ -419,11 +419,20 @@ module Tester
     INIT_RESULT = { lint: {}, validate: {}, diff: {} }.freeze
 
     def initialize(path, to_run)
+      @ignore_file = File.join(File.dirname(path), '.ci-ignore')
       @helmfile = File.basename path
       @origin = Dir.pwd
       # This is a per-env list of charts that have versions pinned.
       super(path, to_run)
       @pinned_chart_versions = pinned_charts
+    end
+
+    def should_run?
+      !File.exists?(@ignore_file) && super
+    end
+
+    def should_test?
+      !File.exists?(@ignore_file) && super
     end
 
     # Set the asset to have failed.

@@ -1,0 +1,19 @@
+# This is a special helmfile that is only here as a convenient way to redepliy
+# all kerberized applications running in kubernetes in the face of a Kerberos
+# configuration change.
+# The same `helmfile -e dse-k8s-eqiad diff/apply` command should be used as in
+# any other helmfile.
+environments:
+  dse-k8s-eqiad:
+    values:
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+---
+bases:
+  - ../global.yaml
+
+helmfiles:
+- path: ../spark-history*/helmfile.yaml
+- path: ../superset*/helmfile.yaml
+- path: ../growthbook*/helmfile.yaml
+- path: ../blunderbuss*/helmfile.yaml
+- path: ../airflow-*/helmfile.yaml
