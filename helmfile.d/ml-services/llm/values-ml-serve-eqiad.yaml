@@ -376,7 +376,7 @@ inference_services:
   llm-qwen3-14b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-08-17-141410-publish"
+      image_version: "2026-08-20-140329-publish"
       custom_env:
         - name: MODEL_NAME
           value: "llm-qwen3-14b"
@@ -460,7 +460,7 @@ inference_services:
   llm-qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-08-17-141410-publish"
+      image_version: "2026-08-20-140329-publish"
       custom_env:
         - name: MODEL_NAME
           value: "llm-qwen36-27b"
@@ -496,6 +496,8 @@ inference_services:
           value: "False"
         - name: TOOL_CALLING_ENABLED
           value: "True"
+        - name: TOOL_CALL_PARSER
+          value: "qwen3_coder"
         - name: VLLM_ROCM_USE_AITER
           value: "0"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
