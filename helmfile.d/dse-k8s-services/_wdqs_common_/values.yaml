@@ -4,8 +4,9 @@ resources:
 backend:
   volume:
     storageClass: topolvm-performance
-    size: 600Gi # 600Gi should be enough for 1 full index and 1 backup
-
+    # 900Gi should be enough for 3 indices (1 live, 1 backup, 1 temporary when downloading
+    # a new index until backups are rotated) and also 2x persisted delta triples.
+    size: 900Gi
 qlever:
   version: master_2026-08-20T20-33-08Z_1075455
   config:
