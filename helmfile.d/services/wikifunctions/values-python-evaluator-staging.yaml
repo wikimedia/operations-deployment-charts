@@ -13,3 +13,7 @@ mesh:
   certmanager:
     extraFQDNs:
     - 'wikifunctions-python-evaluator.k8s-staging.discovery.wmnet'
+
+config:
+  public:
+    ORCHESTRATOR_CALLBACK_API_URI: 'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v1/callback/'
