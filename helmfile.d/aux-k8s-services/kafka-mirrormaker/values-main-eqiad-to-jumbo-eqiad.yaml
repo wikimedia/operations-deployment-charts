@@ -4,7 +4,9 @@ config:
     target: jumbo-eqiad
     # Blacklist change-prop topics. We don't need them in jumbo.
     # Also blacklist cirrusSearch related jobs.  These have unexplained HUGE messages.
-    topics: '^(?!.*change-prop\.|.*changeprop\.|.*cpjobqueue\.|.*mediawiki\.job\.cirrus).+$'
+    # and generally any mediawiki.job message. We already exclude them from data-lake
+    # ingestion.
+    topics: '^(?!.*change-prop\.|.*changeprop\.|.*cpjobqueue\.|.*mediawiki\.job\.).+$'
     flags:
       streams: 12
 
