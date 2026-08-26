@@ -159,7 +159,10 @@ releases:
               resources: ["*"]
               verbs: ["*"]
             - apiGroups: ["serving.kserve.io"]
-              resources: ["inferenceservices"]
+              resources:
+                - "inferenceservices"
+                - "llminferenceservices"
+                - "llminferenceserviceconfigs"
               verbs: ["*"]
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
@@ -363,7 +366,10 @@ releases:
               resources: ["revisions"]
               verbs: ["*"]
             - apiGroups: ["serving.kserve.io"]
-              resources: ["inferenceservices"]
+              resources:
+                - "inferenceservices"
+                - "llminferenceservices"
+                - "llminferenceserviceconfigs"
               verbs: ["*"]
             - apiGroups: [""]
               resources: ["nodes"]

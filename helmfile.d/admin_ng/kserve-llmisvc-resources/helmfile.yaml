@@ -1,0 +1,42 @@
+# LLMInferenceService (llmisvc) control plane.
+#
+# A separate controller from kserve-resources: its own binary, scheme, leader-election ID
+# and webhooks. It registers neither the Knative nor the Istio APIs and never reads
+# `deploy.defaultDeploymentMode`, so it runs alongside the Knative-mode kserve-resources
+# release without interfering with it. Rendered object names do not collide.
+#
+# Teardown order matters: all six webhooks are failurePolicy: Fail with no
+# namespaceSelector, so while this release is down, CREATE/UPDATE of llminferenceservices
+# and CREATE/UPDATE/DELETE of llminferenceserviceconfigs fail cluster-wide (which also
+# blocks namespace deletion). Destroy workload releases before this one.
+#
+# Be sure to include this helmfile into the "bases:" array in the parent helmfile.
+templates:
+  default: &default
+    chart: wmf-stable/kserve-llmisvc-resources
+    namespace: kserve
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kserve_llmisvc_resources\" }}{{ .Environment.Values.install_kserve_llmisvc_resources }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: kserve-llmisvc-resources
+    <<: *default
+    needs:
+      - kube-system/namespaces
+      - cert-manager/cert-manager
+      # The webhook Certificate is issued by the cfssl `discovery` ClusterIssuer.
+      - cert-manager/cfssl-issuer
+      - kserve/kserve-llmisvc-crd-minimal
+    values:
+      # Generic default values for all environments
+      - "values/common.yaml"
+      # Default values for this cluster group
+      - "values/{{ .Values.cluster_group }}.yaml"
+      # Environment specific defaults
+      - "values/{{ .Environment.Name }}/values.yaml"
+      # Release specific overrides
+      - "{{`{{ .Release.Name }}`}}/values.yaml"
+      # Overrides specific to release in environment
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml"
+      # Secrets (from private puppet repo)
+      - "/etc/helmfile-defaults/private/admin/{{`{{ .Release.Name }}`}}/{{ .Environment.Name }}.yaml"

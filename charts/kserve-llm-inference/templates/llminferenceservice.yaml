@@ -1,0 +1,38 @@
+{{- range $name, $svc := .Values.llm_inference_services }}
+{{- if not $svc.model }}{{ fail (printf "llm_inference_services.%s: model.uri is required" $name) }}{{ end }}
+{{- if not $svc.model.uri }}{{ fail (printf "llm_inference_services.%s: model.uri is required" $name) }}{{ end }}
+---
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceService
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" $ | nindent 4 }}
+spec:
+  model:
+    uri: {{ $svc.model.uri }}
+    {{- with $svc.model.name }}
+    name: {{ . }}
+    {{- end }}
+  replicas: {{ $svc.replicas | default 1 }}
+  # Pod-template annotations. These reach the workload pod, not just the CR.
+  annotations:
+    # llmisvc workloads are not part of the Istio mesh: the model is reached
+    # in-cluster on the workload Service, and an injected sidecar would also make
+    # the Prometheus `k8s-pods` job drop the pod.
+    sidecar.istio.io/inject: "false"
+    {{- if $.Values.monitoring.enabled }}
+    prometheus.kserve.io/scrape: "true"
+    prometheus.kserve.io/port: {{ $.Values.monitoring.port | quote }}
+    prometheus.kserve.io/path: "/metrics"
+    {{- end }}
+    {{- with $svc.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $svc.template }}
+  # Overlay on the kserve-config-llm-template preset, merged by container name.
+  template:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,23 @@
+# CRDs for the LLMInferenceService (llmisvc) control plane: llminferenceservices and
+# llminferenceserviceconfigs.
+#
+# Must be installed before kserve-llmisvc-resources: the llminferenceservices CRD declares
+# conversion.strategy: Webhook against a Service that the resources release creates, and
+# its caBundle is injected by the cert-manager cainjector.
+#
+# Note that `atomic: true` applies here, so a failed first apply rolls back by DELETING the
+# CRDs. Never put the first custom resource creation in the same change as this release.
+#
+# Be sure to include this helmfile into the "bases:" array in the parent helmfile.
+templates:
+  default: &default
+    chart: wmf-stable/kserve-llmisvc-crd-minimal
+    namespace: kserve
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_kserve_llmisvc_crd_minimal\" }}{{ .Environment.Values.install_kserve_llmisvc_crd_minimal }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: kserve-llmisvc-crd-minimal
+    <<: *default
+    needs:
+      - kube-system/namespaces

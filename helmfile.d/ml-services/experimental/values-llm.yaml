@@ -1,0 +1,41 @@
+# LLMInferenceService definitions for the `llm` release in `experimental`.
+# Chart: charts/kserve-llm-inference.
+#
+# Egress rules come from values.yaml, which this release also loads.
+#
+# Hardware note: the ml-staging GPUs are MI210 (aldebaran, gfx90a), not MI300X.
+#   * gfx90a has no FP8, so the FP8 checkpoints under s3://wmf-ml-models/llm/ are
+#     not usable here.
+#   * Do not set VLLM_ROCM_USE_AITER or an aiter attention backend on gfx90a.
+# ml/amd-vllm022 is built for gfx90a;gfx942, so the image itself is fine.
+
+llm_inference_services:
+  # First llmisvc service. Deliberately the smallest model available, to prove the
+  # control plane, the preset, the storage-initializer and the vLLM boot path with
+  # the fastest possible turnaround.
+  llm-qwen3-embedding:
+    model:
+      uri: s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/
+      name: qwen3-embedding-0.6b
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+              ephemeral-storage: 10Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "8"
+              memory: 16Gi
+              ephemeral-storage: 15Gi
+              amd.com/gpu: "1"
+          env:
+            # Conservative for a first run: no aiter, no FP8, modest context.
+            # If vLLM cannot infer the task for this checkpoint, add --task embed.
+            - name: VLLM_ADDITIONAL_ARGS
+              value: "--max-model-len 4096 --gpu-memory-utilization 0.85"
+      # No tolerations or nodeAffinity: nothing else in ml-staging requests a GPU,
+      # and the mi300x taint does not apply to these nodes.

@@ -1,0 +1,63 @@
+{{/*
+WMF addition -- upstream ships no NetworkPolicy for the llmisvc controller.
+
+ml-serve applies a Calico `default-deny` GlobalNetworkPolicy to every namespace
+outside kube-system, for both Ingress and Egress
+(helmfile.d/admin_ng/values/ml-serve.yaml, GlobalNetworkPolicies.default-deny).
+Without the rules below the apiserver cannot reach the admission and conversion
+webhooks on 9443, and the controller cannot reach the apiserver. Since all six
+webhook configurations are failurePolicy: Fail, that makes LLMInferenceService
+objects uncreatable rather than merely degraded.
+
+Shape follows charts/kserve-resources/templates/networkpolicy.yaml.
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "llm-isvc-resources.deploymentName" . }}-calico-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "llm-isvc-resources.labels" . | nindent 4 }}
+spec:
+  types:
+    - Ingress
+  selector: control-plane=="{{ include "llm-isvc-resources.deploymentName" . }}"
+  ingress:
+    # Admission and CRD conversion webhooks, called by the apiserver.
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - 9443
+    # Controller metrics. WMF Prometheus runs off-cluster on bare metal, so this
+    # is a port-only rule with no source selector -- the namespaceSelector
+    # matchLabels.name=="monitoring" idiom can never match here.
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - {{ .Values.kserve.llmisvc.controller.metricsBindPort }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "llm-isvc-resources.deploymentName" . }}-calico-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "llm-isvc-resources.labels" . | nindent 4 }}
+spec:
+  types:
+    - Egress
+  selector: control-plane=="{{ include "llm-isvc-resources.deploymentName" . }}"
+  egress:
+    # Reconcile loop, leader election, and the storage-version migration.
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default

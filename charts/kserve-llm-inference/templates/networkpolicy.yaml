@@ -1,0 +1,62 @@
+{{- if .Values.llm_inference_services }}
+{{/*
+  ml-serve applies a Calico `default-deny` GlobalNetworkPolicy to every namespace
+  outside kube-system, in both directions, so workload pods need explicit rules.
+
+  These pods carry no Istio sidecar, so unlike kserve-inference pods there are no
+  queue-proxy or sidecar ports to open -- only vLLM's own port.
+*/}}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-{{ .Release.Name }}-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      # Set by the controller on every workload pod (workload.go:166-171). The chart's
+      # own metadata labels do NOT reach the pod -- only spec.labels propagates.
+      app.kubernetes.io/part-of: llminferenceservice
+      kserve.io/component: workload
+  policyTypes:
+    - Ingress
+  ingress:
+    # vLLM's OpenAI API and /metrics. No `from:` -- callers are in-cluster peers and
+    # off-cluster Prometheus, which no selector can express.
+    - ports:
+        - port: {{ .Values.monitoring.port }}
+          protocol: TCP
+{{- if and .Values.networkpolicy.egress.enabled .Values.networkpolicy.egress.dst_nets }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-{{ .Release.Name }}-egress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  types:
+    - Egress
+  # Same labels as the ingress policy above, in Calico selector syntax.
+  selector: app.kubernetes.io/part-of=="llminferenceservice" && kserve.io/component=="workload"
+  egress:
+    # Model download by the storage-initializer (thanos-swift S3 frontend), plus
+    # whatever else the namespace declares.
+    {{- range .Values.networkpolicy.egress.dst_nets }}
+    {{- $cidr := .cidr }}
+    {{- range .ports }}
+    - action: Allow
+      protocol: {{ .protocol | default "tcp" | upper }}
+      destination:
+        nets:
+          - {{ $cidr }}
+        ports:
+          - {{ .port }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}

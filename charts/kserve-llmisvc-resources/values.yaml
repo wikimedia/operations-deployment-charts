@@ -1,0 +1,94 @@
+kserve:
+  version: v0.20.0
+  llmisvc:
+    # InferencePool / endpoint-picker is out of scope (needs Istio >= 1.27; we run 1.24.2).
+    # Safe to leave off: every GIE watch is gated on IsCrdAvailable (controller.go:436-444)
+    # and Delete tolerates meta.IsNoMatchError (lifecycle_crud.go:65).
+    createGIECRDs: false
+    controller:
+      image: docker-registry.wikimedia.org/kserve-llmisvc-controller
+      tag: ''
+      imagePullPolicy: IfNotPresent
+      imagePullSecrets: []
+      labels: {}
+      podLabels: {}
+      annotations: {}
+      # WMF Prometheus discovers pods, so the scrape annotations must be on the
+      # pod template. Upstream puts prometheus.io/scrape on the Deployment only,
+      # where role: pod discovery cannot see it.
+      podAnnotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8443'
+      serviceAnnotations: {}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      # WMF Prometheus runs off-cluster on bare metal, so it cannot reach a
+      # loopback listener. See profile::prometheus::k8s in operations/puppet.
+      metricsBindAddress: 0.0.0.0
+      metricsBindPort: '8443'
+      nodeSelector: {}
+      tolerations: []
+      topologySpreadConstraints: []
+      affinity: {}
+      resources:
+        limits:
+          cpu: 100m
+          memory: 300Mi
+        requests:
+          cpu: 100m
+          memory: 300Mi
+      replicas: 1
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 5
+        httpGet:
+          path: /healthz
+          port: 8081
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 5
+        timeoutSeconds: 5
+        failureThreshold: 5
+        httpGet:
+          path: /readyz
+          port: 8081
+      service:
+        type: ClusterIP
+        port: 8443
+        targetPort: metrics
+      serviceAccount:
+        name: ''
+      env: []
+      extraVolumes: []
+      extraVolumeMounts: []
+      # Serve metrics as plaintext. With --metrics-secure the controller installs
+      # controller-runtime's WithAuthenticationAndAuthorization filter, which needs
+      # a bearer token; WMF Prometheus authenticates with a client cert only.
+      extraArgs:
+        - --metrics-secure=false
+      terminationGracePeriodSeconds: 10
+
+commonLabels: {}
+commonAnnotations: {}

@@ -1,0 +1,124 @@
+{{- $modelName := `{{ .Spec.Model.Name }}` -}}
+{{- if .Values.llm_inference_services }}
+{{/*
+  The WMF LLM runtime preset.
+
+  The controller unconditionally appends a base ref named `kserve-config-llm-template`
+  for any single-node service without workers, so a config with exactly this name must
+  exist or PresetsCombined never goes Ready.
+
+  It is rendered into the release namespace on purpose, never into `kserve`.
+  PREVENT_WELL_KNOWN_CONFIG_DELETION defaults to true and the validating webhook
+  refuses to delete a well-known name only when the namespace is `kserve` -- a preset
+  there cannot be removed, which breaks `helm uninstall` and atomic rollback.
+
+  Upstream's own kserve-config-llm-template is unusable here: it is a CUDA image plus a
+  ~150-line bash prologue that probes /sys/class/infiniband and /proc/driver/nvidia and
+  sets NCCL/NVSHMEM/UCX variables. This is the ROCm equivalent, without that prologue.
+*/}}
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceServiceConfig
+metadata:
+  name: kserve-config-llm-template
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  template:
+    serviceAccountName: {{ .Values.serviceAccountName }}
+    terminationGracePeriodSeconds: {{ .Values.defaults.terminationGracePeriodSeconds }}
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    initContainers:
+      # Declared only to attach a restricted-compliant securityContext and resources to
+      # the init container the controller injects. Upstream's CreateInitContainerWithConfig
+      # sets neither, and StorageInitializerConfig has no field for a securityContext, so
+      # without this stanza PodSecurity `restricted` rejects the pod.
+      - name: storage-initializer
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        resources:
+          {{- toYaml .Values.storageInitializer.resources | nindent 10 }}
+    containers:
+      # The name `main` is required: the controller resolves the model container by it.
+      - name: main
+        image: {{ include "kserve-llm-inference.vllmImage" . }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/bash
+          - -c
+          - |
+            exec vllm serve /mnt/models \
+              --served-model-name "{{ $modelName }}" \
+              --port {{ .Values.monitoring.port }} \
+              ${VLLM_ADDITIONAL_ARGS} \
+              "$@"
+          - --
+        ports:
+          - containerPort: {{ .Values.monitoring.port }}
+            protocol: TCP
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          # vLLM writes compile and HF caches under $HOME=/srv.
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          # Required, not optional: the image declares `USER somebody`, and kubelet
+          # cannot verify a non-numeric USER against runAsNonRoot.
+          runAsUser: {{ .Values.defaults.runAsUser }}
+          seccompProfile:
+            type: RuntimeDefault
+        resources:
+          {{- toYaml .Values.defaults.resources | nindent 10 }}
+        # Model load on a large checkpoint takes minutes, so readiness gets a long
+        # startup budget rather than a long initialDelay.
+        startupProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.monitoring.port }}
+          periodSeconds: 10
+          failureThreshold: 90
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.monitoring.port }}
+          periodSeconds: 10
+          timeoutSeconds: 2
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.monitoring.port }}
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 5
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /bin/sleep
+                - "15"
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          - mountPath: /tmp
+            name: tmp-dir
+    volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: {{ .Values.defaults.shmSize }}
+      - name: tmp-dir
+        emptyDir: {}
+{{- end }}

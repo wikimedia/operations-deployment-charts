@@ -62,3 +62,14 @@ istio:
         - 8081
         # External gRPC port for kserve v2 inference protocol.
         - 50051
+
+# ml-staging-codfw runs kserve 0.20. Prod stays on the versions pinned in
+# values/common.yaml.
+#
+# `~` means "use the newest published chart", the idiom calico already uses for
+# staging. Do not pin an explicit version here: CI skips its local-chart patching for
+# any release that carries a version, and then cannot resolve a version that this
+# change has not published yet (.rake_modules/tester/asset.rb, should_patch?).
+chartVersions:
+  wmf-stable/kserve-crd-minimal: ~ # Install latest version
+  wmf-stable/kserve-resources: ~ # Install latest version

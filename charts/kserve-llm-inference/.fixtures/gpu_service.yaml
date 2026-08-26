@@ -1,0 +1,54 @@
+# A GPU-pinned service, shaped like the existing llm/experimental entries.
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 10.2.1.54/32   # thanos-swift.svc.codfw.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
+      - cidr: 10.2.2.54/32   # thanos-swift.svc.eqiad.wmnet
+        ports:
+          - port: 443
+            protocol: tcp
+
+llm_inference_services:
+  llm-example-14b:
+    model:
+      uri: s3://wmf-ml-models/llm/example-14b/
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "16"
+              memory: 16Gi
+              ephemeral-storage: 30Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: 16Gi
+              ephemeral-storage: 35Gi
+              amd.com/gpu: "1"
+          env:
+            - name: VLLM_ADDITIONAL_ARGS
+              value: "--max-model-len 16384 --gpu-memory-utilization 0.92"
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: mi300x-experiments
+          effect: NoSchedule
+        - key: dedicated
+          operator: Equal
+          value: mi300x-experiments
+          effect: NoExecute
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - ml-serve1012.eqiad.wmnet

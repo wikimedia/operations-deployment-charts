@@ -132,6 +132,8 @@ environments:
       - install_knative: true
       - install_kserve_crd_minimal: true
       - install_kserve_resources: true
+      - install_kserve_llmisvc_crd_minimal: true
+      - install_kserve_llmisvc_resources: true
       - install_cert_manager: true
       - install_kube_state_metrics: true
       - namespace_certificates: true
@@ -249,6 +251,8 @@ bases:
   - knative-serving/helmfile.yaml
   - kserve-crd-minimal/helmfile.yaml
   - kserve-resources/helmfile.yaml
+  - kserve-llmisvc-crd-minimal/helmfile.yaml
+  - kserve-llmisvc-resources/helmfile.yaml
   - kube-state-metrics/helmfile.yaml
   - helm-state-metrics/helmfile.yaml
   - flink-operator/helmfile.yaml

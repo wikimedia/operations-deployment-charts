@@ -1,0 +1,93 @@
+# Registry used for in-cluster image pulls.
+registry: docker-registry.discovery.wmnet
+
+# The vLLM runtime backing every LLMInferenceService in this release.
+# production-images ml/vllm022 -- ROCm 7.2.0, vLLM 0.22.1, gfx90a + gfx942.
+# The image has no ENTRYPOINT; the preset below supplies the command.
+vllm:
+  image: ml/amd-vllm022
+  version: gfx90agfx942rocm7.2.0pytorch2.10.0flash-attn2.8.3aiter0.1.13vllm0.22.1-3
+
+# ServiceAccount carrying the Swift/S3 credentials used by the storage-initializer.
+# Created by the kserve-inference release in this namespace; referenced, not created.
+serviceAccountName: kserve
+
+monitoring:
+  enabled: true
+  # vLLM serves its OpenAI API and /metrics on this port.
+  port: 8000
+
+# Applied to the `main` container of every service unless the service overrides them.
+# Explicit values are required: the namespace LimitRange defaults to 100Mi/100m,
+# which no LLM can start under.
+defaults:
+  resources:
+    requests:
+      cpu: "2"
+      memory: 16Gi
+      ephemeral-storage: 10Gi
+    limits:
+      cpu: "4"
+      memory: 32Gi
+      ephemeral-storage: 15Gi
+  # /dev/shm, needed by vLLM for inter-process tensor sharing.
+  shmSize: 8Gi
+  # Grace period for vLLM to drain in-flight generations.
+  terminationGracePeriodSeconds: 60
+  # Numeric uid the model container runs as. Must be set explicitly: the
+  # amd-vllm022 image declares `USER somebody`, and kubelet refuses to start a
+  # container with runAsNonRoot: true when it cannot prove a non-numeric USER is
+  # non-root ("image has non-numeric user (somebody)"). 65533 is `somebody` in
+  # production-images config.yaml known_uid_mappings.
+  runAsUser: 65533
+
+# The storage-initializer runs as an init container injected by the controller.
+# Upstream sets no securityContext on it and offers no config field for one, so the
+# preset declares the container to carry these. Without this, PodSecurity `restricted`
+# rejects every pod. See README.md.
+storageInitializer:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+      ephemeral-storage: 10Gi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+      ephemeral-storage: 15Gi
+
+# Egress rules. Same structure as charts/kserve-inference, so a namespace's
+# helmfile.d/ml-services/<ns>/values.yaml can feed both charts:
+#   dst_nets:
+#     - cidr: 10.2.1.54/32
+#       ports:
+#         - port: 443
+#           protocol: tcp
+networkpolicy:
+  egress:
+    enabled: false
+    dst_nets: []
+
+# One LLMInferenceService per entry.
+#
+#   llm_inference_services:
+#     llm-example:
+#       model:
+#         uri: s3://wmf-ml-models/llm/example/
+#         name: llm-example          # optional; defaults to the entry name
+#       replicas: 1
+#       annotations: {}              # merged over the chart defaults
+#       # Free-form PodSpec overlay, merged over the preset by container name.
+#       # This is where GPUs, node pinning and vLLM env go.
+#       template:
+#         containers:
+#           - name: main
+#             resources:
+#               requests: {amd.com/gpu: "1"}
+#               limits:   {amd.com/gpu: "1"}
+#             env:
+#               - name: VLLM_ADDITIONAL_ARGS
+#                 value: "--max-model-len 16384"
+#         tolerations: []
+#         affinity: {}
+llm_inference_services: {}
