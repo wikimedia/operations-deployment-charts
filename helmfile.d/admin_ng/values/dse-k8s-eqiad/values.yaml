@@ -271,6 +271,21 @@ namespaces:
         max:
           memory: "32Gi"
           cpu: "16"
+  matomo:
+    tlsHostnames:
+    - matomo
+    tlsExtraSANs:
+    - wikimediafoundation.org
+    - m.wikimediafoundation.org
+    - www.wikimediafoundation.org
+  matomo-next:
+    tlsHostnames:
+    - matomo
+    - matomo-next
+    tlsExtraSANs:
+    - wikimediafoundation.org
+    - m.wikimediafoundation.org
+    - www.wikimediafoundation.org
   mediawiki-dumps-legacy:
     enableJobSidecarController: true
     deployClusterRole: deploy-mediawiki-dumps-legacy
