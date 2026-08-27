@@ -1,0 +1,29 @@
+templates:
+  default: &default
+    namespace: kube-system
+    missingFileHandler: Warn
+
+releases:
+  - name: runtime-classes
+    chart: wmf-stable/raw
+    values:
+      - templates:
+        {{- with .Values.runtimeClasses.gVisor }}
+        {{- if .enabled }}
+        {{- range $handler := .handlers }}
+        - |
+          apiVersion: node.k8s.io/v1
+          kind: RuntimeClass
+          metadata:
+            name: {{ if (eq $handler "default" ) }}gvisor{{ else }}gvisor-{{ $handler }}{{ end }}
+          handler: {{ if (eq $handler "default" ) }}runsc{{ else }}runsc-{{ $handler }}{{ end }}
+          overhead:
+            podFixed:
+              cpu: "100m"
+              memory: "100Mi"
+          scheduling:
+            nodeSelector:
+              dev.gvisor/enabled: "true"
+        {{- end }}
+        {{- end }}
+        {{- end }}

@@ -142,6 +142,10 @@ namespaces:
           cpu: "20"
           memory: "10Gi"
 
+runtimeClasses:
+  gVisor:
+    enabled: true
+
 chartVersions:
   wmf-stable/calico: ~ # Install latest version
   wmf-stable/calico-crds: ~ # Install latest version

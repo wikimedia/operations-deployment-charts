@@ -56,6 +56,15 @@ IPAMConfig:
   # Prohibit nodes from borrowing IPs out of other nodes IPAM blocks (T296303)
   strictAffinity: true
 
+# In helmfile_runtime_classes.yaml we define a list of custom RuntimeClass resources
+# that are deployed in the target environment
+runtimeClasses:
+  # Enable gVisor sandboxing for workloads that require it. You can see the list of
+  # supported gVisor handlers in puppet's profile::containerd class
+  gVisor:
+    enabled: false
+    handlers: ["default", "debug"]
+
 # In helmfile_rbac.yaml we define a deploy ClusterRole and few other ones,
 # like deploy-{flink,kserve,..} with special extra settings for ad-hoc use cases.
 # To avoid deploying all extra deploy ClusterRoles to all clusters, we define
@@ -138,4 +147,3 @@ chartVersions:
   wmf-stable/kserve-crd-minimal: 0.1.0
   wmf-stable/kserve-resources: 0.1.1
   wmf-stable/kube-state-metrics: 5.11.0
-
