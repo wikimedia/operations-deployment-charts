@@ -17,6 +17,29 @@ monitoring:
   # vLLM serves its OpenAI API and /metrics on this port.
   port: 8000
 
+# Ingress routing. Every LLMInferenceService is reachable at
+# <service>.<namespace>.<domain>, the same way an InferenceService is -- the chart
+# writes the VirtualService that Knative writes for a predictor. This needs no Gateway
+# API CRDs, no Istio upgrade, and no change to LVS, DNS, TLS SANs or rest-gateway.
+# See templates/virtualservice.yaml.
+#
+# Name a service `llm-*` in namespace `llm` to pick up rest-gateway's existing
+# `liftwing_llm` route group and its LiftWingLLM rate limit (T426749) for free.
+routing:
+  # Shared gateway owned by the knative-serving release. Do not define a new one:
+  # ~155 InferenceServices route through this gateway.
+  gateway: knative-serving/knative-ingress-gateway
+  # Host is <service>.<namespace>.<domain>, matching the InferenceService convention
+  # and the *.<namespace>.wikimedia.org SANs on knative-serving-tls-certificate.
+  domain: wikimedia.org
+  # Public path prefix that rest-gateway forwards but vLLM does not serve. Only
+  # <prefix>/v1/ is routed, matching rest-gateway's own scope -- see
+  # templates/virtualservice.yaml.
+  openaiPrefix: /openai
+  # Istio's default route timeout is 15s, far below a long generation. Override per
+  # service with `timeout:` on its entry.
+  timeout: 600s
+
 # Applied to the `main` container of every service unless the service overrides them.
 # Explicit values are required: the namespace LimitRange defaults to 100Mi/100m,
 # which no LLM can start under.
@@ -77,6 +100,7 @@ networkpolicy:
 #         name: llm-example          # optional; defaults to the entry name
 #       replicas: 1
 #       annotations: {}              # merged over the chart defaults
+#       timeout: 600s                # per-service route timeout override
 #       # Free-form PodSpec overlay, merged over the preset by container name.
 #       # This is where GPUs, node pinning and vLLM env go.
 #       template:

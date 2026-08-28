@@ -1,0 +1,75 @@
+{{- range $name, $svc := .Values.llm_inference_services }}
+{{- $r := $.Values.routing }}
+{{/*
+  Ingress routing for one LLMInferenceService, at host
+  <service>.<namespace>.<domain>.
+
+  An InferenceService gets this from Knative: it creates a Route, and net-istio
+  reconciles a VirtualService onto the shared gateway. llmisvc creates only a
+  ClusterIP Service -- Knative is not in its scheme -- and `spec.router` is not usable
+  here, because the Gateway API CRDs are absent and the Inference Extension needs
+  Istio >= 1.27 while ml-serve runs 1.24.2. So the chart writes the VirtualService
+  that Knative would otherwise have written.
+
+  Nothing outside the cluster changes: the model hostname is only ever a `Host`
+  header and is never resolved, the gateway is `hosts: ['*']` with one certificate,
+  and `*.<namespace>.wikimedia.org` is already a SAN on
+  knative-serving-tls-certificate. So no Gateway, LVS, DNS or SAN work is needed.
+
+  The controller names the workload Service <name>-kserve-workload-svc and gives it the
+  container's own port, not 80, so the destination port is monitoring.port rather than a
+  second literal that could drift from the preset.
+
+  Istio merges every VirtualService bound to a gateway, and two claiming one host is
+  undefined. `<service>.<namespace>` is the InferenceService convention, so keep
+  llmisvc names distinct from InferenceService names in the same namespace.
+*/}}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" $ | nindent 4 }}
+spec:
+  gateways:
+    - {{ $r.gateway }}
+  hosts:
+    - {{ printf "%s.%s.%s" $name $.Release.Namespace $r.domain }}
+  http:
+    # rest-gateway's `liftwing_llm` openai rule rewrites the public path to
+    # /openai/v1/... and forwards it unchanged, but vLLM serves /v1/... . Strip the
+    # prefix here. vLLM's --root-path cannot do this: FastAPI's root_path only
+    # affects URL generation and requires the proxy to strip the prefix itself.
+    #
+    # Match /openai/v1/ rather than /openai/, so this mirrors rest-gateway's own
+    # scope. Rewriting /openai/ to / would forward the whole vLLM surface --
+    # /openai/metrics reaching /metrics, /openai/invocations reaching /invocations --
+    # to anything able to talk to the ingress directly. vLLM documents that
+    # endpoints outside /v1, /v2 and /inference are unauthenticated.
+    - name: openai
+      match:
+        - uri:
+            prefix: {{ printf "%s/v1/" (trimSuffix "/" $r.openaiPrefix) }}
+      rewrite:
+        uri: /v1/
+      timeout: {{ $svc.timeout | default $r.timeout }}
+      route:
+        - destination:
+            host: {{ printf "%s-kserve-workload-svc.%s.svc.cluster.local" $name $.Release.Namespace }}
+            port:
+              number: {{ $.Values.monitoring.port }}
+    # Callers that already speak vLLM's native paths: in-cluster clients, and any
+    # future rest-gateway rule that does not add the /openai prefix.
+    - name: native
+      match:
+        - uri:
+            prefix: /v1/
+      timeout: {{ $svc.timeout | default $r.timeout }}
+      route:
+        - destination:
+            host: {{ printf "%s-kserve-workload-svc.%s.svc.cluster.local" $name $.Release.Namespace }}
+            port:
+              number: {{ $.Values.monitoring.port }}
+{{- end }}

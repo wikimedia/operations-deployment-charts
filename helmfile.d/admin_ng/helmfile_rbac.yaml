@@ -164,6 +164,19 @@ releases:
                 - "llminferenceservices"
                 - "llminferenceserviceconfigs"
               verbs: ["*"]
+            {{- if hasKey $.Environment.Values "istio_gateways" }}
+            ## Ingress routing for LLMInferenceService. Knative writes the
+            ## VirtualService for an InferenceService, but llmisvc has no Knative
+            ## integration, so charts/kserve-llm-inference writes it instead.
+            ##
+            ## Only "virtualservices", unlike the sibling deploy-* roles which also
+            ## grant gateways and destinationrules: no kserve chart creates either,
+            ## and a "gateways" grant would let any of these deploy users bind
+            ## arbitrary hosts and ports on the shared ingress.
+            - apiGroups: ["networking.istio.io"]
+              resources: ["virtualservices"]
+              verbs: ["*"]
+            {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["*"]

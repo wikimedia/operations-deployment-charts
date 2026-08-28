@@ -96,3 +96,48 @@ No `spec.worker` (multi-node): the upstream worker presets add `IPC_LOCK`, `SYS_
 `NET_RAW`, which PodSecurity `restricted` forbids.
 
 No `spec.scaling`: it needs WVA and KEDA, neither of which is deployed.
+
+## Ingress routing
+
+Every LLMInferenceService is reachable at `<service>.<namespace>.wikimedia.org`, the
+same way an InferenceService is. There is no opt-in.
+
+An InferenceService gets this from Knative: it creates a Route, and net-istio
+reconciles a VirtualService onto the shared gateway. llmisvc creates only a ClusterIP
+Service, so `templates/virtualservice.yaml` writes the VirtualService that Knative
+would otherwise have written, binding the workload Service to
+`knative-serving/knative-ingress-gateway`.
+
+Nothing outside the cluster has to change. The model hostname is only ever a `Host`
+header and is never resolved; the gateway is `hosts: ['*']` with a single certificate;
+and `*.<namespace>.wikimedia.org` is already a SAN on `knative-serving-tls-certificate`.
+So there is no Gateway, LVS, DNS or SAN work, and no Gateway API CRDs are needed.
+
+`spec.router` stays unset. The Gateway API CRDs are not installed on ml-serve, and the
+Inference Extension needs Istio >= 1.27 while ml-serve runs 1.24.2. Never set
+`spec.router.scheduler`: it requires a GIE v1 `InferencePool` with no CRD guard.
+
+### Paths
+
+rest-gateway's `liftwing_llm` route group already matches any service named `llm-*` and
+forwards to `<service>.llm.wikimedia.org`, so naming a service `llm-*` in namespace
+`llm` also picks up the `LiftWingLLM` rate limit (T426749) with no rest-gateway change.
+
+Its `openai` rule forwards `/openai/v1/...` unchanged, but vLLM serves `/v1/...`, so the
+VirtualService rewrites `/openai/v1/` to `/v1/`. vLLM's `--root-path` cannot do this:
+FastAPI's `root_path` only affects URL generation and requires the proxy to strip the
+prefix.
+
+The match is `/openai/v1/`, not `/openai/`. Rewriting `/openai/` to `/` would forward
+vLLM's entire surface -- `/openai/metrics` reaching `/metrics`, `/openai/invocations`
+reaching `/invocations` -- to any caller able to reach the ingress directly. vLLM
+documents that endpoints outside `/v1`, `/v2` and `/inference` are unauthenticated.
+
+Its `predict` rule (`/v1/models/<name>:predict`) does not apply. That is the KServe V1
+protocol, implemented by the predictor images, not by vLLM. llmisvc is OpenAI-only.
+
+### Host collisions
+
+Istio merges every VirtualService bound to a gateway, and two claiming the same host is
+undefined. `<service>.<namespace>` matches the InferenceService convention, so keep
+llmisvc names distinct from InferenceService names in the same namespace.
