@@ -415,7 +415,7 @@ task :refresh_fixtures do
       if x['tcp_keepalive']
         upstream['tcp_keepalive'] = x['tcp_keepalive']
       end
-      x['upstream'] = upstream_mock
+      x['upstream'] = upstream
 
       if x['split']
         x['split']['address'] = x['split']['upstream']
