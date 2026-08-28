@@ -400,20 +400,21 @@ task :refresh_fixtures do
       'port' => 443,
       'encryption' => true,
     }
-    # List of keys to keep in the listeners definition, assembles what we do in
+    # NOTE: This should be kept in sync with services_proxy data written by
     # modules/profile/manifests/kubernetes/deployment_server/global_config.pp
+    # in puppet. There are two parts to this:
+    # * List of keys in the listener definitions to copy into the service_proxy
+    #   data items.
     listener_keys_to_keep = %w(port http_host timeout retry_policy xfp upstream split)
+    # * List of keys in the listener definitions to copy into the upstream data.
+    upstream_keys_from_listener = %w(idle_timeout keepalive sets_sni sni_rewrites_host_header tcp_keepalive)
     data = hiera['profile::services_proxy::envoy::listeners'].map do |x|
       name = x['name']
       upstream = upstream_mock.dup
-      if x['sets_sni'] == true
-        upstream['sets_sni'] = true
-      end
-      if x['keepalive']
-        upstream['keepalive'] = x['keepalive']
-      end
-      if x['tcp_keepalive']
-        upstream['tcp_keepalive'] = x['tcp_keepalive']
+      upstream_keys_from_listener.each do |k|
+        if x.key?(k)
+          upstream[k] = x[k]
+        end
       end
       x['upstream'] = upstream
 
