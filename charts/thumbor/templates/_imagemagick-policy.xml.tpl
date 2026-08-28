@@ -95,12 +95,5 @@
   <policy domain="coder" rights="none" pattern="EPS" />
   <policy domain="coder" rights="none" pattern="PDF" />
   <policy domain="coder" rights="none" pattern="XPS" />
-  <!-- Flip the conditions, disable everything unless allowed -->
-  <policy domain="delegate" rights="none" pattern="*" />
-  <policy domain="module" rights="none" pattern="*" />
-  <policy domain="coder" rights="none" pattern="*" />
-  <!-- Keep both JPG and JPEG, IM in our production rely on file extension to detect coder -->
-  <policy domain="module" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,WEBP,TIFF,TIF,BMP,XCF}" />
-  <policy domain="coder" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,WEBP,TIFF,TIF,BMP,XCF}" />
 </policymap>
 {{ end }}
