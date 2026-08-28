@@ -275,17 +275,16 @@ namespaces:
     tlsHostnames:
     - matomo
     tlsExtraSANs:
-    - wikimediafoundation.org
-    - m.wikimediafoundation.org
-    - www.wikimediafoundation.org
+    - piwik.wikimedia.org
+    - matomo.wikimedia.org
   matomo-next:
     tlsHostnames:
     - matomo
     - matomo-next
     tlsExtraSANs:
-    - wikimediafoundation.org
-    - m.wikimediafoundation.org
-    - www.wikimediafoundation.org
+    - piwik.wikimedia.org
+    - matomo.wikimedia.org
+    - matomo-next.wikimedia.org
   mediawiki-dumps-legacy:
     enableJobSidecarController: true
     deployClusterRole: deploy-mediawiki-dumps-legacy
