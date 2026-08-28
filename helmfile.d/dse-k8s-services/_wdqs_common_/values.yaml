@@ -12,7 +12,7 @@ qlever:
   config:
     public:
       QLEVER_QUERY_TIMEOUT: 300s
-      QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics
+      QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics --set-runtime-parameter service-max-redirects=3
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
   # set per-release so each dataset fits the wdqs namespace quota
   requests: {}
