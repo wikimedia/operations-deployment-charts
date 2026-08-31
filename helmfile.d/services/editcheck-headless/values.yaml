@@ -1,0 +1,115 @@
+# Three ports with different jobs. 3000 serves the probes, and /check and
+# /config over `kubectl port-forward`. 50051 serves the gRPC traffic for the
+# Linked Artifacts Cache. 9102 serves Prometheus. Only the mesh TLS port is
+# exposed, so the HTTP port gets no Service.
+
+chartName: editcheck-headless
+
+app:
+  image: repos/mediawiki/services/editcheck-headless
+  version: 2026-08-26-231446-production
+  port: 3000
+  metricsPort: 9102
+  # One browser for each pinned wiki, plus one shared browser for all other
+  # wikis. That is three here. A session runs one check at a time, so the
+  # browser count bounds concurrency, not the cores.
+  #
+  # These figures are a guess. The pilot exists to measure them (T432286).
+  # Read editcheck_headless_browser_rss_bytes. The memory request stays below
+  # the limit, so that the pilot can see the browsers go above it.
+  requests:
+    cpu: 2
+    memory: 2Gi
+  limits:
+    cpu: 4
+    memory: 3Gi
+  liveness_probe:
+    # Does not look at the browsers. Only a wedged event loop needs a restart.
+    # Browser health belongs to the readiness probe.
+    httpGet:
+      path: /healthz
+      port: 3000
+    # Helm merges maps. Without this, the chart default tcpSocket handler
+    # stays, and a probe with two handlers is invalid.
+    tcpSocket: null
+  readiness_probe:
+    # 503 while a started session has a dead browser. The service relaunches a
+    # dead browser without help.
+    httpGet:
+      path: /readyz
+      port: 3000
+
+service:
+  deployment: production
+  # Inert while the mesh is on. These record the container port mapping.
+  port:
+    name: http
+    targetPort: 3000
+    port: 3000
+    nodePort: null
+
+config:
+  public:
+    # Wikis that get a dedicated, pre-warmed session. All other wikis share one
+    # on-demand session and serialise behind it. A name that the sitematrix
+    # cannot resolve stops the service at startup.
+    MW_WIKIS: testwiki,enwiki
+
+# Two pods, so one crash does not stop the service. Each pod warms its own
+# browsers, so report the per-pod figures.
+resources:
+  replicas: 2
+
+monitoring:
+  enabled: true
+  # The pod declares three container ports. Without this, prometheus makes a
+  # target for each one, and only 9102 answers. This keeps the ports whose name
+  # ends in "-metrics", which app.generic gives to metricsPort alone.
+  named_ports: true
+
+# We want things outside of wikikube to be able to reach the service.
+ingress:
+  enabled: true
+
+mesh:
+  enabled: true
+  public_port: 4693
+  # Envoy forwards to the gRPC port, not to app.port. hoarde's grpc lambda
+  # speaks plaintext to its own sidecar, so the TLS hop is envoy to envoy.
+  upstream_local_port: 50051
+  # A check drives a real browser. The service's own --timeout-ms is 90s, so
+  # keep this above it.
+  upstream_timeout: "180.0s"
+  # The chart default is 200, which logs every request.
+  local_access_log_min_code: "500"
+  telemetry:
+    enabled: true
+    port: 9361
+
+# The browser loads real wiki pages from the public edge, as proton does. It
+# needs no upload-lb, because it blocks images, stylesheets, fonts and media.
+# The sitematrix gives https base URLs only.
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+      - cidr: 208.80.153.224/32 # text-lb.codfw
+        ports:
+          - protocol: tcp
+            port: 443
+      - cidr: 208.80.154.224/32 # text-lb.eqiad
+        ports:
+          - protocol: tcp
+            port: 443
+      - cidr: 103.102.166.224/32 # text-lb.eqsin
+        ports:
+          - protocol: tcp
+            port: 443
+      - cidr: 198.35.26.96/32 # text-lb.ulsfo
+        ports:
+          - protocol: tcp
+            port: 443
+      - cidr: 91.198.174.192/32 # text-lb.esams
+        ports:
+          - protocol: tcp
+            port: 443

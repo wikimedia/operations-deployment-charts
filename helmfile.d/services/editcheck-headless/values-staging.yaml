@@ -1,0 +1,11 @@
+resources:
+  replicas: 1
+
+# Ask for less CPU, per proton's values-staging.
+app:
+  requests:
+    cpu: 1
+
+ingress:
+  enabled: true
+  staging: true
