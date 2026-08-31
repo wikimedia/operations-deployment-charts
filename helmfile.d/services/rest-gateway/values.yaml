@@ -317,6 +317,42 @@ main_app:
           "approved-bot": # community approved bot, based on jwt auth
             HOUR: 9999999
 
+      # Cost-based limit for WDQS v2 (QLever), shared by the query-next
+      # and query-scholarly-next routes. Duration-weighted (measure: time) so a
+      # few heavy queries drain as much budget as many light ones, with an
+      # upfront_cost floor so trivial queries still cost something.
+      "WDQS":
+        shadow_mode: true
+        measure: time
+        upfront_cost: 100
+        limits: # TODO(gmodena): these values are placeholders, copied from ParseCost,
+                # that will need to be updated after we observe enough
+                # traffic in shadow mode.
+          "*": # catch-all limits
+            MINUTE: 600
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 600
+          "unauthed-bot": # no auth, but good User-Agent
+            MINUTE: 12000
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 12000
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 24000
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            MINUTE: 240000 # needs high limit until we can distinguish clients
+          "authed-user": # valid JWT
+            MINUTE: 12000
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 120000
+          "highlimits-user": # valid WT and member of specific global groups
+            MINUTE: 9999999
+          "known-network": # no auth, network under our control (WMCS, WME)
+            MINUTE: 9999999
+          "approved-bot": # community approved bot, based on jwt auth
+            MINUTE: 9999999
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 9999999
+
   domains:
     - rest-gateway.discovery.wmnet
     - rest-gateway.discovery.wmnet:*
@@ -1207,6 +1243,38 @@ main_app:
           out: '/\1'
           to: 'liftwing-openapi-server.discovery.wmnet'
 
+    # WDQS v2 (QLever) public SPARQL endpoints. Each graph is a distinct release,
+    # selected by Host: query-next.wikidata.org -> main graph,
+    # query-scholarly-next.wikidata.org -> scholarly articles graph.
+    # TODO(gmodena): these endpoints will redirect to query.wikidata.org and
+    # query-scholarly.wikidat.org in 2027, once Blazegraph is fully deprecated.
+    - name: wdqs-query-next
+      domain: query-next.wikidata.org
+      cluster: query-next
+      timeout: 60s              # match the wdqs-proxy downstream SPARQL read timeout
+      csp_enabled: false
+      api_cors_enabled: true     # SPARQL can be called cross-origin from browsers (Query UI)
+      request_headers_to_remove: ["cookie"]
+      response_headers_to_remove: ["set-cookie"]
+      rate_limit_policies: [ "WDQS", "BYPASS" ]
+      urls:
+        - name: sparql
+          in: '/+sparql(.*)'
+          out: '/sparql\1'
+    - name: wdqs-query-scholarly-next
+      domain: query-scholarly-next.wikidata.org
+      cluster: query-scholarly-next
+      timeout: 60s
+      csp_enabled: false
+      api_cors_enabled: true
+      request_headers_to_remove: ["cookie"]
+      response_headers_to_remove: ["set-cookie"]
+      rate_limit_policies: [ "WDQS", "BYPASS" ]
+      urls:
+        - name: sparql
+          in: '/+sparql(.*)'
+          out: '/sparql\1'
+
   discovery_endpoints:
     # Remember to add the corresponding svc.$dc.wmnet entry in egress
     mobileapps:
@@ -1284,6 +1352,20 @@ main_app:
       port: 30443
       ingress: true
       internal_host: liftwing-studio.discovery.wmnet
+    query-next:
+      tls: true
+      port: 30443
+      timeout: 60s
+      # TODO(gmodena): interanl/external routes currently point to the same host.
+      # Needs update once deployment is finalized.
+      internal_host: wdqs2-main-external.discovery.wmnet
+    query-scholarly-next:
+      tls: true
+      port: 30443
+      timeout: 60s
+      # TODO(gmodena): internal/external routes currently point to the same host.
+      # Needs update once deployment is finalized.
+      internal_host: wdqs2-scholarly-external.discovery.wmnet
     mwdebug:
       tls: true
       port: 4444
