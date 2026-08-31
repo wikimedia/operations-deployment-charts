@@ -1,11 +1,11 @@
 Thank you for installing {{ template "base.name.chart" . }}.
 
-Your release is named {{ template "base.name.release" . }}.
+Your release is named {{ .Release.Name }}.
 
 To learn more about the release, try:
-
-  $ helm status {{ template "base.name.release" . }}
-  $ helm get {{ template "base.name.release" . }}
+  $ helm status {{ .Release.Name }}
+You may also inspect various details of the release, see the helm get subcommands for more information:
+  $ helm get {{ .Release.Name }}
 
 {{- if eq .Values.service.deployment "minikube" }}
 You are using minikube, which means it's really easy to access your service. Run the following
