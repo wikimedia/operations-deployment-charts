@@ -100,7 +100,7 @@
   <policy domain="module" rights="none" pattern="*" />
   <policy domain="coder" rights="none" pattern="*" />
   <!-- Keep both JPG and JPEG, IM in our production rely on file extension to detect coder -->
-  <policy domain="module" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,WEBP,TIFF,TIF,BMP,XCF}" />
-  <policy domain="coder" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,WEBP,TIFF,TIF,BMP,XCF}" />
+  <policy domain="module" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,PNG32,WEBP,TIFF,TIF,BMP,XCF,PPM}" />
+  <policy domain="coder" rights="read|write" pattern="{GIF,JPG,JPEG,PNG,PNG32,WEBP,TIFF,TIF,BMP,XCF,PPM}" />
 </policymap>
 {{ end }}
