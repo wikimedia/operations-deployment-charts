@@ -1,5 +1,5 @@
 main_app:
-  version: 2026-07-21-105254-production
+  version: 2026-08-30-180323-production
 
 resources:
   replicas: 2
@@ -60,6 +60,7 @@ mcrouter:
 config:
   public:
     URLLIB3_DISABLE_WARNINGS: True  # T292025
+    TOGGLE_EVOLVED_BANNER: True  # T434556
     REQUIRE_HTTPS: True
     DB_HOST: m5-master.eqiad.wmnet
     CACHE_BACKEND: django_prometheus.cache.backends.memcached.MemcachedCache
