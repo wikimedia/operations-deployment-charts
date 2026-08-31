@@ -3,9 +3,14 @@ resources:
 # to raise the number of canary replicas as well.
 # We aim for ~3% of the deployment for canaries, rounding up.
   # March 2026 sizing for *multi-DC* serving:
-  replicas: 352
-  # March 2026 Switchover sizing for *single-DC* serving:
-  #replicas: 600
+  #replicas: 352
+  # September 2026 Switchover sizing for *single-DC* serving:
+  # ./estimate_mw_replicas.py \
+  #   --query-start "2026-08-24T00:00Z" \
+  #   --query-end "2026-08-31T00:00Z" \
+  #   --target-utilization 0.75 --target-quantile 0.95 \
+  #   --is-global
+  replicas: 600
 
 mesh:
   image_version: 1.39.0-1
