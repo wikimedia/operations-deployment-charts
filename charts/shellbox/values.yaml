@@ -124,3 +124,13 @@ php:
 
 app:
   port: 8080
+
+# gVisor support. If enabled, the deployment will use gVisor as the runtime class for the pod.
+gVisor:
+  enabled: false
+  # The runtime class name to use for gVisor. If not set, defaults to "gvisor".
+  # You can see the supported runtime class names in the cluster by running `kubectl get runtimeclass`,
+  # or check helmfile.d/admin_ng/helmfile_runtime_classes.yaml for the runtime class names that are
+  # supported in production, and operations/puppet profile::containerd for the definitions of how such
+  # runtime classes are configured
+  runtime_class_name: ""

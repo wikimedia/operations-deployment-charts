@@ -27,7 +27,16 @@ spec:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
         checksum/apache: {{ include (print $.Template.BasePath "/_configmaps.tpl") . | sha256sum }}
+        {{- if and .Values.gVisor.enabled (eq .Values.php.fcgi_mode "FCGI_UNIX" ) }}
+        # See  https://gvisor.dev/docs/user_guide/containerd/configuration/#Enabling%20inotify%20for%20Shared%20Volumes
+        dev.gvisor.spec.mount.shared-socket.share: "pod"
+        dev.gvisor.spec.mount.shared-socket.type: "tmpfs"
+        dev.gvisor.spec.mount.shared-socket.options: "rw,rprivate"
+        {{- end }}
     spec:
+      {{- if .Values.gVisor.enabled }}
+      runtimeClassName: {{ .Values.gVisor.runtime_class_name | default "gvisor" }}
+      {{- end }}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
