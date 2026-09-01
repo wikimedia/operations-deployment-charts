@@ -1,9 +1,8 @@
 main_app:
   failure_throttling_memcache: "10.192.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local"
   swift:
-    # swift-codfw service proxy - enable when mesh is
-    #host: 'http://localhost:6201'
-    host: 'https://ms-fe.svc.codfw.wmnet'
+    # swift-codfw service proxy, which talks TLS to ms-fe.svc.codfw.wmnet
+    host: 'http://localhost:6201'
   poolcounter:
     enabled: true
     server: "poolcounter2005.codfw.wmnet"

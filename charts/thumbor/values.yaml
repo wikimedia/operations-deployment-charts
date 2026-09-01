@@ -91,7 +91,8 @@ main_app:
   # Much of this can be moved to helmfile.d when it exists for
   # thumbor, but much of this will be unchanged
   swift:
-    # A URL for the swift host used for storage
+    # A URL for the swift host used for storage - in prod we use the
+    # service mesh listener for swift.
     host: "http://localhost"
     account: "mw"
     user: "thumbor"
@@ -303,6 +304,8 @@ cache:
           cpu: 500m
           memory: 200Mi
 
+discovery: ~
+services_proxy: ~
 
 networkpolicy:
   egress:

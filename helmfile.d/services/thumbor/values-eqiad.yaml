@@ -1,9 +1,8 @@
 main_app:
   failure_throttling_memcache: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
   swift:
-    # swift-eqiad service proxy - enable when mesh is
-    #host: 'http://localhost:6101'
-    host: 'https://ms-fe.svc.eqiad.wmnet'
+    # swift-eqiad service proxy, which talks TLS to ms-fe.svc.eqiad.wmnet
+    host: 'http://localhost:6101'
   poolcounter:
     enabled: true
     server: "poolcounter1006.eqiad.wmnet"

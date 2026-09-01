@@ -4,9 +4,13 @@ resources:
 monitoring:
   enabled: true
 
-# enable once TLS is ready
 mesh:
-  enabled: false
+  # The sidecar is used for egress only for now: we reach swift through its
+  # service proxy listeners rather than talking to ms-fe directly.
+  # Setting public_port to null keeps inbound traffic on the plain haproxy
+  # nodePort - enable TLS termination here once TLS is ready.
+  enabled: true
+  public_port: null
 
 strategy:
   maxSurge: 0

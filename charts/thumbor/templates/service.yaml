@@ -1,7 +1,11 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
 
 {{ include "mesh.service" . }}
-{{ if not .Values.mesh.enabled }}
+{{/*
+If we haven't set a public port, we're using the mesh for egress
+only so we still need to set up a service.
+*/}}
+{{ if not (and .Values.mesh.enabled .Values.mesh.public_port) }}
 ---
 apiVersion: v1
 kind: Service

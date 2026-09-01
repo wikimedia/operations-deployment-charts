@@ -7,8 +7,8 @@ strategy:
 
 main_app:
   swift:
-    # swift-eqiad service proxy
-    host: 'https://swift.discovery.wmnet'
+    # swift-eqiad service proxy, which talks TLS to ms-fe.svc.eqiad.wmnet
+    host: 'http://localhost:6101'
   poolcounter:
     enabled: true
     server: "poolcounter1006.eqiad.wmnet"
@@ -19,9 +19,6 @@ main_app:
     enabled: "True"
     timeout: 59
     kill_after: 5
-
-mesh:
-  enabled: false
 
 cache:
   mcrouter:
