@@ -2079,6 +2079,10 @@ config:
             title: Is pageview
             formula: $is_pageview
 
+          - name: is_thumb_generated
+            title: X-Analytics is thumb generated
+            formula: $is_thumb_generated
+
           - name: isp
             title: ISP
             formula: $isp
@@ -2204,7 +2208,6 @@ config:
             title: X-Is-Browser score (STR)
             # X-I-B is a string in Druid
             formula: $x_is_browser
-
 
           - name: x_trusted_request
             title: X-Trusted-Request
