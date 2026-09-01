@@ -1,0 +1,67 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-probes-host-probes-containers
+  annotations:
+    kyverno_policy_name: disallow-probes-host
+    kyverno_rule_name: host-probes-containers
+    psa_profile: baseline
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      variables.allContainers.all(container,
+        [
+          container.?livenessProbe.orValue({}),
+      container.?readinessProbe.orValue({}),
+          container.?startupProbe.orValue({}),
+      container.?lifecycle.?postStart.orValue({}),
+          container.?lifecycle.?preStop.orValue({})
+      ].all(probe,
+          probe.?httpGet.?host.orValue("") == "" &&
+      probe.?tcpSocket.?host.orValue("") == ""
+        )
+      )
+    message: >-
+      The `host` field in probes and lifecycle hooks is disallowed. The fields spec.containers[*].livenessProbe.httpGet.host,
+      spec.containers[*].readinessProbe.httpGet.host, spec.containers[*].startupProbe.httpGet.host,
+      spec.containers[*].livenessProbe.tcpSocket.host, spec.containers[*].readinessProbe.tcpSocket.host,
+      spec.containers[*].startupProbe.tcpSocket.host, spec.containers[*].lifecycle.postStart.tcpSocket.host,
+      spec.containers[*].lifecycle.preStop.tcpSocket.host, spec.containers[*].lifecycle.postStart.httpGet.host,
+      spec.containers[*].lifecycle.preStop.httpGet.host, spec.initContainers[*].livenessProbe.httpGet.host,
+      spec.initContainers[*].readinessProbe.httpGet.host, spec.initContainers[*].startupProbe.httpGet.host,
+      spec.initContainers[*].livenessProbe.tcpSocket.host, spec.initContainers[*].readinessProbe.tcpSocket.host,
+      spec.initContainers[*].startupProbe.tcpSocket.host, spec.initContainers[*].lifecycle.postStart.tcpSocket.host,
+      spec.initContainers[*].lifecycle.preStop.tcpSocket.host, spec.initContainers[*].lifecycle.postStart.httpGet.host,
+      spec.initContainers[*].lifecycle.preStop.httpGet.host must either be undefined
+      or set to an empty string.
+  variables:
+  - name: allContainers
+    expression: |-
+      object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      [])
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-probes-host-probes-containers
+spec:
+  policyName: disallow-probes-host-probes-containers
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/profile
+        operator: In
+        values:
+        - baseline
+        - restricted
+      - key: pod-security.wmf.org/disallow-probes-host-probes-containers
+        operator: NotIn
+        values:
+        - exclude
+  validationActions: [Deny]
