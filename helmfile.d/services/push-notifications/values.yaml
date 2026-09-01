@@ -5,10 +5,16 @@ helm_scaffold_version: 0.2
 main_app:
   version: 2025-06-20-153128-publish # need to switch to -$environment
   mwapi_uri: http://localhost:6500/w/api.php
+  proxy: http://urldownloader.discovery.wmnet:8080
   no_proxy_list:
     - localhost
   limits:
     memory: 750Mi
+config:
+  public:
+    HTTP_PROXY: http://urldownloader.discovery.wmnet:8080
+    HTTPS_PROXY: http://urldownloader.discovery.wmnet:8080
+    NO_PROXY: localhost
 monitoring:
   enabled: true
 resources:
