@@ -50,4 +50,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "restrict-seccomp-check-seccomp" | default (list "Deny") | toYaml | nindent 4 }}

@@ -47,4 +47,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "restrict-sysctls-check-sysctls" | default (list "Deny") | toYaml | nindent 4 }}

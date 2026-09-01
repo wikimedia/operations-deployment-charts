@@ -1,10 +1,10 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: disallow-probes-host-probes-containers
+  name: disallow-probes-host
   annotations:
     kyverno_policy_name: disallow-probes-host
-    kyverno_rule_name: host-probes-containers
+    kyverno_rule_name: probes-host
     psa_profile: baseline
 spec:
   matchConstraints:
@@ -49,9 +49,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: disallow-probes-host-probes-containers
+  name: disallow-probes-host
 spec:
-  policyName: disallow-probes-host-probes-containers
+  policyName: disallow-probes-host
   matchResources:
     namespaceSelector:
       matchExpressions:
@@ -60,8 +60,8 @@ spec:
         values:
         - baseline
         - restricted
-      - key: pod-security.wmf.org/disallow-probes-host-probes-containers
+      - key: pod-security.wmf.org/disallow-probes-host
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "disallow-probes-host" | default (list "Deny") | toYaml | nindent 4 }}

@@ -57,4 +57,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "disallow-capabilities-strict-require-drop-all" | default (list "Deny") | toYaml | nindent 4 }}

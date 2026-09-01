@@ -8,10 +8,10 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: step-01_prepare_host-probes-containers
+  - name: step-01_prepare_probes-host
     try:
     - apply:
-        file: ../disallow-probes-host-probes-containers.yaml
+        file: ../disallow-probes-host.yaml
   - name: step-02
     try:
     - apply:

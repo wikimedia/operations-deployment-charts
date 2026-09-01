@@ -48,4 +48,4 @@ spec:
         operator: In
         values:
         - include
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "allow-hostpath-mw-parsoid-testing" | default (list "Deny") | toYaml | nindent 4 }}

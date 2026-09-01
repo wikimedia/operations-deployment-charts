@@ -1,3 +1,8 @@
 # Default values for validating-admission-policies.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+
+# In validatingActions you may define overrides for the default
+# validatingActions field of a policy (which should be 'Deny').
+# The key is the name of the policy, valid values are
+# 'Deny', 'Warn', and 'Audit' (where 'Deny' and 'Warn' are mutually exclusive).
+validatingActions:
+  disallow-probes-host: [Warn, Audit]

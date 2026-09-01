@@ -46,4 +46,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "disallow-host-ports-range-host-port-range" | default (list "Deny") | toYaml | nindent 4 }}

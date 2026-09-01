@@ -50,4 +50,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: [Deny]
+  validationActions: {{ get (default dict .Values.validatingActions) "disallow-selinux-user-role" | default (list "Deny") | toYaml | nindent 4 }}
