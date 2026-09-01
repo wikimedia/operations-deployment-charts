@@ -18,13 +18,13 @@ config:
       host: https://feeds.spur.us
       extra_dejson:
         proxies:
-          https: http://url-downloader.eqiad.wikimedia.org:8080
+          https: http://urldownloader.discovery.wmnet:8080
     cloudflare_radar:
       host: https://api.cloudflare.com/client/v4
       conn_type: http
       extra_dejson:
         proxies:
-          https: http://url-downloader.eqiad.wikimedia.org:8080
+          https: http://urldownloader.discovery.wmnet:8080
   extra_secrets:
     datahub_ingest_superset.yaml: |
       source:
