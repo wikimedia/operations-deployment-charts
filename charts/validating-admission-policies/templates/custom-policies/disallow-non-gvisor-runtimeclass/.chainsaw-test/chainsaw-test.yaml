@@ -1,0 +1,26 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-non-gvisor-runtimeclass
+spec:
+  namespaceTemplate:
+    metadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.wmf.org/disallow-non-gvisor-runtimeclass: include
+  steps:
+  - name: prepare_non-gvisor-runtimeclass
+    try:
+    - apply:
+        file: runtimeclass.yaml
+    - apply:
+        file: ../disallow-non-gvisor-runtimeclass.yaml
+  - name: test
+    try:
+    - create:
+        file: pod-good.yaml
+    - create:
+        file: pod-bad.yaml
+        expect:
+        - check:
+            ($error != null): true

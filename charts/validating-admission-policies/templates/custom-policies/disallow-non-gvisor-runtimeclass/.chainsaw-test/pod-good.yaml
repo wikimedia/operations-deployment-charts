@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  runtimeClassName: gvisor
+  containers:
+  - name: container01
+    image: busybox:1.35
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  runtimeClassName: gvisor-testing
+  containers:
+  - name: container01
+    image: busybox:1.35

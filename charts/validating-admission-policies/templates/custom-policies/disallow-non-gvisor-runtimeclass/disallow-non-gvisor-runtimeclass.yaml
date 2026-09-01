@@ -1,0 +1,33 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: disallow-non-gvisor-runtimeclass
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ['']
+      apiVersions: ['*']
+      operations: [CREATE, UPDATE]
+      resources: [pods]
+  validations:
+  - expression: |-
+      has(object.spec.runtimeClassName) &&
+      object.spec.runtimeClassName.startsWith('gvisor')
+    message: >-
+      Pods in this namespace must run with a gVisor RuntimeClass (spec.runtimeClassName
+      starting with "gvisor").
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: disallow-non-gvisor-runtimeclass
+spec:
+  policyName: disallow-non-gvisor-runtimeclass
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+      - key: pod-security.wmf.org/disallow-non-gvisor-runtimeclass
+        operator: In
+        values:
+        - include
+  validationActions: {{ get (default dict .Values.validationActions) "disallow-non-gvisor-runtimeclass" | default (list "Deny") | toYaml | nindent 4 }}
