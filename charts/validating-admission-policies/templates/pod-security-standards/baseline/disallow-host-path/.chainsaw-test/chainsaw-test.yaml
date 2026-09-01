@@ -8,11 +8,11 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_host-path
+  - name: step-01_prepare_host-path
     try:
     - apply:
         file: ../disallow-host-path.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml

@@ -13,6 +13,11 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainers
+    expression: |-
+      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
   validations:
   - expression: |-
       variables.allContainers.all(container,
@@ -20,11 +25,6 @@ spec:
     message: >-
       Privileged mode is disallowed. All containers must set the securityContext.privileged
       field to `false` or unset the field.
-  variables:
-  - name: allContainers
-    expression: |-
-      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
-      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

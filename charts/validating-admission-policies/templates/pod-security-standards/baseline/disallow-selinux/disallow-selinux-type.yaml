@@ -13,6 +13,14 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainerTypes
+    expression: |-
+      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
+  - name: seLinuxTypes
+    expression: |-
+      ['container_t', 'container_init_t', 'container_kvm_t']
   validations:
   - expression: |-
       (!has(object.spec.securityContext) ||
@@ -29,14 +37,6 @@ spec:
       Setting the SELinux type is restricted. The field securityContext.seLinuxOptions.type
       must either be unset or set to one of the allowed values (container_t, container_init_t,
       or container_kvm_t).
-  variables:
-  - name: allContainerTypes
-    expression: |-
-      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
-      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
-  - name: seLinuxTypes
-    expression: |-
-      ['container_t', 'container_init_t', 'container_kvm_t']
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

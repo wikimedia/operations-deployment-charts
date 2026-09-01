@@ -13,6 +13,11 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainers
+    expression: |-
+      object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      [])
   validations:
   - expression: |-
       variables.allContainers.all(container,
@@ -40,11 +45,6 @@ spec:
       spec.initContainers[*].lifecycle.preStop.tcpSocket.host, spec.initContainers[*].lifecycle.postStart.httpGet.host,
       spec.initContainers[*].lifecycle.preStop.httpGet.host must either be undefined
       or set to an empty string.
-  variables:
-  - name: allContainers
-    expression: |-
-      object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
-      [])
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

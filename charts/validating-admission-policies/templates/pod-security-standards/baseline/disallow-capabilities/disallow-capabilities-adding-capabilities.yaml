@@ -13,6 +13,15 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allowedCapabilities
+    expression: |-
+      ['AUDIT_WRITE', 'CHOWN', 'DAC_OVERRIDE', 'FOWNER', 'FSETID', 'KILL', 'MKNOD',
+      'NET_BIND_SERVICE', 'SETFCAP', 'SETGID', 'SETPCAP', 'SETUID', 'SYS_CHROOT']
+  - name: allContainers
+    expression: |-
+      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
   validations:
   - expression: |-
       variables.allContainers.all(container,
@@ -23,15 +32,6 @@ spec:
       Any capabilities added beyond the allowed list (AUDIT_WRITE, CHOWN, DAC_OVERRIDE,
       FOWNER, FSETID, KILL, MKNOD, NET_BIND_SERVICE, SETFCAP, SETGID, SETPCAP, SETUID,
       SYS_CHROOT) are disallowed.
-  variables:
-  - name: allowedCapabilities
-    expression: |-
-      ['AUDIT_WRITE', 'CHOWN', 'DAC_OVERRIDE', 'FOWNER', 'FSETID', 'KILL', 'MKNOD',
-      'NET_BIND_SERVICE', 'SETFCAP', 'SETGID', 'SETPCAP', 'SETUID', 'SYS_CHROOT']
-  - name: allContainers
-    expression: |-
-      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
-      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

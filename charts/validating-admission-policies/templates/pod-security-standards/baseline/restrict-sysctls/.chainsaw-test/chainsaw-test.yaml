@@ -8,11 +8,11 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_check-sysctls
+  - name: step-01_prepare_check-sysctls
     try:
     - apply:
         file: ../restrict-sysctls-check-sysctls.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml

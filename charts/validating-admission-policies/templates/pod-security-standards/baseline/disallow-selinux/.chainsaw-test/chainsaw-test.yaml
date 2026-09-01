@@ -8,15 +8,15 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_selinux-type
+  - name: step-01_prepare_selinux-type
     try:
     - apply:
         file: ../disallow-selinux-type.yaml
-  - name: prepare_selinux-user-role
+  - name: step-01_prepare_selinux-user-role
     try:
     - apply:
         file: ../disallow-selinux-user-role.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml

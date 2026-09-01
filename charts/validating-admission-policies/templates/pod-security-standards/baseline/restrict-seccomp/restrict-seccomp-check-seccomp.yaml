@@ -13,6 +13,14 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainers
+    expression: |-
+      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
+      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
+  - name: allowedProfileTypes
+    expression: |-
+      ['RuntimeDefault', 'Localhost']
   validations:
   - expression: |-
       (object.spec.?securityContext.?seccompProfile.?type.orValue('Localhost')  in
@@ -23,14 +31,6 @@ spec:
     message: >-
       Use of custom Seccomp profiles is disallowed. The field spec.containers[*].securityContext.seccompProfile.type
       must be unset or set to `RuntimeDefault` or `Localhost`.
-  variables:
-  - name: allContainers
-    expression: |-
-      (object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers :
-      []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))
-  - name: allowedProfileTypes
-    expression: |-
-      ['RuntimeDefault', 'Localhost']
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

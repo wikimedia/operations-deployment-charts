@@ -13,6 +13,11 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainers
+    expression: |-
+      object.spec.containers +  object.spec.?initContainers.orValue([]) +
+      object.spec.?ephemeralContainers.orValue([])
   validations:
   - expression: |-
       variables.allContainers.all(container,  container.?ports.orValue([]).all(port,
@@ -21,11 +26,6 @@ spec:
       Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort,
       spec.initContainers[*].ports[*].hostPort, and spec.ephemeralContainers[*].ports[*].hostPort
       must either be unset or set to `0`.
-  variables:
-  - name: allContainers
-    expression: |-
-      object.spec.containers +  object.spec.?initContainers.orValue([]) +
-      object.spec.?ephemeralContainers.orValue([])
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

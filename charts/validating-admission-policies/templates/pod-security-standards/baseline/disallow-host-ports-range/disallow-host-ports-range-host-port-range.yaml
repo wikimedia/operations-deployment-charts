@@ -13,6 +13,11 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allContainers
+    expression: |-
+      object.spec.containers +  object.spec.?initContainers.orValue([]) +
+      object.spec.?ephemeralContainers.orValue([])
   validations:
   - expression: |-
       variables.allContainers.all(container,  container.?ports.orValue([]).all(port, size(port)
@@ -22,11 +27,6 @@ spec:
       port.hostPort <= 6000) ))
     message: >-
       The only permitted hostPorts are in the range 5000-6000.
-  variables:
-  - name: allContainers
-    expression: |-
-      object.spec.containers +  object.spec.?initContainers.orValue([]) +
-      object.spec.?ephemeralContainers.orValue([])
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

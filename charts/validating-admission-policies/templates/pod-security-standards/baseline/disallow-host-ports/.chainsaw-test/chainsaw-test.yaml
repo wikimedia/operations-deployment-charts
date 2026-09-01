@@ -8,11 +8,11 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_host-ports-none
+  - name: step-01_prepare_host-ports-none
     try:
     - apply:
         file: ../disallow-host-ports-none.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml

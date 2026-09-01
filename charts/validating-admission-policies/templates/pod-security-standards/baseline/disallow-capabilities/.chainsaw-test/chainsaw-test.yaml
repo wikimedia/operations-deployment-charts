@@ -8,11 +8,11 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_adding-capabilities
+  - name: step-01_prepare_adding-capabilities
     try:
     - apply:
         file: ../disallow-capabilities-adding-capabilities.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml

@@ -13,6 +13,12 @@ spec:
       apiVersions: ['*']
       operations: [CREATE, UPDATE]
       resources: [pods]
+  variables:
+  - name: allowedSysctls
+    expression: |-
+      ['kernel.shm_rmid_forced', 'net.ipv4.ip_local_port_range',
+      'net.ipv4.ip_unprivileged_port_start', 'net.ipv4.tcp_syncookies',
+      'net.ipv4.ping_group_range']
   validations:
   - expression: |-
       object.spec.?securityContext.?sysctls.orValue([]).all(sysctl, sysctl == '' ||
@@ -22,12 +28,6 @@ spec:
       Setting additional sysctls above the allowed type is disallowed. The field spec.securityContext.sysctls
       must be unset or not use any other names than kernel.shm_rmid_forced, net.ipv4.ip_local_port_range,
       net.ipv4.ip_unprivileged_port_start, net.ipv4.tcp_syncookies and net.ipv4.ping_group_range.
-  variables:
-  - name: allowedSysctls
-    expression: |-
-      ['kernel.shm_rmid_forced', 'net.ipv4.ip_local_port_range',
-      'net.ipv4.ip_unprivileged_port_start', 'net.ipv4.tcp_syncookies',
-      'net.ipv4.ping_group_range']
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding

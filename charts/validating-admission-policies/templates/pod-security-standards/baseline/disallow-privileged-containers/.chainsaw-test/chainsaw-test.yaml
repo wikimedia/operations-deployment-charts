@@ -8,11 +8,11 @@ spec:
       labels:
         pod-security.wmf.org/profile: baseline
   steps:
-  - name: prepare_privileged-containers
+  - name: step-01_prepare_privileged-containers
     try:
     - apply:
         file: ../disallow-privileged-containers.yaml
-  - name: bad
+  - name: step-02
     try:
     - apply:
         file: pod-good.yaml
