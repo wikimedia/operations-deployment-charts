@@ -136,6 +136,11 @@ proxy:
       WDQS_PROXY_METRICS_PREFIX: wdqs.proxy.
       # disable all metrics reporting by default. Toggle desired binders in helmfiles.
       QUARKUS_MICROMETER_ENABLED: false
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: 8080
+    periodSeconds: 10
   requests:
     cpu: 100m
     memory: 512Mi
