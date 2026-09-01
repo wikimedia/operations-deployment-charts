@@ -99,8 +99,31 @@ No `spec.scaling`: it needs WVA and KEDA, neither of which is deployed.
 
 ## Ingress routing
 
-Every LLMInferenceService is reachable at `<service>.<namespace>.wikimedia.org`, the
+Every LLMInferenceService is reachable at `<service>.<namespace>.<routing.domain>`, the
 same way an InferenceService is. There is no opt-in.
+
+The routing inputs are values, not literals. `routing.gateway` takes any Istio Gateway as
+`<namespace>/<name>`, `routing.domain` is the hostname suffix, `routing.openaiPrefix` is
+the public path prefix stripped before the upstream, and `routing.timeout` is the route
+timeout, overridable per service. Their defaults are the LiftWing ones, and the rest of
+this section describes that deployment rather than a chart requirement.
+
+### Dependency on knative-serving
+
+The chart references two objects it does not create: the Istio Gateway named by
+`routing.gateway`, which the `knative-serving` chart creates, and the TLS secret that
+Gateway references (`knative-serving-tls-certificate`, from `helmfile_namespace_certs.yaml`).
+
+That is a reference to an object, not a runtime dependency on Knative Serving. The
+workload has no Knative involvement: the llmisvc controller does not register the Knative
+API in its scheme, and it creates no Route, Revision, queue-proxy or autoscaler. If
+Knative Serving were removed but the Gateway kept, this chart would work unchanged.
+Pointing `routing.gateway` at another Istio Gateway moves it.
+
+The dependency is not declared in `Chart.yaml`. Helm's `dependencies:` field is for
+subcharts and cannot express "this object must already exist". Helmfile does not order it
+either, because `knative-serving` is an admin_ng release while this chart is an
+ml-services release, and `needs:` does not span the two.
 
 An InferenceService gets this from Knative: it creates a Route, and net-istio
 reconciles a VirtualService onto the shared gateway. llmisvc creates only a ClusterIP
