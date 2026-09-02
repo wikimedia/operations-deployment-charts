@@ -28,6 +28,7 @@ config:
     WASMTIME_FUEL_LIMIT: "10000000000"
     WASMTIME_MEMORY_PAGES: "10000"
     MAX_REQUESTS_PER_ID: "100"
+    ORCHESTRATOR_CALLBACK_API_URI: 'http://localhost:6520/1/v1/callback/'
 
 # The evaluator's ingress config is peculiar since it is contained in
 # "wikifunctions", that by default is used to create the gateway hosts

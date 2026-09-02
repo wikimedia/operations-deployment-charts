@@ -56,17 +56,17 @@ config:
         "useWikidataMemcached": true,
         "wikidataMemcachedTTL": 86400,
         "useBatching": true,
-        "acceptCallbacks": false,
+        "acceptCallbacks": true,
         "evaluatorConfigs": [
           {
             "programmingLanguages": ["Z610"],
             "evaluatorUri": "http://localhost:6514/1/v1/evaluate/",
-            "useReentrance": false
+            "useReentrance": true
           },
           {
             "programmingLanguages": ["Z600"],
             "evaluatorUri": "http://localhost:6515/1/v1/evaluate/",
-            "useReentrance": false
+            "useReentrance": true
           }
         ]
       }
