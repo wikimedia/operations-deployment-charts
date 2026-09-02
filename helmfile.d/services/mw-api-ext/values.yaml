@@ -5,8 +5,13 @@ resources:
   # October 2025 sizing for *multi-DC* serving:
   # TODO: This needs tuned as rest-gateway routed traffic migrates from mw-api-int.
   #replicas: 260
-  # March 2026 Switchover sizing for *single-DC* serving:
-  replicas: 285
+  # September 2026 Switchover sizing for *single-DC* serving:
+  # ./estimate_mw_replicas.py \
+  #   --query-start "2026-08-24T00:00Z" \
+  #   --query-end "2026-08-31T00:00Z" \
+  #   --target-utilization 0.75 --target-quantile 0.95 \
+  #   --is-global
+  replicas: 320
 
 mesh:
   image_version: 1.39.0-1
