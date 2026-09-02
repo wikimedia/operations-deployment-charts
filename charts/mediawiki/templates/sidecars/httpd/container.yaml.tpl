@@ -7,6 +7,9 @@
 - name: {{ $release }}-httpd
   image: {{.Values.docker.registry }}/{{ .Values.mw.httpd.image_tag }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if $flags.native_sidecars}}
+  restartPolicy: Always
+  {{- end }}
   env:
   - name: FCGI_MODE
     value: {{ .Values.php.fcgi_mode }}

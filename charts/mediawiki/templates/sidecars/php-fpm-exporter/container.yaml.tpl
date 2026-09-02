@@ -5,6 +5,9 @@
 - name: {{ $release }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.php.exporter.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if $flags.native_sidecars }}
+  restartPolicy: Always
+  {{- end }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", "--addr=0.0.0.0:9118"]
   ports:
     - name: fpm-metrics
