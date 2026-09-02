@@ -35,6 +35,10 @@ php:
 mw:
   experimental:
     enabled: true
+  helpers:
+    feature_flags:
+      default:
+        native_sidecars: true
 # mw-experimetal runs only on specific nodes
 tolerations:
   - key: dedicated
