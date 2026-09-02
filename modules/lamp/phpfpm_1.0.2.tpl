@@ -64,6 +64,9 @@
 {{- define "lamp.phpfpm.exporter" }}
 - name: {{ template "base.name.release" . }}-php-fpm-exporter
   image: {{ .Values.docker.registry }}/prometheus-php-fpm-exporter:{{ .Values.lamp.phpfpm.exporter_version }}
+  {{- if .Values.lamp.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   args: ["--endpoint=http://127.0.0.1:9181/fpm-status", "--addr=0.0.0.0:9118"]
   ports:
     - name: fpm-metrics
