@@ -63,13 +63,21 @@ data:
         {{- end }}
         {{- $dimensionsByTitle := dict }}
         {{- $titles := list }}
+        {{- $timeDim := dict }}
         {{- range .dimensions }}
           {{- $_ := set $dimensionsByTitle .title . }}
+          {{- if eq .name "__time" }}
+          {{- $timeDim = . }}
+          {{- else }}
           {{- $titles = append $titles .title }}
+          {{- end }}
         {{- end }}
         {{- $sortedDimensions := list }}
         {{- range sortAlpha $titles }}
           {{- $sortedDimensions = append $sortedDimensions (get $dimensionsByTitle .) }}
+        {{- end }}
+        {{- if $timeDim }}
+        {{- $sortedDimensions = prepend $sortedDimensions $timeDim }}
         {{- end }}
         {{- $_ := set $datacube "dimensions" $sortedDimensions }}
         {{- $datacubes = append $datacubes $datacube }}
