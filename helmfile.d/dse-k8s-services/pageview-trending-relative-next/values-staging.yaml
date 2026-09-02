@@ -7,7 +7,7 @@ app:
   # logConfiguration:
   #   rootLogger.level: INFO
 
-  version: v1.60.0-dev2
+  version: v1.61.0
 
   taskManager:
     # NOTE: parallelism == TM replicas * numberOfTaskSlots.
@@ -34,6 +34,9 @@ app:
       topic-prefix: eqiad
       # overwrite output topic to avoid collisions with production
       output-topic: staging.pageview.trending.relative.v1
+      # Output topic for mediawiki queue, on the Test cluster to test behavior.
+      mediawiki-job-topic: staging.mediawiki.job.pageviewTrendingRelativeUpdate
+      mediawiki-job-kafka-bootstrap-servers: kafka-test-eqiad.external-services.svc.cluster.local:9093
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
 
 
@@ -53,4 +56,5 @@ flink:
     swift_bucket: pageview-trending-relative-next.dse-k8s-eqiad
 
 external_services:
-  kafka: [jumbo-eqiad]
+  # jumbo for the page view streams, test for the mediawiki job summaries.
+  kafka: [jumbo-eqiad, test-eqiad]
