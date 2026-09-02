@@ -25,6 +25,9 @@ cache:
     cross_cluster_timeout: 100
     num_proxies: 3
     probe_timeout: 6000
+    # If sidecar is true, the restartPolicy for the container will be set to Always, which
+    # marks this container as a Kubernetes sidecar container.
+    sidecar: false
     timeouts_until_tko: 3
     zone: foo
     prestop_sleep: 8

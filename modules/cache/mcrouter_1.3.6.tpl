@@ -5,6 +5,9 @@
 - name: {{ template "base.name.release" . }}-mcrouter
   image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).mcrouter | default "mcrouter:latest"}}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.cache.mcrouter.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   {{- with .Values.cache.mcrouter }}
   env:
     - name: PORT
