@@ -7,6 +7,9 @@ lamp:
   fcgi_mode: FCGI_UNIX
   # Allows to distinguish between installations
   servergroup: default
+  # If sidecar is true, the restartPolicy for the container will be set to Always, which
+  # marks this container as a Kubernetes sidecar container.
+  sidecar: false
   ### HTTPD section ###
   httpd:
     # The version of the httpd-fcgi image

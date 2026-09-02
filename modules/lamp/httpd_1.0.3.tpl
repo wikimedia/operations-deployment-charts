@@ -17,6 +17,9 @@
 - name: {{ template "base.name.release" . }}-httpd
   image: {{.Values.docker.registry }}/httpd-fcgi:{{ .Values.lamp.httpd.version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.lamp.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   env:
     - name: FCGI_MODE
       value: {{ .Values.lamp.fcgi_mode }}
@@ -61,6 +64,9 @@
 - name: {{ template "base.name.release" . }}-httpd-exporter
   image: {{ .Values.docker.registry }}/prometheus-apache-exporter:{{ .Values.lamp.httpd.exporter_version }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.lamp.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   args: ["--scrape_uri", "http://127.0.0.1:9181/server-status?auto"]
   ports:
     - name: httpd-metrics
