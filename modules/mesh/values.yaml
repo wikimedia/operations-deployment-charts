@@ -7,6 +7,9 @@ mesh:
   error_page: ~
   image_name: envoy
   image_version: latest
+  # If sidecar is true, the restartPolicy for the container will be set to Always, which
+  # marks this container as a Kubernetes sidecar container.
+  sidecar: false
   certmanager:
     # Override the hostname used for certificates. By default .Release.Namespace will be used.
     # Together with mesh.certmanager.domains this generates a list of FQDNs used in the
