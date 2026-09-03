@@ -29,6 +29,22 @@ function host_routing(route_handle)
   return HOST_DIVERSION_CLUSTERS[host]
 end
 
+-- Select the appropriate upstream cluster based on the value of the
+-- PHP_ENGINE cookie.
+function php_engine_routing(route_handle)
+  if not PHP_ENGINE_ENROLLED_VERSION then
+    return nil
+  end
+  local cookie = route_handle:headers():get("cookie")
+  if not cookie then
+    return nil
+  end
+  if not string.find(cookie, "PHP_ENGINE=" .. PHP_ENGINE_ENROLLED_VERSION) then
+    return nil
+  end
+  return PHP_ENGINE_ENROLLED_CLUSTER
+end
+
 -- A Lua cluster specifier plugin script to manage upstream cluster selection
 -- for the MediaWiki API. See [0] for an overview of the plugin API.
 -- [0] https://www.envoyproxy.io/docs/envoy/latest/configuration/http/cluster_specifier/lua
@@ -39,6 +55,10 @@ function envoy_on_route(route_handle)
     return cluster
   end
   cluster = xwd_routing(route_handle)
+  if cluster ~= nil then
+    return cluster
+  end
+  cluster = php_engine_routing(route_handle)
   if cluster ~= nil then
     return cluster
   end

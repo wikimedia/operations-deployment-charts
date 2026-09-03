@@ -89,4 +89,53 @@ describe("mw-api cluster specifier plugin", function()
       end)
     end)
   end)
+
+  insulate("with PHP_ENGINE routing", function()
+    _G.PHP_ENGINE_ENROLLED_VERSION = "8.5"
+    _G.PHP_ENGINE_ENROLLED_CLUSTER = "mw-api-ext-next-ro_cluster"
+
+    it("returns the default cluster when cookie is absent", function()
+      local handle = fake_route_handle({})
+      assert.are.equal(DEFAULT_CLUSTER, envoy_on_route(handle))
+    end)
+
+    it("returns the default cluster when cookie does not contain an enrolled version", function()
+      local handle = fake_route_handle({ ["cookie"] = "Foo=Bar; Beep=Boop" })
+      assert.are.equal(DEFAULT_CLUSTER, envoy_on_route(handle))
+    end)
+
+    it("returns the default cluster when cookie does not contain the correct enrolled version", function()
+      local handle = fake_route_handle({ ["cookie"] = "Foo=Bar; PHP_ENGINE=7.4; Beep=Boop" })
+      assert.are.equal(DEFAULT_CLUSTER, envoy_on_route(handle))
+    end)
+
+    it("returns the appropriate cluster when cookie contains the enrolled version", function()
+      local handle = fake_route_handle({ ["cookie"] = "Foo=Bar; PHP_ENGINE=8.5; Beep=Boop" })
+      assert.are.equal("mw-api-ext-next-ro_cluster", envoy_on_route(handle))
+    end)
+
+    insulate("with x-wikimedia-debug routing", function()
+      _G.XWD_BACKEND_CLUSTERS = { ["k8s-mwdebug"] = "mwdebug_cluster" }
+
+      it("prefers x-wikimedia-debug routing when enrolled", function()
+        local handle = fake_route_handle({
+          ["cookie"] = "Foo=Bar; PHP_ENGINE=8.5; Beep=Boop",
+          ["x-wikimedia-debug"] = "backend=k8s-mwdebug",
+        })
+        assert.are.equal("mwdebug_cluster", envoy_on_route(handle))
+      end)
+    end)
+
+    insulate("with host-diversion routing", function()
+      _G.HOST_DIVERSION_CLUSTERS = { ["test.wikipedia.org"] = "mw-pretrain_cluster" }
+
+      it("prefers host diversion for an eligible host when enrolled", function()
+        local handle = fake_route_handle({
+          ["cookie"] = "Foo=Bar; PHP_ENGINE=8.5; Beep=Boop",
+          [":authority"] = "test.wikipedia.org",
+        })
+        assert.are.equal("mw-pretrain_cluster", envoy_on_route(handle))
+      end)
+    end)
+  end)
 end)

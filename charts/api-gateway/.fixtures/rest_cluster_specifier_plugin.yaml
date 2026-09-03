@@ -9,6 +9,10 @@ main_app:
       host_diversion:
         test.wikipedia.org:
           discovery_endpoint: mw-test
+      php_engine:
+        version: "8.5"
+        endpoint:
+          discovery_endpoint: mw-api-next
       default:
         discovery_endpoint: mw-api-main
 
@@ -29,6 +33,8 @@ main_app:
   discovery_endpoints:
     mw-api-main:
       port: 1234
+    mw-api-next:
+      port: 3456
     mwdebug:
       port: 2345
     mw-test:

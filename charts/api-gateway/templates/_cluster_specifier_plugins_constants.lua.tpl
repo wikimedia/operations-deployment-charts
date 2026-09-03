@@ -16,4 +16,8 @@ local HOST_DIVERSION_CLUSTERS = {
 {{- end }}
 }
 {{- end }}
+{{- if .params.php_engine }}
+local PHP_ENGINE_ENROLLED_VERSION = "{{ .params.php_engine.version }}"
+local PHP_ENGINE_ENROLLED_CLUSTER = "{{ include "restgateway.cluster_specifier_plugins.endpoint_to_cluster" ( dict "value" .params.php_engine.endpoint "Root" $.Root ) }}"
+{{- end }}
 {{- end }}
