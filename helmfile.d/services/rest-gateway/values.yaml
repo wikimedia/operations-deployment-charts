@@ -1290,6 +1290,92 @@ main_app:
       ingress: true
       timeout: 60s
       internal_host: liftwing-openapi-server.discovery.wmnet
+    mwdebug:
+      tls: true
+      port: 4444
+    mwdebug-next:
+      tls: true
+      port: 4453
+
+  endpoints:
+    mwdebug_eqiad:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mwdebug.svc.eqiad.wmnet: 4444
+    mwdebug_codfw:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mwdebug.svc.codfw.wmnet: 4444
+    mwdebug-next_eqiad:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mwdebug-next.svc.eqiad.wmnet: 4453
+    mwdebug-next_codfw:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mwdebug-next.svc.codfw.wmnet: 4453
+    mw-experimental_eqiad:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mw-experimental.eqiad.wmnet: 4456
+    mw-experimental_codfw:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mw-experimental.codfw.wmnet: 4456
+    mw-parsoid_eqiad:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mw-parsoid.eqiad.wmnet: 4452
+    mw-parsoid_codfw:
+      tls: true
+      type: LOGICAL_DNS
+      hosts:
+        mw-parsoid.codfw.wmnet: 4452
+
+  cluster_specifier_plugins:
+    mw-api:
+      # This configures the mw-api plugin to support traffic diversion based on
+      # the X-Wikimedia-Debug header's backend attribute, associating available
+      # endpoints with their respective backend names.
+      # See https://wikitech.wikimedia.org/wiki/WikimediaDebug.
+      xwd_backends:
+        k8s-mwdebug:
+          discovery_endpoint: mwdebug
+        k8s-mwdebug-next:
+          discovery_endpoint: mwdebug-next
+        k8s-mwdebug-eqiad:
+          endpoint: mwdebug_eqiad
+        k8s-mwdebug-codfw:
+          endpoint: mwdebug_codfw
+        k8s-mwdebug-next-eqiad:
+          endpoint: mwdebug-next_eqiad
+        k8s-mwdebug-next-codfw:
+          endpoint: mwdebug-next_codfw
+        k8s-mw-experimental-eqiad:
+          endpoint: mw-experimental_eqiad
+        k8s-mw-experimental-codfw:
+          endpoint: mw-experimental_codfw
+        k8s-mw-parsoid-eqiad:
+          endpoint: mw-parsoid_eqiad
+        k8s-mw-parsoid-codfw:
+          endpoint: mw-parsoid_codfw
+      # The default endpoint serves two purposes:
+      # * Within the Lua code executed by the plugin, if no specific diversion
+      #   behavior applies to a given request, the associated cluster is used.
+      # * In the event that said Lua code fails, envoy will use this same cluster.
+      default:
+        # In normal operation, mw-api-ext-ro always points to the DC-local deployment.
+        # As long as ATS multi-DC routing does the right thing, this will allow requests
+        # sent from ATS to the secondary datacenter to stay there instead of crossing back
+        # to the primary.
+        discovery_endpoint: mw-api-ext-ro
 
 service:
   deployment: production
@@ -1427,6 +1513,34 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 4455
+    - cidr: 10.2.2.59/32 # mwdebug.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4444
+    - cidr: 10.2.1.59/32 # mwdebug.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4444
+    - cidr: 10.2.2.9/32 # mwdebug-next.discovery.wmnet (eqiad)
+      ports:
+        - protocol: tcp
+          port: 4453
+    - cidr: 10.2.1.9/32 # mwdebug-next.discovery.wmnet (codfw)
+      ports:
+        - protocol: tcp
+          port: 4453
+    - cidr: 10.64.16.131/32 # wikikube-worker-exp1001.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 4452  # mw-parsoid
+        - protocol: tcp
+          port: 4456  # mw-experimental
+    - cidr: 10.192.32.41/32 # wikikube-worker-exp2001.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 4452  # mw-parsoid
+        - protocol: tcp
+          port: 4456  # mw-experimental
     - cidr: 10.2.1.23/32 # linkrecommendation.svc.codfw.wmnet
       ports:
         - protocol: tcp
