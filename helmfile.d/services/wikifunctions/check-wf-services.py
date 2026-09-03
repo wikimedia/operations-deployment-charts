@@ -138,6 +138,96 @@ ERROR_HANDLER = Test('Error handler', {
     "Z828K1": {"Z1K1": "Z99", "Z99K1": {"Z1K1": "Z9", "Z9K1": "Z4"}},
 }, eq('Z4'), extract=lambda v: v['Z2K1']['Z6K1'])
 
+LEXEME_CALLBACK_PY = Test('Python callback', {
+    "Z1K1": "Z7",
+    "Z7K1": {
+        "Z1K1": "Z8",
+        "Z8K1": [
+            "Z17",
+            {
+                "Z1K1": "Z17",
+                "Z17K1": "Z6095",
+                "Z17K2": {
+                    "Z1K1": "Z6",
+                    "Z6K1": "Z400K1"
+                },
+                "Z17K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11"
+                    ]
+                }
+            }
+        ],
+        "Z8K2": "Z6",
+        "Z8K3": [
+            "Z20"
+        ],
+        "Z8K4": [
+            "Z14",
+            {
+                "Z1K1": "Z14",
+                "Z14K1": "Z400",
+                "Z14K3": {
+                    "Z1K1": "Z16",
+                    "Z16K1": "Z610",
+                    "Z16K2": "def Z400(Z400K1):\n    lexeme = Wikifunctions.Call('Z6825', Z400K1)\n    glosses = lexeme.Z6005K6[0].Z6006K2.Z12K1\n    for gloss in glosses:\n        if gloss.Z11K1.Z60K1 == 'es':\n            return gloss.Z11K2\n    return 'NOT FOUND'"
+                }
+            }
+        ],
+        "Z8K5": "Z400"
+    },
+    "Z400K1": {
+        "Z1K1": "Z6095",
+        "Z6095K1": "L1"
+    }
+}, eq('madre'))
+
+LEXEME_CALLBACK_JS = Test('JavaScript callback', {
+    "Z1K1": "Z7",
+    "Z7K1": {
+        "Z1K1": "Z8",
+        "Z8K1": [
+            "Z17",
+            {
+                "Z1K1": "Z17",
+                "Z17K1": "Z6095",
+                "Z17K2": {
+                    "Z1K1": "Z6",
+                    "Z6K1": "Z400K1"
+                },
+                "Z17K3": {
+                    "Z1K1": "Z12",
+                    "Z12K1": [
+                        "Z11"
+                    ]
+                }
+            }
+        ],
+        "Z8K2": "Z6",
+        "Z8K3": [
+            "Z20"
+        ],
+        "Z8K4": [
+            "Z14",
+            {
+                "Z1K1": "Z14",
+                "Z14K1": "Z400",
+                "Z14K3": {
+                    "Z1K1": "Z16",
+                    "Z16K1": "Z600",
+                    "Z16K2": "function Z400( Z400K1 ) {\n\tconst lexeme = Wikifunctions.Call('Z6825', Z400K1);\n\tconst glosses = lexeme.Z6005K6[0].Z6006K2.Z12K1;\n\tfor (const gloss of glosses) {\n\t\tif (gloss.Z11K1.Z60K1 === 'es') {\n\t\t\treturn gloss.Z11K2;\n\t\t}\n\t}\n\treturn 'NOT FOUND';\n}"
+                }
+            }
+        ],
+        "Z8K5": "Z400"
+    },
+    "Z400K1": {
+        "Z1K1": "Z6095",
+        "Z6095K1": "L1"
+    }
+}, eq('madre'))
+
 TESTS: list[Test] = [
     BASIC_ECHO,
     JS_ADD_CALL,
@@ -145,6 +235,8 @@ TESTS: list[Test] = [
     STRING_JOIN,
     LEXEME_ONE,
     ERROR_HANDLER,
+    LEXEME_CALLBACK_PY,
+    LEXEME_CALLBACK_JS,
 ]
 
 
