@@ -1,9 +1,13 @@
 {{ define "rsyslog.deployment" }}
 {{ $release := include "base.name.release" . }}
+{{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
 {{- if .Values.mw.logging.rsyslog -}}
 - name: {{ $release }}-rsyslog
   image: {{.Values.docker.registry }}/{{ .Values.common_images.rsyslogd }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if $flags.native_sidecars }}
+  restartPolicy: Always
+  {{- end }}
   {{- if .Values.mw.logging.debug }}
   args: ["-dn"]
   {{- end }}
