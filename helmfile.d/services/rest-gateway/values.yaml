@@ -619,12 +619,7 @@ main_app:
 
     - name: mw-api-ext
       timeout: 15s
-      # The name is misleading, as it's not a different deployment than mw-api-ext
-      # However, in normal operation, it always points to the DC-local deployment.
-      # As long as ATS multi-DC routing does the right thing, this will allow requests
-      # sent from ATS to the secondary datacenter to stay there instead of crossing back
-      # to the primary.
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       request_headers_to_add:
         - key: x-restbase-compat
           value: true
@@ -724,7 +719,7 @@ main_app:
 
     - name: mw-rest-auth
       timeout: 15s
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       jwt: allow_missing_or_failed
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
@@ -743,12 +738,7 @@ main_app:
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
 
-      # The name is misleading, as it's not a different deployment than mw-api-ext
-      # However, in normal operation, it always points to the DC-local deployment.
-      # As long as ATS multi-DC routing does the right thing, this will allow requests
-      # sent from ATS to the secondary datacenter to stay there instead of crossing back
-      # to the primary.
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       urls:
         # *** BEGIN rest.php APIs ***
@@ -863,7 +853,7 @@ main_app:
     # Allow certain action API calls to bypass rate limits
     - name: mw-action-api-nolimit
       timeout: 53s
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       rate_limit_policies: [ "BYPASS", "BYPASS" ]
       urls:
@@ -897,7 +887,7 @@ main_app:
     # We apply a cost-bassed limit to prevent high load
     - name: mw-action-api-parse
       timeout: 53s
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       rate_limit_policies: [ "May2026", "ParseCost" ]
       urls:
@@ -915,7 +905,7 @@ main_app:
     - name: mw-action-api-abstractwiki
       # We set a higher timeout to allow for long queries
       timeout: 53s
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       domain: abstract.wikipedia.org
       rate_limit_policies: [ "AbstractWiki", "BYPASS" ]
@@ -935,12 +925,7 @@ main_app:
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
 
-      # The name is misleading, as it's not a different deployment than mw-api-ext
-      # However, in normal operation, it always points to the DC-local deployment.
-      # As long as ATS multi-DC routing does the right thing, this will allow requests
-      # sent from ATS to the secondary datacenter to stay there instead of crossing back
-      # to the primary.
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       urls:
         # *** BEGIN action API routes ***
@@ -973,12 +958,7 @@ main_app:
       # befitting the mw apis, or to simply defer to the headers
       # mediawiki sends.
 
-      # The name is misleading, as it's not a different deployment than mw-api-ext
-      # However, in normal operation, it always points to the DC-local deployment.
-      # As long as ATS multi-DC routing does the right thing, this will allow requests
-      # sent from ATS to the secondary datacenter to stay there instead of crossing back
-      # to the primary.
-      cluster: mw-api-ext-ro
+      cluster_specifier_plugin: mw-api
       csp_enabled: false
       api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
