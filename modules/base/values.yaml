@@ -15,6 +15,9 @@ common_images:
 monitoring:
   enabled: false
   named_ports: false
+  # If sidecar is true, the restartPolicy for the container will be set to Always, which
+  # marks this container as a Kubernetes sidecar container.
+  sidecar: false
   # If you want the prometheus-statsd-exporter sidecar, you
   # need the following
   statsd:
