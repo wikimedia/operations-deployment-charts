@@ -49,6 +49,7 @@ templates:
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "values-{{ .Environment.Name }}-{{`{{ .Release.Name }}`}}.yaml" # env and release-specific overrides
       - "override-{{`{{ .Release.Name }}`}}.yaml" # override values like ingress/mesh host to wdqs2-next-* (release values are shared from _wdqs_common_ with the wdqs namespace)
+      - "override-{{ .Environment.Name }}-{{`{{ .Release.Name }}`}}.yaml" # override values like ingress/mesh host to wdqs2-next-* (release values are shared from _wdqs_common_ with the wdqs
 
 hooks:
   - events: ["prepare"]
