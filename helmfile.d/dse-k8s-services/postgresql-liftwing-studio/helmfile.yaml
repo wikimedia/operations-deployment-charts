@@ -1,0 +1,61 @@
+# PostgreSQL cluster for Lift Wing Studio (Open WebUI), deployed into the
+# liftwing-studio namespace next to the application
+# (helmfile.d/dse-k8s-services/liftwing-studio), which reads DATABASE_URL from
+# the postgresql-liftwing-studio-app secret the operator creates.
+# See https://wikitech.wikimedia.org/wiki/Data_Platform/Systems/PostgreSQL
+helmDefaults:
+  createNamespace: false
+  verify: false
+  atomic: true
+  timeout: 600
+  force: false
+  args:
+    # kubeconfig file can be overwritten using the environment state value kubeConfig
+    # Use the following example as a reference:
+    # helmfile --state-values-set kubeConfig=/path/to/config -e environment apply
+    - --kubeconfig
+    - {{ .Environment.Values | get "kubeConfig" (printf "/etc/kubernetes/postgresql-liftwing-studio-deploy-%s.config" .Environment.Name) }}
+
+environments:
+  dse-k8s-eqiad:
+    values:
+      - releases:
+        - postgresql-liftwing-studio
+      - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
+    missingFileHandler: Warn
+
+---
+
+bases:
+  - ../global.yaml
+
+hooks:
+  - events: ["prepare"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] START helmfile.d/dse-k8s-services/postgresql-liftwing-studio: {{`{{.HelmfileCommand}}`}}",
+      ]
+  - events: ["cleanup"]
+    command: "helmfile_log_sal"
+    args:
+      [
+        "{{`{{.HelmfileCommand}}`}}",
+        "[{{`{{ .Environment.Name }}`}}] DONE helmfile.d/dse-k8s-services/postgresql-liftwing-studio: {{`{{.HelmfileCommand}}`}}",
+      ]
+
+releases:
+  - name: postgresql-liftwing-studio
+    namespace: liftwing-studio
+    chart: wmf-stable/cloudnative-pg-cluster
+    # Allow to forcibly recreate pods by passing --state-values-set roll_restart=1 on the command line
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "/etc/helmfile-defaults/private/dse-k8s_services/postgresql-liftwing-studio/{{ .Environment.Name }}.yaml"
+      - "values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
+      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      - environmentName: "{{ .Environment.Name }}"
+      - fullnameOverride: "postgresql-liftwing-studio"
