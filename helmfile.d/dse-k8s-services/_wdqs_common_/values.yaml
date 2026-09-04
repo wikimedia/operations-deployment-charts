@@ -99,6 +99,46 @@ proxy:
     cpu: 2
     memory: 2Gi
 
+# Envoy service-mesh sidecar tuning for the wdqs-proxy pods.
+mesh:
+  # Custom Envoy histogram buckets for request latency (rq_time).
+  #
+  # WDQS enforces a 60s response timeout and its latency distribution is
+  # skewed toward long-running queries. Over a 90-day sample of successful
+  # (200) requests on the current external endpoint (blazegraph, main +
+  # scholarly) the observed distribution was:
+  #   <10ms       2.0%
+  #   10-100ms   54.0%
+  #   100ms-1s   38.1%
+  #   1s-10s      3.9%
+  #   >10s        2.0%
+  # The chart-default rq_time bucket set tops out at 2500ms, collapsing the
+  # ~6% of requests above ~2s into the overflow bucket and flattening the
+  # observed latency profile. Extending rq_time up to the 60s timeout
+  # restores resolution across the tail.
+  #
+  # Overriding envoy_stats_config replaces the chart-default stats_config
+  # wholesale, so the remaining match blocks below mirror the chart default
+  # (charts/wdqs mesh configuration, https://phabricator.wikimedia.org/T391333).
+  envoy_stats_config:
+    histogram_bucket_settings:
+      - match:
+          safe_regex:
+            regex: ".+rq_time$"
+        buckets: [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000]
+      - match: # Included to mirror the chart default
+          safe_regex:
+            regex: ".+upstream_cx_connect_ms$"
+        buckets: [1, 5, 10, 25, 50, 100, 250, 500, 1000]
+      - match: # Included to mirror the chart default
+          safe_regex:
+            regex: ".+(upstream|downstream)_cx_length_ms$"
+        buckets: [2500, 5000, 10000, 30000, 60000, 300000]
+      - match: # Included to mirror the chart default
+          safe_regex:
+            regex: ".+"
+        buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000]
+
 networkpolicy:
   egress:
     enabled: true
