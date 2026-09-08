@@ -39,7 +39,7 @@ metadata:
 # custom-policies
 Contains custom policies and bindings.
 
-These are WMF specific hand crafted policies. For consistency sake, they should come with a binding of the same name which allows to `include` the policy at a namespace level, like:
+These are WMF specific hand crafted policies. For consistency sake, they should come with a binding of the same name which allows to `include` the policy at a namespace level and a small helm template to configure `validationActions` in a standardized way across all policies:
 
 ```yaml
 apiVersion: admissionregistration.k8s.io/v1
@@ -55,6 +55,7 @@ spec:
         operator: In
         values:
         - include
+  validationActions: {{ get (default dict .Values.validationActions) "fancy-new-policy" | default (list "Deny") | toYaml | nindent 4 }}
 ```
 
 

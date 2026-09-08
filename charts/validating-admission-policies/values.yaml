@@ -1,8 +1,8 @@
 # Default values for validating-admission-policies.
 
-# In validatingActions you may define overrides for the default
-# validatingActions field of a policy (which should be 'Deny').
+# In validationActions you may define overrides for the default
+# validationActions field of a policy (which should be 'Deny').
 # The key is the name of the policy, valid values are
 # 'Deny', 'Warn', and 'Audit' (where 'Deny' and 'Warn' are mutually exclusive).
-validatingActions:
+validationActions:
   disallow-probes-host: [Warn, Audit]

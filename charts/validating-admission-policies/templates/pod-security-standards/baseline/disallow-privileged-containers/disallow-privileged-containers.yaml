@@ -44,4 +44,4 @@ spec:
         operator: NotIn
         values:
         - exclude
-  validationActions: {{ get (default dict .Values.validatingActions) "disallow-privileged-containers" | default (list "Deny") | toYaml | nindent 4 }}
+  validationActions: {{ get (default dict .Values.validationActions) "disallow-privileged-containers" | default (list "Deny") | toYaml | nindent 4 }}
