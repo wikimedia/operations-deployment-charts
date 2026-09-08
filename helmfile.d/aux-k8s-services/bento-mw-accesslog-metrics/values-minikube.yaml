@@ -1,0 +1,31 @@
+---
+app:
+  kafka:
+    broker_list:
+      - my-cluster-kafka-brokers.kafka:9093
+    client_id: "${HOSTNAME}"
+    tls:
+      skip_cert_verify: true
+
+ingress:
+  enabled: false
+
+  requests:
+    cpu: 1
+    memory: 1Gi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+service:
+  deployment: "minikube"
+
+networkpolicy:
+  egress:
+    enabled: false
+
+kafka:
+  allowed_clusters: []
+
+external_services:
+  kafka: []

@@ -1,0 +1,75 @@
+---
+app:
+
+  kafka:
+    broker_list:
+      - my-cluster-kafka-brokers.kafka:9093
+    topics_in: ~
+    topic_out:
+      name: mediawiki.httpd.accesslog
+    tls:
+      skip_cert_verify: true
+
+  input:
+    generate:
+      interval: 1s
+      mapping: |
+        let req_id = uuid_v4()
+        let ip = "${random_int(min: 1, max: 220)}.${random_int(min: 0, max: 255)}.${random_int(min: 0, max: 255)}.${random_int(min: 1, max: 254)}"
+        let worker_id = random_int(min: 2000, max: 2500)
+        let pod_hash = uuid_v4().slice(0, 5)
+
+        let status = match random_int(min: 1, max: 10) {
+          this <= 7 => 200,
+          this <= 8 => 301,
+          this <= 9 => 404,
+          _ => 500
+        }
+
+        root.host.name = "wikikube-worker${$worker_id}.codfw.wmnet"
+        root.orchestrator.type = "kubernetes"
+        root.orchestrator.namespace = "mw-web"
+        root.orchestrator.resource.name = "mw-web.codfw.main-ff84c8fb8-${$pod_hash}"
+        root.labels.deployment = "mw-web"
+        root.labels.release = "main"
+
+        root."client.ip" = $ip
+        root."ecs.version" = "1.11.0"
+        root."event.category" = ["network", "web"]
+        root."event.dataset" = "apache.access"
+        root."event.duration" = random_int(min: 10000, max: 500000)
+        root."event.kind" = "event"
+        root."event.outcome" = if $status < 400 { "success" } else { "failure" }
+        root."event.type" = ["access", "connection"]
+
+        root."http.request.headers.accept_language" = "en-us,en;q=0.9"
+        root."http.request.headers.x_analytics" = "-"
+        root."http.request.headers.x_client_ip" = "-"
+        root."http.request.headers.x_forwarded_for" = "${$ip}, 10.128.1.29"
+        root."http.request.headers.x_request_id" = $req_id
+        root."http.request.method" = "GET"
+        root."http.request.referrer" = "-"
+
+        root."http.response.bytes" = random_int(min: 1000, max: 80000)
+        root."http.response.headers.content_type" = "text/html"
+        root."http.response.headers.user" = "-"
+        root."http.response.status_code" = $status
+
+        root."labels.handler" = "proxy:unix:/run/shared/fpm-www.sock|fcgi://localhost"
+        root."labels.httpd_server_name" = "wikipedia"
+
+        root."server.ip" = "127.0.0.1"
+        root."service.type" = "apache2"
+        root."source.ip" = "127.0.0.1"
+        root.timestamp = now().format("2006-01-02T15:04:05")
+
+        root."url.domain" = "he.wikipedia.org"
+        root."url.full" = "http://he.wikipedia.org/wiki/מירב_כהן_(שחיינית)"
+        root."url.path" = "/wiki/מירב_כהן_(שחיינית)"
+        root."url.query" = ""
+
+        root."user.name" = "-"
+        root."user_agent.original" = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+
+resources:
+  replicas: 1

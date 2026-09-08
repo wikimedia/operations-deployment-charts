@@ -1,0 +1,11 @@
+---
+app:
+  kafka:
+    broker_list:
+      - kafka-logging-codfw.external-services.svc.cluster.local:9093
+    client_id: bento-mw-accesslog-metrics-codfw
+    ssl: true
+
+external_services:
+  kafka:
+    - logging-codfw
