@@ -32,7 +32,7 @@ config:
       email:
         # We don't want to alert for development instances to avoid adding noise
         # to ops week.
-        email_backend: airflow.utils.email.send_email_trace # Logs, does not send
+        email_backend: webserver_config.send_email_smtp_dry_run  # Logs, does not send
         from_email: airflow-{{ $.Release.Name }} <noreply@wikimedia.org>
         default_email_on_retry: false
         default_email_on_failure: false
