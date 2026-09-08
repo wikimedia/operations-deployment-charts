@@ -12,6 +12,7 @@ kind:
 	@if ! kind get clusters 2>/dev/null| grep -q $(KIND_CLUSTER_NAME); then \
 		kind create cluster --name $(KIND_CLUSTER_NAME) --config kind.yaml; \
 	fi
+	kubectl wait --for=condition=Ready nodes --all --timeout=120s --context kind-$(KIND_CLUSTER_NAME)
 
 kind-delete:
 	kind delete cluster --name $(KIND_CLUSTER_NAME)
@@ -19,7 +20,7 @@ kind-delete:
 chainsaw: chainsaw-custom chainsaw-pss
 
 chainsaw-custom: kind
-	chainsaw test --include-test-regex "^chainsaw/templates/custom-policies/\$$"
+	chainsaw test --include-test-regex "^chainsaw/templates/custom-policies/$(TEST)\$$"
 
 chainsaw-pss: kind
-	chainsaw test --include-test-regex "^chainsaw/templates/pod-security-standards/\$$"
+	chainsaw test --include-test-regex "^chainsaw/templates/pod-security-standards/$(TEST)\$$"
