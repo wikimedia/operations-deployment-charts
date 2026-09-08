@@ -3,6 +3,9 @@
 - name: {{ template "base.name.release" . }}-tls-proxy
   image: {{ .Values.docker.registry }}/{{ .Values.mesh.image_name | default "envoy" }}:{{ .Values.mesh.image_version | default "latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.mesh.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   env:
     - name: SERVICE_NAME
       value: {{ .Release.Name }}
@@ -19,6 +22,10 @@
       value: "{{ .drain_time_s | default 600 }}"
     - name: DRAIN_STRATEGY
       value: {{ .drain_strategy | default "gradual" }}
+    {{- end }}
+    {{- range $k, $v := .Values.mesh.extra_env }}
+    - name: {{ $k }}
+      value: {{ $v | quote }}
     {{- end }}
   {{- if .Values.mesh.public_port }}
   ports:
@@ -42,7 +49,7 @@
     preStop:
       exec:
         command:
-        - "/bin/sh"
+        - "/bin/bash"
         - "-c"
         - "/bin/drain-envoy.sh"
 {{- else if .Values.mesh.prestop_sleep }}

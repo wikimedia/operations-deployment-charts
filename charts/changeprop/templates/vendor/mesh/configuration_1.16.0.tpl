@@ -166,9 +166,9 @@ static_resources:
       {{- end }}
       {{- $values := dict "Name" $name "Upstream" $listener.upstream -}}
       {{- include "mesh.configuration._cluster" $values | indent 2 }}
-      {{- if $listener.split -}}
-        {{ $split_name := printf "%s-split" $name }}
-        {{- $values := dict "Name" $split_name "Upstream" $listener.split -}}
+      {{- range $split := $listener.splits }}
+        {{- $split_name := printf "%s_%s-split" $name $split.name }}
+        {{- $values := dict "Name" $split_name "Upstream" $split -}}
         {{- include "mesh.configuration._cluster" $values | indent 2 }}
       {{- end }}
       {{- /* Figure out if a rate limit is configured for this listener */ -}}
@@ -193,10 +193,20 @@ static_resources:
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
   {{- include "mesh.configuration._admin_listener" $af_aware_dot | indent 2}}
   {{- if .Values.mesh.public_port -}}
+  {{- $af_aware_dot = set $af_aware_dot "port" .Values.mesh.public_port }}
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
   {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
   {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
   {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- range .Values.mesh.restricted_listeners }}
+  {{- $af_aware_dot = set $af_aware_dot "port" .port }}
+  {{- $af_aware_dot = set $af_aware_dot "allow_only" .allow_only }}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "::" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- $af_aware_dot = set $af_aware_dot "listen_address" "0.0.0.0" }}
+  {{- include "mesh.configuration._local_listener" $af_aware_dot | indent 2}}
+  {{- end }}
+  {{- $af_aware_dot = unset $af_aware_dot "allow_only" }}
   {{- end -}}
   {{- if .Values.discovery | default false -}}
     {{- range $name := .Values.discovery.listeners }}
@@ -286,7 +296,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
 - address:
     socket_address:
       address: "{{ .listen_address | default "0.0.0.0" }}"
-      port_value: {{ .Values.mesh.public_port }}
+      port_value: {{ .port }}
   filter_chains:
   - filters:
     - name: envoy.filters.network.http_connection_manager
@@ -339,19 +349,23 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
           - domains: ['*']
             name: tls_termination
             routes:
+            {{- with .allow_only }}
+            - match:
+                path: {{ .path | quote }}
+                headers:
+                - name: ":method"
+                  string_match:
+                    exact: {{ .method | quote }}
+              {{- include "mesh.configuration._local_route" $ | nindent 14 }}
             - match: {prefix: /}
-              route:
-                cluster: {{ template "mesh.configuration._local_cluster_name" . }}
-                timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
-                {{- if .Values.mesh.idle_upstream_timeout | default false }}
-                idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
-                {{- end }}
-                {{- if .Values.mesh.upstream_retry_policy }}
-                retry_policy:
-                {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
-                  {{ $k }}: {{ $v }}
-                {{- end }}
-                {{- end }}
+              direct_response:
+                status: 403
+                body:
+                  inline_string: "Forbidden: only {{ .method }} {{ .path }} is permitted on this port\n"
+            {{- else }}
+            - match: {prefix: /}
+              {{- include "mesh.configuration._local_route" . | nindent 14 }}
+            {{- end }}
         {{- include "mesh.configuration._error_page" . | indent 8 }}
         {{- if (.Values.mesh.tracing | default dict).enabled }}
         request_id_extension:
@@ -373,7 +387,7 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
                 timeout: 0.250s
               service_name: {{ .Values.mesh.tracing.service_name | default .Release.Namespace }}
         {{- end }}
-        stat_prefix: ingress_https_{{ .Release.Name }}
+        stat_prefix: ingress_https_{{ .Release.Name }}{{ if ne .port .Values.mesh.public_port }}_{{ .port }}{{ end }}
         server_name: {{ .Release.Name }}-tls
         server_header_transformation: APPEND_IF_ABSENT
         internal_address_config:
@@ -404,7 +418,23 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
   - name: envoy.filters.listener.tls_inspector
     typed_config:
       "@type": type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
+  traffic_direction: INBOUND
 {{- end }}
+
+{{- define "mesh.configuration._local_route" -}}
+route:
+  cluster: {{ template "mesh.configuration._local_cluster_name" . }}
+  timeout: {{ .Values.mesh.upstream_timeout | default "60s" }}
+  {{- if .Values.mesh.idle_upstream_timeout | default false }}
+  idle_timeout: {{ .Values.mesh.idle_upstream_timeout }}
+  {{- end }}
+  {{- if .Values.mesh.upstream_retry_policy }}
+  retry_policy:
+  {{- range $k, $v :=  .Values.mesh.upstream_retry_policy }}
+    {{ $k }}: {{ $v }}
+  {{- end }}
+  {{- end }}
+{{- end -}}
 
 {{/* Mesh network configuration. */}}
 {{- /*
@@ -433,20 +463,20 @@ LOCAL_{{ (.Values.mesh.tracing | default dict).service_name | default .Release.N
         port: 10100  # this is the port on the remote system
         encryption: false
         ips:
-        - 1.2.3.4
-      # If you have a split section, traffic will be split between the main address and this one
-      # based on the percentage indicated.
-      split:
+        - 1.2.3.4/32
+      # If you have one or more listener splits, traffic will be split between the main address and
+      # the split ones according to the provided Host header patterns.
+      splits:
+      - name: testwiki-b
+        host_regex: "test[.]wikipedia[.]org"
         address: svcB.discovery.wmnet
         port: 10200
         encryption: true
-        percentage: 10
         keepalive: "6s"
         sets_sni: true
         sni_rewrites_host_header: true
         ips:
-          - 1.2.3.3
-
+          - 1.2.3.3/32
 
 For TCP load balancer, we define the TCP service, and then we add upstreams as a list under 'tcp_services_proxy'.
 There is also the option to set custom health checks, otherwise all upstreams
@@ -574,27 +604,34 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
             {{- end }}
             {{- end }}
             routes:
-            {{- if .Listener.split }}
+            {{- range $split := .Listener.splits }}
             - match:
                 prefix: "/"
-                runtime_fraction:
-                  default_value:
-                    numerator: {{ .Listener.split.percentage }}
-                    denominator: HUNDRED
-                  runtime_key: routing.traffic_shift.{{ .Name }}
+                headers:
+                - name: ":authority"
+                  string_match:
+                    safe_regex:
+                      regex: {{ $split.host_regex | quote }}
               route:
-                {{- if .Listener.http_host }}
-                host_rewrite_literal: {{ .Listener.http_host }}
-                {{- end }}
-                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
-                {{- if and .Listener.split.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.split.sni_rewrites_host_header) .Listener.split.sni_rewrites_host_header) }}
+                {{- if $.Listener.http_host }}
+                host_rewrite_literal: {{ $.Listener.http_host }}
+                {{- /* Note: we can't use a simple | default true below, because false, a Boolean, is considered empty */ -}}
+                {{- else if and $split.sets_sni (or (kindIs "invalid" $split.sni_rewrites_host_header) $split.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
-                cluster: {{ .Name }}-split
-                timeout: {{ .Listener.timeout }}
-                {{- if .Listener.retry_policy }}
+                cluster: {{ printf "%s_%s-split" $.Name $split.name }}
+                timeout: {{ $.Listener.timeout }}
+                {{- /* puppet-defined idle timeout
+                 note that route-level idle timeouts are stream idle timeouts in envoy terminology and
+                 behave differently to other idle timeout settings - see 039059f18b2 in puppet and
+                 the envoy docs
+                */}}
+                {{- if $split.idle_timeout }}
+                idle_timeout: {{ $split.idle_timeout }}
+                {{- end }}
+                {{- if $.Listener.retry_policy }}
                 retry_policy:
-                {{- range $k, $v :=  .Listener.retry_policy }}
+                {{- range $k, $v :=  $.Listener.retry_policy }}
                   {{ $k }}: {{ $v }}
                 {{- end -}}
                 {{- end }}
@@ -604,9 +641,8 @@ More info: https://www.envoyproxy.io/docs/envoy/v1.23.12/api-v3/config/core/v3/h
               route:
                 {{- if .Listener.http_host }}
                 host_rewrite_literal: {{ .Listener.http_host }}
-                {{- end }}
-                {{- /* can't use a simple | default true here cause false, a Boolean, is considered empty */ -}}
-                {{- if and .Listener.upstream.sets_sni (not .Listener.http_host) (or (kindIs "invalid" .Listener.upstream.sni_rewrites_host_header) .Listener.upstream.sni_rewrites_host_header) }}
+                {{- /* Note: we can't use a simple | default true below, because false, a Boolean, is considered empty */ -}}
+                {{- else if and .Listener.upstream.sets_sni (or (kindIs "invalid" .Listener.upstream.sni_rewrites_host_header) .Listener.upstream.sni_rewrites_host_header) }}
                 auto_host_rewrite: true
                 {{- end }}
                 cluster: {{ .Name }}
