@@ -1,0 +1,86 @@
+# LiftWing tool-server: a limited toolbelt of universal, read-only tools
+# (REST + MCP) that clients call during tool-calling loops. See T436892.
+
+chartName: tool-server
+
+monitoring:
+  enabled: true
+
+config:
+  public:
+    # Identity (Wikipedia API requires a descriptive User-Agent).
+    TOOL_SERVER_USER_AGENT: "WMF-LiftWing-Tool-Server/0.1 (https://phabricator.wikimedia.org/T436892)"
+    # MediaWiki API proxy through the envoy services-proxy (localhost:6500
+    # routes to mw-api-int.discovery.wmnet) on LiftWing.
+    # NB: Leave empty "" for local dev to hit Wikipedia directly.
+    TOOL_MW_API_PROXY: "http://localhost:6500"
+
+# Envoy services-proxy listeners for outgoing traffic. Each name must match
+# a key in the services_proxy dictionary (injected at deploy time from Puppet
+# hieradata). The envoy sidecar creates a localhost listener for each entry.
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+
+resources:
+  replicas: 1
+
+app:
+  image: wikimedia/machinelearning-liftwing-inference-services-tool-server
+  version: "2026-09-08-104246-publish"
+  port: 8080
+  limits:
+    cpu: 1
+    memory: 1Gi
+    ephemeral-storage: 10Gi
+  requests:
+    cpu: 1
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 10
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 8443
+  telemetry:
+    enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+
+ingress:
+  enabled: true
+  selectors:
+    service.istio.io/canonical-name: istio-ingressgateway-services
+    istio: ingressgateway
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
