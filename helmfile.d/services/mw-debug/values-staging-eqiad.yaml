@@ -2,12 +2,15 @@
 docker:
   registry: docker-registry.discovery.wmnet
 main_app:
-  image: restricted/mediawiki-multiversion-debug:2025-03-04-105954-publish
+  image: restricted/mediawiki-multiversion-debug:2026-09-08-131104-publish-83
 mw:
   httpd:
-    image_tag: restricted/mediawiki-webserver:2025-03-04-105954-webserver
+    image_tag: restricted/mediawiki-webserver:2026-09-08-131104-webserver-bookworm
   datacenter: eqiad
   mail_host: mx-out1001.wikimedia.org
+php:
+  version: '8.3'
+
 resources:
   replicas: 1
 # While we are using the mw-mcrouter daemonset by default
