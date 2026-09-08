@@ -1,0 +1,33 @@
+{{/*
+- .Values.cronjobs: dict with all jobs. Using a dict provides the flexibility to
+  override certain parameters of cronjobs on a per cluster level
+*/}}
+{{ $root := . }}
+{{ range $cronjob, $cron_opts  := .Values.cronjobs }}
+{{- if $cron_opts.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+{{- include "base.meta.metadata" (dict "Root" $root "Name" $cronjob) | indent 2 }}
+spec:
+  {{- include "app.job.cron_properties" $cron_opts | indent 2 }}
+  jobTemplate:
+    metadata:
+      {{- include "base.meta.labels" $root | indent 6 }}
+    spec:
+     {{- include "app.job.job_properties" $cron_opts | indent 6 }}
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: {{ template "base.name.chart" $root }}
+            release: {{ $root.Release.Name }}
+        spec:
+          restartPolicy: Never
+          containers:
+          {{- include "app.job.container" (dict "Root" $root  "Name" $cronjob  "Job" $cron_opts )| indent 10 }}
+          {{- include "app.job.volume" (dict "Root" $root "Name" $cronjob  "Job" $cron_opts) | indent 10 }}
+
+{{- end }}
+{{- end }}

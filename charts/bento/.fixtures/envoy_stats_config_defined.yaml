@@ -1,0 +1,14 @@
+mesh:
+  enabled: true
+  image_version: 1.13.1-2
+  public_port: 4666 # the port where TLS will be exposed
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+  envoy_stats_config:
+    histogram_bucket_settings:
+      - match:
+          safe_regex:
+            regex: ".+rq_time$"
+        buckets: [42]

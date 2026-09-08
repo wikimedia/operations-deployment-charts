@@ -1,0 +1,91 @@
+{{- define "config.input.kafka" }}
+label: "kafka_in"
+kafka_franz:
+  seed_brokers:
+    {{- toYaml .Values.app.kafka.broker_list | nindent 4 }}
+  topics:
+    {{- toYaml .Values.app.kafka.topics_in | nindent 4 }}
+  tls:
+    {{- toYaml .Values.app.kafka.tls | nindent 4}}
+  {{- $defaultConsumerGroup := printf "%s-%s" (include "base.name.release" .) $.Release.Namespace }}
+  consumer_group: {{ dig "app" "kafka" "consumer_group" "" .Values.AsMap | default $defaultConsumerGroup }}
+  client_id: \"{{ dig "app" "kafka" "client_id" "" .Values.AsMap | default $defaultConsumerGroup }}\"
+  start_from_oldest: {{ .Values.app.kafka.start_from_oldest }}
+  batching:
+    {{- toYaml .Values.app.kafka.batching | nindent 4 }}
+{{- end }}
+
+{{- define "config.output.kafka" }}
+{{- if .Values.app.kafka.topic_out }}
+label: "kafka_out"
+kafka_franz:
+  seed_brokers:
+    {{- toYaml .Values.app.kafka.broker_list | nindent 4 }}
+  topic: {{ .Values.app.kafka.topic_out.name }}
+  tls:
+    {{- toYaml .Values.app.kafka.tls | nindent 4}}
+  # you should set this property to easily correlate requests on the broker with the client
+  # instance which made it. Typically, all consumers within the same group will share the
+  # same client ID in order to enforce client quotas
+  client_id: {{ template "base.name.release" . }}-{{ $.Release.Namespace }}
+  max_in_flight: {{ .Values.app.kafka.topic_out.max_in_flight }}
+  batching:
+    {{- toYaml .Values.app.kafka.batching | nindent 4 }}
+{{- else }}
+label: "drop_out"
+drop: {}
+{{- end }}
+{{- end }}
+{{- define "config.app" }}
+http:
+  enabled: true
+  address: 0.0.0.0:{{ .Values.app.port }}
+  debug_endpoints: {{ .Values.debug.enabled }}
+
+input:
+  {{- if .Values.app.input }}
+  {{- toYaml .Values.app.input | nindent 2 }}
+  {{- else }}
+  {{ include "config.input.kafka" . | indent 2 }}
+  {{- end }}
+
+buffer:
+  none: {}
+
+pipeline:
+  threads: -1
+  {{- if .Values.app.processors }}
+  processors:
+    {{- toYaml .Values.app.processors | nindent 4 }}
+  {{- else }}
+  processors: []
+  {{- end }}
+
+output:
+  {{- if .Values.app.output }}
+  {{- toYaml .Values.app.output | nindent 2 }}
+  {{- else }}
+  {{ include "config.output.kafka" . | indent 2 }}
+  {{- end }}
+
+logger:
+  level: INFO
+  format: logfmt
+  add_timestamp: false
+
+metrics:
+  {{- if .Values.app.metrics }}
+  {{- toYaml .Values.app.metrics | nindent 2 }}
+  {{- else }}
+  prometheus:
+    use_histogram_timing: false
+    add_process_metrics: false
+    add_go_metrics: false
+  mapping: |
+    root = "benthos_" + this
+  {{- end }}
+
+shutdown_delay: {{ .Values.app.shutdown.delay }}
+shutdown_timeout: {{ .Values.app.shutdown.timeout }}
+
+{{- end }}
