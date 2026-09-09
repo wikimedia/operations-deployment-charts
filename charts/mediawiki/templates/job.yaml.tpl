@@ -137,7 +137,10 @@ spec:
       # above.
       {{- include "mesh.deployment.container" $ | indent 8}}
       {{- $configpath := printf "/etc/mercurius/%s.yaml" $mercurius_job }}
-      {{- include "lamp.deployment" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
+      {{- include "mediawiki.container" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
+      {{- if $.Values.monitoring.enabled }}
+      {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
+      {{- end }}
       {{- include "rsyslog.deployment" $ | indent 8 }}
       volumes:
       {{- include "mw.volumes" $ | indent 8}}
