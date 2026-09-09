@@ -26,7 +26,7 @@ main_app:
 
     # jobs we don't want to process at all
     # The videotranscode jobs have been moved to use mw-videoscaler and mercurius
-    excluded_jobs: ["ThumbnailRender", "webVideoTranscode", "webVideoTranscodePrioritized"]
+    excluded_jobs: ["ThumbnailRender", "webVideoTranscode", "webVideoTranscodePrioritized", "parsoidCachePrewarm"]
 
     # All the jobs listed below get their own rule, which transfers to
     # their own processing unit - each type of job listed explicitly is processed
@@ -55,7 +55,7 @@ main_app:
       # when maintenance scripts are run. Elevated concurrency
       RecordLintJob:
         enabled: true
-        concurrency: 50
+        concurrency: 25
         consumer_batch_size: 10
       wikibase-addUsagesForPage:
         enabled: true
@@ -127,7 +127,7 @@ main_app:
         enabled: true
         concurrency: 7
       parsoidCachePrewarm:
-        enabled: true
+        enabled: false
         concurrency: 70
       cacheAbstractContentFragment:
         # (T430898) Abstract Wikipedia re-render fragment job set to low concurrency
@@ -150,7 +150,7 @@ main_app:
         partition:
           # This is the concurrency of the individual partitions, so overall concurrency
           # is 8 * 30 = 240
-          concurrency: 30
+          concurrency: 10
           # Abandon jobs which root job is more than 1 week long
           root_claim_ttl: 604800
       htmlCacheUpdate:
