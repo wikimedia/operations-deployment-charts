@@ -85,6 +85,10 @@ config:
         nda: [User]
         wmf: [User]
         ops: [Admin]
+      k8s_namespace_role_mappings:
+        "{{ $.Release.Namespace }}": [Admin]
+      audience:
+        - "https://dse-k8s-ctrl.svc.eqiad.wmnet:6443"  # allow k8s tokens for testing
 
     extra_rbac: ~
     local_settings:

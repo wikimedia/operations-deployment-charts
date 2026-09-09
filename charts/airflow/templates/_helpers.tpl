@@ -562,6 +562,9 @@ spec:
   mountPath: /opt/airflow/airflow.cfg
   subPath: airflow.cfg
 - name: {{ template "release.name" . }}-webserver-config
+  mountPath: /opt/airflow/auth_manager.py
+  subPath: auth_manager.py
+- name: {{ template "release.name" . }}-webserver-config
   mountPath: /opt/airflow/webserver_config.py
   subPath: webserver_config.py
 - name: {{ template "release.name" . }}-webserver-config

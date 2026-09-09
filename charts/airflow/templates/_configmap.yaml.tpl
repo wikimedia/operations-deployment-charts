@@ -108,6 +108,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   # These are system-specified config overrides.
+  auth_manager.py: |
+    {{- .Files.Get "files/webserver/auth_manager.py" | nindent 4 }}
   webserver_config.py: |
     {{- if not $.Values.devenv.enabled }}
     from airflow.www.fab_security.manager import AUTH_OAUTH
@@ -131,6 +133,7 @@ data:
         }
     ]
     {{- end }}
+    {{- end }}
 
     {{- with $.Values.config.airflow.auth }}
     AUTH_ROLE_ADMIN = {{ template "toPythonValue" (dict "value" .role_admin) }}
@@ -139,9 +142,6 @@ data:
     AUTH_USER_REGISTRATION = {{ template "toPythonValue" (dict "value" .user_registration) }}
     AUTH_USER_REGISTRATION_ROLE = {{ template "toPythonValue" (dict "value" .user_registration_role) }}
 
-    # Flask-WTF
-    WTF_CSRF_ENABLED = True
-    WTF_CSRF_TIME_LIMIT = None
     AUTH_ROLES_MAPPING = {
       {{- range $ldapGroupTpl, $airflowRole := .role_mappings }}
       {{- $ldapGroup := include "evalValue" (dict "value" $ldapGroupTpl "Root" $) }}
@@ -149,9 +149,24 @@ data:
       "cn={{ $ldapGroup }},ou=groups,dc=wikimedia,dc=org": {{ template "toPythonValue" (dict "value" $airflowRole) }},
       {{- end }}
       {{- end }}
+      {{- range $k8sNamespaceTpl, $airflowRole := .k8s_namespace_role_mappings }}
+      {{- $k8sNamespace := include "evalValue" (dict "value" $k8sNamespaceTpl "Root" $) }}
+      "kubernetes.io:namespace:{{ $k8sNamespace }}": {{ template "toPythonValue" (dict "value" $airflowRole) }},
+      {{- end }}
+    }
+
+    AUTH_K8S_TOKEN_VERIFICATION_OPTIONS = {
+      "audience": [
+        {{- range $audienceTpl := .audience }}
+        "{{ include "evalValue" (dict "value" $audienceTpl "Root" $) }}",
+        {{- end }}
+      ]
     }
     {{- end }}
-    {{- end }}
+
+    # Flask-WTF
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = None
 
     {{- range $path, $_ :=  $.Files.Glob "files/webserver_config/*.py"}}
     {{ $.Files.Get $path | nindent 4 }}
