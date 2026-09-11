@@ -191,6 +191,14 @@ env:
   value: "False"
 - name: ENVOY_SERVICE_NAME
   value: {{ template "service.envoy" . }}
+- name: AIRFLOW_API_URL
+  value: "{{ include "evalValue" (dict "value" $.Values._vars.airflow_api_url "Root" $) }}"
+{{- with $.Values.config.airflow.auth.service_token }}
+{{- if and .audience .path }}
+- name: AIRFLOW_SERVICE_TOKEN
+  value: "{{ $.Values._vars.airflow_service_token_dir }}/{{ .path }}"
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "airflow.env.requests-ca-bundle" }}
@@ -555,6 +563,15 @@ spec:
 - name: {{ template "release.name" . }}-dags
   persistentVolumeClaim:
     claimName: {{ template "release.name" . }}-dags-pvc
+{{- with $.Values.config.airflow.auth.service_token }}
+{{- if and .audience .path }}
+- name: {{ template "release.name" $ }}-service-token
+  projected:
+    sources:
+    - serviceAccountToken:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "app.airflow.volumeMounts" }}
@@ -587,6 +604,12 @@ spec:
   mountPath: /opt/airflow/dags
 - name: {{ template "release.name" . }}-kubernetes-pod-templates
   mountPath: /opt/airflow/pod_templates
+{{- with $.Values.config.airflow.auth.service_token }}
+{{- if and .audience .path }}
+- name: {{ template "release.name" $ }}-service-token
+  mountPath: {{ $.Values._vars.airflow_service_token_dir }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "app.gitsync.volumes" }}

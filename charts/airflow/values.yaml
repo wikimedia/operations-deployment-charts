@@ -16,6 +16,8 @@ _vars:
   spark_conf_dir: &spark_conf_dir /etc/spark3/conf
   hdfs_keytab: &hdfs_keytab /etc/security/keytabs/hadoop/hdfs.keytab
   hdfs_principal: &hdfs_principal hdfs/_HOST@WIKIMEDIA
+  airflow_api_url: "https://{{ template \"mesh.name.fqdn\" . }}:{{ $.Values.mesh.public_port }}"
+  airflow_service_token_dir: /tmp/airflow_service_token
 
 app:
   image: &base-image repos/data-engineering/airflow-dags
@@ -85,10 +87,14 @@ config:
         nda: [User]
         wmf: [User]
         ops: [Admin]
+      service_token:  # options are passed to serviceAccountToken as is
+        path: token
+        audience: ~
+        expirationSeconds: 600  # 10 minutes is the minimum TTL
       k8s_namespace_role_mappings:
         "{{ $.Release.Namespace }}": [Admin]
       audience:
-        - "https://dse-k8s-ctrl.svc.eqiad.wmnet:6443"  # allow k8s tokens for testing
+        - "{{ $.Values.config.airflow.auth.service_token.audience }}"  # allow airflow service account to access airflow
 
     extra_rbac: ~
     local_settings:
@@ -120,7 +126,7 @@ config:
         test_connection: enabled
         xcom_backend: airflow.providers.common.io.xcom.backend.XComObjectStorageBackend
         might_contain_dag_callable: import_helper.focused_import # Handles $.Values.airflow.config.dags_filter filtering
-        execution_api_server_url: "https://{{ template \"mesh.name.fqdn\" . }}:{{ $.Values.mesh.public_port }}/execution/"
+        execution_api_server_url: "{{ $.Values._vars.airflow_api_url }}/execution/"
       common.io:
         # Store XCOMs larger than 500KB in S3 instead of database - T415661
         xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/xcoms

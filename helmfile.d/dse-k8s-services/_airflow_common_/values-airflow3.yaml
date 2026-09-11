@@ -12,6 +12,9 @@ dagProcessor:
 
 config:
   airflow:
+    auth:
+      service_token:
+        audience: airflow
     config:
       scheduler:
         standalone_dag_processor: true
