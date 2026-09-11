@@ -1,0 +1,155 @@
+docker:
+  registry: docker-registry.wikimedia.org
+  pull_policy: IfNotPresent
+
+resources:
+  replicas: 1
+
+podSecurityContext: {}
+
+app:
+  image: "repos/data-engineering/liftwing-studio/open-webui"
+  version: latest
+  port: 8080
+  command: []
+  args: []
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2
+    memory: 2Gi
+  liveness_probe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  data_dir: /app/backend/data
+  persistence:
+    enabled: false
+    storage_class: override_me
+    size: 10Gi
+    access_mode: ReadWriteOnce
+    claim_name: ""
+  data_volume:
+    sizeLimit: 2Gi
+  database:
+    existingSecret: ""
+    key: uri
+  volumes: []
+  volumeMounts: []
+
+litellm:
+  enabled: true
+  image: "repos/data-engineering/liftwing-studio/litellm"
+  version: latest
+  port: 4000
+  command: []
+  args: []
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+  liveness_probe:
+    httpGet:
+      path: /health/liveliness
+      port: 4000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness_probe:
+    httpGet:
+      path: /health/readiness
+      port: 4000
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  config_dir: /etc/litellm
+  env: {}
+  config:
+    model_list: []
+    litellm_settings:
+      drop_params: true
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+
+config:
+  public: {}
+  private: {}
+
+monitoring:
+  enabled: false
+
+service:
+  deployment: minikube
+  port:
+    name: http
+    targetPort: 8080
+    port: 8080
+    nodePort: null
+
+debug:
+  enabled: false
+  ports: []
+
+ingress:
+  enabled: false
+  keepNodePort: false
+  staging: false
+  gatewayHosts:
+    default: ""
+    disableDefaultHosts: false
+    extraFQDNs: []
+  existingGatewayName: ""
+  routeHosts: []
+  httproutes: []
+  base_cors_policy: false
+  custom_cors_policy: {}
+
+mesh:
+  enabled: false
+  image_version: latest
+  certs:
+    cert: "snakeoil"
+    key: "snakeoil"
+  idle_timeout: "4.5s"
+  public_port: 8080
+  local_access_log_min_code: "200"
+  request_headers_to_add: []
+  upstream_timeout: "60s"
+  telemetry:
+    enabled: true
+    port: 1667
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+discovery:
+  listeners: []
+
+tcp_proxy:
+  listeners: []
+
+services_proxy: ~
+tcp_services_proxy: ~
+
+networkpolicy:
+  egress:
+    enabled: false
+
+kafka:
+  allowed_clusters: []
+
+affinity: {}

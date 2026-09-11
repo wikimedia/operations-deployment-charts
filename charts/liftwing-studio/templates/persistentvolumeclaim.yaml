@@ -1,0 +1,15 @@
+{{- if .Values.app.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "liftwing-studio.pvc_name" . }}
+  {{- include "base.meta.labels" . | indent 2 }}
+spec:
+  accessModes:
+    - {{ .Values.app.persistence.access_mode | default "ReadWriteOnce" }}
+  volumeMode: Filesystem
+  storageClassName: {{ required "app.persistence.storage_class is required" .Values.app.persistence.storage_class }}
+  resources:
+    requests:
+      storage: {{ .Values.app.persistence.size }}
+{{- end }}

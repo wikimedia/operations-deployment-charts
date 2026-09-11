@@ -1,0 +1,16 @@
+app:
+  image: repos/data-engineering/liftwing-studio/open-webui
+  version: latest
+
+litellm:
+  enabled: false
+
+config:
+  public:
+    OPENAI_API_BASE_URL: "http://some-endpoint.example:8000/v1"
+  private:
+    OPENAI_API_KEY: fixture-only
+    WEBUI_SECRET_KEY: fixture-only
+
+service:
+  deployment: minikube

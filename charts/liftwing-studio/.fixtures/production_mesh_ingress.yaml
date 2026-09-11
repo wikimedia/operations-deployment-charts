@@ -1,0 +1,88 @@
+chartName: liftwing-studio
+
+monitoring:
+  enabled: true
+
+resources:
+  replicas: 1
+
+app:
+  image: repos/data-engineering/liftwing-studio/open-webui
+  version: "0.11.3-1"
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2
+    memory: 2Gi
+  persistence:
+    enabled: true
+    storage_class: ceph-rbd-ssd
+    size: 20Gi
+  database:
+    existingSecret: postgresql-liftwing-studio-app
+    key: uri
+
+litellm:
+  image: repos/data-engineering/liftwing-studio/litellm
+  version: "1.100.0-1"
+  env:
+    SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+  config:
+    model_list:
+      - model_name: qwen3-14b
+        litellm_params:
+          model: hosted_vllm/llm-qwen3-14b
+          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          extra_headers:
+            Host: llm-qwen3-14b.llm.wikimedia.org
+      - model_name: qwen36-27b
+        litellm_params:
+          model: hosted_vllm/llm-qwen36-27b
+          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          extra_headers:
+            Host: llm-qwen36-27b.llm.wikimedia.org
+    litellm_settings:
+      drop_params: true
+      request_timeout: 600
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+
+config:
+  public:
+    ENABLE_PERSISTENT_CONFIG: "False"
+    ENABLE_OLLAMA_API: "False"
+    ENABLE_OPENAI_API: "True"
+    WEBUI_URL: "https://liftwing-studio.discovery.wmnet"
+  private:
+    LITELLM_MASTER_KEY: sk-fixture-only
+    WEBUI_SECRET_KEY: fixture-only
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 8443
+  upstream_timeout: "600s"
+  telemetry:
+    enabled: true
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.1.63/32
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.2.63/32
+      ports:
+      - protocol: tcp
+        port: 30443
+
+ingress:
+  enabled: true
+  selectors:
+    service.istio.io/canonical-name: istio-ingressgateway-services
+    istio: ingressgateway

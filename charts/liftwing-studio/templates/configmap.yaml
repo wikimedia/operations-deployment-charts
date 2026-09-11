@@ -1,0 +1,11 @@
+{{- if .Values.litellm.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" . "Name" "litellm-config") | indent 2 }}
+data:
+  config.yaml: |-
+    {{- toYaml .Values.litellm.config | nindent 4 }}
+{{- end }}
+{{ include "mesh.configuration.configmap" . }}
