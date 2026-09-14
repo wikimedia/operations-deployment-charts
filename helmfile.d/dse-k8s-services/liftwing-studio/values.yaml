@@ -1,0 +1,120 @@
+chartName: liftwing-studio
+
+monitoring:
+  enabled: true
+
+podSecurityContext:
+  fsGroup: 900
+  fsGroupChangePolicy: OnRootMismatch
+
+resources:
+  replicas: 1
+
+app:
+  image: repos/data-engineering/liftwing-studio/open-webui
+  version: "0.11.3-2026-09-11-095120-686de61c3013396f4941f5c881bd30c87cfd4bae@sha256:983efc9254aba76e7867909fe7c19422d8983ac76fc8c6a1614ca9c01456754c"
+  limits:
+    cpu: 2
+    memory: 2Gi
+    ephemeral-storage: 10Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+  data_dir: /app/backend/data
+  persistence:
+    enabled: true
+    storage_class: ceph-rbd-ssd
+    size: 10Gi
+  database:
+    existingSecret: postgresql-liftwing-studio-app
+    key: uri
+
+litellm:
+  image: repos/data-engineering/liftwing-studio/litellm
+  version: "1.100.0-2026-09-11-095120-686de61c3013396f4941f5c881bd30c87cfd4bae@sha256:a21e8a7feb7e8c1480b939d0a2b5093294027491b1f75fb6bc7a74825095b522"
+  limits:
+    cpu: 1
+    memory: 1Gi
+    ephemeral-storage: 5Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+    ephemeral-storage: 500Mi
+  env:
+    SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+    REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+    LITELLM_TELEMETRY: "False"
+    LITELLM_LOCAL_MODEL_COST_MAP: "True"
+  config:
+    model_list:
+      - model_name: qwen3-14b
+        litellm_params:
+          model: hosted_vllm/llm-qwen3-14b
+          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          extra_headers:
+            Host: llm-qwen3-14b.llm.wikimedia.org
+      - model_name: qwen36-27b
+        litellm_params:
+          model: hosted_vllm/llm-qwen36-27b
+          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          extra_headers:
+            Host: llm-qwen36-27b.llm.wikimedia.org
+    litellm_settings:
+      drop_params: true
+      request_timeout: 600
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+
+config:
+  public:
+    ENABLE_PERSISTENT_CONFIG: "True"
+    ENABLE_OLLAMA_API: "False"
+    ENABLE_OPENAI_API: "True"
+    WEBUI_URL: "https://liftwing-studio.discovery.wmnet:30443"
+    WEBUI_SESSION_COOKIE_SECURE: "true"
+    WEBUI_SESSION_COOKIE_SAME_SITE: "lax"
+    WEBUI_AUTH_COOKIE_SECURE: "true"
+    WEBUI_AUTH_COOKIE_SAME_SITE: "lax"
+    ENABLE_SIGNUP: "True"
+    DEFAULT_USER_ROLE: "pending"
+    ENABLE_LOGIN_FORM: "True"
+    SHOW_ADMIN_DETAILS: "false"
+    RAG_EMBEDDING_ENGINE: "openai"
+    AUDIO_STT_ENGINE: "openai"
+    OFFLINE_MODE: "True"
+    HF_HUB_OFFLINE: "1"
+    ENABLE_VERSION_UPDATE_CHECK: "False"
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 8443
+  upstream_timeout: "600s"
+  telemetry:
+    enabled: true
+  resources:
+    requests:
+      cpu: 500m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+
+ingress:
+  enabled: true
