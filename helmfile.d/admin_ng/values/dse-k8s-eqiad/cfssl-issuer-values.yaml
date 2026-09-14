@@ -1,6 +1,8 @@
 issuers:
   discovery:
     profile: k8s_dse
+    # In case of fire, you can use pki1003
+    url: https://pki1002.eqiad.wmnet:8443
 
   # This cfssl issuer will be used to create certificates for our Opensearch clusters valid
   # for 6 months, because the opensearch-operator does not restart opensearch pods when the
