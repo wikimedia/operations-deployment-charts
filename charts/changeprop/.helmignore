@@ -2,6 +2,8 @@
 # This supports shell glob matching, relative path matching, and
 # negation (prefixed with !). Only one pattern per line.
 .DS_Store
+# Avoid "Error: chart file [...] is larger than the maximum file size 5242880"
+.venv/
 # Common VCS dirs
 .git/
 .gitignore
