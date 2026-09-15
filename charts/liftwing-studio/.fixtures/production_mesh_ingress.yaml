@@ -53,10 +53,24 @@ config:
     ENABLE_PERSISTENT_CONFIG: "False"
     ENABLE_OLLAMA_API: "False"
     ENABLE_OPENAI_API: "True"
-    WEBUI_URL: "https://liftwing-studio.discovery.wmnet"
+    WEBUI_URL: "https://liftwing-studio.discovery.wmnet:30443"
+    ENABLE_OAUTH: "True"
+    ENABLE_OAUTH_SIGNUP: "True"
+    ENABLE_OAUTH_PERSISTENT_CONFIG: "False"
+    OAUTH_CLIENT_ID: "liftwing_studio"
+    OAUTH_PROVIDER_NAME: "Wikimedia SSO"
+    OPENID_PROVIDER_URL: "https://idp.wikimedia.org/oidc/.well-known"
+    OPENID_REDIRECT_URI: "https://liftwing-studio.discovery.wmnet:30443/oauth/oidc/login/callback"
+    OAUTH_SCOPES: "openid email profile groups"
+    OAUTH_AUTO_REDIRECT: "True"
+    ENABLE_PASSWORD_AUTH: "False"
+    ENABLE_LOGIN_FORM: "False"
+    ENABLE_SIGNUP: "False"
+    DEFAULT_USER_ROLE: "user"
   private:
     LITELLM_MASTER_KEY: sk-fixture-only
     WEBUI_SECRET_KEY: fixture-only
+    OAUTH_CLIENT_SECRET: fixture-only
 
 service:
   deployment: production
