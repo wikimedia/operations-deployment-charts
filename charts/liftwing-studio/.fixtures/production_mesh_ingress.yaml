@@ -81,6 +81,9 @@ networkpolicy:
       - protocol: tcp
         port: 30443
 
+external_services:
+  cas: [idp]
+
 ingress:
   enabled: true
   selectors:
