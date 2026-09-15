@@ -92,7 +92,7 @@ HTTP_LOADER_REQUEST_TIMEOUT = 300
 UPLOAD_MAX_SIZE = 1048576 # 1GB
 
 ## Allow each worker to take more than a request at time.
-ENGINE_THREADPOOL_SIZE = 2
+ENGINE_THREADPOOL_SIZE = 4
 
 ## List of filters that thumbor will allow to be used in generated images. All of
 ## them must be full names of python modules (python must be able to import
