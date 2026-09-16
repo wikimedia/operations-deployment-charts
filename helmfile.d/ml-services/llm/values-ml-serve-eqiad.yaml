@@ -581,10 +581,10 @@ inference_services:
   semantic-highlighting-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-semantic-highlighting"
-      image_version: "2026-09-14-121745-publish"
+      image_version: "2026-09-16-093148-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "semantic-highlighter-staging"
+          value: "semantic-highlighting-staging"
         - name: STORAGE_URI
           value: "s3://wmf-ml-models/semantic-highlighting/v1/20260914093624/"
         - name: MODEL_PATH
