@@ -151,6 +151,7 @@ SUBPROCESS_TIMEOUT = {{ .Values.main_app.subprocess_timeout.timeout }}
 SUBPROCESS_TIMEOUT_KILL_AFTER = {{ .Values.main_app.subprocess_timeout.kill_after }}
 
 VIPS_ENGINE_MIN_PIXELS = 10000000
+VIPS_ENGINE_JPG_ROLLOUT_HEX = ['a']
 
 CHROMA_SUBSAMPLING = '4:2:0'
 QUALITY_LOW = 40
