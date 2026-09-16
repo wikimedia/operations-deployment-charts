@@ -670,6 +670,67 @@ inference_services:
             memory: 16Gi
             ephemeral-storage: 10Gi
 
+  semantic-highlighting:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-semantic-highlighting"
+      image_version: "2026-09-16-093148-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "semantic-highlighting"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/semantic-highlighting/v1/20260914093624/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        - name: SH_DTYPE
+          # Use default model prediction, bfloat16 does not yield better perfs
+          value: "float32"
+        - name: SH_MAX_ANSWER_LEN
+          # Max answer span length (in tokens)
+          value: "30"
+        - name: SH_TOP_K
+          # Candidate starts/ends considered when decoding
+          value: "20"
+        - name: SH_BATCH_SIZE
+          # Default result set size on web is 20
+          value: "20"
+        - name: SH_MIN_CONTEXT_TOKENS
+          # Passages shorter than this skip inference and return no highlight; `0` disables
+          value: "40"
+      container:
+        resources:
+          limits:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 15Gi
+          requests:
+            cpu: "6"
+            memory: 16Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 10Gi
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
+                        - "ml-serve1015.eqiad.wmnet"
+
   semantic-highlighting-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-semantic-highlighting"
