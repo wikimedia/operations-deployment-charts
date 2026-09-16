@@ -25,7 +25,7 @@ main_app:
   # - 1 GB for apcu (maybe something more for appservers)
   # - 500 Mb per worker
   # - 500mi CPU per worker + 500mi for the master process
-  # Following removed and calculated in lamp deployment based on php workers number
+  # Following removed and calculated in mediawiki container based on php workers number
   requests:
     # Set to true to ignore the cpu/memory requests and let the chart compute them
     # See php.cpu_per_worker and php.memory_per_worker for documentation
