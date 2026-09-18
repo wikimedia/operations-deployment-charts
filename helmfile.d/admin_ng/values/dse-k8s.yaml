@@ -44,6 +44,8 @@ GlobalNetworkPolicies:
         nets:
             # eqiad
         - "10.67.24.0/21"
+            # eqiad, second Pod range during the move to 10.68.0.0/17 (T429773)
+        - "10.68.0.0/17"
             # codfw
         - "10.192.96.0/21"
     - action: Allow
