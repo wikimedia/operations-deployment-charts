@@ -12,6 +12,7 @@
 - Remove support for (unused) percentage-based listener split
 - Fix support for RouteAction-level stream idle timeout in the split listener
   case (was missing)
+- values.yaml documented mesh.upstream_idle_timeout but the module always read mesh.idle_upstream_timeout.
 
 ## service 1.2.1
 

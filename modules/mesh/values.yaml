@@ -47,8 +47,8 @@ mesh:
   upstream_local_port: ~
   # Timeout of a request to the local service
   upstream_timeout: "60s"
-  # timeout for an idle upstream connection - 300s is the envoy default
-  upstream_idle_timeout: "300s"
+  # Timeout for an idle upstream connection; unset defers to Envoy's 5-minute default.
+  idle_upstream_timeout: ~
   # Enabling telemetry, telemetry port.
   telemetry:
     enabled: true
