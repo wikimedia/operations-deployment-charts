@@ -10,10 +10,11 @@ app:
 
   taskManager:
     # NOTE: parallelism == TM replicas * numberOfTaskSlots.
-    replicas: 10
+    # 10 replicas can process 1M events/sec, use it to catch up after a downtime.
+    replicas: 6
     resource:
       cpu: 2
-      memory: 3000m
+      memory: 2500m
 
   flinkVersion: v2_0
 
