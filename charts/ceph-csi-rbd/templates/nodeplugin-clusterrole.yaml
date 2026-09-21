@@ -9,12 +9,14 @@ metadata:
     component: {{ .Values.nodeplugin.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- with .Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
 rules:
-{{- if .Values.topology.enabled }}
   - apiGroups: [""]
     resources: ["nodes"]
     verbs: ["get"]
-{{- end }}
+  # WMF: the Vault grants (secrets, configmaps, serviceaccounts) and
+  # serviceaccounts/token are not granted here. We do not use the Vault KMS, and
+  # the tenant namespace grants are made by nodeplugin-role.yaml instead.
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["get"]

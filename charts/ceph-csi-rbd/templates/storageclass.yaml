@@ -1,3 +1,6 @@
+{{- /* WMF: upstream renders a single StorageClass from .Values.storageClass.
+       We loop over .Values.storageClass.classes instead, so that one release
+       can offer several classes, for example one per Ceph pool. */}}
 {{- if .Values.storageClass.create -}}
 {{ range $storageClass := $.Values.storageClass.classes }}
 ---
@@ -14,13 +17,19 @@ metadata:
     chart: {{ include "ceph-csi-rbd.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
+    {{- with $.Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
 provisioner: {{ $.Values.driverName }}
 parameters:
   clusterID: {{ $storageClass.clusterID }}
-  pool: {{ $storageClass.pool }}
   imageFeatures: {{ $storageClass.imageFeatures | default "layering" }}
+{{- if $storageClass.pool }}
+  pool: {{ $storageClass.pool }}
+{{- end }}
 {{- if $storageClass.tryOtherMounters }}
   tryOtherMounters: {{ $storageClass.tryOtherMounters | quote}}
+{{- end }}
+{{- if $storageClass.mkfsOptions }}
+  mkfsOptions: {{ $storageClass.mkfsOptions }}
 {{- end }}
 {{- if $storageClass.mounter }}
   mounter: {{ $storageClass.mounter }}
@@ -52,6 +61,15 @@ parameters:
 {{- end }}
 {{- if $storageClass.unmapOptions }}
   unmapOptions: {{ $storageClass.unmapOptions }}
+{{- end }}
+{{- if $storageClass.stripeUnit }}
+  stripeUnit: {{ $storageClass.stripeUnit | quote }}
+{{- end }}
+{{- if $storageClass.stripeCount }}
+  stripeCount: {{ $storageClass.stripeCount | quote }}
+{{- end }}
+{{- if $storageClass.objectSize }}
+  objectSize: {{ $storageClass.objectSize | quote }}
 {{- end }}
   csi.storage.k8s.io/provisioner-secret-name: {{ $storageClass.provisionerSecret | default "csi-rbd-secret" }}
 {{- if $storageClass.provisionerSecretNamespace }}

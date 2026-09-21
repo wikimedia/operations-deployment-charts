@@ -10,6 +10,7 @@ metadata:
     component: {{ .Values.provisioner.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- with .Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
 rules:
   - apiGroups: [""]
     resources: ["configmaps"]
@@ -18,19 +19,16 @@ rules:
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create"]
 {{- if .Values.secret.create }}
+  # WMF: the provisioner ClusterRole cannot read secrets. Name the one secret
+  # it needs instead.
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "watch", "list"]
     resourceNames: ["{{ .Values.secret.name }}"]
-{{- end -}}
-{{- if .Values.provisioner.podSecurityPolicy.enabled }}
-  - apiGroups: ['policy']
-    resources: ['podsecuritypolicies']
-    verbs: ['use']
-    resourceNames: ['{{ include "ceph-csi-rbd.provisioner.fullname" . }}']
-{{- end -}}
+{{- end }}
 
-
+{{- /* WMF: grant the permissions that upstream puts in the ClusterRole, but
+       only in the namespaces that consume our storage classes. */}}
 {{ range $tenantNamespace := $.Values.tenantNamespaces }}
 ---
 kind: Role
@@ -44,6 +42,7 @@ metadata:
     component: {{ $.Values.provisioner.name }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
+    {{- with $.Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
 rules:
 {{- if $.Values.storageClass.encrypted }}
   - apiGroups: [""]
