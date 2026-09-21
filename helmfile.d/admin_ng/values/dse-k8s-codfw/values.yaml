@@ -1,3 +1,8 @@
+# Take each ceph-csi chart here explicitly, together with the container images
+# that chart version needs. common.yaml pins the rest of the fleet. See T407166.
+chartVersions:
+  wmf-stable/ceph-csi-rbd: ~ # Install latest version
+
 # When adding a new namespace, please keep the entries alphabetically sorted
 namespaces:
   echoserver: {}

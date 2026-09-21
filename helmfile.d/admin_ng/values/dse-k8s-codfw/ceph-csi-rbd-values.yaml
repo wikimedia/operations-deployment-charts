@@ -12,11 +12,11 @@ nodeplugin:
   registrar:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-node-driver-registrar
-      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2ec5cc7339112097310d44a46e7855f413321490ceae9609ac1e2bbaf63b8e8c
+      tag: 2026-09-21-110728-306e18f10e1e7869bddcd8daca94d2927774f8e6@sha256:d0ad01310fd8e0d3ce8218db514a2bf9a1e4bb5697af0c8714f2749a7e8fbc89
   plugin:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/ceph-csi
-      tag: 2026-06-11-173435-f35c22fc39d70394e218d98db84c6a4ede877884@sha256:f0d4d0717f44475882e0b53093b114116938633d5d4e6a0c1a6a0820acb537e2
+      tag: 2026-09-18-134456-904779674c9496bf744cb072864906505607d2bf@sha256:1cf0d13631f0c5dd9d4fda80bc5b67c2ae4956a99193f69136476a23bb678776
   tolerations:
   # allow the ceph-csi-rbd pods to run on dedicated workers,
   # as the workload might still require access to Ceph rbd volumes.
@@ -31,15 +31,15 @@ provisioner:
   provisioner:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-provisioner
-      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:2e3be4184503ba6b70ad26d4ef9f6d22624f72cbb9c57e5e778a2fb20356949d
+      tag: 2026-09-21-110728-306e18f10e1e7869bddcd8daca94d2927774f8e6@sha256:5b4b3b52b0663963879089e3c1ec86e5f0947f06c8ec12c326b0b49b75d48626
   attacher:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-attacher
-      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:0c19e6639d82980599bece800ddc03532c8e52f8e2c83ff2e36015ca4043309c
+      tag: 2026-09-21-110728-306e18f10e1e7869bddcd8daca94d2927774f8e6@sha256:3fbc647df78586ce0ffa0fe22fb0834b5567e4dadd68845aec325ea229686781
   resizer:
     image:
       repository: docker-registry.discovery.wmnet/repos/data-engineering/kubernetes/csi/csi-resizer
-      tag: 2024-08-22-120807-77a5c01b194c89e260e0036d452576b4c6f7b376@sha256:255f17ae27ff06eae246d1ac8535e278069f1f3dabd8d315f5254470bd3fc164
+      tag: 2026-09-21-110728-306e18f10e1e7869bddcd8daca94d2927774f8e6@sha256:34bede5dc15e585f33a1ad9ecbd57b8fc8289b168d27900149ebe4cd916e6e20
   snapshotter:
     enabled: false
 
