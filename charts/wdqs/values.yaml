@@ -134,8 +134,6 @@ proxy:
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.wikimedia.org/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/releases/permalink/latest/downloads/allowlist.json
       # Prefix for all service metrics. Not: the dot at the end of prefix is required by convention.
       WDQS_PROXY_METRICS_PREFIX: wdqs.proxy.
-      # disable all metrics reporting by default. Toggle desired binders in helmfiles.
-      QUARKUS_MICROMETER_ENABLED: false
   readiness_probe:
     httpGet:
       path: /health
