@@ -12,6 +12,9 @@ opensearchCluster:
           accessModes:
             - ReadWriteOnce
       replicas: 1
+      env:
+        - name: DISABLE_SECURITY_PLUGIN
+          value: "false"
       roles:
         - "data"
       resources:
