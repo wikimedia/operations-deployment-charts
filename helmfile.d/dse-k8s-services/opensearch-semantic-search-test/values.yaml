@@ -2,12 +2,6 @@ opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search-test"
     image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-0
-    additionalConfig:
-      # disable query insights metrics (https://github.com/opensearch-project/query-insights/issues/651)
-      search.insights.top_queries.latency.enabled: "false"
-      search.insights.top_queries.cpu.enabled: "false"
-      search.insights.top_queries.memory.enabled: "false"
-      search.insights.recommendations.enabled: "false"
   nodePools:
     - &node-pool-common
       component: data
