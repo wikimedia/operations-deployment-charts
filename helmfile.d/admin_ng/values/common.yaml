@@ -141,6 +141,12 @@ chartVersions:
   wmf-stable/calico: 0.4.0
   wmf-stable/calico-crds: 0.3.0
   wmf-stable/cert-manager: 1.16.4
+  # Pin ceph-csi to the versions prod runs today. T407166 rebases both charts
+  # on upstream v3.14.2 and publishes 0.2.0. Without a pin, every cluster takes
+  # the new chart on its next apply. Each cluster opts in separately, in a
+  # commit that names the chart version and the container images together.
+  wmf-stable/ceph-csi-cephfs: 0.1.8
+  wmf-stable/ceph-csi-rbd: 0.1.13
   # Pin kserve to the versions prod runs today. This change publishes 0.2.0, and
   # without a pin every cluster would take it on its next apply. ml-staging-codfw
   # overrides these to `~` when it opts in to 0.20.
