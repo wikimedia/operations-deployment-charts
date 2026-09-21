@@ -95,6 +95,47 @@ proxy:
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
       QUARKUS_MANAGEMENT_PORT: 9100
+      QUERY_REWRITER_SPARQL_PREFIXES: |
+        # Core Wikidata entities
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdata: <http://www.wikidata.org/wiki/Special:EntityData/>
+        PREFIX wds: <http://www.wikidata.org/entity/statement/>
+        PREFIX wdv: <http://www.wikidata.org/value/>
+        PREFIX wdref: <http://www.wikidata.org/reference/>
+        # Property types
+        PREFIX p: <http://www.wikidata.org/prop/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/>
+        PREFIX ps: <http://www.wikidata.org/prop/statement/>
+        PREFIX psv: <http://www.wikidata.org/prop/statement/value/>
+        PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>
+        PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
+        PREFIX pqv: <http://www.wikidata.org/prop/qualifier/value/>
+        PREFIX pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/>
+        PREFIX pr: <http://www.wikidata.org/prop/reference/>
+        PREFIX prv: <http://www.wikidata.org/prop/reference/value/>
+        PREFIX prn: <http://www.wikidata.org/prop/reference/value-normalized/>
+        PREFIX wdno: <http://www.wikidata.org/prop/novalue/>
+        # Wikibase ontology
+        PREFIX wikibase: <http://wikiba.se/ontology#>
+        PREFIX wikibaseqs: <http://wikiba.se/queryService#>
+        # Standard external namespaces
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+        PREFIX schema: <http://schema.org/>
+        PREFIX prov: <http://www.w3.org/ns/prov#>
+        PREFIX dct: <http://purl.org/dc/terms/>
+        PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+        # Geospatial
+        PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+        PREFIX geof: <http://www.opengis.net/def/geosparql/function/>
+        # Blazegraph extensions
+        PREFIX bd: <http://www.bigdata.com/rdf#>
+        # we need prefix to strip hints from incoming queries.
+        PREFIX hint: <http://www.bigdata.com/queryHints#>
   # Bug: T439248
   readiness_probe:
     httpGet:
