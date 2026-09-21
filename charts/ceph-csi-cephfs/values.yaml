@@ -2,6 +2,9 @@
 rbac:
   # Specifies whether RBAC resources should be created
   create: true
+  # When possible try and reduce the scope of permission to only give
+  # access to resources defined in the config. See the README for more info
+  leastPrivileges: true
 
 serviceAccounts:
   nodeplugin:
@@ -28,7 +31,25 @@ serviceAccounts:
 #     cephFS:
 #       subvolumeGroup: "csi"
 #       netNamespaceFilePath: "{{ .kubeletDir }}/plugins/{{ .driverName }}/net"
+#       radosNamespace: "csi"
 csiConfig: []
+
+# Configuration for the encryption KMS
+# yamllint disable-line rule:line-length
+# Ref: https://github.com/ceph/ceph-csi/blob/devel/docs/deploy-cephfs.md#cephfs-volume-encryption
+# Example:
+#   encryptionKMSConfig:
+#     encryptionKMSType: vault
+#     vaultAddress: https://vault.example.com
+#     vaultAuthPath: /v1/auth/kubernetes/login
+#     vaultRole: csi-kubernetes
+#     vaultPassphraseRoot: /v1/secret
+#     vaultPassphrasePath: ceph-csi/
+#     vaultCAVerify: "true"
+encryptionKMSConfig: {}
+
+# Labels to apply to all resources
+commonLabels: {}
 
 # Set logging level for csi containers.
 # Supported values from 0 to 5. 0 for general useful logs,
@@ -37,6 +58,27 @@ csiConfig: []
 logLevel: 5
 # sidecarLogLevel is the variable for Kubernetes sidecar container's log level
 sidecarLogLevel: 1
+# Log slow operations at the specified rate.
+# Operation is considered slow if it outlives its deadline.
+logSlowOperationInterval: 30s
+
+# Set fsGroupPolicy for CSI Driver object spec
+# https://kubernetes-csi.github.io/docs/support-fsgroup.html
+# The following modes are supported:
+# - None: Indicates that volumes will be mounted with no modifications, as the
+#   CSI volume driver does not support these operations.
+# - File: Indicates that the CSI volume driver supports volume ownership and
+#   permission change via fsGroup, and Kubernetes may use fsGroup to change
+#   permissions and ownership of the volume to match user requested fsGroup in
+#   the pod's SecurityPolicy regardless of fstype or access mode.
+# - ReadWriteOnceWithFSType: Indicates that volumes will be examined to
+#   determine if volume ownership and permissions should be modified to match
+#   the pod's security policy.
+# Changes will only occur if the fsType is defined and the persistent volume's
+# accessModes contains ReadWriteOnce.
+CSIDriver:
+  fsGroupPolicy: "File"
+  seLinuxMount: true
 
 nodeplugin:
   name: nodeplugin
@@ -78,20 +120,25 @@ nodeplugin:
       loadBalancerIP: ""
       loadBalancerSourceRanges: []
 
+  ## Reference to one or more secrets to be used when pulling images
+  ##
+  imagePullSecrets: []
+  # - name: "image-pull-secret"
+
   profiling:
     enabled: false
 
   registrar:
     image:
       repository: registry.k8s.io/sig-storage/csi-node-driver-registrar
-      tag: v2.5.1
+      tag: v2.13.0
       pullPolicy: IfNotPresent
     resources: {}
 
   plugin:
     image:
       repository: quay.io/cephcsi/cephcsi
-      tag: v3.7.2
+      tag: v3.14.2
       pullPolicy: IfNotPresent
     resources: {}
 
@@ -101,6 +148,12 @@ nodeplugin:
 
   affinity: {}
 
+  annotations: {}
+
+  podSecurityContext: {}
+
+  podAnnotations: {}
+
   # Set to true to enable Ceph Kernel clients
   # on kernel < 4.17 which support quotas
   # forcecephkernelclient: true
@@ -109,11 +162,6 @@ nodeplugin:
   # example: kernelmountoptions: "recover_session=clean"
   kernelmountoptions: ""
   fusemountoptions: ""
-
-  # If true, create & use Pod Security Policy resources
-  # https://kubernetes.io/docs/concepts/policy/pod-security-policy/
-  podSecurityPolicy:
-    enabled: false
 
 provisioner:
   name: provisioner
@@ -170,15 +218,28 @@ provisioner:
       loadBalancerIP: ""
       loadBalancerSourceRanges: []
 
+  ## Reference to one or more secrets to be used when pulling images
+  ##
+  imagePullSecrets: []
+  # - name: "image-pull-secret"
+
   profiling:
     enabled: false
 
   provisioner:
     image:
       repository: registry.k8s.io/sig-storage/csi-provisioner
-      tag: v3.2.1
+      tag: v5.1.0
       pullPolicy: IfNotPresent
     resources: {}
+    args:
+    #   # httpEndpointPort specifies the http server port for
+    #   # diagnostics, health checks and metrics.
+    #   # Uncomment below line to enable the `http-endpoint` arg for sidecar
+    #   httpEndpointPort: 8090
+    ## For further options, check
+    ## https://github.com/kubernetes-csi/external-provisioner#command-line-options
+    extraArgs: []
 
   # set metadata on volume
   setmetadata: true
@@ -188,17 +249,35 @@ provisioner:
     enabled: true
     image:
       repository: registry.k8s.io/sig-storage/csi-resizer
-      tag: v1.5.0
+      tag: v1.13.1
       pullPolicy: IfNotPresent
     resources: {}
+    args:
+    #   # httpEndpointPort specifies the http server port for
+    #   # diagnostics, health checks and metrics.
+    #   # Uncomment below line to enable the `http-endpoint` arg for sidecar
+    #   httpEndpointPort: 8091
+    ## For further options, check
+    ## https://github.com/kubernetes-csi/external-resizer#recommended-optional-arguments
+    extraArgs: []
 
   snapshotter:
     enabled: true
     image:
       repository: registry.k8s.io/sig-storage/csi-snapshotter
-      tag: v6.0.1
+      tag: v8.2.0
       pullPolicy: IfNotPresent
     resources: {}
+    args:
+      # enableVolumeGroupSnapshots enables support for volume group snapshots
+      enableVolumeGroupSnapshots: false
+      # httpEndpointPort specifies the http server port for
+      # diagnostics, health checks and metrics.
+      # Uncomment below line to enable the `http-endpoint` arg for sidecar
+      # httpEndpointPort: 8092
+    ## For further options, check
+    ## https://github.com/kubernetes-csi/external-snapshotter#csi-external-snapshotter-sidecar-command-line-options
+    extraArgs: []
 
   nodeSelector: {}
 
@@ -206,10 +285,22 @@ provisioner:
 
   affinity: {}
 
-  # If true, create & use Pod Security Policy resources
-  # https://kubernetes.io/docs/concepts/policy/pod-security-policy/
-  podSecurityPolicy:
-    enabled: false
+  annotations: {}
+
+  podSecurityContext: {}
+
+  podAnnotations: {}
+
+# readAffinity:
+# Enable read affinity for CephFS subvolumes. Recommended to
+# set to true if running kernel 5.8 or newer.
+# enabled: false
+# Define which node labels to use as CRUSH location.
+# This should correspond to the values set in the CRUSH map.
+# NOTE: the value here serves as an example
+# crushLocationLabels:
+#   - topology.kubernetes.io/region
+#   - topology.kubernetes.io/zone
 
 # Mount the host /etc/selinux inside pods to support
 # selinux-enabled filesystems
@@ -257,6 +348,18 @@ storageClass:
     # If omitted, defaults to "csi-vol-".
     # volumeNamePrefix: "foo-bar-"
     volumeNamePrefix: ""
+
+    # (optional) Instruct the plugin it has to encrypt the volume
+    # By default it is disabled. Valid values are "true" or "false".
+    # A string is expected here, i.e. "true", not true.
+    # encrypted: "true"
+    encrypted: ""
+
+    # (optional) Use external key management system for encryption passphrases by
+    # specifying a unique ID matching KMS ConfigMap. The ID is only used for
+    # correlation to configmap entry.
+    encryptionKMSID: ""
+
     # The secrets have to contain user and/or Ceph admin credentials.
     provisionerSecret: csi-cephfs-secret
     # If the Namespaces are not specified, the secrets are assumed to
@@ -278,11 +381,13 @@ secret:
   # Specifies whether the secret should be created
   create: false
   name: csi-cephfs-secret
+  annotations: {}
   # Key values correspond to a user name and its key, as defined in the
   # ceph cluster. User ID should have required access to the 'pool'
   # specified in the storage class
-  adminID: <plaintext ID>
-  adminKey: <Ceph auth key corresponding to ID above>
+  # The userID must not include the "client." prefix!
+  userID: <plaintext ID>
+  userKey: <Ceph auth key corresponding to the userID above>
 
 # This is a sample configmap that helps define a Ceph configuration as required
 # by the CSI plugins.
@@ -296,13 +401,13 @@ cephconf: |
     auth_service_required = cephx
     auth_client_required = cephx
 
-    # Workaround for http://tracker.ceph.com/issues/23446
-    fuse_set_user_groups = false
-
     # ceph-fuse which uses libfuse2 by default has write buffer size of 2KiB
     # adding 'fuse_big_writes = true' option by default to override this limit
     # see https://github.com/ceph/ceph-csi/issues/1928
     fuse_big_writes = true
+
+# Array of extra objects to deploy with the release
+extraDeploy: []
 
 #########################################################
 # Variables for 'internal' use please use with caution! #
@@ -324,7 +429,15 @@ configMapName: ceph-csi-config
 externallyManagedConfigmap: false
 # Name of the configmap used for ceph.conf
 cephConfConfigMapName: ceph-config
+# Name of the configmap used for encryption kms configuration
+kmsConfigMapName: ceph-csi-encryption-kms-config
+# CephFS RadosNamespace used to store CSI specific objects and keys.
+# radosNamespaceCephFS: csi
+# Unique ID distinguishing this instance of Ceph CSI among other instances,
+# when sharing Ceph clusters across CSI instances for provisioning
+# instanceID: default
 
-
-# List of namespaces that make use of the ceph-csi-cephfs storage classes of PersistentVolumes
+# WMF: list of namespaces that use the ceph-csi-cephfs storage classes. Each
+# one gets a Role and a RoleBinding, in place of the cluster wide grants that
+# upstream puts in the provisioner ClusterRole.
 tenantNamespaces: []

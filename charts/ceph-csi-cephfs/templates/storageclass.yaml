@@ -1,3 +1,6 @@
+{{- /* WMF: upstream renders a single StorageClass from .Values.storageClass.
+       We loop over .Values.storageClass.classes instead, so that one release
+       can offer several classes, for example one per CephFS filesystem. */}}
 {{- if .Values.storageClass.create -}}
 {{ range $storageClass := .Values.storageClass.classes }}
 ---
@@ -14,12 +17,19 @@ metadata:
     chart: {{ include "ceph-csi-cephfs.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
+    {{- with $.Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
 provisioner: {{ $.Values.driverName }}
 parameters:
   clusterID: {{ $storageClass.clusterID }}
   fsName: {{ $storageClass.fsName }}
 {{- if $storageClass.pool }}
   pool: {{ $storageClass.pool }}
+{{- end }}
+{{- if $storageClass.encrypted }}
+  encrypted: "{{ $storageClass.encrypted }}"
+{{- end }}
+{{- if $storageClass.encryptionKMSID }}
+  encryptionKMSID: {{ $storageClass.encryptionKMSID }}
 {{- end }}
 {{- if $storageClass.fuseMountOptions }}
   fuseMountOptions: "{{ $storageClass.fuseMountOptions }}"

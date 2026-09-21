@@ -9,6 +9,11 @@ metadata:
     component: {{ .Values.nodeplugin.name }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- with .Values.commonLabels }}{{ toYaml . | trim | nindent 4 }}{{- end }}
+{{- if .Values.nodeplugin.annotations }}
+  annotations:
+    {{- toYaml .Values.nodeplugin.annotations | nindent 4 -}}
+{{- end }}
 spec:
   selector:
     matchLabels:
@@ -25,7 +30,13 @@ spec:
         component: {{ .Values.nodeplugin.name }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+        {{- with .Values.commonLabels }}{{ toYaml . | trim | nindent 8 }}{{- end }}
+    {{- if .Values.nodeplugin.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.nodeplugin.podAnnotations | nindent 8 -}}
+    {{- end }}
     spec:
+      securityContext: {{ toYaml .Values.nodeplugin.podSecurityContext | nindent 8 }}
       serviceAccountName: {{ include "ceph-csi-cephfs.serviceAccountName.nodeplugin" . }}
 {{- if .Values.nodeplugin.priorityClassName }}
       priorityClassName: {{ .Values.nodeplugin.priorityClassName }}
@@ -35,33 +46,11 @@ spec:
       # to use e.g. Rook orchestrated cluster, and mons' FQDN is
       # resolved through k8s service, set dns policy to cluster first
       dnsPolicy: ClusterFirstWithHostNet
+{{- if .Values.nodeplugin.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.nodeplugin.imagePullSecrets | indent 8 -}}
+{{- end }}
       containers:
-        - name: driver-registrar
-          # This container requires write privileges to the hostPath
-          # /var/lib/kubelet/plugins_registry in order to create a socket
-          # that is used to register the plugin with the kubelet.
-          securityContext:
-            runAsUser: 0
-            privileged: true
-            allowPrivilegeEscalation: true
-          image: "{{ .Values.nodeplugin.registrar.image.repository }}:{{ .Values.nodeplugin.registrar.image.tag }}"
-          imagePullPolicy: {{ .Values.nodeplugin.registrar.image.pullPolicy }}
-          args:
-            - "--v={{ .Values.logLevel }}"
-            - "--csi-address=/csi/{{ .Values.pluginSocketFile }}"
-            - "--kubelet-registration-path={{ .Values.kubeletDir }}/plugins/{{ .Values.driverName }}/{{ .Values.pluginSocketFile }}"
-          env:
-            - name: KUBE_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-          volumeMounts:
-            - name: socket-dir
-              mountPath: /csi
-            - name: registration-dir
-              mountPath: /registration
-          resources:
-{{ toYaml .Values.nodeplugin.registrar.resources | indent 12 }}
         - name: csi-cephfsplugin
           image: "{{ .Values.nodeplugin.plugin.image.repository }}:{{ .Values.nodeplugin.plugin.image.tag }}"
           imagePullPolicy: {{ .Values.nodeplugin.plugin.image.pullPolicy }}
@@ -78,9 +67,20 @@ spec:
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--v={{ .Values.logLevel }}"
             - "--drivername=$(DRIVER_NAME)"
+{{- if .Values.instanceID }}
+            - "--instanceid={{ .Values.instanceID }}"
+{{- end }}
+{{- if .Values.radosNamespaceCephFS }}
+            - "--radosnamespacecephfs={{ .Values.radosNamespaceCephFS }}"
+{{- end }}
 {{- if .Values.nodeplugin.profiling.enabled }}
             - "--enableprofiling={{ .Values.nodeplugin.profiling.enabled }}"
 {{- end }}
+            - "--enable-read-affinity={{ and .Values.readAffinity .Values.readAffinity.enabled | default false }}"
+{{- if and .Values.readAffinity .Values.readAffinity.enabled }}
+            - "--crush-location-labels={{ .Values.readAffinity.crushLocationLabels | join "," }}"
+{{- end }}
+            - "--logslowopinterval={{ .Values.logSlowOperationInterval }}"
           env:
             - name: POD_IP
               valueFrom:
@@ -133,6 +133,32 @@ spec:
               mountPath: /csi/mountinfo
           resources:
 {{ toYaml .Values.nodeplugin.plugin.resources | indent 12 }}
+        - name: driver-registrar
+          # This container requires write privileges to the hostPath
+          # /var/lib/kubelet/plugins_registry in order to create a socket
+          # that is used to register the plugin with the kubelet.
+          securityContext:
+            runAsUser: 0
+            privileged: true
+            allowPrivilegeEscalation: true
+          image: "{{ .Values.nodeplugin.registrar.image.repository }}:{{ .Values.nodeplugin.registrar.image.tag }}"
+          imagePullPolicy: {{ .Values.nodeplugin.registrar.image.pullPolicy }}
+          args:
+            - "--v={{ .Values.logLevel }}"
+            - "--csi-address=/csi/{{ .Values.pluginSocketFile }}"
+            - "--kubelet-registration-path={{ .Values.kubeletDir }}/plugins/{{ .Values.driverName }}/{{ .Values.pluginSocketFile }}"
+          env:
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+          resources:
+{{ toYaml .Values.nodeplugin.registrar.resources | indent 12 }}
 {{- if .Values.nodeplugin.httpMetrics.enabled }}
         - name: liveness-prometheus
 {{- if .Values.selinuxMount }}
