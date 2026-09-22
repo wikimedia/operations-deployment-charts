@@ -73,6 +73,12 @@ deployExtraClusterRoles:
 - "amdgpu-node-labeller"
 - "spark-support"
 
+# Permit unauthenticated reads of the OIDC discovery document and the JWKS.
+# The Ceph RADOS Gateway will need them to verify projected ServiceAccount tokens.
+# Set this to false to remove the binding again.
+# The binding is in helmfile.d/admin_ng/helmfile_rbac.yaml
+expose_oidc_discovery: true
+
 # These pod security labels are used to allow host paths in certain locations used by analytics workloads.
 # the `include` security policies referenced in these labels are defined in
 # charts/validating-admission-policies/templates/custom-policies
