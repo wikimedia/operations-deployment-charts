@@ -1,8 +1,8 @@
 app:
-  version: v1.5.5-prod
+  version: v2.0.0-prod
 
   service:
-    user_agent: Test Kitchen UI/1.5 (#experiment-platform)
+    user_agent: Test Kitchen UI/2.0 (#experiment-platform)
     validate_deployment_windows: true
 
   logging:
@@ -22,7 +22,6 @@ app:
 
   growthbook:
     include_gb: true
-    include_tk: true
     # http://localhost:6049 is proxied to growthbook-api
     api_url: http://localhost:6049/api/v1/experiments
     ui_url: https://growthbook.wikimedia.org/experiments
