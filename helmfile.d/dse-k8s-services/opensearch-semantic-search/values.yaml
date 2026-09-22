@@ -1,13 +1,7 @@
 opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search"
-    image: docker-registry.discovery.wmnet/repos/data-engineering/opensearch:3@sha256:23ed4054bcf07110e5f2a37d6aa7087ceddeb503ac54118dbe7027a7d522095f
-    additionalConfig:
-      # disable query insights metrics (https://github.com/opensearch-project/query-insights/issues/651)
-      search.insights.top_queries.latency.enabled: "false"
-      search.insights.top_queries.cpu.enabled: "false"
-      search.insights.top_queries.memory.enabled: "false"
-      search.insights.recommendations.enabled: "false"
+    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-2
   nodePools:
     - &node-pool-common
       component: data
@@ -21,6 +15,8 @@ opensearchCluster:
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/share/opensearch/plugins/opensearch-knn/lib
+        - name: DISABLE_SECURITY_PLUGIN
+          value: "false"
       jvm: -Xmx6G -Xms6G -Djava.library.path=/usr/share/opensearch/plugins/opensearch-knn/lib
       roles:
         - "data"
