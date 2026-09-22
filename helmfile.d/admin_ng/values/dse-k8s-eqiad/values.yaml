@@ -438,6 +438,39 @@ namespaces:
         max:
           memory: "40Gi"
           cpu: "12"
+  # Same shape as opensearch-semantic-search, so that the two storage classes
+  # can be compared. This ns keeps its data on local SSDs (topolvm-balanced).
+  # This is a temporary namespace/cluster (Sept 22 2026).
+  opensearch-semantic-search-ssd:
+    resourcequota:
+      compute:
+        requests:
+          cpu: "100"
+          memory: "800Gi"
+        limits:
+          cpu: "100"
+          memory: "800Gi"
+    limitranges:
+      container:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "40Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "2000Mi"
+          cpu: "500m"
+        default:
+          memory: "2000Mi"
+          cpu: "500m"
+      pod:
+        min:
+          memory: "300Mi"
+          cpu: "100m"
+        max:
+          memory: "40Gi"
+          cpu: "12"
   opensearch-semantic-search-test:
     limitranges:
       container:
