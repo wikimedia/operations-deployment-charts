@@ -1,0 +1,74 @@
+# A copy of the opensearch-semantic-search release that keeps its data on local
+# SSDs instead of Ceph. We will run the two side by side to compare the storage
+# back ends. This is a temporary cluster (Sept 22, 2026).
+opensearchCluster:
+  general:
+    serviceName: "opensearch-semantic-search-ssd"
+    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-2
+  nodePools:
+    - &node-pool-common
+      component: data
+      diskSize: "170Gi"
+      persistence:
+        pvc:
+          storageClass: topolvm-balanced
+          accessModes:
+            - ReadWriteOnce
+      replicas: 9
+      env:
+        - name: LD_LIBRARY_PATH
+          value: /usr/share/opensearch/plugins/opensearch-knn/lib
+        - name: DISABLE_SECURITY_PLUGIN
+          value: "false"
+      jvm: -Xmx6G -Xms6G -Djava.library.path=/usr/share/opensearch/plugins/opensearch-knn/lib
+      roles:
+        - "data"
+      resources:
+        requests:
+          memory: "38Gi"
+          cpu: "4000m"
+        limits:
+          memory: "38Gi"
+          cpu: "4000m"
+    # These annotations enable/configure metrics scrapes
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9200"
+        prometheus.io/path: "/_prometheus/metrics"
+        prometheus.io/scheme: "https"
+    - <<: *node-pool-common
+      component: masters
+      roles:
+        - "master"
+        - "data"
+      replicas: 7
+      affinity:
+        # prefer 2 masters are not scheduled on the same k8s worker
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-nodepool: masters
+              topologyKey: kubernetes.io/hostname
+certificate:
+  extraFQDNs:
+  - opensearch-semantic-search-ssd.discovery.wmnet
+  - k8s-ingress-dse-aa.discovery.wmnet
+
+networkpolicy:
+  egress:
+    enabled: true
+    dst_nets:
+    - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
+      ports:
+      - protocol: tcp
+        port: 30443
+    - cidr: 10.64.32.100/32 # relforge1008.eqiad.wmnet, for testing
+      ports:
+      - protocol: tcp
+        port: 8003
