@@ -32,6 +32,17 @@ app:
     # Helm merges maps. Without this, the chart default tcpSocket handler
     # stays, and a probe with two handlers is invalid.
     tcpSocket: null
+    # The HTTP server binds only after all pinned sessions warm. Each session
+    # starts a browser and loads a real wiki page, one after the other. Until
+    # that completes, /healthz refuses the connection. This chart has no
+    # startup probe, so the default liveness settings can kill the container
+    # before it listens. Keep the delay below the helmfile timeout of 600s.
+    initialDelaySeconds: 180
+    # The event loop also drives the browsers. A busy pod can miss a 1s
+    # deadline, and a slow answer is not a dead process.
+    timeoutSeconds: 5
+    periodSeconds: 15
+    failureThreshold: 4
   readiness_probe:
     # 503 while a started session has a dead browser. The service relaunches a
     # dead browser without help.
