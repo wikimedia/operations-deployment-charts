@@ -25,3 +25,17 @@ php:
 
 monitoring:
   statsd: ~
+
+affinity:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - thumbor
+          topologyKey: kubernetes.io/hostname
