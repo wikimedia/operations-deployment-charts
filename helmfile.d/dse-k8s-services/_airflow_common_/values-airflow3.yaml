@@ -1,11 +1,14 @@
 app:
-  version: &base-image-version airflow-3.3.1-py3.11-2026-09-15-193809-12ad80d074c391dcdde234a002d6fded425deae6@sha256:35f231236d1fbbfc7e57765bb2d81e5589a609a36082292ff519d6377d1c479a
+  version: &base-image-version next-latest
   executor_pod_image_version: *base-image-version
   waitForMigrations: true
   args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
   readiness_probe:
     httpGet:
       path: /api/v2/monitor/health
+
+docker:
+  pull_policy: Always  # needed as we use rolling tag for development
 
 dagProcessor:
   enabled: true

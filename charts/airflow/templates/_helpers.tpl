@@ -492,7 +492,7 @@ spec:
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Root.Values.docker.pull_policy }}
     {{- include "app.airflow.env" .Root | indent 4 }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "header" false "profiles" $profiles) | indent 4 }}
     {{- include "airflow.task-pod.volumeMounts" (dict "Root" .Root "profiles" $profiles) | indent 4 }}
@@ -519,7 +519,7 @@ spec:
   containers:
   - name: base
     image: {{ template "executor_pod._image" .Root }}
-    imagePullPolicy: IfNotPresent
+    imagePullPolicy: {{ .Root.Values.docker.pull_policy }}
     {{- include "airflow.task-pod.env" (dict "Root" .Root "profiles" $profiles) | indent 4 }}
     {{- include "airflow.env.requests-ca-bundle" .Root | indent 4 }}
     {{- include "airflow.env.s3" .Root | indent 4 }}
