@@ -4,7 +4,7 @@
 opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search-ssd"
-    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-2
+    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-4
   nodePools:
     - &node-pool-common
       component: data
@@ -14,7 +14,7 @@ opensearchCluster:
           storageClass: topolvm-balanced
           accessModes:
             - ReadWriteOnce
-      replicas: 9
+      replicas: 13
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/share/opensearch/plugins/opensearch-knn/lib
@@ -25,10 +25,10 @@ opensearchCluster:
         - "data"
       resources:
         requests:
-          memory: "38Gi"
+          memory: "16Gi"
           cpu: "4000m"
         limits:
-          memory: "38Gi"
+          memory: "16Gi"
           cpu: "4000m"
     # These annotations enable/configure metrics scrapes
       annotations:
@@ -41,14 +41,14 @@ opensearchCluster:
       roles:
         - "master"
         - "data"
-      replicas: 7
+      replicas: 3
       affinity:
-        # prefer 2 masters are not scheduled on the same k8s worker
+        # do not let 2 masters be scheduled on the same k8s worker
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
+          requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
-                  opster.io/opensearch-cluster: opensearch-cluster
+                  opster.io/opensearch-cluster: opensearch-semantic-search-ssd
                   opster.io/opensearch-nodepool: masters
               topologyKey: kubernetes.io/hostname
 certificate:
