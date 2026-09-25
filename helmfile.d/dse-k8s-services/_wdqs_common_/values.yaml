@@ -95,6 +95,14 @@ proxy:
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
       QUARKUS_MANAGEMENT_PORT: 9100
+  # Bug: T439248
+  readiness_probe:
+    httpGet:
+      path: /health
+      port: 8080
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
   requests:
     cpu: 2
     memory: 2Gi
