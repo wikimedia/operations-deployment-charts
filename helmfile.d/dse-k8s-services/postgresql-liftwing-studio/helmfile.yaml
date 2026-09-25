@@ -1,8 +1,3 @@
-# PostgreSQL cluster for Lift Wing Studio (Open WebUI), deployed into the
-# liftwing-studio namespace next to the application
-# (helmfile.d/dse-k8s-services/liftwing-studio), which reads DATABASE_URL from
-# the postgresql-liftwing-studio-app secret the operator creates.
-# See https://wikitech.wikimedia.org/wiki/Data_Platform/Systems/PostgreSQL
 helmDefaults:
   createNamespace: false
   verify: false
@@ -56,6 +51,7 @@ releases:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
       - "/etc/helmfile-defaults/private/dse-k8s_services/postgresql-liftwing-studio/{{ .Environment.Name }}.yaml"
       - "values-cloudnative-pg-cluster-{{ .Environment.Name }}.yaml"  # values common to all cloudnative-pg clusters in the environment
+      - "values-postgresql-documentdb.yaml"  # values common to PG/documentdb instances
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - fullnameOverride: "postgresql-liftwing-studio"
