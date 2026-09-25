@@ -1,0 +1,16 @@
+{{ include "lamp.httpd.configmap" . }}
+{{ include "mesh.configuration.configmap" . }}
+{{- include "auth_proxy.httpd_cas.configmap" . }}
+---
+{{/*
+  Environment variables that will be injected into the pod.
+  Ref https://plugins.matomo.org/EnvironmentVariables
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+{{- include "base.meta.metadata" (dict "Root" . "Name" "public-config") | indent 2 }}
+data:
+    {{- range $k, $v := .Values.config.public }}
+    {{ upper $k }}: {{ $v | quote }}
+    {{- end }}

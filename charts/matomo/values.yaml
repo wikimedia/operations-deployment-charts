@@ -1,0 +1,301 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  port: 8088
+lamp:
+  # wether to use unix sockets or tcp to communicate with php-fpm
+  fcgi_mode: FCGI_UNIX
+  # Allows to distinguish between installations
+  servergroup: default
+  ### HTTPD section ###
+  httpd:
+    # The version of the httpd-fcgi image
+    version: latest
+    # The port apache will be listening on
+    port: 8088
+    # Requests and limits for httpd
+    requests:
+      cpu: 500m
+      memory: 200M
+    limits:
+      cpu: 500m
+      memory: 200M
+    # custom apache configuration to inject
+    custom_config: ""
+    # The version of the prometheus-httpd-exporter image
+    exporter_version: latest
+  phpfpm:
+    # data about the image
+    image:
+      # The docker image for the main app
+      name: repos/data-engineering/matomo/oci-image
+      # the version of said image
+      version: 2026-09-30-193929-f6a2a279937d83756b3118ee29e307f207d7f24f-production
+      # WMF pipeline specific: we can have multiple "flavours" of the same release.
+      # Leave blank to omit.
+      flavour: ~
+    # php-fpm configuration
+    # Opcache tunables
+    opcache:
+      # Opcache size
+      size: "100M"
+      # maximum number of accelerated files.
+      nofiles: 1024
+    # time in seconds after which a slow request will be logged.
+    slowlog_timeout: 1
+    # timeout for a request
+    timeout: 60
+    # number of workers. Typically 2x the CPU cores.
+    workers: 8
+    # APCu configuration
+    apc:
+      size: 200M
+    requests:
+      cpu: 1
+      memory: 500M
+    limits:
+      cpu: 2
+      memory: 1G
+    # Version of the phpfpm exporter
+    exporter_version: latest
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+  # The ports to scrape are all labeled -metrics here.
+  named_ports: true
+service:
+  deployment: production # valid values are "production" and "minikube"
+  port:
+    name: http # a unique name of lowercase alphanumeric characters or "-", starting and ending with alphanumeric, max length 63
+    # protocol: TCP # TCP is the default protocol
+    targetPort: 8088 # the number or name of the exposed port on the container
+    port: 8088 # the number of the port desired to be exposed to the cluster
+    nodePort: null # you need to define this if "production" is used. In minikube environments let it autoallocate
+
+config:
+# Keys are capitalized and prefixed with MATOMO_ when injected as environment variables,
+# ref https://plugins.matomo.org/EnvironmentVariables .
+# > Override any Matomo config with environment variables.
+# > To overwrite any setting simply specify an environment variable in the following format:
+# > MATOMO_$CATEGORY_$SETTING
+  # Deployment secrets override public defaults; omit the MATOMO_ prefix from keys.
+  private:
+    DATABASE_PASSWORD: 'secret'
+    GENERAL_SALT: 'secret'
+  public:
+    DATABASE_ADAPTER: 'PDO\MYSQL'
+    DATABASE_CHARSET: 'utf8mb4'
+    DATABASE_COLLATION: 'utf8mb4_general_ci'
+    DATABASE_DBNAME: 'changeme'
+    DATABASE_HOST: 'changeme.svc.eqiad.wmnet'
+    DATABASE_SCHEMA: 'Mariadb'
+    DATABASE_TABLES_PREFIX: 'changeme_'
+    DATABASE_USERNAME: 'changeme'
+    # https://matomo.org/faq/new-to-piwik/faq_134/
+    # This setting lets Matomo know you’re using multiple servers and for example
+    # it will then not allow the installation of a plugin via the UI 
+    # (or the plugin would be only installed on one server), or it will not 
+    # allow config file changes from the UI (as the config file would be 
+    # updated on one server only).
+    GENERAL_MULTI_SERVER_ENVIRONMENT: '1'
+# ref https://matomo.org/faq/how-to-install/faq_98/
+#"If after upgrading to Matomo 5 you're seeing visits with local IP addresses
+# then you may need to set `proxy_ip_read_last_in_list = 0`"
+    GENERAL_PROXY_IP_READ_LAST_IN_LIST: '0'
+    GENERAL_MAIL_USERNAME: 'changeme'
+cronjobs: {}
+#    my-cron-hourly:
+#      name: my-cron-hourly
+#      enabled: true
+#      command:
+#        - /bin/cowsay
+#        - "hello"
+#      schedule: "@hourly"
+#      concurrency: Replace
+#      image_versioned: my-app:1.1.1
+#      resources:
+#        requests:
+#          cpu: 500m
+#           memory: 200M
+#        limits:
+#          cpu: 500m
+#          memory: 200M
+#      volumeMounts:
+#        - mountPath: "/tmp/acow"
+#          name: tmp-cow-memory
+#      volumes:
+#        - name: tmp-cow-memory
+#          emptyDir:
+#            medium: Memory
+#            sizeLimit: "10Gi"
+
+# Additional resources if we want to add a port for a debugger to connect to.
+debug:
+  enabled: false
+  # Define here any port that you want to expose for debugging purposes
+  ports: []
+
+# Allow external traffic to reach this service via a (cluster provided) ingress controller.
+# https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
+ingress:
+  enabled: true
+  # By default, enabling ingress will switch the charts services from type NodePort to
+  # ClusterIP. While that is fine for new services it may not be desired during transition
+  # of existing ones from dedicated LVS to Ingress.
+  # By setting keepNodePort to true, the services will stay of type NodePort.
+  keepNodePort: false
+  # gatewayHosts settings configure the hostnames this service will be reachable on.
+  # By default, this will be a list like:
+  # - {{ gatewayHosts.default }}.{{ domain }}
+  # For all domains listed in .gatewayHosts.domains (specified by SRE for each environment)
+  gatewayHosts:
+    # default will expand to {{ .Release.Namespace }} as long as it is an empty string.
+    default: ""
+    # disableDefaultHosts may be set to true if the service should not be reachable via
+    # the gateway hosts generated by default (see above).
+    disableDefaultHosts: false
+    # extraFQDNs is a list of extra FQDNs this service should be reachable on.
+    # It can be used to extend the gateway hosts that are generated by default.
+    extraFQDNs: []
+  # If you want to attach routes of this release to an existing Gateway, provide the name
+  # of that gateway here in the format: <namespace>/<gateway-name>
+  # This is useful if you wish to make multiple releases available from the same hostname.
+  existingGatewayName: ""
+  # routeHosts is a list of FQDNs the httproutes should attach to.
+  # If existingGatewayName not set, this list might be empty and will default to the gateway
+  # host generated according to how .Values.gatewayHosts.* is configured.
+  # If existingGatewayName is set, you need to provide the FQDNs your routes should attach to.
+  routeHosts: []
+  # HTTPRoute routing rules. By default https://<hosts from above>/ will be routed to
+  # the service without modification.
+  # Docs: https://istio.io/v1.9/docs/reference/config/networking/virtual-service/#HTTPRoute
+  httproutes: []
+  # Base CORS HTTP headers for the general use case.
+  base_cors_policy: false
+  # Add a custom CORS policy, injecting an Istio CorsPolicy config:
+  # https://istio.io/latest/docs/reference/config/networking/virtual-service/#CorsPolicy
+  # Takes precedence over base_cors_policy.
+  custom_cors_policy: {}
+# Basic mesh-related data.
+mesh:
+  enabled: true
+  admin: {port: 1666 }
+  image_version: latest
+  # http keepalive timeout for incoming requests
+  idle_timeout: "4.5s"
+  # Port to listen to
+  public_port: 8080
+  local_access_log_min_code: "200"
+  # Headers to add to a local request,
+  # in dictionary form.
+  request_headers_to_add: []
+  # Timeout of a request to the local service
+  upstream_timeout: "60s"
+  # Enabling telemetry, telemetry port.
+  telemetry:
+    enabled: true
+    port: 1667
+  # Extra set of label / value to use in the mesh Service label selector.
+  # Use this when you have multiple pods with different functionalities
+  # in the namespace, to make sure the traffic only goes to the appropriate one.
+  extra_service_selector_labels: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 100Mi
+    limits:
+      cpu: 500m
+      memory: 500Mi
+
+# Mesh-related discovery
+# TODO: move under mesh.* once we can
+discovery:
+  # List of listeners
+  listeners: []
+
+# Mesh related pure TCP proxies
+tcp_proxy:
+  listeners: []
+
+# Should be provided by configuration management.
+# See details of the structures in the comments
+# In the configuration module.
+services_proxy: ~
+tcp_services_proxy: ~
+
+# The httpd-cas sidecar manages CAS authentication, redirecting to the main app when authenticated.
+auth_proxy:
+  enabled: false
+  httpd_cas:
+    image: httpd-cas
+    version: latest # we use latest everywhere in the defaults.
+    # Port that CAS will listen on
+    port: 8088
+    # Port that CAS will proxy to
+    target_port: override_me
+    site:
+      # HTTP virtualhost that CAS proxy will handle
+      server_name: override_me
+      # URL that users will see, see
+      # https://github.com/apereo/mod_auth_cas/blob/9acbc6239f35f291d3b166f897bdda012adf5cea/README#L217
+      cas_root_proxied_as: override_me
+      cas_login_url: https://idp.wikimedia.org/login
+      cas_validate_url: https://idp.wikimedia.org/serviceValidate
+      cas_ldap_groups: [nda, wmf, ops]
+      health_check_path: /var/www/health_check
+      conf_name: 50-httpd-cas
+      cas_debug: "Off"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 500m
+        memory: 400Mi
+    cookies_path: /var/cache/apache2/mod_auth_cas/
+    cookies_size_limit: 100Mi
+
+docker:
+  registry: docker-registry.discovery.wmnet
+  pull_policy: IfNotPresent
+resources:
+  replicas: 1
+
+monitoring:
+  # If enabled is true, monitoring annotations will be added to the deployment.
+  enabled: false
+
+networkpolicy:
+  egress:
+    enabled: false
+
+# Add here the list of kafka-clusters (by name) that the service will need to reach.
+kafka:
+  allowed_clusters: []
+
+# Optional affinity settings
+affinity: {}
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: some-key
+#                operator: In
+#                values:
+#                  - some-value
+#  nodeSelector:
+#    node.kubernetes.io/some-key: some-value
+
+# The set of external services to allow egress to
+# Example:
+# kafka:
+# - main-codfw
+# - main-eqiad
+# presto:
+# - analytics
+#
+# See https://wikitech.wikimedia.org/wiki/Kubernetes/Deployment_Charts#Enabling_egress_to_services_external_to_Kubernetes
+# for the list of supported services
+external_services: {}

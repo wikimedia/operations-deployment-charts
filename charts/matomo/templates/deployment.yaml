@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" .) | indent 2 }}
+spec:
+  selector:
+  {{- include "base.meta.selector" . | indent 4 }}
+  replicas: {{ .Values.resources.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "base.meta.pod_labels" . | indent 8 }}
+      annotations:
+        {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
+    spec:
+      {{- if .Values.affinity }}
+      {{- toYaml .Values.affinity | nindent 6 }}
+      {{- end }}
+      containers:
+        {{- include "lamp.httpd.container" . | indent 8 }}
+        ## Add any additional volumes for apache configuration here.
+        ## Indentation level: 10
+        {{- /* Preserve the LAMP container's env and add explicit Secret references,
+              as in app.generic.container. Explicit env overrides public envFrom. */}}
+        {{- $app := include "lamp.phpfpm.container" . | fromYamlArray | first }}
+        {{- /* Keep Matomo's bundled /srv/app/config files visible. */}}
+        {{- $mounts := list }}
+        {{- $configVolume := printf "%s-app-config" (include "base.name.release" .) }}
+        {{- range $app.volumeMounts }}
+        {{- if ne .name $configVolume }}
+        {{- $mounts = append $mounts . }}
+        {{- end }}
+        {{- end }}
+        {{- $_ := set $app "volumeMounts" $mounts }}
+        {{- $env := $app.env }}
+        {{- range $k, $v := .Values.config.private }}
+        {{- $name := printf "MATOMO_%s" (upper $k) }}
+        {{- $ref := dict "name" (printf "%s-secret-config" (include "base.name.release" $)) "key" $k }}
+        {{- $env = append $env (dict "name" $name "valueFrom" (dict "secretKeyRef" $ref)) }}
+        {{- end }}
+        {{- $_ := set $app "env" $env }}
+        {{- toYaml (list $app) | nindent 8 }}
+          envFrom:
+            - prefix: MATOMO_
+              configMapRef:
+                name: {{ template "base.name.release" . }}-public-config
+        {{- if .Values.monitoring.enabled }}
+        {{- include "lamp.httpd.exporter" . | indent 8 }}
+        {{- include "lamp.phpfpm.exporter" . | indent 8 }}
+        {{- end }}
+        {{- include "mesh.deployment.container" . | indent 8 }}
+        {{- include "auth_proxy.httpd_cas.container" . | indent 8 }}
+      volumes:
+        # httpd custom configuration.
+        {{- include "lamp.httpd.volume" . | indent 8 }}
+        # Shared unix socket
+        {{- include "lamp.common.socket" . | indent 8 }}
+        {{- include "mesh.deployment.volume" . | indent 8 }}
+        {{- include "auth_proxy.httpd_cas.volume" . | indent 8 }}
+
+
