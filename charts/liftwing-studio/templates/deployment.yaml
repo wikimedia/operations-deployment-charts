@@ -26,7 +26,7 @@ spec:
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
-        {{- include "liftwing-studio.webui.container" . | indent 8 }}
+        {{- include "liftwing-studio.app.container" . | indent 8 }}
         {{- include "liftwing-studio.litellm.container" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:

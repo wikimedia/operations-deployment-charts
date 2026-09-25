@@ -11,8 +11,8 @@ resources:
   replicas: 1
 
 app:
-  image: repos/data-engineering/liftwing-studio/open-webui
-  version: "0.11.3-2026-09-21-082029-906852c02ff89a2e0bb21486ef8f478b28ce05f5@sha256:3281d705b942d166add42f8585e3a1ccf9b97daea3e96a0b188e2b21adf2770c"
+  image: repos/data-engineering/liftwing-studio/librechat
+  version: "0.8.7-2026-09-25-090601-cc5510ba9f47f27498015b2194d2e9077d8f2627@sha256:c298fb55e4229e8f33c748e688dbd8be37fa1ef3f636625edcd47578a38c19f6"
   limits:
     cpu: 2
     memory: 2Gi
@@ -21,14 +21,29 @@ app:
     cpu: 500m
     memory: 1Gi
     ephemeral-storage: 1Gi
-  data_dir: /app/backend/data
   persistence:
     enabled: true
     storage_class: ceph-rbd-ssd
     size: 10Gi
   database:
     existingSecret: postgresql-liftwing-studio-app
-    key: uri
+    host: ferretdb
+  config:
+    version: 1.3.13
+    cache: true
+    endpoints:
+      custom:
+        - name: Lift Wing
+          apiKey: "${LITELLM_MASTER_KEY}"
+          baseURL: http://localhost:4000/v1
+          models:
+            default:
+              - qwen3-14b
+              - qwen36-27b
+            fetch: false
+          titleConvo: true
+          titleModel: current_model
+          modelDisplayLabel: Lift Wing
 
 litellm:
   image: repos/data-engineering/liftwing-studio/litellm
@@ -68,33 +83,23 @@ litellm:
 
 config:
   public:
-    ENABLE_PERSISTENT_CONFIG: "True"
-    ENABLE_OLLAMA_API: "False"
-    ENABLE_OPENAI_API: "True"
-    WEBUI_URL: "https://liftwing-studio.discovery.wmnet:30443"
-    WEBUI_SESSION_COOKIE_SECURE: "true"
-    WEBUI_SESSION_COOKIE_SAME_SITE: "lax"
-    WEBUI_AUTH_COOKIE_SECURE: "true"
-    WEBUI_AUTH_COOKIE_SAME_SITE: "lax"
-    ENABLE_OAUTH: "True"
-    ENABLE_OAUTH_SIGNUP: "True"
-    ENABLE_OAUTH_PERSISTENT_CONFIG: "False"
-    OAUTH_CLIENT_ID: "liftwing_studio"
-    OAUTH_PROVIDER_NAME: "Wikimedia SSO"
-    OPENID_PROVIDER_URL: "https://idp.wikimedia.org/oidc/.well-known"
-    OPENID_REDIRECT_URI: "https://liftwing-studio.discovery.wmnet:30443/oauth/oidc/login/callback"
-    OAUTH_SCOPES: "openid email profile groups"
-    OAUTH_AUTO_REDIRECT: "True"
-    ENABLE_PASSWORD_AUTH: "False"
-    ENABLE_LOGIN_FORM: "False"
-    ENABLE_SIGNUP: "False"
-    DEFAULT_USER_ROLE: "user"
-    SHOW_ADMIN_DETAILS: "false"
-    RAG_EMBEDDING_ENGINE: "openai"
-    AUDIO_STT_ENGINE: "openai"
-    OFFLINE_MODE: "True"
-    HF_HUB_OFFLINE: "1"
-    ENABLE_VERSION_UPDATE_CHECK: "False"
+    DOMAIN_CLIENT: "https://liftwing-studio.discovery.wmnet:30443"
+    DOMAIN_SERVER: "https://liftwing-studio.discovery.wmnet:30443"
+    NO_INDEX: "true"
+    ENDPOINTS: "custom"
+    SEARCH: "false"
+    ALLOW_EMAIL_LOGIN: "false"
+    ALLOW_REGISTRATION: "false"
+    ALLOW_PASSWORD_RESET: "false"
+    ALLOW_SOCIAL_LOGIN: "true"
+    OPENID_ISSUER: "https://idp.wikimedia.org/oidc"
+    OPENID_CLIENT_ID: "liftwing_studio"
+    OPENID_SCOPE: "openid profile email"
+    OPENID_CALLBACK_URL: "/oauth/openid/callback"
+    OPENID_BUTTON_LABEL: "Wikimedia SSO"
+    OPENID_AUTO_REDIRECT: "true"
+    OPENID_USERNAME_CLAIM: "preferred_username"
+    OPENID_NAME_CLAIM: "name"
 
 service:
   deployment: production

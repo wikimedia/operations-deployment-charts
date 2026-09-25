@@ -1,4 +1,4 @@
-{{- define "liftwing-studio.webui.container" }}
+{{- define "liftwing-studio.app.container" }}
 - name: {{ template "base.name.release" . }}
   image: {{ template "app.generic._image" . }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
@@ -22,26 +22,22 @@
       value: {{ template "base.name.release" . }}
     - name: PORT
       value: {{ .Values.app.port | quote }}
-    - name: DATA_DIR
-      value: {{ .Values.app.data_dir | quote }}
-  {{- if and .Values.app.database.existingSecret (not (hasKey .Values.config.private "DATABASE_URL")) }}
-    - name: DATABASE_URL
+    - name: CONFIG_PATH
+      value: "{{ .Values.app.config_dir }}/librechat.yaml"
+  {{- with .Values.app.database }}
+  {{- if and .existingSecret (not (hasKey $.Values.config.private "MONGO_URI")) }}
+    - name: MONGO_USER
       valueFrom:
         secretKeyRef:
-          name: {{ .Values.app.database.existingSecret }}
-          key: {{ .Values.app.database.key | default "uri" }}
-  {{- end }}
-  {{- if .Values.litellm.enabled }}
-  {{- if not (hasKey .Values.config.public "OPENAI_API_BASE_URL") }}
-    - name: OPENAI_API_BASE_URL
-      value: "http://localhost:{{ .Values.litellm.port }}/v1"
-  {{- end }}
-  {{- if and (hasKey .Values.config.private "LITELLM_MASTER_KEY") (not (hasKey .Values.config.private "OPENAI_API_KEY")) }}
-    - name: OPENAI_API_KEY
+          name: {{ .existingSecret }}
+          key: {{ .user_key | default "username" }}
+    - name: MONGO_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ template "base.name.release" . }}-secret-config
-          key: LITELLM_MASTER_KEY
+          name: {{ .existingSecret }}
+          key: {{ .password_key | default "password" }}
+    - name: MONGO_URI
+      value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@{{ .host }}:{{ .port }}/{{ .name }}"
   {{- end }}
   {{- end }}
   {{- range $k, $v := .Values.config.public }}
@@ -58,8 +54,17 @@
 {{ include "base.helper.resources" .Values.app | indent 2 }}
 {{ include "base.helper.restrictedSecurityContext" . | indent 2 }}
   volumeMounts:
-    - name: webui-data
-      mountPath: {{ .Values.app.data_dir }}
+    - name: data
+      mountPath: /app/uploads
+      subPath: uploads
+    - name: data
+      mountPath: /app/client/public/images
+      subPath: images
+    - name: logs
+      mountPath: /app/logs
+    - name: librechat-config
+      mountPath: {{ .Values.app.config_dir }}
+      readOnly: true
   {{- with .Values.app.volumeMounts }}
 {{ toYaml . | indent 4 }}
   {{- end }}
@@ -122,7 +127,7 @@
 {{- end -}}
 
 {{- define "liftwing-studio.volumes" }}
-- name: webui-data
+- name: data
 {{- if .Values.app.persistence.enabled }}
   persistentVolumeClaim:
     claimName: {{ include "liftwing-studio.pvc_name" . }}
@@ -130,6 +135,12 @@
   emptyDir:
     {{- toYaml .Values.app.data_volume | nindent 4 }}
 {{- end }}
+- name: logs
+  emptyDir:
+    {{- toYaml .Values.app.logs_volume | nindent 4 }}
+- name: librechat-config
+  configMap:
+    name: {{ include "base.meta.name" (dict "Root" . "Name" "librechat-config") }}
 {{- if .Values.litellm.enabled }}
 - name: litellm-config
   configMap:

@@ -1,16 +1,22 @@
 app:
-  image: repos/data-engineering/liftwing-studio/open-webui
+  image: repos/data-engineering/liftwing-studio/librechat
   version: latest
+  config:
+    version: 1.3.13
+    endpoints:
+      custom:
+        - name: external
+          apiKey: "${EXTERNAL_API_KEY}"
+          baseURL: http://some-endpoint.example:8000/v1
+          models:
+            default: [some-model]
 
 litellm:
   enabled: false
 
 config:
-  public:
-    OPENAI_API_BASE_URL: "http://some-endpoint.example:8000/v1"
   private:
-    OPENAI_API_KEY: fixture-only
-    WEBUI_SECRET_KEY: fixture-only
+    EXTERNAL_API_KEY: fixture-only
 
 service:
   deployment: minikube

@@ -8,4 +8,12 @@ data:
   config.yaml: |-
     {{- toYaml .Values.litellm.config | nindent 4 }}
 {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  {{- include "base.meta.metadata" (dict "Root" . "Name" "librechat-config") | indent 2 }}
+data:
+  librechat.yaml: |-
+    {{- toYaml .Values.app.config | nindent 4 }}
 {{ include "mesh.configuration.configmap" . }}

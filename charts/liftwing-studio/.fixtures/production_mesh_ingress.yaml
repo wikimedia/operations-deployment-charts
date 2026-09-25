@@ -7,8 +7,8 @@ resources:
   replicas: 1
 
 app:
-  image: repos/data-engineering/liftwing-studio/open-webui
-  version: "0.11.3-1"
+  image: repos/data-engineering/liftwing-studio/librechat
+  version: "0.8.7-1"
   requests:
     cpu: 500m
     memory: 1Gi
@@ -21,7 +21,18 @@ app:
     size: 20Gi
   database:
     existingSecret: postgresql-liftwing-studio-app
-    key: uri
+    host: ferretdb
+  config:
+    version: 1.3.13
+    cache: true
+    endpoints:
+      custom:
+        - name: Lift Wing
+          apiKey: "${LITELLM_MASTER_KEY}"
+          baseURL: http://localhost:4000/v1
+          models:
+            default: [qwen3-14b, qwen36-27b]
+            fetch: false
 
 litellm:
   image: repos/data-engineering/liftwing-studio/litellm
@@ -50,27 +61,22 @@ litellm:
 
 config:
   public:
-    ENABLE_PERSISTENT_CONFIG: "False"
-    ENABLE_OLLAMA_API: "False"
-    ENABLE_OPENAI_API: "True"
-    WEBUI_URL: "https://liftwing-studio.discovery.wmnet:30443"
-    ENABLE_OAUTH: "True"
-    ENABLE_OAUTH_SIGNUP: "True"
-    ENABLE_OAUTH_PERSISTENT_CONFIG: "False"
-    OAUTH_CLIENT_ID: "liftwing_studio"
-    OAUTH_PROVIDER_NAME: "Wikimedia SSO"
-    OPENID_PROVIDER_URL: "https://idp.wikimedia.org/oidc/.well-known"
-    OPENID_REDIRECT_URI: "https://liftwing-studio.discovery.wmnet:30443/oauth/oidc/login/callback"
-    OAUTH_SCOPES: "openid email profile groups"
-    OAUTH_AUTO_REDIRECT: "True"
-    ENABLE_PASSWORD_AUTH: "False"
-    ENABLE_LOGIN_FORM: "False"
-    ENABLE_SIGNUP: "False"
-    DEFAULT_USER_ROLE: "user"
+    DOMAIN_CLIENT: "https://liftwing-studio.discovery.wmnet:30443"
+    DOMAIN_SERVER: "https://liftwing-studio.discovery.wmnet:30443"
+    ENDPOINTS: "custom"
+    ALLOW_EMAIL_LOGIN: "false"
+    ALLOW_REGISTRATION: "false"
+    ALLOW_SOCIAL_LOGIN: "true"
+    OPENID_ISSUER: "https://idp.wikimedia.org/oidc"
+    OPENID_CLIENT_ID: "liftwing_studio"
   private:
     LITELLM_MASTER_KEY: sk-fixture-only
-    WEBUI_SECRET_KEY: fixture-only
-    OAUTH_CLIENT_SECRET: fixture-only
+    CREDS_KEY: fixture-only
+    CREDS_IV: fixture-only
+    JWT_SECRET: fixture-only
+    JWT_REFRESH_SECRET: fixture-only
+    OPENID_CLIENT_SECRET: fixture-only
+    OPENID_SESSION_SECRET: fixture-only
 
 service:
   deployment: production
