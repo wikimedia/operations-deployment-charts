@@ -1,7 +1,7 @@
 opensearchCluster:
   general:
     serviceName: "opensearch-semantic-search-test"
-    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-2
+    image: docker-registry.wikimedia.org/repos/search-platform/cirrussearch-opensearch-image:v3.8.0-4
   nodePools:
     - &node-pool-common
       component: data
@@ -13,8 +13,8 @@ opensearchCluster:
             - ReadWriteOnce
       replicas: 1
       env:
-        - name: DISABLE_SECURITY_PLUGIN
-          value: "false"
+        - name: LD_LIBRARY_PATH
+          value: /usr/share/opensearch/plugins/opensearch-knn/lib
       roles:
         - "data"
       resources:
