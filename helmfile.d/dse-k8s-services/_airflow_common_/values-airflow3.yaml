@@ -19,7 +19,7 @@ config:
       service_token:
         audience: airflow
     config:
-      scheduler:
-        standalone_dag_processor: true
       core:
         auth_manager: auth_manager.FabAuthManager
+      scheduler:
+        standalone_dag_processor: true

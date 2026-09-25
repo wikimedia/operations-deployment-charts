@@ -1,9 +1,24 @@
+app:
+  version: &base-image-version airflow-3.3.2-py3.11-2026-09-28-093637-48c6f16118118bbc06291d949cf2273c74bbd7fa@sha256:182c63122cd76de0e593900ff3e8f544e669b64644d37dfdcef823135e7d4877
+  executor_pod_image_version: *base-image-version
+  waitForMigrations: true
+  args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
+  readiness_probe:
+    httpGet:
+      path: /api/v2/monitor/health
+
 config:
   airflow:
     instance_name: test-k8s
     auth:
       op_ldap_role: ~
+      service_token:
+        audience: airflow
     config:
+      core:
+        auth_manager: auth_manager.FabAuthManager
+      scheduler:
+        standalone_dag_processor: true
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
       kerberos:
@@ -20,10 +35,16 @@ config:
   oidc:
     idp_server: idp-test.wikimedia.org
 
+dagProcessor:
+  enabled: true
+
 external_services:
   webserver:
     # We login to airflow-test-k8s via the idp-test CAS server
     cas: [idp-test]
+
+gitsync:
+  ref: main_airflow_3.3
 
 ingress:
   gatewayHosts:
