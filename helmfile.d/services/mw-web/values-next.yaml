@@ -5,8 +5,9 @@
 # discovery service at ATS).
 
 resources:
-  # NOTE: Keep 1 replica running to satisfy pybal checks, etc. when not in use.
-  replicas: 1
+  # NOTE: Keep 2 replicas running to satisfy pybal checks, etc. when not in use.
+  # 2 replicas should prevent false positive paging alerts, like in T439396.
+  replicas: 2
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) and / or maxSurge
