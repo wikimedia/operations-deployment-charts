@@ -32,6 +32,10 @@ mesh:
   idle_timeout: "4.5s"
   # Port to listen to
   public_port: 8080
+  # Kubernetes appProtocol of the public_port Service port. The ingressgateway uses it to
+  # select the protocol to the upstream. Set "grpc" for gRPC services.
+  # See: https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/#explicit-protocol-selection
+  public_port_app_protocol: ~
   local_access_log_min_code: "200"
   # Specify a retry policy for the upstream cluster of the TLS terminator.
   # Without this specified there are no retries

@@ -18,6 +18,9 @@ spec:
   ports:
     - name: {{ template "base.name.release" . }}-https
       protocol: TCP
+      {{- with .Values.mesh.public_port_app_protocol }}
+      appProtocol: {{ . }}
+      {{- end }}
       port: {{ .Values.mesh.public_port }}
       {{- if eq (include "base.helper.serviceType" .) "NodePort" }}
       nodePort: {{ .Values.mesh.public_port }}

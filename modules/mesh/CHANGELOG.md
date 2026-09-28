@@ -1,3 +1,7 @@
+## service 1.2.2
+
+- Add public_port_app_protocol, to set appProtocol on the TLS service port
+
 ## certificate 1.2.0
 
 - Dependency: name 1.1 => 1.2
