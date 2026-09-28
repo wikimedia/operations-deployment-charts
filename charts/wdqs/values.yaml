@@ -1,5 +1,6 @@
 app:
   port: &proxyport 443
+  metricsPort: &metricsport 9100
 
 backend:
   volume:
@@ -129,6 +130,7 @@ proxy:
     public:
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_URL: http://wdqs-main-internal-qlever:7001/sparql
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
+      QUARKUS_MANAGEMENT_PORT: *metricsport
       QUERY_REWRITER_MW_SPARQL_ENABLED: false
       QUERY_REWRITER_FEDERATION_ENABLED: true
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.wikimedia.org/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/releases/permalink/latest/downloads/allowlist.json
@@ -142,6 +144,7 @@ proxy:
   requests:
     cpu: 100m
     memory: 512Mi
+  metricsPort: *metricsport
 
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.

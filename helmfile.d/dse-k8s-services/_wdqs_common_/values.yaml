@@ -94,7 +94,6 @@ proxy:
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 300000
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
-      QUARKUS_MANAGEMENT_PORT: 9100
   # Bug: T439248
   readiness_probe:
     httpGet:
@@ -109,7 +108,6 @@ proxy:
   limits:
     cpu: 2
     memory: 2Gi
-  metricsPort: 9100  # matches QUARKUS_MANAGEMENT_PORT
 
 # Envoy service-mesh sidecar tuning for the wdqs-proxy pods.
 mesh:
@@ -150,6 +148,8 @@ mesh:
           safe_regex:
             regex: ".+"
         buckets: [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000]
+  telemetry:
+    enabled: true
 
 networkpolicy:
   egress:
