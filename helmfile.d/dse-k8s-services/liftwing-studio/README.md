@@ -2,35 +2,127 @@
 
 Kubernetes deployment of [liftwing-studio](https://gitlab.wikimedia.org/repos/data-engineering/liftwing-studio):
 a [LibreChat](https://github.com/LibreChat-AI/LibreChat) chat frontend over the LLMs served on
-Lift Wing, with a [LiteLLM](https://docs.litellm.ai/) proxy in between so LibreChat sees a
-standard OpenAI API. Runs on `dse-k8s-eqiad`, namespace `liftwing-studio`.
+Lift Wing. Runs on `dse-k8s-eqiad`, namespace `liftwing-studio`.
 
 ## Architecture
 
 ```
-istio ingress :30443 ──> envoy tls-proxy :8443 ──> librechat :3080 ──localhost:4000──> litellm ──HTTPS──> inference.discovery.wmnet:30443
-                                                        │                                               Host: llm-<model>.llm.wikimedia.org
-                                                        ├──HTTPS──> idp.wikimedia.org  (OIDC)
-                                                        ├──> ferretdb :27017 ──> postgresql-liftwing-studio-rw :5432  (MongoDB wire protocol over DocumentDB)
-                                                        └──> /app/uploads, /app/client/public/images  (Ceph RBD volume)
+browser
+   │ HTTPS, SNI/Host liftwing-studio.discovery.wmnet
+   ▼
+k8s-ingress-dse (LVS :30443) ──> istio ingressgateway
+   │
+   ▼
+┌─ pod liftwing-studio-production ──────────────────────────────────────────────┐
+│ envoy tls-proxy :8443 ──> librechat :3080 ──localhost:4000──> litellm         │
+│                               │                                  │            │
+└───────────────────────────────┼──────────────────────────────────┼────────────┘
+                                │                                  │ HTTPS, Host: llm-<model>.llm.wikimedia.org
+          ┌─────────────────────┼─────────────────┐                ▼
+          ▼                     ▼                 ▼           inference.discovery.wmnet:30443
+   idp.wikimedia.org   ferretdb :27017     Ceph RBD volume    (ml-serve istio → isvc)
+       (OIDC)                │             uploads, images
+                             ▼
+              postgresql-liftwing-studio (cnpg, documentdb)
 ```
 
-One pod, three containers: `librechat`, `litellm` and the envoy tls-proxy sidecar. A single
-replica with a `Recreate` strategy, because the Ceph RBD volume is single-writer.
+Three releases share the namespace:
 
-## Key facts
+| release | chart | what it runs |
+|---|---|---|
+| `liftwing-studio` | `liftwing-studio` | one pod: `librechat`, `litellm` and the envoy tls-proxy sidecar |
+| `ferretdb-liftwing-studio` | `ferretdb` | one stateless FerretDB pod behind the `ferretdb` Service |
+| `postgresql-liftwing-studio` | `cloudnative-pg-cluster` | a two-instance PostgreSQL cluster with the DocumentDB extension |
 
-| | |
-|---|---|
-| Releases | `liftwing-studio` (this one), `ferretdb-liftwing-studio` and `postgresql-liftwing-studio` (cloudnative-pg), all in the same namespace |
-| Images | built with Blubber and published by CI from the GitLab repo above; tags are `<upstream version>-<pipeline timestamp>-<commit sha>`, pinned here with digests |
-| Runtime user | both images run as uid/gid 900 with a numeric `USER`, which `runAsNonRoot` (no `runAsUser`) and `fsGroup: 900` require |
-| Database | LibreChat needs MongoDB. FerretDB 2.x serves the MongoDB wire protocol on top of a cnpg cluster running the `postgresql-documentdb` image, the same stack as growthbook. `MONGO_URI` is assembled in the pod from the `username` and `password` keys of the operator's `postgresql-liftwing-studio-app` secret, since FerretDB authenticates clients as PostgreSQL users |
-| Persistence | 10Gi `ceph-rbd-ssd` PVC for uploads and generated images, mounted by `subPath`. Not backed up; the database is |
-| Config | `librechat.yaml` is rendered from `app.config` into a ConfigMap at `/etc/librechat`; everything else is environment |
-| Secrets | `LITELLM_MASTER_KEY`, `CREDS_KEY`, `CREDS_IV`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `OPENID_CLIENT_SECRET` and `OPENID_SESSION_SECRET` under `dse-k8s_services/liftwing-studio/` in private puppet; the S3 backup credentials under `postgresql-liftwing-studio/`. The OIDC client secret is also needed on the idp side, under `profile::idp::services` |
-| Models | `litellm.config.model_list`, rendered into a ConfigMap. Each entry selects an isvc by `Host: llm-<model>.llm.wikimedia.org`. LibreChat lists them through a single custom endpoint in `app.config` |
-| Egress | direct HTTPS to `inference.discovery.wmnet:30443` via `networkpolicy.egress.dst_nets`, and to the idp hosts via `external_services: {cas: [idp]}`. FerretDB is reached through the cluster-wide `allow-pod-to-pod` policy |
-| URL | `https://liftwing-studio.discovery.wmnet:30443`, a CNAME to `k8s-ingress-dse.discovery.wmnet` in operations/dns, with a `service::catalog` entry in puppet for probing. Internal only, so a browser needs a tunnel to that name and the internal CA |
-| Auth | OIDC against idp.wikimedia.org, client `liftwing_studio`. Access is restricted to the `wmf` and `nda` LDAP groups by `required_groups` in puppet's `profile::idp::services`. Local login is off; accounts are created on first SSO login with the `USER` role, and nobody is promoted to `ADMIN` automatically |
-| Timeouts | 600s on both `mesh.upstream_timeout` and `litellm_settings.request_timeout`; completions stream over SSE for minutes |
+### Request path
+
+Traffic arrives on the shared DSE ingress. `liftwing-studio.discovery.wmnet` is a CNAME to
+`k8s-ingress-dse.discovery.wmnet`. The istio ingressgateway terminates TLS with the namespace
+certificate, selects this service by SNI and Host, and re-encrypts to the envoy tls-proxy on 8443,
+which presents the release's own mesh certificate and hands plain HTTP to LibreChat on 3080. The name is internal only: there is no
+`*.wikimedia.org` hostname, so a browser needs a route to that name and the internal CA.
+
+LibreChat serves both the web client and its API. Chat completions stream back to the browser
+over Server-Sent Events, which is plain long-lived HTTP; nothing on this path upgrades to
+websockets. The 600s `mesh.upstream_timeout` is what lets a slow completion keep streaming.
+
+### Models
+
+LibreChat does not talk to Lift Wing directly. Its one custom endpoint, `Lift Wing`, points at
+LiteLLM on `localhost:4000`, which presents a single OpenAI-compatible API with every model behind
+it. LiteLLM exists because each Lift Wing model is a separate inference service selected by Host
+header on a shared gateway: `litellm.config.model_list` maps a model name to
+`https://inference.discovery.wmnet:30443/openai/v1` plus a per-model
+`Host: llm-<model>.llm.wikimedia.org`. LibreChat's endpoint headers are per endpoint rather than
+per model, so without LiteLLM each model would have to appear as a provider of its own.
+
+The two sides must agree: a model is usable only if it is in LiteLLM's `model_list` and in the
+`default` list of the endpoint in `app.config`. Both sides authenticate with the same
+`LITELLM_MASTER_KEY`.
+
+The models currently exist only on ml-serve-eqiad, while `inference.discovery.wmnet` is
+active-active. A request resolved to codfw reaches a gateway with no matching isvc and gets a 404
+rather than failing over.
+
+### Data
+
+LibreChat stores everything through Mongoose and supports only MongoDB. WMF does not run MongoDB,
+so FerretDB translates the MongoDB wire protocol into calls on the DocumentDB extension inside a
+cnpg-managed PostgreSQL cluster, the same arrangement growthbook uses. FerretDB holds no state; all
+data and the S3 backups live in PostgreSQL.
+
+FerretDB authenticates MongoDB clients as PostgreSQL roles, so there is one set of credentials:
+the `username` and `password` keys of the operator-generated `postgresql-liftwing-studio-app`
+secret. LibreChat assembles `MONGO_URI` from them in the pod, and FerretDB's initContainer writes
+its own PostgreSQL URI from the same secret into an `emptyDir` when the pod starts. That URI is
+read once, so FerretDB keeps whatever credentials existed at its last start.
+
+The DocumentDB settings come from `_postgresql-growthbook_common_`, shared with growthbook. They
+preload `pg_cron` and `pg_documentdb`, and `pg_cron` requires the database to be named `app`. The
+extension and its grants are created by `postInitApplicationSQL`, which runs only when the cluster
+is bootstrapped.
+
+Uploaded files and generated images are not in the database: they sit on a 10Gi `ceph-rbd-ssd`
+PVC mounted by `subPath` at `/app/uploads` and `/app/client/public/images`. The volume is
+single-writer, which is why the deployment runs one replica with a `Recreate` strategy, and it is
+not backed up.
+
+### Authentication
+
+Login is OpenID Connect against idp.wikimedia.org as the client `liftwing_studio`, registered in
+puppet's `profile::idp::services`. Who may log in is decided there, not in LibreChat:
+`required_groups: [nda, wmf]` makes the IDP refuse anyone outside those LDAP groups before they
+reach the callback. The registration's `service_id` regex is also what the IDP validates the
+callback URL against, and LibreChat derives that URL from `DOMAIN_SERVER` plus
+`/oauth/openid/callback`.
+
+LibreChat redirects every visitor straight to the IDP (`OPENID_AUTO_REDIRECT`), email login and
+self-registration are off, and an account is created on first login with the `USER` role.
+LibreChat promotes the first account to `ADMIN` only for local and LDAP logins, so under OIDC
+nobody is an admin until someone sets the role in the `users` collection. The OpenID strategy is
+registered only when `ALLOW_SOCIAL_LOGIN` is true.
+
+### Configuration and secrets
+
+`librechat.yaml` is rendered from `app.config` into a ConfigMap mounted at `/etc/librechat`, and
+LiteLLM's config from `litellm.config` the same way. Everything else is environment:
+`config.public` as plain values, `config.private` as keys of the release Secret. The private
+values come from `dse-k8s_services/liftwing-studio/` in private puppet: `LITELLM_MASTER_KEY`,
+`CREDS_KEY` and `CREDS_IV` (encryption of stored credentials), `JWT_SECRET` and
+`JWT_REFRESH_SECRET` (sessions), and `OPENID_CLIENT_SECRET` and `OPENID_SESSION_SECRET` (the OIDC
+handshake). The OIDC client secret also has to match its copy on the IDP side. There is no
+database-backed settings layer that can override these values.
+
+### Network
+
+Egress is restricted by the chart's NetworkPolicy to the two inference VIPs on 30443 and, through
+`external_services: {cas: [idp]}`, to the idp hosts. In-cluster traffic, such as LibreChat to
+FerretDB and FerretDB to PostgreSQL, is allowed by the cluster-wide `allow-pod-to-pod` policy on
+dse-k8s, with ingress opened by the FerretDB and cnpg charts.
+
+### Images
+
+Both images are built with Blubber and published by CI from the GitLab repository above, tagged
+`<upstream version>-<pipeline timestamp>-<commit sha>` and pinned here by digest. They run as
+uid/gid 900 with a numeric `USER`, which `runAsNonRoot` without a `runAsUser`, and the pod's
+`fsGroup: 900`, both depend on.
