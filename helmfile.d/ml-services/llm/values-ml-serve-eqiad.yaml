@@ -218,7 +218,7 @@ inference_services:
                         - "ml-serve1015.eqiad.wmnet"
 
   # policy-violation isvc
-  gpt-oss-safeguard-20b:
+  llm-gpt-oss-safeguard-20b:
     predictor:
       image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
       image_version: "2026-07-28-135536-publish"
@@ -316,8 +316,9 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        # can only use ml-serve1012 because T421461#11838860
-                        - "ml-serve1012.eqiad.wmnet"
+                        # We want to use the 96GB partitions in ml-serve1013 and ml-serve1014
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
 
   # policy-violation isvc
   cope-b-a4b:
