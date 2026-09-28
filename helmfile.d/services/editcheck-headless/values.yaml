@@ -74,9 +74,12 @@ ingress:
 mesh:
   enabled: true
   public_port: 4693
-  # Envoy forwards to the gRPC port, not to app.port. hoarde's grpc lambda
-  # speaks plaintext to its own sidecar, so the TLS hop is envoy to envoy.
+  # Envoy forwards to the gRPC port, not to app.port. hoarde calls this
+  # service with gRPC through the ingress.
   upstream_local_port: 50051
+  # Without this, the ingressgateway sends HTTP/1.1 to the sidecar, the
+  # sidecar sends HTTP/1.1 to the gRPC port, and every call fails.
+  public_port_app_protocol: grpc
   # A check drives a real browser. The service's own --timeout-ms is 90s, so
   # keep this above it.
   upstream_timeout: "180.0s"
