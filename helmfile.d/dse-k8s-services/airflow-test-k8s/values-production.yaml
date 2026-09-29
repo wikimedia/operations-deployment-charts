@@ -19,6 +19,7 @@ config:
         auth_manager: auth_manager.FabAuthManager
       scheduler:
         standalone_dag_processor: true
+        create_cron_data_intervals: true
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
       kerberos:

@@ -112,7 +112,12 @@ data:
     {{- .Files.Get "files/webserver/auth_manager.py" | nindent 4 }}
   webserver_config.py: |
     {{- if not $.Values.devenv.enabled }}
-    from airflow.www.fab_security.manager import AUTH_OAUTH
+    try:
+        # Airflow 3.3+
+        from flask_appbuilder.const import AUTH_OAUTH
+    except ImportError:
+        # Airflow 2.x
+        from airflow.www.fab_security.manager import AUTH_OAUTH
 
     AUTH_TYPE = AUTH_OAUTH
     {{- with $.Values.config.oidc }}
