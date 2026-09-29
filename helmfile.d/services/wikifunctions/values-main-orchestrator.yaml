@@ -26,19 +26,23 @@ cache:
 
 config:
   public:
+    # (T439592) To control verbosity; 'info' is recommended, falls back to 'debug' if unset
+    ORCHESTRATOR_LOG_LEVEL: "info"
     # Set a nicer name for the OpenTelemetry entries than 'unknown_service'
     OTEL_SERVICE_NAME: wikifunctions-orchestrator
-    # Production wiki access (initially, for wikifunctions.org)
+    # Production Wikifunctions.org access
     WIKI_API_URL: http://localhost:6501/w/api.php
     WIKI_VIRTUAL_HOST: www.wikifunctions.org
     # Production Wikidata.org wiki access
     WIKIDATA_API_URL: http://localhost:6501/
     WIKIDATA_VIRTUAL_HOST: www.wikidata.org
+    # Node heap size, to avoid OOM issues
     ORCHESTRATOR_HEAP_SIZE: "2048"
     # Top-level request timeout at the orchestrator level (in milliseconds)
     # This should be a second or so larger than FUNCTION_EVALUATOR_TIMEOUT_MS
     # This needs to be a bit less than the 10s k8s bucket
     ORCHESTRATOR_TIMEOUT_MS: "9700"
+    # General configuration values:
     ORCHESTRATOR_CONFIG: |
       {
         "addNestedMetadata": false,
