@@ -93,14 +93,14 @@ services:
         headers:
           host: '{{ `{{request.params.domain}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
-          query: '{{ `{{ default(request.query, {}) }}` }}'
+        query: '{{ `{{ default(request.query, {}) }}` }}'
       corerevisionhtml_req:
         method: GET
         uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/revision/{{ `{{revision}}` }}/with_html'
         headers:
           host: '{{ `{{request.params.domain}}` }}'
           accept-language: '{{ `{{accept-language}}` }}'
-          query: '{{ `{{ default(request.query, {}) }}` }}'
+        query: '{{ `{{ default(request.query, {}) }}` }}'
       wikitexttohtml_req:
         method: POST
         uri: '{{ .Values.main_app.mwrestapi_uri }}/v1/transform/wikitext/to/html/{{ `{{title}}` }}'
