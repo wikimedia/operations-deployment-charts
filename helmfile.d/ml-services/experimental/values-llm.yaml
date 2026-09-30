@@ -3,9 +3,12 @@
 #
 # Egress rules come from values.yaml, which this release also loads.
 #
-# Hardware note: the ml-staging GPUs are MI210 (aldebaran, gfx90a), not MI300X.
-#   * gfx90a has no FP8, so the FP8 checkpoints under s3://wmf-ml-models/llm/ are
-#     not usable here.
+# Hardware note: ml-staging has mixed GPUs, not all MI210:
+#   * ml-staging2001 is MI100 (gfx908). The image below has no gfx908 kernels, so
+#     vLLM segfaults there -- pin GPU llmisvcs to ml-staging2003 with a nodeSelector.
+#   * ml-staging2003 is MI210 (aldebaran, gfx90a). It has no hardware FP8, but vLLM
+#     serves the block-scaled FP8 checkpoints under s3://wmf-ml-models/llm/ through a
+#     Triton kernel, so they are usable.
 #   * Do not set VLLM_ROCM_USE_AITER or an aiter attention backend on gfx90a.
 # ml/amd-vllm022 is built for gfx90a;gfx942, so the image itself is fine.
 
@@ -52,12 +55,17 @@ llm_inference_services:
             requests:
               cpu: "8"
               memory: 24Gi
-              ephemeral-storage: 40Gi
+              # Deliberately under-requested: the checkpoint is ~15 GiB, but 2003's
+              # ephemeral-storage is over-reserved by other services (~93 GiB of
+              # requests). A low request passes scheduling; the limit still gives the
+              # storage-initializer room to write the checkpoint. Do not "fix" this
+              # back to ~40Gi -- it fails with "Insufficient ephemeral-storage".
+              ephemeral-storage: 2Gi
               amd.com/gpu: "1"
             limits:
               cpu: "16"
               memory: 32Gi
-              ephemeral-storage: 45Gi
+              ephemeral-storage: 20Gi
               amd.com/gpu: "1"
           env:
             - name: VLLM_ADDITIONAL_ARGS
@@ -71,9 +79,12 @@ llm_inference_services:
                 --reasoning-parser qwen3
                 --tool-call-parser hermes
                 --enable-auto-tool-choice
-            - name: VLLM_ATTENTION_BACKEND
-              value: "TRITON_ATTN"
+                --attention-backend TRITON_ATTN
             - name: VLLM_ROCM_USE_AITER
               value: "0"
             - name: TORCH_BLAS_PREFER_HIPBLASLT
               value: "1"
+      # ml-staging2001 is MI100 (gfx908) and the amd-vllm022 image has no gfx908
+      # kernels, so vLLM segfaults there. Pin to the MI210 (gfx90a) node.
+      nodeSelector:
+        kubernetes.io/hostname: ml-staging2003.codfw.wmnet
