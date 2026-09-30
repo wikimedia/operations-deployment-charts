@@ -15,7 +15,6 @@ spec:
   ingress:
     - ports:
       {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
-      {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
