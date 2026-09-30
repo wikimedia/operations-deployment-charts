@@ -20,7 +20,7 @@
 {{ toYaml .Values.php.httpd.exporter.requests | indent 6 }}
     limits:
 {{ toYaml .Values.php.httpd.exporter.limits | indent 6 }}
-{{- if .Values.main_app.prestop_sleep }}
+{{- if and .Values.main_app.prestop_sleep (not $flags.native_sidecars) }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
 {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}

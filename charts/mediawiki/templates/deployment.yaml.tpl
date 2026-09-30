@@ -55,6 +55,7 @@ spec:
       containers:
       {{- include "mediawiki.container" . | indent 8 }}
       initContainers:
+      {{- include "mesh.deployment.container" . | indent 8 }}
       {{- if $flags.web }}
       {{- include "sidecars.httpd.container" . | indent 8 }}
       {{- include "sidecars.httpd-exporter.container" . | indent 8}}
@@ -66,7 +67,6 @@ spec:
       {{- if .Values.mw.localmemcached.enabled }}
         {{- include "localmemcached.deployment" . | indent 8 }}
       {{- end }}
-      {{- include "mesh.deployment.container" . | indent 8 }}
       {{- include "rsyslog.deployment" . | indent 8 }}
       {{- include "base.statsd.container" . | indent 8 }}
       {{- end }}

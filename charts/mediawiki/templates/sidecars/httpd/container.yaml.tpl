@@ -43,7 +43,7 @@
       # mcrouter, if enabled, should have its own readiness probe probably.
       path: /healthz
       port: php-metrics
-{{- if .Values.main_app.prestop_sleep }}
+{{- if and .Values.main_app.prestop_sleep (not $flags.native_sidecars) }}
 {{ include "base.helper.prestop" .Values.main_app.prestop_sleep | nindent 2}}
 {{- end }}
   resources:
