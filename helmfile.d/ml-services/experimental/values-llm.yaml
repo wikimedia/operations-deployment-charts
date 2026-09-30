@@ -39,3 +39,41 @@ llm_inference_services:
               value: "--max-model-len 4096 --gpu-memory-utilization 0.85"
       # No tolerations or nodeAffinity: nothing else in ml-staging requests a GPU,
       # and the mi300x taint does not apply to these nodes.
+  llm-qwen3-14b-fp8:
+    model:
+      uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
+      name: qwen3-14b-fp8
+    replicas: 1
+    timeout: 600s
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "8"
+              memory: 24Gi
+              ephemeral-storage: 40Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: 32Gi
+              ephemeral-storage: 45Gi
+              amd.com/gpu: "1"
+          env:
+            - name: VLLM_ADDITIONAL_ARGS
+              value: >-
+                --max-model-len 16384
+                --kv-cache-dtype fp8
+                --gpu-memory-utilization 0.92
+                --max-num-seqs 32
+                --max-num-batched-tokens 8192
+                --block-size 64
+                --reasoning-parser qwen3
+                --tool-call-parser hermes
+                --enable-auto-tool-choice
+            - name: VLLM_ATTENTION_BACKEND
+              value: "TRITON_ATTN"
+            - name: VLLM_ROCM_USE_AITER
+              value: "0"
+            - name: TORCH_BLAS_PREFER_HIPBLASLT
+              value: "1"
