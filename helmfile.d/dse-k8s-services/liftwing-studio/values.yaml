@@ -83,8 +83,8 @@ litellm:
 
 config:
   public:
-    DOMAIN_CLIENT: "https://liftwing-studio.discovery.wmnet:30443"
-    DOMAIN_SERVER: "https://liftwing-studio.discovery.wmnet:30443"
+    DOMAIN_CLIENT: "https://liftwing-studio.wikimedia.org"
+    DOMAIN_SERVER: "https://liftwing-studio.wikimedia.org"
     NO_INDEX: "true"
     ENDPOINTS: "custom"
     SEARCH: "false"
@@ -136,3 +136,7 @@ external_services:
 
 ingress:
   enabled: true
+  gatewayHosts:
+    default: "liftwing-studio"
+    extraFQDNs:
+    - liftwing-studio.wikimedia.org

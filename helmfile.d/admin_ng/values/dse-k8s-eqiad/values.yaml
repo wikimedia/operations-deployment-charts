@@ -246,7 +246,9 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: disabled
-  liftwing-studio: {}
+  liftwing-studio:
+    tlsExtraSANs:
+    - liftwing-studio.wikimedia.org
   llm-inference:
     deployTLSCertificate: false
     labels:

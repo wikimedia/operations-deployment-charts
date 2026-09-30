@@ -8,9 +8,9 @@ Lift Wing. Runs on `dse-k8s-eqiad`, namespace `liftwing-studio`.
 
 ```
 browser
-   │ HTTPS, SNI/Host liftwing-studio.discovery.wmnet
+   │ HTTPS liftwing-studio.wikimedia.org
    ▼
-k8s-ingress-dse (LVS :30443) ──> istio ingressgateway
+cache_text (haproxy + ATS) ──HTTPS to liftwing-studio.discovery.wmnet, SNI liftwing-studio.wikimedia.org──> k8s-ingress-dse (LVS :30443) ──> istio ingressgateway
    │
    ▼
 ┌─ pod liftwing-studio-production ──────────────────────────────────────────────┐
@@ -36,11 +36,21 @@ Three releases share the namespace:
 
 ### Request path
 
-Traffic arrives on the shared DSE ingress. `liftwing-studio.discovery.wmnet` is a CNAME to
-`k8s-ingress-dse.discovery.wmnet`. The istio ingressgateway terminates TLS with the namespace
-certificate, selects this service by SNI and Host, and re-encrypts to the envoy tls-proxy on 8443,
-which presents the release's own mesh certificate and hands plain HTTP to LibreChat on 3080. The name is internal only: there is no
-`*.wikimedia.org` hostname, so a browser needs a route to that name and the internal CA.
+The public name is `liftwing-studio.wikimedia.org`, a CNAME to `dyna.wikimedia.org` in
+operations/dns, so browsers reach the cache_text edge. haproxy terminates TLS there with the
+`*.wikimedia.org` certificate, and ATS maps the host to `https://liftwing-studio.discovery.wmnet:30443`
+(`profile::trafficserver::backend::mapping_rules` in puppet). ATS keeps the original Host header and
+uses it as the SNI, so it connects to the discovery name but asks for, and verifies, a certificate
+for `liftwing-studio.wikimedia.org`. The host is in `cache::alternate_domains`
+with `caching: 'pass'`, because every response is per-user, and its mapping rule raises ATS's
+`transaction_active_timeout_out` from cache_text's 205s to 600s so long streamed responses aren't cut.
+
+`liftwing-studio.discovery.wmnet` is a CNAME to `k8s-ingress-dse.discovery.wmnet`, the shared DSE
+ingress. The istio ingressgateway terminates TLS with the namespace certificate, which carries
+`liftwing-studio.wikimedia.org` as an extra SAN (`tlsExtraSANs` in admin_ng), selects this service by
+SNI and Host, and re-encrypts to the envoy tls-proxy on 8443. That presents the release's own mesh
+certificate and hands plain HTTP to LibreChat on 3080. The internal name still routes, but LibreChat
+builds its login callback from `DOMAIN_SERVER`, so logins return to the public name.
 
 LibreChat serves both the web client and its API. Chat completions stream back to the browser
 over Server-Sent Events, which is plain long-lived HTTP; nothing on this path upgrades to
