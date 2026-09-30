@@ -54,6 +54,7 @@ spec:
         component: proxy
       annotations:
         {{- include "base.meta.pod_annotations" . | indent 8 }}
+        {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       containers:
         {{- include "app.proxy.container" . | indent 8 }}
