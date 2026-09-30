@@ -548,7 +548,9 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
+                        # T439555: Medium model we want to host it using the 96GB partitions.
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
 
   llm-qwen38-27b:
     predictor:
