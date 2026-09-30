@@ -134,6 +134,10 @@ config:
         xcom_objectstorage_compression: ~ # We are planning to enable compression at the Ceph level down the road
       database:
         load_default_connections: false
+      email:
+        default_email_on_retry: false # T377745. We want to be alerted only after exhausting all retries.
+        # new option for Airflow 3 that works for task_runner only
+        from_email: "{{ $.Values.config.airflow.config.smtp.smtp_mail_from }}"
       kerberos:
         reinit_frequency: 3600 # in seconds
         ccache: *krb5ccname
@@ -185,8 +189,6 @@ config:
         backend: airflow.secrets.local_filesystem.LocalFilesystemBackend
         # See https://github.com/apache/airflow/blob/73dd6c17bd10ddda63a1682ac2174b0d206590dd/airflow/secrets/local_filesystem.py#L278-L279
         backend_kwargs: '{"connections_file_path": "/opt/airflow/secrets/connections.yaml"}' # WARN: must be json-parseable
-      email:
-        default_email_on_retry: false # T377745. We want to be alerted only after exhausting all retries.
       smtp:
         smtp_host: override_me
         smtp_mail_from: "airflow-{{ $.Values.config.airflow.instance_name }}: <noreply@wikimedia.org>"
@@ -212,6 +214,19 @@ config:
 
   # https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html
   connections:
+    # new style SmtpHook connection
+    smtp_default:
+      conn_type: email
+      host: "{{ $.Values.config.airflow.config.smtp.smtp_host }}"
+      # smtplib.SMTP passes port as string socket.getaddrinfo, which is alright
+      port: "{{ toYaml $.Values.config.airflow.config.smtp.smtp_port }}"
+      # WARN: must be json-parseable
+      extra: |
+        {
+          "disable_ssl": {{ toJson (not $.Values.config.airflow.config.smtp.smtp_ssl) }},
+          "disable_tls": {{ toJson (not $.Values.config.airflow.config.smtp.smtp_starttls) }},
+          "from_email": {{ include "evalValue" (dict "value" $.Values.config.airflow.config.smtp.smtp_mail_from "Root" $) | toJson }}
+        }
     fs_local:
       conn_type: fs
       description: Local filesystem on the Airflow Scheduler node
