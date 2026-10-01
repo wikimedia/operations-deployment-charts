@@ -28,7 +28,8 @@ app:
       kafka-consumer-group-id: pageview-trending-relative__dse-k8s-eqiad.001
       topic-prefix: eqiad
       # side output for Mediawiki Object Cache updates.
-      mediawiki-job-topic: eqiad.mediawiki.job.pageviewTrendingRelativeUpdate
+      mediawiki-job-stream: mediawiki.job.pageviewTrendingRelativeUpdate
+      mediawiki-job-schema-version: 1.0.0
       mediawiki-job-kafka-bootstrap-servers: kafka-main-eqiad.external-services.svc.cluster.local:9093
       event-stream-json-schema-urls: file:///srv/app/resources/schema_repo
 
