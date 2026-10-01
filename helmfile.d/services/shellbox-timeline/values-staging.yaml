@@ -4,3 +4,7 @@ resources:
 main_app:
   requests:
     cpu: 200m
+
+# there's no kvm available in staging at the moment
+gVisor:
+  runtime_class_name: gvisor
