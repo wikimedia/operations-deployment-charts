@@ -6,6 +6,8 @@ config:
         worker_pods_creation_batch_size: 32
       core:
         parallelism: 128
+      scheduler:
+        max_tis_per_query: 32
   auth:
     op_ldap_role: airflow-analytics-ops
 
