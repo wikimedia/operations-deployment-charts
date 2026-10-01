@@ -52,6 +52,8 @@ main_app:
     img-src app://*.wikimedia.org https://*.wikimedia.org app://wikimedia.org https://wikimedia.org 'self' data:;
     object-src 'none';
     script-src app://meta.wikimedia.org https://meta.wikimedia.org 'unsafe-inline';
+    worker-src 'self' blob:;
+    font-src app://meta.wikimedia.org https://meta.wikimedia.org data:;
     style-src app://meta.wikimedia.org https://meta.wikimedia.org app://*.wikipedia.org https://*.wikipedia.org 'self' 'unsafe-inline';
     frame-ancestors 'self'
     "
