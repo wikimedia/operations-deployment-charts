@@ -1,8 +1,13 @@
 resources:
   replicas: 2
 mesh:
-  # Slightly above apache timeout
+  # On the inbound listeners, set the route-level request timeout and
+  # stream-idle timeout slightly above the apache timeout.
+  # We need to set the stream idle timeout to match because the default (300s)
+  # will terminate the in-flight request (i.e., it is expected that the stream
+  # is idle during execution; no data flows in either direction).
   upstream_timeout: "1202.5s"
+  idle_upstream_timeout: "1202.5s"
 # These are directly copied from mw-jobrunner.
 php:
   max_execution_time: 1200
