@@ -369,7 +369,9 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1012.eqiad.wmnet"
+                        # T439555: Host it using the 96GB partitions.
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
 
   # General-purpose chat/completions LLM. Named "llm-*" so the rest-gateway
   # liftwing_llm route group matches it by name and applies the LiftWingLLM
