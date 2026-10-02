@@ -1,0 +1,6 @@
+# Exercises the CephFS PersistentVolumeClaim provisioning path (T433696).
+kubernetes_pod_operator:
+  persistent_volume_claims:
+    - claim_name: dev-metrics-git-pipeline
+      size: 5Gi
+      storage_class: ceph-cephfs-ssd

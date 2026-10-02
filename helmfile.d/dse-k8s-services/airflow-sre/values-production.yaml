@@ -2,6 +2,20 @@ config:
   airflow:
     instance_name: sre
 
+# Durable PVCs mounted by this instance's KubernetesPodOperator task pods.
+# Provisioned with the airflow release (previously separate wmf-stable/raw
+# releases). DAGs mount them via the operator's volumes/volume_mounts kwargs.
+kubernetes_pod_operator:
+  persistent_volume_claims:
+    - claim_name: airflow-sre-webrequest-to-cdn
+      size: 20Gi
+      storage_class: ceph-rbd-ssd
+      access_mode: ReadWriteOnce
+    - claim_name: airflow-sre-data-transfer
+      size: 20Gi
+      storage_class: ceph-cephfs-ssd
+      access_mode: ReadWriteMany
+
 ingress:
   gatewayHosts:
     default: "airflow-sre"

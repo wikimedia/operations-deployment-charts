@@ -9,6 +9,16 @@ config:
         endpoint_url: https://thanos-swift.discovery.wmnet
         verify: /etc/ssl/certs/wmf-ca-certificates.crt
 
+# Durable PVC mounted by this instance's KubernetesPodOperator task pods.
+# Provisioned with the airflow release (previously a separate wmf-stable/raw
+# release). DAGs mount it via the operator's volumes/volume_mounts kwargs.
+kubernetes_pod_operator:
+  persistent_volume_claims:
+    - claim_name: airflow-ml-model-training
+      size: 20Gi
+      storage_class: ceph-rbd-ssd
+      access_mode: ReadWriteOnce
+
 triggerer:
   enabled: true
 

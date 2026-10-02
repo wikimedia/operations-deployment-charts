@@ -19,7 +19,6 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases:
-        - model-training-pvc
         - production
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
@@ -46,23 +45,10 @@ hooks:
       ]
 
 releases:
-  - name: model-training-pvc
-    chart: wmf-stable/raw
-    values:
-    - resources:
-      - apiVersion: v1
-        kind: PersistentVolumeClaim
-        metadata:
-          name: airflow-ml-model-training
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          volumeMode: Filesystem
-          resources:
-            requests:
-              storage: 20Gi
-          storageClassName: ceph-rbd-ssd
-
+  # NOTE: the airflow-ml-model-training PVC was previously provisioned here as a
+  # separate wmf-stable/raw release. It is now declared in the production
+  # release's values-production.yaml, under
+  # kubernetes_pod_operator.persistent_volume_claims (T433696).
   - name: production
     namespace: airflow-ml
     chart: wmf-stable/airflow

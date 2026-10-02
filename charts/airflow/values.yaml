@@ -542,6 +542,19 @@ kubernetes_pod_operator:
     limits:
       cpu: 1000m
       memory: 1500Mi
+  # CephFS/RBD-backed PersistentVolumeClaims
+  # This only creates the PVCs; a DAG mounts a claim into
+  # its pod via the operator's `volumes` / `volume_mounts` kwargs (and a
+  # pod-level fsGroup so the non-root process can write). Empty by default;
+  # configured per-instance in helmfile.d.
+  # Example:
+  # persistent_volume_claims:
+  #   - claim_name: dev-metrics-git-pipeline
+  #     size: 5Gi
+  #     storage_class: ceph-cephfs-ssd
+  #     access_mode: ReadWriteMany  # optional, defaults to ReadWriteMany
+  #     volume_mode: Filesystem     # optional, defaults to Filesystem
+  persistent_volume_claims: []
 
 kerberos:
   enabled: true

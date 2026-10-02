@@ -61,6 +61,15 @@ scheduler:
     cpu: 8
     memory: 4Gi
 
+kubernetes_pod_operator:
+  persistent_volume_claims:
+    # CephFS disk for the dev-metrics git commit pipeline.
+    # Treated as a rebuildable cache of the collected repo clones.
+    # Mounted by the DAG.
+    - claim_name: dev-metrics-git-pipeline
+      size: 5Gi
+      storage_class: ceph-cephfs-ssd
+
 # Required to render the /etc/refinery/event_intake_service_urls.yaml file in the task pods
 worker:
   config:

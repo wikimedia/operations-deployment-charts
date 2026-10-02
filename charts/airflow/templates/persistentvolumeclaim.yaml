@@ -25,3 +25,22 @@ spec:
     requests:
       storage: {{ $.Values.kerberos.volume.size }}
   storageClassName: {{ $.Values.kerberos.volume.storage_class }}
+
+{{- /*
+  CephFS-backed persistent volumes. One PVC per entry in .Values.kubernetes_pod_operator.persistent_volume_claims;
+*/ -}}
+{{- range $.Values.kubernetes_pod_operator.persistent_volume_claims | default list }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ required "kubernetes_pod_operator.persistent_volume_claims[].claim_name is required" .claim_name }}
+spec:
+  accessModes:
+    - {{ .access_mode | default "ReadWriteMany" }}
+  volumeMode: {{ .volume_mode | default "Filesystem" }}
+  storageClassName: {{ required "kubernetes_pod_operator.persistent_volume_claims[].storage_class is required" .storage_class }}
+  resources:
+    requests:
+      storage: {{ required "kubernetes_pod_operator.persistent_volume_claims[].size is required" .size }}
+{{- end }}

@@ -45,40 +45,10 @@ hooks:
       ]
 
 releases:
-  - name: webrequest-to-cdn-pvc
-    chart: wmf-stable/raw
-    values:
-    - resources:
-      - apiVersion: v1
-        kind: PersistentVolumeClaim
-        metadata:
-          name: airflow-sre-webrequest-to-cdn
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          volumeMode: Filesystem
-          resources:
-            requests:
-              storage: 20Gi
-          storageClassName: ceph-rbd-ssd
-
-  - name: data-transfer-pvc
-    chart: wmf-stable/raw
-    values:
-    - resources:
-      - apiVersion: v1
-        kind: PersistentVolumeClaim
-        metadata:
-          name: airflow-sre-data-transfer
-        spec:
-          accessModes:
-            - ReadWriteMany
-          volumeMode: Filesystem
-          resources:
-            requests:
-              storage: 20Gi
-          storageClassName: ceph-cephfs-ssd
-
+  # NOTE: the airflow-sre-webrequest-to-cdn and airflow-sre-data-transfer PVCs
+  # were previously provisioned here as separate wmf-stable/raw releases. They
+  # are now declared in the production release's values-production.yaml, under
+  # kubernetes_pod_operator.persistent_volume_claims (T433696).
   - name: production
     namespace: airflow-sre
     chart: wmf-stable/airflow
