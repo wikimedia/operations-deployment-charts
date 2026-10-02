@@ -39,7 +39,7 @@ config:
     TTS_GEN_KOKORO_VERSION: "kokoro-v1.0"
     TTS_GEN_DEFAULT_VOICE: "af_heart"
     TTS_GEN_DEFAULT_LANG: "en-us"
-    TTS_GEN_NORM_RULESET: "2026.09.26"
+    TTS_GEN_NORM_RULESET: "2026.10.02"
     # Transcode: Opus tuned for speech intelligibility at low bitrate
     TTS_GEN_OPUS_BITRATE: "32k"
     TTS_GEN_OPUS_APPLICATION: "voip"
@@ -63,11 +63,11 @@ resources:
 
 app:
   image: wikimedia/machinelearning-liftwing-inference-services-tts-section-generator
-  version: "2026-09-24-124227-publish"
+  version: "2026-10-02-154856-publish"
   port: 8080
   limits:
-    cpu: 1
-    memory: 3Gi
+    cpu: 2
+    memory: 8Gi
     ephemeral-storage: 10Gi
   requests:
     cpu: 1
