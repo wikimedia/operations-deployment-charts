@@ -40,6 +40,7 @@ app:
             default:
               - qwen3-14b
               - qwen36-27b
+              - qwen38-27b
             fetch: false
           titleConvo: true
           titleModel: current_model
@@ -75,6 +76,12 @@ litellm:
           api_base: https://inference.discovery.wmnet:30443/openai/v1
           extra_headers:
             Host: llm-qwen36-27b.llm.wikimedia.org
+      - model_name: qwen38-27b
+        litellm_params:
+          model: hosted_vllm/llm-qwen38-27b
+          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          extra_headers:
+            Host: llm-qwen38-27b.llm.wikimedia.org
     litellm_settings:
       drop_params: true
       request_timeout: 600
