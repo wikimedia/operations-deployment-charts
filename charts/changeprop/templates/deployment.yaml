@@ -46,6 +46,10 @@ spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- if .Values.mesh.sidecar }}
+      initContainers:
+        {{- include "mesh.deployment.container" . | nindent 8 }}
+      {{- end }}
       containers:
         # The main application container
         - name: {{ template "base.name.release" . }}
@@ -118,7 +122,9 @@ spec:
               mountPath: /etc/monitoring
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
 {{- end }}
+        {{- if not .Values.mesh.sidecar }}
         {{- include "mesh.deployment.container" . | nindent 8 }}
+        {{- end }}
 {{- if .Values.nutcracker.enabled }}
         - name: {{ .Release.Name }}-nutcracker
           image: {{ .Values.docker.registry }}/{{ .Values.common_images.nutcracker.nutcracker }}
