@@ -11,7 +11,7 @@ qlever:
   version: master_2026-08-20T20-33-08Z_1075455
   config:
     public:
-      QLEVER_QUERY_TIMEOUT: 300s
+      QLEVER_QUERY_TIMEOUT: 60s
       QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics --set-runtime-parameter service-max-redirects=3
       http_proxy: http://urldownloader.discovery.wmnet:8080
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
@@ -91,7 +91,7 @@ proxy:
     public:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
-      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 300000
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 60000
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
       QUARKUS_MANAGEMENT_PORT: 9100
@@ -113,6 +113,9 @@ proxy:
 
 # Envoy service-mesh sidecar tuning for the wdqs-proxy pods.
 mesh:
+  # Kept above the proxy's 60s request timeout so the two deadlines don't race.
+  upstream_timeout: "65s"
+
   # Custom Envoy histogram buckets for request latency (rq_time).
   #
   # WDQS enforces a 60s response timeout and its latency distribution is
