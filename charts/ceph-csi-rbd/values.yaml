@@ -579,16 +579,19 @@ kubeletDir: /var/lib/kubelet
 cephLogDirHostPath: /var/log/ceph
 # Name of the csi-driver
 driverName: rbd.csi.ceph.com
+# WMF: upstream gives the RBD and the CephFS chart the same default names for
+# these configmaps. We install both drivers into kube-system, where one name
+# cannot belong to two Helm releases, so each chart prefixes its own.
 # Name of the configmap used for state
-configMapName: ceph-csi-config
+configMapName: ceph-csi-rbd-config
 # Key to use in the Configmap if not config.json
 # configMapKey:
 # Use an externally provided configmap
 externallyManagedConfigmap: false
 # Name of the configmap used for ceph.conf
-cephConfConfigMapName: ceph-config
+cephConfConfigMapName: ceph-csi-rbd-ceph-config
 # Name of the configmap used for encryption kms configuration
-kmsConfigMapName: ceph-csi-encryption-kms-config
+kmsConfigMapName: ceph-csi-rbd-encryption-kms-config
 # Unique ID distinguishing this instance of Ceph CSI among other instances,
 # when sharing Ceph clusters across CSI instances for provisioning
 # instanceID: default
