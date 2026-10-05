@@ -422,15 +422,19 @@ kubeletDir: /var/lib/kubelet
 # Name of the csi-driver
 driverName: cephfs.csi.ceph.com
 # Name of the configmap used for state
-configMapName: ceph-csi-config
+configMapName: ceph-csi-cephfs-config
 # Key to use in the Configmap if not config.json
 # configMapKey:
 # Use an externally provided configmap
 externallyManagedConfigmap: false
 # Name of the configmap used for ceph.conf
-cephConfConfigMapName: ceph-config
+cephConfConfigMapName: ceph-csi-cephfs-ceph-config
 # Name of the configmap used for encryption kms configuration
-kmsConfigMapName: ceph-csi-encryption-kms-config
+# WMF: upstream gives the RBD and the CephFS chart the same default names for
+# these configmaps. We install both drivers into kube-system, where one name
+# cannot belong to two Helm releases, so the CephFS copies are prefixed. The
+# RBD release keeps the original names.
+kmsConfigMapName: ceph-csi-cephfs-encryption-kms-config
 # CephFS RadosNamespace used to store CSI specific objects and keys.
 # radosNamespaceCephFS: csi
 # Unique ID distinguishing this instance of Ceph CSI among other instances,
