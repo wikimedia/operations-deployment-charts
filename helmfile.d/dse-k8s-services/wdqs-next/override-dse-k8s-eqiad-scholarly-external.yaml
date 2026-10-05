@@ -6,3 +6,9 @@ qlever:
     cpu: 8
   limits:
     cpu: 8
+
+# Matches the QLEVER_NUM_QUERIES override above.
+proxy:
+  config:
+    public:
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE: 16

@@ -95,6 +95,21 @@ proxy:
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
       QUARKUS_MANAGEMENT_PORT: 9100
+      # QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE is set per release,
+      # next to the QLEVER_NUM_QUERIES it is derived from.
+      #
+      # The proxy streams the backend response, so a pooled connection is held for
+      # the entire duration of a query, not just for the request round-trip. The pool is therefore a
+      # concurrency limit on qlever. Once the pool is full, further queries queue until they trip
+      # the QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT, rather than failing fast.
+      #
+      # As a baseline we set
+      #
+      #   connection-pool-size (per proxy pod) == QLEVER_NUM_QUERIES (per qlever pod)
+      #
+      # Setting it higher pushes the surplus onto qlever, which answers overcapacity with 429. The
+      # proxy maps that to a 504, so the excess surfaces to users as gateway timeouts instead of waiting.
+      # Setting it lower leaves qlever idle under load.
       QUERY_REWRITER_SPARQL_PREFIXES: |
         # Core Wikidata entities
         PREFIX wd: <http://www.wikidata.org/entity/>
