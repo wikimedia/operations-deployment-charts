@@ -88,6 +88,8 @@ app:
     # only when the job is running, so if the job is offline e.g. over a weekend,
     # we won't going to lose the latest savepoint.
     "kubernetes.operator.savepoint.history.max.age": 72h
+    # Enable restarts in case of failures, e.g: schema registry is not available. https://phabricator.wikimedia.org/T415264
+    "kubernetes.operator.job.restart.failed": "true"
     # Enables the Kubernetes HA service. Recovery metadata will be stored in a ConfigMap.
     "high-availability": KUBERNETES
     # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart

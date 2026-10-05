@@ -129,6 +129,9 @@ app:
     # we won't going to lose the latest savepoint.
     "kubernetes.operator.savepoint.history.max.age": 24h
 
+    # Enable restarts in case of failures, e.g: schema registry is not available. https://phabricator.wikimedia.org/T415264
+    "kubernetes.operator.job.restart.failed": "true"
+
     # We encountered issues with checkpoint times as checkpoint
     # barriers propagated through the job.
     # Enable unaligned checkpointing and network buffer debloating.
