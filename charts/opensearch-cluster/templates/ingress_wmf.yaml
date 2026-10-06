@@ -40,6 +40,9 @@ spec:
       request:
         remove:
         - x-request-id
+      response:
+        set:
+          x-cluster-name: {{ $.Values.opensearchCluster.general.serviceName | quote }}
     route:
     - destination:
         host: {{ $.Values.opensearchCluster.general.serviceName }}-bulk.{{ $.Release.Namespace }}.svc.cluster.local
@@ -51,6 +54,9 @@ spec:
       request:
         remove:
         - x-request-id
+      response:
+        set:
+          x-cluster-name: {{ $.Values.opensearchCluster.general.serviceName | quote }}
     route:
     - destination:
         host: {{ $.Values.opensearchCluster.general.serviceName }}.{{ $.Release.Namespace }}.svc.cluster.local

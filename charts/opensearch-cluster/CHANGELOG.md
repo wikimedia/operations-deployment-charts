@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.27]
+### Added
+  - The ingress routes now set the X-Cluster-Name header on all responses,
+    so that clients behind dns discovery can record metrics against the
+    responding cluster.
+### Deprecated
+### Removed
+### Fixed
+
+---
 ## [0.0.25]
 ### Added
 ### Deprecated
