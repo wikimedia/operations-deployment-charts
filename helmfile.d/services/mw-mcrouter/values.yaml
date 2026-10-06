@@ -18,6 +18,8 @@ common_images:
 
 cache:
   mcrouter:
+    # Testing for T420223
+    extra_args: "--reset-inactive-connection-interval=0 --keepalive-idle=300 --keepalive-interval=10 --keepalive-count=3"
     num_proxies: 12
     enabled: true
     resources:
@@ -50,5 +52,3 @@ tolerations:
   - key: dedicated
     value: mw-experimental
     effect: NoSchedule
-
-updateStrategyOnDelete: true
