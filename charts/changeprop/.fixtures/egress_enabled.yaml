@@ -3,3 +3,11 @@ networkpolicy:
     enabled: true
     dst_nets:
     - cidr: 123.123.123.123/24
+
+# Also enable egress via service mesh.
+mesh:
+  enabled: true
+  public_port: null  # egress-only (no inbound TLS termination)
+discovery:
+  listeners:
+    - mw-api-int-async

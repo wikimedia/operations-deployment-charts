@@ -34,6 +34,7 @@ spec:
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
+    {{- include "mesh.networkpolicy.egress" . | indent 4 }}
 {{- end }}
 
 {{ include "base.networkpolicy.egress.external-services" . }}
