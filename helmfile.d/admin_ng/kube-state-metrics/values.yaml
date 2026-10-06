@@ -31,6 +31,7 @@ metricDenylist:
 
 # Additional Kubernetes label keys to be used as labels in the metrics.
 metricLabelsAllowlist:
+  - nodes=[*]
   - cronjobs=[script,team]
   - jobs=[script,username,team,cronjob]
 
