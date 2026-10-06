@@ -91,6 +91,9 @@
   {{- end }}
   ports:
     - containerPort: {{ .Values.litellm.port }}
+    {{- if .Values.monitoring.named_ports }}
+      name: litellm-metrics
+    {{- end }}
   {{- if .Values.litellm.liveness_probe }}
   livenessProbe:
   {{- toYaml .Values.litellm.liveness_probe | nindent 4 }}

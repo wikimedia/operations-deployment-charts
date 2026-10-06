@@ -2,6 +2,7 @@ chartName: liftwing-studio
 
 monitoring:
   enabled: true
+  named_ports: true
 
 podSecurityContext:
   fsGroup: 900
@@ -83,6 +84,7 @@ litellm:
           extra_headers:
             Host: llm-qwen38-27b.llm.wikimedia.org
     litellm_settings:
+      callbacks: ["prometheus"]
       drop_params: true
       request_timeout: 600
     general_settings:

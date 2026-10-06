@@ -16,6 +16,10 @@ spec:
     - ports:
       {{- include "app.generic.networkpolicy_ingress" . | indent 6 -}}
       {{- include "mesh.networkpolicy.ingress" . | indent 6 }}
+      {{- if and .Values.litellm.enabled .Values.monitoring.named_ports }}
+      - port: {{ .Values.litellm.port }}
+        protocol: TCP
+      {{- end }}
 {{- if .Values.networkpolicy.egress.enabled }}
   egress:
     {{- include "base.networkpolicy.egress-basic" .Values }}
