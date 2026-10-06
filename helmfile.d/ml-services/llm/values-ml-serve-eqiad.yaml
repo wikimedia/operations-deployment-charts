@@ -53,66 +53,6 @@ inference_services:
                         - "ml-serve1014.eqiad.wmnet"
                         - "ml-serve1015.eqiad.wmnet"
 
-  embeddings-staging:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-embeddings"
-      image_version: "2026-03-12-144127-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "qwen3-embedding-staging"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/"
-        - name: MODEL_VERSION
-          value: "Qwen3-Embedding-0.6B"
-        - name: DTYPE
-          value: "float16"
-        - name: TRUST_REMOTE_CODE
-          value: "False"
-        - name: MAX_MODEL_LEN
-          value: "32768"
-        - name: MAX_NUM_BATCHED_TOKENS
-          value: "32768"
-        - name: VLLM_ROCM_USE_AITER
-          value: "1"
-        - name: VLLM_USE_TRITON_FLASH_ATTN
-          value: "0"
-        - name: MAX_JOBS
-          value: "1"
-      container:
-        resources:
-          limits:
-            cpu: "1"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 15Gi
-          requests:
-            cpu: "1"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 10Gi
-      config:
-        maxReplicas: 1
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
-                        - "ml-serve1015.eqiad.wmnet"
-
   jina-embeddings:
     predictor:
       image: "machinelearning-liftwing-inference-services-embeddings-transformers"
@@ -186,12 +126,12 @@ inference_services:
         resources:
           limits:
             cpu: "1"
-            memory: 16Gi
+            memory: 8Gi
             amd.com/gpu: "1"
             ephemeral-storage: 15Gi
           requests:
             cpu: "1"
-            memory: 16Gi
+            memory: 4Gi
             amd.com/gpu: "1"
             ephemeral-storage: 10Gi
       config:
@@ -531,7 +471,101 @@ inference_services:
             sizeLimit: "8Gi"
       config:
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 1
+        timeout: 600
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        # T439555: Medium model we want to host it using the 96GB partitions.
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
+
+  qwen36-27b-experiments:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-qwen36"
+      image_version: "2026-08-25-153535-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "qwen36-27b-experiments"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/Qwen3.6-27B-FP8/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        - name: TRUST_REMOTE_CODE
+          value: "True"
+        - name: LANGUAGE_MODEL_ONLY
+          value: "True"
+        - name: SKIP_MM_PROFILING
+          value: "True"
+        - name: DTYPE
+          value: "auto"
+        - name: KV_CACHE_DTYPE
+          value: "fp8"
+        - name: GPU_MEMORY_UTILIZATION
+          value: "0.85"
+        - name: MAX_MODEL_LEN
+          value: "32768"
+        - name: TENSOR_PARALLEL_SIZE
+          value: "1"
+        - name: MAX_NUM_SEQS
+          value: "128"
+        - name: MAX_NUM_BATCHED_TOKENS
+          value: "32768"
+        - name: BLOCK_SIZE
+          value: "64"
+        - name: ATTENTION_BACKEND
+          value: "TRITON_ATTN"
+        - name: ENFORCE_EAGER
+          value: "False"
+        - name: TOOL_CALLING_ENABLED
+          value: "True"
+        - name: TOOL_CALL_PARSER
+          value: "qwen3_coder"
+        - name: VLLM_ROCM_USE_AITER
+          value: "0"
+        - name: TORCH_BLAS_PREFER_HIPBLASLT
+          value: "1"
+        - name: MAX_JOBS
+          value: "1"
+        - name: AMDGCN_USE_BUFFER_OPS
+          value: "0"
+      container:
+        resources:
+          limits:
+            cpu: "16"
+            memory: 32Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 40Gi
+          requests:
+            cpu: "16"
+            memory: 32Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 35Gi
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "8Gi"
+      config:
+        minReplicas: 1
+        maxReplicas: 1
         timeout: 600
         tolerations:
           - key: "dedicated"
@@ -768,12 +802,12 @@ inference_services:
         resources:
           limits:
             cpu: "1"
-            memory: 16Gi
+            memory: 8Gi
             amd.com/gpu: "1"
             ephemeral-storage: 15Gi
           requests:
             cpu: "1"
-            memory: 16Gi
+            memory: 8Gi
             amd.com/gpu: "1"
             ephemeral-storage: 10Gi
       config:
