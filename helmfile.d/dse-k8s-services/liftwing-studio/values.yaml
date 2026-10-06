@@ -63,6 +63,7 @@ litellm:
     REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
     LITELLM_TELEMETRY: "False"
     LITELLM_LOCAL_MODEL_COST_MAP: "True"
+    JSON_LOGS: "true"
   config:
     model_list:
       - model_name: qwen3-14b
@@ -93,6 +94,7 @@ litellm:
 
 config:
   public:
+    CONSOLE_JSON: "true"
     DOMAIN_CLIENT: "https://hummingbird.wikimedia.org"
     DOMAIN_SERVER: "https://hummingbird.wikimedia.org"
     NO_INDEX: "true"
@@ -118,6 +120,7 @@ mesh:
   enabled: true
   public_port: 8443
   upstream_timeout: "600s"
+  local_access_log_min_code: "500"
   telemetry:
     enabled: true
   resources:
