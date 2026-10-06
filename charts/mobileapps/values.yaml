@@ -47,7 +47,7 @@ main_app:
   linked_artifacts_uri: https://linked-artifacts.discovery.wmnet:30443
   mobile_html_rest_api_base_uri: //meta.wikimedia.org/api/rest_v1/
   mobile_html_csp: "default-src 'none';
-    connect-src app://*.wikipedia.org https://*.wikipedia.org;
+    connect-src app://*.wikipedia.org https://*.wikipedia.org app://meta.wikimedia.org https://meta.wikimedia.org;
     media-src app://upload.wikimedia.org https://upload.wikimedia.org 'self';
     img-src app://*.wikimedia.org https://*.wikimedia.org app://wikimedia.org https://wikimedia.org 'self' data:;
     object-src 'none';
