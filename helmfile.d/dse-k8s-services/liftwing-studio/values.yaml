@@ -85,6 +85,7 @@ litellm:
             Host: llm-qwen38-27b.llm.wikimedia.org
     litellm_settings:
       callbacks: ["prometheus"]
+      require_auth_for_metrics_endpoint: false
       drop_params: true
       request_timeout: 600
     general_settings:
