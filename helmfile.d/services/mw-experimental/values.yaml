@@ -55,3 +55,7 @@ tolerations:
 affinity:
   nodeSelector:
     dedicated: mw-experimental
+
+# T438375 Test updated rsyslog image
+common_images:
+  rsyslogd: rsyslog:8.2608.0-4
