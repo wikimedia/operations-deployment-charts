@@ -6,9 +6,13 @@ spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
   updateStrategy:
+    {{- if .Values.updateStrategyOnDelete }}
+    type: OnDelete
+    {{- else }}
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 4%
+    {{- end }}
   template:
     metadata:
       labels:
