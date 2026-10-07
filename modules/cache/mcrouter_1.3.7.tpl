@@ -62,6 +62,9 @@
 - name: {{ template "base.name.release" . }}-mcrouter-exporter
   image: {{ .Values.docker.registry }}/{{ ((.Values.common_images).mcrouter).exporter | default "prometheus-mcrouter-exporter:latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.cache.mcrouter.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   args: ["--mcrouter.address", "127.0.0.1:{{ .Values.cache.mcrouter.port }}", "-mcrouter.server_metrics", "-web.listen-address", ":9151" ]
   ports:
   # Port names are limited to 15 characters.
