@@ -23,7 +23,7 @@ networkpolicy:
     enabled: true
     dst_nets:
       # -- search.svc.{eqiad,codfw}.wmnet is covered by envoy
-      # -- url-downloader is covered by default egress rules
+      # -- urldownloader is covered by default egress rules
       # -- T291447: allow direct access to text-lb nodes
       - cidr: 208.80.154.224/32  # text-lb.eqiad.wikimedia.org
         ports:
@@ -68,8 +68,8 @@ config:
     ES_HOSTS: localhost:6519  # Envoy proxy to opensearch-toolhub
     ES_INDEX_REPLICAS: 2
     WIKIMEDIA_OAUTH2_KEY: 89c2e5fbbbbe57687b8757c46cb74901
-    http_proxy: http://url-downloader.eqiad.wikimedia.org:8080
-    https_proxy: http://url-downloader.eqiad.wikimedia.org:8080
+    http_proxy: http://urldownloader.svc.eqiad.wikimedia.org:8080
+    https_proxy: http://urldownloader.svc.eqiad.wikimedia.org:8080
     no_proxy: localhost,mediawiki.org,wikibooks.org,wikidata.org,wikimedia.org,wikinews.org,wikipedia.org,wikiquote.org,wikisource.org,wikiversity.org,wikivoyage.org,wiktionary.org
 
 crawler:
