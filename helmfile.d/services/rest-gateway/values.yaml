@@ -1355,6 +1355,14 @@ main_app:
     mwdebug-next:
       tls: true
       port: 4453
+    mw-pretrain:
+      # NOTE: mw-pretrain is an ingress service, so we set ingress: true on the
+      # endpoint definition here (to use SNI). DO NOT set ingress: true on the
+      # routes that use this endpoint (by way of the mw-api plugin), as we do
+      # not want auto_host_rewrite behavior.
+      ingress: true
+      port: 30443 # ingress port
+      tls: true
 
   endpoints:
     mwdebug_eqiad:
@@ -1425,6 +1433,10 @@ main_app:
           endpoint: mw-parsoid_eqiad
         k8s-mw-parsoid-codfw:
           endpoint: mw-parsoid_codfw
+      # This configures diversion of testwiki traffic to mw-pretrain.
+      host_diversion:
+        test.wikipedia.org:
+          discovery_endpoint: mw-pretrain
       # The default endpoint serves two purposes:
       # * Within the Lua code executed by the plugin, if no specific diversion
       #   behavior applies to a given request, the associated cluster is used.
