@@ -16,12 +16,12 @@ helmDefaults:
 environments:
   dse-k8s-eqiad:
     values:
-      - releases: [main-internal, scholarly-internal, main-external, scholarly-external]
+      - releases: [main-external, scholarly-external]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   dse-k8s-codfw:
     values:
-      - releases: [main-internal, scholarly-internal, main-external, scholarly-external]
+      - releases: [main-external, scholarly-external]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 
@@ -68,10 +68,6 @@ hooks:
 
 
 releases:
-  - name: main-internal
-    <<: *default
-  - name: scholarly-internal
-    <<: *default
   - name: main-external
     <<: *default
   - name: scholarly-external
