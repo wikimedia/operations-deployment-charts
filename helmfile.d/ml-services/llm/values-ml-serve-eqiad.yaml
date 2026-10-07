@@ -398,7 +398,8 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1015.eqiad.wmnet" # T439555: Small model can be hosted on ml-serve1015 24GB partition size.
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
 
   llm-qwen36-27b:
     predictor:
