@@ -9,19 +9,24 @@
 <div class="lang-list-button-wrapper">
             <h1>Wikimedia Downloads</h1>
             <p>
-                Please note that we have rate limited downloaders and we are capping the
-                number of per-ip connections to 3. This will help to ensure that everyone
-                can access the files with reasonable download times.  Clients that try to
-                evade these limits may be blocked.
+                If you are reading this on Wikimedia servers, please note that we are now enforcing the
+                <a href="https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy">Wikimedia Foundation User-Agent Policy</a>
+                for dumps downloads. Downloads are also rate limited and capped at 3 connections per-IP.
+                These controls will help to ensure that everyone can access the files with reasonable
+                download times. Clients that do not respect the user-agent policy or who try to evade
+                these limits may be blocked.
             </p>
             <p>The following kinds of downloads are available:</p>
             <dl>
                 <dt>Database backup dumps (current page)</dt>
                 <dd>
-                    A complete copy of all Wikimedia wikis, in the form of wikitext source
-                    and metadata embedded in XML (<strong>Note: These XML dumps are deprecated,
-                    please use <a href="other/mediawiki_content_history/readme.html">MediaWiki Content File Exports</a>
-                    instead</strong>). A number of raw database tables in SQL form are also available.
+                    A complete copy of all public Wikimedia wikis, in the form of wikitext source
+                    and metadata embedded in XML (<strong>Note: These XML dumps are deprecated
+                    and will be sunset in January 2027, please use
+                    <a href="other/mediawiki_content_history/readme.html">MediaWiki Content File Exports</a>
+                    instead. More information about how to migrate can be found on the
+                    <a href="https://wikitech.wikimedia.org/wiki/MediaWiki_Content_File_Exports">project page</a>.</strong>).
+                    A number of raw database tables in SQL form are also available.
                 </dd>
                 <dd>
                     These snapshots are provided monthly. If you are a regular user of these dumps,
