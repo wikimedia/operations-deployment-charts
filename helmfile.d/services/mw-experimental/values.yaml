@@ -7,8 +7,13 @@ strategy:
   type: Recreate
   rollingUpdate: ~
 
+cache:
+  mcrouter:
+    sidecar: true
+
 mesh:
   public_port: 4456
+  sidecar: true
   tracing:
     enabled: true
     sampling: 100
