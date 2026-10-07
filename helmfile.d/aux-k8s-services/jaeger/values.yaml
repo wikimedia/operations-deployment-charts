@@ -301,6 +301,8 @@ extraObjects:
     kind: Certificate
     metadata:
       name: main-jaeger-query
+      labels:
+        release: "{{ .Release.Name }}"
     spec:
       secretName: main-jaeger-query
       commonName: "{{ template \"jaeger.query.name\" . }}.{{ .Release.Namespace }}.svc"
