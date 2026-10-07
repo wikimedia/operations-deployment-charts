@@ -3,6 +3,9 @@
 - name: {{ template "base.name.release" . }}-tls-proxy
   image: {{ .Values.docker.registry }}/{{ .Values.mesh.image_name | default "envoy" }}:{{ .Values.mesh.image_version | default "latest" }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
+  {{- if .Values.mesh.sidecar }}
+  restartPolicy: Always
+  {{- end }}
   env:
     - name: SERVICE_NAME
       value: {{ .Release.Name }}
