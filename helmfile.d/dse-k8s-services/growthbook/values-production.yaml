@@ -1,8 +1,9 @@
 # We currently run a non-official release, which was built on a
-# specific commit, to include a bugfix we care about
-# (https://github.com/growthbook/growthbook/pull/5520)
-image: &app_image repos/data-engineering/growthbook
-version: &app_version 5.1.0-2026-09-28-093215-dc73da319cbb9e60948ae4d435a66975d790112b
+# specific commit, to include a couple of features we care about
+# [Let launch checklists hide individual built-in items](https://github.com/growthbook/growthbook/pull/7200)
+# [Render Markdown links in Custom Hook warnings](https://github.com/growthbook/growthbook/pull/7124)
+image: &app_image repos/data-engineering/growthbook/next
+version: &app_version 2026-10-07-083700-b0dd648598941a664ae7c8fbb0ea168d41ab2709
 app_origin: &app_origin https://growthbook.wikimedia.org
 api_host: &api_host https://growthbook-api.wikimedia.org
 
