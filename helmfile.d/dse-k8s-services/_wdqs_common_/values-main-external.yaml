@@ -5,7 +5,7 @@ proxy:
       EVENTGATE_STREAM: wdqs_external.sparql_query.v2
       EVENTGATE_GRAPH_NAME: wikidata_main
       # Matches QLEVER_NUM_QUERIES below.
-      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE: 60
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE: 120
 
 ingress:
   gatewayHosts:
@@ -23,12 +23,17 @@ qlever:
       QLEVER_DBNAME: wikidata_main
       QLEVER_MAX_MEM: 135G
       QLEVER_MAX_CACHE: 32G
-      QLEVER_NUM_QUERIES: 60
+      QLEVER_NUM_QUERIES: 120
+  # Sized against the wdqs namespace quota as of 2026-10-07.
+  # We take 60 and leave 6 cores as extra headroom to grow sidecard containers.
+  #
+  # When the internal releases are redeployed into this namespace, this value
+  # must be adjusted accounting for their dedicated hardware specs.
   requests:
-    cpu: 30
+    cpu: 60
     memory: 155Gi
   limits:
-    cpu: 30
+    cpu: 60
     memory: 155Gi
 
 init:
