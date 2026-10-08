@@ -132,6 +132,9 @@ config:
         xcom_objectstorage_path: s3://{{ $.Values.config.airflow.config.logging.remote_log_conn_id }}@{{ $.Values.config.airflow.s3_bucket }}/xcoms
         xcom_objectstorage_threshold: "524288" # 500KB
         xcom_objectstorage_compression: ~ # We are planning to enable compression at the Ceph level down the road
+      dag_processor:
+        min_file_process_interval: 60  # default is 30
+        parsing_processes: 1  # default is 2
       database:
         load_default_connections: false
       email:
@@ -316,9 +319,9 @@ triggerer:
 dagProcessor:
   liveness_probe:
     initialDelaySeconds: 10
-    timeoutSeconds: 20
+    timeoutSeconds: 60
     failureThreshold: 5
-    periodSeconds: 60
+    periodSeconds: 180
     exec:
       command:
       - sh
@@ -327,10 +330,10 @@ dagProcessor:
         jobs check --local --job-type DagProcessorJob
   enabled: false
   requests:
-    cpu: "0.5"
+    cpu: "1"
     memory: 1Gi
   limits:
-    cpu: "0.5"
+    cpu: "2"
     memory: 2Gi
 
 # Export the content of the postgresql app secret to environment variables
