@@ -1,0 +1,28 @@
+chartName: lac-lambdas
+
+resources:
+  replicas: 2
+
+monitoring:
+  enabled: true
+  named_ports: true
+
+service:
+  deployment: production
+  nodePort: false
+
+mesh:
+  enabled: true
+
+# MediaWiki is reached through this listener, which the mesh gives on
+# http://localhost:6500. One proxy serves every wiki and the wiki is named
+# in the Host header.
+discovery:
+  listeners:
+    - mw-api-int-async-ro
+
+networkpolicy:
+  egress:
+    enabled: true
+  ingress:
+    enabled: true
