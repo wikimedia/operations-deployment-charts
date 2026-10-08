@@ -101,3 +101,14 @@ networkpolicy:
         ports:
           - protocol: TCP
             port: 7531
+
+priorityClassName: high-priority
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node.kubernetes.io/link-speed-mbps
+              operator: In
+              values:
+                - "10000"
