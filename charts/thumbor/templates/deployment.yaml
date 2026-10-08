@@ -35,6 +35,9 @@ spec:
         {{- end }}
         {{- include "mesh.name.annotations" . | indent 8}}
     spec:
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
