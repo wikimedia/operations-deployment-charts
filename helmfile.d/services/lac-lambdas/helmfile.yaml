@@ -14,7 +14,8 @@ helmDefaults:
 environments:
   staging: &default_values
     values:
-      - releases: []
+      - releases:
+        - revision-feature-counts
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   eqiad:
@@ -61,4 +62,6 @@ hooks:
       ]
 
 
-releases: []
+releases:
+  - name: revision-feature-counts
+    <<: *default

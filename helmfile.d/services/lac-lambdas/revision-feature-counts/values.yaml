@@ -1,0 +1,105 @@
+resources:
+  # In each of eqiad and codfw. Staging overrides this.
+  replicas: 4
+
+app:
+  image: repos/data-engineering/linked-artifact-lambdas/python
+  version: v0.2.0
+
+  command: ["python3"]
+  args: ["-m", "revision_feature_counts.server"]
+
+  port: 50051        # gRPC, inside the pod. Envoy forwards to it.
+  metricsPort: 9102  # /healthz and /metrics, for Prometheus and the kubelet.
+
+  # /healthz answers only after the wiki map is read and the gRPC port is
+  # open, so a pod that answers here can serve a call.
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 9102
+    initialDelaySeconds: 2
+    periodSeconds: 5
+
+  # Kept shallow on purpose: a failed liveness check restarts the pod, and a
+  # pod that is alive but cannot answer is already held back by readiness.
+  # The delay must cover the wiki map being read, which can take
+  # rfc_sitematrix_timeout below.
+  liveness_probe:
+    tcpSocket:
+      port: 50051
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    failureThreshold: 3
+
+  requests:
+    cpu: 2
+    memory: 1Gi
+  limits:
+    cpu: 2
+    memory: 2Gi
+
+config:
+  # jsonargparse reads these as YAML.
+  # A value of the wrong type stops the service at startup.
+  public:
+    rfc_grpc_port: 50051
+    rfc_http_port: 9102
+
+    # increasing max_workers is not too useful since counting feature
+    # is a pure python process that runs serially. More workers just
+    # means more parallel html fetches.
+    rfc_max_workers: 8
+
+    # if max_concurrent_rpcs >> max_workers, there will be more requests
+    # queued than can be processed in the given timeout limit.
+    rfc_max_concurrent_rpcs: 24
+
+    rfc_html_timeout: 60.0
+
+    # rely on envoy for retries
+    rfc_html_retries: 0
+
+    # 8 MiB. The largest revision measured is 4.4 MB of HTML.
+    # Quoted on purpose. A whole number of 1000000 or more goes through
+    # `quote` as "8.388608e+06", which the service rejects as not an int.
+    rfc_html_max_bytes: "8388608"
+    rfc_mw_rest_base_url: "http://localhost:6500"
+
+    rfc_sitematrix_timeout: 10.0
+    rfc_sitematrix_reload_seconds: 86400.0
+    rfc_wiki_project_codes: ["wiki"]
+
+    # A fault in mwparserfromhtml stops the call, so no artifact with a gap
+    # is cached. Set to "false" only while a known fault is repaired.
+    rfc_strict_features: true
+
+    rfc_log_level: "INFO"
+    # Logstash reads ECS JSON, one object per line. This is the only copy:
+    # without it the service writes plain text.
+    rfc_log_config: |-
+      version: 1
+      disable_existing_loggers: false
+      formatters:
+        ecs:
+          class: ecs_logging.StdlibFormatter
+      handlers:
+        console:
+          class: logging.StreamHandler
+          formatter: ecs
+          stream: ext://sys.stdout
+      root:
+        handlers: [console]
+
+mesh:
+  # The envoy local cluster and the trace service are named after the
+  # namespace unless this is set. The namespace holds every lambda, so
+  # without it each one reports as lac-lambdas and they cannot be told apart.
+  tracing:
+    service_name: revision-feature-counts
+  certmanager:
+    default_host: "revision-feature-counts"
+
+ingress:
+  gatewayHost:
+    default: "revision-feature-counts"
