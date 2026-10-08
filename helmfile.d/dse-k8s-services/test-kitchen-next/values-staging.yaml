@@ -1,5 +1,5 @@
 app:
-  version: v2.0.1-prod
+  version: v2.1.0-prod
 
   service:
     user_agent: Test Kitchen UI/2.0 (#experiment-platform)
@@ -21,17 +21,9 @@ app:
     redirect_uri: https://test-kitchen-next.wikimedia.org/login/callback
 
   growthbook:
-    include_gb: true
     # http://localhost:6048 is proxied to growthbook-api-next
     api_url: http://localhost:6048/api/v1/experiments
     ui_url: https://growthbook-next.wikimedia.org/experiments
-    drafts_validation: false
-    drafts_validation_interval: 4
-
-  phabricator:
-    api_url: https://phabricator.discovery.wmnet/api/
-    enabled: true
-    timeout_ms: 5000
 
 ingress:
   gatewayHosts:

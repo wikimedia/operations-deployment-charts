@@ -28,17 +28,9 @@ idp:
   response_type: {{ .Values.app.idp.response_type }}
 
 growthbook:
-  include_gb: {{ .Values.app.growthbook.include_gb }}
   api_url: {{ .Values.app.growthbook.api_url }}
   ui_url: {{ .Values.app.growthbook.ui_url }}
   poll_interval_ms: {{ .Values.app.growthbook.poll_interval_ms }}
   timeout_ms: {{ .Values.app.growthbook.timeout_ms }}
-  drafts_validation: {{ .Values.app.growthbook.drafts_validation }}
-  drafts_validation_interval: {{ .Values.app.growthbook.drafts_validation_interval }}
-
-phabricator:
-  api_url: {{ .Values.app.phabricator.api_url }}
-  enabled: {{ .Values.app.phabricator.enabled }}
-  timeout_ms: {{ .Values.app.phabricator.timeout_ms }}
 
 {{- end }}

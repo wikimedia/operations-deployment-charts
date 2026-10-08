@@ -71,17 +71,9 @@ app:
     response_type: code
 
   growthbook:
-    include_gb: true
     api_url: https://growthbook-api-next.wikimedia.org/api/v1/experiments
     ui_url: https://growthbook-next.wikimedia.org/experiments
     poll_interval_ms: 15000
-    timeout_ms: 5000
-    drafts_validation: false
-    drafts_validation_interval: 4
-
-  phabricator:
-    api_url: https://phabricator.discovery.wmnet/api/
-    enabled: false
     timeout_ms: 5000
 
 monitoring:
