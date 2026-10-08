@@ -984,3 +984,9 @@ kubeControllers:
     limits:
       cpu: ~
       memory: 150Mi
+
+priorityClasses:
+- name: high-priority
+  value: 100
+  description: "Priority class used by high-priority pods, to ensure they
+    get scheduled before regular pods under resource pressure"
