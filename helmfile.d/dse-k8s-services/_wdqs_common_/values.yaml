@@ -92,6 +92,7 @@ proxy:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 60000
+      QUARKUS_HTTP_LIMITS_MAX_FORM_ATTRIBUTE_SIZE: 50k
       # QUARKUS_MANAGEMENT_ENABLED=true and QUARKUS_MICROMETER_PROMETHEUS_EXPORT_PATH=/metrics
       # are compiled into the wdqs-proxy binary. Attempting to set them here will have no effect.
       QUARKUS_MANAGEMENT_PORT: 9100
