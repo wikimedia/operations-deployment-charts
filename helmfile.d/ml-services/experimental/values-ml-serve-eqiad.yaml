@@ -115,7 +115,8 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
-        maxReplicas: 1
+        minReplicas: 2
+        maxReplicas: 2
         tolerations:
           - key: "dedicated"
             operator: "Equal"
