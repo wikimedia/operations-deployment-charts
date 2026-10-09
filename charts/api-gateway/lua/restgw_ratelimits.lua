@@ -158,18 +158,15 @@ function wmf_ratelimit_info(request_handle)
         -- Identified by provenance. We could probably pick out the "client" or "id" field.
         ratelimit_class = "known-client"
 
-    elseif centralauthPayload.rlc then
+    elseif centralauthPayload.rlc and wmf_can_trust_rlc( centralauthPayload ) then
         -- T420280: Use rate limit class from centralauth token
         ratelimit_class = centralauthPayload.rlc
 
-    elseif bearerPayload.rlc then
+    elseif bearerPayload.rlc and wmf_can_trust_rlc( bearerPayload ) then
         -- We trust that long-lived tokens don't have an rlc field.
-       -- TODO: Ignore stale rlc field if the token is older than a day (check iat field).
-        -- That shouldn't happen, since long-lived tokens shouldn't have an rlc field.
-        -- But if they do, we shouldn't use it, we should use the cookie's rlc instead.
         ratelimit_class = bearerPayload.rlc
 
-    elseif cookiePayload.rlc then
+    elseif cookiePayload.rlc and wmf_can_trust_rlc( cookiePayload ) then
         -- T418042: Use the rlc field from a session cookie if it is present.
         ratelimit_class = cookiePayload.rlc
 
@@ -233,6 +230,43 @@ function wmf_ratelimit_info(request_handle)
     end
 
     wmf_run_hooks(request_handle, "ratelimit")
+end
+
+-- Whether the token is fresh enough to be trusted with defining a rate limit class (rlc claim).
+-- To be trusted, the token must:
+-- * have an iat and a sub claim
+-- * both exp and sxp must be in the future
+-- * iat must be in the past, but not more than jwt.rlc_expiry seconds
+function wmf_can_trust_rlc( jwt_payload )
+    local now = os.time()
+
+    -- If there is no sub, don't use the rlc
+    if jwt_payload.sub == nil then
+        return false
+    end
+
+    -- WMF custom session expiry. Typically 4 hours.
+    if jwt_payload.sxp ~= nil and now > jwt_payload.sxp then
+        return false
+    end
+
+    -- Regular expiry. Here for completeness. Should have been caught by jwt_authn already.
+    if jwt_payload.exp ~= nil and now > jwt_payload.exp then
+        return false
+    end
+
+    -- Token from the future. Here for completeness. Should have been caught by jwt_authn already.
+    if jwt_payload.iat ~= nil and now + 60 < jwt_payload.iat then
+        return false
+    end
+
+    -- Token too old (or no iat). Don't trust rlc claims for more than a day.
+    -- Client should have gotten a new token by now.
+    if jwt_payload.iat == nil or now > jwt_payload.iat + HelmValues.main_app.jwt.rlc_expiry then
+        return false
+    end
+
+    return true
 end
 
 function wmf_apply_class_overrides( request_handle, ratelimit_class )

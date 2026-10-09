@@ -287,7 +287,8 @@ class RateLimitTest(unittest.TestCase):
 
         resp = self.target.post(liftwing_path, liftwing_body, headers = headers)
         self.assertEqual(401, resp.status, "expected anon request to be rejected because the rate limit is 0")
-        self.assertIn("Bearer", resp.headers.get("WWW-Authenticate"), "WWW-Authenticate")
+        expected_challenge = f'Bearer realm="{env.values.main_app.jwt.issuer}"'
+        self.assertEqual(expected_challenge, resp.headers.get("WWW-Authenticate"), "WWW-Authenticate")
 
     def test_anon_limit(self):
         headers = { "x-client-ip": env.nextIp() }

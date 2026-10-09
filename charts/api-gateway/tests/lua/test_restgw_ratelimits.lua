@@ -18,6 +18,7 @@ _G.HelmValues = {
         jwt = {
             enabled = true,
             issuer = "test.example.org",
+            rlc_expiry = 3600,
         },
         ratelimiter = {
             fallback_class = "anon",
@@ -90,6 +91,17 @@ end
 -- Installation: luarocks install busted
 
 describe("rest_hooks", function()
+    -- Pin the clock so the test below can rely on NOW.
+    local NOW = 1700000000
+    local real_time = os.time
+
+    before_each(function()
+        os.time = function() return NOW end
+    end)
+    after_each(function()
+        os.time = real_time
+    end)
+
     describe("wmf_ratelimit_info", function()
         describe("policy handling", function()
             it("should set x-wmf-ratelimit-policy based on route metadata", function()
@@ -410,10 +422,11 @@ describe("rest_hooks", function()
                 -- use the one from the bearer token.
                 local payload = {
                     sub = "12345",
-                    rlc = "special-class"
+                    rlc = "special-class", iat = os.time()
                 }
                 local cookie_payload = {
-                    rlc = "cookie-class"
+                    sub = "12345",
+                    rlc = "cookie-class", iat = os.time()
                 }
 
                 -- The JWT payload is stored in stream metadata
@@ -436,7 +449,8 @@ describe("rest_hooks", function()
                     sub = "12345",
                 }
                 local cookie_payload = {
-                    rlc = "updated-class"
+                    sub = "12345",
+                    rlc = "updated-class", iat = os.time()
                 }
 
                 -- The JWT payload is stored in stream metadata
@@ -457,9 +471,9 @@ describe("rest_hooks", function()
         describe("centralauth_payload handling", function()
             it("should use the centralauth payload over other payloads", function()
                 local meta = { ["envoy.filters.http.jwt_authn"] = {
-                    ["cookie_payload"] =      { sub = "111", rlc = "cookie-rlc" },
-                    ["bearer_payload"] =      { sub = "222", rlc = "bearer-rlc" },
-                    ["centralauth_payload"] = { sub = "333", rlc = "centralauth-rlc" },
+                    ["cookie_payload"] =      { sub = "111", rlc = "cookie-rlc", iat = os.time() },
+                    ["bearer_payload"] =      { sub = "222", rlc = "bearer-rlc", iat = os.time() },
+                    ["centralauth_payload"] = { sub = "333", rlc = "centralauth-rlc", iat = os.time() },
                 } }
                 local req = fake_request_handle( { streamMetadata = meta } )
                 wmf_ratelimit_info(req)
@@ -516,7 +530,8 @@ describe("rest_hooks", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
                     sub = "12345",
-                    rlc = "special-class"
+                    rlc = "special-class",
+                    iat = os.time(),
                 }
                 local meta = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234"}
@@ -531,7 +546,8 @@ describe("rest_hooks", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
                     sub = "12345",
-                    rlc = "special-class"
+                    rlc = "special-class",
+                    iat = os.time(),
                 }
                 local meta = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "A" } -- should be preferred
@@ -546,7 +562,8 @@ describe("rest_hooks", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
                     sub = "12345",
-                    rlc = "special-class"
+                    rlc = "special-class",
+                    iat = os.time(),
                 }
                 local meta = { ["envoy.filters.http.jwt_authn"] = { ["bearer_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", ["x-trusted-request"] = "B" } -- should be preferred
@@ -561,7 +578,8 @@ describe("rest_hooks", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
                     sub = "12345",
-                    rlc = "BYPASS" -- magic value!
+                    rlc = "BYPASS", -- magic value!
+                    iat = os.time(),
                 }
                 local meta = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
                 local headers = { ["x-client-ip"] = "1234", }
@@ -574,7 +592,8 @@ describe("rest_hooks", function()
             it("should not use the rlc claim if the sub claim is not present", function()
                 -- The JWT payload is stored in stream metadata
                 local payload = {
-                    rls = "special-class" -- should be ignored
+                    rlc = "special-class", -- should be ignored without sub
+                    iat = os.time(),
                 }
                 local meta = { ["envoy.filters.http.jwt_authn"] = { ["cookie_payload"] = payload } }
                 local req = fake_request_handle( { streamMetadata = meta } )
@@ -583,6 +602,59 @@ describe("rest_hooks", function()
                 local result = req:headers()
                 assert.are.equal( "anon", result:get("x-wmf-ratelimit-class") )
             end)
+        end)
+        describe("rlc claim trust", function()
+            local EXPIRY = HelmValues.main_app.jwt.rlc_expiry
+
+            -- Claims for a token whose rlc should be honored. Each case overrides some of them;
+            -- false removes a claim.
+            local function make_payload( overrides )
+                local payload = {
+                    sub = "12345",
+                    rlc = "special-class",
+                    iat = NOW - EXPIRY / 2,
+                    sxp = NOW + EXPIRY,
+                    exp = NOW + 2 * EXPIRY,
+                }
+                for k, v in pairs( overrides ) do
+                    payload[k] = v or nil
+                end
+                return payload
+            end
+
+            -- A token whose rlc is not trusted still identifies the user if it has a sub.
+            local cases = {
+                ["use the rlc if all claims are valid"] =
+                    { overrides = {}, class = "special-class" },
+                ["use the rlc if sxp and exp are absent"] =
+                    { overrides = { sxp = false, exp = false }, class = "special-class" },
+                ["ignore the rlc if sub is missing"] =
+                    { overrides = { sub = false }, class = "anon" },
+                ["ignore the rlc if iat is missing"] =
+                    { overrides = { iat = false }, class = "authed-user" },
+                ["ignore the rlc if iat is older than rlc_expiry"] =
+                    { overrides = { iat = NOW - EXPIRY - 1 }, class = "authed-user" },
+                ["ignore the rlc if iat is in the future"] =
+                    { overrides = { iat = NOW + 120 }, class = "authed-user" },
+                ["ignore the rlc if sxp is exceeded"] =
+                    { overrides = { sxp = NOW - 1 }, class = "authed-user" },
+                ["ignore the rlc if exp is exceeded"] =
+                    { overrides = { exp = NOW - 1 }, class = "authed-user" },
+            }
+
+            for _, source in ipairs( { "cookie_payload", "bearer_payload", "centralauth_payload" } ) do
+                for name, case in pairs( cases ) do
+                    it("should " .. name .. " (" .. source .. ")", function()
+                        local payload = make_payload( case.overrides )
+                        local meta = { ["envoy.filters.http.jwt_authn"] = { [source] = payload } }
+                        local req = fake_request_handle( { streamMetadata = meta } )
+                        wmf_ratelimit_info(req)
+
+                        -- rlc is only used if the token meets the conditions.
+                        assert.are.equal( case.class, req:headers():get("x-wmf-ratelimit-class") )
+                    end)
+                end
+            end
         end)
         describe("OPTIONS support for CORS (T418969, T419866)", function()
             it("should bypass rate limiting for OPTIONS requests", function()
@@ -599,6 +671,39 @@ describe("rest_hooks", function()
                 assert.is_nil( result:get("x-wmf-ratelimit-policy-1") )
             end)
         end)
+    end)
+
+    describe("wmf_can_trust_rlc", function()
+        local EXPIRY = HelmValues.main_app.jwt.rlc_expiry
+
+        local cases = {
+            ["accept a recently issued token"] =
+                { expected = true, payload = { sub = "1", iat = NOW - EXPIRY / 2 } },
+            ["accept a token with sxp and exp in the future"] =
+                { expected = true, payload = { sub = "1", iat = NOW - EXPIRY / 2, sxp = NOW + EXPIRY, exp = NOW + 2 * EXPIRY } },
+            ["accept a token with no sxp and or exp"] =
+                { expected = true, payload = { sub = "1", iat = NOW - EXPIRY / 2 } },
+            ["accept a token issued slightly in the future (clock skew)"] =
+                { expected = true, payload = { sub = "1", iat = NOW + 30 } },
+            ["reject a token without sub"] =
+                { expected = false, payload = { iat = NOW - EXPIRY / 2 } },
+            ["reject a token without iat"] =
+                { expected = false, payload = { sub = "1", sxp = NOW + EXPIRY, exp = NOW + 2 * EXPIRY } },
+            ["reject a token issued more than rlc_expiry seconds ago"] =
+                { expected = false, payload = { sub = "1", iat = NOW - EXPIRY - 1, exp = NOW + EXPIRY } },
+            ["reject a token issued too far in the future"] =
+                { expected = false, payload = { sub = "1", iat = NOW + 120 } },
+            ["reject a token past its session expiry (sxp)"] =
+                { expected = false, payload = { sub = "1", iat = NOW - EXPIRY / 2, sxp = NOW - 1, exp = NOW + EXPIRY } },
+            ["reject a token past its expiry (exp)"] =
+                { expected = false, payload = { sub = "1", iat = NOW - EXPIRY / 2, exp = NOW - 1 } },
+        }
+
+        for name, case in pairs(cases) do
+            it("should " .. name, function()
+                assert.are.equal( case.expected, wmf_can_trust_rlc( case.payload ) )
+            end)
+        end
     end)
 
     describe("wmf_set_retry_after", function()

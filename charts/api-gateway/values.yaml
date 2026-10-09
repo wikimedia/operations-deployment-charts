@@ -44,6 +44,13 @@ main_app:
     # careful with leading "https://" and trailing "/"
     issuer: null
 
+    # The maximum age of a token (in seconds) that allows the rate limit class (rlc)
+    # to be used. sessionJwt cookies have no exp claim (they use sxp instead), so they
+    # never expire as far as generic JWT infrastructure is concerned. We have to apply
+    # expiry logic for them manually.
+    # The default expiry is one day.
+    rlc_expiry: 86400
+
   # if true, enable a debug server that echoes requests - see README.md
   http_https_echo: false
 

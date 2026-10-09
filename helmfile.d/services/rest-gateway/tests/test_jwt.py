@@ -164,7 +164,7 @@ class JwtTest(unittest.TestCase):
     ## Some endpoints ignore even invalid tokens (useful for authentication endpoints)
     ###################################################################################
     def test_expired_token_allowed(self):
-        """ Assert that are exempt from JWT checks allow expired tokens. """
+        """ Assert that endpoints that are exempt from JWT checks can be accessed with expired tokens. """
         ip = env.nextIp()
         token = jwtools.createJwtOrSkip(self,
             sub = env.nextName("Tester"),
@@ -174,6 +174,38 @@ class JwtTest(unittest.TestCase):
         headers = { "x-client-ip": ip, "Authorization": "Bearer " + token }
         rest = self.target.get(self.jwt_exempt_endpoint, headers = headers)
         self.assertEqual(rest.status, 200, "expired token should be allowed for this endpoint")
+
+    ###################################################################################
+    ## The rlc claim (rate limit class) is only trusted from fresh tokens
+    ###################################################################################
+    def test_rlc_claim_only_trusted_from_fresh_tokens(self):
+        """ Assert that the rlc claim is ignored for tokens that are stale or past their session expiry."""
+
+        # Tokens that have no rlc effect still identify the user, so they get "authed-user".
+        rlc_expiry = env.values.main_app.jwt.get("rlc_expiry", 86400)
+        now = datetime.datetime.now(datetime.timezone.utc)
+        cases = {
+            "fresh token": ( { "iat": now - datetime.timedelta(minutes=5) }, "approved-bot" ),
+            "iat older than rlc_expiry": (
+                { "iat": now - datetime.timedelta(seconds = rlc_expiry + 60) }, "authed-user" ),
+            "sxp in the past": (
+                { "iat": now - datetime.timedelta(minutes=5), "sxp": int( ( now - datetime.timedelta(minutes=1) ).timestamp() ) },
+                "authed-user" ),
+        }
+
+        for name, ( claims, expected_class ) in cases.items():
+            with self.subTest( name ):
+                token = jwtools.createJwtOrSkip(self,
+                    sub = env.nextName("Tester"),
+                    rlc = "approved-bot",
+                    **claims
+                )
+
+                headers = { "x-client-ip": env.nextIp(), "cookie": "sessionJwt=" + token }
+                resp = self.target.get(self.default_endpoint, headers = headers)
+
+                self.assertEqual(200, resp.status)
+                self.assertEqual(expected_class, resp.headers.get("x-wmf-ratelimit-class"))
 
 def main():
     unittest.main()
