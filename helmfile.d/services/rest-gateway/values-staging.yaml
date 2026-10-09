@@ -39,6 +39,20 @@ smokepy:
     # Endpoint that should require a JWT
     jwt_required_endpoint: "/w/api.php?action=compare&format=json"
 
+    # Checks that must respond with status 200, keyed by a name shown in test output.
+    # "path" is relative to target_url; "host" and "headers" are optional and
+    # override the settings above.
+    probes:
+      mw_action:
+        path: "/w/api.php?action=query&meta=siteinfo"
+      mw_rest:
+        path: "/w/rest.php/v1/page/Main_Page"
+      api_static:
+        path: "/api/index.html"
+      api_route:
+        path: "/api/v1/page/Main_Page"
+        host: test.wikipedia.org
+
 main_app:
   # enable debug logging in staging
   args: ["-l", "debug"]
