@@ -318,7 +318,7 @@ inference_services:
     # LLM request duration varies a lot, so RPS is a poor load signal.
     annotations:
       autoscaling.knative.dev/metric: "concurrency"
-      autoscaling.knative.dev/target: "5"
+      autoscaling.knative.dev/target: "16"
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
       image_version: "2026-08-25-153535-publish"
