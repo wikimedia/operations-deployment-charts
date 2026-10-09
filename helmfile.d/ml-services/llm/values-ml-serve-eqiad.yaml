@@ -680,6 +680,68 @@ inference_services:
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
 
+  llm-clef-flash:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-decision-models-clef"
+      image_version: "2026-10-09-070058-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "llm-clef-flash"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/clef-flash/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        # Served with HF transformers (Qwen backbone + joint schema head), not
+        # vLLM, so there are no engine arguments.
+        - name: WARMUP
+          value: "True"
+      container:
+        resources:
+          limits:
+            cpu: "16"
+            # Host RSS peaks at 18.7 GiB while loading the safetensors shards
+            # before settling at ~3 GiB; 16Gi would OOMKill the pod mid-load.
+            memory: 32Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 30Gi
+          requests:
+            cpu: "8"
+            memory: 24Gi
+            amd.com/gpu: "1"
+            # The checkpoint is 15.3 GiB; the storage-initializer writes it to
+            # the pod before the server reads it.
+            ephemeral-storage: 25Gi
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "8Gi"
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        # 18.7 GiB VRAM resident: needs a 96GB partition (1015 is 24GB).
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
+
   tts:
     predictor:
       config:
