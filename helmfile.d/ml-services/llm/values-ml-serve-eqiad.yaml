@@ -314,6 +314,11 @@ inference_services:
   # liftwing_llm route group matches it by name and applies the LiftWingLLM
   # rate limit (T426749).
   llm-qwen3-14b:
+    # T440588: Scale on in-flight requests, not on RPS.
+    # LLM request duration varies a lot, so RPS is a poor load signal.
+    annotations:
+      autoscaling.knative.dev/metric: "concurrency"
+      autoscaling.knative.dev/target: "5"
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
       image_version: "2026-08-25-153535-publish"
@@ -377,7 +382,8 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
-        maxReplicas: 1
+        minReplicas: 1
+        maxReplicas: 2
         tolerations:
           - key: "dedicated"
             operator: "Equal"
