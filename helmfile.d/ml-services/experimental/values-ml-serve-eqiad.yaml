@@ -52,6 +52,12 @@ inference_services:
   # Copy of llm-qwen3-14b from the llm ns, pinned to ml-serve1015
   # (24GB partitions) for the MI300X tuning benchmark (T431553)
   llm-qwen3-14b-24gb:
+    # Autoscale on in-flight requests (T431553). Kept at 1 replica for now
+    # to measure single-pod capacity with a shared prompt prefix; the
+    # target is set from that run when maxReplicas is raised.
+    annotations:
+      autoscaling.knative.dev/metric: "concurrency"
+      autoscaling.knative.dev/target: "4"
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
       image_version: "2026-08-25-153535-publish"
@@ -115,8 +121,8 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
-        minReplicas: 2
-        maxReplicas: 2
+        minReplicas: 1
+        maxReplicas: 1
         tolerations:
           - key: "dedicated"
             operator: "Equal"
