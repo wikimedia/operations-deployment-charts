@@ -52,9 +52,9 @@ inference_services:
   # Copy of llm-qwen3-14b from the llm ns, pinned to ml-serve1015
   # (24GB partitions) for the MI300X tuning benchmark (T431553)
   llm-qwen3-14b-24gb:
-    # Autoscale on in-flight requests (T431553). Kept at 1 replica for now
-    # to measure single-pod capacity with a shared prompt prefix; the
-    # target is set from that run when maxReplicas is raised.
+    # Autoscale on in-flight requests (T431553). Target 4: highest tested
+    # concurrency where one pod kept TTFT p90 <= 2.5s with realistic
+    # requests (3500 in incl. 1400 shared prefix / 400 out).
     annotations:
       autoscaling.knative.dev/metric: "concurrency"
       autoscaling.knative.dev/target: "4"
@@ -122,7 +122,7 @@ inference_services:
             sizeLimit: "8Gi"
       config:
         minReplicas: 1
-        maxReplicas: 1
+        maxReplicas: 3
         tolerations:
           - key: "dedicated"
             operator: "Equal"
