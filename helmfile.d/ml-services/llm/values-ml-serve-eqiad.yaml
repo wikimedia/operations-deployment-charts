@@ -123,13 +123,13 @@ inference_services:
       container:
         resources:
           limits:
-            cpu: "1"
-            memory: 8Gi
+            cpu: "4"
+            memory: 16Gi
             amd.com/gpu: "1"
             ephemeral-storage: 15Gi
           requests:
-            cpu: "1"
-            memory: 4Gi
+            cpu: "2"
+            memory: 16Gi
             amd.com/gpu: "1"
             ephemeral-storage: 10Gi
       config:
@@ -151,8 +151,7 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
+                        - "ml-serve1015.eqiad.wmnet"
 
   # policy-violation isvc
   llm-gpt-oss-safeguard-20b:
