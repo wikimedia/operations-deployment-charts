@@ -84,7 +84,7 @@ releases:
             resources:
             - ingresses
             verbs: ["get", "list", "watch"]
-          - nonResourceURLs: ["/metrics"]
+          - nonResourceURLs: ["/metrics", "/metrics/resources"]
             verbs: ["get"]
         ## Used by imagecatalog
         - apiVersion: rbac.authorization.k8s.io/v1
