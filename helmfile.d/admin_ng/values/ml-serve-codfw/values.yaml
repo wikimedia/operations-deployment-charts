@@ -4,3 +4,9 @@ kubernetesMasters:
     - '2620:0:860:103:10:192:32:33/128'
     - '10.192.48.41/32'
     - '2620:0:860:104:10:192:48:41/128'
+
+# kserve 0.20. Overrides the pins in values/common.yaml, which hold the rest of
+# ml-serve on 0.17. Explicit versions rather than `~`: prod must not follow latest.
+chartVersions:
+  wmf-stable/kserve-crd-minimal: 0.2.0
+  wmf-stable/kserve-resources: 0.2.0
