@@ -1,5 +1,4 @@
 _vars:
-  kyuubi-image: &kyuubi-image "docker-registry.discovery.wmnet/repos/data-engineering/spark/kyuubi:1.10.2-2026-07-21-093731-2335256b2a95b42cd637298b2ef03682250249c2@sha256:695627eaf3bb26a9e89da994a5f4a3fdb1458a5c6d5a5be3926e2ee22f231dad"
   spark-image: &spark-image "docker-registry.discovery.wmnet/repos/data-engineering/spark:3.5.7-2026-07-21-093731-2335256b2a95b42cd637298b2ef03682250249c2@sha256:0c05acc276a9c367d241709198b23d0b517c4b9063185a64ba8bb7975cd7e263"
 
 orchestrator:
@@ -18,13 +17,8 @@ external_services:
   - kdc
   s3:
   - eqiad-dpe
-  zookeeper:
-  - test-eqiad
 
 external_services_selector: "spark-role in { 'driver', 'executor' }"
-
-kyuubi:
-  image: *kyuubi-image
 
 config:
   hadoop:
@@ -54,13 +48,4 @@ config:
     spark.kerberos.principal: analytics/analytics-test.discovery.wmnet@WIKIMEDIA
     spark.kubernetes.driver.podTemplateFile: local:///etc/spark/pod_templates/driver.yaml
     spark.kubernetes.executor.podTemplateFile: local:///etc/spark/pod_templates/executor.yaml
-
-  kyuubi:
-    kyuubi.kinit.principal: analytics/_HOST@WIKIMEDIA
-    kyuubi.kinit.keytab: /etc/security/keytabs/analytics.keytab
-    kyuubi.server.auth.kerberos.principal: analytics/_HOST@WIKIMEDIA
-    kyuubi.server.auth.kerberos.keytab: /etc/security/keytabs/analytics.keytab
-    kyuubi.ha.addresses: zookeeper-test-eqiad.external-services.svc.cluster.local:2181
-    kyuubi.zookeeper.embedded.data.log.dir: ~
-    kyuubi.zookeeper.embedded.data.dir: ~
 
