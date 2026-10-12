@@ -1,0 +1,4 @@
+# Take each ceph-csi chart here explicitly, together with the container images
+# that chart version needs. common.yaml pins the rest of the fleet. See T407166.
+chartVersions:
+  wmf-stable/ceph-csi-rbd: ~ # Install latest version
