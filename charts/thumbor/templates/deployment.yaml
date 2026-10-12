@@ -39,7 +39,8 @@ spec:
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
       {{- if .Values.affinity }}
-      {{- toYaml .Values.affinity | nindent 6 }}
+      affinity:
+      {{- toYaml .Values.affinity | nindent 8 }}
       {{- end }}
       containers:
       {{- include "default.containers" . | indent 8}}
