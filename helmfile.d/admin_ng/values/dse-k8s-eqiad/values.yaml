@@ -1,6 +1,7 @@
 # Take each ceph-csi chart here explicitly, together with the container images
 # that chart version needs. common.yaml pins the rest of the fleet. See T407166.
 chartVersions:
+  wmf-stable/ceph-csi-cephfs: ~ # Install latest version
   wmf-stable/ceph-csi-rbd: ~ # Install latest version
 
 # These pod security labels are used to allow host paths in certain locations used by analytics workloads.
