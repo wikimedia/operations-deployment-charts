@@ -35,8 +35,8 @@ data:
     {{- if and $.Values.config.private.aws_access_key_id $.Values.config.private.aws_secret_access_key }}
     spark.hadoop.fs.s3a.access.key: {{ $.Values.config.private.aws_access_key_id }}
     spark.hadoop.fs.s3a.secret.key: {{ $.Values.config.private.aws_secret_access_key }}
-    spark.fs.s3a.endpoint: https://rgw.eqiad.dpe.anycast.wmnet/
-    spark.fs.s3a.path.style.access: true
+    spark.hadoop.fs.s3a.endpoint: https://rgw.eqiad.dpe.anycast.wmnet/
+    spark.hadoop.fs.s3a.path.style.access: true
     spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version: 2
     spark.hadoop.mapreduce.fileoutputcommitter.cleanup-failures.ignored: true
     spark.hadoop.parquet.enable.summary-metadata: false
