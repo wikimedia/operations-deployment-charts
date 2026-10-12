@@ -17,6 +17,10 @@ config:
       dfs.encrypt.data.transfer.cipher.suites: AES/CTR/NoPadding
       dfs.ha.automatic-failover.enabled: 'true'
       dfs.internal.nameservices: override_me
+      dfs.namenode.kerberos.principal: hdfs/_HOST@WIKIMEDIA
+      # In the pods, a NameNode address can resolve to an external-services name, so
+      # _HOST gives the wrong host. Accept the hdfs principal that the NameNode sends.
+      dfs.namenode.kerberos.principal.pattern: 'hdfs/*@WIKIMEDIA'
       dfs.nameservices: override_me
       dfs.webhdfs.enabled: 'false'
     core:
