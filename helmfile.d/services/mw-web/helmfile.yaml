@@ -62,6 +62,7 @@ templates:
       - "/etc/helmfile-defaults/private/main_services/{{`{{ .Release.Namespace }}`}}/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
       - "global-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "global-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - "/etc/helmfile-defaults/mediawiki/release/{{`{{ .Release.Namespace }}`}}-{{`{{ .Release.Name }}`}}-{{ .Environment.Name }}.yaml" # Special file controlled by scap
     setTemplate:
