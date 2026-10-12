@@ -2,8 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 app:
-  # Defined in https://gitlab.wikimedia.org/repos/data-engineering/spark/-/blob/main/history-server/blubber.yaml
-  image:  repos/data-engineering/spark/spark3.4-history
+  # Defined in https://gitlab.wikimedia.org/repos/data-engineering/spark/-/blob/main/spark/blubber.yaml
+  image: repos/data-engineering/spark/spark-history
   version: latest # we use latest everywhere in the defaults.
 
   port: 18080 # application port
@@ -26,7 +26,7 @@ app:
     initialDelaySeconds: 20 # We wait a bit to let the app start first, which takes a while
   # We inject all spark configuration keys into the environment as this is how they are then
   # passed to the java process.
-  # See https://github.com/wikimedia/operations-docker-images-production-images/blob/master/images/spark/3.1/entrypoint.sh#L27
+  # See https://gitlab.wikimedia.org/repos/data-engineering/spark/-/blob/main/spark/history/entrypoint.sh
   env_from:
   - configMapRef:
       name: spark-history-config
@@ -79,8 +79,7 @@ config:
     root:
       level: info
 
-  sparkEnv:
-    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+  sparkEnv: {}
 
   # The spark configuration overrides
   spark:
