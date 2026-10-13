@@ -689,7 +689,7 @@ inference_services:
   llm-clef-flash:
     predictor:
       image: "machinelearning-liftwing-inference-services-decision-models-clef"
-      image_version: "2026-10-09-070058-publish"
+      image_version: "2026-10-13-131442-publish"
       custom_env:
         - name: MODEL_NAME
           value: "llm-clef-flash"
@@ -697,10 +697,20 @@ inference_services:
           value: "s3://wmf-ml-models/llm/clef-flash/"
         - name: MODEL_PATH
           value: "/mnt/models"
-        # Served with HF transformers (Qwen backbone + joint schema head), not
-        # vLLM, so there are no engine arguments.
+        # vLLM runs the Qwen backbone; the clef joint schema head runs in torch.
         - name: WARMUP
           value: "True"
+        - name: GPU_MEMORY_UTILIZATION
+          value: "0.85"
+        # Same ROCm settings as the other vLLM services on ml-serve1013/1014.
+        - name: VLLM_ROCM_USE_AITER
+          value: "0"
+        - name: TORCH_BLAS_PREFER_HIPBLASLT
+          value: "1"
+        - name: MAX_JOBS
+          value: "1"
+        - name: AMDGCN_USE_BUFFER_OPS
+          value: "0"
       container:
         resources:
           limits:
