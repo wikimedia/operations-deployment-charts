@@ -4,7 +4,7 @@ resources:
 
 app:
   image: repos/data-engineering/linked-artifact-lambdas/python
-  version: v0.2.0
+  version: v0.3.0
 
   command: ["python3"]
   args: ["-m", "revision_feature_counts.server"]
@@ -101,5 +101,6 @@ mesh:
     default_host: "revision-feature-counts"
 
 ingress:
-  gatewayHost:
+  enabled: true
+  gatewayHosts:
     default: "revision-feature-counts"

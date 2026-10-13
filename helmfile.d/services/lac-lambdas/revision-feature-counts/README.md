@@ -9,6 +9,14 @@ The lambda that the Linked Artifact Cache calls to compute the `revision_feature
 
 ## Deploying
 
+Log on to a deployment host:
+
+```
+ssh deployment.eqiad.wmnet
+```
+
+And run the following to deploy to the appropriate environment.
+
 ```bash
 cd /srv/deployment-charts/helmfile.d/services/lac-lambdas
 helmfile -e staging -i apply --selector name=revision-feature-counts
