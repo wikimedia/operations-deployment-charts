@@ -9,6 +9,15 @@ main_app:
           hostname: cassandra-dev2001-a.codfw.wmnet
           port: 50051
           timeout: 5s
+      edit_suggestions_counts:
+        lambda:
+          type: grpc
+          hostname: editcheck-headless.k8s-staging.discovery.wmnet
+          port: 30443
+          timeout: 30s
+          content_type: application/json
+          tls: &stdtls
+            ca: /etc/ssl/certs/ca-certificates.crt
       article_topics:
         lambda:
           type: kserve_v2
@@ -18,17 +27,16 @@ main_app:
           model_name: outlink-topic-model
           content_type: application/json
           tls:
-            ca: /etc/ssl/certs/ca-certificates.crt
+            <<: *stdtls
             authority: outlink-topic-model-grpc.articletopic-outlink.wikimedia.org
-      edit_suggestions_counts:
+      revision_feature_counts:
         lambda:
           type: grpc
-          hostname: editcheck-headless.k8s-staging.discovery.wmnet
+          hostname: revision-feature-counts.k8s-staging.discovery.wmnet
           port: 30443
-          timeout: 30s
+          timeout: 10s
           content_type: application/json
-          tls:
-            ca: /etc/ssl/certs/ca-certificates.crt
+          tls: *stdtls
 
 resources:
   replicas: 1
