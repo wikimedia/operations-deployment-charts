@@ -13,7 +13,7 @@ main_app:
     enabled: true
     server: "poolcounter1006.eqiad.wmnet"
   thumbor_workers: 2
-  failure_throttling_memcache: "10.64.72.12:4442" # mcrouter-main.mw-mcrouter.svc.cluster.local
+  failure_throttling_memcache: "127.0.0.1:11213"
   log_level: "debug"
   subprocess_timeout:
     enabled: "True"
@@ -22,6 +22,8 @@ main_app:
 
 cache:
   mcrouter:
+    enabled: true
+    port: 11213
     route_prefix: eqiad/thumbor
     zone: eqiad
     routes:
