@@ -66,10 +66,12 @@ config:
     # cannot resolve stops the service at startup.
     MW_WIKIS: testwiki,enwiki
 
-# Two pods, so one crash does not stop the service. Each pod warms its own
-# browsers, so report the per-pod figures.
+# Each pod has one browser session for each pinned wiki, and a session runs
+# one check at a time. So the replica count sets the enwiki capacity. Keep the
+# changeprop-jobqueue concurrency for editSuggestionCountsPrecompute the same.
+# Each pod warms its own browsers, so report the per-pod figures.
 resources:
-  replicas: 2
+  replicas: 4
 
 monitoring:
   enabled: true
