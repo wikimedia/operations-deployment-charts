@@ -141,3 +141,75 @@ inference_services:
                       operator: "In"
                       values:
                         - "ml-serve1015.eqiad.wmnet"
+
+  # Copy of llm-clef-flash from the llm ns, served with vLLM instead of
+  # HF transformers, to test it on MI300X before we replace the llm one
+  # (T440223). Same MODEL_NAME, so requests are the same as for llm.
+  llm-clef-flash-vllm:
+    predictor:
+      image: "machinelearning-liftwing-inference-services-decision-models-clef"
+      image_version: "2026-10-14-101821-publish"
+      custom_env:
+        - name: MODEL_NAME
+          value: "llm-clef-flash"
+        - name: STORAGE_URI
+          value: "s3://wmf-ml-models/llm/clef-flash/"
+        - name: MODEL_PATH
+          value: "/mnt/models"
+        # vLLM runs the Qwen backbone; the clef joint schema head runs in torch.
+        - name: WARMUP
+          value: "True"
+        - name: GPU_MEMORY_UTILIZATION
+          value: "0.85"
+        # Same ROCm settings as the other vLLM services on ml-serve1013/1014.
+        - name: VLLM_ROCM_USE_AITER
+          value: "0"
+        - name: TORCH_BLAS_PREFER_HIPBLASLT
+          value: "1"
+        - name: MAX_JOBS
+          value: "1"
+        - name: AMDGCN_USE_BUFFER_OPS
+          value: "0"
+      container:
+        resources:
+          limits:
+            cpu: "16"
+            memory: 32Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 30Gi
+          requests:
+            cpu: "8"
+            memory: 24Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 25Gi
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "8Gi"
+      config:
+        maxReplicas: 1
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "mi300x-experiments"
+            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: "kubernetes.io/hostname"
+                      operator: "In"
+                      values:
+                        # BF16 weights are 15.6 GiB in vLLM: needs a 96GB
+                        # partition (1015 is 24GB).
+                        - "ml-serve1013.eqiad.wmnet"
+                        - "ml-serve1014.eqiad.wmnet"
