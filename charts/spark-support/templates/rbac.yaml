@@ -31,6 +31,13 @@ rules:
 - apiGroups: [""]
   resources: ["events"]
   verbs: ["get", "list"]
+# The SparkKubernetesOperator of Airflow creates SparkApplications and reads their status.
+- apiGroups: ["sparkoperator.k8s.io"]
+  resources: ["sparkapplications"]
+  verbs: ["create", "get", "list", "watch", "delete"]
+- apiGroups: ["sparkoperator.k8s.io"]
+  resources: ["sparkapplications/status"]
+  verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
