@@ -20,6 +20,7 @@ config:
     ORCHESTRATOR_HEAP_SIZE: "600"
     ORCHESTRATOR_CONFIG: |
       {
+        "maxReportedFunctionCallCounts": 10,
         "addNestedMetadata": false,
         "createCustomSpans": true,
         "generateFunctionsMetrics": true,
