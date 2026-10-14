@@ -13,6 +13,8 @@ service:
 
 mesh:
   enabled: true
+  # Every lambda speaks gRPC.
+  public_port_app_protocol: grpc
 
 # MediaWiki is reached through this listener, which the mesh gives on
 # http://localhost:6500. One proxy serves every wiki and the wiki is named
