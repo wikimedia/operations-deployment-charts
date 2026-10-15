@@ -39,6 +39,7 @@ releases:
   - name: opensearch-semantic-search-ssd
     chart: wmf-stable/opensearch-cluster
     namespace: opensearch-semantic-search-ssd
+    installed: false
     missingFileHandler: Warn
     values:
       - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
