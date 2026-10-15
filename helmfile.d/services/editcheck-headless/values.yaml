@@ -68,10 +68,12 @@ config:
 
 # Each pod has one browser session for each pinned wiki, and a session runs
 # one check at a time. So the replica count sets the enwiki capacity. Keep the
-# changeprop-jobqueue concurrency for editSuggestionCountsPrecompute the same.
+# changeprop-jobqueue concurrency for editSuggestionCountsPrecompute one lower.
+# The ingress does not know which pods are busy, so the spare pod makes it
+# less likely that two checks wait on one pod.
 # Each pod warms its own browsers, so report the per-pod figures.
 resources:
-  replicas: 4
+  replicas: 7
 
 monitoring:
   enabled: true
