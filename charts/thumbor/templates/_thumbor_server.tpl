@@ -103,7 +103,6 @@ FILTERS = [
     'wikimedia_thumbor.filter.format',
     'wikimedia_thumbor.filter.lang',
     'wikimedia_thumbor.filter.page',
-    'thumbor.filters.format',
     'thumbor.filters.quality'
 ]
 
