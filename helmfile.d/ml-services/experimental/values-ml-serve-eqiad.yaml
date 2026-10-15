@@ -60,7 +60,7 @@ inference_services:
         - name: MODEL_NAME
           value: "llm-clef-flash"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/clef-flash/"
+          value: "s3://wmf-ml-models/llm/clef-flash-fp8/20261014115722/"
         - name: MODEL_PATH
           value: "/mnt/models"
         # vLLM runs the Qwen backbone; the clef joint schema head runs in torch.
@@ -77,18 +77,22 @@ inference_services:
           value: "1"
         - name: AMDGCN_USE_BUFFER_OPS
           value: "0"
+        # using cpu for lm_head as it is causing increased latencies when using smaller GPU partitions
+        # vllm doesn't use this so the base model is still on GPU
+        - name: DEVICE
+          value: "cpu"
       container:
         resources:
           limits:
-            cpu: "16"
-            memory: 32Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 30Gi
-          requests:
             cpu: "8"
-            memory: 24Gi
+            memory: 20Gi
             amd.com/gpu: "1"
-            ephemeral-storage: 25Gi
+            ephemeral-storage: 20Gi
+          requests:
+            cpu: "4"
+            memory: 20Gi
+            amd.com/gpu: "1"
+            ephemeral-storage: 15Gi
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
@@ -98,7 +102,8 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
-        maxReplicas: 1
+        minReplicas: 4
+        maxReplicas: 4
         tolerations:
           - key: "dedicated"
             operator: "Equal"
@@ -116,7 +121,4 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        # BF16 weights are 15.6 GiB in vLLM: needs a 96GB
-                        # partition (1015 is 24GB).
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
+                        - "ml-serve1015.eqiad.wmnet"
