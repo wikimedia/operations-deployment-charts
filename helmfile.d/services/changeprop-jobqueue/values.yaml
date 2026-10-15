@@ -138,11 +138,11 @@ main_app:
         concurrency: 1
       # T432286: Each job waits up to 50s for editcheck-headless through LAC.
       # On low_traffic_jobs it holds shared slots for that time. Concurrency
-      # agrees with the enwiki browser sessions (editcheck-headless replicas),
-      # so a backlog stays in Kafka.
+      # is one less than the enwiki browser sessions (editcheck-headless
+      # replicas), so a backlog stays in Kafka.
       editSuggestionCountsPrecompute:
         enabled: true
-        concurrency: 4
+        concurrency: 6
         # Failures are mostly overload timeouts, and a retry adds load.
         # 0 is not possible: changeprop then uses its default of 2.
         retry_limit: 1
