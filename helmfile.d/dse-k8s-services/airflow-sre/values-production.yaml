@@ -1,6 +1,24 @@
+app:
+  version: &base-image-version airflow-3.3.2-py3.11-2026-09-28-093637-48c6f16118118bbc06291d949cf2273c74bbd7fa@sha256:182c63122cd76de0e593900ff3e8f544e669b64644d37dfdcef823135e7d4877
+  executor_pod_image_version: *base-image-version
+  waitForMigrations: true
+  args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
+  readiness_probe:
+    httpGet:
+      path: /api/v2/monitor/health
+
 config:
   airflow:
     instance_name: sre
+    config:
+      core:
+        auth_manager: auth_manager.FabAuthManager
+      scheduler:
+        standalone_dag_processor: true
+        create_cron_data_intervals: true
+
+dagProcessor:
+  enabled: true
 
 ingress:
   gatewayHosts:
@@ -42,3 +60,7 @@ rsync:
         # puppetserver2004
         -  10.192.43.9/32
         -  2620:0:860:122:10:192:43:9/128
+
+scheduler:
+  requests:
+    memory: 1Gi
