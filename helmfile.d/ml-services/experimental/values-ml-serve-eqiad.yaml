@@ -1,54 +1,5 @@
 inference_services:
 
-  # policy-violation isvc
-  cope-a-9b:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-policy-violation-cope-a-9b"
-      image_version: "2026-07-07-081557-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "cope-a-9b"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/cope-a-9b-merged/"
-        - name: MODEL_PATH
-          value: "/mnt/models"
-        - name: TRUST_REMOTE_CODE
-          value: "False"
-        - name: MAX_MODEL_LEN
-          value: 4096
-      container:
-        resources:
-          limits:
-            cpu: "6"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 30Gi
-          requests:
-            cpu: "6"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 25Gi
-      config:
-        maxReplicas: 1
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1013.eqiad.wmnet"
-
   # Copy of llm-clef-flash from the llm ns, served with vLLM instead of
   # HF transformers, to test it on MI300X before we replace the llm one
   # (T440223). Same MODEL_NAME, so requests are the same as for llm.
