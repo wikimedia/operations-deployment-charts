@@ -18,6 +18,30 @@ spec:
           name: kubernetes
           namespace: default
 
+{{- if .Values.prometheus.metrics.enable }}
+{{- /*
+Allow Prometheus to scrape the metrics of the spark-operator controller.
+Prometheus runs outside the cluster, so the rule has no source selector.
+*/}}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "spark-operator.name" . }}-controller-metrics
+  labels:
+    {{- include "spark-operator.labels" . | nindent 4 }}
+spec:
+  selector: "app.kubernetes.io/name == 'spark-operator' && app.kubernetes.io/component == 'controller'"
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - {{ .Values.prometheus.metrics.port }}
+{{- end }}
+
 {{- /*
 Allow the spark-operator controller to access the driver port on each spark driver pod
 in each of the job namespaces. This is needed in order for the controller to change the
