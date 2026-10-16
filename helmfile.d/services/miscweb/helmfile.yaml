@@ -17,6 +17,7 @@ environments:
       - releases:
         - bugzilla
         - annualreport
+        - apps
         - attribution
         - bienvenida
         - transparencyreport
@@ -95,6 +96,8 @@ releases:
   - name: bugzilla
     <<: *default
   - name: annualreport
+    <<: *default
+  - name: apps
     <<: *default
   - name: attribution
     <<: *default
