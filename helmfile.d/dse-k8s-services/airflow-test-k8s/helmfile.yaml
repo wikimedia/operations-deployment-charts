@@ -61,6 +61,7 @@ releases:
       - "/etc/helmfile-defaults/private/dse-k8s_services/airflow-test-k8s/{{ .Environment.Name }}.yaml"
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-analytics-test.yaml" # analytics-hadoop specific overrides
+      - "values-airflow3-production.yaml" # airflow3 specific options, here dirung upgrade
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-test-k8s"
