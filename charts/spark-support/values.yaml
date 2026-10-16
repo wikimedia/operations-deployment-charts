@@ -142,6 +142,19 @@ kerberos:
     - mountPath: /etc/security/keytabs
       name: kerberos-keytabs
 
+# S3 credentials from a projected service account token (AssumeRoleWithWebIdentity).
+# If enabled, the toolbox and the pods from the pod templates get the token and the AWS
+# variables, and spark-defaults.conf uses the token for the listed buckets only.
+s3:
+  web_identity:
+    enabled: false
+    # The RADOS Gateway: the S3 and STS endpoint, and the audience of the token.
+    endpoint: override_me
+    region: dpe
+    # The role that the spark service account assumes.
+    role_arn: override_me
+    buckets: []
+
 monitoring:
   # If enabled is true, monitoring annotations will be added to the deployment.
   enabled: false

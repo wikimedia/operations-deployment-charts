@@ -47,6 +47,18 @@ data:
     spark.sql.sources.commitProtocolClass: org.apache.spark.internal.io.cloud.PathOutputCommitProtocol
     spark.sql.parquet.output.committer.class: org.apache.spark.internal.io.cloud.BindingParquetOutputCommitter
     {{- end }}
+    {{- with .Values.s3.web_identity }}
+    {{- if .enabled }}
+    {{- $endpoint := .endpoint }}
+    {{- $region := .region }}
+    {{- range .buckets }}
+    spark.hadoop.fs.s3a.bucket.{{ . }}.endpoint {{ $endpoint }}
+    spark.hadoop.fs.s3a.bucket.{{ . }}.endpoint.region {{ $region }}
+    spark.hadoop.fs.s3a.bucket.{{ . }}.path.style.access true
+    spark.hadoop.fs.s3a.bucket.{{ . }}.aws.credentials.provider software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsProvider
+    {{- end }}
+    {{- end }}
+    {{- end }}
 {{- end }}
 
 {{- define "configmap.kerberos-client-config" }}
@@ -103,6 +115,7 @@ data:
             value: /etc/hadoop/conf
           - name: SPARK_CONF_DIR
             value: /etc/spark/conf
+          {{- include "s3.web_identity.env" . | indent 10 }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -120,8 +133,10 @@ data:
             memory: "4Gi"
         volumeMounts:
           {{- include "kerberos.volumemounts" . | indent 10 }}
+          {{- include "s3.web_identity.volumemounts" . | indent 10 }}
       volumes:
           {{- include "kerberos.volumes" . | indent 8 }}
+          {{- include "s3.web_identity.volumes" . | indent 8 }}
   executor.yaml: |
     apiVersion: v1
     Kind: Pod
@@ -134,6 +149,7 @@ data:
             value: /etc/hadoop/conf
           - name: SPARK_CONF_DIR
             value: /etc/spark/conf
+          {{- include "s3.web_identity.env" . | indent 10 }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -153,9 +169,11 @@ data:
           - mountPath: /etc/krb5.conf
             name: kerberos-client-configuration
             subPath: krb5.conf
+          {{- include "s3.web_identity.volumemounts" . | indent 10 }}
       volumes:
         - name: kerberos-client-configuration
           configMap:
             name: kerberos-client-configuration
+        {{- include "s3.web_identity.volumes" . | indent 8 }}
 
 {{- end }}

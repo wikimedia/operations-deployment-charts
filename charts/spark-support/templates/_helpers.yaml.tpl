@@ -53,3 +53,45 @@
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{- define "s3.web_identity.env" }}
+{{- with .Values.s3.web_identity }}
+{{- if .enabled }}
+- name: AWS_ROLE_ARN
+  value: {{ .role_arn }}
+- name: AWS_ROLE_SESSION_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: metadata.name
+- name: AWS_WEB_IDENTITY_TOKEN_FILE
+  value: /var/run/secrets/rgw/token
+- name: AWS_ENDPOINT_URL_STS
+  value: {{ .endpoint }}
+- name: AWS_REGION
+  value: {{ .region }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "s3.web_identity.volumemounts" }}
+{{- if .Values.s3.web_identity.enabled }}
+- mountPath: /var/run/secrets/rgw
+  name: rgw-token
+  readOnly: true
+{{- end }}
+{{- end }}
+
+{{- define "s3.web_identity.volumes" }}
+{{- with .Values.s3.web_identity }}
+{{- if .enabled }}
+# The kubelet renews the token before it expires.
+- name: rgw-token
+  projected:
+    sources:
+      - serviceAccountToken:
+          audience: {{ .endpoint }}
+          expirationSeconds: 3600
+          path: token
+{{- end }}
+{{- end }}
+{{- end }}

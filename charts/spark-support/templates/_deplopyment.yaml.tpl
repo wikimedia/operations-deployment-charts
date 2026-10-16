@@ -26,15 +26,21 @@ spec:
           args: ["infinity"]
           image: {{ get $.Values.config.spark "spark.kubernetes.container.image" }}
           imagePullPolicy: {{ .Values.docker.pull_policy }}
+          {{- if .Values.s3.web_identity.enabled }}
+          env:
+          {{- include "s3.web_identity.env" . | indent 10 }}
+          {{- end }}
           volumeMounts:
           {{- include "hadoop.volumemounts" . | indent 10 }}
           {{- include "kerberos.volumemounts" . | indent 10 }}
           {{- include "spark.volumemounts" . | indent 10 }}
+          {{- include "s3.web_identity.volumemounts" . | indent 10 }}
           {{- include "base.helper.restrictedSecurityContext" . | indent 10 }}
           {{- include "base.helper.resources" $.Values.spark.toolbox.resources | indent 10 }}
       volumes:
         {{- include "hadoop.volumes" . | indent 8 }}
         {{- include "kerberos.volumes" . | indent 8 }}
         {{- include "spark.volumes" . | indent 8 }}
+        {{- include "s3.web_identity.volumes" . | indent 8 }}
 
 {{- end }}

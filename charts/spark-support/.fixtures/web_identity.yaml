@@ -1,0 +1,6 @@
+s3:
+  web_identity:
+    enabled: true
+    endpoint: https://rgw.example.org
+    role_arn: arn:aws:iam::RGW00000000000000000:role/Example
+    buckets: [example-bucket]

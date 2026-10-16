@@ -20,6 +20,14 @@ external_services:
 
 external_services_selector: "spark-role in { 'driver', 'executor' }"
 
+# The spark service account assumes this role for the wmf-data-analytics-test bucket.
+s3:
+  web_identity:
+    enabled: true
+    endpoint: https://rgw.eqiad.dpe.anycast.wmnet
+    role_arn: arn:aws:iam::RGW77442553136504853:role/Analytics-TestBucketWriter
+    buckets: [wmf-data-analytics-test]
+
 config:
   hadoop:
     hdfs:
