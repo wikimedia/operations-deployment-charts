@@ -13,11 +13,15 @@ config:
       service_token:
         audience: airflow
     config:
+      api:
+        base_url: "https://{{ $.Values.ingress.gatewayHosts.default }}.wikimedia.org"
       core:
         auth_manager: auth_manager.FabAuthManager
       scheduler:
         standalone_dag_processor: true
         create_cron_data_intervals: true
+      webserver:
+        base_url: ~
 
 dagProcessor:
   enabled: true
