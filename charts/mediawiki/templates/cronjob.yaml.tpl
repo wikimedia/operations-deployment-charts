@@ -62,7 +62,7 @@ spec:
           # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
           # above.
           {{- include "mediawiki.container" (merge (dict "JobConfig" $jobConfig) $ ) | indent 10 }}
-          {{- include "cache.mcrouter.deployment" $ | indent 10 }}
+          {{- include "cache.mcrouter.container" $ | indent 10 }}
           {{- include "mesh.deployment.container" $ | indent 10}}
           {{- include "rsyslog.deployment" $ | indent 10 }}
           {{- include "base.statsd.container" $ | indent 10 }}
@@ -141,7 +141,7 @@ spec:
           # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
           # above.
           {{- include "mediawiki.container" $ | indent 10 }}
-          {{- include "cache.mcrouter.deployment" $ | indent 10 }}
+          {{- include "cache.mcrouter.container" $ | indent 10 }}
           {{- include "mesh.deployment.container" $ | indent 10 }}
           {{- include "rsyslog.deployment" $ | indent 10 }}
           {{- include "base.statsd.container" $ | indent 10 }}
