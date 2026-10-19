@@ -1,59 +1,5 @@
 inference_services:
 
-  # Copy of cope-b-a4b from the llm ns.
-  cope-b-a4b:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-policy-violation-cope-b-a4b"
-      image_version: "2026-07-06-073804-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "cope-b-a4b"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/cope-b-a4b/"
-        - name: MODEL_PATH
-          value: "/mnt/models"
-        - name: TRUST_REMOTE_CODE
-          value: "False"
-        - name: DTYPE
-          value: "bfloat16"
-        - name: MAX_MODEL_LEN
-          value: 16384
-      container:
-        resources:
-          limits:
-            cpu: "6"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 65Gi
-          requests:
-            cpu: "6"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 60Gi
-      config:
-        minReplicas: 2
-        maxReplicas: 2
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        # T439555: Host it using the 96GB partitions.
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
-
   # Rerun the vllm-bench, it will be removed after the tests
   llm-qwen38-27b:
     predictor:
