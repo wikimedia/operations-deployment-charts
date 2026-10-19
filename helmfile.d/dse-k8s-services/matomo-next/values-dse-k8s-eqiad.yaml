@@ -1,9 +1,10 @@
 config:
 # Keys are capitalized and prefixed with MATOMO_ when injected as environment variables,
 # ref https://plugins.matomo.org/EnvironmentVariables .
-# > Override any Matomo config with environment variables. 
-# > To overwrite any setting simply specify an environment variable in the following format:
-# > MATOMO_$CATEGORY_$SETTING
+# Only the variables that appear under `config.public` or `config.private` in the chart's
+# `values.yaml` are supported. If you need to add a variable, 
+# start by adding it `matomo-envvars.inc` in [the WMF Matomo OCI (Docker) image repo]
+# (https://gitlab.wikimedia.org/repos/data-engineering/matomo/oci-image) .
   # Deployment secrets override public defaults; omit the MATOMO_ prefix from keys.
   public:
     DATABASE_DBNAME: matomo-next
@@ -12,6 +13,10 @@ config:
     DATABASE_TABLES_PREFIX: matomo_
     DATABASE_USERNAME: matomo-next
     GENERAL_MAIL_USERNAME: 'wmf-admin'
+    GENERAL_TRUSTED_HOSTS:
+     - 127.0.0.1:8080
+     - matomo-next.wikimedia.org
+     - matomo-next.svc.eqiad.wmnet:30443
 ingress:
   enabled: true
   # By default, enabling ingress will switch the charts services from type NodePort to

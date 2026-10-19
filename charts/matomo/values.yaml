@@ -31,7 +31,7 @@ lamp:
       # The docker image for the main app
       name: repos/data-engineering/matomo/oci-image
       # the version of said image
-      version: 2026-09-30-193929-f6a2a279937d83756b3118ee29e307f207d7f24f-production
+      version: 2026-10-21-183628-8fdc6057b942c4edb25fce702d72bf11029635d1-production
       # WMF pipeline specific: we can have multiple "flavours" of the same release.
       # Leave blank to omit.
       flavour: ~
@@ -76,9 +76,10 @@ service:
 config:
 # Keys are capitalized and prefixed with MATOMO_ when injected as environment variables,
 # ref https://plugins.matomo.org/EnvironmentVariables .
-# > Override any Matomo config with environment variables.
-# > To overwrite any setting simply specify an environment variable in the following format:
-# > MATOMO_$CATEGORY_$SETTING
+# Only the variables that appear under 'private' or 'public' below are supported. 
+# If you need to add a variable, 
+# start by adding it `matomo-envvars.inc` in [the WMF Matomo OCI (Docker) image repo]
+# (https://gitlab.wikimedia.org/repos/data-engineering/matomo/oci-image) .
   # Deployment secrets override public defaults; omit the MATOMO_ prefix from keys.
   private:
     DATABASE_PASSWORD: 'secret'
@@ -92,6 +93,12 @@ config:
     DATABASE_SCHEMA: 'Mariadb'
     DATABASE_TABLES_PREFIX: 'changeme_'
     DATABASE_USERNAME: 'changeme'
+    # https://matomo.org/faq/how-to-install/faq_98/
+    GENERAL_ASSUME_SECURE_PROTOCOL: '1'
+    GENERAL_FORCE_SSL: '1'
+    PROXY_CLIENT_HEADERS: ["HTTP_X_FORWARDED_FOR"]
+    # https://matomo.org/faq/on-premise/what-is-the-trusted-host-check-feature-in-matomo/
+    GENERAL_TRUSTED_HOSTS: ["127.0.0.1:8080","override-me.org", "override-me.co"]
     # https://matomo.org/faq/new-to-piwik/faq_134/
     # This setting lets Matomo know you’re using multiple servers and for example
     # it will then not allow the installation of a plugin via the UI 

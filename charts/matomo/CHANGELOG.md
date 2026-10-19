@@ -12,3 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 ### Fixed
 ---
+## [0.0.2]
+### Added
+- Support for array variables such as `GENERAL_TRUSTED_HOSTS: '["127.0.0.1:8080","override-me.org", "override-me.co"]'`
+### Deprecated
+### Removed
+### Fixed
+---
