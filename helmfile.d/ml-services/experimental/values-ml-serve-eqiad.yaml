@@ -54,15 +54,15 @@ inference_services:
                         - "ml-serve1014.eqiad.wmnet"
 
   # Rerun the vllm-bench, it will be removed after the tests
-  llm-qwen36-27b:
+  llm-qwen38-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
       image_version: "2026-08-25-153535-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "llm-qwen36-27b"
+          value: "llm-qwen38-27b"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/Qwen3.6-27B-FP8/"
+          value: "s3://wmf-ml-models/llm/Qwen3.8-27B-FP8/"
         - name: MODEL_PATH
           value: "/mnt/models"
         - name: TRUST_REMOTE_CODE
