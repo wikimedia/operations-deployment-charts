@@ -310,100 +310,6 @@ inference_services:
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
 
-  # General-purpose chat/completions LLM. Named "llm-*" so the rest-gateway
-  # liftwing_llm route group matches it by name and applies the LiftWingLLM
-  # rate limit (T426749).
-  llm-qwen3-14b:
-    # T440588: Scale on in-flight requests, not on RPS.
-    # LLM request duration varies a lot, so RPS is a poor load signal.
-    annotations:
-      autoscaling.knative.dev/metric: "concurrency"
-      autoscaling.knative.dev/target: "16"
-    predictor:
-      image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-08-25-153535-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "llm-qwen3-14b"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/qwen3-14b-fp8/"
-        - name: MODEL_PATH
-          value: "/mnt/models"
-        - name: TRUST_REMOTE_CODE
-          value: "True"
-        - name: DTYPE
-          value: "auto"
-        - name: KV_CACHE_DTYPE
-          value: "fp8"
-        - name: GPU_MEMORY_UTILIZATION
-          value: "0.92"
-        - name: MAX_MODEL_LEN
-          value: "16384"
-        - name: TENSOR_PARALLEL_SIZE
-          value: "1"
-        - name: MAX_NUM_SEQS
-          value: "32"
-        - name: MAX_NUM_BATCHED_TOKENS
-          value: "8192"
-        - name: BLOCK_SIZE
-          value: "64"
-        - name: ATTENTION_BACKEND
-          value: "TRITON_ATTN"
-        - name: ENFORCE_EAGER
-          value: "False"
-        - name: TOOL_CALLING_ENABLED
-          value: "True"
-        - name: VLLM_ROCM_USE_AITER
-          value: "0"
-        - name: TORCH_BLAS_PREFER_HIPBLASLT
-          value: "1"
-        - name: MAX_JOBS
-          value: "1"
-        - name: AMDGCN_USE_BUFFER_OPS
-          value: "0"
-      container:
-        resources:
-          limits:
-            cpu: "16"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 35Gi
-          requests:
-            cpu: "16"
-            memory: 16Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 30Gi
-        volumeMounts:
-          - mountPath: /dev/shm
-            name: dshm
-      volumes:
-        - name: dshm
-          emptyDir:
-            medium: Memory
-            sizeLimit: "8Gi"
-      config:
-        minReplicas: 1
-        maxReplicas: 2
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
-
   llm-qwen36-27b:
     predictor:
       image: "machinelearning-liftwing-inference-services-qwen36"
@@ -907,10 +813,10 @@ inference_services:
                         - "ml-serve1014.eqiad.wmnet"
 
 llm_inference_services:
-  # llm-qwen3-14b served as an LLMInferenceService with plain vLLM. Both run
-  # until we replace the InferenceService. The model name is the same, so
-  # OpenAI requests are the same except for the host.
-  qwen3-14b-vllm:
+  # General-purpose chat/completions LLM. Named "llm-*" so the rest-gateway
+  # liftwing_llm route group matches it by name and applies the LiftWingLLM
+  # rate limit (T426749).
+  llm-qwen3-14b:
     model:
       uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
       name: llm-qwen3-14b
@@ -930,8 +836,8 @@ llm_inference_services:
               ephemeral-storage: 35Gi
               amd.com/gpu: "1"
           env:
-            # The InferenceService defaults to thinking off and does not send
-            # tools to the model when tool_choice is "none". Keep both.
+            # Keep the behavior of the old InferenceService: thinking off by
+            # default, and no tools sent to the model when tool_choice is "none".
             # The value is word-split by the preset: JSON must have no spaces.
             - name: VLLM_ADDITIONAL_ARGS
               value: >-
