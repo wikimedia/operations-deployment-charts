@@ -8,3 +8,6 @@ main_app:
 # there's no kvm available in staging at the moment
 gVisor:
   runtime_class_name: gvisor
+dns:
+  nameserver: 10.64.76.4  # coredns-internalonly
+  nodeDomain: eqiad.wmnet
