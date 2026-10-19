@@ -31,7 +31,8 @@ inference_services:
             amd.com/gpu: "1"
             ephemeral-storage: 60Gi
       config:
-        maxReplicas: 1
+        minReplicas: 2
+        maxReplicas: 2
         tolerations:
           - key: "dedicated"
             operator: "Equal"
