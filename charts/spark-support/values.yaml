@@ -32,6 +32,8 @@ config:
       hadoop.proxyuser.mapred.hosts: '*'
       hadoop.rpc.protection: privacy
       hadoop.security.authentication: kerberos
+      # The images have no native Hadoop library, so use the Java codec for HDFS transfer encryption.
+      hadoop.security.crypto.codec.classes.aes.ctr.nopadding: org.apache.hadoop.crypto.JceAesCtrCryptoCodec
       hadoop.ssl.enabled.protocols: TLSv1.2
       io.file.buffer.size: '131072'
     hive:
