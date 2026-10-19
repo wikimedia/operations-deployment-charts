@@ -1,8 +1,13 @@
 mesh:
   enabled: true
+  sidecar: false
   image_version: 1.39.0-1
 
 mw:
+  helpers:
+    feature_flags:
+      default:
+        native_sidecars: false
   httpd:
     enabled: false
 

@@ -20,6 +20,7 @@ service:
     nodePort: 8444
 
 mesh:
+  sidecar: false
   public_port: null
   tracing:
     enabled: true
@@ -149,6 +150,7 @@ mw:
         active_active: false
         dumps: true
         networkpolicy: false
+        native_sidecars: false
   domain_suffix: "org"
   httpd:
     enabled: false
