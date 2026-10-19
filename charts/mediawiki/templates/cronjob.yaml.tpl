@@ -37,6 +37,7 @@ spec:
             script: "{{ $jobConfig.labels.script }}"
             cronjob: "{{ $jobConfig.name }}"
           annotations:
+            {{- if not $flags.native_sidecars }}
             # Shut down the pod (via k10s-controller-sidecars) when the -app container is finished, even
             # if sidecars are still running.
             # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
@@ -55,17 +56,19 @@ spec:
             {{- if $sidecars }}
             pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
             {{- end }}
+            {{- end }}
             comment: {{ $jobConfig.description | quote }}
         spec:
           terminationGracePeriodSeconds: {{ $jobConfig.terminationGracePeriodSeconds | default $.Values.terminationGracePeriodSeconds }}
           containers:
-          # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
-          # above.
           {{- include "mediawiki.container" (merge (dict "JobConfig" $jobConfig) $ ) | indent 10 }}
-          {{- include "cache.mcrouter.container" $ | indent 10 }}
-          {{- include "mesh.deployment.container" $ | indent 10}}
+          {{- if $flags.native_sidecars }}
+          initContainers:
+          {{- end }}
+          {{- include "mesh.deployment.container" $ | indent 10 }}
           {{- include "rsyslog.deployment" $ | indent 10 }}
           {{- include "base.statsd.container" $ | indent 10 }}
+          {{- include "cache.mcrouter.container" $ | indent 10 }}
           volumes:
           {{- include "mw.volumes" $ | indent 12}}
           {{- include "base.statsd.volume" $ | indent 12 }}
@@ -110,6 +113,7 @@ spec:
             release: {{ .Release.Name }}
             deployment: {{ .Release.Namespace }}
           annotations:
+            {{- if not $flags.native_sidecars }}
             # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
             # if sidecars are still running.
             # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
@@ -128,6 +132,7 @@ spec:
             {{- if $sidecars }}
             pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
             {{- end }}
+            {{- end }}
         spec:
           {{- if $.Values.terminationGracePeriodSeconds }}
           terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
@@ -138,13 +143,14 @@ spec:
             {{/* To speed up volume mounts, as the volume contains many files. See T402644. */}}
             fsGroupChangePolicy: "OnRootMismatch"
           containers:
-          # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
-          # above.
           {{- include "mediawiki.container" $ | indent 10 }}
-          {{- include "cache.mcrouter.container" $ | indent 10 }}
+          {{- if $flags.native_sidecars }}
+          initContainers:
+          {{- end }}
           {{- include "mesh.deployment.container" $ | indent 10 }}
           {{- include "rsyslog.deployment" $ | indent 10 }}
           {{- include "base.statsd.container" $ | indent 10 }}
+          {{- include "cache.mcrouter.container" $ | indent 10 }}
           volumes:
           {{- include "mw.volumes" $ | indent 10 }}
           {{- include "base.statsd.volume" $ | indent 10 }}

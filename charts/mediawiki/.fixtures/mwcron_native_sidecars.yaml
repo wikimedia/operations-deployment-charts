@@ -1,0 +1,88 @@
+php:
+  servergroup: "mwcron-test-rw"
+mwcron:
+  jobs:
+    - name: "test"
+      schedule: "@daily"
+      command: "/usr/local/bin/foreachwiki extensions/foo/bar/cron.php"
+      labels:
+        team: team-name
+        script: extensions/foo/bar/cron.php
+      description: "A description of the job"
+      startingDeadlineSeconds: 30
+      successfulJobsHistoryLimit: 10
+      failedJobsHistoryLimit: 10
+      ttlSecondsAfterFinished: 1000000000
+    - name: "test2"
+      schedule: "*/10 * * * *"
+      command: "/usr/local/bin/expanddblist all | xargs -I{} -P4 bash -c '/usr/local/bin/mwscript Version.php --wiki={} 2>&1 | ts {}'"
+      labels:
+        team: team-name
+        script: extensions/foo/bar/mwcron2.php
+      description: "A description of the job"
+mw:
+  helpers:
+    feature_flags:
+      default:
+        native_sidecars: true
+  httpd:
+    enabled: false
+  primary_dc: local
+  datacenter: local
+  read_only:
+    local: false
+  logging:
+    rsyslog: true
+  fancycaptcha:
+    words: |
+      fnord
+      lord
+      zord
+    badwords: |
+      cloud
+      webscale
+      mongodb
+      eiximenis
+
+# 'sidecar' is enabled to verify native k8s sidecar config settings.
+cache:
+  mcrouter:
+    sidecar: true
+    enabled: true
+
+mesh:
+  enabled: true
+  sidecar: true
+  image_version: 1.13.1-2
+  public_port: ~
+  certs:
+    cert: |-
+      -- begin --
+      12345
+      -- end --
+    key: |-
+      -- begin --
+      678910
+      -- end --
+  # Enable telemetry
+  telemetry:
+    enabled: true
+    port: 9361
+
+discovery:
+  listeners:
+    - citoid
+    - eventgate-analytics
+    - eventgate-analytics-external
+    - eventgate-main
+    - sessionstore
+    - echostore
+    - termbox
+    - push-notifications
+    - restbase
+    - cxserver
+    - shellbox
+    - shellbox-constraints
+    - shellbox-media
+    - shellbox-syntaxhighlight
+    - shellbox-timeline
