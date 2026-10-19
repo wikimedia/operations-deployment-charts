@@ -820,10 +820,10 @@ GlobalNetworkPolicies:
     types:
       - Ingress
       - Egress
-  # Allow all pods access to kube-dns, except wikifunctions (which uses the
+  # Allow all pods access to kube-dns, except wikifunctions  and shellbox* (which use the
   # internalonly variant, allowed below)
   allow-kube-dns:
-    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions"}'
+    namespaceSelector: 'has(projectcalico.org/name) && projectcalico.org/name not in {"kube-system", "wikifunctions", "shellbox", "shellbox-constraints", "shellbox-media", "shellbox-syntaxhighlight", "shellbox-timeline", "shellbox-video"}'
     types:
       - Egress
     egress:
