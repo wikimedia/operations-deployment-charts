@@ -841,3 +841,93 @@ llm_inference_services:
                     values:
                       - "ml-serve1013.eqiad.wmnet"
                       - "ml-serve1014.eqiad.wmnet"
+
+  # gpt-oss-safeguard-20b served as plain vLLM. The llm-gpt-oss-safeguard-20b
+  # InferenceService keeps the policy-violation API and will call this service.
+  # No "llm-" prefix: rest-gateway does not route it publicly.
+  gpt-oss-safeguard-20b:
+    model:
+      uri: s3://wmf-ml-models/llm/gpt-oss-safeguard-20b/
+      name: gpt-oss-safeguard-20b
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "16"
+              memory: 80Gi
+              ephemeral-storage: 30Gi
+              amd.com/gpu: "2"
+            limits:
+              cpu: "16"
+              memory: 80Gi
+              ephemeral-storage: 35Gi
+              amd.com/gpu: "2"
+          env:
+            # Same engine settings as the InferenceService.
+            # The value is word-split by the preset: JSON must have no spaces.
+            - name: VLLM_ADDITIONAL_ARGS
+              value: >-
+                --tensor-parallel-size 2
+                --max-model-len 16384
+                --gpu-memory-utilization 0.95
+                --max-num-seqs 384
+                --max-num-batched-tokens 24576
+                --block-size 64
+                --attention-backend ROCM_AITER_UNIFIED_ATTN
+                --enable-prefix-caching
+                --compilation-config {"use_inductor_graph_partition":true}
+            # Harmony cannot download the tiktoken files, so it reads them from
+            # the model directory.
+            - name: TIKTOKEN_ENCODINGS_BASE
+              value: "/mnt/models/tiktoken_encodings/"
+            # Same ROCm and NCCL settings as the InferenceService, for
+            # tensor parallelism inside one pod.
+            - name: VLLM_ROCM_USE_AITER
+              value: "1"
+            - name: TORCH_BLAS_PREFER_HIPBLASLT
+              value: "1"
+            - name: TORCH_SYMM_MEM_DISABLE_MULTICAST
+              value: "1"
+            - name: HSA_FORCE_FINE_GRAIN_PCIE
+              value: "1"
+            - name: HSA_ENABLE_IPC_MODE_LEGACY
+              value: "0"
+            - name: NCCL_P2P_DISABLE
+              value: "0"
+            - name: NCCL_SOCKET_IFNAME
+              value: lo
+            - name: NCCL_SHM_DISABLE
+              value: "0"
+            - name: NCCL_DEBUG
+              value: "INFO"
+            - name: VLLM_SKIP_P2P_CHECK
+              value: "0"
+            - name: VLLM_HOST_IP
+              value: "127.0.0.1"
+            - name: RCCL_MSCCL_ENABLE
+              value: "0"
+            - name: MAX_JOBS
+              value: "1"
+            - name: AMDGCN_USE_BUFFER_OPS
+              value: "0"
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "mi300x-experiments"
+          effect: "NoSchedule"
+        - key: "dedicated"
+          operator: "Equal"
+          value: "mi300x-experiments"
+          effect: "NoExecute"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "kubernetes.io/hostname"
+                    operator: "In"
+                    values:
+                      - "ml-serve1013.eqiad.wmnet"
+                      - "ml-serve1014.eqiad.wmnet"
