@@ -476,6 +476,9 @@ inference_services:
                         - "ml-serve1014.eqiad.wmnet"
 
   tts:
+    annotations:
+      autoscaling.knative.dev/metric: "concurrency"
+      autoscaling.knative.dev/target: "1"
     predictor:
       config:
         containerConcurrency: 1
