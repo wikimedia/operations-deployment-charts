@@ -16,6 +16,38 @@ mesh:
   # Every lambda speaks gRPC.
   public_port_app_protocol: grpc
 
+app:
+  port: 50051 # gRPC, should be the same for all lac-lambdas
+  metricsPort: 9102 # /healthz and /metrics, for Prometheus and the kubelet, should be the same for all lambdas
+
+  # Generic values, can be overriden in the lambda's values file
+  # Should return a 200 when the pod can actually respond to queries
+  readiness_probe:
+    httpGet:
+      path: /healthz
+      port: 9102
+    initialDelaySeconds: 2
+    periodSeconds: 5
+
+  # Keep shallow: a failed liveness check restarts the pod, and a
+  # pod that is alive but cannot answer is already held back by readiness.
+  # This is meant to detect a pod that does not start at all.
+  liveness_probe:
+    tcpSocket:
+      port: 50051
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    failureThreshold: 3
+
+  # Defaults, can be overriden in the lambda's values file.
+  # Keep low on purpose, bump if needed
+  requests:
+    cpu: 0.5
+    memory: 500Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
 # MediaWiki is reached through this listener, which the mesh gives on
 # http://localhost:6500. One proxy serves every wiki and the wiki is named
 # in the Host header.

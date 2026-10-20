@@ -9,29 +9,6 @@ app:
   command: ["python3"]
   args: ["-m", "revision_feature_counts.server"]
 
-  port: 50051        # gRPC, inside the pod. Envoy forwards to it.
-  metricsPort: 9102  # /healthz and /metrics, for Prometheus and the kubelet.
-
-  # /healthz answers only after the wiki map is read and the gRPC port is
-  # open, so a pod that answers here can serve a call.
-  readiness_probe:
-    httpGet:
-      path: /healthz
-      port: 9102
-    initialDelaySeconds: 2
-    periodSeconds: 5
-
-  # Kept shallow on purpose: a failed liveness check restarts the pod, and a
-  # pod that is alive but cannot answer is already held back by readiness.
-  # The delay must cover the wiki map being read, which can take
-  # rfc_sitematrix_timeout below.
-  liveness_probe:
-    tcpSocket:
-      port: 50051
-    initialDelaySeconds: 15
-    periodSeconds: 15
-    failureThreshold: 3
-
   requests:
     cpu: 2
     memory: 1Gi
