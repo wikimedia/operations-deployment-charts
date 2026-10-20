@@ -87,10 +87,11 @@ health:
     memory: 1Gi
 
 proxy:
-  version: v0.13.0
+  version: v0.14.1
   config:
     public:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
+      QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.discovery.wmnet:8443/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/raw/v0.4/allowlist.json
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 60000
       QUARKUS_HTTP_LIMITS_MAX_FORM_ATTRIBUTE_SIZE: 50k
@@ -230,7 +231,7 @@ ingress:
 # And we need egress rules from qlever to federated endpoints (from the allow list).
 external_services:
   gitlab:
-    - wikimedia
+    - discovery
   urldownloader:
     - wikimedia
 
