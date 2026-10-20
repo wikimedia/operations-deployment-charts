@@ -1,51 +1,59 @@
 inference_services:
 
   # Rerun the vllm-bench, it will be removed after the tests
-  llm-qwen38-27b:
+  llm-gpt-oss-safeguard-20b:
     predictor:
-      image: "machinelearning-liftwing-inference-services-qwen36"
-      image_version: "2026-08-25-153535-publish"
+      image: "machinelearning-liftwing-inference-services-policy-violation-gpt-oss-safeguard"
+      image_version: "2026-07-28-135536-publish"
       custom_env:
         - name: MODEL_NAME
-          value: "llm-qwen38-27b"
+          value: "llm-gpt-oss-safeguard-20b"
         - name: STORAGE_URI
-          value: "s3://wmf-ml-models/llm/Qwen3.8-27B-FP8/"
-        - name: MODEL_PATH
-          value: "/mnt/models"
+          value: "s3://wmf-ml-models/gpt-oss-safeguard-20b/"
+        - name: TIKTOKEN_ENCODINGS_BASE
+          value: "/mnt/models/tiktoken_encodings/"
         - name: TRUST_REMOTE_CODE
-          value: "True"
-        - name: LANGUAGE_MODEL_ONLY
-          value: "True"
-        - name: SKIP_MM_PROFILING
-          value: "True"
-        - name: DTYPE
-          value: "auto"
-        - name: KV_CACHE_DTYPE
-          value: "fp8"
+          value: "False"
         - name: GPU_MEMORY_UTILIZATION
-          value: "0.85"
+          value: "0.95"
         - name: MAX_MODEL_LEN
-          value: "32768"
-        - name: TENSOR_PARALLEL_SIZE
-          value: "1"
-        - name: MAX_NUM_SEQS
-          value: "32"
+          value: "16384"
         - name: MAX_NUM_BATCHED_TOKENS
-          value: "32768"
+          value: "24576"
+        - name: MAX_NUM_SEQS
+          value: "384"
         - name: BLOCK_SIZE
           value: "64"
         - name: ATTENTION_BACKEND
-          value: "TRITON_ATTN"
-        - name: ENFORCE_EAGER
-          value: "False"
-        - name: TOOL_CALLING_ENABLED
-          value: "True"
-        - name: TOOL_CALL_PARSER
-          value: "qwen3_coder"
+          value: "ROCM_AITER_UNIFIED_ATTN"
         - name: VLLM_ROCM_USE_AITER
-          value: "0"
+          value: "1"
+        - name: TENSOR_PARALLEL_SIZE
+          value: "2"
+        - name: DISABLE_CUSTOM_ALL_REDUCE
+          value: "False"
         - name: TORCH_BLAS_PREFER_HIPBLASLT
           value: "1"
+        - name: TORCH_SYMM_MEM_DISABLE_MULTICAST
+          value: "1"
+        - name: HSA_FORCE_FINE_GRAIN_PCIE
+          value: "1"
+        - name: HSA_ENABLE_IPC_MODE_LEGACY
+          value: "0"
+        - name: NCCL_P2P_DISABLE
+          value: "0"
+        - name: NCCL_SOCKET_IFNAME
+          value: lo
+        - name: NCCL_SHM_DISABLE
+          value: "0"
+        - name: NCCL_DEBUG
+          value: "INFO"
+        - name: VLLM_SKIP_P2P_CHECK
+          value: "0"
+        - name: VLLM_HOST_IP
+          value: "127.0.0.1"
+        - name: RCCL_MSCCL_ENABLE
+          value: "0"
         - name: MAX_JOBS
           value: "1"
         - name: AMDGCN_USE_BUFFER_OPS
@@ -54,14 +62,14 @@ inference_services:
         resources:
           limits:
             cpu: "16"
-            memory: 32Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 40Gi
+            memory: 80Gi
+            amd.com/gpu: "2"
+            ephemeral-storage: 35Gi
           requests:
             cpu: "16"
-            memory: 32Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 35Gi
+            memory: 80Gi
+            amd.com/gpu: "2"
+            ephemeral-storage: 30Gi
         volumeMounts:
           - mountPath: /dev/shm
             name: dshm
@@ -91,6 +99,6 @@ inference_services:
                     - key: "kubernetes.io/hostname"
                       operator: "In"
                       values:
-                        # T439555: Medium model we want to host it using the 96GB partitions.
+                        # We want to use the 96GB partitions in ml-serve1013 and ml-serve1014
                         - "ml-serve1013.eqiad.wmnet"
                         - "ml-serve1014.eqiad.wmnet"
