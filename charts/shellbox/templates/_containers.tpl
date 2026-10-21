@@ -66,7 +66,7 @@ resources:
   {{- end }}
   {{- include "base.helper.restrictedSecurityContext" . | indent 2 }}
 - name: {{ template "base.name.release" . }}-app
-  image: {{ .Values.docker.registry }}/wikimedia/mediawiki-libs-shellbox:{{ if .Values.shellbox.version }}{{ .Values.shellbox.version }}-{{ end }}{{ .Values.shellbox.flavour }}
+  image: {{ .Values.docker.registry }}/{{ .Values.shellbox.image }}:{{ if .Values.shellbox.version }}{{ .Values.shellbox.version }}-{{ end }}{{ .Values.shellbox.flavour }}
   imagePullPolicy: {{ .Values.docker.pull_policy }}
   env:
   - name: SERVERGROUP

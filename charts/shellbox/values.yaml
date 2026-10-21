@@ -49,10 +49,11 @@ config:
 
 shellbox:
   secret_key: "@@ CHANGE THIS @@"
+  image: wikimedia/mediawiki-libs-shellbox
   # If version is not empty, the image used for shellbox will be
-  # $registry/wikimedia/mediawiki-libs-shellbox:$version-$flavour
+  # $registry/$image:$version-$flavour
   # while it will just be
-  # $registry/wikimedia/mediawiki-libs-shellbox:$flavour
+  # $registry/$image:$flavour
   # otherwise. This is done so that you can control the shellbox version for all variants with a single,
   # global setting.
   version: ""
