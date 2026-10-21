@@ -374,6 +374,18 @@ main_app:
   # PATH/PAGE/REVISION, this rule will get matched first and
   # PAGE/REVISION will be passed as a single capture group
   rest_gateway_routes:
+    - name: hummingbird
+      domain: hummingbird.wikimedia.org
+      cluster: liftwing-studio
+      owns_root: true
+      ingress: true
+      timeout: 600s
+      csp_enabled: false
+      urls:
+        - name: all
+          in: '/(.*)'
+          out: '/\1'
+
     - name: mobileapps
       timeout: 120s
       urls:
@@ -1270,6 +1282,11 @@ main_app:
       ingress: true
       timeout: 60s
       internal_host: liftwing-openapi-server.discovery.wmnet
+    liftwing-studio:
+      tls: true
+      port: 30443
+      ingress: true
+      internal_host: liftwing-studio.discovery.wmnet
     mwdebug:
       tls: true
       port: 4444
@@ -1553,6 +1570,14 @@ networkpolicy:
       ports:
         - protocol: tcp
           port: 31443
+    - cidr: 10.2.1.91/32 # k8s-ingress-dse.svc.codfw.wmnet
+      ports:
+        - protocol: tcp
+          port: 30443
+    - cidr: 10.2.2.91/32 # k8s-ingress-dse.svc.eqiad.wmnet
+      ports:
+        - protocol: tcp
+          port: 30443
 
 # Needed by the ratelimit sidecar
 nutcracker:
