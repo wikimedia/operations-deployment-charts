@@ -28,6 +28,7 @@ spec:
         {{- toYaml .Values.mwscript.labels | nindent 8 }}
         {{- end }}
       annotations:
+        {{- if not $flags.native_sidecars }}
         # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
         # if sidecars are still running.
         # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
@@ -46,6 +47,7 @@ spec:
         {{- if $sidecars }}
         pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
         {{- end }}
+        {{- end }}
         {{- if .Values.mwscript.comment }}
         comment: {{ .Values.mwscript.comment | quote }}
         {{- end }}
@@ -57,13 +59,16 @@ spec:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
       # above.
       {{- include "mediawiki.container" . | indent 8 }}
+      {{- if not $flags.native_sidecars }}
+      initContainers:
+      {{- end }}
+      {{- include "mesh.deployment.container" . | indent 8 }}
+      {{- include "rsyslog.deployment" . | indent 8 }}
+      {{- include "base.statsd.container" . | indent 8 }}
       {{- if .Values.monitoring.enabled }}
       {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
       {{- end }}
       {{- include "cache.mcrouter.deployment" . | indent 8 }}
-      {{- include "mesh.deployment.container" . | indent 8}}
-      {{- include "rsyslog.deployment" . | indent 8 }}
-      {{- include "base.statsd.container" . | indent 8 }}
       volumes:
       {{- include "mw.volumes" . | indent 8}}
       {{- include "base.statsd.volume" . | indent 8 }}
@@ -116,6 +121,7 @@ spec:
         envoyproxy.io/scrape: "true"
         envoyproxy.io/port: "{{ $.Values.mesh.telemetry.port }}"
         {{- end }}
+        {{- if not $flags.native_sidecars }}
         # Shut down the pod (via k8s-controller-sidecars) when the -app container is finished, even
         # if sidecars are still running.
         # TODO: This needs to be updated as sidecars are added/removed, else Jobs will stay active
@@ -131,17 +137,19 @@ spec:
         {{- if $sidecars }}
         pod.kubernetes.io/sidecars: {{ $sidecars | join "," }}
         {{- end }}
+        {{- end }}
     spec:
       containers:
-      # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
-      # above.
-      {{- include "mesh.deployment.container" $ | indent 8}}
       {{- $configpath := printf "/etc/mercurius/%s.yaml" $mercurius_job }}
       {{- include "mediawiki.container" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
+      {{- if $flags.native_sidecars }}
+      initContainers:
+      {{- end }}
+      {{- include "mesh.deployment.container" $ | indent 8 }}
+      {{- include "rsyslog.deployment" $ | indent 8 }}
       {{- if $.Values.monitoring.enabled }}
       {{- include "sidecars.php-fpm-exporter.container" . | indent 8 }}
       {{- end }}
-      {{- include "rsyslog.deployment" $ | indent 8 }}
       volumes:
       {{- include "mw.volumes" $ | indent 8}}
       # Exiting 0 indicates that mercurius has picked up a new version and will
