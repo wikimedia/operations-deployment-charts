@@ -12,6 +12,15 @@ main_app:
 
   hoarde:
     tables:
+      edit_suggestions_counts:
+        lambda:
+          type: grpc
+          hostname: editcheck-headless.discovery.wmnet
+          port: 30443
+          timeout: 30s
+          content_type: application/json
+          tls: &stdtls
+            ca: /etc/ssl/certs/ca-certificates.crt
       article_topics:
         lambda:
           type: kserve_v2
@@ -21,17 +30,16 @@ main_app:
           model_name: outlink-topic-model
           content_type: application/json
           tls:
-            ca: /etc/ssl/certs/ca-certificates.crt
+            <<: *stdtls
             authority: outlink-topic-model-grpc.articletopic-outlink.wikimedia.org
-      edit_suggestions_counts:
+      revision_feature_counts:
         lambda:
           type: grpc
-          hostname: editcheck-headless.discovery.wmnet
+          hostname: revision-feature-counts.discovery.wmnet
           port: 30443
-          timeout: 30s
+          timeout: 10s
           content_type: application/json
-          tls:
-            ca: /etc/ssl/certs/ca-certificates.crt
+          tls: *stdtls
 
   requests:
     cpu: 200m
