@@ -1,11 +1,7 @@
 # Manual copy of production values to avoid relying on scap
 docker:
   registry: docker-registry.discovery.wmnet
-main_app:
-  image: restricted/mediawiki-multiversion-debug:2026-09-08-131104-publish-83
 mw:
-  httpd:
-    image_tag: restricted/mediawiki-webserver:2026-09-08-131104-webserver-bookworm
   datacenter: eqiad
   mail_host: mx-out1001.wikimedia.org
 php:
