@@ -1,5 +1,5 @@
 app:
-  version: 2026-10-28-100152-9fd4efc6fb4998cb1b40414ff9a7036c31b8c38f@sha256:a7296c7786a7139bb596540ae69328856f96bf7d7c1beec6f80ac910a338ade5
+  version: 2026-10-28-151723-537f1d51323402c9dcfed4ceab590b4cd7f8ce6d@sha256:8bf12bde7d6b8ef132570c0d719ee587fc8d288fd9a4a8e7fc92e192a6f746b4
 
 config:
   hdfs:
@@ -26,8 +26,10 @@ external_services:
   - legacy
   hadoop-master:
   - analytics
+  - analytics-test
   hadoop-worker:
   - analytics
+  - analytics-test
 
 common_images:
   kerberos:
