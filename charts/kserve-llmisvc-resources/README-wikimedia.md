@@ -45,7 +45,10 @@ are deleted. The controller still reads the `inferenceservice-config` ConfigMap 
 
 ### Modified
 
-- `Chart.yaml` — WMF version `0.1.0` (chartmuseum publishes a version exactly once, and Helm 3 lint
+- `files/llmisvc/resources.yaml` — removed the trailing `status:` block from the four
+  Inference Extension CRDs (rendered only with `createGIECRDs: true`). It is set by the
+  API server, and its `null` fields fail kubeconform validation in CI.
+- `Chart.yaml` — WMF version `0.1.1` (chartmuseum publishes a version exactly once, and Helm 3 lint
   rejects a leading `v`), WMF maintainers, `wmf/upstreamVersion: v0.20.0`.
 - `files/llmisvc/certificate-patch.yaml` — `+4` lines adding the cfssl `issuerRef`
   (`discovery` ClusterIssuer, group `cfssl-issuer.wikimedia.org`). Upstream has no values hook for

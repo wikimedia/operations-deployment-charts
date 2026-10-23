@@ -1,0 +1,6 @@
+# Install the Gateway API Inference Extension CRDs bundled with the chart
+# (InferencePool and the llm-d InferenceObjective/InferenceModelRewrite), on
+# staging only, to test the endpoint picker (T436650).
+kserve:
+  llmisvc:
+    createGIECRDs: true
