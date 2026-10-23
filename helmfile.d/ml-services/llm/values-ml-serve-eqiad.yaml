@@ -701,8 +701,8 @@ llm_inference_services:
                 --max-model-len 32768
                 --kv-cache-dtype fp8
                 --gpu-memory-utilization 0.85
-                --max-num-seqs 128
-                --max-num-batched-tokens 32768
+                --max-num-seqs 16
+                --max-num-batched-tokens 8192
                 --block-size 64
                 --attention-backend TRITON_ATTN
                 --reasoning-parser qwen3
