@@ -1,0 +1,20 @@
+# Kubernetes Gateway API CRDs, where install_gateway_api_crds is set.
+#
+# The llmisvc controller caches CRD discovery for its lifetime, so restart
+# deploy/llmisvc-controller-manager in kserve after these are first installed.
+templates:
+  default: &default
+    missingFileHandler: Warn
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_gateway_api_crds\" }}{{ .Environment.Values.install_gateway_api_crds }}{{ else }}{{ false }}{{end}}`}}"
+
+releases:
+  - name: gateway-api-crds
+    chart: wmf-stable/gateway-api-crds
+    {{- $version := .Values.chartVersions | get "wmf-stable/gateway-api-crds" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    <<: *default
+    namespace: kube-system
+    needs:
+      - kube-system/namespaces
