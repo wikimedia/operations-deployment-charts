@@ -1,0 +1,20 @@
+apiVersion: v2
+name: gateway-api-crds
+description: Kubernetes Gateway API CRDs (standard channel)
+type: application
+# NOTE: version here is WMF's version of this chart.
+# appVersion should be the upstream version.
+version: 0.0.1
+# Keep appVersion at the Gateway API version the cluster's Istio is built against
+# (sigs.k8s.io/gateway-api in Istio's go.mod), not the latest release: newer CRDs can
+# serve API versions that Istio does not know. Istio 1.29 uses v1.4.1.
+appVersion: v1.4.1
+keywords:
+  - gateway-api
+  - crds
+sources:
+  - https://github.com/kubernetes-sigs/gateway-api/tree/v1.4.1/config/crd/standard
+home: https://gateway-api.sigs.k8s.io/
+maintainers:
+  - name: Wikimedia Machine Learning Team
+    url: https://www.mediawiki.org/wiki/Machine_Learning
