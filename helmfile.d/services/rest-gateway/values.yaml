@@ -153,7 +153,7 @@ main_app:
             MINUTE: 200
           "established-user": # valid JWT, meets age/edit count criteria
             MINUTE: 2000
-          "highlimits-user": # valid WT and member of specific global groups
+          "highlimits-user": # valid JWT and member of specific global groups
             MINUTE: 999999
           "known-network": # no auth, network under our control (WMCS, WME)
             MINUTE: 999999
@@ -185,7 +185,7 @@ main_app:
             MINUTE: 200
           "established-user": # valid JWT, meets age/edit count criteria
             MINUTE: 2000
-          "highlimits-user": # valid WT and member of specific global groups
+          "highlimits-user": # valid JWT and member of specific global groups
             MINUTE: 999999
           "known-network": # no auth, network under our control (WMCS, WME)
             MINUTE: 999999
@@ -221,7 +221,7 @@ main_app:
             MINUTE: 12000
           "established-user": # valid JWT, meets age/edit count criteria
             MINUTE: 120000
-          "highlimits-user": # valid WT and member of specific global groups
+          "highlimits-user": # valid JWT and member of specific global groups
             MINUTE: 9999999
           "known-network": # no auth, network under our control (WMCS, WME)
             MINUTE: 9999999
@@ -257,7 +257,7 @@ main_app:
             HOUR: 9999999 # 100_000
           "established-user": # valid JWT, meets age/edit count criteria
             HOUR: 9999999 # 1_000_000
-          "highlimits-user": # valid WT and member of specific global groups
+          "highlimits-user": # valid JWT and member of specific global groups
             HOUR: 9999999 # no limit
           "known-network": # no auth, network under our control (WMCS, WME)
             HOUR: 9999999
@@ -290,7 +290,7 @@ main_app:
             HOUR: 100000
           "established-user": # valid JWT, meets age/edit count criteria
             HOUR: 200000
-          "highlimits-user": # valid WT and member of specific global groups
+          "highlimits-user": # valid JWT and member of specific global groups
             HOUR: 9999999
           "known-network":
             HOUR: 9999999
@@ -318,40 +318,93 @@ main_app:
             HOUR: 9999999
 
       # Cost-based limit for WDQS v2 (QLever), shared by the query-next
-      # and query-scholarly-next routes. Duration-weighted (measure: time) so a
-      # few heavy queries drain as much budget as many light ones, with an
-      # upfront_cost floor so trivial queries still cost something.
+      # and query-scholarly-next routes. Cost is duration-weighted so a
+      # few heavy, long running, queries drain as much budget as many light ones,
+      # with an upfront_cost floor so trivial queries still cost something.
+      # Each query occupies at least one full core for its whole runtime.
+      #
+      # Limits are set as "ms of query time per minute" to approximate concurrent
+      # request counts.
+      #
+      # The target is "18 concurrent in-flight queries per actor", which maps to 18 cores
+      # in the wdqs fleet occupied at once. We approximate a budget per minute as
+      #
+      #     budget_ms_per_minute = target_concurrency * 60 * 1000
+      #      18 concurrent ->  1080000
+      #      54 concurrent ->  3240000
+      #     180 concurrent -> 10800000  (number of cores in wdqs/eqiad)
+      # https://wikitech.wikimedia.org/wiki/User:GModena_(WMF)/Drafts/2026-10_WDQSv2_Load_Testing
+
+      # NOTE: duration is charged when the query finishes, so a burst of long running queries is throttled
+      # in the following window.
+      # TODO (gmodena): what happens if all queries fire at once?
       "WDQS":
-        shadow_mode: true
         measure: time
         upfront_cost: 100
-        limits: # TODO(gmodena): these values are placeholders, copied from ParseCost,
-                # that will need to be updated after we observe enough
-                # traffic in shadow mode.
+        limits: # TODO(gmodena): derived from 2026-10 concurrency target, not yet from
+                # observed traffic. Revisit once we have shadow mode data on real
+                # SPARQL durations. Bug: T437892
           "*": # catch-all limits
-            MINUTE: 600
+            MINUTE: 1080000 # 18 concurrent
           "anon": # no auth, not a browser, no good User-Agent, no known IP
-            MINUTE: 600
+            MINUTE: 1080000 # 18 concurrent
           "unauthed-bot": # no auth, but good User-Agent
-            MINUTE: 12000
+            MINUTE: 1080000 # 18 concurrent
           "anon-browser": # no auth, but looks like a browser
-            MINUTE: 12000
+            MINUTE: 1080000 # 18 concurrent
           "anon-app": # no auth, but looks like our app
-            MINUTE: 24000
+            MINUTE: 1080000 # 18 concurrent
           "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
-            MINUTE: 240000 # needs high limit until we can distinguish clients
+            MINUTE: 3240000 # 54 concurrent: one IP is many real clients
           "authed-user": # valid JWT
-            MINUTE: 12000
+            MINUTE: 1080000 # 18 concurrent
           "established-user": # valid JWT, meets age/edit count criteria
-            MINUTE: 120000
-          "highlimits-user": # valid WT and member of specific global groups
-            MINUTE: 9999999
+            MINUTE: 1080000 # 18 concurrent
+          "highlimits-user": # valid JWT and member of specific global groups
+            MINUTE: 10800000 # no per-actor cap below the 180-concurrent target
           "known-network": # no auth, network under our control (WMCS, WME)
-            MINUTE: 9999999
+            MINUTE: 10800000 # no per-actor cap below the 180-concurrent target
           "approved-bot": # community approved bot, based on jwt auth
-            MINUTE: 9999999
+            MINUTE: 10800000 # no per-actor cap below the 180-concurrent target
           "known-client": # no auth, network associated with a known client
-            MINUTE: 9999999
+            MINUTE: 10800000 # no per-actor cap below the 180-concurrent target
+
+      # Request-based companion to the cost-based WDQS policy. Per-actor limits were
+      # chosen to cap total inbound traffic at the desired number of global concurrent
+      # requests.
+      #
+      # Targeting a cap of 4qps per actor, approximated to 240 requests / minute.
+      # Global ceiling is at 40qps 2400 rpm for known actors.
+      #
+      # NOTE: an actor may spend all 240 requests in the first second of a window. At
+      # observed p95 query time (~14s) that is ~240 queries in flight from a single actor.
+      # TODO: is `MINUTE` the right bucket?
+      "WDQSqps":
+        limits:
+          "*": # catch-all limits
+            MINUTE: 240 # 4 qps
+          "anon": # no auth, not a browser, no good User-Agent, no known IP
+            MINUTE: 240 # 4 qps
+          "unauthed-bot": # no auth, but good User-Agent
+            MINUTE: 240 # 4 qps
+          "anon-browser": # no auth, but looks like a browser
+            MINUTE: 240 # 4 qps
+          "anon-app": # no auth, but looks like our app
+            MINUTE: 240 # 4 qps
+          "anon-cgnat": # Carrier Grade NAT: many clients using a single IP
+            MINUTE: 720 # 12 qps: one IP is many real clients
+          "authed-user": # valid JWT
+            MINUTE: 240 # 4 qps
+          "established-user": # valid JWT, meets age/edit count criteria
+            MINUTE: 240 # 4 qps
+          "highlimits-user": # valid JWT and member of specific global groups
+            MINUTE: 2400 # no per-actor cap below the 40 qps capacity target
+          "known-network": # no auth, network under our control (WMCS, WME)
+            MINUTE: 2400 # no per-actor cap below the 40 qps capacity target
+          "approved-bot": # community approved bot, based on jwt auth
+            MINUTE: 2400 # no per-actor cap below the 40 qps capacity target
+          "known-client": # no auth, network associated with a known client
+            MINUTE: 2400 # no per-actor cap below the 40 qps capacity target
 
   domains:
     - rest-gateway.discovery.wmnet
@@ -1256,7 +1309,7 @@ main_app:
       api_cors_enabled: true     # SPARQL can be called cross-origin from browsers (Query UI)
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      rate_limit_policies: [ "WDQS", "BYPASS" ]
+      rate_limit_policies: [ "WDQS", "WDQSqps" ]
       urls:
         - name: sparql
           in: '/+sparql(.*)'
@@ -1269,7 +1322,7 @@ main_app:
       api_cors_enabled: true
       request_headers_to_remove: ["cookie"]
       response_headers_to_remove: ["set-cookie"]
-      rate_limit_policies: [ "WDQS", "BYPASS" ]
+      rate_limit_policies: [ "WDQS", "WDQSqps" ]
       urls:
         - name: sparql
           in: '/+sparql(.*)'
