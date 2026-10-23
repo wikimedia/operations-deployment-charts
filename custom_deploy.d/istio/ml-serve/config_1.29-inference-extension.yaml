@@ -1,0 +1,12 @@
+# Overlay for config_1.29.yaml: enables the Gateway API Inference Extension in
+# istiod, so InferencePool can be used as an HTTPRoute backend (T436650).
+#
+# Apply on ml-staging-codfw only, together with the base config:
+#   istioctl-1.29.4 install -f ml-serve/config_1.29.yaml -f ml-serve/config_1.29-inference-extension.yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  values:
+    pilot:
+      env:
+        ENABLE_GATEWAY_API_INFERENCE_EXTENSION: "true"

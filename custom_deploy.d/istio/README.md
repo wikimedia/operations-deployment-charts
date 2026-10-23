@@ -73,3 +73,13 @@ kube-env admin ml-serve-eqiad
 # Apply the istio config (where X is the istio version)
 istioctlX apply -f ml-serve/config.yaml
 ```
+
+## ml-serve: Gateway API Inference Extension (staging only)
+
+`ml-serve/config_1.29-inference-extension.yaml` is an overlay, not a full config.
+Apply it after `config_1.29.yaml` on ml-staging-codfw only:
+
+```
+kube-env admin ml-staging-codfw
+istioctl-1.29.4 install -f ml-serve/config_1.29.yaml -f ml-serve/config_1.29-inference-extension.yaml
+```
