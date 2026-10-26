@@ -60,6 +60,7 @@ releases:
       - "values.yaml" # non-env-specific values, in this repository
       - "/etc/helmfile-defaults/private/dse-k8s_services/airflow-dumps/{{ .Environment.Name }}.yaml"
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-airflow3-production.yaml" # airflow3 specific options, here during upgrade
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-dumps"
