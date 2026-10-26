@@ -11,19 +11,40 @@ spec:
       labels:
         {{- include "base.meta.pod_labels" . | indent 8 }}
       annotations:
+        checksum/httpd-site: {{ .Files.Get "files/apache/matomo.conf" | sha256sum }}
+        {{- include "lamp.httpd.annotation" . | nindent 8 }}
         {{- include "base.meta.pod_annotations" . | indent 8 }}
         {{- include "mesh.name.annotations" . | indent 8 }}
     spec:
       {{- if .Values.affinity }}
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
+      {{- $app := include "lamp.phpfpm.container" . | fromYamlArray | first }}
+      securityContext:
+        # Allow the Matomo image's www-data user to populate the shared volume.
+        fsGroup: 33
+      initContainers:
+        - name: copy-matomo-files
+          image: {{ $app.image | quote }}
+          imagePullPolicy: {{ .Values.docker.pull_policy }}
+          # Bypass the application entrypoint and include dotfiles in the copy.
+          command: ["/bin/sh", "-ec"]
+          args:
+            - cp -R /srv/app/. /matomo-files/
+          {{- include "base.helper.resources" .Values.lamp.phpfpm | nindent 10 }}
+          {{- include "base.helper.restrictedSecurityContext" . | nindent 10 }}
+          volumeMounts:
+            - name: matomo-files
+              mountPath: /matomo-files
       containers:
-        {{- include "lamp.httpd.container" . | indent 8 }}
-        ## Add any additional volumes for apache configuration here.
-        ## Indentation level: 10
+        {{- $httpd := include "lamp.httpd.container" . | fromYamlArray | first }}
+        {{- $staticMount := dict "name" "matomo-files" "mountPath" "/srv/app" "readOnly" true }}
+        {{- $_ := set $httpd "volumeMounts" (append ($httpd.volumeMounts | default list) $staticMount) }}
+        {{- $siteMount := dict "name" "matomo-httpd-site" "mountPath" "/etc/apache2/sites-enabled/000-default.conf" "subPath" "matomo.conf" "readOnly" true }}
+        {{- $_ := set $httpd "volumeMounts" (append $httpd.volumeMounts $siteMount) }}
+        {{- toYaml (list $httpd) | nindent 8 }}
         {{- /* Preserve the LAMP container's env and add explicit Secret references,
               as in app.generic.container. Explicit env overrides public envFrom. */}}
-        {{- $app := include "lamp.phpfpm.container" . | fromYamlArray | first }}
         {{- /* Keep Matomo's bundled /srv/app/config files visible. */}}
         {{- $mounts := list }}
         {{- $configVolume := printf "%s-app-config" (include "base.name.release" .) }}
@@ -52,11 +73,14 @@ spec:
         {{- include "mesh.deployment.container" . | indent 8 }}
         {{- include "auth_proxy.httpd_cas.container" . | indent 8 }}
       volumes:
+        - name: matomo-httpd-site
+          configMap:
+            name: {{ template "base.name.release" . }}-httpd-site
+        - name: matomo-files
+          emptyDir: {}
         # httpd custom configuration.
         {{- include "lamp.httpd.volume" . | indent 8 }}
         # Shared unix socket
         {{- include "lamp.common.socket" . | indent 8 }}
         {{- include "mesh.deployment.volume" . | indent 8 }}
         {{- include "auth_proxy.httpd_cas.volume" . | indent 8 }}
-
-
