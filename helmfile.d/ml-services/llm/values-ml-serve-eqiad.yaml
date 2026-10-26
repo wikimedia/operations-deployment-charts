@@ -478,10 +478,10 @@ inference_services:
   tts:
     annotations:
       autoscaling.knative.dev/metric: "concurrency"
-      autoscaling.knative.dev/target: "1"
+      autoscaling.knative.dev/target: "2"
     predictor:
       config:
-        containerConcurrency: 1
+        containerConcurrency: 2
         minReplicas: 1
         maxReplicas: 4
         timeout: 600
