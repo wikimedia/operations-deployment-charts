@@ -4,7 +4,7 @@ resources:
 
 app:
   image: repos/data-engineering/linked-artifact-lambdas/python
-  version: v0.3.0
+  version: v0.4.0
 
   command: ["python3"]
   args: ["-m", "revision_feature_counts.server"]
@@ -32,6 +32,10 @@ config:
     # queued than can be processed in the given timeout limit.
     rfc_max_concurrent_rpcs: 24
 
+    # Must stay under terminationGracePeriodSeconds, 30 by default, or
+    # Kubernetes kills the pod before the running calls finish.
+    rfc_stop_grace_seconds: 10.0
+
     rfc_html_timeout: 60.0
 
     # rely on envoy for retries
@@ -45,7 +49,9 @@ config:
 
     rfc_sitematrix_timeout: 10.0
     rfc_sitematrix_reload_seconds: 86400.0
-    rfc_wiki_project_codes: ["wiki"]
+    # A JSON string on purpose. A YAML list goes through `quote` as
+    # "[wiki test test2]", which the service reads as one project code.
+    rfc_wiki_project_codes: '["wiki","test","test2"]'
 
     # A fault in mwparserfromhtml stops the call, so no artifact with a gap
     # is cached. Set to "false" only while a known fault is repaired.
