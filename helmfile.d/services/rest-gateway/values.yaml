@@ -381,6 +381,7 @@ main_app:
       ingress: true
       timeout: 600s
       csp_enabled: false
+      jwt: allow_missing_or_failed
       urls:
         - name: all
           in: '/(.*)'
