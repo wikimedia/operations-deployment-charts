@@ -6,9 +6,11 @@ callable that receives the extracted response value and returns True/False,
 so you can use eq() for simple equality or write a lambda/function for
 anything more complex.
 
-Add new clusters by appending a (label, url) tuple to CLUSTERS.
+Add new clusters by adding a name: url entry to CLUSTERS. Give a cluster name
+as an argument to test only that cluster.
 """
 
+import argparse
 import json
 import sys
 import urllib.request
@@ -241,13 +243,18 @@ TESTS: list[Test] = [
 
 
 # ---------------------------------------------------------------------------
-# Clusters  —  add new (label, url) entries here
+# Clusters  —  add new name: url entries here
 # ---------------------------------------------------------------------------
 
-CLUSTERS: list[tuple[str, str]] = [
-    ('Staging',    'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v2/evaluate/'),
-    ('Production', 'https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/'),
-]
+# The names match the scap deploy-service environments.
+CLUSTERS: dict[str, str] = {
+    'staging':    'https://wikifunctions.k8s-staging.discovery.wmnet:30443/1/v2/evaluate/',
+    'eqiad':      'https://wikifunctions.svc.eqiad.wmnet:30443/1/v2/evaluate/',
+    'codfw':      'https://wikifunctions.svc.codfw.wmnet:30443/1/v2/evaluate/',
+    'production': 'https://wikifunctions.discovery.wmnet:30443/1/v2/evaluate/',
+}
+
+DEFAULT_CLUSTERS: list[str] = ['staging', 'production']
 
 
 # ---------------------------------------------------------------------------
@@ -310,13 +317,21 @@ def run_test(test: Test, cluster_url: str) -> bool:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        'cluster', nargs='?', choices=CLUSTERS,
+        help=f'cluster to test (default: {", ".join(DEFAULT_CLUSTERS)})',
+    )
+    args = parser.parse_args()
+    cluster_names = [args.cluster] if args.cluster else DEFAULT_CLUSTERS
+
     all_passed = True
-    for i, (cluster_name, cluster_url) in enumerate(CLUSTERS):
+    for i, cluster_name in enumerate(cluster_names):
         if i:
             print()
-        print(f'{WHITE}{cluster_name}{RESET} tests:')
+        print(f'{WHITE}{cluster_name.capitalize()}{RESET} tests:')
         for test in TESTS:
-            if not run_test(test, cluster_url):
+            if not run_test(test, CLUSTERS[cluster_name]):
                 all_passed = False
     return 0 if all_passed else 1
 
