@@ -946,7 +946,7 @@ main_app:
           out: '/w/api.php\1'
         # *** END action API routes ***
     - name: linkrecommendation
-      timeout: 30s
+      timeout: 31s
       cluster: linkrecommendation
       csp_enabled: false
       api_cors_enabled: true
@@ -1259,7 +1259,7 @@ main_app:
     linkrecommendation:
       tls: true
       port: 4006
-      timeout: 30s
+      timeout: 31s
     inference:
       tls: true
       port: 30443
