@@ -106,7 +106,6 @@ namespaces:
       - '*.revscoring-articletopic.wikimedia.org'
       - '*.experimental.wikimedia.org'
       - '*.articletopic-outlink.wikimedia.org'
-      - '*.article-descriptions.wikimedia.org'
       - '*.revertrisk.wikimedia.org'
       - '*.llm.wikimedia.org'
       - '*.logo-detection.wikimedia.org'
@@ -246,32 +245,6 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
-  article-descriptions:
-    deployClusterRole: deploy-kserve
-    deployTLSCertificate: false
-    labels:
-      istio-injection: enabled
-    limitranges:
-      container:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "40Gi"
-          cpu: "16"
-        defaultRequest:
-          memory: "100Mi"
-          cpu: "100m"
-        default:
-          memory: "100Mi"
-          cpu: "100m"
-      pod:
-        min:
-          memory: "100Mi"
-          cpu: "100m"
-        max:
-          memory: "44Gi"
-          cpu: "24"
   article-models:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
