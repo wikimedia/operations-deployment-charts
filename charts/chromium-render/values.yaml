@@ -16,7 +16,7 @@ main_app:
   # Example:
   # command: ["node"]
   # args: ["bin/server.js", "--param1", "arg1"]
-  command: ["node"]
+  command: ["tini", "--", "node"]
   args: ["server.js", "-c", "/etc/chromium-render/config.yaml"]
   # command: ''
   # args: ''
