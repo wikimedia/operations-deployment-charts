@@ -30,7 +30,7 @@ inference_services:
             amd.com/gpu: "1"
             ephemeral-storage: 60Gi
       config:
-        minReplicas: 1
+        minReplicas: 0
         maxReplicas: 1
         # A cold start downloads the model and starts vLLM. It must finish
         # within this timeout.
@@ -129,7 +129,7 @@ inference_services:
             medium: Memory
             sizeLimit: "8Gi"
       config:
-        minReplicas: 1
+        minReplicas: 0
         maxReplicas: 1
         # A cold start downloads the model and starts vLLM. It must finish
         # within this timeout.
