@@ -1,9 +1,0 @@
-{{ include "mesh.configuration.configmap" . }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: datasets-config-base-config-{{ .Release.Name }}
-  {{- include "base.meta.labels" . | indent 2 }}
-data:
-  service-utils.config.yaml: |- {{ include "config.app" . | nindent 4 }}
