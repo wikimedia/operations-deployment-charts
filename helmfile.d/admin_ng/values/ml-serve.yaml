@@ -114,6 +114,7 @@ namespaces:
       - '*.revision-models.wikimedia.org'
       - '*.edit-check.wikimedia.org'
       - '*.revise-tone-task-generator.wikimedia.org'
+      - '*.llm-batch.wikimedia.org'
     labels:
       istio-injection: disabled
   kserve:
@@ -394,6 +395,41 @@ namespaces:
         limits:
           cpu: "250"
           memory: "500Gi"
+  llm-batch:
+    deployClusterRole: deploy-kserve
+    deployTLSCertificate: false
+    labels:
+      istio-injection: enabled
+    limitranges:
+      container:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "128Gi"
+          cpu: "24"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "100Mi"
+          cpu: "100m"
+        max:
+          memory: "132Gi"
+          cpu: "28"
+    resourcequota:
+      pods: {}
+      compute:
+        requests:
+          cpu: "100"
+          memory: "200Gi"
+        limits:
+          cpu: "100"
+          memory: "200Gi"
   edit-check:
     deployClusterRole: deploy-kserve
     deployTLSCertificate: false
