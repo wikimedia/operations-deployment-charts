@@ -40,6 +40,8 @@ smokepy:
     jwt_required_endpoint: "/w/api.php?action=compare&format=json"
 
 main_app:
+  image: envoy-future
+  version: 1.40.1-1
   # enable debug logging in staging
   args: ["-l", "debug"]
   domains:
@@ -397,7 +399,3 @@ nutcracker:
 # Only used by ratelimiter for metrics - envoy uses prometheus native metrics
 monitoring:
   enabled: true
-
-mesh:
-  image_name: envoy-future
-  image_version: 1.40.1-1
