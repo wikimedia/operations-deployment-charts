@@ -18,6 +18,8 @@ Requires the `kserve-llmisvc-crd-minimal` and `kserve-llmisvc-resources` release
 | `LLMInferenceService` | One per `llm_inference_services` entry |
 | `NetworkPolicy` (k8s) | Ingress on the vLLM port |
 | `NetworkPolicy` (Calico) | Egress to `networkpolicy.egress.dst_nets`, when set |
+| `LLMInferenceServiceConfig/kserve-config-llm-scheduler`, `kserve-config-llm-router-route` | Router presets, when `router.enabled` |
+| `NetworkPolicy` (Calico) | Endpoint picker ingress and egress, when `router.enabled` |
 
 It renders no ServiceAccount, Deployment, Service, Gateway, HTTPRoute, VirtualService or
 Ingress. The controller creates the Deployment and Service; the ServiceAccount is the one
@@ -86,11 +88,9 @@ container name — GPUs, tolerations and node pinning go there.
 
 ## Not supported
 
-No `spec.router`, so no Gateway API objects and no external exposure — services are
-reachable in-cluster at `<name>-kserve-workload-svc.<namespace>.svc`.
-
-Never set `spec.router.scheduler`: it requires a GIE v1 `InferencePool` CRD with no
-availability guard, and InferencePool needs Istio >= 1.27 while ml-serve runs 1.24.2.
+`spec.router` only where `router.enabled` is set: it needs the Gateway API and Inference
+Extension CRDs, Istio >= 1.27 with `ENABLE_GATEWAY_API_INFERENCE_EXTENSION`, and a
+Gateway. See [Endpoint picker routing](#endpoint-picker-routing).
 
 No `spec.worker` (multi-node): the upstream worker presets add `IPC_LOCK`, `SYS_RAWIO` and
 `NET_RAW`, which PodSecurity `restricted` forbids.
@@ -113,9 +113,20 @@ header and is never resolved; the gateway is `hosts: ['*']` with a single certif
 and `*.<namespace>.wikimedia.org` is already a SAN on `knative-serving-tls-certificate`.
 So there is no Gateway, LVS, DNS or SAN work, and no Gateway API CRDs are needed.
 
-`spec.router` stays unset. The Gateway API CRDs are not installed on ml-serve, and the
-Inference Extension needs Istio >= 1.27 while ml-serve runs 1.24.2. Never set
-`spec.router.scheduler`: it requires a GIE v1 `InferencePool` with no CRD guard.
+### Endpoint picker routing
+
+With `router.enabled`, a service can set `router: {gateway: {}, route: {}, scheduler: {}}`.
+The controller then creates an InferencePool, an endpoint picker Deployment and an
+HTTPRoute from the presets in `templates/llmisvcconfig-router.yaml`. The HTTPRoute keeps
+the VirtualService's host and paths, so rest-gateway is unaffected; the VirtualService
+is still written, on the Knative gateway.
+
+The endpoint picker runs its default scorers (queue depth, KV-cache utilisation,
+approximate prefix cache). Upstream's tokenizer sidecar is left out: only the
+precise-prefix-cache scorer uses it, and it makes the controller download the model
+into the scheduler pod.
+
+Never set `spec.router` without `router.enabled` — the template fails the render.
 
 ### Paths
 

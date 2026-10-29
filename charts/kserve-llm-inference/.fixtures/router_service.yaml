@@ -1,0 +1,13 @@
+# A service routed through the InferencePool and endpoint picker.
+router:
+  enabled: true
+
+llm_inference_services:
+  llm-example-router:
+    model:
+      uri: s3://wmf-ml-models/llm/example-router/
+    replicas: 2
+    router:
+      gateway: {}
+      route: {}
+      scheduler: {}

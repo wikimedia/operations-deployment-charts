@@ -30,6 +30,20 @@ spec:
     {{- with $svc.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+  {{- with $svc.router }}
+  {{- if not $.Values.router.enabled }}{{ fail (printf "llm_inference_services.%s: router needs router.enabled" $name) }}{{ end }}
+  {{- $router := deepCopy . }}
+  {{- if hasKey $router "route" }}
+  {{- /* The preset cannot template hostnames, so set the VirtualService's host here.
+       The controller merges this over the preset's rules. */}}
+  {{- $host := printf "%s.%s.%s" $name $.Release.Namespace $.Values.routing.domain }}
+  {{- $_ := set $router "route" (mergeOverwrite (dict "http" (dict "spec" (dict "hostnames" (list $host)))) ($router.route | default dict)) }}
+  {{- end }}
+  # Filled in from the kserve-config-llm-scheduler and kserve-config-llm-router-route
+  # presets. See templates/llmisvcconfig-router.yaml.
+  router:
+    {{- toYaml $router | nindent 4 }}
+  {{- end }}
   {{- with $svc.template }}
   # Overlay on the kserve-config-llm-template preset, merged by container name.
   template:

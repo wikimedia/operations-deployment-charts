@@ -40,6 +40,27 @@ routing:
   # service with `timeout:` on its entry.
   timeout: 600s
 
+# Gateway API Inference Extension routing (spec.router). When enabled, the chart renders
+# the kserve-config-llm-scheduler and kserve-config-llm-router-route presets, and a
+# service opts in with `router:` on its entry. Needs the Gateway API and Inference
+# Extension CRDs and an Istio Gateway named by the controller's kserveGateway setting.
+# See templates/llmisvcconfig-router.yaml.
+router:
+  enabled: false
+  endpointPicker:
+    # production-images llm-d/endpoint-picker -- llm-d-router built from source.
+    image: llm-d-endpoint-picker
+    version: 0.9.0-1
+    # The upstream llm-d-router release the image is built from.
+    upstreamVersion: 0.9.0
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
 # Applied to the `main` container of every service unless the service overrides them.
 # Explicit values are required: the namespace LimitRange defaults to 100Mi/100m,
 # which no LLM can start under.
@@ -101,6 +122,12 @@ networkpolicy:
 #       replicas: 1
 #       annotations: {}              # merged over the chart defaults
 #       timeout: 600s                # per-service route timeout override
+#       # Route through the InferencePool and endpoint picker. Requires
+#       # router.enabled; replaces nothing, the VirtualService is still written.
+#       router:
+#         gateway: {}
+#         route: {}
+#         scheduler: {}
 #       # Free-form PodSpec overlay, merged over the preset by container name.
 #       # This is where GPUs, node pinning and vLLM env go.
 #       template:

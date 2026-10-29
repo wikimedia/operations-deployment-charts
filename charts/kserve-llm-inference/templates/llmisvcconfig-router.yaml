@@ -1,0 +1,185 @@
+{{- if and .Values.router.enabled .Values.llm_inference_services }}
+{{- $r := .Values.routing }}
+{{- $epp := .Values.router.endpointPicker }}
+{{- $poolName := "{{ ChildName .ObjectMeta.Name `-inference-pool` }}" }}
+{{- $workloadSvc := "{{ ChildName .ObjectMeta.Name `-kserve-workload-svc` }}" }}
+{{- $openaiPrefix := trimSuffix "/" $r.openaiPrefix }}
+{{/*
+  The WMF router presets, used by any LLMInferenceService that sets spec.router.
+
+  The controller appends `kserve-config-llm-scheduler` when spec.router.scheduler is
+  set and `kserve-config-llm-router-route` when spec.router.route is set
+  (config_merge.go:212-221). Like kserve-config-llm-template, they live in the release
+  namespace, never in `kserve` -- see llmisvcconfig.yaml.
+
+  Scheduler: the endpoint picker only, running its built-in default scorers (queue
+  depth, KV-cache utilisation, approximate prefix cache). Upstream's preset also runs
+  the llm-d-uds-tokenizer sidecar, which only the precise-prefix-cache scorer uses, and
+  whose presence makes the controller download the whole model into the scheduler pod
+  (scheduler.go:423-461). TLS between the gateway, the endpoint picker and vLLM is off
+  (enableLLMInferenceServiceTLS is unset), so upstream's TLS flags and cert mount are
+  dropped too.
+
+  Route: the same contract as templates/virtualservice.yaml -- host
+  <service>.<namespace>.<domain>, /openai/v1/ and /v1/ -- so rest-gateway needs no
+  change. Inference paths go through the InferencePool; everything else under /v1/
+  (e.g. /v1/models, /v1/embeddings) goes straight to the workload Service, as upstream
+  does, because the endpoint picker only parses inference requests.
+*/}}
+---
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceServiceConfig
+metadata:
+  name: kserve-config-llm-scheduler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  router:
+    scheduler:
+      pool:
+        spec:
+          endpointPickerRef:
+            failureMode: FailOpen
+            kind: Service
+            name: {{ "{{ ChildName .ObjectMeta.Name `-epp-service` }}" | quote }}
+            port:
+              number: 9002
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: {{ "{{ .ObjectMeta.Name }}" | quote }}
+              app.kubernetes.io/part-of: llminferenceservice
+              kserve.io/component: workload
+          targetPorts:
+            - number: {{ .Values.monitoring.port }}
+      annotations:
+        # Read by the controller to pick the scheduler config migrations
+        # (scheduler.go:1308). Keep in step with the image version.
+        app.kubernetes.io/version: {{ $epp.upstreamVersion | quote }}
+      template:
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        terminationGracePeriodSeconds: {{ .Values.defaults.terminationGracePeriodSeconds }}
+        containers:
+          - name: main
+            image: {{ printf "%s/%s:%s" .Values.registry $epp.image $epp.version }}
+            imagePullPolicy: IfNotPresent
+            command:
+              - /app/epp
+              - --pool-name
+              - {{ $poolName | quote }}
+              - --pool-namespace
+              - {{ "{{ .ObjectMeta.Namespace }}" | quote }}
+              - --zap-encoder
+              - json
+              - --grpc-port
+              - "9002"
+              - --grpc-health-port
+              - "9003"
+              # Prometheus scrapes from outside the cluster, without a k8s token.
+              - --metrics-endpoint-auth=false
+            ports:
+              - containerPort: 9002
+                name: grpc
+                protocol: TCP
+              - containerPort: 9003
+                name: grpc-health
+                protocol: TCP
+              - containerPort: 9090
+                name: metrics
+                protocol: TCP
+            livenessProbe:
+              grpc:
+                port: 9003
+                service: liveness
+              initialDelaySeconds: 5
+              periodSeconds: 10
+            readinessProbe:
+              grpc:
+                port: 9003
+                service: readiness
+              initialDelaySeconds: 30
+              periodSeconds: 10
+            lifecycle:
+              preStop:
+                exec:
+                  command:
+                    - /bin/sleep
+                    - "15"
+            resources:
+              {{- toYaml $epp.resources | nindent 14 }}
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              privileged: false
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+---
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceServiceConfig
+metadata:
+  name: kserve-config-llm-router-route
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  router:
+    route:
+      http:
+        spec:
+          parentRefs:
+            - group: gateway.networking.k8s.io
+              kind: Gateway
+              name: {{ "{{ .GlobalConfig.IngressGatewayName }}" | quote }}
+              namespace: {{ "{{ .GlobalConfig.IngressGatewayNamespace }}" | quote }}
+          # No hostnames: the CRD validates them as DNS names, so they cannot be
+          # templated here. templates/llminferenceservice.yaml sets them per service.
+          rules:
+            {{- range $prefix := list $openaiPrefix "" }}
+            {{- range $path := list "completions" "chat/completions" "responses" }}
+            - backendRefs:
+                - group: inference.networking.k8s.io
+                  kind: InferencePool
+                  name: {{ $poolName | quote }}
+                  port: {{ $.Values.monitoring.port }}
+              matches:
+                - path:
+                    type: PathPrefix
+                    value: {{ printf "%s/v1/%s" $prefix $path }}
+              {{- if $prefix }}
+              filters:
+                - type: URLRewrite
+                  urlRewrite:
+                    path:
+                      type: ReplacePrefixMatch
+                      replacePrefixMatch: {{ printf "/v1/%s" $path }}
+              {{- end }}
+              timeouts:
+                request: {{ $r.timeout }}
+            {{- end }}
+            - backendRefs:
+                - kind: Service
+                  name: {{ $workloadSvc | quote }}
+                  port: {{ $.Values.monitoring.port }}
+              matches:
+                - path:
+                    type: PathPrefix
+                    value: {{ printf "%s/v1/" $prefix }}
+              {{- if $prefix }}
+              filters:
+                - type: URLRewrite
+                  urlRewrite:
+                    path:
+                      type: ReplacePrefixMatch
+                      replacePrefixMatch: /v1/
+              {{- end }}
+              timeouts:
+                request: {{ $r.timeout }}
+            {{- end }}
+{{- end }}

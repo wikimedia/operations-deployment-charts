@@ -29,6 +29,45 @@ spec:
     - ports:
         - port: {{ .Values.monitoring.port }}
           protocol: TCP
+{{- if .Values.router.enabled }}
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-{{ .Release.Name }}-epp
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" . | nindent 4 }}
+spec:
+  types:
+    - Ingress
+    - Egress
+  # Set by the controller on every endpoint picker pod (scheduler.go:1623).
+  selector: app.kubernetes.io/part-of=="llminferenceservice" && kserve.io/component=="llminferenceservice-router-scheduler"
+  ingress:
+    # ext_proc gRPC from the gateway, and metrics. Port-only, like the workload
+    # policy: the gateway runs in another namespace and Prometheus is off-cluster.
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - 9002
+          - 9090
+  egress:
+    # Watches the InferencePool and its pods.
+    - action: Allow
+      destination:
+        services:
+          name: kubernetes
+          namespace: default
+    # Scrapes vLLM's /metrics on every pod in the pool.
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: app.kubernetes.io/part-of=="llminferenceservice" && kserve.io/component=="workload"
+        ports:
+          - {{ .Values.monitoring.port }}
+{{- end }}
 {{- if and .Values.networkpolicy.egress.enabled .Values.networkpolicy.egress.dst_nets }}
 ---
 apiVersion: crd.projectcalico.org/v1
