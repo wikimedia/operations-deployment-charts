@@ -59,7 +59,7 @@ spec:
       # When adding or removing containers, also update the pod.kubernetes.io/sidecars annotation
       # above.
       {{- include "mediawiki.container" . | indent 8 }}
-      {{- if not $flags.native_sidecars }}
+      {{- if $flags.native_sidecars }}
       initContainers:
       {{- end }}
       {{- include "mesh.deployment.container" . | indent 8 }}
