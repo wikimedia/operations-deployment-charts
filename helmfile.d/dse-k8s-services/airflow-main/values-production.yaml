@@ -44,6 +44,10 @@ config:
     # This GCP service account is scoped to the Google Search Console API, and has no access to any other GCP resources.
     gcs-token-search-console:
       credentials: '{{ .Values.config.private_secrets.gcs_token_search_console | default "" }}'
+    # Phabricator Conduit API token for the dev_metrics_phabricator_interaction_daily DAG.
+    # Consumed by the collect_phabricator_interactions task pod as the PHABRICATOR_TOKEN env var.
+    dev-metrics-phabricator-pipeline:
+      token: '{{ .Values.config.private_secrets.dev_metrics_phabricator_token | default "" }}'
   geoip:
     enabled: true
 
