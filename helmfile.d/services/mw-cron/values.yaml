@@ -14,16 +14,14 @@ main_app:
     memory: ~
 
 mw:
-  helpers:
-    feature_flags:
-      default:
-        native_sidecars: false
   httpd:
     enabled: false
   logging:
     rsyslog: true
   helpers:
     feature_flags:
+      default:
+        native_sidecars: false
       periodic:
         networkpolicy: false
 
