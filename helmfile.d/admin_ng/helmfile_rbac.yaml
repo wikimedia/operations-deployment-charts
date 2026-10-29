@@ -164,6 +164,11 @@ releases:
                 - "llminferenceservices"
                 - "llminferenceserviceconfigs"
               verbs: ["*"]
+            ## Knative keeps the old revision until the new one is ready. If the
+            ## namespace cannot fit both, deployers must delete the old revision.
+            - apiGroups: ["serving.knative.dev"]
+              resources: ["revisions"]
+              verbs: ["delete"]
             {{- if hasKey $.Environment.Values "istio_gateways" }}
             ## Ingress routing for LLMInferenceService. Knative writes the
             ## VirtualService for an InferenceService, but llmisvc has no Knative
