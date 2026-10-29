@@ -1,4 +1,5 @@
 mesh:
+  sidecar: false
   public_port: null
 
 main_app:
@@ -19,6 +20,8 @@ mw:
     feature_flags:
       cli:
         networkpolicy: false
+      default:
+        native_sidecars: false
 
 mwscript:
   enabled: true
