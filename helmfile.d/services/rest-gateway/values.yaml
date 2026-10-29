@@ -1097,10 +1097,6 @@ main_app:
           in: '/+service/lw/inference/(v1/models/langid:predict(.*))'
           out: '/\1'
           to: 'langid.llm.wikimedia.org'
-        - name: articledesc
-          in: '/+service/lw/inference/(v1/models/article-descriptions:predict(.*))'
-          out: '/\1'
-          to: 'article-descriptions.article-descriptions.wikimedia.org'
         - name: reference_need
           in: '/+service/lw/inference/(v1/models/reference-need:predict(.*))'
           out: '/\1'
