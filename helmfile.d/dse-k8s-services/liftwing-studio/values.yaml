@@ -81,19 +81,19 @@ litellm:
       - model_name: qwen3-14b
         litellm_params:
           model: hosted_vllm/llm-qwen3-14b
-          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          api_base: https://inference.svc.eqiad.wmnet:30443/openai/v1
           extra_headers:
             Host: llm-qwen3-14b.llm.wikimedia.org
       - model_name: qwen36-27b
         litellm_params:
           model: hosted_vllm/llm-qwen36-27b
-          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          api_base: https://inference.svc.eqiad.wmnet:30443/openai/v1
           extra_headers:
             Host: llm-qwen36-27b.llm.wikimedia.org
       - model_name: qwen38-27b
         litellm_params:
           model: hosted_vllm/llm-qwen38-27b
-          api_base: https://inference.discovery.wmnet:30443/openai/v1
+          api_base: https://inference.svc.eqiad.wmnet:30443/openai/v1
           extra_headers:
             Host: llm-qwen38-27b.llm.wikimedia.org
     litellm_settings:
@@ -148,10 +148,6 @@ networkpolicy:
     enabled: true
     dst_nets:
     - cidr: 10.2.2.63/32 # inference.svc.eqiad.wmnet
-      ports:
-      - protocol: tcp
-        port: 30443
-    - cidr: 10.2.1.63/32 # inference.svc.codfw.wmnet
       ports:
       - protocol: tcp
         port: 30443

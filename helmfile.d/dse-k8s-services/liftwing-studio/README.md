@@ -19,7 +19,7 @@ cache_text (haproxy + ATS) ──HTTPS to liftwing-studio.discovery.wmnet, SNI h
 └───────────────────────────────┼──────────────────────────────────┼────────────┘
                                 │                                  │ HTTPS, Host: llm-<model>.llm.wikimedia.org
           ┌─────────────────────┼─────────────────┐                ▼
-          ▼                     ▼                 ▼           inference.discovery.wmnet:30443
+          ▼                     ▼                 ▼           inference.svc.eqiad.wmnet:30443
    idp.wikimedia.org   ferretdb :27017     Ceph RBD volume    (ml-serve istio → isvc)
        (OIDC)                │             uploads, images
                              ▼
@@ -62,7 +62,7 @@ LibreChat does not talk to Lift Wing directly. Its one custom endpoint, `Lift Wi
 LiteLLM on `localhost:4000`, which presents a single OpenAI-compatible API with every model behind
 it. LiteLLM exists because each Lift Wing model is a separate inference service selected by Host
 header on a shared gateway: `litellm.config.model_list` maps a model name to
-`https://inference.discovery.wmnet:30443/openai/v1` plus a per-model
+`https://inference.svc.eqiad.wmnet:30443/openai/v1` plus a per-model
 `Host: llm-<model>.llm.wikimedia.org`. LibreChat's endpoint headers are per endpoint rather than
 per model, so without LiteLLM each model would have to appear as a provider of its own.
 
@@ -70,9 +70,9 @@ The two sides must agree: a model is usable only if it is in LiteLLM's `model_li
 `default` list of the endpoint in `app.config`. Both sides authenticate with the same
 `LITELLM_MASTER_KEY`.
 
-The models currently exist only on ml-serve-eqiad, while `inference.discovery.wmnet` is
-active-active. A request resolved to codfw reaches a gateway with no matching isvc and gets a 404
-rather than failing over.
+The models currently exist only on ml-serve-eqiad, so LiteLLM calls the eqiad endpoint directly.
+`inference.discovery.wmnet` is active-active, and a request it resolves to codfw reaches a gateway
+with no matching isvc and gets a 404.
 
 ### Data
 
@@ -125,7 +125,7 @@ database-backed settings layer that can override these values.
 
 ### Network
 
-Egress is restricted by the chart's NetworkPolicy to the two inference VIPs on 30443 and, through
+Egress is restricted by the chart's NetworkPolicy to the eqiad inference VIP on 30443 and, through
 `external_services: {cas: [idp]}`, to the idp hosts. In-cluster traffic, such as LibreChat to
 FerretDB and FerretDB to PostgreSQL, is allowed by the cluster-wide `allow-pod-to-pod` policy on
 dse-k8s, with ingress opened by the FerretDB and cnpg charts.
