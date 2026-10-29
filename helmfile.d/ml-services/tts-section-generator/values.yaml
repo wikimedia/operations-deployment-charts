@@ -26,7 +26,7 @@ config:
     TTS_ISVC_URL: "https://inference.svc.eqiad.wmnet:30443/v1/models/tts:predict"
     TTS_ISVC_HOST: "tts.llm.wikimedia.org"
     TTS_ISVC_VERIFY_TLS: "true"
-    TTS_ISVC_TIMEOUT_S: "1800"
+    TTS_ISVC_TIMEOUT_S: "600"
     # Identity
     TTS_GEN_USER_AGENT: "WMF-ML-TTS-Section-Generator/0.5 (https://phabricator.wikimedia.org/T430536)"
     # NeMo grammar cache (baked at image build; see blubber.yaml build variant)
@@ -92,7 +92,7 @@ service:
 mesh:
   enabled: true
   public_port: 8443
-  upstream_timeout: "1800s"
+  upstream_timeout: "600s"
   telemetry:
     enabled: true
   resources:
