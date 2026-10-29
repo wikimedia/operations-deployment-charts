@@ -20,8 +20,6 @@ mw:
     rsyslog: true
   helpers:
     feature_flags:
-      default:
-        native_sidecars: false
       periodic:
         networkpolicy: false
 
@@ -32,7 +30,6 @@ cache:
 
 mesh:
   enabled: true
-  sidecar: false
   public_port: ~
 
 monitoring:
