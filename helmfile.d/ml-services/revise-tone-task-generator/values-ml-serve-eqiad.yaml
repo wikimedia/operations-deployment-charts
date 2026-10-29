@@ -12,6 +12,15 @@ inference_services:
 
   revise-tone-task-generator:
     predictor:
+      config:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["64G"]
       image: "machinelearning-liftwing-inference-services-revise-tone-task-generator"
       image_version: "2026-08-21-122514-publish"
       custom_env:
