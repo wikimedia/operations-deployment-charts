@@ -7,6 +7,7 @@ inference_services:
         batcher:
           maxBatchSize: 32
           maxLatency: 100
+        affinity: null
       image: "machinelearning-liftwing-inference-services-edit-check"
       image_version: "2026-07-22-133900-publish"
       custom_env:
