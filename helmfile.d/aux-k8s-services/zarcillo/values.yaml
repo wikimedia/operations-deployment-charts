@@ -113,7 +113,11 @@ networkpolicy:
         - protocol: TCP
           port: 443
     # config-master.discovery.wmnet
-    - cidr: 10.64.0.110/32
+    - cidr: 10.64.0.110/32 # eqiad
+      ports:
+        - protocol: TCP
+          port: 443
+    - cidr: 10.192.0.15/32 # codfw
       ports:
         - protocol: TCP
           port: 443
