@@ -172,6 +172,14 @@ inference_services:
       config:
         minReplicas: 3
         maxReplicas: 3
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["64G"]
       image: "machinelearning-liftwing-inference-services-revertrisk-wikidata"
       image_version: "2026-06-26-124615-publish"
       custom_env:
