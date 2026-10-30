@@ -12,7 +12,7 @@ helmDefaults:
 environments:
   ml-serve-eqiad:
     values:
-      - releases: [main]
+      - releases: [main, llmisvc]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   ml-serve-codfw:
@@ -60,6 +60,35 @@ templates:
     needs:
       - llm-batch/service-secrets
 
+  # LLMInferenceService releases. A separate anchor because `default` hardcodes
+  # chart: wmf-stable/kserve-inference.
+  llmisvc: &llmisvc
+    namespace: llm-batch
+    chart: wmf-stable/kserve-llm-inference
+    recreatePods: {{ if (hasKey .Environment.Values "roll_restart") }}{{ eq .Environment.Values.roll_restart "1" }}{{ else }}false{{end}}
+    installedTemplate: '{{`{{ if hasKey .Environment.Values "releases" }}{{ has .Release.Name .Environment.Values.releases }}{{ else }}{{ "no releases defined for this environment" | fail }}{{end}}`}}'
+    missingFileHandler: Warn
+    values:
+      - "/etc/helmfile-defaults/general-{{ .Environment.Name }}.yaml" # general default values, controlled by SRE
+      - "values.yaml" # non-env-specific values, in this repository
+      - "/etc/helmfile-defaults/private/ml-serve_services/llm-batch/{{ .Environment.Name }}.yaml" # prod-specific secrets, controlled by SRE
+      - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
+      - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+    hooks:
+      - name: "log_sal"
+        events: ["presync"]
+        command: "helmfile_log_sal"
+        args:
+          [
+            "{{`{{.HelmfileCommand}}`}}",
+            "[{{ .Environment.Name }}] Ran '{{`{{.HelmfileCommand}}`}}' command on namespace '{{`{{.Release.Namespace}}`}}' for release '{{`{{.Release.Name}}`}}' .",
+          ]
+    needs:
+      - llm-batch/service-secrets
+      # The `kserve` ServiceAccount that carries the Swift credentials is owned by
+      # the `main` release.
+      - llm-batch/main
+
   service_secrets: &service_secrets
     name: service-secrets
     namespace: llm-batch
@@ -72,3 +101,5 @@ releases:
   - <<: *service_secrets
   - name: main
     <<: *default
+  - name: llmisvc
+    <<: *llmisvc
