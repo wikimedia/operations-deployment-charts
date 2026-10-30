@@ -77,7 +77,9 @@ service:
 mesh:
   enabled: true
   public_port: 8443
-  upstream_timeout: "600s"
+  # Long sections synthesize in several isvc requests; the whole /generate-section
+  # call can exceed the 600s default under batch concurrency (T441983).
+  upstream_timeout: "1800s"
   telemetry:
     enabled: true
   resources:
