@@ -80,6 +80,9 @@ mesh:
   # Long sections synthesize in several isvc requests; the whole /generate-section
   # call can exceed the 600s default under batch concurrency (T441983).
   upstream_timeout: "1800s"
+  # Stream-idle timeout (envoy default 300s) cuts off a long section that
+  # streams nothing while synthesizing several isvc requests (T441983).
+  idle_upstream_timeout: "1800s"
   telemetry:
     enabled: true
   resources:
