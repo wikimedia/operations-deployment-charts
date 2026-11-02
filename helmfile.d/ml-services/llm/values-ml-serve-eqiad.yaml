@@ -83,76 +83,27 @@ inference_services:
             ephemeral-storage: 10Gi
       config:
         maxReplicas: 1
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
-
-  jina-embeddings-staging:
-    predictor:
-      image: "machinelearning-liftwing-inference-services-embeddings-transformers"
-      image_version: "2026-07-31-125251-publish"
-      custom_env:
-        - name: MODEL_NAME
-          value: "jina-embeddings-staging"
-        - name: STORAGE_URI
-          value: "s3://wmf-ml-models/jina-embeddings/v1/20260728115813/"
-        - name: MODEL_VERSION
-          value: "jina-embeddings-v5-text-nano-retrieval"
-        - name: DTYPE
-          value: "bfloat16"
-        - name: ATTN_IMPLEMENTATION
-          value: "sdpa"
-        - name: TORCH_BLAS_PREFER_HIPBLASLT
-          value: "0"
-      container:
-        resources:
-          limits:
-            cpu: "1"
-            memory: 4Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 15Gi
-          requests:
-            cpu: "1"
-            memory: 4Gi
-            amd.com/gpu: "1"
-            ephemeral-storage: 10Gi
-      config:
-        maxReplicas: 1
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["24G", "96G", "192G"]
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["24G"]
+              - weight: 50
+                preference:
+                  matchExpressions:
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["96G"]
 
   # policy-violation isvc
   cope-b-a4b:
