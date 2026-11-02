@@ -1,0 +1,88 @@
+{{- with .Values.kserve.llmisvc.gateway }}
+{{- if .create }}
+{{/*
+WMF addition -- the Gateway that LLMInferenceService HTTPRoutes attach to.
+
+Istio's deployment controller turns it into a Deployment and Service named
+<name>-istio in this namespace. It is a separate set of pods from the shared
+istio-ingressgateway, so nothing that routes through knative-ingress-gateway changes.
+
+The ConfigMap is applied by Istio as a strategic merge patch over its generated
+objects (infrastructure.parametersRef):
+  - the namespace enforces PodSecurity `restricted`, and Istio's gateway template only
+    sets a pod seccompProfile from mesh-wide values we do not set;
+  - the default Service type is LoadBalancer, which never gets an address here and
+    leaves the Gateway unprogrammed.
+*/}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-options
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "llm-isvc-resources.labels" $ | nindent 4 }}
+data:
+  deployment: |
+    spec:
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: istio-proxy
+              resources:
+                {{- toYaml .resources | nindent 16 }}
+  service: |
+    spec:
+      type: ClusterIP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "llm-isvc-resources.labels" $ | nindent 4 }}
+spec:
+  gatewayClassName: istio
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+  infrastructure:
+    parametersRef:
+      group: ""
+      kind: ConfigMap
+      name: {{ .name }}-options
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .name }}-calico
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "llm-isvc-resources.labels" $ | nindent 4 }}
+spec:
+  # Ingress only: the allow-pod-to-pod GlobalNetworkPolicy already covers egress to
+  # istiod, the endpoint picker and the model servers.
+  types:
+    - Ingress
+  # Set by Istio on every pod of the generated Deployment.
+  selector: gateway.networking.k8s.io/gateway-name=="{{ .name }}"
+  ingress:
+    # HTTP listener, and Envoy metrics. Port-only: callers are in other namespaces and
+    # Prometheus is off-cluster.
+    - action: Allow
+      protocol: TCP
+      destination:
+        ports:
+          - 80
+          - 15090
+{{- end }}
+{{- end }}

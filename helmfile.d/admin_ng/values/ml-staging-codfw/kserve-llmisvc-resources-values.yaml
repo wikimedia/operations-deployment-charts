@@ -4,3 +4,6 @@
 kserve:
   llmisvc:
     createGIECRDs: true
+    # The Gateway that HTTPRoutes from spec.router.route attach to.
+    gateway:
+      create: true

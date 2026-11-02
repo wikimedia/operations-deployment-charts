@@ -5,6 +5,20 @@ kserve:
     # Safe to leave off: every GIE watch is gated on IsCrdAvailable (controller.go:436-444)
     # and Delete tolerates meta.IsNoMatchError (lifecycle_crud.go:65).
     createGIECRDs: false
+    # WMF addition: the Gateway API Gateway named by the controller's kserveGateway
+    # setting (kserve/kserve-ingress-gateway), used by services with spec.router.route.
+    # Istio deploys a dedicated gateway pod for it in this namespace, separate from the
+    # shared istio-ingressgateway. See templates/gateway.yaml.
+    gateway:
+      create: false
+      name: kserve-ingress-gateway
+      resources:
+        requests:
+          cpu: 500m
+          memory: 256Mi
+        limits:
+          cpu: "2"
+          memory: 1Gi
     controller:
       image: docker-registry.wikimedia.org/kserve-llmisvc-controller
       tag: ''
