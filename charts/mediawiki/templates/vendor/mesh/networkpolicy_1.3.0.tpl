@@ -4,6 +4,7 @@
   {{- range $name := .Values.discovery.listeners }}
     {{- $listener := index $.Values.services_proxy $name }}
     {{- with $listener.upstream }}
+    {{- if .ips }}
 # Network egress to {{ $name }}
 - to:
   {{- range .ips }}
@@ -13,7 +14,21 @@
   ports:
   - protocol: TCP
     port: {{ .port }}
+    {{- end }}
     {{- end }} {{/* end with upstream */}}
+    {{- range $split := $listener.splits }}
+    {{- if $split.ips }}
+# Network egress to {{ $name }}_{{ $split.name }}-split
+- to:
+  {{- range $split.ips }}
+  - ipBlock:
+      cidr: {{ . }}
+  {{- end }}
+  ports:
+  - protocol: TCP
+    port: {{ $split.port }}
+    {{- end }}
+    {{- end }} {{/* end range splits */}}
   {{- end }} {{/* end range listeners */}}
 {{- end }}
 {{- if (.Values.mesh.tracing | default dict).enabled }}
@@ -31,6 +46,8 @@
   ports:
     - protocol: TCP
       port: {{ .Values.mesh.tracing.port | default 4317 }}
+    - protocol: TCP
+      port: {{ .Values.mesh.tracing.app_port | default 4318 }}
 {{- end -}}
 {{- end -}}
 
@@ -40,6 +57,10 @@
 {{- if .Values.mesh.public_port }}
 - port: {{ .Values.mesh.public_port }}
   protocol: TCP
+{{- range .Values.mesh.restricted_listeners }}
+- port: {{ .port }}
+  protocol: TCP
+{{- end }}
 {{- end }}
 {{- if .Values.mesh.telemetry.enabled }}
 - port: {{ .Values.mesh.telemetry.port }}
