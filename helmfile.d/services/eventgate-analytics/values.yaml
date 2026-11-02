@@ -22,10 +22,13 @@ external_services:
 
 main_app:
   name: eventgate-analytics
-  version: v1.35.0
+  version: v1.36.0
   conf:
     transforms:
     - eventgateWikimediaDefaults
+    possible_event_dt_fields:
+    - client_dt
+    - dt
     kafka:
       conf:
         # eventgate-analytics always uses kafka jumbo-eqiad.
