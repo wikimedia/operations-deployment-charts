@@ -42,8 +42,9 @@ spec:
   types:
     - Ingress
     - Egress
-  # Set by the controller on every endpoint picker pod (scheduler.go:1623).
-  selector: app.kubernetes.io/part-of=="llminferenceservice" && kserve.io/component=="llminferenceservice-router-scheduler"
+  # Set by the controller on every endpoint picker pod (SchedulerLabels, scheduler.go:1623).
+  # Note app.kubernetes.io/component, unlike the workload pods' kserve.io/component.
+  selector: app.kubernetes.io/part-of=="llminferenceservice" && app.kubernetes.io/component=="llminferenceservice-router-scheduler"
   ingress:
     # ext_proc gRPC from the gateway, and metrics. Port-only, like the workload
     # policy: the gateway runs in another namespace and Prometheus is off-cluster.
