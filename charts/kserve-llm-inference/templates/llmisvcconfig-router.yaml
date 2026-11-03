@@ -1,9 +1,6 @@
 {{- if and .Values.router.enabled .Values.llm_inference_services }}
-{{- $r := .Values.routing }}
 {{- $epp := .Values.router.endpointPicker }}
 {{- $poolName := "{{ ChildName .ObjectMeta.Name `-inference-pool` }}" }}
-{{- $workloadSvc := "{{ ChildName .ObjectMeta.Name `-kserve-workload-svc` }}" }}
-{{- $openaiPrefix := trimSuffix "/" $r.openaiPrefix }}
 {{/*
   The WMF router presets, used by any LLMInferenceService that sets spec.router.
 
@@ -20,11 +17,8 @@
   (enableLLMInferenceServiceTLS is unset), so upstream's TLS flags and cert mount are
   dropped too.
 
-  Route: the same contract as templates/virtualservice.yaml -- host
-  <service>.<namespace>.<domain>, /openai/v1/ and /v1/ -- so rest-gateway needs no
-  change. Inference paths go through the InferencePool; everything else under /v1/
-  (e.g. /v1/models, /v1/embeddings) goes straight to the workload Service, as upstream
-  does, because the endpoint picker only parses inference requests.
+  Route: only the Gateway parentRefs. The hostnames and rules come from the
+  kserve-llm-inference.routerRoute helper, rendered into each service's spec.
 */}}
 ---
 apiVersion: serving.kserve.io/v1alpha2
@@ -141,48 +135,8 @@ spec:
               kind: Gateway
               name: {{ "{{ .GlobalConfig.IngressGatewayName }}" | quote }}
               namespace: {{ "{{ .GlobalConfig.IngressGatewayNamespace }}" | quote }}
-          # No hostnames: the CRD validates them as DNS names, so they cannot be
-          # templated here. templates/llminferenceservice.yaml sets them per service.
-          rules:
-            {{- range $prefix := list $openaiPrefix "" }}
-            {{- range $path := list "completions" "chat/completions" "responses" }}
-            - backendRefs:
-                - group: inference.networking.k8s.io
-                  kind: InferencePool
-                  name: {{ $poolName | quote }}
-                  port: {{ $.Values.monitoring.port }}
-              matches:
-                - path:
-                    type: PathPrefix
-                    value: {{ printf "%s/v1/%s" $prefix $path }}
-              {{- if $prefix }}
-              filters:
-                - type: URLRewrite
-                  urlRewrite:
-                    path:
-                      type: ReplacePrefixMatch
-                      replacePrefixMatch: {{ printf "/v1/%s" $path }}
-              {{- end }}
-              timeouts:
-                request: {{ $r.timeout }}
-            {{- end }}
-            - backendRefs:
-                - kind: Service
-                  name: {{ $workloadSvc | quote }}
-                  port: {{ $.Values.monitoring.port }}
-              matches:
-                - path:
-                    type: PathPrefix
-                    value: {{ printf "%s/v1/" $prefix }}
-              {{- if $prefix }}
-              filters:
-                - type: URLRewrite
-                  urlRewrite:
-                    path:
-                      type: ReplacePrefixMatch
-                      replacePrefixMatch: /v1/
-              {{- end }}
-              timeouts:
-                request: {{ $r.timeout }}
-            {{- end }}
+          # Hostnames and rules are rendered per service by templates/llminferenceservice.yaml.
+          # They cannot live here: hostnames cannot be templated (the CRD validates them as
+          # DNS names), and any route spec on the service gets the CRD's default rules, which
+          # would replace a preset's rules when the controller merges the service spec last.
 {{- end }}
