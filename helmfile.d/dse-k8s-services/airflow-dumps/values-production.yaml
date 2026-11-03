@@ -19,10 +19,19 @@ ingress:
     - airflow-dumps.wikimedia.org
 
 app: # the webserver
+  version: &base-image-version airflow-3.3.2-py3.11-2026-11-03-131342-88698bdadcc49d1540748393f7cd88e15551e40e@sha256:907c71bfb0ac896c052db76ad32ba456e1d0056f1f015b5fa95354704b821dbc
+  executor_pod_image_version: *base-image-version
   requests:
-    memory: 4Gi
+    memory: 8Gi
   limits:
-    memory: 4Gi
+    memory: 8Gi
+  liveness_probe:
+    failureThreshold: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+  readiness_probe:
+    httpGet:
+      path: /api/v2/monitor/health
 
 scheduler:
   requests:
