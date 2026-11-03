@@ -1,3 +1,7 @@
+## all 1.0.0
+
+- Create meta-module that brings in all mesh submodules
+
 ## service 1.2.2
 
 - Add public_port_app_protocol, to set appProtocol on the TLS service port
