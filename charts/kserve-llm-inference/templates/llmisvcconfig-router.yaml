@@ -77,6 +77,9 @@ spec:
               - "9003"
               # Prometheus scrapes from outside the cluster, without a k8s token.
               - --metrics-endpoint-auth=false
+              # Plaintext ext_proc: the gateway has no DestinationRule telling it to use
+              # TLS, so against the default self-signed TLS server every call is reset.
+              - --secure-serving=false
             ports:
               - containerPort: 9002
                 name: grpc
