@@ -140,11 +140,17 @@ main_app:
       # On low_traffic_jobs it holds shared slots for that time. Concurrency
       # is one less than the enwiki browser sessions (editcheck-headless
       # replicas), so a backlog stays in Kafka.
-      editSuggestionCountsPrecompute:
+      linkedArtifactPrefetch.edit_suggestions_counts:
         enabled: true
         concurrency: 6
         # Failures are mostly overload timeouts, and a retry adds load.
         # 0 is not possible: changeprop then uses its default of 2.
+        retry_limit: 1
+      # T443442: The job above replaces this job. Remove this rule when its
+      # topic has no backlog.
+      editSuggestionCountsPrecompute:
+        enabled: true
+        concurrency: 6
         retry_limit: 1
 
     # Some jobs require partitioning according to MariaDB shards.
