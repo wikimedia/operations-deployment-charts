@@ -56,6 +56,9 @@ spec:
         # Read by the controller to pick the scheduler config migrations
         # (scheduler.go:1308). Keep in step with the image version.
         app.kubernetes.io/version: {{ $epp.upstreamVersion | quote }}
+        # Same as the workload pods: no mesh. An injected sidecar breaks the endpoint
+        # picker's connection to the apiserver.
+        sidecar.istio.io/inject: "false"
       template:
         securityContext:
           runAsNonRoot: true
