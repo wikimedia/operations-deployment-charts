@@ -1,5 +1,9 @@
 {{- range $name, $svc := .Values.llm_inference_services }}
 {{- $r := $.Values.routing }}
+{{- $dest := dict "host" (printf "%s-kserve-workload-svc.%s.svc.cluster.local" $name $.Release.Namespace) "port" $.Values.monitoring.port }}
+{{- if $svc.router }}
+{{- $dest = dict "host" $.Values.router.ingress.service "port" $.Values.router.ingress.port }}
+{{- end }}
 {{/*
   Ingress routing for one LLMInferenceService, at host
   <service>.<namespace>.<domain>.
@@ -19,6 +23,11 @@
   The controller names the workload Service <name>-kserve-workload-svc and gives it the
   container's own port, not 80, so the destination port is monitoring.port rather than a
   second literal that could drift from the preset.
+
+  With `router:` set, the destination is the Gateway API gateway instead, which keeps
+  the Host header and applies the service's HTTPRoute: InferencePool and endpoint
+  picker for inference paths, the workload Service for the rest. This keeps the public
+  path (rest-gateway, LVS, DNS, TLS) unchanged while the router is in use.
 
   Istio merges every VirtualService bound to a gateway, and two claiming one host is
   undefined. `<service>.<namespace>` is the InferenceService convention, so keep
@@ -57,9 +66,9 @@ spec:
       timeout: {{ $svc.timeout | default $r.timeout }}
       route:
         - destination:
-            host: {{ printf "%s-kserve-workload-svc.%s.svc.cluster.local" $name $.Release.Namespace }}
+            host: {{ $dest.host }}
             port:
-              number: {{ $.Values.monitoring.port }}
+              number: {{ $dest.port }}
     # Callers that already speak vLLM's native paths: in-cluster clients, and any
     # future rest-gateway rule that does not add the /openai prefix.
     - name: native
@@ -69,7 +78,7 @@ spec:
       timeout: {{ $svc.timeout | default $r.timeout }}
       route:
         - destination:
-            host: {{ printf "%s-kserve-workload-svc.%s.svc.cluster.local" $name $.Release.Namespace }}
+            host: {{ $dest.host }}
             port:
-              number: {{ $.Values.monitoring.port }}
+              number: {{ $dest.port }}
 {{- end }}

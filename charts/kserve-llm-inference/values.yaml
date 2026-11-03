@@ -47,6 +47,12 @@ routing:
 # See templates/llmisvcconfig-router.yaml.
 router:
   enabled: false
+  # In-cluster Service of the Gateway that spec.router.route attaches to (Istio names it
+  # <gateway>-istio). The VirtualService of a service with `router:` forwards here,
+  # so the public path reaches the endpoint picker. See templates/virtualservice.yaml.
+  ingress:
+    service: kserve-ingress-gateway-istio.kserve.svc.cluster.local
+    port: 80
   endpointPicker:
     # production-images llm-d/endpoint-picker -- llm-d-router built from source.
     image: llm-d-endpoint-picker
