@@ -610,6 +610,13 @@ spec:
   mountPath: {{ $.Values._vars.airflow_service_token_dir }}
 {{- end }}
 {{- end }}
+{{- range $patch_id, $patch_params := $.Values.debug.patch }}
+{{- if $patch_params }}
+- name: {{ template "release.name" $ }}-config
+  mountPath: {{ $patch_params.destination }}
+  subPath: {{ $patch_id }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "app.gitsync.volumes" }}

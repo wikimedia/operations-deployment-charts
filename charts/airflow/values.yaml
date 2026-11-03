@@ -34,6 +34,7 @@ app:
   waitForMigrations: false
   command: ["airflow"]
   args: ["webserver", "--pid" , "/tmp/airflow-webserver.pid"]
+  replicas: ~
   requests:
     cpu: 1000m
     memory: 2Gi
@@ -607,6 +608,7 @@ debug:
   enabled: false
   # Define here any port that you want to expose for debugging purposes
   ports: []
+  patch: {}
 
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)

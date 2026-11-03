@@ -9,7 +9,7 @@ metadata:
 spec:
   selector:
   {{- include "base.meta.selector" . | indent 4 }}
-  replicas: {{ .Values.resources.replicas }}
+  replicas: {{ .Values.app.replicas | default .Values.resources.replicas }}
   template:
     metadata:
       labels:

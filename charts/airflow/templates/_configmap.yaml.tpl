@@ -93,6 +93,12 @@ data:
     {{- end }}
     {{- end }}
 
+  {{- range $patch_id, $patch_params := $.Values.debug.patch }}
+  {{- if $patch_params }}
+  {{ $patch_id }}: |
+    {{- $.Files.Get $patch_params.source | nindent 4 }}
+  {{- end }}
+  {{- end }}
 {{- end }}
 
 {{/*
