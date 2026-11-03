@@ -12,6 +12,12 @@
 #   * Do not set VLLM_ROCM_USE_AITER or an aiter attention backend on gfx90a.
 # ml/amd-vllm022 is built for gfx90a;gfx942, so the image itself is fine.
 
+# Endpoint picker routing (T436650), used by llm-qwen3-14b-fp8. Its route attaches to
+# kserve/kserve-ingress-gateway, reachable in-cluster only; the VirtualService on the
+# knative gateway keeps serving the public path.
+router:
+  enabled: true
+
 llm_inference_services:
   # First llmisvc service. Deliberately the smallest model available, to prove the
   # control plane, the preset, the storage-initializer and the vLLM boot path with
@@ -46,8 +52,13 @@ llm_inference_services:
     model:
       uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
       name: qwen3-14b-fp8
-    replicas: 1
+    # Two replicas, so the endpoint picker has a choice to make.
+    replicas: 2
     timeout: 600s
+    router:
+      gateway: {}
+      route: {}
+      scheduler: {}
     template:
       containers:
         - name: main
