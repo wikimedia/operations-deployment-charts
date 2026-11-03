@@ -1,0 +1,9 @@
+{{ if not (hasSuffix "canary" .Release.Name) }}
+{{ if not .Values.mesh.enabled }}
+  {{- template "app.generic.service" . }}
+{{- end }}
+{{- if .Values.debug.enabled }}
+  {{- template "app.generic.debug_service" . }}
+{{- end }}
+{{ include "mesh.service" . }}
+{{- end }}

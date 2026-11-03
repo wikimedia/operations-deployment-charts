@@ -1,0 +1,13 @@
+chartName: unicorn-web-app
+
+app:
+  image: unicorn-ml
+  version: latest
+
+service:
+  deployment: production
+
+mesh:
+  enabled: true
+  public_port: 4693
+  public_port_app_protocol: grpc
