@@ -645,6 +645,83 @@ llm_inference_services:
                       - "ml-serve1013.eqiad.wmnet"
                       - "ml-serve1014.eqiad.wmnet"
 
+  # Test of the vLLM 0.32 image on MI300X with FP8. Same model, model name and
+  # arguments as llm-qwen38-27b, so the two can be compared. The name has no
+  # "llm-" prefix, so rest-gateway does not route it.
+  qwen38-27b:
+    model:
+      uri: s3://wmf-ml-models/llm/Qwen3.8-27B-FP8/
+      name: llm-qwen38-27b
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          image: docker-registry.discovery.wmnet/ml/amd-vllm032:gfx90agfx942rocm7.2.3pytorch2.13.0flash-attn2.8.3aiter0.1.24.post1vllm0.32.0-1
+          resources:
+            requests:
+              cpu: "16"
+              memory: 32Gi
+              ephemeral-storage: 35Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: 32Gi
+              ephemeral-storage: 40Gi
+              amd.com/gpu: "1"
+          env:
+            # Keep the behavior of the old InferenceService: thinking off by
+            # default, and no tools sent to the model when tool_choice is "none".
+            # The value is word-split by the preset: JSON must have no spaces.
+            # Prefix caching stays off. vLLM enables it by default, but not
+            # for hybrid models like Qwen3.8. When it is on, vLLM 0.22.1 uses
+            # its experimental Mamba "align" mode, which stopped the engine on
+            # clef (EngineDeadError).
+            - name: VLLM_ADDITIONAL_ARGS
+              value: >-
+                --trust-remote-code
+                --language-model-only
+                --skip-mm-profiling
+                --max-model-len 32768
+                --kv-cache-dtype fp8
+                --gpu-memory-utilization 0.85
+                --max-num-seqs 16
+                --max-num-batched-tokens 8192
+                --block-size 64
+                --attention-backend TRITON_ATTN
+                --reasoning-parser qwen3
+                --enable-auto-tool-choice
+                --tool-call-parser qwen3_coder
+                --exclude-tools-when-tool-choice-none
+                --default-chat-template-kwargs {"enable_thinking":false}
+            # Same ROCm settings as the other vLLM services on ml-serve1013/1014.
+            - name: VLLM_ROCM_USE_AITER
+              value: "0"
+            - name: TORCH_BLAS_PREFER_HIPBLASLT
+              value: "1"
+            - name: MAX_JOBS
+              value: "1"
+            - name: AMDGCN_USE_BUFFER_OPS
+              value: "0"
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "mi300x-experiments"
+          effect: "NoSchedule"
+        - key: "dedicated"
+          operator: "Equal"
+          value: "mi300x-experiments"
+          effect: "NoExecute"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "kubernetes.io/hostname"
+                    operator: "In"
+                    values:
+                      - "ml-serve1013.eqiad.wmnet"
+                      - "ml-serve1014.eqiad.wmnet"
+
   llm-gpt-oss-safeguard-20b:
     model:
       uri: s3://wmf-ml-models/llm/gpt-oss-safeguard-20b/
