@@ -146,12 +146,6 @@ main_app:
         # Failures are mostly overload timeouts, and a retry adds load.
         # 0 is not possible: changeprop then uses its default of 2.
         retry_limit: 1
-      # T443442: The job above replaces this job. Remove this rule when its
-      # topic has no backlog.
-      editSuggestionCountsPrecompute:
-        enabled: true
-        concurrency: 6
-        retry_limit: 1
 
     # Some jobs require partitioning according to MariaDB shards.
     partitioned_jobs_config:
