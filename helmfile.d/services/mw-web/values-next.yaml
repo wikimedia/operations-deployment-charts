@@ -18,10 +18,10 @@ resources:
 # flight pulls (e.g., maxSurge = maxUnavailable = 10%) is sufficient.
 # As an alternative or in addition, it may be useful to temporarily increase
 # the deployment timeout value in helmfile.yaml.
-#strategy:
-#  rollingUpdate:
-#    maxSurge: 10%
-#    maxUnavailable: 10%
+strategy:
+  rollingUpdate:
+    maxSurge: 10%
+    maxUnavailable: 10%
 
 mesh:
   public_port: 4454
