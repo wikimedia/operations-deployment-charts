@@ -10,11 +10,11 @@ app:
   args: ["-m", "revision_feature_counts.server"]
 
   requests:
-    cpu: 1.25
-    memory: 1Gi
+    cpu: 0.5
+    memory: 768Mi
   limits:
-    cpu: 2
-    memory: 2Gi
+    cpu: 1
+    memory: 1Gi
 
 config:
   # jsonargparse reads these as YAML.
