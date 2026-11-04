@@ -1,5 +1,5 @@
 app:
-  version: &base-image-version irflow-3.3.2-py3.11-2026-11-04-085408-e2f35447ea725bed18fa40845ddeda388b301085@sha256:d466fbcd33d3d22db15591bd374d84aa3fe09a5001f23d4f3ec9481d5d2938df
+  version: &base-image-version airflow-3.3.2-py3.11-2026-11-04-085408-e2f35447ea725bed18fa40845ddeda388b301085@sha256:d466fbcd33d3d22db15591bd374d84aa3fe09a5001f23d4f3ec9481d5d2938df
   executor_pod_image_version: *base-image-version
   waitForMigrations: true
   args: ["api-server", "--pid" , "/tmp/airflow-webserver.pid"]
