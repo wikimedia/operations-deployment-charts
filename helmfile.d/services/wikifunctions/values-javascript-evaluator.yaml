@@ -29,6 +29,8 @@ config:
     WASMTIME_MEMORY_PAGES: "10000"
     MAX_REQUESTS_PER_ID: "100"
     ORCHESTRATOR_CALLBACK_API_URI: 'http://localhost:6520/1/v1/callback/'
+    # Drop the "request complete" line for each request; metrics count requests.
+    RUST_LOG: 'info,opentelemetry_sdk=off,wf_observability::access_log=off'
 
 # The evaluator's ingress config is peculiar since it is contained in
 # "wikifunctions", that by default is used to create the gateway hosts
