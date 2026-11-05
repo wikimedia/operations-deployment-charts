@@ -35,6 +35,8 @@ namespaces:
     deployTLSCertificate: false
     labels:
       istio-injection: enabled
+  keda:
+    systemNamespace: true
   experimental:
     limitranges:
       container:

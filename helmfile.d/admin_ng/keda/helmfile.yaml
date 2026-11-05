@@ -1,0 +1,25 @@
+# KEDA serves the cluster-wide external metrics API (v1beta1.external.metrics.k8s.io);
+# only one provider can serve it per cluster.
+templates:
+  default: &default
+    chart: wmf-stable/keda
+    namespace: keda
+    missingFileHandler: Warn
+    # installedTemplate is false by default
+    installedTemplate: "{{`{{ if hasKey .Environment.Values \"install_keda\" }}{{ .Environment.Values.install_keda }}{{ else }}{{ false }}{{ end }}`}}"
+
+releases:
+  - name: keda
+    <<: *default
+    {{- $version := .Values.chartVersions | get "wmf-stable/keda" "" }}
+    {{- if $version }}
+    version: {{ $version }}
+    {{- end }}
+    needs:
+      - kube-system/namespaces
+    values:
+      - "values/common.yaml"                                                   # Generic default values for all environments
+      - "values/{{ .Values.cluster_group }}.yaml"                              # Default values for this cluster group
+      - "values/{{ .Environment.Name }}/values.yaml"                           # Environment specific defaults
+      - "keda/values.yaml"                                                     # Release specific overrides
+      - "values/{{ .Environment.Name }}/{{`{{ .Release.Name }}`}}-values.yaml" # Overrides specific to release in environment

@@ -1,0 +1,44 @@
+# Built in https://gitlab.wikimedia.org/repos/data-engineering/keda.
+image:
+  keda:
+    registry: docker-registry.discovery.wmnet
+    repository: repos/data-engineering/keda/keda
+    tag: 2.21.0-2026-11-04-140051
+  metricsApiServer:
+    registry: docker-registry.discovery.wmnet
+    repository: repos/data-engineering/keda/keda-metrics-apiserver
+    tag: 2.21.0-2026-11-04-140051
+  webhooks:
+    registry: docker-registry.discovery.wmnet
+    repository: repos/data-engineering/keda/keda-admission-webhooks
+    tag: 2.21.0-2026-11-04-140051
+
+# Operate only in the namespaces of the services it autoscales: the operator's
+# permissions are bound per namespace instead of cluster-wide.
+watchNamespace: experimental
+
+# Only Deployments are scaled, and the Prometheus scaler needs no credentials: drop the
+# default cluster-wide get on every resource and cluster-wide Secret access.
+rbac:
+  enabledCustomScaledRefKinds: false
+permissions:
+  operator:
+    restrict:
+      secret: true
+
+networkPolicy:
+  enabled: true
+  flavor: calico
+  calico:
+    apiVersion: crd.projectcalico.org/v1
+    operator:
+      extraEgressRules:
+        # prometheus.svc.codfw.wmnet and prometheus.svc.eqiad.wmnet
+        - action: Allow
+          protocol: TCP
+          destination:
+            nets:
+              - 10.2.1.25/32
+              - 10.2.2.25/32
+            ports:
+              - 80
