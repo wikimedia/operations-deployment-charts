@@ -11,7 +11,6 @@ config:
   auth:
     op_ldap_role: airflow-analytics-ops
 
-
 ingress:
   gatewayHosts:
     default: "airflow-dumps"
@@ -19,29 +18,10 @@ ingress:
     - airflow-dumps.wikimedia.org
 
 app: # the webserver
-  version: &base-image-version airflow-3.3.2-py3.11-2026-11-04-085408-e2f35447ea725bed18fa40845ddeda388b301085@sha256:d466fbcd33d3d22db15591bd374d84aa3fe09a5001f23d4f3ec9481d5d2938df
-  executor_pod_image_version: *base-image-version
-  replicas: 2
   requests:
     memory: 8Gi
   limits:
     memory: 8Gi
-  liveness_probe:
-    failureThreshold: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-  readiness_probe:
-    httpGet:
-      path: /api/v2/monitor/health
-
-debug:
-  patch:
-    grid.py:
-      source: files/webserver/grid.py
-      destination: /home/app/.local/lib/python3.11/site-packages/airflow/api_fastapi/core_api/routes/ui/grid.py
-    structure.py:
-      source: files/webserver/structure.py
-      destination: /home/app/.local/lib/python3.11/site-packages/airflow/api_fastapi/core_api/routes/ui/structure.py
 
 scheduler:
   requests:

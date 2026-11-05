@@ -62,5 +62,6 @@ releases:
       - "values-{{ .Environment.Name }}.yaml" # env-specific overrides
       - "values-airflow3-production.yaml" # airflow3 specific options, here during upgrade
       - "values-{{`{{ .Release.Name }}`}}.yaml" # release-specific overrides
+      - "values-production-debug.yaml" # production-only live-debugging
       - environmentName: "{{ .Environment.Name }}"
       - pgServiceName: "postgresql-airflow-dumps"
