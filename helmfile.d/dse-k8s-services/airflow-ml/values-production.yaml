@@ -31,3 +31,15 @@ ingress:
 external_services:
   task-pod:
     thanos-swift: [eqiad, codfw]
+
+# Overrides the shared discovery.listeners (from _airflow_common_) to add the
+# TTS section generator. The list replaces rather than merges, so the shared
+# entries are repeated here; if a listener is added to the shared file, it
+# should be added here too or this instance silently loses it.
+discovery:
+  listeners:
+  - mw-api-int     # to be able to talk to https://meta.wikimedia.org/w/api.php?action=streamsconfig
+  - noc            # to be able to talk to https://noc.wikimedia.org/conf/dblists/xxx
+  - schema         # to be able to talk to https://schema.discovery.wmnet
+  - analytics-web  # to be able to talk to https://analytics.wikimedia.org
+  - tts-section-generator  # to be able to talk to https://tts-section-generator.discovery.wmnet
