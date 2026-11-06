@@ -122,7 +122,7 @@ PROXY_ENGINE_ENGINES = [
     ('wikimedia_thumbor.engine.stl', ['stl']),
 {{- end }}
     ('wikimedia_thumbor.engine.djvu', ['djvu']),
-    ('wikimedia_thumbor.engine.vips', ['tiff', 'png', 'jpg']),
+    ('wikimedia_thumbor.engine.vips', ['tiff', 'png']),
     ('wikimedia_thumbor.engine.tiff', ['tiff']),
     ('wikimedia_thumbor.engine.ghostscript', ['pdf']),
     ('wikimedia_thumbor.engine.gif', ['gif']),
@@ -153,7 +153,6 @@ SUBPROCESS_TIMEOUT = {{ .Values.main_app.subprocess_timeout.timeout }}
 SUBPROCESS_TIMEOUT_KILL_AFTER = {{ .Values.main_app.subprocess_timeout.kill_after }}
 
 VIPS_ENGINE_MIN_PIXELS = 10000000
-VIPS_ENGINE_JPG_ROLLOUT_HEX = ['a']
 
 CHROMA_SUBSAMPLING = '4:2:0'
 QUALITY_LOW = 40
