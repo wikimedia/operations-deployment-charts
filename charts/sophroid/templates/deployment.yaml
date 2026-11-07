@@ -29,6 +29,8 @@ spec:
               path: service.yaml
             - key: listeners.yaml
               path: listeners.yaml
+            - key: resources.yaml
+              path: resources.yaml
 
 {{- define "sophroid.container" }}
 {{- /* This is modified from app.generic.container 1.0.4. */}}
@@ -39,8 +41,9 @@ spec:
   command: [/srv/app/sophroid]
   args:
   - --listeners=/etc/sophroid/listeners.yaml
-  - --services=/etc/sophroid/service.yaml
+  - --services=/etc/sophroid/resources.yaml
   - --port={{ .Values.app.port }}
+  - --kubernetes=true
   {{- range .Values.app.extra_args }}
   - {{ . | quote }}
   {{- end }}
