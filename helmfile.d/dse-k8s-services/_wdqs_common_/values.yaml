@@ -244,17 +244,6 @@ monitoring:
   enabled: true
   named_ports: true # scrape from all ports wth names ending in "-metrics"
 
-affinity:
-  # affinity to bind our backend pod to the wdqs nodes
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-          - key: dedicated
-            operator: In
-            values:
-              - wdqs
-
 # toleration to allow wdqs-backend pods to run on wdqs nodes
 tolerations:
   - key: "dedicated"
