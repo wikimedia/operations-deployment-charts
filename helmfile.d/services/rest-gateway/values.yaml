@@ -1355,6 +1355,7 @@ main_app:
     query-next:
       tls: true
       port: 30443
+      ingress: true
       timeout: 60s
       # TODO(gmodena): interanl/external routes currently point to the same host.
       # Needs update once deployment is finalized.
@@ -1362,6 +1363,7 @@ main_app:
     query-scholarly-next:
       tls: true
       port: 30443
+      ingress: true
       timeout: 60s
       # TODO(gmodena): internal/external routes currently point to the same host.
       # Needs update once deployment is finalized.
