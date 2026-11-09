@@ -2,6 +2,9 @@ config:
   airflow:
     instance_name: dumps
     config:
+      dag_processor:
+        # Airflow 3 reads this key, not the [scheduler] key in the shared values (T402529).
+        min_file_process_interval: 300
       kubernetes_executor:
         worker_pods_creation_batch_size: 32
       core:
