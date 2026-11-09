@@ -1,0 +1,60 @@
+{{- if and .Values.webhooks.enabled .Values.networkPolicy.enabled (eq .Values.networkPolicy.flavor "calico") }}
+apiVersion: {{ .Values.networkPolicy.calico.apiVersion }}
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.webhooks.name }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.additionalAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ .Values.webhooks.name }}
+    name: {{ .Values.webhooks.name }}
+    app.kubernetes.io/name: {{ .Values.webhooks.name }}
+    {{- include "keda.labels" . | indent 4 }}
+spec:
+  selector: app == "{{ .Values.webhooks.name }}"
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from the Kubernetes API server for admission webhooks
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - {{ .Values.webhooks.port | default 9443 }}
+    {{- if .Values.prometheus.webhooks.enabled }}
+    # Allow ingress from any pod in the cluster on the prometheus metrics port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.prometheus.webhooks.port }}
+    {{- end }}
+    {{- if .Values.profiling.webhooks.enabled }}
+    # Allow ingress from any pod in the cluster on the profiling port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.profiling.webhooks.port }}
+    {{- end }}
+    {{- with .Values.networkPolicy.calico.webhooks.extraIngressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    {{- include "keda.calicoEgressRules" . | nindent 4 }}
+    {{- with .Values.networkPolicy.calico.webhooks.extraEgressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

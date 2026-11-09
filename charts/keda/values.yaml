@@ -80,7 +80,7 @@ imagePullSecrets: []
 networkPolicy:
   # -- Enable network policies
   enabled: false
-  # -- Flavor of the network policies (cilium, kubernetes)
+  # -- Flavor of the network policies (cilium, kubernetes, calico)
   flavor: "cilium"
   # -- Allow use of extra egress rules for cilium network policies
   cilium:
@@ -93,6 +93,22 @@ networkPolicy:
     metricsServer:
       extraEgressRules: []
     webhooks:
+      extraEgressRules: []
+  # -- Calico network policies, one per component. Egress to DNS and the Kubernetes API server is always allowed.
+  calico:
+    # -- API version of the Calico NetworkPolicy resources. `projectcalico.org/v3` needs the Calico API server;
+    # use `crd.projectcalico.org/v1` without it.
+    apiVersion: projectcalico.org/v3
+    # -- Allow use of extra ingress and egress rules (Calico rule format) for calico network policies,
+    # e.g. to reach scaler sources or let in a scraper from outside the cluster
+    operator:
+      extraIngressRules: []
+      extraEgressRules: []
+    metricsServer:
+      extraIngressRules: []
+      extraEgressRules: []
+    webhooks:
+      extraIngressRules: []
       extraEgressRules: []
 
 operator:

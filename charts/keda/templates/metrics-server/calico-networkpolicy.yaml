@@ -1,0 +1,66 @@
+{{- if and .Values.metricsServer.enabled .Values.networkPolicy.enabled (eq .Values.networkPolicy.flavor "calico") }}
+apiVersion: {{ .Values.networkPolicy.calico.apiVersion }}
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.operator.name }}-metrics-apiserver
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.additionalAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ .Values.operator.name }}-metrics-apiserver
+    app.kubernetes.io/name: {{ .Values.operator.name }}-metrics-apiserver
+    {{- include "keda.labels" . | indent 4 }}
+spec:
+  selector: app == "{{ .Values.operator.name }}-metrics-apiserver"
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from the Kubernetes API server on the HTTPS metrics API port
+    - action: Allow
+      protocol: TCP
+      source:
+        services:
+          name: kubernetes
+          namespace: default
+      destination:
+        ports:
+          - {{ .Values.service.portHttpsTarget }}
+    {{- if .Values.prometheus.metricServer.enabled }}
+    # Allow ingress from any pod in the cluster on the prometheus metrics port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.prometheus.metricServer.port }}
+    {{- end }}
+    {{- if .Values.profiling.metricsServer.enabled }}
+    # Allow ingress from any pod in the cluster on the profiling port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.profiling.metricsServer.port }}
+    {{- end }}
+    {{- with .Values.networkPolicy.calico.metricsServer.extraIngressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    {{- include "keda.calicoEgressRules" . | nindent 4 }}
+    # Allow egress to the KEDA operator for the gRPC metrics service
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: app == "{{ .Values.operator.name }}"
+        ports:
+          - {{ .Values.operator.metricsServiceTargetPort }}
+    {{- with .Values.networkPolicy.calico.metricsServer.extraEgressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

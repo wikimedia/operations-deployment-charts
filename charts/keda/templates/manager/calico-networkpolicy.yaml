@@ -1,0 +1,58 @@
+{{- if and .Values.networkPolicy.enabled (eq .Values.networkPolicy.flavor "calico") }}
+apiVersion: {{ .Values.networkPolicy.calico.apiVersion }}
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.operator.name }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.additionalAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ .Values.operator.name }}
+    name: {{ .Values.operator.name }}
+    app.kubernetes.io/name: {{ .Values.operator.name }}
+    {{- include "keda.labels" . | indent 4 }}
+spec:
+  selector: app == "{{ .Values.operator.name }}"
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from the KEDA metrics apiserver on the metrics service port (gRPC)
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: app == "{{ .Values.operator.name }}-metrics-apiserver"
+      destination:
+        ports:
+          - {{ .Values.operator.metricsServiceTargetPort }}
+    {{- if .Values.prometheus.operator.enabled }}
+    # Allow ingress from any pod in the cluster on the prometheus metrics port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.prometheus.operator.port }}
+    {{- end }}
+    {{- if .Values.profiling.operator.enabled }}
+    # Allow ingress from any pod in the cluster on the profiling port
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: all()
+      destination:
+        ports:
+          - {{ .Values.profiling.operator.port }}
+    {{- end }}
+    {{- with .Values.networkPolicy.calico.operator.extraIngressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    {{- include "keda.calicoEgressRules" . | nindent 4 }}
+    {{- with .Values.networkPolicy.calico.operator.extraEgressRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
