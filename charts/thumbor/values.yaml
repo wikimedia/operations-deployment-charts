@@ -31,6 +31,8 @@ haproxy:
   version: latest
   port: 4112
   stats_port: 4113
+  # Max concurrent connections haproxy sends to each thumbor worker
+  worker_maxconn: 2
   liveness_probe:
     tcpSocket:
       port: 4112
