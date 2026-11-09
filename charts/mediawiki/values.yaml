@@ -493,6 +493,12 @@ mercurius:
   jobs: []
   brokers: []
   workers: 10
+  # Optional per-job settings, keyed by job name:
+  #   workers: overrides the workers value above for this job
+  #   extra_topics: other job types this job's consumer also reads
+  # Each job runs in its own pod. With main_app requests/limits auto_compute,
+  # the pod is sized from that job's mercurius workers, not php.workers.
+  job_overrides: {}
   # Number of times to retry a failed job
   max_retries: 3
   # First interval for expotential backoff

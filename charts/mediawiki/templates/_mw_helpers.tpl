@@ -119,3 +119,14 @@ k8s-mw{-staging,}-{codfw,eqiad}
 {{- end -}}
 {{- printf "k8s-mw%s-%s" $env $dc -}}
 {{- end -}}
+
+{{/*
+
+Number of mercurius workers for one job: the per-job override if set, else
+mercurius.workers. Call with (dict "root" $ "job" <job name>).
+
+*/}}
+{{- define "mw.mercurius.job_workers" -}}
+{{- $override := index (.root.Values.mercurius.job_overrides | default dict) .job | default dict -}}
+{{- $override.workers | default .root.Values.mercurius.workers -}}
+{{- end -}}

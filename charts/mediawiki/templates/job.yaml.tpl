@@ -141,7 +141,7 @@ spec:
     spec:
       containers:
       {{- $configpath := printf "/etc/mercurius/%s.yaml" $mercurius_job }}
-      {{- include "mediawiki.container" $ | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
+      {{- include "mediawiki.container" (merge (dict "MercuriusJob" $mercurius_job) $) | replace "MERCURIUS_JOB_PLACEHOLDER" $configpath | indent 8 }}
       {{- if $flags.native_sidecars }}
       initContainers:
       {{- end }}

@@ -3,6 +3,10 @@ php:
 mercurius:
   debug: true
   jobs: ["mytestjob1", "mytestjob2"]
+  job_overrides:
+    mytestjob2:
+      workers: 3
+      extra_topics: ["mytestjob1"]
   # use a dummy timestamp to stop test noise where ts changes every run
   dummy_ts: "2024-12-10T17:41:58Z"
   generation: "42"

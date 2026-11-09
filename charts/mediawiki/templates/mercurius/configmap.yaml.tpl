@@ -32,6 +32,7 @@ data:
     {{ dict "id" $release "ts" $ts | toJson }}
   # in future we will create a config for each job - for now share the config
   {{- range $mercurius_job := $.Values.mercurius.jobs }}
+  {{- $override := index ($.Values.mercurius.job_overrides | default dict) $mercurius_job | default dict }}
   {{ $mercurius_job }}.yaml: |-
     release-id: "{{ $release }}"
     release-time: {{ $ts }}
@@ -44,12 +45,15 @@ data:
     {{- with $.Values.mercurius }}
     topics:
       - {{ $.Values.mw.datacenter }}.mediawiki.job.{{ $mercurius_job }}
+    {{- range $topic := $override.extra_topics | default list }}
+      - {{ $.Values.mw.datacenter }}.mediawiki.job.{{ $topic }}
+    {{- end }}
     brokers:
     {{- range $broker := .brokers }}
       - {{ $broker }}
     {{- end }}
     group: mercurius-{{ $.Values.mw.datacenter }}-{{ $mercurius_job }}
-    workers: {{ .workers }}
+    workers: {{ include "mw.mercurius.job_workers" (dict "root" $ "job" $mercurius_job) }}
     command: /bin/bash
     command-args:
       - /usr/bin/mercurius-wrapper

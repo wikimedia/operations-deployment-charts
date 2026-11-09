@@ -1,6 +1,11 @@
 {{define "mediawiki.container"}}
 {{ $release := include "base.name.release" . }}
 {{- $flags := fromJson (include "mw.helpers.feature_flags" . ) -}}
+{{- /* Size resources by the processes the pod runs: php-fpm workers, or one PHP CLI per mercurius worker. */ -}}
+{{- $workers := .Values.php.workers -}}
+{{- with .MercuriusJob -}}
+{{- $workers = include "mw.mercurius.job_workers" (dict "root" $ "job" .) | atoi -}}
+{{- end -}}
 ### The MediaWiki container
 - name: {{ $release }}-app
   image: {{ .Values.docker.registry }}/{{ .Values.main_app.image }}
@@ -161,11 +166,11 @@
       # Minimum 1 whole CPU
       # Multiply the amount of cpu_per_worker (float, unit: cpu, ex: 0.5 is half a CPU per worker)
       # by the number of configured workers + 1 (to take into account the main php-fpm process)
-      cpu: {{ maxf 1 (mulf (add .Values.php.workers 1) .Values.php.cpu_per_worker) }}
+      cpu: {{ maxf 1 (mulf (add $workers 1) .Values.php.cpu_per_worker) }}
       # RAM calculation:
       # Multiply 50% of the amount of memory_per_worker by the number of workers (ignoring the main php-fpm process)
       # Add 50% of the opcache size and the apc size (close to the average real consumption)
-      memory: {{ add (mul .Values.php.workers (div .Values.php.memory_per_worker 2)) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
+      memory: {{ add (mul $workers (div .Values.php.memory_per_worker 2)) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
     {{- else }}
       cpu: {{ .Values.main_app.requests.cpu }}
       memory: {{ .Values.main_app.requests.memory }}
@@ -179,7 +184,7 @@
       # RAM calculation:
       # Multiply the amount of memory_per_worker by the number of workers (ignoring the main php-fpm process)
       # Add 50% of the opcache size and the apc size (close to the average real consumption)
-      memory: {{ add (mul .Values.php.workers .Values.php.memory_per_worker) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
+      memory: {{ add (mul $workers .Values.php.memory_per_worker) (div .Values.php.opcache.size 2) (div .Values.php.apc.size 2) }}Mi
       {{- else if .Values.main_app.limits.memory }}
       memory: {{ .Values.main_app.limits.memory }}
       {{- end }}
