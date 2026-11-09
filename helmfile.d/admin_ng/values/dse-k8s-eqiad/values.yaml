@@ -184,6 +184,55 @@ namespaces:
     deployClusterRole: deploy-airflow
     tlsExtraSANs:
     - airflow-wmde.wikimedia.org
+  # These are the Spark namespaces of the teams that have an Airflow instance.
+  # The name of each namespace is the name of the system user of the team.
+  # The S3 role of the team trusts the spark service account in the namespace.
+  # The analytics and analytics-test namespaces are in ../dse-k8s.yaml.
+  analytics-experiment:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-fr-tech:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-ml:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-platform-eng:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-product:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-research:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-search:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-wikidata:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
+  analytics-wmde:
+    deployClusterRole: deploy-spark-support
+    labels:
+      <<: *analytics-pss-labels
+      istio-injection: disabled
   blunderbuss:
     limitranges:
       container:
