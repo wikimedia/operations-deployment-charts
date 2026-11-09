@@ -4,9 +4,21 @@ image:
   tag: 3.5.8-2026-10-12-204849-6c2709f31a28e7afd6b3995289f2a80aa715942c@sha256:805f81504222596c3773b50c8af4807d34f170cf3695a7de2659b73b941b7405
 
 spark:
+  # The operator creates a service account, RBAC rules and the Spark network
+  # policies in each of these namespaces. Each namespace must exist first.
   jobNamespaces:
   - spark
+  - analytics
+  - analytics-experiment
+  - analytics-fr-tech
+  - analytics-ml
+  - analytics-platform-eng
+  - analytics-product
+  - analytics-research
+  - analytics-search
   - analytics-test
+  - analytics-wikidata
+  - analytics-wmde
 
 certManager:
   enable:
@@ -16,3 +28,4 @@ certManager:
   #   name: discovery
   #   group: cfssl-issuer.wikimedia.org
   #   kind: ClusterIssuer
+
