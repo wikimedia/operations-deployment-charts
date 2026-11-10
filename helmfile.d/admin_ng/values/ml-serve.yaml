@@ -816,6 +816,17 @@ istio:
         - 8081
         # External gRPC port for kserve v2 inference protocol.
         - 50051
+  # Paths denied at the ingressgateway for every Host (AuthorizationPolicy,
+  # DENY). The KServe model-management API (load/unload) is unauthenticated
+  # and must not be reachable through the ingress (T443921).
+  ingress_deny_paths:
+    # REST: /v2/repository/models/<name>/load|unload
+    - /v2/repository*
+    # REST with an encoded slash after /v2: /v2%2Frepository/...
+    - /v2%2F*
+    - /v2%2f*
+    # gRPC: RepositoryModelLoad / RepositoryModelUnload
+    - /inference.GRPCInferenceService/RepositoryModel*
 
 # Measure to deal with https://phabricator.wikimedia.org/T318814
 # By default Kubernetes DNS records have 5s TTL, and in a Service Mesh

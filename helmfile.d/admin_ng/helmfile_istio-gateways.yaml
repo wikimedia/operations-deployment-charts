@@ -152,3 +152,33 @@ releases:
                         "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
                         server_header_transformation: APPEND_IF_ABSENT
 
+  {{- $ingress_deny_paths := .Environment.Values | get "istio.ingress_deny_paths" list }}
+  {{- if $ingress_deny_paths }}
+  # Deny selected paths at the ingressgateway for every Host (T443921).
+  # Istio normalizes the path (pathNormalization: BASE) before evaluating the
+  # policy, so dot-segment traversal ('..', '%2e%2e') cannot bypass it.
+  - name: istio-gateways-authorizationpolicies
+    <<: *default
+    needs:
+      - kube-system/namespaces
+      # This also depends on istio CRDs. But we can't add a dependency here as those are not installed via helmfile.
+    values:
+      - resources:
+          - apiVersion: security.istio.io/v1beta1
+            kind: AuthorizationPolicy
+            metadata:
+              name: ingressgateway-deny-paths
+              namespace: istio-system
+            spec:
+              selector:
+                matchLabels:
+                  istio: ingressgateway
+              action: DENY
+              rules:
+                - to:
+                    - operation:
+                        paths:
+                        {{- range $ingress_deny_paths }}
+                          - {{ . | quote }}
+                        {{- end }}
+  {{- end }}
