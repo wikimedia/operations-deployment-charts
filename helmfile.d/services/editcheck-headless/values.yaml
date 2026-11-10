@@ -11,7 +11,7 @@ app:
   port: 3000
   metricsPort: 9102
   # One browser for each pinned wiki, plus one shared browser for all other
-  # wikis. That is three here. A session runs one check at a time, so the
+  # wikis. That is two here. A session runs one check at a time, so the
   # browser count bounds concurrency, not the cores.
   #
   # These figures are a guess. The pilot exists to measure them (T432286).
@@ -64,7 +64,7 @@ config:
     # Wikis that get a dedicated, pre-warmed session. All other wikis share one
     # on-demand session and serialise behind it. A name that the sitematrix
     # cannot resolve stops the service at startup.
-    MW_WIKIS: testwiki,enwiki
+    MW_WIKIS: enwiki
 
 # Each pod has one browser session for each pinned wiki, and a session runs
 # one check at a time. So the replica count sets the enwiki capacity. Keep the
@@ -74,7 +74,7 @@ config:
 # less likely that two checks wait on one pod.
 # Each pod warms its own browsers, so report the per-pod figures.
 resources:
-  replicas: 7
+  replicas: 14
 
 monitoring:
   enabled: true
