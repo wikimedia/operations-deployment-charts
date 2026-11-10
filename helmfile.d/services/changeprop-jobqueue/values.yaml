@@ -142,7 +142,7 @@ main_app:
       # replicas), so a backlog stays in Kafka.
       linkedArtifactPrefetch.edit_suggestions_counts:
         enabled: true
-        concurrency: 6
+        concurrency: 13
         # Failures are mostly overload timeouts, and a retry adds load.
         # 0 is not possible: changeprop then uses its default of 2.
         retry_limit: 1
