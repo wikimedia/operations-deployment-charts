@@ -333,6 +333,20 @@ main_app:
                 exact: 'compare'
                 ignore_case: true
 
+    # Staging only: rewrite edits v3 per_editor to v4.
+    # Set "all_wikis" as wiki_id value.
+    # The gateway checks this list before the shared routes in values.yaml.
+    # for staging environment.
+    - name: staging-edit-analytics-v3-to-v4
+      cluster: edit-analytics
+      timeout: 5s
+      ingress: true
+      urls:
+        - name: edits_per_editor_v3
+          in: '/+wikimedia.org/v1/metrics/edits/v3/per_editor/([^/]+)/(.+)'
+          out: '/metrics/edits/v4/per_editor/\1/all_wikis/\2'
+      rb_response_headers: true
+
   discovery_endpoints:
     citoid:
       ingress: true
