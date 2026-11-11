@@ -436,25 +436,21 @@ llm_inference_services:
             # MI300X with FP8 models. V1 is removed after vLLM 0.33.
             - name: VLLM_USE_V2_MODEL_RUNNER
               value: "0"
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoSchedule"
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoExecute"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: "kubernetes.io/hostname"
-                    operator: "In"
-                    values:
-                      - "ml-serve1013.eqiad.wmnet"
-                      - "ml-serve1014.eqiad.wmnet"
+                  - key: amd.com/gpu.vram
+                    operator: In
+                    values: ["96G", "24G"]
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: amd.com/gpu.vram
+                    operator: In
+                    values: ["96G"]
 
   llm-qwen36-27b:
     model:
