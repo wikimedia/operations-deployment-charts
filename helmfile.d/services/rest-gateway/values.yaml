@@ -655,6 +655,11 @@ main_app:
         - name: api-spec
           in: '/+wikimedia.org/v1/metrics/edits/api-spec.json'
           out: '/edit-analytics/api-spec.json'
+        # Rewrite v3 per_editor to v4. Insert a fixed wiki_id value ="all_wikis".
+        # Keep this v3 rewrite route before the generic "edits" route.
+        - name: edits_per_editor_v3
+          in: '/+wikimedia.org/v1/metrics/edits/v3/per_editor/([^/]+)/(.+)'
+          out: '/metrics/edits/v4/per_editor/\1/all_wikis/\2'
         - name: edits
           in: '/+wikimedia.org/v1/metrics/edits/(.+)'
           out: '/metrics/edits/\1'
