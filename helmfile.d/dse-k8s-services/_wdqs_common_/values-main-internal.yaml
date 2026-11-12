@@ -15,19 +15,28 @@ mesh:
   certmanager:
     default_host: wdqs2-main-internal
 
+backend:
+  volume:
+    storageClass: topolvm-balanced
+
 qlever:
   config:
     public:
       QLEVER_DBNAME: wikidata_main
-      QLEVER_MAX_MEM: 130G
-      QLEVER_MAX_CACHE: 32G
+      QLEVER_MAX_MEM: 80G
+      QLEVER_MAX_CACHE: 16G
+      # 2x the cores below, per the QLever team's sizing recommendation.
       QLEVER_NUM_QUERIES: 60
+  # Cores are the starting point agreed in T436375.
+  # expected to bed revised once a baseline exists (T431395).
+  # Memory is sized to fit the smallest node in the topolvm-balanced pool,
+  # with extra headroom for sidecars.
   requests:
     cpu: 30
-    memory: 155Gi
+    memory: 96Gi
   limits:
     cpu: 30
-    memory: 155Gi
+    memory: 96Gi
 
 init:
   config:

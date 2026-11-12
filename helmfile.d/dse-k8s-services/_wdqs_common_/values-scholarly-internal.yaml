@@ -5,7 +5,7 @@ proxy:
       EVENTGATE_STREAM: wdqs_internal.sparql_query.v2
       EVENTGATE_GRAPH_NAME: scholarly_articles
       # Matches QLEVER_NUM_QUERIES below.
-      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE: 20
+      QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_CONNECTION_POOL_SIZE: 60
 
 ingress:
   gatewayHosts:
@@ -15,20 +15,28 @@ mesh:
   certmanager:
     default_host: wdqs2-scholarly-internal
 
+backend:
+  volume:
+    storageClass: topolvm-balanced
 
 qlever:
   config:
     public:
       QLEVER_DBNAME: scholarly_articles
-      QLEVER_MAX_MEM: 40G
-      QLEVER_MAX_CACHE: 8G
-      QLEVER_NUM_QUERIES: 20
+      QLEVER_MAX_MEM: 80G
+      QLEVER_MAX_CACHE: 16G
+      # 2x the cores below, per the QLever team's sizing recommendation.
+      QLEVER_NUM_QUERIES: 60
+  # Cores are the starting point agreed in T436375.
+  # expected to bed revised once a baseline exists (T431395).
+  # Memory is sized to fit the smallest node in the topolvm-balanced pool,
+  # with extra headroom for sidecars.
   requests:
-    cpu: 10
-    memory: 60Gi
+    cpu: 30
+    memory: 96Gi
   limits:
-    cpu: 10
-    memory: 60Gi
+    cpu: 30
+    memory: 96Gi
 init:
   config:
     public:
