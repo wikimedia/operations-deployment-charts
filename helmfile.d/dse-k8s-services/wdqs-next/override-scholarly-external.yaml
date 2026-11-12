@@ -20,13 +20,8 @@ mesh:
   certmanager:
     default_host: wdqs2-next-scholarly-external
 
-# Deploy the index from the test bucket to staging, while we gain confidence in the pipeline.
-init:
-  config:
-    public:
-      NEW_INDEX_S3_BUCKET: data-reload-test-bucket
-
 qlever:
+  version: master_2026-10-14T13-13-42Z_064eed2
   config:
     public:
       QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics --set-runtime-parameter service-max-redirects=3 --set-runtime-parameter rebuild-max-concurrent-permutation-pairs=1
