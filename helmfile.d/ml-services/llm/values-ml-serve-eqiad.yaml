@@ -692,6 +692,7 @@ llm_inference_services:
     template:
       containers:
         - name: main
+          image: docker-registry.discovery.wmnet/ml/amd-vllm032:gfx90agfx942rocm7.2.3pytorch2.13.0flash-attn2.8.3aiter0.1.24.post1vllm0.32.0-1
           resources:
             requests:
               cpu: "16"
