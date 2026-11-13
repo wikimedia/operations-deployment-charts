@@ -46,7 +46,7 @@ every pod.
 
 ## The runtime
 
-`ml/amd-vllm022` — ROCm 7.2.0, vLLM 0.22.1, gfx90a and gfx942. The image has no
+`ml/amd-vllm032` — ROCm 7.2.3, vLLM 0.32.0, gfx90a and gfx942. The image has no
 ENTRYPOINT, so the preset supplies the command: `vllm serve /mnt/models`, the OpenAI API
 server, on port 8000.
 

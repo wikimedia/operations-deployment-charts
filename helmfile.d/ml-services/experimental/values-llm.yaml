@@ -10,7 +10,7 @@
 #     serves the block-scaled FP8 checkpoints under s3://wmf-ml-models/llm/ through a
 #     Triton kernel, so they are usable.
 #   * Do not set VLLM_ROCM_USE_AITER or an aiter attention backend on gfx90a.
-# ml/amd-vllm022 is built for gfx90a;gfx942, so the image itself is fine.
+# ml/amd-vllm032 is built for gfx90a;gfx942, so the image itself is fine.
 
 # Endpoint picker routing (T436650), used by llm-qwen3-14b-fp8. Its route attaches to
 # kserve/kserve-ingress-gateway, reachable in-cluster only; the VirtualService on the
@@ -95,7 +95,7 @@ llm_inference_services:
               value: "0"
             - name: TORCH_BLAS_PREFER_HIPBLASLT
               value: "1"
-      # ml-staging2001 is MI100 (gfx908) and the amd-vllm022 image has no gfx908
+      # ml-staging2001 is MI100 (gfx908) and the amd-vllm032 image has no gfx908
       # kernels, so vLLM segfaults there. Pin to the MI210 (gfx90a) node.
       nodeSelector:
         kubernetes.io/hostname: ml-staging2003.codfw.wmnet
