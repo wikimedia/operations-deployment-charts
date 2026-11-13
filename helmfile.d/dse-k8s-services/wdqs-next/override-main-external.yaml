@@ -23,4 +23,5 @@ mesh:
 qlever:
   config:
     public:
-      QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics --set-runtime-parameter service-max-redirects=3 --set-runtime-parameter rebuild-max-concurrent-permutation-pairs=1
+      # Limit the thread count on index rebuilds (see https://github.com/ad-freiburg/qlever/commit/66eae3d62e8b9573b70f76ffd42eaceb5bc8779d)
+      QLEVER_INDEX_REBUILD_MAX_PERMUTATION_PAIRS: 1

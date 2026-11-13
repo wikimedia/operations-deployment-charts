@@ -8,11 +8,13 @@ backend:
     # a new index until backups are rotated) and also 2x persisted delta triples.
     size: 900Gi
 qlever:
-  version: master_2026-10-14T13-13-42Z_064eed2
+  version: v0.10.0-master_2026-11-12T10-32-20Z_3ebdd68
   config:
     public:
       QLEVER_QUERY_TIMEOUT: 60s
-      QLEVER_ADDITIONAL_ARGS: --persist-updates --enable-metrics --set-runtime-parameter service-max-redirects=3
+      QLEVER_SERVICE_MAX_REDIRECTS: 3
+      # No limit on the index rebuild (Qlever default)
+      QLEVER_INDEX_REBUILD_MAX_PERMUTATION_PAIRS: 0
       http_proxy: http://urldownloader.discovery.wmnet:8080
   # Memory sizing (requests/limits memory + QLEVER_MAX_MEM/QLEVER_MAX_CACHE) is
   # set per-release so each dataset fits the wdqs namespace quota
