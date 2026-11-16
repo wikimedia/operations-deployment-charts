@@ -57,7 +57,7 @@
   <!-- <policy domain="system" name="precision" value="6"/> -->
   <!-- <policy domain="system" name="memory-map" value="anonymous"/> -->
   <!-- <policy domain="system" name="max-memory-request" value="256MiB"/> -->
-  <policy domain="resource" name="temporary-path" value="/tmp"/>
+  <policy domain="resource" name="temporary-path" value="/tmp/thumbor"/>
   <policy domain="resource" name="memory" value="{{ regexFind "\\d+" .Values.main_app.limits.memory  | int |  mulf 0.8 }}GiB"/>
   <policy domain="resource" name="map" value="{{ regexFind "\\d+" .Values.main_app.limits.memory  | int |  mulf 0.8 }}GiB"/>
   <policy domain="resource" name="disk" value="4GiB"/>
