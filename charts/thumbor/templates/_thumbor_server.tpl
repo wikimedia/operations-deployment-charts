@@ -92,7 +92,7 @@ HTTP_LOADER_REQUEST_TIMEOUT = 300
 UPLOAD_MAX_SIZE = 1048576 # 1GB
 
 ## Allow each worker to take more than a request at time.
-ENGINE_THREADPOOL_SIZE = 4
+ENGINE_THREADPOOL_SIZE = {{ .Values.main_app.engine_threadpool_size | default 4 }}
 
 ## Enable async engine loading
 ENGINE_LOAD_ASYNC = {{ if .Values.main_app.engine_load_async }}True{{ else }}False{{ end }}

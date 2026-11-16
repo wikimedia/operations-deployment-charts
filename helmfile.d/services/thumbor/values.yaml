@@ -26,13 +26,15 @@ discovery:
 main_app:
   failure_throttling_memcache: "127.0.0.1:11213"
   version: "2026-11-16-141827-production"
-  thumbor_workers: 4
+  thumbor_workers: 1
+  engine_load_async: true
+  engine_threadpool_size: 8
 
   log_level: "error"
 
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
-    cpu: 2
+    cpu: 8
     memory: 7Gi
   # TODO: This is a hack to trick the scheduler into starting more pods than we
   # currently afford. Once we have more kubernetes hosts, we 'll remove
@@ -56,6 +58,7 @@ main_app:
 
 haproxy:
   timeout_queue: 2000
+  worker_maxconn: 16
   version: '3.2.15-1'
   # Try to reduce flapping by not snapping back to Ready immediately
   # when saturation events occur

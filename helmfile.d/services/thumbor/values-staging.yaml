@@ -13,14 +13,12 @@ main_app:
   poolcounter:
     enabled: true
     server: "poolcounter1006.eqiad.wmnet"
-  thumbor_workers: 2
   failure_throttling_memcache: "127.0.0.1:11213"
   log_level: "debug"
   subprocess_timeout:
     enabled: "True"
     timeout: 59
     kill_after: 5
-  engine_load_async: true
 
 cache:
   mcrouter:
@@ -43,6 +41,3 @@ cache:
 # Override defaults in staging
 priorityClassName: ~
 affinity: ~
-
-haproxy:
-  worker_maxconn: 8
