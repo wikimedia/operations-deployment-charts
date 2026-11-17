@@ -36,6 +36,9 @@ app:
     # disable JEMALLOC for testing
     - name: "DISABLE_JEMALLOC"
       value: "true"
+    # T445272
+    - name: "JAVA_TOOL_OPTIONS"
+      value: "-XX:-UseBASE64Intrinsics"
   job:
     allowNonRestoredState: true # required because we are moving away from deprecated kafka connectors T326914
     args: [ "/srv/app/conf/rdf-streaming-updater-config.properties" ]
