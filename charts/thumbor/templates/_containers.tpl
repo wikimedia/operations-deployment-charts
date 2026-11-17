@@ -84,6 +84,8 @@ resources:
       mountPath: /etc/thumbor.d
     - name: imagemagick-config
       mountPath: /etc/imagemagick-thumbor
+    - name: deny-rules
+      mountPath: /etc/thumbor
     {{- if $.Values.main_app.tmp_empty_dir.enabled }}
     - name: tmp-dir
       mountPath: /tmp/

@@ -32,6 +32,20 @@ main_app:
 
   log_level: "error"
 
+  # Originals above these sizes take whole pods down when thumbnailed
+  deny_rules:
+    rules:
+      - {glob: "*.svg", min_bytes: 33554432, reason: "Original too large to thumbnail (SVG over 32 MiB)"}
+      - {glob: "*.stl", min_bytes: 524288000, reason: "Original too large to thumbnail (STL over 500 MiB)"}
+      - {glob: "*.png", min_bytes: 134217728, reason: "Original too large to thumbnail (PNG over 128 MiB)"}
+      - {glob: "*.jpg", min_bytes: 268435456, reason: "Original too large to thumbnail (JPEG over 256 MiB)"}
+      - {glob: "*.jpeg", min_bytes: 268435456, reason: "Original too large to thumbnail (JPEG over 256 MiB)"}
+      - {glob: "*.jpe", min_bytes: 268435456, reason: "Original too large to thumbnail (JPEG over 256 MiB)"}
+      - {glob: "*.tif", min_bytes: 838860800, reason: "Original too large to thumbnail (TIFF over 800 MiB)"}
+      - {glob: "*.tiff", min_bytes: 838860800, reason: "Original too large to thumbnail (TIFF over 800 MiB)"}
+      - {glob: "*.gif", min_bytes: 314572800, reason: "Original too large to thumbnail (GIF over 300 MiB)"}
+      - {glob: "*.webp", min_bytes: 67108864, reason: "Original too large to thumbnail (WebP over 64 MiB)"}
+
   # These limits are per-worker, so multiply these by thumbor_workers
   limits:
     cpu: 8

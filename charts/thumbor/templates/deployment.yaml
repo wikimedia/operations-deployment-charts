@@ -29,6 +29,7 @@ spec:
         checksum/thumbor: {{ include "thumbor_server.config" . | sha256sum }}
         checksum/haproxy: {{ include "haproxy.config" . | sha256sum }}
         checksum/swift: {{ include "swift.config" . | sha256sum }}
+        checksum/deny-rules: {{ toYaml .Values.main_app.deny_rules | sha256sum }}
         {{- include "base.statsd.deployment_annotations" . | indent 8 }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape_by_name: "true"
@@ -58,6 +59,9 @@ spec:
         - name: imagemagick-config
           configMap:
             name: {{ template "base.name.release" . }}-imagemagick-config
+        - name: deny-rules
+          configMap:
+            name: {{ template "base.name.release" . }}-deny-rules
         - name: haproxy-config
           configMap:
             name: {{ template "base.name.release" . }}-haproxy-config

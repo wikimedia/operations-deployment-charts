@@ -64,6 +64,9 @@ main_app:
   image: wikimedia/operations-software-thumbor-plugins
   version: latest
   failure_throttling_memcache: "127.0.0.1:11212"
+  # Mounted as /etc/thumbor/deny-rules.yaml, see the thumbor-plugins README
+  deny_rules:
+    rules: []
 
   log_level: "info"
 

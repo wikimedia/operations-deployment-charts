@@ -1,0 +1,5 @@
+main_app:
+  deny_rules:
+    rules:
+      - {glob: "*.stl", reason: "STL is off"}
+      - {glob: "*.png", min_bytes: 134217728, reason: "Original too large to thumbnail (PNG over 128 MiB)"}
