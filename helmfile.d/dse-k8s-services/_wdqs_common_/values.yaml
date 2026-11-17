@@ -89,12 +89,13 @@ health:
     memory: 1Gi
 
 proxy:
-  version: v0.14.5
+  version: v1.0.0
   config:
     public:
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.discovery.wmnet:8443/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/raw/v0.4/allowlist.json
       QUERY_REWRITER_LABEL_SERVICE_ENABLED: true
+      QUERY_REWRITER_NAMED_SUB_QUERIES_ENABLED: true
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
       QUARKUS_REST_CLIENT_DOWNSTREAM_SPARQL_ENDPOINT_READ_TIMEOUT: 60000
       QUARKUS_HTTP_LIMITS_MAX_FORM_ATTRIBUTE_SIZE: 50k
