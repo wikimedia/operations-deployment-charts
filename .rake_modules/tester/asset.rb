@@ -428,11 +428,11 @@ module Tester
     end
 
     def should_run?
-      !File.exists?(@ignore_file) && super
+      !File.exist?(@ignore_file) && super
     end
 
     def should_test?
-      !File.exists?(@ignore_file) && super
+      !File.exist?(@ignore_file) && super
     end
 
     # Set the asset to have failed.
