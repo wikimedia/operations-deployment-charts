@@ -62,6 +62,8 @@ consumer:
       BATCH_TIMEOUT: 10
       HEAP_SIZE: 2g
       LOG_LEVEL: DEBUG
+      # T445272
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
   metricsPort: 9101
   requests:
     cpu: 2
@@ -74,6 +76,8 @@ health:
   version: v0.0.3
   config:
     public:
+      # T445272
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
       QUARKUS_LOG_CATEGORY__org.wikimedia.wdqs__LEVEL: DEBUG
       # Pool the pod as soon as the index is loaded, without waiting for the
       # consumer to catch up with Kafka lag. The health-monitor has no toggle
@@ -92,6 +96,8 @@ proxy:
   version: v1.0.0
   config:
     public:
+      # T445272
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
       QUARKUS_REST_CLIENT_EVENTGATE_ENDPOINT_URL: http://localhost:6004
       QUERY_REWRITER_FEDERATION_ALLOWLIST_PATH: https://gitlab.discovery.wmnet:8443/repos/wikidata-platform/wdqs/wdqs-federation-allowlist/-/raw/v0.4/allowlist.json
       QUERY_REWRITER_LABEL_SERVICE_ENABLED: true
