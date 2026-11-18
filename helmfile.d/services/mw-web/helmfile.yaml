@@ -107,6 +107,8 @@ releases:
   - name: main
     <<: *default
   - name: next
+    # TODO: T439955 - Temporarily increase timeout to 15m.
+    timeout: 900
     <<: *default
   - name: migration
     <<: *default

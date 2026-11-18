@@ -14,10 +14,11 @@ resources:
 # flight pulls (e.g., maxSurge = maxUnavailable = 10%) is sufficient.
 # As an alternative or in addition, it may be useful to temporarily increase
 # the deployment timeout value in helmfile.yaml.
-#strategy:
-#  rollingUpdate:
-#    maxSurge: 10%
-#    maxUnavailable: 10%
+# TODO: T439955 - Comment out after PHP 8.5 migration is complete.
+strategy:
+  rollingUpdate:
+    maxSurge: 10%
+    maxUnavailable: 10%
 
 # Override local cluster name (defaults to namespace) to disambiguate in
 # tracing and envoy metrics.
