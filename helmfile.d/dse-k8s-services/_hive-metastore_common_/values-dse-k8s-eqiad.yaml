@@ -1,0 +1,13 @@
+app:
+  version: 4.2.1-2026-11-18-153337-786378d7212f1fe9df1c1756f9e6e4b0d40146b9@sha256:fd59c36071a44411b8393bc2402f0fd67dabb17f0f14a47f959cde0b19f3f677
+
+config:
+  public:
+    AWS_REGION: &region dpe
+    AWS_ENDPOINT_URL_STS: &rgw_endpoint https://rgw.eqiad.dpe.anycast.wmnet
+  hadoop:
+    fs.s3a.endpoint.region: *region
+    fs.s3a.endpoint: *rgw_endpoint
+
+external_services:
+  s3: [eqiad-dpe]
