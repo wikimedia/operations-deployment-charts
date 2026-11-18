@@ -31,14 +31,14 @@ mercurius:
     max.poll.interval.ms: "7200000"
   # Bump the generation number whenever updating the pod template, in order to
   # force a new Helm release.
-  generation: 13
+  generation: 14
   # workers *roughly* corresponds to maximum parallel encodes per-job.
   # The prioritized queue keeps a small reserved pool. The normal pool also
   # consumes the prioritized topic, so it picks up that work when idle.
   # TimedMediaHandler claims each transcode atomically, so the second
   # delivery of a prioritized job is a no-op (T444235).
   # Pod CPU and memory are computed from these per-job worker counts.
-  workers: 3
+  workers: 5
   job_overrides:
     webVideoTranscode:
       workers: 13
