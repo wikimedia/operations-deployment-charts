@@ -26,6 +26,7 @@ CHARTS_GLOB = 'charts/**/Chart.yaml'.freeze
 CDRS_GLOB = 'charts/**/.fixtures/crds.yaml'.freeze
 JSON_SCHEMA = 'jsonschema/'.freeze
 LISTENERS_FIXTURE = '.fixtures/service_proxy.yaml'.freeze
+ISTIO_CONFIG_GLOB = 'custom_deploy.d/istio/*/config*.yaml'.freeze
 
 # This returns a base64-encoded value.
 HIERADATA_BASE_URL = 'https://gerrit-replica.wikimedia.org/r/plugins/gitiles/operations/puppet/+/refs/heads/production/hieradata'.freeze
@@ -304,7 +305,7 @@ desc 'Validate istio configuration'
 task :validate_istio_config do
   checked_istioctl_binaries = {}
 
-  FileList.new('custom_deploy.d/istio/*/config*.yaml').each do |config|
+  FileList.new(ISTIO_CONFIG_GLOB).each do |config|
     # We need to determine the istio version from the config file and, if possible,
     # use the corresponding istioctl binary to validate the config.
     tag = begin
@@ -778,9 +779,8 @@ def tasklist_from_changes(changes)
       end
     end
   end
-  # validate_istio_config checks
-  # anything under 'custom_deploy.d/istio/*/config.yaml'
-  intersection = FileList.new('custom_deploy.d/istio/*/config.yaml') & all_changes
+  # validate_istio_config checks for istio configuration files
+  intersection = FileList.new(ISTIO_CONFIG_GLOB) & all_changes
   tasks[:istio] = !intersection.empty?
 
   # TODO: also check heuristically for envoy
