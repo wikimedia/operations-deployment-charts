@@ -8,7 +8,8 @@ resources:
   # NOTE: These numbers are currently identical, since jobrunners are active/passive.
   #replicas: 140
 
-  replicas: 80
+  #replicas: 80
+  replicas: 79  # Scaled to ~ 99% of 80 replicas total (T439955)
 
 mesh:
   image_version: 1.40.1-1
