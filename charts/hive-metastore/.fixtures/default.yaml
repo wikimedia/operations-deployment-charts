@@ -1,0 +1,12 @@
+config:
+  public:
+    AWS_REGION: &region ci
+    AWS_ENDPOINT_URL_STS: &rgw_endpoint https://rgw.ci.dpe.anycast.wmnet
+  hadoop:
+    fs.s3a.endpoint.region: *region
+    fs.s3a.endpoint: *rgw_endpoint
+  metastore:
+    hive.metastore.warehouse.dir: s3a://hive_metastore_ci
+
+external_services:
+  s3: [eqiad-ci]

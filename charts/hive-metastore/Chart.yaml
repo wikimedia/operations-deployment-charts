@@ -1,13 +1,14 @@
 apiVersion: v2
-description: A Helm chart for Kubernetes
+description: A Helm chart to deploy a Hive Metastore to Kubernetes, storing metadata in PG, with hive tables in S3.
 name: hive-metastore
 version: 0.0.1
-home: https://wikitech.wikimedia.org/somepage
-team: team name or team wiki URL
+home: https://wikitech.wikimedia.org/wiki/Data_Platform/Systems/Hive
+team: https://www.mediawiki.org/wiki/Data_Platform_Engineering/Data_Platform_SRE
 maintainers:
-  - name: John Doe
-    email: jdoe@wikimedia.org
+  - name: Balthazar Rouberol
+    email: brouberol@wikimedia.org
 sources:
-  - https://website.org/for/upstream/chart/or/image/definition
+  - https://gitlab.wikimedia.org/repos/data-engineering/hive-metastore/
+  - https://hive.apache.org/docs/latest/admin/adminmanual-metastore-administration/
 keywords:
-  - changeme
+  - hive
