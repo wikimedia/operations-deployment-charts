@@ -1,6 +1,6 @@
 {{ if not (hasSuffix "canary" .Release.Name) }}
 {{ if not .Values.mesh.enabled }}
-  {{- template "app.generic.service" . }}
+  {{- template "app.generic.service.extended" . }}
 {{- end }}
 {{- if .Values.debug.enabled }}
   {{- template "app.generic.debug_service" . }}

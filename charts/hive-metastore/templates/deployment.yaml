@@ -18,7 +18,7 @@ spec:
       {{- toYaml .Values.affinity | nindent 6 }}
       {{- end }}
       containers:
-        {{- include "app.generic.container" . | indent 8 }}
+        {{- include "app.generic.container.extended" . | indent 8 }}
         {{- include "mesh.deployment.container" . | indent 8 }}
       volumes:
         {{- include "app.generic.volume" . | indent 8 }}

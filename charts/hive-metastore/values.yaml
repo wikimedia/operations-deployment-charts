@@ -5,6 +5,9 @@ app:
   image: repos/data-engineering/hive-metastore
   version: latest # we use latest everywhere in the defaults.
   port: &metastore_port 9083  # port exposed as a Service, also used by service-checker.
+  extra_ports:
+  - name: http-iceberg
+    port: &iceberg_rest_port 9001
   # Use command and args below to override the entrypoint. Type is arrays
   # Not necessary unless you want to change the entrypoint defined in the docker image
   # Example:
@@ -22,8 +25,9 @@ app:
     tcpSocket:
       port: *metastore_port
   readiness_probe:
-    tcpSocket:
-      port: *metastore_port
+    httpGet:
+      port: *iceberg_rest_port
+      path: /iceberg/v1/config
   volumes:
   - name: hive-metastore-configuration
     configMap:
@@ -75,6 +79,8 @@ config:
     javax.jdo.option.ConnectionPassword: override_me
     javax.jdo.option.ConnectionURL: override_me
     javax.jdo.option.ConnectionUserName: metastore
+    metastore.catalog.servlet.auth: none
+    metastore.catalog.servlet.port: *iceberg_rest_port
     parquet.compression: SNAPPY
   hadoop:
     fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
