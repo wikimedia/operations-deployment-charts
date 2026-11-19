@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.0.4]
+### Added
+- Use 'latest' image tag for php-fpm to ensure we keep up-to-date. This can be overridden in individual helmfiles if necessary.
+
 ## [0.0.3]
 ### Added
 - Populate a shared volume with bundled Matomo files using an init container and mount it read-only in the httpd-fgi container (needed for hosting static assets until we get on a version of K8s that supports [Image Volumes](https://kubernetes.io/docs/tasks/configure-pod-container/image-volumes/) ).
