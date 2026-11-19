@@ -7,3 +7,24 @@
 {{- end }}
 {{ include "mesh.service" . }}
 {{- end }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+{{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{/* we don't select over the release name, so we also select canaries. */}}
+    app: {{ template "base.name.chart" . }}
+    routed_via: {{ .Release.Name }}
+  ports:
+    - name: {{ .Values.service.port.name }}
+      targetPort: {{ .Values.service.port.targetPort }}
+      port: {{ .Values.service.port.port }}
+    {{- range $port := $.Values.app.extra_ports }}
+    - name: {{ $port.name }}
+      port: {{ $port.port }}
+      targetPort: {{ $port.port }}
+    {{- end }}

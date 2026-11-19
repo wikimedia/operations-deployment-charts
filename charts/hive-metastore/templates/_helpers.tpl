@@ -89,31 +89,24 @@
 {{- end }}
 
 
-{{- define "app.generic.service.extended" }}
----
-apiVersion: v1
-kind: Service
-metadata:
-{{- include "base.meta.metadata" (dict "Root" . ) | indent 2 }}
-spec:
-  type: {{ template "base.helper.serviceType" . }}
-  selector:
-    {{/* we don't select over the release name, so we also select canaries. */}}
-    app: {{ template "base.name.chart" . }}
-    routed_via: {{ .Release.Name }}
-  ports:
-    - name: {{ .Values.service.port.name }}
-      targetPort: {{ .Values.service.port.targetPort }}
-      port: {{ .Values.service.port.port }}
-      {{- if and (eq (include "base.helper.serviceType" .) "NodePort") .Values.service.port.nodePort }}
-      nodePort: {{ .Values.service.port.nodePort }}
-      {{- end }}
-    {{/* start customization */}}
-    {{- range $port := .Values.app.extra_ports }}
-    - name: {{ $port.name }}
-      targetPort: {{ $port.port }}
-      port: {{ $port.port }}
-    {{- end }}
-    {{/* end customization */}}
-
+{{- define "app.generic.networkpolicy_ingress.extended" }}
+{{- if or (not .Values.mesh.enabled) (ne .Values.app.port .Values.mesh.public_port)}}
+- port: {{ .Values.app.port }}
+  protocol: TCP
+{{- end }}
+{{/* start customization */}}
+{{- range $port := .Values.app.extra_ports }}
+- port: {{ $port.port }}
+  protocol: TCP
+{{- end }}
+{{/* end customization */}}
+{{- with .Values.app.metricsPort }}
+- port: {{ . }}
+  protocol: TCP
+{{- end }}
+{{- if .Values.debug.enabled }}
+{{- range .Values.debug.ports }}
+- port: {{ . }}
+  protocol: TCP
+{{- end }}{{- end }}
 {{- end }}
