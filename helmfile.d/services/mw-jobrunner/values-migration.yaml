@@ -3,7 +3,7 @@
 # Incrementally exchange capacity between this and the "main" release in order
 # to actuate the migration.
 resources:
-  replicas: 1  # Scaled to ~ 1% of 80 replicas total (T439955)
+  replicas: 8  # Scaled to ~ 10% of 80 replicas total (T441836)
 
 # During the early phases of a migration when the number of replicas is small,
 # it may be useful to increase maxUnavailable (default: 6%) and / or maxSurge
