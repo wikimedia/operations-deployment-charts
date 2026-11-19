@@ -19,7 +19,7 @@ environments:
   dse-k8s-eqiad:
     values:
       - releases:
-        - production
+        - staging
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
 

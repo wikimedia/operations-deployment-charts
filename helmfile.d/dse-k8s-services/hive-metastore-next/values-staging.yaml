@@ -1,0 +1,7 @@
+config:
+  public:
+    # this corresponds to the analytics-test account id, defined in
+    # https://gerrit.wikimedia.org/r/plugins/gitiles/operations/puppet/+/51b76dbb82bf9025516fe849c8d0fd3c2918e634/hieradata/role/eqiad/ceph/admin.yaml#64
+    AWS_ROLE_ARN: arn:aws:iam::RGW77442553136504853:role/Analytics-TestBucketWriter
+  metastore:
+    javax.jdo.option.ConnectionURL: jdbc:postgresql://postgresql-hive-metastore-next-rw.hive-metastore-next:5432/metastore
