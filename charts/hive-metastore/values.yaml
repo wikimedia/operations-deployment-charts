@@ -125,7 +125,7 @@ cronjobs: {}
 # Allow external traffic to reach this service via a (cluster provided) ingress controller.
 # https://wikitech.wikimedia.org/wiki/Kubernetes/Ingress#Configuration_(for_service_owners)
 ingress:
-  enabled: false
+  enabled: true
   # By default, enabling ingress will switch the charts services from type NodePort to
   # ClusterIP. While that is fine for new services it may not be desired during transition
   # of existing ones from dedicated LVS to Ingress.
@@ -174,7 +174,7 @@ ingress:
 
 # Basic mesh-related data.
 mesh:
-  enabled: false
+  enabled: true
   admin: {port: 1666 }
   image_version: latest
   # http keepalive timeout for incoming requests
