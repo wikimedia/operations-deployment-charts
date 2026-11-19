@@ -10,7 +10,6 @@
 
 {{- define "render_xml_file" -}}
 {{- $Root := .Root }}
-<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
 {{- range $k, $v := .config }}

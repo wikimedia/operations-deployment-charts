@@ -7,7 +7,7 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  hivemetastore-site.xml: |
+  metastore-site.xml: |
     {{- include "render_xml_file" ( dict "config" .Values.config.metastore "Root" $) | nindent 4 }}
 
 ---
@@ -18,5 +18,5 @@ metadata:
   {{- include "base.meta.labels" . | indent 2 }}
   namespace: {{ .Release.Namespace }}
 data:
-  hivemetastore-site.xml: |
+  core-site.xml: |
     {{- include "render_xml_file" ( dict "config" .Values.config.hadoop "Root" $) | nindent 4 }}

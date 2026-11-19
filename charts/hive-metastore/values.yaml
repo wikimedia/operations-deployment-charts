@@ -33,10 +33,10 @@ app:
       name: hive-metastore-hadoop-configuration
   volumeMounts:
     - name: hive-metastore-configuration
-      mountPath: /opt/hive/conf
-      subPath: hivemetastore-site.xml
+      mountPath: /opt/hive/conf/metastore-site.xml
+      subPath: metastore-site.xml
     - name: hive-metastore-hadoop-configuration
-      mountPath: /opt/hadoop/conf
+      mountPath: /opt/hadoop/conf/core-site.xml
       subPath: core-site.xml
     - name: rgw-token
       mountPath: /var/run/secrets/rgw
@@ -67,11 +67,10 @@ config:
     datanucleus.autoStartMechanism: SchemaTable
     datanucleus.fixedDatastore: true
     hive.metastore.disallow.incompatible.col.type.changes: true
-    hive.metastore.sasl.enabled: true
+    hive.metastore.sasl.enabled: false
     hive.metastore.server.max.threads: 500
     hive.metastore.thrift.bind.host: 0.0.0.0
     hive.metastore.uris: thrift://{{ template "base.meta.name" (dict "Root" $) }}:{{ $.Values.app.port }}
-    hive.metastore.warehouse.dir: override_me
     javax.jdo.option.ConnectionDriverName: org.postgresql.Driver
     javax.jdo.option.ConnectionPassword: override_me
     javax.jdo.option.ConnectionURL: override_me
