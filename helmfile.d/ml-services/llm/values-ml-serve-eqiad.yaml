@@ -573,7 +573,6 @@ llm_inference_services:
                 --tool-call-parser qwen3_coder
                 --exclude-tools-when-tool-choice-none
                 --default-chat-template-kwargs {"enable_thinking":false}
-            # Same ROCm settings as the other vLLM services on ml-serve1013/1014.
             - name: VLLM_ROCM_USE_AITER
               value: "0"
             - name: TORCH_BLAS_PREFER_HIPBLASLT
@@ -586,25 +585,14 @@ llm_inference_services:
             # MI300X with FP8 models. V1 is removed after vLLM 0.33.
             - name: VLLM_USE_V2_MODEL_RUNNER
               value: "0"
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoSchedule"
-        - key: "dedicated"
-          operator: "Equal"
-          value: "mi300x-experiments"
-          effect: "NoExecute"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: "kubernetes.io/hostname"
-                    operator: "In"
-                    values:
-                      - "ml-serve1013.eqiad.wmnet"
-                      - "ml-serve1014.eqiad.wmnet"
+                  - key: amd.com/gpu.vram
+                    operator: In
+                    values: ["96G"]
 
   # Test of the vLLM 0.32 image on MI300X with FP8. Same model, model name and
   # arguments as llm-qwen38-27b, so the two can be compared. The name has no
