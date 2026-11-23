@@ -347,6 +347,9 @@ inference_services:
         - name: SH_MIN_CONTEXT_TOKENS
           # Passages shorter than this skip inference and return no highlight; `0` disables
           value: "40"
+        - name: OMP_NUM_THREADS
+          # Limit torch CPU threads to avoid oversubscription on the few pod CPUs
+          value: "1"
       container:
         resources:
           limits:
