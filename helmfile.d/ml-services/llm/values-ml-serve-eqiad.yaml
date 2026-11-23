@@ -324,7 +324,7 @@ inference_services:
   semantic-highlighting-staging:
     predictor:
       image: "machinelearning-liftwing-inference-services-semantic-highlighting"
-      image_version: "2026-09-16-093148-publish"
+      image_version: "2026-11-23-085329-publish"
       custom_env:
         - name: MODEL_NAME
           value: "semantic-highlighting-staging"
@@ -334,7 +334,7 @@ inference_services:
           value: "/mnt/models"
         - name: SH_DTYPE
           # Use default model prediction, bfloat16 does not yield better perfs
-          value: "float32"
+          value: "float16"
         - name: SH_MAX_ANSWER_LEN
           # Max answer span length (in tokens)
           value: "30"
