@@ -333,8 +333,7 @@ inference_services:
         - name: MODEL_PATH
           value: "/mnt/models"
         - name: SH_DTYPE
-          # Use default model prediction, bfloat16 does not yield better perfs
-          value: "float16"
+          value: "float32"
         - name: SH_MAX_ANSWER_LEN
           # Max answer span length (in tokens)
           value: "30"
