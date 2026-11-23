@@ -333,7 +333,13 @@ inference_services:
         - name: MODEL_PATH
           value: "/mnt/models"
         - name: SH_DTYPE
-          value: "float32"
+          value: "float16"
+        # hipBLASLt spends ~0.5 s of CPU per fp16 GEMM on MI300X CPX partitions
+        # (it rejects solutions on every call). Route fp16 GEMMs to rocBLAS.
+        - name: TORCH_BLAS_PREFER_HIPBLASLT  # plain matmuls / bmm
+          value: "0"
+        - name: DISABLE_ADDMM_CUDA_LT  # nn.Linear (matmul + bias)
+          value: "1"
         - name: SH_MAX_ANSWER_LEN
           # Max answer span length (in tokens)
           value: "30"
