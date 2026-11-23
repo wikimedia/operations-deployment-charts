@@ -538,7 +538,7 @@ llm_inference_services:
     model:
       uri: s3://wmf-ml-models/llm/Qwen3.8-27B-FP8/
       name: llm-qwen38-27b
-    replicas: 1
+    replicas: 2
     template:
       containers:
         - name: main
@@ -567,7 +567,7 @@ llm_inference_services:
                 --trust-remote-code
                 --language-model-only
                 --skip-mm-profiling
-                --max-model-len 32768
+                --max-model-len 262144
                 --kv-cache-dtype fp8
                 --gpu-memory-utilization 0.85
                 --max-num-seqs 16
