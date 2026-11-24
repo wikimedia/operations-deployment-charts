@@ -368,6 +368,7 @@ inference_services:
             amd.com/gpu: "1"
             ephemeral-storage: 10Gi
       config:
+        minReplicas: 3
         maxReplicas: 3
         affinity:
           nodeAffinity:
