@@ -15,7 +15,9 @@ spec:
     {{- with $svc.model.name }}
     name: {{ . }}
     {{- end }}
+  {{- if not $svc.autoscaling }}
   replicas: {{ $svc.replicas | default 1 }}
+  {{- end }}
   # Pod-template annotations. These reach the workload pod, not just the CR.
   annotations:
     # llmisvc workloads are not part of the Istio mesh: the model is reached

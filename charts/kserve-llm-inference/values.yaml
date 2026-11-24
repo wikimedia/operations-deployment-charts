@@ -67,6 +67,13 @@ router:
         cpu: "2"
         memory: 2Gi
 
+# Autoscaling with KEDA. A service opts in with `autoscaling:` on its entry. Needs KEDA
+# installed in the cluster (admin_ng). See templates/scaledobject.yaml.
+autoscaling:
+  # Prometheus that KEDA queries for vLLM's metrics, set per cluster, e.g.
+  # http://prometheus.svc.codfw.wmnet/k8s-mlstaging
+  prometheus: ""
+
 # Applied to the `main` container of every service unless the service overrides them.
 # Explicit values are required: the namespace LimitRange defaults to 100Mi/100m,
 # which no LLM can start under.
@@ -125,7 +132,14 @@ networkpolicy:
 #       model:
 #         uri: s3://wmf-ml-models/llm/example/
 #         name: llm-example          # optional; defaults to the entry name
-#       replicas: 1
+#       replicas: 1                  # or autoscaling, not both
+#       # Scale on the average number of requests waiting in vLLM's queue per replica.
+#       # Needs autoscaling.prometheus.
+#       autoscaling:
+#         minReplicas: 1
+#         maxReplicas: 2
+#         targetQueueLength: 1                # optional, default 1
+#         scaleDownStabilizationSeconds: 300  # optional, the HPA default
 #       annotations: {}              # merged over the chart defaults
 #       timeout: 600s                # per-service route timeout override
 #       # Route through the InferencePool and endpoint picker. Requires

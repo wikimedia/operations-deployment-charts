@@ -151,6 +151,21 @@ into the scheduler pod.
 
 Never set `spec.router` without `router.enabled` — the template fails the render.
 
+### Autoscaling
+
+A service can set `autoscaling: {minReplicas, maxReplicas}` instead of `replicas`. The
+chart then renders a KEDA ScaledObject for the `<service>-kserve` Deployment, scaling on
+the average number of requests waiting in vLLM's queue per replica
+(`vllm:num_requests_waiting`), read from `autoscaling.prometheus`. It needs KEDA in the
+cluster (admin_ng `install_keda`).
+
+`spec.replicas` is left unset: the controller only leaves the Deployment's replica count
+alone when it is nil, and would otherwise undo every scaling decision. Setting both
+`replicas` and `autoscaling` fails the render.
+
+A new replica takes minutes to start (model download, load and compile), so this helps
+with sustained load, not short spikes, and only if a GPU is free.
+
 ### Paths
 
 rest-gateway's `liftwing_llm` route group already matches any service named `llm-*` and

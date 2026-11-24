@@ -1,0 +1,41 @@
+{{- range $name, $svc := .Values.llm_inference_services }}
+{{- with $svc.autoscaling }}
+{{- if hasKey $svc "replicas" }}{{ fail (printf "llm_inference_services.%s: set replicas or autoscaling, not both" $name) }}{{ end }}
+{{- if not $.Values.autoscaling.prometheus }}{{ fail (printf "llm_inference_services.%s: autoscaling needs autoscaling.prometheus" $name) }}{{ end }}
+{{- if not (and .minReplicas .maxReplicas) }}{{ fail (printf "llm_inference_services.%s: autoscaling needs minReplicas and maxReplicas" $name) }}{{ end }}
+{{- $deployment := printf "%s-kserve" $name }}
+{{- if gt (len $deployment) 63 }}{{ fail (printf "llm_inference_services.%s: name too long for autoscaling (max %d characters)" $name (sub 63 (len "-kserve"))) }}{{ end }}
+{{- $selector := printf "kubernetes_namespace=%q,app_kubernetes_io_name=%q,kserve_io_component=\"workload\"" $.Release.Namespace $name }}
+---
+# Scales the workload Deployment on the average number of requests waiting in vLLM's
+# queue per replica. spec.replicas is left unset on the LLMInferenceService, so the
+# controller doesn't reset the replica count.
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "kserve-llm-inference.labels" $ | nindent 4 }}
+spec:
+  scaleTargetRef:
+    name: {{ $deployment }}
+  minReplicaCount: {{ .minReplicas }}
+  maxReplicaCount: {{ .maxReplicas }}
+  {{- with .scaleDownStabilizationSeconds }}
+  advanced:
+    horizontalPodAutoscalerConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: {{ . }}
+  {{- end }}
+  triggers:
+    - type: prometheus
+      metricType: AverageValue
+      metadata:
+        serverAddress: {{ $.Values.autoscaling.prometheus }}
+        # Each pod is scraped by two jobs, so take one series per pod before summing.
+        query: sum(max by (kubernetes_pod_name) (vllm:num_requests_waiting{ {{- $selector -}} }))
+        threshold: {{ .targetQueueLength | default 1 | quote }}
+{{- end }}
+{{- end }}
