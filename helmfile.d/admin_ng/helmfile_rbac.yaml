@@ -182,6 +182,12 @@ releases:
               resources: ["virtualservices"]
               verbs: ["*"]
             {{- end }}
+            {{- if hasKey $.Environment.Values "install_keda" }}
+            ## Autoscaling for LLMInferenceService, rendered by charts/kserve-llm-inference.
+            - apiGroups: ["keda.sh"]
+              resources: ["scaledobjects"]
+              verbs: ["*"]
+            {{- end }}
             - apiGroups: ["crd.projectcalico.org"]
               resources: ["networkpolicies"]
               verbs: ["*"]
