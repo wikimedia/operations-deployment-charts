@@ -18,6 +18,11 @@
 router:
   enabled: true
 
+# KEDA autoscaling (T436650), used by llm-qwen3-14b-fp8. The llm release only runs on
+# ml-staging-codfw, so this is the k8s-mlstaging Prometheus.
+autoscaling:
+  prometheus: http://prometheus.svc.codfw.wmnet/k8s-mlstaging
+
 llm_inference_services:
   # First llmisvc service. Deliberately the smallest model available, to prove the
   # control plane, the preset, the storage-initializer and the vLLM boot path with
@@ -52,8 +57,10 @@ llm_inference_services:
     model:
       uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
       name: qwen3-14b-fp8
-    # Two replicas, so the endpoint picker has a choice to make.
-    replicas: 2
+    # 1 to 2 replicas on vLLM's queue. ml-staging2003 has 2 GPUs.
+    autoscaling:
+      minReplicas: 1
+      maxReplicas: 2
     timeout: 600s
     router:
       gateway: {}
