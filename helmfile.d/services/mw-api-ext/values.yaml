@@ -11,7 +11,7 @@ resources:
   #   --query-end "2026-08-31T00:00Z" \
   #   --target-utilization 0.75 --target-quantile 0.95 \
   #   --is-global
-  replicas: 320
+  replicas: 288  # Scaled to 90% of 320 replicas total (T439955)
 
 mesh:
   image_version: 1.40.1-1
