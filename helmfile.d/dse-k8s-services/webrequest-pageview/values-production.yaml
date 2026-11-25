@@ -38,6 +38,11 @@ app:
     # Parallelism == taskManager.replicas * numberOfTaskSlots.
     # Having fewer TMs results in slightly better resource allocation.
     "taskmanager.numberOfTaskSlots": 2
+    # taskManager.resource.cpu is the CPU request. The limit is the
+    # request times this factor, so 4. A taskmanager needs more than
+    # 2 cores to work through a Kafka backlog,
+    # especially on the workers with older CPUs
+    "kubernetes.taskmanager.cpu.limit-factor": 2.0
     # Set the production release specific HA storageDir path.
     # Note: Naming convention is different than in mw-page-content-change-enrich due to swift template in flink chart
     "high-availability.storageDir": "s3://webrequest-pageview.dse-k8s-eqiad/production/high-availability"
