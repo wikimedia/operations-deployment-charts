@@ -12,7 +12,7 @@ helmDefaults:
 environments:
   ml-serve-eqiad:
     values:
-      - releases: [main]
+      - releases: [main, llm]
       - "/etc/helmfile-defaults/clusterinfo-{{ .Environment.Name }}.yaml"
     missingFileHandler: Warn
   ml-serve-codfw:

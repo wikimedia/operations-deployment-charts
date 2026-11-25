@@ -62,3 +62,110 @@ external_services:
   - analytics-query-service-storage-b-codfw
   - analytics-query-service-storage-a-eqiad
   - analytics-query-service-storage-b-eqiad
+
+# LLMInferenceService definitions for the `llm` release (charts/kserve-llm-inference).
+# The `main` release also loads this file and ignores these keys.
+#
+# Hardware note: ml-staging has mixed GPUs, not all MI210:
+#   * ml-staging2001 is MI100 (gfx908). The image below has no gfx908 kernels, so
+#     vLLM segfaults there -- pin GPU llmisvcs to ml-staging2003 with a nodeSelector.
+#   * ml-staging2003 is MI210 (aldebaran, gfx90a). It has no hardware FP8, but vLLM
+#     serves the block-scaled FP8 checkpoints under s3://wmf-ml-models/llm/ through a
+#     Triton kernel, so they are usable.
+#   * Do not set VLLM_ROCM_USE_AITER or an aiter attention backend on gfx90a.
+# ml/amd-vllm032 is built for gfx90a;gfx942, so the image itself is fine.
+
+# Endpoint picker routing (T436650), used by llm-qwen3-14b-fp8. Its route attaches to
+# kserve/kserve-ingress-gateway, reachable in-cluster only; the VirtualService on the
+# knative gateway keeps serving the public path.
+router:
+  enabled: true
+
+# KEDA autoscaling (T436650), used by llm-qwen3-14b-fp8. This file is for
+# ml-staging-codfw, so this is the k8s-mlstaging Prometheus.
+autoscaling:
+  prometheus: http://prometheus.svc.codfw.wmnet/k8s-mlstaging
+
+llm_inference_services:
+  # First llmisvc service. Deliberately the smallest model available, to prove the
+  # control plane, the preset, the storage-initializer and the vLLM boot path with
+  # the fastest possible turnaround.
+  llm-qwen3-embedding:
+    model:
+      uri: s3://wmf-ml-models/qwen3-embedding-0.6b/20251218133542/
+      name: qwen3-embedding-0.6b
+    replicas: 1
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "4"
+              memory: 8Gi
+              ephemeral-storage: 10Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "8"
+              memory: 16Gi
+              ephemeral-storage: 15Gi
+              amd.com/gpu: "1"
+          env:
+            # Conservative for a first run: no aiter, no FP8, modest context.
+            # If vLLM cannot infer the task for this checkpoint, add --task embed.
+            - name: VLLM_ADDITIONAL_ARGS
+              value: "--max-model-len 4096 --gpu-memory-utilization 0.85"
+      # No tolerations or nodeAffinity: nothing else in ml-staging requests a GPU,
+      # and the mi300x taint does not apply to these nodes.
+  llm-qwen3-14b-fp8:
+    model:
+      uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
+      name: qwen3-14b-fp8
+    # 1 to 2 replicas on vLLM's queue. ml-staging2003 has 2 GPUs.
+    autoscaling:
+      minReplicas: 1
+      maxReplicas: 2
+    timeout: 600s
+    router:
+      gateway: {}
+      route: {}
+      scheduler: {}
+    template:
+      containers:
+        - name: main
+          resources:
+            requests:
+              cpu: "8"
+              memory: 24Gi
+              # Deliberately under-requested: the checkpoint is ~15 GiB, but 2003's
+              # ephemeral-storage is over-reserved by other services (~93 GiB of
+              # requests). A low request passes scheduling; the limit still gives the
+              # storage-initializer room to write the checkpoint. Do not "fix" this
+              # back to ~40Gi -- it fails with "Insufficient ephemeral-storage".
+              ephemeral-storage: 2Gi
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: 32Gi
+              ephemeral-storage: 20Gi
+              amd.com/gpu: "1"
+          env:
+            - name: VLLM_ADDITIONAL_ARGS
+              value: >-
+                --max-model-len 16384
+                --kv-cache-dtype fp8
+                --gpu-memory-utilization 0.92
+                --max-num-seqs 32
+                --max-num-batched-tokens 8192
+                --block-size 64
+                --reasoning-parser qwen3
+                --tool-call-parser hermes
+                --enable-auto-tool-choice
+                --attention-backend TRITON_ATTN
+            - name: VLLM_ROCM_USE_AITER
+              value: "0"
+            - name: TORCH_BLAS_PREFER_HIPBLASLT
+              value: "1"
+      # ml-staging2001 is MI100 (gfx908) and the amd-vllm032 image has no gfx908
+      # kernels, so vLLM segfaults there. Pin to the MI210 (gfx90a) node.
+      nodeSelector:
+        kubernetes.io/hostname: ml-staging2003.codfw.wmnet
