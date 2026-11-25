@@ -45,6 +45,7 @@ app:
     "state.backend.type": "rocksdb"
     # Upload only changed SST files on each checkpoint instead of the full state.
     "execution.checkpointing.incremental": "true"
+    "kubernetes.operator.periodic.savepoint.interval": 1h
 
 flink:
   object_store:
