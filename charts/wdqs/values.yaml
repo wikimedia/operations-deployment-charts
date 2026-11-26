@@ -5,6 +5,11 @@ backend:
   volume:
     storageClass: topolvm-performance
     size: 1Mi # dummy value
+    # The StatefulSet persistentVolumeClaimRetentionPolicy. TopoLVM volumes are node-local,
+    # so a kept PVC pins the next pod to its old node.
+    retentionPolicy:
+      whenDeleted: Delete
+      whenScaled: Retain
   security:
     gid: 900 # default runuser as created by blubber
 

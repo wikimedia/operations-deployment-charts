@@ -33,6 +33,10 @@ spec:
         {{- include "app.reindex.container" . | indent 8 }}
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
+  {{- with .Values.backend.volume.retentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   volumeClaimTemplates:
     {{- include "app.backend.pvc" . | indent 4 }}
 
