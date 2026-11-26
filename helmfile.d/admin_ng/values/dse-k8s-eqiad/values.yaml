@@ -42,6 +42,27 @@ namespaces:
     labels:
       <<: *analytics-pss-labels
     deployClusterRole: deploy-airflow
+    limitranges:
+      container:
+        min:
+          memory: "50Mi"
+          cpu: "25m"
+        max:
+          memory: "16Gi"
+          cpu: "8"
+        defaultRequest:
+          memory: "100Mi"
+          cpu: "100m"
+        default:
+          memory: "100Mi"
+          cpu: "100m"
+      pod:
+        min:
+          memory: "50Mi"
+          cpu: "100m"
+        max:
+          memory: "16Gi"
+          cpu: "10"
   airflow-experiment-platform:
     labels:
       <<: *analytics-pss-labels
