@@ -13,14 +13,14 @@ app:
       byte_size: ~
 
   requests:
-    cpu: 7      #8
+    cpu: 5      #8
     memory: 3Gi #4
   limits:
-    cpu: 7      #8 # rate(container_cpu_usage_seconds_total{cluster="syslog", id="/system.slice/system-benthos.slice/benthos@mw_accesslog_metrics.service"}[5m])
+    cpu: 5      #8 # rate(container_cpu_usage_seconds_total{cluster="syslog", id="/system.slice/system-benthos.slice/benthos@mw_accesslog_metrics.service"}[5m])
     memory: 3Gi #4 # container_memory_usage_bytes{cluster="syslog", id="/system.slice/system-benthos.slice/benthos@mw_accesslog_metrics.service"}
 
 resources:
-  replicas: 1
+  replicas: 2
 
 monitoring:
   enabled: true
