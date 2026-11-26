@@ -133,12 +133,12 @@ networkpolicy:
 #         uri: s3://wmf-ml-models/llm/example/
 #         name: llm-example          # optional; defaults to the entry name
 #       replicas: 1                  # or autoscaling, not both
-#       # Scale on the average number of requests waiting in vLLM's queue per replica.
+#       # Scale on the average number of requests (running + waiting) per replica.
 #       # Needs autoscaling.prometheus.
 #       autoscaling:
 #         minReplicas: 1
 #         maxReplicas: 2
-#         targetQueueLength: 1                # optional, default 1
+#         targetRequests: 24                  # below vLLM's --max-num-seqs
 #         scaleDownStabilizationSeconds: 300  # optional, the HPA default
 #       annotations: {}              # merged over the chart defaults
 #       timeout: 600s                # per-service route timeout override

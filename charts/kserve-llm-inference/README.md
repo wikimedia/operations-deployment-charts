@@ -155,9 +155,13 @@ Never set `spec.router` without `router.enabled` — the template fails the rend
 
 A service can set `autoscaling: {minReplicas, maxReplicas}` instead of `replicas`. The
 chart then renders a KEDA ScaledObject for the `<service>-kserve` Deployment, scaling on
-the average number of requests waiting in vLLM's queue per replica
-(`vllm:num_requests_waiting`), read from `autoscaling.prometheus`. It needs KEDA in the
-cluster (admin_ng `install_keda`).
+the average number of requests per replica, running plus waiting
+(`vllm:num_requests_running` + `vllm:num_requests_waiting`), read from
+`autoscaling.prometheus`. It needs KEDA in the cluster (admin_ng `install_keda`).
+
+Set `targetRequests` below vLLM's `--max-num-seqs`, for example 24 for 32, so a new
+replica starts before the queue grows. Do not scale on the queue alone: when all
+replicas are full, few requests wait, and the HPA removes a busy replica.
 
 `spec.replicas` is left unset: the controller only leaves the Deployment's replica count
 alone when it is nil, and would otherwise undo every scaling decision. Setting both

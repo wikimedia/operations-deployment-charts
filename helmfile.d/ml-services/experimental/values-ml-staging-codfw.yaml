@@ -120,10 +120,12 @@ llm_inference_services:
     model:
       uri: s3://wmf-ml-models/llm/qwen3-14b-fp8/
       name: qwen3-14b-fp8
-    # 1 to 2 replicas on vLLM's queue. ml-staging2003 has 2 GPUs.
+    # 1 to 2 replicas. ml-staging2003 has 2 GPUs. targetRequests is 3/4 of
+    # --max-num-seqs (32) below.
     autoscaling:
       minReplicas: 1
       maxReplicas: 2
+      targetRequests: 24
     timeout: 600s
     router:
       gateway: {}
