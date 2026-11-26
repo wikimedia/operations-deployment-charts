@@ -1,0 +1,9 @@
+# Install the Gateway API Inference Extension CRDs bundled with the chart
+# (InferencePool and the llm-d InferenceObjective/InferenceModelRewrite), for the
+# endpoint picker (T436650).
+kserve:
+  llmisvc:
+    createGIECRDs: true
+    # The Gateway that HTTPRoutes from spec.router.route attach to.
+    gateway:
+      create: true
