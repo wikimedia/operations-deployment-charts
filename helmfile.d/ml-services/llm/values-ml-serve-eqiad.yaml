@@ -137,26 +137,14 @@ inference_services:
             ephemeral-storage: 60Gi
       config:
         maxReplicas: 1
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoSchedule"
-          - key: "dedicated"
-            operator: "Equal"
-            value: "mi300x-experiments"
-            effect: "NoExecute"
         affinity:
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: "kubernetes.io/hostname"
-                      operator: "In"
-                      values:
-                        # T439555: Host it using the 96GB partitions.
-                        - "ml-serve1013.eqiad.wmnet"
-                        - "ml-serve1014.eqiad.wmnet"
+                    - key: amd.com/gpu.vram
+                      operator: In
+                      values: ["96G"]
 
   llm-clef-flash:
     predictor:
